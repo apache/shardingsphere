@@ -63,7 +63,7 @@ public final class YamlGovernanceShardingWithMasterSlaveIntegrateTest extends Ab
         if (hasDataSource) {
             dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
-            Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("db0_master", "db0_slave", "db1_master", "db1_slave"), AbstractYamlDataSourceTest::createDataSource);
+            Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("primary_ds_0", "replica_ds_0", "primary_ds_1", "replica_ds_1"), AbstractYamlDataSourceTest::createDataSource);
             Map<String, DataSource> result = new HashMap<>();
             for (Entry<String, DataSource> each : dataSourceMap.entrySet()) {
                 result.put(each.getKey(), each.getValue());

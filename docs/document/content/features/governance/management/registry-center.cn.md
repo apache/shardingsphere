@@ -59,5 +59,5 @@ Zookeeper 命令如下：
 Zookeeper 命令如下：
 
 ```
-[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/states/datanodes/${your_schema_name}/${your_slave_datasource_name} DISABLED
+[zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/states/datanodes/${your_schema_name}/${your_replica_datasource_name} DISABLED
 ```

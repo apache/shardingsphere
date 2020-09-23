@@ -22,7 +22,7 @@
     <sql-case id="revoke_user_from" value="REVOKE ADVISOR, ALTER DATABASE from user_dev" db-types="Oracle" />
     <sql-case id="revoke_user_with_hostname_on_db" value="REVOKE select, insert ON * FROM 'user_dev'@'localhost'" db-types="MySQL" />
     <sql-case id="revoke_user_with_hostname_on_table" value="REVOKE select, insert ON t_order FROM 'user_dev'@'localhost'" db-types="MySQL" />
-    <sql-case id="revoke_user_with_hostname_on_db_and_table" value="REVOKE select, insert ON master.t_order FROM 'user_dev'@'localhost'" db-types="MySQL" />
+    <sql-case id="revoke_user_with_hostname_on_db_and_table" value="REVOKE select, insert ON primary_ds.t_order FROM 'user_dev'@'localhost'" db-types="MySQL" />
     <sql-case id="revoke_user_with_hostname" value="REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'user_dev'@'localhost'" db-types="MySQL" />
     <sql-case id="revoke_select" value="REVOKE SELECT ON *.* FROM user1" db-types="MySQL" />
     <sql-case id="revoke_select_column" value="REVOKE SELECT (order_id) ON ds_0.t_order FROM user1" db-types="MySQL" />

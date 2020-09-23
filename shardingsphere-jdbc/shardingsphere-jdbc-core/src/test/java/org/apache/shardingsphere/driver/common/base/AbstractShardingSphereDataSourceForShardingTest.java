@@ -39,7 +39,7 @@ import java.util.Objects;
 
 public abstract class AbstractShardingSphereDataSourceForShardingTest extends AbstractSQLTest {
     
-    private static ShardingSphereDataSource shardingSphereDataSource;
+    private static ShardingSphereDataSource dataSource;
     
     private static final List<String> SHARDING_DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1");
     
@@ -47,14 +47,14 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     
     @BeforeClass
     public static void initShardingSphereDataSource() throws SQLException, IOException {
-        if (null != shardingSphereDataSource) {
+        if (null != dataSource) {
             return;
         }
-        shardingSphereDataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile(CONFIG_SHARDING));
+        dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile(CONFIG_SHARDING));
     }
     
     private static Map<String, DataSource> getDataSourceMap() {
-        return Maps.filterKeys(getDATABASE_TYPE_MAP().values().iterator().next(), SHARDING_DB_NAMES::contains);
+        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), SHARDING_DB_NAMES::contains);
     }
     
     private static File getFile(final String fileName) {
@@ -65,7 +65,7 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     @Before
     public void initTable() {
         try {
-            ShardingSphereConnection conn = shardingSphereDataSource.getConnection();
+            ShardingSphereConnection conn = dataSource.getConnection();
             RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_data.sql"))));
             conn.close();
         } catch (final SQLException ex) {
@@ -74,15 +74,15 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     }
     
     protected final ShardingSphereDataSource getShardingSphereDataSource() {
-        return shardingSphereDataSource;
+        return dataSource;
     }
     
     @AfterClass
     public static void clear() throws Exception {
-        if (null == shardingSphereDataSource) {
+        if (null == dataSource) {
             return;
         }
-        shardingSphereDataSource.close();
-        shardingSphereDataSource = null;
+        dataSource.close();
+        dataSource = null;
     }
 }

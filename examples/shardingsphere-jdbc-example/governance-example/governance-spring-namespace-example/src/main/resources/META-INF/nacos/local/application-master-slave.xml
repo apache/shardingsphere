@@ -21,7 +21,7 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
-       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
+       xmlns:primary-replica-replication="http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication"
        xmlns:governance="http://shardingsphere.apache.org/schema/shardingsphere/governance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd 
@@ -31,42 +31,42 @@
                            http://www.springframework.org/schema/tx/spring-tx.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/masterslave
-                           http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication
+                           http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication/primary-replica-replication.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/governance
                            http://shardingsphere.apache.org/schema/shardingsphere/governance/governance.xsd
                            ">
     <import resource="classpath*:META-INF/nacos/registry-center.xml" />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     
-    <bean id="demo_ds_master" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+    <bean id="demo_primary_ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
     
-    <bean id="demo_ds_slave_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+    <bean id="demo_replica_ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_slave_0"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_replica_ds_0"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
     
-    <bean id="demo_ds_slave_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+    <bean id="demo_replica_ds_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_slave_1"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_replica_ds_1"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
     
-    <master-slave:load-balance-algorithm id="randomStrategy" type="RANDOM" />
+    <primary-replica-replication:load-balance-algorithm id="randomStrategy" type="RANDOM" />
 
-    <master-slave:rule id="masterSlaveRule">
-        <master-slave:data-source-rule id="demo_ds" master-data-source-name="demo_ds_master" slave-data-source-names="demo_ds_slave_0, demo_ds_slave_1" load-balance-algorithm-ref="randomStrategy" />
-    </master-slave:rule>
+    <primary-replica-replication:rule id="masterSlaveRule">
+        <primary-replica-replication:data-source-rule id="demo_ds" primary-data-source-name="demo_primary_ds" replica-data-source-names="demo_replica_ds_0, demo_replica_ds_1" load-balance-algorithm-ref="randomStrategy" />
+    </primary-replica-replication:rule>
     
-    <shardingsphere:data-source id="realMasterSlaveDataSource" data-source-names="demo_ds_master, demo_ds_slave_0, demo_ds_slave_1" rule-refs="masterSlaveRule" />
+    <shardingsphere:data-source id="realMasterSlaveDataSource" data-source-names="demo_primary_ds, demo_replica_ds_0, demo_replica_ds_1" rule-refs="masterSlaveRule" />
     
     <governance:data-source id="masterSlaveDataSource" data-source-ref="realMasterSlaveDataSource" reg-center-ref="regCenter" config-center-ref="confCenter" />
     

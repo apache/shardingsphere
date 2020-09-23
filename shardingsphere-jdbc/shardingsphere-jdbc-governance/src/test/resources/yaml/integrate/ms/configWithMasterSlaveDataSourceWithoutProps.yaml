@@ -16,34 +16,34 @@
 #
 
 dataSources:
-  db_master: !!org.apache.commons.dbcp2.BasicDataSource
+  db_primary: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:db_primary;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxTotal: 100
-  db_slave_0: !!org.apache.commons.dbcp2.BasicDataSource
+  replica_ds_0: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db_slave_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:replica_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxTotal: 100
-  db_slave_1: !!org.apache.commons.dbcp2.BasicDataSource
+  replica_ds_1: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db_slave_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:replica_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxTotal: 100
 
 rules:
-- !MASTER_SLAVE
+- !PRIMARY_REPLICA_REPLICATION
   dataSources:
-    db_ms:
-      name: db_ms
-      masterDataSourceName: db_master
-      slaveDataSourceNames:
-        - db_slave_0
-        - db_slave_1
+    pr_ds:
+      name: pr_ds
+      primaryDataSourceName: db_primary
+      replicaDataSourceNames:
+        - replica_ds_0
+        - replica_ds_1
 
 governance:
   name: test_ms_registry_name

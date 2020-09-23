@@ -44,8 +44,8 @@ import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.replication.primaryreplica.algorithm.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.replication.primaryreplica.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.replication.primaryreplica.algorithm.config.AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration;
+import org.apache.shardingsphere.replication.primaryreplica.api.config.PrimaryReplicaReplicationRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -178,19 +178,19 @@ public final class ConfigCenter {
                 Preconditions.checkState(hasAvailableTableConfigurations(config),
                         "No available rule configurations in `%s` for governance.", schemaName);
                 configurations.add(each);
-            } else if (each instanceof AlgorithmProvidedMasterSlaveRuleConfiguration) {
-                AlgorithmProvidedMasterSlaveRuleConfiguration config = (AlgorithmProvidedMasterSlaveRuleConfiguration) each;
+            } else if (each instanceof AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration) {
+                AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration config = (AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration) each;
                 config.getDataSources().forEach(group -> Preconditions.checkState(
-                        !group.getMasterDataSourceName().isEmpty(), "No available master-slave rule configuration in `%s` for governance.", schemaName));
+                        !group.getPrimaryDataSourceName().isEmpty(), "No available master-slave rule configuration in `%s` for governance.", schemaName));
                 configurations.add(each);
             } else if (each instanceof AlgorithmProvidedEncryptRuleConfiguration) {
                 AlgorithmProvidedEncryptRuleConfiguration config = (AlgorithmProvidedEncryptRuleConfiguration) each;
                 Preconditions.checkState(!config.getEncryptors().isEmpty(), "No available encrypt rule configuration in `%s` for governance.", schemaName);
                 configurations.add(each);
-            } else if (each instanceof MasterSlaveRuleConfiguration) {
-                MasterSlaveRuleConfiguration config = (MasterSlaveRuleConfiguration) each;
+            } else if (each instanceof PrimaryReplicaReplicationRuleConfiguration) {
+                PrimaryReplicaReplicationRuleConfiguration config = (PrimaryReplicaReplicationRuleConfiguration) each;
                 config.getDataSources().forEach(group -> Preconditions.checkState(
-                        !group.getMasterDataSourceName().isEmpty(), "No available master-slave rule configuration in `%s` for governance.", schemaName));
+                        !group.getPrimaryDataSourceName().isEmpty(), "No available master-slave rule configuration in `%s` for governance.", schemaName));
                 configurations.add(each);
             } else if (each instanceof EncryptRuleConfiguration) {
                 EncryptRuleConfiguration config = (EncryptRuleConfiguration) each;

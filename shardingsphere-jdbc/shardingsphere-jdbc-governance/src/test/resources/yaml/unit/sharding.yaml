@@ -16,14 +16,14 @@
 #
 
 dataSources:
-  ds_m: !!org.apache.commons.dbcp2.BasicDataSource
+  primary_ds: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:ds_m;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:primary_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password:
-  ds_s: !!org.apache.commons.dbcp2.BasicDataSource
+  replica_ds: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:ds_s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:replica_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password:
 
@@ -31,7 +31,7 @@ rules:
 - !SHARDING
   tables:
     t_order:
-      actualDataNodes: ds_ms.t_order_${0..1}
+      actualDataNodes: pr_ds.t_order_${0..1}
       databaseStrategy:
         standard:
           shardingColumn: user_id
@@ -44,7 +44,7 @@ rules:
         column: order_id
         keyGeneratorName: snowflake
     t_order_item:
-      actualDataNodes: ds_ms.t_order_item_${0..1}
+      actualDataNodes: pr_ds.t_order_item_${0..1}
       tableStrategy:
         standard:
           shardingColumn: order_id
@@ -65,7 +65,7 @@ rules:
     default_database_inline:
       type: INLINE
       props:
-        algorithm-expression: ds_ms_${user_id % 2}
+        algorithm-expression: pr_ds_${user_id % 2}
     t_order_database_inline:
       type: INLINE
       props:
@@ -85,12 +85,12 @@ rules:
       props:
           worker-id: 123
 
-- !MASTER_SLAVE
+- !PRIMARY_REPLICA_REPLICATION
   dataSources:
-    ds_ms:
-      masterDataSourceName: ds_m
-      slaveDataSourceNames:
-        - ds_s
+    pr_ds:
+      primaryDataSourceName: primary_ds
+      replicaDataSourceNames:
+        - replica_ds
 
 props:
   sql-show: false

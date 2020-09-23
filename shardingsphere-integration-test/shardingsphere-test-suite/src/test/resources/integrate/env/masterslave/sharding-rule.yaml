@@ -16,11 +16,11 @@
 #
 
 rules:
-- !MASTER_SLAVE
+- !PRIMARY_REPLICA_REPLICATION
   dataSources:
-    master-slave-ds: 
-      name: master-slave-ds
-      masterDataSourceName: master
-      slaveDataSourceNames: 
-        - slave_0
-        - slave_1
+    primary-replica-ds: 
+      name: primary-replica-ds
+      primaryDataSourceName: primary_ds
+      replicaDataSourceNames: 
+        - replica_0
+        - replica_1

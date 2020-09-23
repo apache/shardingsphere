@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-http\://shardingsphere.apache.org/schema/shardingsphere/masterslave=org.apache.shardingsphere.replication.primaryreplica.spring.namespace.handler.MasterSlaveNamespaceHandler
+http\://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication=org.apache.shardingsphere.replication.primaryreplica.spring.namespace.handler.PrimaryReplicaReplicationNamespaceHandler

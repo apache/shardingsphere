@@ -16,7 +16,7 @@
 #
 
 governance:
-  name: demo_yaml_ds_ms
+  name: demo_yaml_pr_ds
   registryCenter:
     type: ZooKeeper
     serverLists: localhost:2181

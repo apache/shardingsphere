@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForMasterSlaveTest;
+import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForPrimaryReplicaReplicationTest;
 import org.junit.Test;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public final class MasterSlaveStatementTest extends AbstractShardingSphereDataSourceForMasterSlaveTest {
+public final class MasterSlaveStatementTest extends AbstractShardingSphereDataSourceForPrimaryReplicaReplicationTest {
     
     @Test(expected = SQLException.class)
     public void assertQueryWithNull() throws SQLException {
