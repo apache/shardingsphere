@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDat
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
@@ -48,6 +49,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -184,5 +186,121 @@ public final class InsertStatementContextTest {
         assertThat(actual.getInsertValueContexts().get(1).getValue(0), is(2));
         assertThat(actual.getInsertValueContexts().get(1).getValue(1), is("Jerry"));
         assertThat(actual.getInsertValueContexts().get(1).getValue(2), is("init"));
+    }
+    
+    @Test
+    public void assertUseDefaultColumnsForMySQL() {
+        assertUseDefaultColumns(new MySQLInsertStatement());
+    }
+    
+    @Test
+    public void assertUseDefaultColumnsForOracle() {
+        assertUseDefaultColumns(new OracleInsertStatement());
+    }
+    
+    @Test
+    public void assertUseDefaultColumnsForPostgreSQL() {
+        assertUseDefaultColumns(new PostgreSQLInsertStatement());
+    }
+    
+    @Test
+    public void assertUseDefaultColumnsForSQL92() {
+        assertUseDefaultColumns(new SQL92InsertStatement());
+    }
+    
+    @Test
+    public void assertUseDefaultColumnsForSQLServer() {
+        assertUseDefaultColumns(new SQLServerInsertStatement());
+    }
+    
+    private void assertUseDefaultColumns(final InsertStatement insertStatement) {
+        insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("")));
+        InsertStatementContext insertStatementContext = new InsertStatementContext(new SchemaMetaData(), Collections.emptyList(), insertStatement);
+        assertTrue(insertStatementContext.useDefaultColumns());
+    }
+    
+    @Test
+    public void assertNotUseDefaultColumnsWithColumnsForMySQL() {
+        assertNotUseDefaultColumnsWithColumns(new MySQLInsertStatement());
+    }
+    
+    @Test
+    public void assertNotUseDefaultColumnsWithColumnsForOracle() {
+        assertNotUseDefaultColumnsWithColumns(new OracleInsertStatement());
+    }
+    
+    @Test
+    public void assertNotUseDefaultColumnsWithColumnsForPostgreSQL() {
+        assertNotUseDefaultColumnsWithColumns(new PostgreSQLInsertStatement());
+    }
+    
+    @Test
+    public void assertNotUseDefaultColumnsWithColumnsForSQL92() {
+        assertNotUseDefaultColumnsWithColumns(new SQL92InsertStatement());
+    }
+    
+    @Test
+    public void assertNotUseDefaultColumnsWithColumnsForSQLServer() {
+        assertNotUseDefaultColumnsWithColumns(new SQLServerInsertStatement());
+    }
+    
+    private void assertNotUseDefaultColumnsWithColumns(final InsertStatement insertStatement) {
+        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
+        insertStatement.setInsertColumns(insertColumnsSegment);
+        insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("")));
+        InsertStatementContext insertStatementContext = new InsertStatementContext(new SchemaMetaData(), Collections.emptyList(), insertStatement);
+        assertFalse(insertStatementContext.useDefaultColumns());
+    }
+    
+    @Test
+    public void assertNotUseDefaultColumnsWithSetAssignmentForMySQL() {
+        MySQLInsertStatement insertStatement = new MySQLInsertStatement();
+        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
+        insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("")));
+        InsertStatementContext insertStatementContext = new InsertStatementContext(new SchemaMetaData(), Collections.emptyList(), insertStatement);
+        assertFalse(insertStatementContext.useDefaultColumns());
+    }
+    
+    @Test
+    public void assertGetValueListCountWithValuesForMySQL() {
+        assertGetValueListCountWithValues(new MySQLInsertStatement());
+    }
+    
+    @Test
+    public void assertGetValueListCountWithValuesForOracle() {
+        assertGetValueListCountWithValues(new OracleInsertStatement());
+    }
+    
+    @Test
+    public void assertGetValueListCountWithValuesForPostgreSQL() {
+        assertGetValueListCountWithValues(new PostgreSQLInsertStatement());
+    }
+    
+    @Test
+    public void assertGetValueListCountWithValuesForSQL92() {
+        assertGetValueListCountWithValues(new SQL92InsertStatement());
+    }
+    
+    @Test
+    public void assertGetValueListCountWithValuesForSQLServer() {
+        assertGetValueListCountWithValues(new SQLServerInsertStatement());
+    }
+    
+    private void assertGetValueListCountWithValues(final InsertStatement insertStatement) {
+        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))));
+        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 2))));
+        insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("")));
+        InsertStatementContext insertStatementContext = new InsertStatementContext(new SchemaMetaData(), Collections.emptyList(), insertStatement);
+        assertThat(insertStatementContext.getValueListCount(), is(2));
+    }
+    
+    @Test
+    public void assertGetValueListCountWithSetAssignmentForMySQL() {
+        MySQLInsertStatement insertStatement = new MySQLInsertStatement();
+        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0,
+                new ColumnSegment(0, 0, new IdentifierValue("col")), new LiteralExpressionSegment(0, 0, 1)))));
+        insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("")));
+        InsertStatementContext insertStatementContext = new InsertStatementContext(new SchemaMetaData(), Collections.emptyList(), insertStatement);
+        assertThat(insertStatementContext.getValueListCount(), is(1));
     }
 }

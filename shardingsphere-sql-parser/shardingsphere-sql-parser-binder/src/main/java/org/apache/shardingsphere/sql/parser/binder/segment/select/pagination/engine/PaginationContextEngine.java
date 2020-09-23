@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.Whe
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
-import org.apache.shardingsphere.sql.parser.sql.dialect.helper.dml.SelectStatementHelper;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +45,7 @@ public final class PaginationContextEngine {
      * @return pagination context
      */
     public PaginationContext createPaginationContext(final SelectStatement selectStatement, final ProjectionsContext projectionsContext, final List<Object> parameters) {
-        Optional<LimitSegment> limitSegment = SelectStatementHelper.getLimitSegment(selectStatement);
+        Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(selectStatement);
         if (limitSegment.isPresent()) {
             return new LimitPaginationContextEngine().createPaginationContext(limitSegment.get(), parameters);
         }

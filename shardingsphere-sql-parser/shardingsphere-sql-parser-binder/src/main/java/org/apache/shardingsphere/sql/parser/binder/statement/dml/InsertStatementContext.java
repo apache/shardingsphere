@@ -30,12 +30,13 @@ import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementC
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.helper.dml.InsertStatementHelper;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,7 +67,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     public InsertStatementContext(final SchemaMetaData schemaMetaData, final List<Object> parameters, final InsertStatement sqlStatement) {
         super(sqlStatement);
-        columnNames = sqlStatement.useDefaultColumns() ? schemaMetaData.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : sqlStatement.getColumnNames();
+        columnNames = useDefaultColumns() ? schemaMetaData.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : InsertStatementHandler.getColumnNames(sqlStatement);
         AtomicInteger parametersOffset = new AtomicInteger(0);
         insertValueContexts = getInsertValueContexts(parameters, parametersOffset);
         insertSelectContext = getInsertSelectContext(schemaMetaData, parameters, parametersOffset).orElse(null);
@@ -86,7 +87,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private List<InsertValueContext> getInsertValueContexts(final List<Object> parameters, final AtomicInteger parametersOffset) {
         List<InsertValueContext> result = new LinkedList<>();
-        for (Collection<ExpressionSegment> each : getSqlStatement().getAllValueExpressions()) {
+        List<List<ExpressionSegment>> allValueExpressions = InsertStatementHandler.getAllValueExpressions(getSqlStatement());
+        for (Collection<ExpressionSegment> each : allValueExpressions) {
             InsertValueContext insertValueContext = new InsertValueContext(each, parameters, parametersOffset.get());
             result.add(insertValueContext);
             parametersOffset.addAndGet(insertValueContext.getParameterCount());
@@ -106,7 +108,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     }
     
     private Optional<OnDuplicateUpdateContext> getOnDuplicateKeyUpdateValueContext(final List<Object> parameters, final AtomicInteger parametersOffset) {
-        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHelper.getOnDuplicateKeyColumnsSegment(getSqlStatement());
+        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(getSqlStatement());
         if (!onDuplicateKeyColumnsSegment.isPresent()) {
             return Optional.empty();
         }
@@ -167,5 +169,27 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         TableExtractor tableExtractor = new TableExtractor();
         tableExtractor.extractTablesFromInsert(getSqlStatement());
         return tableExtractor.getRewriteTables();
+    }
+    
+    /**
+     * Judge is use default columns or not.
+     *
+     * @return is use default columns or not
+     */
+    public boolean useDefaultColumns() {
+        InsertStatement insertStatement = getSqlStatement();
+        Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
+        return insertStatement.getColumns().isEmpty() && !setAssignment.isPresent();
+    }
+    
+    /**
+     * Get value list count.
+     *
+     * @return value list count
+     */
+    public int getValueListCount() {
+        InsertStatement insertStatement = getSqlStatement();
+        Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
+        return setAssignment.isPresent() ? 1 : insertStatement.getValues().size();
     }
 }
