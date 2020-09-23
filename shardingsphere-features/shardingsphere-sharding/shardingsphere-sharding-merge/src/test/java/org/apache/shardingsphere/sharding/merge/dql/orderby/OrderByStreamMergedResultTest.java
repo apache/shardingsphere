@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,7 +58,7 @@ public final class OrderByStreamMergedResultTest {
     
     @Before
     public void setUp() {
-        SelectStatement selectStatement = new SelectStatement();
+        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         SimpleTableSegment tableSegment = new SimpleTableSegment(10, 13, new IdentifierValue("tbl"));
         selectStatement.setFrom(tableSegment);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);

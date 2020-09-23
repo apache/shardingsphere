@@ -30,8 +30,8 @@ import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
-import org.apache.shardingsphere.infra.context.SchemaContexts;
-import org.apache.shardingsphere.infra.context.SchemaContextsBuilder;
+import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.schema.SchemaContextsBuilder;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
@@ -152,6 +152,6 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     }
     
     private Map<String, DataSource> getDataSourceMap() {
-        return schemaContexts.getSchemaContexts().get(DefaultSchema.LOGIC_NAME).getSchema().getDataSources();
+        return schemaContexts.getSchemaContextMap().get(DefaultSchema.LOGIC_NAME).getSchema().getDataSources();
     }
 }

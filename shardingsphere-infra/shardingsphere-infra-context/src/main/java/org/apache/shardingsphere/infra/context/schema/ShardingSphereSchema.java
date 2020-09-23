@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -46,19 +46,23 @@ public final class ShardingSphereSchema {
     /**
      * Close data sources.
      * @param dataSources data sources
+     * @throws SQLException exception
      */
-    public void closeDataSources(final Collection<String> dataSources) {
+    public void closeDataSources(final Collection<String> dataSources) throws SQLException {
         for (String each :dataSources) {
             close(this.dataSources.get(each));
         }
     }
     
-    private void close(final DataSource dataSource) {
-        try {
-            Method method = dataSource.getClass().getDeclaredMethod("close");
-            method.setAccessible(true);
-            method.invoke(dataSource);
-        } catch (final ReflectiveOperationException ignored) {
+    private void close(final DataSource dataSource) throws SQLException {
+        if (dataSource instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) dataSource).close();
+            // CHECKSTYLE:OFF
+            } catch (final Exception e) {
+            // CHECKSTYLE:ON
+                throw new SQLException(e);
+            }
         }
     }
 }

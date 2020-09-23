@@ -27,15 +27,15 @@ import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultS
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.SchemaContext;
-import org.apache.shardingsphere.infra.context.SchemaContexts;
+import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
+import org.apache.shardingsphere.infra.context.schema.SchemaContext;
+import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.sql.LogicSQLContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ExecutorConstant;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContextBuilder;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.RawJDBCExecutor;
@@ -48,13 +48,8 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.Stateme
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.StreamQueryResult;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
-import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
-import org.apache.shardingsphere.infra.route.DataNodeRouter;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -285,14 +280,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         clearStatements();
         SchemaContext schemaContext = schemaContexts.getDefaultSchemaContext();
         SQLStatement sqlStatement = schemaContext.getRuntimeContext().getSqlParserEngine().parse(sql, false);
-        DataNodeRouter dataNodeRouter = new DataNodeRouter(schemaContext.getSchema().getMetaData(), schemaContexts.getProps(), schemaContext.getSchema().getRules());
-        RouteContext routeContext = dataNodeRouter.route(sqlStatement, sql, Collections.emptyList());
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(schemaContext.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
-                schemaContexts.getProps(), schemaContext.getSchema().getRules());
-        SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(sql, Collections.emptyList(), routeContext);
-        SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
-        Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(schemaContext.getSchema().getMetaData(), sqlRewriteResult, sqlStatementContext);
-        ExecutionContext result = new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
+        LogicSQLContext logicSQLContext = new LogicSQLContext(schemaContext, sql, Collections.emptyList(), sqlStatement);
+        ExecutionContext result = new KernelProcessor().generateExecutionContext(logicSQLContext, schemaContexts.getProps());
         logSQL(sql, schemaContexts.getProps(), result);
         return result;
     }

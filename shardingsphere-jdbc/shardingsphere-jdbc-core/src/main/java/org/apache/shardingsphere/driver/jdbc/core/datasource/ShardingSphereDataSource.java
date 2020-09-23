@@ -23,8 +23,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.context.SchemaContexts;
-import org.apache.shardingsphere.infra.context.SchemaContextsBuilder;
+import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.schema.SchemaContextsBuilder;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
@@ -34,7 +34,6 @@ import org.apache.shardingsphere.transaction.context.impl.StandardTransactionCon
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -101,7 +100,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
      * @return data sources
      */
     public Map<String, DataSource> getDataSourceMap() {
-        return schemaContexts.getSchemaContexts().get(DefaultSchema.LOGIC_NAME).getSchema().getDataSources();
+        return schemaContexts.getSchemaContextMap().get(DefaultSchema.LOGIC_NAME).getSchema().getDataSources();
     }
     
     @Override
@@ -116,16 +115,15 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
      * @throws Exception exception
      */
     public void close(final Collection<String> dataSourceNames) throws Exception {
-        dataSourceNames.forEach(each -> close(getDataSourceMap().get(each)));
+        for (String each : dataSourceNames) {
+            close(getDataSourceMap().get(each));
+        }
         schemaContexts.close();
     }
     
-    private void close(final DataSource dataSource) {
-        try {
-            Method method = dataSource.getClass().getDeclaredMethod("close");
-            method.setAccessible(true);
-            method.invoke(dataSource);
-        } catch (final ReflectiveOperationException ignored) {
+    private void close(final DataSource dataSource) throws Exception {
+        if (dataSource instanceof AutoCloseable) {
+            ((AutoCloseable) dataSource).close();
         }
     }
 }

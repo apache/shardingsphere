@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.infra.metadata.refresh;
 
 import com.google.common.collect.ImmutableMap;
+
 import java.util.Collections;
+
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
@@ -41,8 +44,7 @@ public abstract class AbstractMetaDataRefreshStrategyTest {
     private ShardingSphereMetaData buildMetaData() {
         return new ShardingSphereMetaData(null, new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap
             .of("t_order", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", 1, "String", false, false, false)), Collections.singletonList(new IndexMetaData("index"))))),
-            ImmutableMap.of("t_order_item", new SchemaMetaData(ImmutableMap.of("t_order_item",
-                new TableMetaData(Collections.singletonList(new ColumnMetaData("order_item_id", 1, "String", true, false, false)), Collections.singletonList(new IndexMetaData("index"))))))),
+            ImmutableMap.of("t_order_item", Lists.newArrayList("t_order_item"))),
                 "sharding_db");
     }
 }

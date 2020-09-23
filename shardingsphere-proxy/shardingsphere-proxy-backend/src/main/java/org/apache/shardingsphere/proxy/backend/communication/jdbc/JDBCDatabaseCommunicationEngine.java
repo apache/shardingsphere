@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.event.persist.MetaDataPersistEvent;
-import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.governance.core.event.model.persist.MetaDataPersistEvent;
+import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -34,8 +34,8 @@ import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.kernel.LogicSQLContext;
-import org.apache.shardingsphere.proxy.backend.kernel.ProxyKernelProcessor;
+import org.apache.shardingsphere.infra.context.sql.LogicSQLContext;
+import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
@@ -64,7 +64,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     @Override
     public BackendResponse execute() throws SQLException {
-        ExecutionContext executionContext = new ProxyKernelProcessor().generateExecutionContext(logicSQLContext);
+        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(logicSQLContext, ProxyContext.getInstance().getSchemaContexts().getProps());
         logSQL(executionContext);
         return doExecute(executionContext);
     }
@@ -94,7 +94,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (refreshStrategy.isPresent()) {
             refreshStrategy.get().refreshMetaData(logicSQLContext.getSchemaContext().getSchema().getMetaData(), ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
                     logicSQLContext.getSchemaContext().getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
-            ShardingSphereEventBus.getInstance().post(
+            GovernanceEventBus.getInstance().post(
                     new MetaDataPersistEvent(logicSQLContext.getSchemaContext().getName(), logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData()));
         }
     }

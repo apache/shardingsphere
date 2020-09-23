@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -140,7 +141,7 @@ public final class ShardingInsertStatementValidatorTest {
 
     private InsertStatement createInsertSelectStatement() {
         InsertStatement result = createInsertStatement();
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         result.setInsertSelect(new SubquerySegment(0, 0, selectStatement));
         return result;

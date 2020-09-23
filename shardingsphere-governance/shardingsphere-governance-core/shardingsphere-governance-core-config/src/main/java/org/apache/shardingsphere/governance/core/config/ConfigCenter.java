@@ -24,11 +24,11 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.governance.core.event.persist.DataSourcePersistEvent;
-import org.apache.shardingsphere.governance.core.event.persist.MetaDataPersistEvent;
-import org.apache.shardingsphere.governance.core.event.persist.RulePersistEvent;
-import org.apache.shardingsphere.governance.core.event.persist.SchemaNamePersistEvent;
-import org.apache.shardingsphere.governance.core.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.governance.core.event.model.persist.DataSourcePersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.persist.MetaDataPersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.persist.RulePersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.persist.SchemaNamePersistEvent;
+import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlRuleSchemaMetaData;
@@ -44,8 +44,8 @@ import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.masterslave.algorithm.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.replication.primaryreplica.algorithm.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.replication.primaryreplica.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -74,7 +74,7 @@ public final class ConfigCenter {
     public ConfigCenter(final ConfigurationRepository repository) {
         node = new ConfigCenterNode();
         this.repository = repository;
-        ShardingSphereEventBus.getInstance().register(this);
+        GovernanceEventBus.getInstance().register(this);
     }
     
     /**

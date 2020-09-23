@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.cache;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -31,7 +31,7 @@ public final class SQLParseResultCacheTest {
     @Test
     public void assertGetSQLStatementWithinCache() {
         SQLParseResultCache actual = new SQLParseResultCache();
-        SQLStatement selectStatement = new SelectStatement();
+        SQLStatement selectStatement = new MySQLSelectStatement();
         actual.put("SELECT 1", selectStatement);
         assertTrue(actual.getSQLStatement("SELECT 1").isPresent());
         assertThat(actual.getSQLStatement("SELECT 1").get(), is(selectStatement));
@@ -40,7 +40,7 @@ public final class SQLParseResultCacheTest {
     @Test
     public void assertGetSQLStatementWithoutCache() {
         SQLParseResultCache actual = new SQLParseResultCache();
-        SQLStatement selectStatement = new SelectStatement();
+        SQLStatement selectStatement = new MySQLSelectStatement();
         actual.put("SELECT 1", selectStatement);
         assertFalse(actual.getSQLStatement("SELECT 2").isPresent());
     }
@@ -48,7 +48,7 @@ public final class SQLParseResultCacheTest {
     @Test
     public void assertClear() {
         SQLParseResultCache actual = new SQLParseResultCache();
-        SQLStatement selectStatement = new SelectStatement();
+        SQLStatement selectStatement = new MySQLSelectStatement();
         actual.put("SELECT 1", selectStatement);
         actual.clear();
         assertFalse(actual.getSQLStatement("SELECT 1").isPresent());

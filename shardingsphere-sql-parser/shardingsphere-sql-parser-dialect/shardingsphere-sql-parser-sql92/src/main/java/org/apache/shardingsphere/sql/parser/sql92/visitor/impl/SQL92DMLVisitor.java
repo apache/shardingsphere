@@ -79,13 +79,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Joi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.BooleanLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.SQL92Visitor;
 
 import java.util.Collection;
@@ -131,7 +131,7 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement();
+        SQL92UpdateStatement result = new SQL92UpdateStatement();
         result.setTableSegment((TableSegment) visit(ctx.tableReferences()));
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
@@ -198,7 +198,7 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
-        SelectStatement result = (SelectStatement) visit(ctx.unionClause());
+        SQL92SelectStatement result = (SQL92SelectStatement) visit(ctx.unionClause());
         result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
@@ -211,7 +211,7 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SelectStatement result = new SelectStatement();
+        SQL92SelectStatement result = new SQL92SelectStatement();
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
         if (!ctx.selectSpecification().isEmpty()) {
             result.getProjections().setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
@@ -371,7 +371,7 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
     @Override
     public ASTNode visitTableFactor(final TableFactorContext ctx) {
         if (null != ctx.subquery()) {
-            SelectStatement subquery = (SelectStatement) visit(ctx.subquery());
+            SQL92SelectStatement subquery = (SQL92SelectStatement) visit(ctx.subquery());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery);
             SubqueryTableSegment result = new SubqueryTableSegment(subquerySegment);
             if (null != ctx.alias()) {

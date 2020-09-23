@@ -28,14 +28,14 @@ import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.OnDupli
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLStatementUtils;
-import org.apache.shardingsphere.sql.parser.sql.common.util.TableExtractUtils;
+import org.apache.shardingsphere.sql.parser.sql.dialect.helper.dml.InsertStatementHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -106,7 +106,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     }
     
     private Optional<OnDuplicateUpdateContext> getOnDuplicateKeyUpdateValueContext(final List<Object> parameters, final AtomicInteger parametersOffset) {
-        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = SQLStatementUtils.getOnDuplicateKeyColumnsSegment(getSqlStatement());
+        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHelper.getOnDuplicateKeyColumnsSegment(getSqlStatement());
         if (!onDuplicateKeyColumnsSegment.isPresent()) {
             return Optional.empty();
         }
@@ -164,8 +164,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        TableExtractUtils utils = new TableExtractUtils();
-        utils.extractTablesFromInsert(getSqlStatement());
-        return utils.getRewriteTables();
+        TableExtractor tableExtractor = new TableExtractor();
+        tableExtractor.extractTablesFromInsert(getSqlStatement());
+        return tableExtractor.getRewriteTables();
     }
 }

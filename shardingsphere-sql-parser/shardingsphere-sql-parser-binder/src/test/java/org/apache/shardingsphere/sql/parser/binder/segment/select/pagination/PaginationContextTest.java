@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser.binder.segment.select.pagination;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
@@ -28,6 +28,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.Pa
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -126,16 +131,62 @@ public final class PaginationContextTest {
     }
     
     @Test
-    public void getRevisedRowCount() {
-        SelectStatement selectStatement = new SelectStatement();
+    public void getRevisedRowCountForMySQL() {
+        getRevisedRowCount(new MySQLSelectStatement());
+    }
+    
+    @Test
+    public void getRevisedRowCountForOracle() {
+        getRevisedRowCount(new OracleSelectStatement());
+    }
+    
+    @Test
+    public void getRevisedRowCountForPostgreSQL() {
+        getRevisedRowCount(new PostgreSQLSelectStatement());
+    }
+    
+    @Test
+    public void getRevisedRowCountForSQL92() {
+        getRevisedRowCount(new SQL92SelectStatement());
+    }
+    
+    @Test
+    public void getRevisedRowCountForSQLServer() {
+        getRevisedRowCount(new SQLServerSelectStatement());
+    }
+    
+    private void getRevisedRowCount(final SelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(null, Collections.emptyList(), selectStatement);
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectStatementContext), is(50L));
     }
     
     @Test
-    public void getRevisedRowCountWithMax() {
-        SelectStatement selectStatement = new SelectStatement();
+    public void getRevisedRowCountWithMaxForMySQL() {
+        getRevisedRowCountWithMax(new MySQLSelectStatement());
+    }
+    
+    @Test
+    public void getRevisedRowCountWithMaxForOracle() {
+        getRevisedRowCountWithMax(new OracleSelectStatement());
+    }
+    
+    @Test
+    public void getRevisedRowCountWithMaxForPostgreSQL() {
+        getRevisedRowCountWithMax(new PostgreSQLSelectStatement());
+    }
+    
+    @Test
+    public void getRevisedRowCountWithMaxForSQL92() {
+        getRevisedRowCountWithMax(new SQL92SelectStatement());
+    }
+    
+    @Test
+    public void getRevisedRowCountWithMaxForSQLServer() {
+        getRevisedRowCountWithMax(new SQLServerSelectStatement());
+    }
+    
+    private void getRevisedRowCountWithMax(final SelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.DESC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));

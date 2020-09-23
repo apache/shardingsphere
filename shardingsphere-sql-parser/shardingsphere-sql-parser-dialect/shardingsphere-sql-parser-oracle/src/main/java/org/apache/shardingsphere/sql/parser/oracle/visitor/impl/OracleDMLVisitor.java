@@ -83,13 +83,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Joi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.BooleanLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleUpdateStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -139,7 +139,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement();
+        OracleUpdateStatement result = new OracleUpdateStatement();
         result.setTableSegment((TableSegment) visit(ctx.tableReferences()));
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
@@ -227,7 +227,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
-        SelectStatement result = (SelectStatement) visit(ctx.unionClause());
+        OracleSelectStatement result = (OracleSelectStatement) visit(ctx.unionClause());
         result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
@@ -240,7 +240,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SelectStatement result = new SelectStatement();
+        OracleSelectStatement result = new OracleSelectStatement();
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
         if (null != ctx.duplicateSpecification()) {
             result.getProjections().setDistinctRow(isDistinct(ctx));
@@ -398,7 +398,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     @Override
     public ASTNode visitTableFactor(final TableFactorContext ctx) {
         if (null != ctx.subquery()) {
-            SelectStatement subquery = (SelectStatement) visit(ctx.subquery());
+            OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.subquery());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery);
             SubqueryTableSegment result = new SubqueryTableSegment(subquerySegment);
             if (null != ctx.alias()) {

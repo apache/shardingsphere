@@ -35,10 +35,15 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -106,14 +111,37 @@ public final class SimpleShadowDataSourceRouterTest {
         simpleShadowDataSourceRouter = new SimpleShadowDataSourceJudgeEngine(shadowRule, insertStatementContext);
         assertFalse("should not be shadow", simpleShadowDataSourceRouter.isShadow());
     }
-    
+
     @Test
-    public void judgeForWhereSegment() {
+    public void judgeForWhereSegmentForMySQL() {
+        judgeForWhereSegment(new MySQLSelectStatement());
+    }
+
+    @Test
+    public void judgeForWhereSegmentForOracle() {
+        judgeForWhereSegment(new OracleSelectStatement());
+    }
+
+    @Test
+    public void judgeForWhereSegmentForPostgreSQL() {
+        judgeForWhereSegment(new PostgreSQLSelectStatement());
+    }
+
+    @Test
+    public void judgeForWhereSegmentForSQL92() {
+        judgeForWhereSegment(new SQL92SelectStatement());
+    }
+
+    @Test
+    public void judgeForWhereSegmentForSQLServer() {
+        judgeForWhereSegment(new SQLServerSelectStatement());
+    }
+    
+    private void judgeForWhereSegment(final SelectStatement selectStatement) {
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("shadow"));
         LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, true);
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, "=", null);
         WhereSegment whereSegment = new WhereSegment(0, 0, expression);
-        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setWhere(whereSegment);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.setDistinctRow(true);

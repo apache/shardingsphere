@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.helper.dml.UpdateStatementHelper;
 
 import java.util.List;
 import java.util.Optional;
@@ -71,7 +72,7 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
 
     @Override
     public void postValidate(final UpdateStatement sqlStatement, final RouteResult routeResult) {
-        if (sqlStatement.getLimit().isPresent() && routeResult.getRouteUnits().size() > 1) {
+        if (UpdateStatementHelper.getLimitSegment(sqlStatement).isPresent() && routeResult.getRouteUnits().size() > 1) {
             throw new ShardingSphereException("UPDATE ... LIMIT can not support sharding route to multiple data nodes.");
         }
     }

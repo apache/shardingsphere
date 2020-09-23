@@ -44,6 +44,6 @@ public final class ServerHandlerInitializer extends ChannelInitializer<SocketCha
     
     private DatabaseType getDatabaseType() {
         // TODO Consider loading from configuration.
-        return ProxyContext.getInstance().getSchemaContexts().getSchemaContexts().isEmpty() ? new MySQLDatabaseType() : ProxyContext.getInstance().getSchemaContexts().getDatabaseType();
+        return ProxyContext.getInstance().getSchemaContexts().getSchemaContextMap().isEmpty() ? new MySQLDatabaseType() : ProxyContext.getInstance().getSchemaContexts().getDatabaseType();
     }
 }

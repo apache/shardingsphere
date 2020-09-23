@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Joi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -106,7 +107,7 @@ public final class ShardingUpdateStatementValidatorTest {
     }
     
     private UpdateStatement createUpdateStatement() {
-        UpdateStatement result = new UpdateStatement();
+        UpdateStatement result = new MySQLUpdateStatement();
         result.setTableSegment(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
         result.setSetAssignment(
                 new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, "")))));
@@ -114,7 +115,7 @@ public final class ShardingUpdateStatementValidatorTest {
     }
     
     private UpdateStatement createUpdateStatementAndParameters(final Object shardingColumnParameter) {
-        UpdateStatement result = new UpdateStatement();
+        UpdateStatement result = new MySQLUpdateStatement();
         result.setTableSegment(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
         Collection<AssignmentSegment> assignments = Collections.singletonList(
                 new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, shardingColumnParameter)));

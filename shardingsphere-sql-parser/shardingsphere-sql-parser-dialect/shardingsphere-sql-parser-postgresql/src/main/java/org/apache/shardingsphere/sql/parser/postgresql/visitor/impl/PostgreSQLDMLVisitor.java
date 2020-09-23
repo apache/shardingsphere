@@ -103,14 +103,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLCallStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLDoStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLUpdateStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -267,7 +267,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement();
+        PostgreSQLUpdateStatement result = new PostgreSQLUpdateStatement();
         SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relationExprOptAlias());
         result.setTableSegment(tableSegment);
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setClauseList()));
@@ -304,14 +304,14 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
-        SelectStatement result = (SelectStatement) visit(ctx.selectNoParens());
+        PostgreSQLSelectStatement result = (PostgreSQLSelectStatement) visit(ctx.selectNoParens());
         result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     
     @Override
     public ASTNode visitSelectNoParens(final SelectNoParensContext ctx) {
-        SelectStatement result = (SelectStatement) visit(ctx.selectClauseN());
+        PostgreSQLSelectStatement result = (PostgreSQLSelectStatement) visit(ctx.selectClauseN());
         if (null != ctx.sortClause()) {
             OrderBySegment orderBySegment = (OrderBySegment) visit(ctx.sortClause());
             result.setOrderBy(orderBySegment);
@@ -342,12 +342,12 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     
     @Override
     public ASTNode visitSelectClauseN(final SelectClauseNContext ctx) {
-        return null == ctx.simpleSelect() ? new SelectStatement() : visit(ctx.simpleSelect());
+        return null == ctx.simpleSelect() ? new PostgreSQLSelectStatement() : visit(ctx.simpleSelect());
     }
     
     @Override
     public ASTNode visitSimpleSelect(final SimpleSelectContext ctx) {
-        SelectStatement result = new SelectStatement();
+        PostgreSQLSelectStatement result = new PostgreSQLSelectStatement();
         if (null != ctx.targetList()) {
             ProjectionsSegment projects = (ProjectionsSegment) visit(ctx.targetList());
             if (null != ctx.distinctClause()) {
@@ -441,7 +441,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             return projection;
         }
         if (null != expr.cExpr() && null != expr.cExpr().selectWithParens()) {
-            SelectStatement select = (SelectStatement) visit(expr.cExpr().selectWithParens());
+            PostgreSQLSelectStatement select = (PostgreSQLSelectStatement) visit(expr.cExpr().selectWithParens());
             SubquerySegment subquery = new SubquerySegment(expr.cExpr().selectWithParens().start.getStartIndex(), expr.cExpr().selectWithParens().stop.getStopIndex(), select);
             SubqueryProjectionSegment projection = new SubqueryProjectionSegment(subquery);
             AliasSegment alias = null != ctx.identifier()
@@ -485,7 +485,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             return result;
         }
         if (null != ctx.selectWithParens()) {
-            SelectStatement select = (SelectStatement) visit(ctx.selectWithParens());
+            PostgreSQLSelectStatement select = (PostgreSQLSelectStatement) visit(ctx.selectWithParens());
             SubquerySegment subquery = new SubquerySegment(ctx.selectWithParens().start.getStartIndex(), ctx.selectWithParens().stop.getStopIndex(), select);
             AliasSegment alias = null != ctx.aliasClause() ? (AliasSegment) visit(ctx.aliasClause()) : null;
             SubqueryTableSegment result = new SubqueryTableSegment(subquery);
