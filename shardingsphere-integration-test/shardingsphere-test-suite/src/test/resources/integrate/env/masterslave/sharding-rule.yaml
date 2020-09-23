@@ -20,7 +20,7 @@ rules:
   dataSources:
     primary-replica-ds: 
       name: primary-replica-ds
-      primaryDataSourceName: master
+      primaryDataSourceName: primary_ds
       replicaDataSourceNames: 
-        - slave_0
-        - slave_1
+        - replica_0
+        - replica_1
