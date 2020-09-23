@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -81,10 +82,8 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
                 new ColumnMetaData("status", Types.VARCHAR, "varchar", false, false, false),
                 new ColumnMetaData("c_date", Types.TIMESTAMP, "timestamp", false, false, false)), Collections.emptySet()));
         tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
-        Map<String, TableMetaData> unconfiguredTableMetaDataMap = new HashMap<>(1, 1);
-        unconfiguredTableMetaDataMap.put("t_category", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
-        Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
-        unconfiguredSchemaMetaDataMap.put("ds_0", new SchemaMetaData(unconfiguredTableMetaDataMap));
+        Map<String, Collection<String>> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
+        unconfiguredSchemaMetaDataMap.put("ds_0", Arrays.asList("t_category"));
         return new RuleSchemaMetaData(new SchemaMetaData(tableMetaDataMap), unconfiguredSchemaMetaDataMap);
     }
 }

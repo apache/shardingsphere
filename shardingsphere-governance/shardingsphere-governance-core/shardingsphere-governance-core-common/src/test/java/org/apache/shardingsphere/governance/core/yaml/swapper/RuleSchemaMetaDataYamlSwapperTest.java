@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -48,8 +49,6 @@ public final class RuleSchemaMetaDataYamlSwapperTest {
         assertThat(yamlRuleSchemaMetaData.getConfiguredSchemaMetaData().getTables().get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
         assertThat(yamlRuleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().keySet(), is(Collections.singleton("ds_0")));
         assertThat(yamlRuleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0").getTables().keySet(), is(Collections.singleton("t_user")));
-        assertThat(yamlRuleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0").getTables().get("t_user").getIndexes().keySet(), is(Collections.singleton("primary")));
-        assertThat(yamlRuleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0").getTables().get("t_user").getColumns().keySet(), is(Collections.singleton("id")));
     }
     
     @Test
@@ -64,9 +63,7 @@ public final class RuleSchemaMetaDataYamlSwapperTest {
         assertThat(ruleSchemaMetaData.getConfiguredSchemaMetaData().getAllColumnNames("t_order").size(), is(1));
         assertThat(ruleSchemaMetaData.getConfiguredSchemaMetaData().get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
         assertThat(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().keySet(), is(Collections.singleton("ds_0")));
-        assertThat(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0").getAllTableNames(), is(Collections.singleton("t_user")));
-        assertThat(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0").get("t_user").getIndexes().keySet(), is(Collections.singleton("primary")));
-        assertThat(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0").get("t_user").getColumns().keySet(), is(Collections.singleton("id")));
+        assertThat(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0"), is(Arrays.asList("t_user")));
     }
     
     @SneakyThrows

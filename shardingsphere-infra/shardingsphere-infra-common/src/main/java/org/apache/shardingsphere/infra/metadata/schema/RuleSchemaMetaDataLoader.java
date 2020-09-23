@@ -77,7 +77,7 @@ public final class RuleSchemaMetaDataLoader {
             configuredSchemaMetaData.merge(schemaMetaData);
         }
         decorate(configuredSchemaMetaData);
-        Map<String, SchemaMetaData> unConfiguredSchemaMetaDataMap = loadUnConfiguredSchemaMetaData(databaseType, dataSourceMap, excludedTableNames);
+        Map<String, Collection<String>> unConfiguredSchemaMetaDataMap = loadUnConfiguredSchemaMetaData(databaseType, dataSourceMap, excludedTableNames);
         return new RuleSchemaMetaData(configuredSchemaMetaData, unConfiguredSchemaMetaDataMap);
     }
     
@@ -136,13 +136,13 @@ public final class RuleSchemaMetaDataLoader {
         return load(databaseType, dataSourceMap, tableName, props);
     }
     
-    private Map<String, SchemaMetaData> loadUnConfiguredSchemaMetaData(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+    private Map<String, Collection<String>> loadUnConfiguredSchemaMetaData(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
                                                                        final Collection<String> excludedTableNames) throws SQLException {
-        Map<String, SchemaMetaData> result = new HashMap<>(dataSourceMap.size(), 1);
+        Map<String, Collection<String>> result = new HashMap<>(dataSourceMap.size(), 1);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(entry.getValue(), databaseType.getName(), excludedTableNames);
-            if (!schemaMetaData.getAllTableNames().isEmpty()) {
-                result.put(entry.getKey(), schemaMetaData);
+            Collection<String> tableNames = SchemaMetaDataLoader.loadUnconfiguredTableNames(entry.getValue(), databaseType.getName(), excludedTableNames);
+            if (!tableNames.isEmpty()) {
+                result.put(entry.getKey(), tableNames);
             }
         }
         return result;

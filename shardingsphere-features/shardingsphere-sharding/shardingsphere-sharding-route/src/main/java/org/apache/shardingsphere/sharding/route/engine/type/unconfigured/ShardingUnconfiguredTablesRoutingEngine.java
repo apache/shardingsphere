@@ -20,18 +20,17 @@ package org.apache.shardingsphere.sharding.route.engine.type.unconfigured;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Sharding unconfigured tables engine.
@@ -41,7 +40,7 @@ public final class ShardingUnconfiguredTablesRoutingEngine implements ShardingRo
     
     private final Collection<String> logicTables;
     
-    private final Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap;
+    private final Map<String, Collection<String>> unconfiguredSchemaMetaDataMap;
     
     @Override
     public RouteResult route(final ShardingRule shardingRule) {
@@ -50,17 +49,14 @@ public final class ShardingUnconfiguredTablesRoutingEngine implements ShardingRo
             throw new ShardingSphereException("Can not route tables for `%s`, please make sure the tables are in same schema.", logicTables);
         }
         RouteResult result = new RouteResult();
-        List<RouteMapper> routingTables = new ArrayList<>(logicTables.size());
-        for (String each : logicTables) {
-            routingTables.add(new RouteMapper(each, each));
-        }
+        List<RouteMapper> routingTables = logicTables.stream().map(table -> new RouteMapper(table, table)).collect(Collectors.toList());
         result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName.get(), dataSourceName.get()), routingTables));
         return result;
     }
     
     private Optional<String> findDataSourceName() {
-        for (Entry<String, SchemaMetaData> entry : unconfiguredSchemaMetaDataMap.entrySet()) {
-            if (entry.getValue().getAllTableNames().containsAll(logicTables)) {
+        for (Entry<String, Collection<String>> entry : unconfiguredSchemaMetaDataMap.entrySet()) {
+            if (entry.getValue().containsAll(logicTables)) {
                 return Optional.of(entry.getKey());
             }
         }

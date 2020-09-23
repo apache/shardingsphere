@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sharding.route.engine.type.unconfigured;
 
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -29,7 +27,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -45,11 +43,8 @@ public final class ShardingUnconfiguredTablesRoutingEngineTest {
     
     @Before
     public void setUp() {
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(2, 1);
-        tableMetaDataMap.put("t_order", new TableMetaData(Collections.emptyList(), Collections.emptyList()));
-        tableMetaDataMap.put("t_order_item", new TableMetaData(Collections.emptyList(), Collections.emptyList()));
-        Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
-        unconfiguredSchemaMetaDataMap.put("ds_0", new SchemaMetaData(tableMetaDataMap));
+        Map<String, Collection<String>> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
+        unconfiguredSchemaMetaDataMap.put("ds_0", Arrays.asList("t_order", "t_order_item"));
         shardingDefaultDatabaseRoutingEngine = new ShardingUnconfiguredTablesRoutingEngine(Arrays.asList("t_order", "t_order_item"), unconfiguredSchemaMetaDataMap);
     }
     

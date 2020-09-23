@@ -88,8 +88,8 @@ public final class RuleSchemaMetaDataLoaderTest {
         assertTrue(actual.getConfiguredSchemaMetaData().get("data_node_routed_table_1").getColumns().containsKey("id"));
         assertThat(actual.getUnconfiguredSchemaMetaDataMap().size(), is(1));
         assertTrue(actual.getUnconfiguredSchemaMetaDataMap().containsKey("logic_db"));
-        assertTrue(actual.getUnconfiguredSchemaMetaDataMap().get("logic_db").containsTable("unconfigured_table_0"));
-        assertTrue(actual.getUnconfiguredSchemaMetaDataMap().get("logic_db").containsTable("unconfigured_table_1"));
+        assertTrue(actual.getUnconfiguredSchemaMetaDataMap().get("logic_db").contains("unconfigured_table_0"));
+        assertTrue(actual.getUnconfiguredSchemaMetaDataMap().get("logic_db").contains("unconfigured_table_1"));
     }
     
     @Test

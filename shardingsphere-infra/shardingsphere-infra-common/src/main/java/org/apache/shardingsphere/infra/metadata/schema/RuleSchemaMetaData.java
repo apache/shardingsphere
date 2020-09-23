@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -34,7 +35,7 @@ public final class RuleSchemaMetaData {
     
     private final SchemaMetaData configuredSchemaMetaData;
     
-    private final Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap;
+    private final Map<String, Collection<String>> unconfiguredSchemaMetaDataMap;
     
     /**
      * Get schema meta data.
@@ -43,7 +44,7 @@ public final class RuleSchemaMetaData {
      */
     public SchemaMetaData getSchemaMetaData() {
         SchemaMetaData result = new SchemaMetaData();
-        unconfiguredSchemaMetaDataMap.values().forEach(result::merge);
+        unconfiguredSchemaMetaDataMap.values().stream().flatMap(tableNames -> tableNames.stream()).forEach(tableName -> result.put(tableName, new TableMetaData()));
         result.merge(configuredSchemaMetaData);
         return result;
     }
@@ -55,9 +56,7 @@ public final class RuleSchemaMetaData {
      */
     public Collection<String> getAllTableNames() {
         Collection<String> result = new LinkedList<>(configuredSchemaMetaData.getAllTableNames());
-        for (SchemaMetaData each : unconfiguredSchemaMetaDataMap.values()) {
-            result.addAll(each.getAllTableNames());
-        }
+        unconfiguredSchemaMetaDataMap.values().forEach(result::addAll);
         return result;
     }
 }

@@ -114,6 +114,7 @@ public abstract class BaseDQLIT extends SingleIT {
         if ("shadow".equals(getRuleType())) {
             return;
         }
+        // Unconfigured Table doesn't have column info, should skip check column info
         if (0 == actualMetaData.getColumnCount()) {
             return;
         }
