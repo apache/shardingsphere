@@ -54,24 +54,6 @@ public final class TableMetaDataLoader {
         }
     }
     
-    /**
-     * Load table without column and index meta data, this is for unconfigured table.
-     *
-     * @param dataSource data source
-     * @param tableNamePattern table name pattern
-     * @param databaseType database type
-     * @return table meta data
-     * @throws SQLException SQL exception
-     */
-    public static Optional<TableMetaData> loadWithoutColumnMetaData(final DataSource dataSource, final String tableNamePattern, final String databaseType) throws SQLException {
-        try (MetaDataConnection connection = new MetaDataConnection(dataSource.getConnection())) {
-            if (!isTableExist(connection, tableNamePattern, databaseType)) {
-                return Optional.empty();
-            }
-            return Optional.of(new TableMetaData());
-        }
-    }
-    
     private static boolean isTableExist(final Connection connection, final String tableNamePattern, final String databaseType) throws SQLException {
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), tableNamePattern, null)) {
             return resultSet.next();

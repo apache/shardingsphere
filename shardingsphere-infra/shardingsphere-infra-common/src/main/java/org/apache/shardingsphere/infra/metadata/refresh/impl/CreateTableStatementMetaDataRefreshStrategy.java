@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.TableMetaDataLoaderCallback;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStatementContext;
 
 import javax.sql.DataSource;
@@ -46,18 +45,13 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
         if (tableMetaData.isPresent()) {
             metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().put(tableName, tableMetaData.get());
         } else {
-            refreshUnconfiguredMetaData(metaData, databaseType, dataSourceMap, tableName);
+            refreshUnconfiguredMetaData(metaData, dataSourceMap, tableName);
         }
     }
     
-    private void refreshUnconfiguredMetaData(final ShardingSphereMetaData metaData, 
-                                             final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String tableName) throws SQLException {
+    private void refreshUnconfiguredMetaData(final ShardingSphereMetaData metaData, final Map<String, DataSource> dataSourceMap, final String tableName) throws SQLException {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            Optional<TableMetaData> tableMetaData = TableMetaDataLoader.loadWithoutColumnMetaData(entry.getValue(), tableName, databaseType.getName());
-            if (tableMetaData.isPresent()) {
-                refreshUnconfiguredMetaData(metaData, tableName, entry.getKey());
-                return;
-            }
+            refreshUnconfiguredMetaData(metaData, tableName, entry.getKey());
         }
     }
     
