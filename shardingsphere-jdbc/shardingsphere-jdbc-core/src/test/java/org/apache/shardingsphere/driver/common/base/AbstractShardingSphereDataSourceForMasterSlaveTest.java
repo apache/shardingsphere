@@ -38,7 +38,7 @@ public abstract class AbstractShardingSphereDataSourceForMasterSlaveTest extends
     
     private static final String CONFIG_MASTER_SLAVE = "config-master-slave.yaml";
     
-    private static final List<String> MASTER_SLAVE_DB_NAMES = Arrays.asList("test_ds_master", "test_ds_slave");
+    private static final List<String> MASTER_SLAVE_DB_NAMES = Arrays.asList("test_primary_ds", "test_replica_ds");
     
     @BeforeClass
     public static void initMasterSlaveDataSources() throws SQLException, IOException {

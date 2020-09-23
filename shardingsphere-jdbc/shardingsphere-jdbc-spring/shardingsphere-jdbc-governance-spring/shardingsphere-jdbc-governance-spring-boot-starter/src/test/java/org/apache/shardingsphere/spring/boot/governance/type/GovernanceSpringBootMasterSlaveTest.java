@@ -22,8 +22,8 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.replication.primaryreplica.rule.MasterSlaveDataSourceRule;
-import org.apache.shardingsphere.replication.primaryreplica.rule.MasterSlaveRule;
+import org.apache.shardingsphere.replication.primaryreplica.rule.PrimaryReplicaReplicationDataSourceRule;
+import org.apache.shardingsphere.replication.primaryreplica.rule.PrimaryReplicaReplicationRule;
 import org.apache.shardingsphere.spring.boot.governance.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -69,16 +69,16 @@ public class GovernanceSpringBootMasterSlaveTest {
         }
         Collection<ShardingSphereRule> rules = schemaContexts.getDefaultSchemaContext().getSchema().getRules();
         assertThat(rules.size(), is(1));
-        assertMasterSlaveRule((MasterSlaveRule) rules.iterator().next());
+        assertMasterSlaveRule((PrimaryReplicaReplicationRule) rules.iterator().next());
     }
     
-    private void assertMasterSlaveRule(final MasterSlaveRule rule) {
-        MasterSlaveDataSourceRule dataSourceRule = rule.getSingleDataSourceRule();
-        assertThat(dataSourceRule.getName(), is("ds_ms"));
-        assertThat(dataSourceRule.getName(), is("ds_ms"));
-        assertThat(dataSourceRule.getMasterDataSourceName(), is("ds_master"));
-        assertThat(dataSourceRule.getSlaveDataSourceNames().size(), is(2));
-        assertThat(dataSourceRule.getSlaveDataSourceNames().get(0), is("ds_slave_0"));
-        assertThat(dataSourceRule.getSlaveDataSourceNames().get(1), is("ds_slave_1"));
+    private void assertMasterSlaveRule(final PrimaryReplicaReplicationRule rule) {
+        PrimaryReplicaReplicationDataSourceRule dataSourceRule = rule.getSingleDataSourceRule();
+        assertThat(dataSourceRule.getName(), is("pr_ds"));
+        assertThat(dataSourceRule.getName(), is("pr_ds"));
+        assertThat(dataSourceRule.getPrimaryDataSourceName(), is("primary_ds"));
+        assertThat(dataSourceRule.getReplicaDataSourceNames().size(), is(2));
+        assertThat(dataSourceRule.getReplicaDataSourceNames().get(0), is("replica_ds_0"));
+        assertThat(dataSourceRule.getReplicaDataSourceNames().get(1), is("replica_ds_1"));
     }
 }

@@ -9,10 +9,10 @@ weight = 2
 dataSources: # 省略数据源配置
 
 rules:
-- !MASTER_SLAVE
+- !PRIMARY_REPLICA_REPLICATION
   dataSources:
     <data-source-name> (+): # 读写分离逻辑数据源名称
-      masterDataSourceName: # 主库数据源名称
+      primaryDataSourceName: # 主库数据源名称
       slaveDataSourceNames: 
         - <slave-data_source-name> (+) # 从库数据源名称
       loadBalancerName: # 负载均衡算法名称

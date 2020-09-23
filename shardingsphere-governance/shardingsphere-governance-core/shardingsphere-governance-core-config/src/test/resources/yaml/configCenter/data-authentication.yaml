@@ -20,5 +20,5 @@ users:
     authorizedSchemas: sharding_db
     password: root1
   root2:
-    authorizedSchemas: sharding_db,ms_db
+    authorizedSchemas: sharding_db,pr_db
     password: root2;

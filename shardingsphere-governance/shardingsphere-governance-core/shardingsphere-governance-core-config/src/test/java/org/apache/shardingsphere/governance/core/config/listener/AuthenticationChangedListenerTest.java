@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 public final class AuthenticationChangedListenerTest {
     
     private static final String AUTHENTICATION_YAML = "  users:\n" + "    root1:\n      password: root1\n" 
-            + "      authorizedSchemas: sharding_db\n" + "    root2:\n" + "      password: root2\n" + "      authorizedSchemas: sharding_db,ms_db";
+            + "      authorizedSchemas: sharding_db\n" + "    root2:\n" + "      password: root2\n" + "      authorizedSchemas: sharding_db,pr_db";
     
     private AuthenticationChangedListener authenticationChangedListener;
     

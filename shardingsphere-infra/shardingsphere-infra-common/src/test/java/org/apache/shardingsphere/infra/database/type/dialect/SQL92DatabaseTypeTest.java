@@ -40,7 +40,7 @@ public final class SQL92DatabaseTypeTest {
     
     @Test
     public void assertGetDataSourceMetaData() {
-        assertThat(new SQL92DatabaseType().getDataSourceMetaData("jdbc:h2:mem:master_ds_0", "sa"), instanceOf(SQL92DataSourceMetaData.class));
+        assertThat(new SQL92DatabaseType().getDataSourceMetaData("jdbc:h2:mem:primary_ds_0", "sa"), instanceOf(SQL92DataSourceMetaData.class));
         assertThat(new SQL92DatabaseType().getDataSourceMetaData("jdbc:mariadb://localhost:3306/demo_ds_0", "sa"), instanceOf(SQL92DataSourceMetaData.class));
         assertThat(new SQL92DatabaseType().getDataSourceMetaData("jdbc:mysql://127.0.0.1/demo_ds_0", "root"), instanceOf(SQL92DataSourceMetaData.class));
         assertThat(new SQL92DatabaseType().getDataSourceMetaData("jdbc:postgresql://localhost:5432/demo_ds_0", "postgres"), instanceOf(SQL92DataSourceMetaData.class));

@@ -38,7 +38,7 @@ import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.replication.primaryreplica.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.replication.primaryreplica.api.config.PrimaryReplicaReplicationRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.junit.Test;
@@ -349,10 +349,10 @@ public final class ConfigCenterTest {
         when(configurationRepository.get("/schemas/sharding_db/rule")).thenReturn(readYAML(MASTER_SLAVE_RULE_YAML));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         Collection<RuleConfiguration> actual = configCenter.loadRuleConfigurations("sharding_db");
-        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = (MasterSlaveRuleConfiguration) actual.iterator().next();
+        PrimaryReplicaReplicationRuleConfiguration masterSlaveRuleConfiguration = (PrimaryReplicaReplicationRuleConfiguration) actual.iterator().next();
         assertThat(masterSlaveRuleConfiguration.getDataSources().size(), is(1));
-        assertThat(masterSlaveRuleConfiguration.getDataSources().iterator().next().getMasterDataSourceName(), is("master_ds"));
-        assertThat(masterSlaveRuleConfiguration.getDataSources().iterator().next().getSlaveDataSourceNames().size(), is(2));
+        assertThat(masterSlaveRuleConfiguration.getDataSources().iterator().next().getPrimaryDataSourceName(), is("primary_ds"));
+        assertThat(masterSlaveRuleConfiguration.getDataSources().iterator().next().getReplicaDataSourceNames().size(), is(2));
     }
     
     @Test
@@ -448,9 +448,9 @@ public final class ConfigCenterTest {
     @Test
     public void assertPersistSchemaNameWithExistAndNewSchema() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
-        when(configurationRepository.get("/schemas")).thenReturn("master_slave_db");
+        when(configurationRepository.get("/schemas")).thenReturn("primary_replica_db");
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), true);
-        verify(configurationRepository).persist(eq("/schemas"), eq("master_slave_db,sharding_db"));
+        verify(configurationRepository).persist(eq("/schemas"), eq("primary_replica_db,sharding_db"));
     }
     
     @Test
@@ -472,28 +472,28 @@ public final class ConfigCenterTest {
     @Test
     public void assertRenewSchemaNameEventWithDrop() {
         SchemaNamePersistEvent event = new SchemaNamePersistEvent("sharding_db", true);
-        when(configurationRepository.get("/schemas")).thenReturn("sharding_db,master_slave_db");
+        when(configurationRepository.get("/schemas")).thenReturn("sharding_db,primary_replica_db");
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
-        verify(configurationRepository).persist(eq("/schemas"), eq("master_slave_db"));
+        verify(configurationRepository).persist(eq("/schemas"), eq("primary_replica_db"));
     }
     
     @Test
     public void assertRenewSchemaNameEventWithAdd() {
         SchemaNamePersistEvent event = new SchemaNamePersistEvent("sharding_db", false);
-        when(configurationRepository.get("/schemas")).thenReturn("master_slave_db");
+        when(configurationRepository.get("/schemas")).thenReturn("primary_replica_db");
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
-        verify(configurationRepository).persist(eq("/schemas"), eq("master_slave_db,sharding_db"));
+        verify(configurationRepository).persist(eq("/schemas"), eq("primary_replica_db,sharding_db"));
     }
     
     @Test
     public void assertRenewSchemaNameEventWithAddAndExist() {
         SchemaNamePersistEvent event = new SchemaNamePersistEvent("sharding_db", false);
-        when(configurationRepository.get("/schemas")).thenReturn("sharding_db,master_slave_db");
+        when(configurationRepository.get("/schemas")).thenReturn("sharding_db,primary_replica_db");
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
-        verify(configurationRepository).persist(eq("/schemas"), eq("sharding_db,master_slave_db"));
+        verify(configurationRepository).persist(eq("/schemas"), eq("sharding_db,primary_replica_db"));
     }
     
     @Test
@@ -522,7 +522,7 @@ public final class ConfigCenterTest {
         assertThat(ruleSchemaMetaData.getConfiguredSchemaMetaData().getAllColumnNames("t_order").size(), is(1));
         assertThat(ruleSchemaMetaData.getConfiguredSchemaMetaData().get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
         assertThat(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().keySet(), is(Collections.singleton("ds_0")));
-        assertThat(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0"), is(Arrays.asList("t_user")));
+        assertThat(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0"), is(Collections.singletonList("t_user")));
     }
     
     @Test

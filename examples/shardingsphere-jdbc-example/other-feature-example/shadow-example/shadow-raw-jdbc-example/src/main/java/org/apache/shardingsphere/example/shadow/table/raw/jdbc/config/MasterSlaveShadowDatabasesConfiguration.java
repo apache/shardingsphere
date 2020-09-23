@@ -20,8 +20,8 @@ package org.apache.shardingsphere.example.shadow.table.raw.jdbc.config;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.replication.primaryreplica.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.replication.primaryreplica.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.replication.primaryreplica.api.config.PrimaryReplicaReplicationRuleConfiguration;
+import org.apache.shardingsphere.replication.primaryreplica.api.config.rule.PrimaryReplicaReplicationDataSourceRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 
 import javax.sql.DataSource;
@@ -35,17 +35,17 @@ public final class MasterSlaveShadowDatabasesConfiguration implements ExampleCon
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds_master", DataSourceUtil.createDataSource("demo_ds_master"));
-        dataSourceMap.put("ds_slave", DataSourceUtil.createDataSource("demo_ds_slave"));
-        dataSourceMap.put("shadow_ds_master", DataSourceUtil.createDataSource("demo_shadow_ds_master"));
-        dataSourceMap.put("shadow_ds_slave", DataSourceUtil.createDataSource("demo_shadow_ds_slave"));
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Arrays.asList("ds_master", "ds_slave"), Arrays.asList("shadow_ds_master", "shadow_ds_slave"));
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, getMasterSlaveRuleConfiguration()), null);
+        Map<String, DataSource> dataSourceMap = new HashMap<>(4, 1);
+        dataSourceMap.put("primary_ds", DataSourceUtil.createDataSource("demo_primary_ds"));
+        dataSourceMap.put("replica_ds", DataSourceUtil.createDataSource("demo_replica_ds"));
+        dataSourceMap.put("shadow_primary_ds", DataSourceUtil.createDataSource("demo_shadow_primary_ds"));
+        dataSourceMap.put("shadow_replica_ds", DataSourceUtil.createDataSource("demo_shadow_replica_ds"));
+        ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration("shadow", Arrays.asList("primary_ds", "replica_ds"), Arrays.asList("shadow_primary_ds", "shadow_replica_ds"));
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfig, getPrimaryReplicaReplicationRuleConfiguration()), null);
     }
     
-    private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
-        MasterSlaveDataSourceRuleConfiguration masterSlaveDataSourceRuleConfiguration = new MasterSlaveDataSourceRuleConfiguration("ds_ms", "ds_master", Collections.singletonList("ds_slave"), null);
-        return new MasterSlaveRuleConfiguration(Collections.singletonList(masterSlaveDataSourceRuleConfiguration), Collections.emptyMap());
+    private PrimaryReplicaReplicationRuleConfiguration getPrimaryReplicaReplicationRuleConfiguration() {
+        PrimaryReplicaReplicationDataSourceRuleConfiguration config = new PrimaryReplicaReplicationDataSourceRuleConfiguration("pr_ds", "primary_ds", Collections.singletonList("replica_ds"), null);
+        return new PrimaryReplicaReplicationRuleConfiguration(Collections.singletonList(config), Collections.emptyMap());
     }
 }

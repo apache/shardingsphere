@@ -66,8 +66,8 @@ public final class ShardingSphereConnectionTest {
         DataSource masterDataSource = mockDataSource();
         DataSource slaveDataSource = mockDataSource();
         dataSourceMap = new HashMap<>(2, 1);
-        dataSourceMap.put("test_ds_master", masterDataSource);
-        dataSourceMap.put("test_ds_slave", slaveDataSource);
+        dataSourceMap.put("test_primary_ds", masterDataSource);
+        dataSourceMap.put("test_replica_ds", slaveDataSource);
     }
     
     private static DataSource mockDataSource() throws SQLException {
@@ -106,7 +106,7 @@ public final class ShardingSphereConnectionTest {
     
     @Test
     public void assertGetConnectionFromCache() throws SQLException {
-        assertThat(connection.getConnection("test_ds_master"), is(connection.getConnection("test_ds_master")));
+        assertThat(connection.getConnection("test_primary_ds"), is(connection.getConnection("test_primary_ds")));
     }
     
     @Test(expected = IllegalStateException.class)
@@ -145,9 +145,9 @@ public final class ShardingSphereConnectionTest {
         when(upSlaveConnection.isValid(anyInt())).thenReturn(true);
         when(downSlaveConnection.isValid(anyInt())).thenReturn(false);
         connection.getCachedConnections().put("test_master", masterConnection);
-        connection.getCachedConnections().put("test_slave_up", upSlaveConnection);
+        connection.getCachedConnections().put("test_replica_up", upSlaveConnection);
         assertTrue(connection.isValid(0));
-        connection.getCachedConnections().put("test_slave_down", downSlaveConnection);
+        connection.getCachedConnections().put("test_replica_down", downSlaveConnection);
         assertFalse(connection.isValid(0));
     }
 }

@@ -312,7 +312,7 @@ public final class ShardingRuleTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructShardingRuleWithNullDataSourceNames() {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        ShardingTableRuleConfiguration shardingTableRuleConfiguration = createTableRuleConfiguration("LOGIC_TABLE", "ms_ds_${0..1}.table_${0..2}");
+        ShardingTableRuleConfiguration shardingTableRuleConfiguration = createTableRuleConfiguration("LOGIC_TABLE", "pr_ds_${0..1}.table_${0..2}");
         shardingRuleConfiguration.getTables().add(shardingTableRuleConfiguration);
         new ShardingRule(shardingRuleConfiguration, null);
     }

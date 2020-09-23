@@ -38,15 +38,15 @@ public final class HikariDataSourcePropertiesSetterTest {
     @Before
     public void setUp() {
         MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds_master.type", "com.zaxxer.hikari.HikariDataSource");
-        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds_master.data-source-properties.cachePrepStmts", "true");
-        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds_master.data-source-properties.prepStmtCacheSize", "250");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.primary_ds.type", "com.zaxxer.hikari.HikariDataSource");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.primary_ds.data-source-properties.cachePrepStmts", "true");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.primary_ds.data-source-properties.prepStmtCacheSize", "250");
         environment = mockEnvironment;
     }
     
     @Test
     public void assertPropertiesSet() {
-        dbcpDataSourcePropertiesSetter.propertiesSet(environment, "spring.shardingsphere.datasource.", "ds_master", dataSource);
+        dbcpDataSourcePropertiesSetter.propertiesSet(environment, "spring.shardingsphere.datasource.", "primary_ds", dataSource);
         assertThat(dataSource.getDataSourceProperties().getProperty("cachePrepStmts"), is("true"));
         assertThat(dataSource.getDataSourceProperties().getProperty("prepStmtCacheSize"), is("250"));
     }

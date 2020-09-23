@@ -16,13 +16,13 @@
 #
 
 rules:
-- !MASTER_SLAVE
+- !PRIMARY_REPLICA_REPLICATION
   dataSources:
     test_ds:
       name: test_ds
-      masterDataSourceName: test_ds_master
-      slaveDataSourceNames:
-        - test_ds_slave
+      primaryDataSourceName: test_primary_ds
+      replicaDataSourceNames:
+        - test_replica_ds
       loadBalancerName: roundRobin
   loadBalancers:
     roundRobin:

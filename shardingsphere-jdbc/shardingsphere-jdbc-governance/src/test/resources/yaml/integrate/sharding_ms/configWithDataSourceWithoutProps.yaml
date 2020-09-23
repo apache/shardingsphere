@@ -16,27 +16,27 @@
 #
 
 dataSources:
-  db0_master: !!org.apache.commons.dbcp2.BasicDataSource
+  primary_ds_0: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db0_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:primary_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxTotal: 100
-  db1_master: !!org.apache.commons.dbcp2.BasicDataSource
+  primary_ds_1: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db1_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:primary_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxTotal: 100
-  db0_slave: !!org.apache.commons.dbcp2.BasicDataSource
+  replica_ds_0: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db0_slave;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:replica_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxTotal: 100
-  db1_slave: !!org.apache.commons.dbcp2.BasicDataSource
+  replica_ds_1: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db1_slave;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:replica_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxTotal: 100
@@ -45,9 +45,9 @@ rules:
 - !SHARDING
   tables:
     config:
-      actualDataNodes: db_ms_${0..1}.t_config
+      actualDataNodes: pr_ds_${0..1}.t_config
     t_order: 
-      actualDataNodes: db_ms_${0..1}.t_order_${0..2}
+      actualDataNodes: pr_ds_${0..1}.t_order_${0..2}
       databaseStrategy: 
         standard:
           shardingColumn: user_id
@@ -60,7 +60,7 @@ rules:
         column: order_id
         keyGeneratorName: increment
     t_order_item:
-      actualDataNodes: db_ms_${0..1}.t_order_item_${0..1}
+      actualDataNodes: pr_ds_${0..1}.t_order_item_${0..1}
       databaseStrategy: 
         standard:
           shardingColumn: user_id
@@ -99,22 +99,22 @@ rules:
       type: INLINE
       props:
         algorithm-expression: t_order_item_${order_id % 2}
-    
+  
   keyGenerators:
     increment:
       type: INCREMENT
 
-- !MASTER_SLAVE
+- !PRIMARY_REPLICA_REPLICATION
   dataSources:
-    db_ms_0:
-      masterDataSourceName: db0_master
-      slaveDataSourceNames:
-        - db0_slave
+    pr_ds_0:
+      primaryDataSourceName: primary_ds_0
+      replicaDataSourceNames:
+        - replica_ds_0
       loadBalancerName: roundRobin
-    db_ms_1:
-      masterDataSourceName: db1_master
-      slaveDataSourceNames:
-        - db1_slave
+    pr_ds_1:
+      primaryDataSourceName: primary_ds_1
+      replicaDataSourceNames:
+        - replica_ds_1
       loadBalancerName: roundRobin
   loadBalancers:
     roundRobin:

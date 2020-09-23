@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.replication.primaryreplica.algorithm.RandomMasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.replication.primaryreplica.rule.MasterSlaveDataSourceRule;
-import org.apache.shardingsphere.replication.primaryreplica.rule.MasterSlaveRule;
+import org.apache.shardingsphere.replication.primaryreplica.algorithm.RandomReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.replication.primaryreplica.rule.PrimaryReplicaReplicationDataSourceRule;
+import org.apache.shardingsphere.replication.primaryreplica.rule.PrimaryReplicaReplicationRule;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -77,8 +77,8 @@ public class SpringBootStarterTest {
         for (ShardingSphereRule each : rules) {
             if (each instanceof ShardingRule) {
                 assertShardingRule((ShardingRule) each);
-            } else if (each instanceof MasterSlaveRule) {
-                assertMasterSlaveRule((MasterSlaveRule) each);
+            } else if (each instanceof PrimaryReplicaReplicationRule) {
+                assertMasterSlaveRule((PrimaryReplicaReplicationRule) each);
             } else if (each instanceof EncryptRule) {
                 assertEncryptRule((EncryptRule) each);
             } else if (each instanceof ShadowRule) {
@@ -115,15 +115,15 @@ public class SpringBootStarterTest {
         assertThat(tableShardingStrategy.getShardingAlgorithm().getProps().getProperty("algorithm-expression"), is("t_order_$->{order_id % 2}"));
     }
     
-    private void assertMasterSlaveRule(final MasterSlaveRule rule) {
-        assertThat(rule.getDataSourceMapper(), is(Collections.singletonMap("ds_ms", Arrays.asList("ds_master", "ds_slave_0", "ds_slave_1"))));
-        MasterSlaveDataSourceRule masterSlaveDataSourceRule = rule.getSingleDataSourceRule();
+    private void assertMasterSlaveRule(final PrimaryReplicaReplicationRule rule) {
+        assertThat(rule.getDataSourceMapper(), is(Collections.singletonMap("pr_ds", Arrays.asList("primary_ds", "replica_ds_0", "replica_ds_1"))));
+        PrimaryReplicaReplicationDataSourceRule masterSlaveDataSourceRule = rule.getSingleDataSourceRule();
         assertNotNull(masterSlaveDataSourceRule);
-        assertThat(masterSlaveDataSourceRule.getName(), is("ds_ms"));
-        assertThat(masterSlaveDataSourceRule.getMasterDataSourceName(), is("ds_master"));
-        assertThat(masterSlaveDataSourceRule.getSlaveDataSourceNames(), is(Arrays.asList("ds_slave_0", "ds_slave_1")));
-        assertThat(masterSlaveDataSourceRule.getLoadBalancer(), instanceOf(RandomMasterSlaveLoadBalanceAlgorithm.class));
-        assertThat(masterSlaveDataSourceRule.getDataSourceMapper(), is(Collections.singletonMap("ds_ms", Arrays.asList("ds_master", "ds_slave_0", "ds_slave_1"))));
+        assertThat(masterSlaveDataSourceRule.getName(), is("pr_ds"));
+        assertThat(masterSlaveDataSourceRule.getPrimaryDataSourceName(), is("primary_ds"));
+        assertThat(masterSlaveDataSourceRule.getReplicaDataSourceNames(), is(Arrays.asList("replica_ds_0", "replica_ds_1")));
+        assertThat(masterSlaveDataSourceRule.getLoadBalancer(), instanceOf(RandomReplicaLoadBalanceAlgorithm.class));
+        assertThat(masterSlaveDataSourceRule.getDataSourceMapper(), is(Collections.singletonMap("pr_ds", Arrays.asList("primary_ds", "replica_ds_0", "replica_ds_1"))));
     }
     
     private void assertEncryptRule(final EncryptRule rule) {

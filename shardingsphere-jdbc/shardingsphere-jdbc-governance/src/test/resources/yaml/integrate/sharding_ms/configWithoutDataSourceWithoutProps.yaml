@@ -19,9 +19,9 @@ rules:
 - !SHARDING
   tables:
     config:
-      actualDataNodes: db_ms_${0..1}.t_config
+      actualDataNodes: pr_ds_${0..1}.t_config
     t_order: 
-      actualDataNodes: db_ms_${0..1}.t_order_${0..1}
+      actualDataNodes: pr_ds_${0..1}.t_order_${0..1}
       databaseStrategy: 
         standard:
           shardingColumn: user_id
@@ -34,7 +34,7 @@ rules:
         column: order_id
         keyGeneratorName: increment
     t_order_item:
-      actualDataNodes: db_ms_${0..1}.t_order_item_${0..1}
+      actualDataNodes: pr_ds_${0..1}.t_order_item_${0..1}
       databaseStrategy:
         standard:
           shardingColumn: user_id
@@ -70,17 +70,17 @@ rules:
     increment:
       type: INCREMENT
 
-- !MASTER_SLAVE
+- !PRIMARY_REPLICA_REPLICATION
   dataSources:
-    db_ms_0:
-      masterDataSourceName: db0_master
-      slaveDataSourceNames:
-        - db0_slave
+    pr_ds_0:
+      primaryDataSourceName: primary_ds_0
+      replicaDataSourceNames:
+        - replica_ds_0
       loadBalancerName: roundRobin
-    db_ms_1:
-      masterDataSourceName: db1_master
-      slaveDataSourceNames:
-        - db1_slave
+    pr_ds_1:
+      primaryDataSourceName: primary_ds_1
+      replicaDataSourceNames:
+        - replica_ds_1
   loadBalancers:
     roundRobin:
       type: ROUND_ROBIN

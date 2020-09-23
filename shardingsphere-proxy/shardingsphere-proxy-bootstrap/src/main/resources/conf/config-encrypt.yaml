@@ -19,10 +19,6 @@
 # 
 # Here you can configure the rules for the proxy.
 # This example is configuration of encrypt rule.
-#   
-# If you want to use encrypt, please refer to this file; 
-# if you want to use sharding, please refer to the config-sharding.yaml.
-# if you want to use master-slave, please refer to the config-master_slave.yaml.
 # 
 ######################################################################################################
 #

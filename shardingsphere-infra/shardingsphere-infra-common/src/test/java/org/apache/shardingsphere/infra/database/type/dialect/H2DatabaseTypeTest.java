@@ -40,8 +40,8 @@ public final class H2DatabaseTypeTest {
     
     @Test
     public void assertGetDataSourceMetaData() {
-        assertThat(new H2DatabaseType().getDataSourceMetaData("jdbc:h2:~:master_ds_0", "sa"), instanceOf(H2DataSourceMetaData.class));
-        assertThat(new H2DatabaseType().getDataSourceMetaData("jdbc:h2:mem:master_ds_0", "sa"), instanceOf(H2DataSourceMetaData.class));
+        assertThat(new H2DatabaseType().getDataSourceMetaData("jdbc:h2:~:primary_ds_0", "sa"), instanceOf(H2DataSourceMetaData.class));
+        assertThat(new H2DatabaseType().getDataSourceMetaData("jdbc:h2:mem:primary_ds_0", "sa"), instanceOf(H2DataSourceMetaData.class));
     }
     
     @Test

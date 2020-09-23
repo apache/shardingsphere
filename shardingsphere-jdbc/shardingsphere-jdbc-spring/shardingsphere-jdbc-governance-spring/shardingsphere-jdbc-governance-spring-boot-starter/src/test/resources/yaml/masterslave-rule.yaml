@@ -16,15 +16,15 @@
 #
 
 rules:
-  - !MASTER_SLAVE
+  - !PRIMARY_REPLICA_REPLICATION
     loadBalancers:
       roundRobin:
         type: ROUND_ROBIN
     dataSources:
-      ds_ms:
+      pr_ds:
         loadBalancerName: roundRobin
-        masterDataSourceName: ds_master
-        name: ds_ms
-        slaveDataSourceNames:
-          - ds_slave_0
-          - ds_slave_1
+        primaryDataSourceName: primary_ds
+        name: pr_ds
+        replicaDataSourceNames:
+          - replica_ds_0
+          - replica_ds_1

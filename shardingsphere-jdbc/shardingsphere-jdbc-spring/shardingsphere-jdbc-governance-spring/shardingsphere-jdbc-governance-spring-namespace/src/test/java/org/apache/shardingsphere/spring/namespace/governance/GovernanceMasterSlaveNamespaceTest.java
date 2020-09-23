@@ -21,11 +21,11 @@ import org.apache.shardingsphere.driver.governance.internal.datasource.Governanc
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
-import org.apache.shardingsphere.replication.primaryreplica.algorithm.RandomMasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.replication.primaryreplica.algorithm.RoundRobinMasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.replication.primaryreplica.rule.MasterSlaveDataSourceRule;
-import org.apache.shardingsphere.replication.primaryreplica.rule.MasterSlaveRule;
-import org.apache.shardingsphere.replication.primaryreplica.spi.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.replication.primaryreplica.algorithm.RandomReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.replication.primaryreplica.algorithm.RoundRobinReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.replication.primaryreplica.rule.PrimaryReplicaReplicationDataSourceRule;
+import org.apache.shardingsphere.replication.primaryreplica.rule.PrimaryReplicaReplicationRule;
+import org.apache.shardingsphere.replication.primaryreplica.spi.ReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.spring.namespace.governance.util.EmbedTestingServer;
 import org.apache.shardingsphere.spring.namespace.governance.util.FieldValueUtil;
 import org.junit.BeforeClass;
@@ -56,41 +56,41 @@ public class GovernanceMasterSlaveNamespaceTest extends AbstractJUnit4SpringCont
     
     @Test
     public void assertDefaultMaserSlaveDataSource() {
-        MasterSlaveRule masterSlaveRule = getMasterSlaveRule("defaultMasterSlaveDataSourceGovernance");
-        Optional<MasterSlaveDataSourceRule> masterSlaveDataSourceRule = masterSlaveRule.findDataSourceRule("default_dbtbl_0");
+        PrimaryReplicaReplicationRule masterSlaveRule = getMasterSlaveRule("defaultMasterSlaveDataSourceGovernance");
+        Optional<PrimaryReplicaReplicationDataSourceRule> masterSlaveDataSourceRule = masterSlaveRule.findDataSourceRule("default_dbtbl_0");
         assertTrue(masterSlaveDataSourceRule.isPresent());
-        assertThat(masterSlaveDataSourceRule.get().getMasterDataSourceName(), is("dbtbl_0_master"));
-        assertTrue(masterSlaveDataSourceRule.get().getSlaveDataSourceNames().contains("dbtbl_0_slave_0"));
-        assertTrue(masterSlaveDataSourceRule.get().getSlaveDataSourceNames().contains("dbtbl_0_slave_1"));
+        assertThat(masterSlaveDataSourceRule.get().getPrimaryDataSourceName(), is("dbtbl_0_master"));
+        assertTrue(masterSlaveDataSourceRule.get().getReplicaDataSourceNames().contains("dbtbl_0_replica_0"));
+        assertTrue(masterSlaveDataSourceRule.get().getReplicaDataSourceNames().contains("dbtbl_0_replica_1"));
     }
     
     @Test
     public void assertTypeMasterSlaveDataSource() {
-        MasterSlaveRule randomSlaveRule = getMasterSlaveRule("randomMasterSlaveDataSourceGovernance");
-        Optional<MasterSlaveDataSourceRule> randomMasterSlaveDataSourceRule = randomSlaveRule.findDataSourceRule("random_dbtbl_0");
+        PrimaryReplicaReplicationRule randomSlaveRule = getMasterSlaveRule("randomMasterSlaveDataSourceGovernance");
+        Optional<PrimaryReplicaReplicationDataSourceRule> randomMasterSlaveDataSourceRule = randomSlaveRule.findDataSourceRule("random_dbtbl_0");
         assertTrue(randomMasterSlaveDataSourceRule.isPresent());
-        assertTrue(randomMasterSlaveDataSourceRule.get().getLoadBalancer() instanceof RandomMasterSlaveLoadBalanceAlgorithm);
-        MasterSlaveRule roundRobinSlaveRule = getMasterSlaveRule("roundRobinMasterSlaveDataSourceGovernance");
-        Optional<MasterSlaveDataSourceRule> roundRobinMasterSlaveDataSourceRule = roundRobinSlaveRule.findDataSourceRule("roundRobin_dbtbl_0");
+        assertTrue(randomMasterSlaveDataSourceRule.get().getLoadBalancer() instanceof RandomReplicaLoadBalanceAlgorithm);
+        PrimaryReplicaReplicationRule roundRobinSlaveRule = getMasterSlaveRule("roundRobinMasterSlaveDataSourceGovernance");
+        Optional<PrimaryReplicaReplicationDataSourceRule> roundRobinMasterSlaveDataSourceRule = roundRobinSlaveRule.findDataSourceRule("roundRobin_dbtbl_0");
         assertTrue(roundRobinMasterSlaveDataSourceRule.isPresent());
-        assertTrue(roundRobinMasterSlaveDataSourceRule.get().getLoadBalancer() instanceof RoundRobinMasterSlaveLoadBalanceAlgorithm);
+        assertTrue(roundRobinMasterSlaveDataSourceRule.get().getLoadBalancer() instanceof RoundRobinReplicaLoadBalanceAlgorithm);
     }
     
     @Test
     @Ignore
     // TODO load balance algorithm have been construct twice for SpringMasterDatasource extends MasterSlaveDatasource.
     public void assertRefMasterSlaveDataSource() {
-        MasterSlaveLoadBalanceAlgorithm randomLoadBalanceAlgorithm = applicationContext.getBean("randomLoadBalanceAlgorithm", MasterSlaveLoadBalanceAlgorithm.class);
-        MasterSlaveRule masterSlaveRule = getMasterSlaveRule("refMasterSlaveDataSourceGovernance");
-        Optional<MasterSlaveDataSourceRule> masterSlaveDataSourceRule = masterSlaveRule.findDataSourceRule("randomLoadBalanceAlgorithm");
+        ReplicaLoadBalanceAlgorithm randomLoadBalanceAlgorithm = applicationContext.getBean("randomLoadBalanceAlgorithm", ReplicaLoadBalanceAlgorithm.class);
+        PrimaryReplicaReplicationRule masterSlaveRule = getMasterSlaveRule("refMasterSlaveDataSourceGovernance");
+        Optional<PrimaryReplicaReplicationDataSourceRule> masterSlaveDataSourceRule = masterSlaveRule.findDataSourceRule("randomLoadBalanceAlgorithm");
         assertTrue(masterSlaveDataSourceRule.isPresent());
         assertThat(masterSlaveDataSourceRule.get().getLoadBalancer(), is(randomLoadBalanceAlgorithm));
     }
     
-    private MasterSlaveRule getMasterSlaveRule(final String masterSlaveDataSourceName) {
+    private PrimaryReplicaReplicationRule getMasterSlaveRule(final String masterSlaveDataSourceName) {
         GovernanceShardingSphereDataSource masterSlaveDataSource = applicationContext.getBean(masterSlaveDataSourceName, GovernanceShardingSphereDataSource.class);
         SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(masterSlaveDataSource, "schemaContexts");
-        return (MasterSlaveRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
+        return (PrimaryReplicaReplicationRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
     }
     
     @Test

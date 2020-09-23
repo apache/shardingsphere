@@ -94,12 +94,12 @@ dataSource: # <!!数据库连接池实现类> `!!`表示实例化该类
 dataSources:
   ds_0: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:ds_m;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password:
   ds_1: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:ds_s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password:
 ```

@@ -46,11 +46,11 @@ public class GovernanceShardingMasterSlaveNamespaceTest extends AbstractJUnit4Sp
     public void assertMasterSlaveShardingDataSourceByUserStrategy() {
         Map<String, DataSource> dataSourceMap = getDataSourceMap("masterSlaveShardingDataSourceByUserStrategyGovernance");
         assertNotNull(dataSourceMap.get("dbtbl_0_master"));
-        assertNotNull(dataSourceMap.get("dbtbl_0_slave_0"));
-        assertNotNull(dataSourceMap.get("dbtbl_0_slave_1"));
+        assertNotNull(dataSourceMap.get("dbtbl_0_replica_0"));
+        assertNotNull(dataSourceMap.get("dbtbl_0_replica_1"));
         assertNotNull(dataSourceMap.get("dbtbl_1_master"));
-        assertNotNull(dataSourceMap.get("dbtbl_1_slave_0"));
-        assertNotNull(dataSourceMap.get("dbtbl_1_slave_1"));
+        assertNotNull(dataSourceMap.get("dbtbl_1_replica_0"));
+        assertNotNull(dataSourceMap.get("dbtbl_1_replica_1"));
         ShardingRule shardingRule = getShardingRule("masterSlaveShardingDataSourceByUserStrategyGovernance");
         assertThat(shardingRule.getTableRules().size(), is(1));
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
