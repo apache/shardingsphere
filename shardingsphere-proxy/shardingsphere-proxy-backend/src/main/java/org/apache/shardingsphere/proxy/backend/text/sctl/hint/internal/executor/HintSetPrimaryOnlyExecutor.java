@@ -20,16 +20,16 @@ package org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
-import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintSetMasterOnlyCommand;
+import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintSetPrimaryOnlyCommand;
 
 /**
- * Hint set master database only command executor.
+ * Hint set primary database only command executor.
  */
-public final class HintSetMasterOnlyExecutor extends AbstractHintUpdateExecutor<HintSetMasterOnlyCommand> {
+public final class HintSetPrimaryOnlyExecutor extends AbstractHintUpdateExecutor<HintSetPrimaryOnlyCommand> {
     
     @Override
-    public BackendResponse execute(final HintSetMasterOnlyCommand command) {
-        if (command.isMasterOnly()) {
+    public BackendResponse execute(final HintSetPrimaryOnlyCommand command) {
+        if (command.isPrimaryOnly()) {
             HintManagerHolder.get().setPrimaryRouteOnly();
         }
         return new UpdateResponse();

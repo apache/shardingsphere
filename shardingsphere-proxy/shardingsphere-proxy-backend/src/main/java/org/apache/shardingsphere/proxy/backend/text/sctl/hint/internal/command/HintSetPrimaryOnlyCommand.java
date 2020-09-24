@@ -22,15 +22,15 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintCommand;
 
 /**
- * Hint set master database only command.
+ * Hint set primary database only command.
  *
  * <p>
- * example: sctl:hint set MASTER_ONLY=true.
+ * example: sctl:hint set PRIMARY_ONLY=true.
  * </p>
  */
 @RequiredArgsConstructor
 @Getter
-public final class HintSetMasterOnlyCommand implements HintCommand {
+public final class HintSetPrimaryOnlyCommand implements HintCommand {
     
-    private final boolean masterOnly;
+    private final boolean primaryOnly;
 }

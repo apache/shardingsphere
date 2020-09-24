@@ -84,7 +84,7 @@ public final class ExampleMain {
                 statement.execute("sctl:hint set DatabaseShardingValue=1");
                 return;
             case PRIMARY_ONLY:
-                statement.execute("sctl:hint set MASTER_ONLY=true");
+                statement.execute("sctl:hint set PRIMARY_ONLY=true");
                 return;
             default:
                 throw new UnsupportedOperationException("unsupported type");

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.H
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintClearCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintErrorParameterCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintSetDatabaseShardingValueCommand;
-import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintSetMasterOnlyCommand;
+import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintSetPrimaryOnlyCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintShowStatusCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintShowTableStatusCommand;
 
@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  */
 public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCTLHintStatement> {
     
-    private final String setMasterOnlyRegex = "sctl:hint\\s+set\\s+MASTER_ONLY=(true|false)\\s*$";
+    private final String setPrimaryOnlyRegex = "sctl:hint\\s+set\\s+PRIMARY_ONLY=(true|false)\\s*$";
     
     private final String setDatabaseShardingValueRegex = "sctl:hint\\s+set\\s+DatabaseShardingValue=(\\S*)";
     
@@ -69,7 +69,7 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
     private final Matcher errorParameterMatcher;
     
     public ShardingCTLHintParser(final String sql) {
-        setMasterOnlyMatcher = Pattern.compile(setMasterOnlyRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
+        setMasterOnlyMatcher = Pattern.compile(setPrimaryOnlyRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
         setDatabaseShardingValueMatcher = Pattern.compile(setDatabaseShardingValueRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
         addDatabaseShardingValueMatcher = Pattern.compile(addDatabaseShardingValueRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
         addTableShardingValueMatcher = Pattern.compile(addTableShardingValueRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
@@ -98,7 +98,7 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
     private Optional<ShardingCTLHintStatement> parseUpdateShardingCTLHintStatement() {
         if (setMasterOnlyMatcher.find()) {
             boolean masterOnly = Boolean.parseBoolean(setMasterOnlyMatcher.group(1).toUpperCase());
-            return Optional.of(new ShardingCTLHintStatement(new HintSetMasterOnlyCommand(masterOnly)));
+            return Optional.of(new ShardingCTLHintStatement(new HintSetPrimaryOnlyCommand(masterOnly)));
         }
         if (setDatabaseShardingValueMatcher.find()) {
             String shardingValue = setDatabaseShardingValueMatcher.group(1);

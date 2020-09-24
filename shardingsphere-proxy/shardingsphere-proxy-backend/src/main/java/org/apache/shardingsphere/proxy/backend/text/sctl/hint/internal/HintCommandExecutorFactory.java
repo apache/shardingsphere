@@ -24,7 +24,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.H
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintAddTableShardingValueCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintClearCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintSetDatabaseShardingValueCommand;
-import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintSetMasterOnlyCommand;
+import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintSetPrimaryOnlyCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintShowStatusCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintShowTableStatusCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor.HintAddDatabaseShardingValueExecutor;
@@ -32,7 +32,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor.
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor.HintClearExecutor;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor.HintErrorParameterExecutor;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor.HintSetDatabaseShardingValueExecutor;
-import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor.HintSetMasterOnlyExecutor;
+import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor.HintSetPrimaryOnlyExecutor;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor.HintShowStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor.HintShowTableStatusExecutor;
 
@@ -51,8 +51,8 @@ public final class HintCommandExecutorFactory {
      * @return hint command executor
      */
     public static HintCommandExecutor newInstance(final HintCommand hintCommand, final BackendConnection backendConnection, final String sql) {
-        if (hintCommand instanceof HintSetMasterOnlyCommand) {
-            return new HintSetMasterOnlyExecutor();
+        if (hintCommand instanceof HintSetPrimaryOnlyCommand) {
+            return new HintSetPrimaryOnlyExecutor();
         }
         if (hintCommand instanceof HintSetDatabaseShardingValueCommand) {
             return new HintSetDatabaseShardingValueExecutor();
