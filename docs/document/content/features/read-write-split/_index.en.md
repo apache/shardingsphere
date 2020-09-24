@@ -25,4 +25,4 @@ Though read-write split can enhance system throughput and availability, it also 
 
 ## Goal
 
-**The main design goal of the read-write split modular of ShardingSphere is to try to reduce the influence of read-write split, in order to let users use master-slave database group like one database.**
+**The main design goal of the read-write split modular of ShardingSphere is to try to reduce the influence of read-write split, in order to let users use primary-replica replication database group like one database.**

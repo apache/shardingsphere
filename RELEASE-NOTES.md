@@ -250,7 +250,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 1. [ISSUE #701](https://github.com/apache/shardingsphere/issues/701) Caching parsed results to improve performance
 1. [ISSUE #773](https://github.com/apache/shardingsphere/issues/773) Support sharding and autoincrement key of INSERT without column names
 1. [ISSUE #935](https://github.com/apache/shardingsphere/issues/935) Use `YAML` instead of `JSON` to store configurations in registry center
-1. [ISSUE #1004](https://github.com/apache/shardingsphere/issues/1004) Properties can configure for Sharding and Master-slave independent
+1. [ISSUE #1004](https://github.com/apache/shardingsphere/issues/1004) Properties can configure for sharding and primary-replica replication independent
 1. [ISSUE #1205](https://github.com/apache/shardingsphere/issues/1205) Execute engine enhancement
 
 #### ShardingSphere-JDBC
@@ -267,7 +267,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 ### API changes
 
 1. [ISSUE #1153](https://github.com/apache/shardingsphere/issues/1153) Adjust the maven artifactId for Orchestration module
-1. [ISSUE #1203](https://github.com/apache/shardingsphere/issues/1203) Adjust Spring namespace xsd for Sharding and Master-slave
+1. [ISSUE #1203](https://github.com/apache/shardingsphere/issues/1203) Adjust Spring namespace xsd for Sharding and primary-replica replication
 1. [ISSUE #1289](https://github.com/apache/shardingsphere/issues/1289) Adjust Hint API
 1. [ISSUE #1302](https://github.com/apache/shardingsphere/issues/1302) Refine package structure
 1. [ISSUE #1305](https://github.com/apache/shardingsphere/issues/1305) Deprecated and remove sharding-jdbc-transaction-parent module

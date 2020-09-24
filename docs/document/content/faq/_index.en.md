@@ -25,7 +25,8 @@ Answer:
 
 The use norm of Spring Namespace does not require to deploy xsd files to the official website. But considering some users' needs, we will deploy them to ShardingSphere's official website.
 
-Actually, META-INF\spring.schemas in the jar package of shardingsphere-jdbc-spring-namespace has been configured with the position of xsd files: META-INF\namespace\sharding.xsd and META-INF\namespace\master-slave.xsd, so you only need to make sure that the file is in the jar package.
+Actually, META-INF\spring.schemas in the jar package of shardingsphere-jdbc-spring-namespace has been configured with the position of xsd files: 
+META-INF\namespace\sharding.xsd and META-INF\namespace\primary-replica-replication.xsd, so you only need to make sure that the file is in the jar package.
 
 ## 4. How to solve `Cloud not resolve placeholder … in string value …` error?
 

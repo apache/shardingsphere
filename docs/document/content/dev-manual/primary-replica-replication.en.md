@@ -1,6 +1,6 @@
 +++
 pre = "<b>5.5. </b>"
-title = "Master-Slave"
+title = "Primary-replica Replication"
 weight = 5
 chapter = true
 +++
