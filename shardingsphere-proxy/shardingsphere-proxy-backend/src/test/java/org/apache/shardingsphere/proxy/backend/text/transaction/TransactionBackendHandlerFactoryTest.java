@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackSta
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.hamcrest.Matcher;
-import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.mockito.Answers;
 
@@ -70,7 +69,7 @@ public final class TransactionBackendHandlerFactoryTest {
         Field field = classInstance.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         T value = (T) field.get(classInstance);
-        MatcherAssert.assertThat(value, matcher);
+        assertThat(value, matcher);
     }
     
     @SneakyThrows
