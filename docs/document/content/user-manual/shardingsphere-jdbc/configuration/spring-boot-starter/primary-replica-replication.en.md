@@ -1,5 +1,5 @@
 +++
-title = "Read-write Split"
+title = "Primary-Replica Replication"
 weight = 2
 +++
 

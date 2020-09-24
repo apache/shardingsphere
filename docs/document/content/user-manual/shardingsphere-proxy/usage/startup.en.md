@@ -7,7 +7,7 @@ weight = 1
 
 1. Download the latest version of ShardingSphere-Proxy.
 1. If users use docker, they can implement `docker pull shardingsphere/shardingsphere-proxy` to get the clone. Please refer to [Docker Clone](/en/user-manual/shardingsphere-proxy/docker/) for more details.
-1. After the decompression, revise `conf/server.yaml` and documents begin with `config-` prefix, `conf/config-xxx.yaml` for example, to configure sharding rules and read-write split rules. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/configuration/) for the configuration method.
+1. After the decompression, revise `conf/server.yaml` and documents begin with `config-` prefix, `conf/config-xxx.yaml` for example, to configure sharding rules and primary-replica replication rules. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/configuration/) for the configuration method.
 1. Please run `bin/start.sh` for Linux operating system; run `bin/start.bat` for Windows operating system to start ShardingSphere-Proxy. To configure start port and document location, please refer to [Quick Start](/en/quick-start/shardingsphere-proxy-quick-start/).
 
 ## Using PostgreSQL

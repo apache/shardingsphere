@@ -36,7 +36,7 @@ It includes running instance information of database access object, with sub-nod
 
 ### /states/datanodes
 
-It is able to orchestrate read-write split replica database, delete or disable data dynamically.
+It is able to orchestrate replica database, delete or disable data dynamically.
 
 ## Operation Guide
 
@@ -52,7 +52,7 @@ Zookeeper command is as follows:
 
 ### Disable Replica Database
 
-Under read-write split scenarios, users can write `DISABLED` (case insensitive) to sub-nodes of data source name to disable replica database sources. Delete `DISABLED` or the node to enable it.
+Under primary-replica replication scenarios, users can write `DISABLED` (case insensitive) to sub-nodes of data source name to disable replica database sources. Delete `DISABLED` or the node to enable it.
 
 Zookeeper command is as follows:
 

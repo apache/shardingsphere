@@ -1,5 +1,5 @@
 +++
-title = "Read-write Split"
+title = "Primary-Replica Replication"
 weight = 2
 +++
 
@@ -22,7 +22,7 @@ Attributes:
 
 | *Name*                     | *DataType*           | *Description*                                  | *Default Value*                    |
 | -------------------------- | -------------------- | ---------------------------------------------- | ---------------------------------- |
-| name                       | String               | Read-write split data source name              | -                                  |
+| name                       | String               | Primary-replica replication data source name   | -                                  |
 | primaryDataSourceName      | String               | Primary sources source name                    | -                                  |
 | replicaDataSourceNames (+) | Collection\<String\> | Replica sources source name list               | -                                  |
 | loadBalancerName (?)       | String               | Load balance algorithm name of replica sources | Round robin load balance algorithm |

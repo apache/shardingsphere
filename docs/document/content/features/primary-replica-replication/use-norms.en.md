@@ -6,8 +6,8 @@ weight = 2
 
 ## Supported Items
 
-* Provide the read-write split configuration of one primary database with multiple replica databases, which can be used alone or with sharding table and database;
-* Support SQL pass-through in independent use of read-write split;
+* Provide the primary-replica replication configuration of one primary database with multiple replica databases, which can be used alone or with sharding table and database;
+* Support SQL pass-through in independent use of primary-replica replication;
 * If there is write operation in the same thread and database connection, all the following read operations are from the primary database to ensure data consistency;
 * Forcible primary database route based on SQL Hint;
 
