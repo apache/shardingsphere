@@ -49,9 +49,9 @@ public final class HintShowStatusExecutor extends AbstractHintQueryExecutor<Hint
         return new MultipleLocalDataMergedResult(Collections.singletonList(row));
     }
     
-    private List<Object> createRow(final boolean masterOnly, final HintShardingType shardingType) {
+    private List<Object> createRow(final boolean primaryOnly, final HintShardingType shardingType) {
         List<Object> result = new ArrayList<>(2);
-        result.add(String.valueOf(masterOnly).toLowerCase());
+        result.add(String.valueOf(primaryOnly).toLowerCase());
         result.add(String.valueOf(shardingType).toLowerCase());
         return result;
     }

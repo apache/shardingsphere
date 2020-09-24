@@ -49,7 +49,7 @@ public final class ExampleMain {
             case DATABASE_ONLY:
                 return YamlDataSourceFactory.createDataSource(getFile("/META-INF/hint-databases-only.yaml"));
             case PRIMARY_ONLY:
-                return YamlDataSourceFactory.createDataSource(getFile("/META-INF/hint-master-only.yaml"));
+                return YamlDataSourceFactory.createDataSource(getFile("/META-INF/hint-primary-only.yaml"));
             default:
                 throw new UnsupportedOperationException("unsupported type");
         }

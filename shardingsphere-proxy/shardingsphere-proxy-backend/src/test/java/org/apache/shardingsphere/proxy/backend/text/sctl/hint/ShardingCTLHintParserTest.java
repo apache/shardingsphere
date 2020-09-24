@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 public final class ShardingCTLHintParserTest {
     
     @Test
-    public void assertValidSetMasterOnlySQL() {
+    public void assertValidSetPrimaryOnlySQL() {
         String sql = "sctl:hint set primary_only=true ";
         Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
         assertTrue(actual.isPresent());
@@ -46,7 +46,7 @@ public final class ShardingCTLHintParserTest {
     }
     
     @Test
-    public void assertInValidSetMasterOnlySQL() {
+    public void assertInValidSetPrimaryOnlySQL() {
         String sql = "sctl:hint set primary_only1=true ";
         Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
         assertTrue(actual.isPresent());

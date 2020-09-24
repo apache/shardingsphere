@@ -52,7 +52,7 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
     
     private final String errorParameterRegex = "sctl:hint\\s+.*";
     
-    private final Matcher setMasterOnlyMatcher;
+    private final Matcher setPrimaryOnlyMatcher;
     
     private final Matcher setDatabaseShardingValueMatcher;
     
@@ -69,7 +69,7 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
     private final Matcher errorParameterMatcher;
     
     public ShardingCTLHintParser(final String sql) {
-        setMasterOnlyMatcher = Pattern.compile(setPrimaryOnlyRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
+        setPrimaryOnlyMatcher = Pattern.compile(setPrimaryOnlyRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
         setDatabaseShardingValueMatcher = Pattern.compile(setDatabaseShardingValueRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
         addDatabaseShardingValueMatcher = Pattern.compile(addDatabaseShardingValueRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
         addTableShardingValueMatcher = Pattern.compile(addTableShardingValueRegex, Pattern.CASE_INSENSITIVE).matcher(sql);
@@ -96,9 +96,9 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
     }
     
     private Optional<ShardingCTLHintStatement> parseUpdateShardingCTLHintStatement() {
-        if (setMasterOnlyMatcher.find()) {
-            boolean masterOnly = Boolean.parseBoolean(setMasterOnlyMatcher.group(1).toUpperCase());
-            return Optional.of(new ShardingCTLHintStatement(new HintSetPrimaryOnlyCommand(masterOnly)));
+        if (setPrimaryOnlyMatcher.find()) {
+            boolean primaryOnly = Boolean.parseBoolean(setPrimaryOnlyMatcher.group(1).toUpperCase());
+            return Optional.of(new ShardingCTLHintStatement(new HintSetPrimaryOnlyCommand(primaryOnly)));
         }
         if (setDatabaseShardingValueMatcher.find()) {
             String shardingValue = setDatabaseShardingValueMatcher.group(1);
