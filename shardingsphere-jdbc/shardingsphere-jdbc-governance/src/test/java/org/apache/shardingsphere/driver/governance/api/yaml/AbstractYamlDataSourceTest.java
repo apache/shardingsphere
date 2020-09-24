@@ -72,8 +72,14 @@ public abstract class AbstractYamlDataSourceTest {
     }
     
     private static List<String> getSchemaFiles() {
-        return Arrays.asList("yaml/schema/sharding/db0.sql", "yaml/schema/sharding/db1.sql", "yaml/schema/ms/primary_ds.sql", 
-                "yaml/schema/ms/replica_ds_0.sql", "yaml/schema/ms/replica_ds_1.sql", "yaml/schema/sharding_ms/primary_ds_0.sql", 
-                "yaml/schema/sharding_ms/primary_ds_1.sql", "yaml/schema/sharding_ms/replica_ds_0.sql", "yaml/schema/sharding_ms/replica_ds_1.sql");
+        return Arrays.asList("yaml/schema/sharding/db0.sql", 
+                "yaml/schema/sharding/db1.sql", 
+                "yaml/schema/primary_replica_replication/primary_ds.sql", 
+                "yaml/schema/primary_replica_replication/replica_ds_0.sql", 
+                "yaml/schema/primary_replica_replication/replica_ds_1.sql", 
+                "yaml/schema/sharding_primary_replica_replication/primary_ds_0.sql", 
+                "yaml/schema/sharding_primary_replica_replication/primary_ds_1.sql", 
+                "yaml/schema/sharding_primary_replica_replication/replica_ds_0.sql", 
+                "yaml/schema/sharding_primary_replica_replication/replica_ds_1.sql");
     }
 }

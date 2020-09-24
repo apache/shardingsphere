@@ -14,4 +14,4 @@ Zookeeper support is provided now, and the support for other registries will be 
 
 + Users can disable or enable the instance by operate button.
 
-+ Users can disable or enable the access to slave database.
++ Users can disable or enable the access to replica database.

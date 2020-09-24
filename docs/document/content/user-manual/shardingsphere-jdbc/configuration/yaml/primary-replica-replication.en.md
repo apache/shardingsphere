@@ -1,5 +1,5 @@
 +++
-title = "Read-write Split"
+title = "Primary-Replica Replication"
 weight = 2
 +++
 
@@ -11,10 +11,10 @@ dataSource: # Omit data source configuration
 rules:
 - !PRIMARY_REPLICA_REPLICATION
   dataSources:
-    <data-source-name> (+): # Logic data source name of master slave
+    <data-source-name> (+): # Logic data source name of primary-replica replication
       primaryDataSourceName: # Primary data source name
-      slaveDataSourceNames: 
-        - <slave-data-source-name> (+) # Slave data source name
+      replicaDataSourceNames: 
+        - <replica-data-source-name> (+) # Replica data source name
       loadBalancerName: # Load balance algorithm name
   
   # Load balance algorithm configuration

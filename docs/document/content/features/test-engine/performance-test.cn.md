@@ -130,10 +130,10 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-masterSlaveRule:
+primaryReplicaReplicationRule:
   name: pr_ds
-  masterDataSourceName: primary_ds
-  slaveDataSourceNames:
+  primaryDataSourceName: primary_ds
+  replicaDataSourceNames:
     - replica_ds_0
 ```
 
@@ -227,25 +227,25 @@ shardingRule:
   defaultDataSourceName: primary_ds_1
   defaultTableStrategy:
     none:
-  masterSlaveRules:
+  primaryReplicaReplicationRules:
     pr_ds_0:
-      masterDataSourceName: primary_ds_0
-      slaveDataSourceNames:
+      primaryDataSourceName: primary_ds_0
+      replicaDataSourceNames:
         - replica_ds_0
       loadBalanceAlgorithmType: ROUND_ROBIN
     pr_ds_1:
-      masterDataSourceName: primary_ds_1
-      slaveDataSourceNames:
+      primaryDataSourceName: primary_ds_1
+      replicaDataSourceNames:
         - replica_ds_1
       loadBalanceAlgorithmType: ROUND_ROBIN
     pr_ds_2:
-      masterDataSourceName: primary_ds_2
-      slaveDataSourceNames:
+      primaryDataSourceName: primary_ds_2
+      replicaDataSourceNames:
         - replica_ds_2
       loadBalanceAlgorithmType: ROUND_ROBIN
     pr_ds_3:
-      masterDataSourceName: primary_ds_3
-      slaveDataSourceNames:
+      primaryDataSourceName: primary_ds_3
+      replicaDataSourceNames:
         - replica_ds_3
       loadBalanceAlgorithmType: ROUND_ROBIN
 encryptRule:

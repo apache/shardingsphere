@@ -44,7 +44,7 @@ shardingsphere
   │  │  │  ├─encrypt
   │  │  │  ├─governance
   │  │  │  ├─pluggable-architecture
-  │  │  │  ├─read-write-split
+  │  │  │  ├─primary-replica-replication
   │  │  │  ├─replica
   │  │  │  ├─scaling
   │  │  │  ├─shadow

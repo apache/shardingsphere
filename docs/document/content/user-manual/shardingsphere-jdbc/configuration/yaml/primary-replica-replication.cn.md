@@ -13,8 +13,8 @@ rules:
   dataSources:
     <data-source-name> (+): # 读写分离逻辑数据源名称
       primaryDataSourceName: # 主库数据源名称
-      slaveDataSourceNames: 
-        - <slave-data_source-name> (+) # 从库数据源名称
+      replicaDataSourceNames: 
+        - <replica-data_source-name> (+) # 从库数据源名称
       loadBalancerName: # 负载均衡算法名称
   
   # 负载均衡算法配置
