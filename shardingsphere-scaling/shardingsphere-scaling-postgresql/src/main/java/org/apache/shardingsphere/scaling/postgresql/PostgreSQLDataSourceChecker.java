@@ -47,7 +47,7 @@ public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker
                 }
             }
         } catch (final SQLException ex) {
-            throw new PrepareFailedException("Data Sources check failed!", ex);
+            throw new PrepareFailedException("Data sources privilege check failed!", ex);
         }
     }
     
