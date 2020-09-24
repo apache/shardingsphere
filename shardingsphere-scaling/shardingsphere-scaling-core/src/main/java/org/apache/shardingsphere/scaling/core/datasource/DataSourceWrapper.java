@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.scaling.core.datasource;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -31,7 +30,7 @@ import java.util.logging.Logger;
 /**
  * Data source wrapper is for abstract standard jdbc and sharding jdbc.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DataSourceWrapper implements DataSource, AutoCloseable {
     
     private final DataSource dataSource;
@@ -84,10 +83,6 @@ public class DataSourceWrapper implements DataSource, AutoCloseable {
     @Override
     public void close() throws IOException {
         if (dataSource == null) {
-            return;
-        }
-        if (dataSource instanceof Closeable) {
-            ((Closeable) dataSource).close();
             return;
         }
         if (dataSource instanceof AutoCloseable) {

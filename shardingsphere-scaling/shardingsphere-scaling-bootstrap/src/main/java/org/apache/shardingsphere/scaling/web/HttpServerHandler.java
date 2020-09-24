@@ -124,8 +124,8 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     private void checkJob(final ChannelHandlerContext context, final String requestPath) {
         int jobId = Integer.parseInt(requestPath.split("/")[4]);
         try {
-            Map<String, DataConsistencyCheckResult> result = SCALING_JOB_CONTROLLER.check(jobId);
-            response(GSON.toJson(ResponseContentUtil.build(result)), context, HttpResponseStatus.OK);
+            Map<String, DataConsistencyCheckResult> dataConsistencyCheckResultMap = SCALING_JOB_CONTROLLER.check(jobId);
+            response(GSON.toJson(ResponseContentUtil.build(dataConsistencyCheckResultMap)), context, HttpResponseStatus.OK);
         } catch (final ScalingJobNotFoundException ex) {
             response(GSON.toJson(ResponseContentUtil.handleBadRequest(ex.getMessage())), context, HttpResponseStatus.BAD_REQUEST);
         }
