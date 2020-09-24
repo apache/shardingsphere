@@ -303,7 +303,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         if (null != ctx.predicate()) {
             right = (ExpressionSegment) visit(ctx.predicate());
         } else {
-            right = (ExpressionSegment) visit(ctx.subquery());
+            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (MySQLSelectStatement) visit(ctx.subquery())));
         }
         String operator = null != ctx.SAFE_EQ_() ? ctx.SAFE_EQ_().getText() : ctx.comparisonOperator().getText();
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));

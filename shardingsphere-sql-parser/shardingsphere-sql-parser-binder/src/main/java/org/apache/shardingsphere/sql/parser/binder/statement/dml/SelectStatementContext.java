@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Pro
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.engine.ProjectionsContextEngine;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;

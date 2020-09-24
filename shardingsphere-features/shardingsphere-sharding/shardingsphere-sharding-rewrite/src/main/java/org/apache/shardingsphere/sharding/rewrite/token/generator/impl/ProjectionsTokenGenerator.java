@@ -79,6 +79,9 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
                     result.get(routeUnit).add(getDerivedProjectionText(each));
                 }
             }
+            if (result.get(routeUnit).isEmpty()) {
+                result.remove(routeUnit);
+            }
         }
         return result;
     }
