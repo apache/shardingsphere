@@ -16,7 +16,7 @@
  */
 
 /*
- * Please make sure primary-replica-replication data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ * Please make sure primary-replica-replication data sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
  */
 
 package org.apache.shardingsphere.example.shadow.table.raw.jdbc;

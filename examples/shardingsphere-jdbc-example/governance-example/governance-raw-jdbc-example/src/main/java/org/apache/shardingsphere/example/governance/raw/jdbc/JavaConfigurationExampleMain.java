@@ -39,7 +39,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /*
- * 1. Please make sure primary-replication-replica data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ * 1. Please make sure primary-replication-replica data sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
  * 2. Please make sure sharding-governance-center-zookeeper-curator in your pom if registryCenterType = RegistryCenterType.ZOOKEEPER.
  * 3. Please make sure sharding-governance-center-nacos in your pom if registryCenterType = RegistryCenterType.NACOS.
  */
