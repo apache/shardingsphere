@@ -39,7 +39,7 @@ public final class ShardingCTLHintParserTest {
     
     @Test
     public void assertValidSetMasterOnlySQL() {
-        String sql = "sctl:hint set master_only=true ";
+        String sql = "sctl:hint set primary_only=true ";
         Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
         assertTrue(actual.isPresent());
         assertTrue(((HintSetPrimaryOnlyCommand) actual.get().getHintCommand()).isPrimaryOnly());
@@ -47,7 +47,7 @@ public final class ShardingCTLHintParserTest {
     
     @Test
     public void assertInValidSetMasterOnlySQL() {
-        String sql = "sctl:hint set master_only1=true ";
+        String sql = "sctl:hint set primary_only1=true ";
         Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
         assertTrue(actual.isPresent());
         assertThat(actual.get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));

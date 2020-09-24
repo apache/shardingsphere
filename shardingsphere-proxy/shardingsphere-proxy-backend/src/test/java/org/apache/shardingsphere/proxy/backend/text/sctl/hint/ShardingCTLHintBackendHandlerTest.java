@@ -93,7 +93,7 @@ public final class ShardingCTLHintBackendHandlerTest {
     @Test
     public void assertSetMasterOnly() {
         clearThreadLocal();
-        String sql = "sctl:hint set master_only=true ";
+        String sql = "sctl:hint set primary_only=true ";
         ShardingCTLHintBackendHandler shardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         assertThat(shardingCTLHintBackendHandler.execute(), instanceOf(UpdateResponse.class));
         assertTrue(HintManager.isPrimaryRouteOnly());
@@ -143,7 +143,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         ShardingCTLHintBackendHandler defaultShardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         BackendResponse backendResponse = defaultShardingCTLHintBackendHandler.execute();
         assertThat(backendResponse, instanceOf(QueryResponse.class));
-        assertThat(((QueryResponse) backendResponse).getQueryHeaders().get(0).getColumnLabel(), is("master_only"));
+        assertThat(((QueryResponse) backendResponse).getQueryHeaders().get(0).getColumnLabel(), is("primary_only"));
         assertThat(((QueryResponse) backendResponse).getQueryHeaders().get(1).getColumnLabel(), is("sharding_type"));
         assertTrue(defaultShardingCTLHintBackendHandler.next());
         QueryData defaultQueryData = defaultShardingCTLHintBackendHandler.getQueryData();
@@ -152,9 +152,9 @@ public final class ShardingCTLHintBackendHandlerTest {
         assertThat(defaultQueryData.getData().get(0).toString(), is("false"));
         assertThat(defaultQueryData.getData().get(1).toString(), is("databases_tables"));
         assertFalse(defaultShardingCTLHintBackendHandler.next());
-        String setMasterOnlySQL = "sctl:hint set master_only=true";
+        String setPrimaryOnlySQL = "sctl:hint set primary_only=true";
         String setDatabaseOnlySQL = "sctl:hint set DatabaseShardingValue=100";
-        new ShardingCTLHintBackendHandler(setMasterOnlySQL, backendConnection).execute();
+        new ShardingCTLHintBackendHandler(setPrimaryOnlySQL, backendConnection).execute();
         new ShardingCTLHintBackendHandler(setDatabaseOnlySQL, backendConnection).execute();
         ShardingCTLHintBackendHandler updateShardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         updateShardingCTLHintBackendHandler.execute();

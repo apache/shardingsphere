@@ -51,7 +51,7 @@ public final class HintCommandExecutorFactoryTest {
     
     @Test
     public void assertHintSetMasterOnlyExecutor() {
-        String sql = "sctl:hint set master_only=false";
+        String sql = "sctl:hint set primary_only=false";
         HintCommand hintCommand = mock(HintSetPrimaryOnlyCommand.class);
         assertThat(HintCommandExecutorFactory.newInstance(hintCommand, backendConnection, sql), instanceOf(HintSetPrimaryOnlyExecutor.class));
     }
