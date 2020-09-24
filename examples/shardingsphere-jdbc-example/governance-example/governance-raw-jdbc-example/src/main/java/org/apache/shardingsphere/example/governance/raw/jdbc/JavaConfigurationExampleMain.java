@@ -73,7 +73,7 @@ public final class JavaConfigurationExampleMain {
                 configuration = loadConfigFromRegCenter 
                         ? new CloudShardingDatabasesAndTablesConfiguration(governanceConfig) : new LocalShardingDatabasesAndTablesConfiguration(governanceConfig);
                 break;
-            case MASTER_SLAVE:
+            case PRIMARY_REPLICA_REPLICATION:
                 configuration = loadConfigFromRegCenter ? new CloudPrimaryReplicaReplicationConfiguration(governanceConfig) : new LocalPrimaryReplicaReplicationConfiguration(governanceConfig);
                 break;
             case ENCRYPT:

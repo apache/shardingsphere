@@ -49,7 +49,7 @@ public final class ExampleMain {
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 return String.format("META-INF/%s/%s/application-sharding-databases-tables.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-            case MASTER_SLAVE:
+            case PRIMARY_REPLICA_REPLICATION:
                 return String.format("META-INF/%s/%s/application-master-slave.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
             case ENCRYPT:
                 return String.format("META-INF/%s/%s/application-encrypt.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");

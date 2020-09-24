@@ -63,7 +63,7 @@ public final class YamlConfigurationExampleMain {
             case SHARDING_DATABASES_AND_TABLES:
                 yamlFilePath = String.format("/META-INF/%s/%s/sharding-databases-tables.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
                 return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
-            case MASTER_SLAVE:
+            case PRIMARY_REPLICA_REPLICATION:
                 yamlFilePath = String.format("/META-INF/%s/%s/master-slave.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
                 return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
             case ENCRYPT:
