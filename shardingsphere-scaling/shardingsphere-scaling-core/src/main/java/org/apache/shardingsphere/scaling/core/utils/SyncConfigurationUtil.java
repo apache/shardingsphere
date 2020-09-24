@@ -118,12 +118,12 @@ public final class SyncConfigurationUtil {
     
     private static Map<String, Map<String, String>> toDataSourceTableNameMap(final TableRule tableRule) {
         Map<String, Map<String, String>> result = new HashMap<>();
-        for (Entry<String, Collection<String>> each : tableRule.getDatasourceToTablesMap().entrySet()) {
-            Map<String, String> tableNameMap = result.get(each.getKey());
+        for (Entry<String, Collection<String>> entry : tableRule.getDatasourceToTablesMap().entrySet()) {
+            Map<String, String> tableNameMap = result.get(entry.getKey());
             if (null == tableNameMap) {
-                result.put(each.getKey(), toTableNameMap(tableRule.getLogicTable(), each.getValue()));
+                result.put(entry.getKey(), toTableNameMap(tableRule.getLogicTable(), entry.getValue()));
             } else {
-                tableNameMap.putAll(toTableNameMap(tableRule.getLogicTable(), each.getValue()));
+                tableNameMap.putAll(toTableNameMap(tableRule.getLogicTable(), entry.getValue()));
             }
         }
         return result;
@@ -138,12 +138,12 @@ public final class SyncConfigurationUtil {
     }
     
     private static void mergeDataSourceTableNameMap(final Map<String, Map<String, String>> mergedResult, final Map<String, Map<String, String>> newDataSourceTableNameMap) {
-        for (Entry<String, Map<String, String>> each : newDataSourceTableNameMap.entrySet()) {
-            Map<String, String> tableNameMap = mergedResult.get(each.getKey());
+        for (Entry<String, Map<String, String>> entry : newDataSourceTableNameMap.entrySet()) {
+            Map<String, String> tableNameMap = mergedResult.get(entry.getKey());
             if (null == tableNameMap) {
-                mergedResult.put(each.getKey(), each.getValue());
+                mergedResult.put(entry.getKey(), entry.getValue());
             } else {
-                tableNameMap.putAll(each.getValue());
+                tableNameMap.putAll(entry.getValue());
             }
         }
     }
