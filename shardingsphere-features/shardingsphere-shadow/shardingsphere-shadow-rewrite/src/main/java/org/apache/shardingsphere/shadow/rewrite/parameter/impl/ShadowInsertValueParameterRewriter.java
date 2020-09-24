@@ -34,7 +34,7 @@ public final class ShadowInsertValueParameterRewriter extends ShadowParameterRew
     
     @Override
     protected boolean isNeedRewriteForShadow(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertStatementContext && ((InsertStatementContext) sqlStatementContext).getColumnNames().contains(getShadowRule().getColumn());
+        return sqlStatementContext instanceof InsertStatementContext && ((InsertStatementContext) sqlStatementContext).getInsertColumnNames().contains(getShadowRule().getColumn());
     }
     
     @Override

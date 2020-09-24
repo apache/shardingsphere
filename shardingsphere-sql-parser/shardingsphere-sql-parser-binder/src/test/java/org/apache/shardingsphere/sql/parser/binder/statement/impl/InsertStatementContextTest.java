@@ -303,4 +303,51 @@ public final class InsertStatementContextTest {
         InsertStatementContext insertStatementContext = new InsertStatementContext(new SchemaMetaData(), Collections.emptyList(), insertStatement);
         assertThat(insertStatementContext.getValueListCount(), is(1));
     }
+    
+    @Test
+    public void assertGetInsertColumnNamesForInsertColumnsForMySQL() {
+        assertGetInsertColumnNamesForInsertColumns(new MySQLInsertStatement());
+    }
+    
+    @Test
+    public void assertGetInsertColumnNamesForInsertColumnsForOracle() {
+        assertGetInsertColumnNamesForInsertColumns(new OracleInsertStatement());
+    }
+    
+    @Test
+    public void assertGetInsertColumnNamesForInsertColumnsForPostgreSQL() {
+        assertGetInsertColumnNamesForInsertColumns(new PostgreSQLInsertStatement());
+    }
+    
+    @Test
+    public void assertGetInsertColumnNamesForInsertColumnsForSQL92() {
+        assertGetInsertColumnNamesForInsertColumns(new SQL92InsertStatement());
+    }
+    
+    @Test
+    public void assertGetInsertColumnNamesForInsertColumnsForSQLServer() {
+        assertGetInsertColumnNamesForInsertColumns(new SQLServerInsertStatement());
+    }
+    
+    private void assertGetInsertColumnNamesForInsertColumns(final InsertStatement insertStatement) {
+        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
+        insertStatement.setInsertColumns(insertColumnsSegment);
+        insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("")));
+        InsertStatementContext insertStatementContext = new InsertStatementContext(new SchemaMetaData(), Collections.emptyList(), insertStatement);
+        List<String> columnNames = insertStatementContext.getInsertColumnNames();
+        assertThat(columnNames.size(), is(1));
+        assertThat(columnNames.iterator().next(), is("col"));
+    }
+    
+    @Test
+    public void assertGetInsertColumnNamesForSetAssignmentForMySQL() {
+        MySQLInsertStatement insertStatement = new MySQLInsertStatement();
+        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0,
+                new ColumnSegment(0, 0, new IdentifierValue("col")), new LiteralExpressionSegment(0, 0, 1)))));
+        insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("")));
+        InsertStatementContext insertStatementContext = new InsertStatementContext(new SchemaMetaData(), Collections.emptyList(), insertStatement);
+        List<String> columnNames = insertStatementContext.getInsertColumnNames();
+        assertThat(columnNames.size(), is(1));
+        assertThat(columnNames.iterator().next(), is("col"));
+    }
 }

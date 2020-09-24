@@ -70,7 +70,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     public InsertStatementContext(final SchemaMetaData schemaMetaData, final List<Object> parameters, final InsertStatement sqlStatement) {
         super(sqlStatement);
-        List<String> insertColumnNames = getInsertColumnNames(sqlStatement);
+        List<String> insertColumnNames = getInsertColumnNames();
         columnNames = useDefaultColumns() ? schemaMetaData.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames;
         AtomicInteger parametersOffset = new AtomicInteger(0);
         insertValueContexts = getInsertValueContexts(parameters, parametersOffset);
@@ -197,12 +197,18 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         return setAssignment.isPresent() ? 1 : insertStatement.getValues().size();
     }
         
-    private List<String> getInsertColumnNames(final InsertStatement insertStatement) {
+    /**
+     * Get insert column names.
+     *
+     * @return column names collection
+     */
+    public List<String> getInsertColumnNames() {
+        InsertStatement insertStatement = getSqlStatement();
         Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
         return setAssignment.isPresent() ? getColumnNamesForSetAssignment(setAssignment.get()) : getColumnNamesForInsertColumns(insertStatement.getColumns());
     }
     
-    private static List<String> getColumnNamesForSetAssignment(final SetAssignmentSegment setAssignment) {
+    private List<String> getColumnNamesForSetAssignment(final SetAssignmentSegment setAssignment) {
         List<String> result = new LinkedList<>();
         for (AssignmentSegment each : setAssignment.getAssignments()) {
             result.add(each.getColumn().getIdentifier().getValue().toLowerCase());
@@ -210,7 +216,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         return result;
     }
     
-    private static List<String> getColumnNamesForInsertColumns(final Collection<ColumnSegment> columns) {
+    private List<String> getColumnNamesForInsertColumns(final Collection<ColumnSegment> columns) {
         List<String> result = new LinkedList<>();
         for (ColumnSegment each : columns) {
             result.add(each.getIdentifier().getValue().toLowerCase());
