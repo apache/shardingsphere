@@ -38,11 +38,11 @@ public final class RoundRobinReplicaLoadBalanceAlgorithm implements ReplicaLoadB
     private Properties props = new Properties();
     
     @Override
-    public String getDataSource(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
+    public String getDataSource(final String name, final String primaryDataSourceName, final List<String> replicaDataSourceNames) {
         AtomicInteger count = COUNTS.containsKey(name) ? COUNTS.get(name) : new AtomicInteger(0);
         COUNTS.putIfAbsent(name, count);
-        count.compareAndSet(slaveDataSourceNames.size(), 0);
-        return slaveDataSourceNames.get(Math.abs(count.getAndIncrement()) % slaveDataSourceNames.size());
+        count.compareAndSet(replicaDataSourceNames.size(), 0);
+        return replicaDataSourceNames.get(Math.abs(count.getAndIncrement()) % replicaDataSourceNames.size());
     }
     
     @Override
