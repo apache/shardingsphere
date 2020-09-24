@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class MasterSlaveShadowDatabasesConfiguration implements ExampleConfiguration {
+public final class PrimaryReplicaReplicationShadowDatabasesConfiguration implements ExampleConfiguration {
     
     @Override
     public DataSource getDataSource() throws SQLException {

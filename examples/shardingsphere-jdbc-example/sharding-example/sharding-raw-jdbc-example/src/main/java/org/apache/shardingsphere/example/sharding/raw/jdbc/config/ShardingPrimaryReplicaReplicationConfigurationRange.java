@@ -36,15 +36,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public final class ShardingMasterSlaveConfigurationRange implements ExampleConfiguration {
+public final class ShardingPrimaryReplicaReplicationConfigurationRange implements ExampleConfiguration {
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createMasterSlaveRuleConfiguration()), new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(
+                createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createPrimaryReplicaReplicationRuleConfiguration()), new Properties());
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>();
+        Map<String, DataSource> result = new HashMap<>(6, 1);
         result.put("demo_primary_ds_0", DataSourceUtil.createDataSource("demo_primary_ds_0"));
         result.put("demo_primary_ds_0_replica_0", DataSourceUtil.createDataSource("demo_primary_ds_0_replica_0"));
         result.put("demo_primary_ds_0_replica_1", DataSourceUtil.createDataSource("demo_primary_ds_0_replica_1"));
@@ -80,12 +81,12 @@ public final class ShardingMasterSlaveConfigurationRange implements ExampleConfi
         return result;
     }
     
-    private static PrimaryReplicaReplicationRuleConfiguration createMasterSlaveRuleConfiguration() {
-        PrimaryReplicaReplicationDataSourceRuleConfiguration dataSourceConfiguration1 = new PrimaryReplicaReplicationDataSourceRuleConfiguration(
+    private static PrimaryReplicaReplicationRuleConfiguration createPrimaryReplicaReplicationRuleConfiguration() {
+        PrimaryReplicaReplicationDataSourceRuleConfiguration dataSourceConfig1 = new PrimaryReplicaReplicationDataSourceRuleConfiguration(
                 "ds_0", "demo_primary_ds_0", Arrays.asList("demo_primary_ds_0_replica_0", "demo_primary_ds_0_replica_1"), null);
-        PrimaryReplicaReplicationDataSourceRuleConfiguration dataSourceConfiguration2 = new PrimaryReplicaReplicationDataSourceRuleConfiguration(
+        PrimaryReplicaReplicationDataSourceRuleConfiguration dataSourceConfig2 = new PrimaryReplicaReplicationDataSourceRuleConfiguration(
                 "ds_1", "demo_primary_ds_1", Arrays.asList("demo_primary_ds_1_replica_0", "demo_primary_ds_1_replica_1"), null);
-        return new PrimaryReplicaReplicationRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2), Collections.emptyMap());
+        return new PrimaryReplicaReplicationRuleConfiguration(Arrays.asList(dataSourceConfig1, dataSourceConfig2), Collections.emptyMap());
     }
     
     private static Properties getProperties() {
