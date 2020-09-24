@@ -14,7 +14,7 @@ rules:
     <data-source-name> (+): # Logic data source name of primary-replica replication
       primaryDataSourceName: # Primary data source name
       replicaDataSourceNames: 
-        - <slave-data-source-name> (+) # Replica data source name
+        - <replica-data-source-name> (+) # Replica data source name
       loadBalancerName: # Load balance algorithm name
   
   # Load balance algorithm configuration

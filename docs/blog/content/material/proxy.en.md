@@ -50,7 +50,7 @@ The whole architecture can be divided into three components: Frontend, Core-modu
 
 *   Core-module: After getting decoded command of MySQL, it starts to parse/rewrite/route/conflate SQL through Sharding-Core.
    
-*   Backend:  it's interacted with real database by Hikari pool of BIO. Its performance declines on condition of one master more slaves or large scale to database cluster in the way of BIO, so we will provide way of NIO to connect real database in the future.
+*   Backend:  it's interacted with real database by Hikari pool of BIO. Its performance declines on condition of one primary more replicas or large scale to database cluster in the way of BIO, so we will provide way of NIO to connect real database in the future.
   
 
 ![](https://shardingsphere.apache.org/blog/img/proxy_architecture1_en.jpg)

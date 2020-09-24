@@ -107,7 +107,7 @@
 
 1. MariaDB supported.
 1. Improve the compatibility of SQL parsing.
-1. `SELECT FOR UPDATE` route to master data source only.
+1. `SELECT FOR UPDATE` route to primary data source only.
 1. Hint in ShardingSphere-Proxy available.
 1. Make configuration of orchestration consistent between ShardingSphere-JDBC and ShardingSphere-Proxy.
 1. Renew modified data sources only, not renew all the data sources.
@@ -140,7 +140,7 @@
 ### Enhancement
 
 1. Support using less-than character(<) and greater-than character(>) for sharding data.
-1. When master and slave dataSources exist, support executing `SELECT FOR UPDATE` on master dataSource.
+1. When primary and replica dataSources exist, support executing `SELECT FOR UPDATE` on primary data source.
 1. Support hint in ShardingSphere-Proxy.
 1. Finish parsing DAL syntax for MySQL.
 1. Make configuration of orchestration compatible between ShardingSphere-JDBC and ShardingSphere-Proxy.
@@ -293,7 +293,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 
 1. [ISSUE #372](https://github.com/apache/shardingsphere/issues/372) Reuse PreparedStatement cause cache of route result do not clean
 1. [ISSUE #629](https://github.com/apache/shardingsphere/issues/629) Support transaction isolation on JDBC
-1. [ISSUE #735](https://github.com/apache/shardingsphere/issues/735) Unexpected slave datasource routing result when using `Round-robin` load-balance algorithm in Mybatis
+1. [ISSUE #735](https://github.com/apache/shardingsphere/issues/735) Unexpected replica datasource routing result when using `Round-robin` load-balance algorithm in Mybatis
 1. [ISSUE #1011](https://github.com/apache/shardingsphere/issues/1011) Can't resolve placeholder in `Spring Boot YAML` configuration
 
 ## 2.0.3
@@ -313,7 +313,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 
 #### ShardingSphere-JDBC
 
-1. [ISSUE #522](https://github.com/apache/shardingsphere/issues/522) Slave database does not need to execute the DDL for read-write splitting
+1. [ISSUE #522](https://github.com/apache/shardingsphere/issues/522) Replica database does not need to execute the DDL for read-write splitting
 
 
 ## 2.0.2
@@ -366,7 +366,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 1. API adjust. Brand new groupId and artifactId for `Maven`, package name and spring namespace name. Simplify and enhance API configuration, inline expression fully configuration support
 1. Support `spring-boot-starter` of `ShardingSphere-JDBC`
 1. Dynamic configuration. `ZooKeeper` and `etcd` can be used as registry to dynamically modify data sources and sharding configurations
-1. Database orchestration. Fusing database access procedures to access databases and disable access to slave databases
+1. Database orchestration. Fusing database access procedures to access databases and disable access to replica databases
 1. ConfigMap support. Predefined metadata can be obtained in the sharding and read-write separation strategy
 1. Tracking system support. You can view the invocation chain of `ShardingSphere-JDBC` through `sky-walking` and other `Opentracing` based APM systems
 
@@ -394,7 +394,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 1. [ISSUE #394](https://github.com/apache/shardingsphere/issues/394) Can't only close statement
 1. [ISSUE #398](https://github.com/apache/shardingsphere/issues/398) Use Hint routing to shield case sensitivity 
 1. [ISSUE #404](https://github.com/apache/shardingsphere/issues/404) Sharding-jdbc's spring-boot-starter does not support HikariDataSource
-1. [ISSUE #436](https://github.com/apache/shardingsphere/issues/436) Read-write splitting, when the RoundRobin algorithm is configured from the database and MyBatis is used, it can only be routed to the same slave library
+1. [ISSUE #436](https://github.com/apache/shardingsphere/issues/436) Read-write splitting, when the RoundRobin algorithm is configured from the database and MyBatis is used, it can only be routed to the same replica database
 1. [ISSUE #452](https://github.com/apache/shardingsphere/issues/452) Sharding of DDL statements to more than one table causes a connection leak
 1. [ISSUE #472](https://github.com/apache/shardingsphere/issues/472) Before Connection executes createStatement, it calls getMetaData first and then setAutoCommit can not take effective connection to the database that was created later
 
@@ -515,7 +515,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 
 1. [ISSUE #191](https://github.com/apache/shardingsphere/issues/191) Generating KeyGenerator of workerId based on IP of host
 1. [ISSUE #192](https://github.com/apache/shardingsphere/issues/192) Get workerId's KeyGenerator based on HOSTNAME's digital suffix
-1. [ISSUE #210](https://github.com/apache/shardingsphere/issues/210) Routing to single library and single table to remove supplementary SQL statement fragments
+1. [ISSUE #210](https://github.com/apache/shardingsphere/issues/210) Routing to single database and single table to remove supplementary SQL statement fragments
 
 ### Bug Fixes
 
@@ -549,7 +549,7 @@ Automatic generation key implementation, including
 ### Bug Fixes
 
 1. [ISSUE #149](https://github.com/apache/shardingsphere/issues/149) When INSERT IGNORE INTO, if the data is duplicated, the value returned to -1 when ignored, and it should be returned to 0
-1. [ISSUE #118](https://github.com/apache/shardingsphere/issues/118) In the same thread, DQL is executed first, then DML is executed, and DML operation is executed from the slave database
+1. [ISSUE #118](https://github.com/apache/shardingsphere/issues/118) In the same thread, DQL is executed first, then DML is executed, and DML operation is executed from the replica database
 1. [ISSUE #122](https://github.com/apache/shardingsphere/issues/122) In cases where connections are not available (such as network interruption), transactions should be interrupted rather than retry
 1. [ISSUE #152](https://github.com/apache/shardingsphere/issues/152) PreparedStatement's cache causes an array out of bound
 1. [ISSUE #150](https://github.com/apache/shardingsphere/issues/150) With the latest SQLServer jdbc driver compatibility problem, Product Name should be changed from SQLServer to Microsoft SQL Server
@@ -580,7 +580,7 @@ Automatic generation key implementation, including
 ### Bug Fixes
 
 1. [ISSUE #89](https://github.com/apache/shardingsphere/issues/89) Use read-write separation with sharding hint leads to conflict
-1. [ISSUE #95](https://github.com/apache/shardingsphere/issues/95) Write operations in the same thread are read from the master database changed to the same thread and within the same connection
+1. [ISSUE #95](https://github.com/apache/shardingsphere/issues/95) Write operations in the same thread are read from the primary database changed to the same thread and within the same connection
 
 ## 1.3.0
 

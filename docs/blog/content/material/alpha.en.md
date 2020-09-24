@@ -10,7 +10,7 @@ Within a few months ElasticJob as the subproject of Apache ShardingSphere has fi
 ### Background
 ElasticJob (https://github.com/apache/shardingsphere-elasticjob) is a distributed scheduling solution for internet ecology and massive tasks. ElasticJob consisting of two separate subprojects, ElasticJob-Lite and ElasticJob-Cloud. It was born in 2015, at that time the industry had outstanding job scheduling library such as QuartZ, but lacked of exploration at distributed field. The lack of distributed scheduling cloud platform products has caused ElasticJob to attract attention from the beginning. It effectively makes up for the shortcomings of operations in the distributed field, and provides a one-stop automated operation and maintenance management and control terminal. Each product uses a unified operation API. Developers only need to develop once and deploy at will.
 
-In the technology selection for ElasticJob, it chose to stand on the shoulders of giants instead of reinvent the wheel. It perfectly combines the standard job scheduling library QuartZ, , and ZooKeeper, a weapon for distributed coordination, to quickly and stably build a new concept of distributed scheduling framework.
+In the technology selection for ElasticJob, it chose to stand on the shoulders of giants instead of reinvent the wheel. It perfectly combines the standard job scheduling library QuartZ, and ZooKeeper, a weapon for distributed coordination, to quickly and stably build a new concept of distributed scheduling framework.
 
 ### ElasticJob scheduling model
 The scheduling model of ElasticJob is divided into in-process scheduling ElasticJob-Lite, which supports thread-level scheduling, and ElasticJob-Cloud, which supports process-level scheduling.
@@ -27,7 +27,7 @@ The architecture diagram is shown below:
 
 ![](https://shardingsphere.apache.org/blog/img/alpha1.jpg)
 
-It can be seen from the figure that the distributed job node of ElasticJob-Lite obtains the master node through election, and shards through the master node. After the fragmentation is completed, the master node and the slave node are the same, and both execute tasks in a self-scheduled manner. 
+It can be seen from the figure that the distributed job node of ElasticJob-Lite obtains the master node through election, and shards through the master node. After the fragmentation is completed, the master node and the replica node are the same, and both execute tasks in a self-scheduled manner. 
 
 **Process level scheduling**
 

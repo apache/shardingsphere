@@ -7,7 +7,7 @@ weight = 2
 
 - As config center manage configuration data, registry center hold all ephemeral status data dynamically generated in runtime(such as available proxy instances, disabled datasource instances etc).
 
-- Registry center can disable the access to slave database and the access of application. Governance still has many functions(such as flow control) to be developed.
+- Registry center can disable the access to replica database and the access of application. Governance still has many functions(such as flow control) to be developed.
 
 ## Data Structure in Registry Center
 
@@ -36,7 +36,7 @@ It includes running instance information of database access object, with sub-nod
 
 ### /states/datanodes
 
-It is able to orchestrate read-write split slave database, delete or disable data dynamically.
+It is able to orchestrate read-write split replica database, delete or disable data dynamically.
 
 ## Operation Guide
 
@@ -50,9 +50,9 @@ Zookeeper command is as follows:
 [zk: localhost:2181(CONNECTED) 0] set /${your_zk_namespace}/states/proxynodes/${your_instance_ip_a}@${your_instance_pid_x}@${UUID} DISABLED
 ```
 
-### Disable Slave Database
+### Disable Replica Database
 
-Under read-write split scenarios, users can write `DISABLED` (case insensitive) to sub-nodes of data source name to disable slave database sources. Delete `DISABLED` or the node to enable it.
+Under read-write split scenarios, users can write `DISABLED` (case insensitive) to sub-nodes of data source name to disable replica database sources. Delete `DISABLED` or the node to enable it.
 
 Zookeeper command is as follows:
 

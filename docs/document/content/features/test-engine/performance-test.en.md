@@ -18,7 +18,7 @@ While as a comparison, MySQL runs with INSERT & UPDATE & DELETE statement and si
 
 ### Primary-Replica Replication
 
-One master database and one slave database, which are deployed on different machines, are designed for this scenario based on ten thousand data volume.
+One primary database and one replica database, which are deployed on different machines, are designed for this scenario based on ten thousand data volume.
 While as a comparison, MySQL runs with INSERT & SELECT & DELETE sql statement on the basis of ten thousand data volume.
 
 ### Primary-Replica Replication & Encrypt & Sharding
