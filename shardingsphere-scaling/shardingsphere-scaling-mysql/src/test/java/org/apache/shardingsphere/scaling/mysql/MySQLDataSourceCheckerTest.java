@@ -33,8 +33,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -42,20 +40,20 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLDataSourceCheckerTest {
-
+    
     @Mock
     private Connection connection;
-
+    
     @Mock
     private PreparedStatement preparedStatement;
     
     @Mock
     private ResultSet resultSet;
-
+    
     private Collection<DataSource> dataSources;
-
+    
     private MySQLDataSourceChecker dataSourceChecker;
-
+    
     @Before
     public void setUp() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
