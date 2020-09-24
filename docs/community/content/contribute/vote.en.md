@@ -117,7 +117,7 @@ https://www.apache.org/foundation/policies/conduct.html
 Here is the guideline for all of the ShardingSphere committers:
 https://shardingsphere.apache.org/community/en/contribute/committer/
 ```
-### 7. New committer sign icla, this step refers to [iCLA Sign Guide](/en/icla/)
+### 7. New committer sign icla, this step refers to [Sign ICLA Guide](https://shardingsphere.apache.org/community/en/contribute/icla/)
 
 ### 8. wait for secretary to create a new account
 
