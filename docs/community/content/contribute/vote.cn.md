@@ -1,6 +1,6 @@
 +++ 
 title = "接收新的提交者的流程指南" 
-weight = 11 
+weight = 12 
 chapter = true 
 +++
 
@@ -86,6 +86,7 @@ Best wishes,
 
 ```
 ### 5. 准committer回复邀请函内容，回复表达同意与感谢
+
 ### 6. PMC做出回复
 ```
 Hi (提名者),
@@ -116,7 +117,7 @@ https://www.apache.org/foundation/policies/conduct.html
 Here is the guideline for all of the ShardingSphere committers:
 https://shardingsphere.apache.org/community/en/contribute/committer/
 ```
-### 7. 准committer签署icla 具体步骤参考签署icla指南
+### 7. 准committer签署icla 具体步骤参考[签署icla指南](/cn/icla/)
 
 ### 8. 等待secretary通知创建账户
 
