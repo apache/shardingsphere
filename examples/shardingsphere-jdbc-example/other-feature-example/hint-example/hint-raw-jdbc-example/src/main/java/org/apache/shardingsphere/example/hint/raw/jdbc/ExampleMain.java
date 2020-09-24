@@ -33,7 +33,7 @@ public final class ExampleMain {
     
     private static final HintType TYPE = HintType.DATABASE_TABLES;
 //    private static final HintType TYPE = HintType.DATABASE_ONLY;
-//    private static final HintType TYPE = HintType.MASTER_ONLY;
+//    private static final HintType TYPE = HintType.PRIMARY_ONLY;
     
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = getDataSource();
@@ -49,7 +49,7 @@ public final class ExampleMain {
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/hint-databases-tables.yaml"));
             case DATABASE_ONLY:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/hint-databases-only.yaml"));
-            case MASTER_ONLY:
+            case PRIMARY_ONLY:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/hint-master-only.yaml"));
             default:
                 throw new UnsupportedOperationException("unsupported type");
@@ -85,7 +85,7 @@ public final class ExampleMain {
             case DATABASE_ONLY:
                 hintManager.setDatabaseShardingValue(1L);
                 return;
-            case MASTER_ONLY:
+            case PRIMARY_ONLY:
                 hintManager.setMasterRouteOnly();
                 return;
             default:
