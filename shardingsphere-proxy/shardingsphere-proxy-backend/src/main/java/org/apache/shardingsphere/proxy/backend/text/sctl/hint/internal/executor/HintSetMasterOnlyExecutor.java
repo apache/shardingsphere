@@ -30,7 +30,7 @@ public final class HintSetMasterOnlyExecutor extends AbstractHintUpdateExecutor<
     @Override
     public BackendResponse execute(final HintSetMasterOnlyCommand command) {
         if (command.isMasterOnly()) {
-            HintManagerHolder.get().setMasterRouteOnly();
+            HintManagerHolder.get().setPrimaryRouteOnly();
         }
         return new UpdateResponse();
     }

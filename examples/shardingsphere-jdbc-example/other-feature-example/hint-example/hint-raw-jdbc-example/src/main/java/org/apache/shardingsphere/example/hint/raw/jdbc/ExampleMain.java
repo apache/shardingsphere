@@ -86,7 +86,7 @@ public final class ExampleMain {
                 hintManager.setDatabaseShardingValue(1L);
                 return;
             case PRIMARY_ONLY:
-                hintManager.setMasterRouteOnly();
+                hintManager.setPrimaryRouteOnly();
                 return;
             default:
                 throw new UnsupportedOperationException("unsupported type");

@@ -49,7 +49,7 @@ public final class PrimaryReplicaReplicationDataSourceRouter {
     }
     
     private boolean isMasterRoute(final SQLStatement sqlStatement) {
-        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || PrimaryVisitedManager.getPrimaryVisited() || HintManager.isMasterRouteOnly();
+        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || PrimaryVisitedManager.getPrimaryVisited() || HintManager.isPrimaryRouteOnly();
     }
     
     private boolean containsLockSegment(final SQLStatement sqlStatement) {

@@ -96,7 +96,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         String sql = "sctl:hint set master_only=true ";
         ShardingCTLHintBackendHandler shardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         assertThat(shardingCTLHintBackendHandler.execute(), instanceOf(UpdateResponse.class));
-        assertTrue(HintManager.isMasterRouteOnly());
+        assertTrue(HintManager.isPrimaryRouteOnly());
     }
     
     @Test
