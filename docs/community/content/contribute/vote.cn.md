@@ -117,7 +117,7 @@ https://www.apache.org/foundation/policies/conduct.html
 Here is the guideline for all of the ShardingSphere committers:
 https://shardingsphere.apache.org/community/en/contribute/committer/
 ```
-### 7. 准committer签署icla 具体步骤参考[签署icla指南](/cn/icla/)
+### 7. 准committer签署icla 具体步骤参考[签署iCLA指南](https://shardingsphere.apache.org/community/cn/contribute/icla/)
 
 ### 8. 等待secretary通知创建账户
 
