@@ -176,9 +176,9 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     }
     
     /**
-     * Judge is use default columns or not.
+     * Judge whether use default columns or not.
      *
-     * @return is use default columns or not
+     * @return whether use default columns or not
      */
     public boolean useDefaultColumns() {
         InsertStatement insertStatement = getSqlStatement();
