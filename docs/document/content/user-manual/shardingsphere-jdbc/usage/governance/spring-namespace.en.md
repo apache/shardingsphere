@@ -44,9 +44,8 @@ weight = 4
      </util:properties>
      <governance:reg-center id="regCenter" type="Zookeeper" server-lists="localhost:2181" />
      <governance:config-center id="configCenter" type="ZooKeeper" server-lists="localhost:2182" />
-     <governance:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" reg-center-ref="regCenter" config-center-ref="configCenter" overwrite="true" />
-     <governance:slave-data-source id="masterSlaveDataSource" data-source-ref="realMasterSlaveDataSource" reg-center-ref="regCenter" config-center-ref="configCenter" overwrite="true" />
-     <governance:data-source id="encryptDataSource" data-source-ref="realEncryptDataSource" reg-center-ref="regCenter" config-center-ref="configCenter" overwrite="true" />
+     <governance:data-source id="shardingDatabasesTablesDataSource" data-source-names="realShardingDatabasesTablesDataSource" reg-center-ref="regCenter" config-center-ref="configCenter" overwrite="true" />
+     <governance:data-source id="encryptDataSource" data-source-names="realEncryptDataSource" reg-center-ref="regCenter" config-center-ref="configCenter" overwrite="true" />
 </beans>
 ```
 

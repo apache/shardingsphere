@@ -49,12 +49,12 @@ chapter = true
 | ------------------------- | --------------------- |
 | RouteDecorator            | 用于处理路由结果        |
 
-| *已知实现类*                        | *详细说明*                |
-| ---------------------------------- | ------------------------ |
-| ShardingRouteDecorator             | 用于处理分片路由结果       |
-| MasterSlaveRouteDecorator          | 用于处理读写分离路由结果    |
-| ConsensusReplicationRouteDecorator | 用于处理强一致多副本路由结果 |
-| ShadowRouteDecorator               | 用于处理影子库路由结果      |
+| *已知实现类*                             | *详细说明*                |
+| --------------------------------------- | ------------------------ |
+| ShardingRouteDecorator                  | 用于处理分片路由结果       |
+| PrimaryReplicaReplicationRouteDecorator | 用于处理读写分离路由结果    |
+| ConsensusReplicationRouteDecorator      | 用于处理强一致多副本路由结果 |
+| ShadowRouteDecorator                    | 用于处理影子库路由结果      |
 
 ## SQLRewriteContextDecorator
 

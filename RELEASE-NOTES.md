@@ -287,7 +287,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 1. [ISSUE #1015](https://github.com/apache/shardingsphere/issues/1015) Support SQL like `SELECT id, COUNT(*) FROM table GROUP BY 1,2`
 1. [ISSUE #1120](https://github.com/apache/shardingsphere/issues/1120) Derived columns of `GROUP BY / ORDER BY` appear in query result
 1. [ISSUE #1186](https://github.com/apache/shardingsphere/issues/1186) Dead lock may occur on MEMORY_STRICTLY mode when get connection on concurrency environment
-1. [ISSUE #1265](https://github.com/apache/shardingsphere/issues/1265) RoundRobinMasterSlaveLoadBalanceAlgorithm throw an ArrayIndexOutOfBoundsException when AtomicInteger overflow
+1. [ISSUE #1265](https://github.com/apache/shardingsphere/issues/1265) RoundRobinReplicaLoadBalanceAlgorithm throw an ArrayIndexOutOfBoundsException when AtomicInteger overflow
 
 #### ShardingSphere-JDBC
 

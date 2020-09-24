@@ -87,7 +87,7 @@ rules:
 - !SHARDING
   xxx
   
-- !MASTERSLAVE
+- !PRIMARY_REPLICA_REPLICATION
   xxx
   
 - !ENCRYPT

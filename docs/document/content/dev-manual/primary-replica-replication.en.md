@@ -1,17 +1,17 @@
 +++
 pre = "<b>5.5. </b>"
-title = "Primary-replica Replication"
+title = "Primary-Replica Replication"
 weight = 5
 chapter = true
 +++
 
-## MasterSlaveLoadBalanceAlgorithm
+## ReplicaLoadBalanceAlgorithm
 
-| *SPI Name*                                | *Description*                                         |
-| ----------------------------------------- | ----------------------------------------------------- |
-| MasterSlaveLoadBalanceAlgorithm           | Load balance algorithm of slave databases             |
+| *SPI Name*                            | *Description*                                           |
+| ------------------------------------- | ------------------------------------------------------- |
+| ReplicaLoadBalanceAlgorithm           | Load balance algorithm of replica databases             |
 
-| *Implementation Class*                    | *Description*                                         |
-| ----------------------------------------- | ----------------------------------------------------- |
-| RoundRobinMasterSlaveLoadBalanceAlgorithm | Round robin load balance algorithm of slave databases |
-| RandomMasterSlaveLoadBalanceAlgorithm     | Random load balance algorithm of slave databases      |
+| *Implementation Class*                | *Description*                                           |
+| ------------------------------------- | ------------------------------------------------------- |
+| RoundRobinReplicaLoadBalanceAlgorithm | Round robin load balance algorithm of replica databases |
+| RandomReplicaLoadBalanceAlgorithm     | Random load balance algorithm of replica databases      |
