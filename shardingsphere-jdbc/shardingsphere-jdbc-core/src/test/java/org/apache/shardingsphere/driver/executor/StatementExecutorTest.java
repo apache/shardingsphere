@@ -196,7 +196,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement result = mock(Statement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:ds_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:primary_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(result.getConnection()).thenReturn(connection);
         return result;

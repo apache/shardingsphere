@@ -23,7 +23,7 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
-       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
+       xmlns:primary-replica-replication="http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context
@@ -34,8 +34,8 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/masterslave
-                           http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication
+                           http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication/primary-replica-replication.xsd
                            ">
     <context:annotation-config />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.jpa"/>
@@ -57,59 +57,59 @@
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
     <tx:annotation-driven />
     
-    <bean id="demo_ds_master_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+    <bean id="demo_primary_ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_0?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds_0?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
         <property name="maximumPoolSize" value="16"/>
     </bean>
     
-    <bean id="demo_ds_master_0_slave_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+    <bean id="demo_primary_ds_0_replica_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_0_slave_0?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds_0_replica_0?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
         <property name="maximumPoolSize" value="16"/>
     </bean>
     
-    <bean id="demo_ds_master_0_slave_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+    <bean id="demo_primary_ds_0_replica_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_0_slave_1?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds_0_replica_1?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
         <property name="maximumPoolSize" value="16"/>
     </bean>
     
-    <bean id="demo_ds_master_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+    <bean id="demo_primary_ds_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_1?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds_1?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
         <property name="maximumPoolSize" value="16"/>
     </bean>
     
-    <bean id="demo_ds_master_1_slave_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+    <bean id="demo_primary_ds_1_replica_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_1_slave_0?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds_1_replica_0?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
         <property name="maximumPoolSize" value="16"/>
     </bean>
     
-    <bean id="demo_ds_master_1_slave_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+    <bean id="demo_primary_ds_1_replica_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_1_slave_1?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds_1_replica_1?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
         <property name="maximumPoolSize" value="16"/>
     </bean>
     
-    <master-slave:load-balance-algorithm id="randomStrategy" type="RANDOM" />
+    <primary-replica-replication:load-balance-algorithm id="randomStrategy" type="RANDOM" />
     
     <sharding:sharding-algorithm id="databaseAlgorithm" type="INLINE">
         <props>
-            <prop key="algorithm-expression">demo_ds_ms_${user_id % 2}</prop>
+            <prop key="algorithm-expression">demo_pr_ds_${user_id % 2}</prop>
         </props>
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseAlgorithm" />
@@ -139,8 +139,8 @@
     
     <sharding:rule id="shardingRule">
         <sharding:table-rules>
-            <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds_ms_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generate-strategy-ref="orderKeyGenerator" />
-            <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_ms_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generate-strategy-ref="itemKeyGenerator" />
+            <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_pr_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generate-strategy-ref="orderKeyGenerator" />
+            <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_pr_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generate-strategy-ref="itemKeyGenerator" />
         </sharding:table-rules>
         <sharding:binding-table-rules>
             <sharding:binding-table-rule logic-tables="t_order,t_order_item"/>
@@ -149,12 +149,12 @@
             <sharding:broadcast-table-rule table="t_address"/>
         </sharding:broadcast-table-rules>
     </sharding:rule>
-    <master-slave:rule id="masterSlaveRule">
-        <master-slave:data-source-rule id="demo_ds_ms_0" master-data-source-name="demo_ds_master_0" slave-data-source-names="demo_ds_master_0_slave_0, demo_ds_master_0_slave_1" load-balance-algorithm-ref="randomStrategy" />
-        <master-slave:data-source-rule id="demo_ds_ms_1" master-data-source-name="demo_ds_master_1" slave-data-source-names="demo_ds_master_1_slave_0, demo_ds_master_1_slave_1" load-balance-algorithm-ref="randomStrategy" />
-    </master-slave:rule>
+    <primary-replica-replication:rule id="primaryReplicaReplicationRule">
+        <primary-replica-replication:data-source-rule id="demo_pr_ds_0" primary-data-source-name="demo_primary_ds_0" replica-data-source-names="demo_primary_ds_0_replica_0, demo_primary_ds_0_replica_1" load-balance-algorithm-ref="randomStrategy" />
+        <primary-replica-replication:data-source-rule id="demo_pr_ds_1" primary-data-source-name="demo_primary_ds_1" replica-data-source-names="demo_primary_ds_1_replica_0, demo_primary_ds_1_replica_1" load-balance-algorithm-ref="randomStrategy" />
+    </primary-replica-replication:rule>
     
-    <shardingsphere:data-source id="shardingDataSource" data-source-names="demo_ds_master_0,demo_ds_master_1,demo_ds_master_0_slave_0, demo_ds_master_0_slave_1,demo_ds_master_1_slave_0, demo_ds_master_1_slave_1" rule-refs="shardingRule, masterSlaveRule">
+    <shardingsphere:data-source id="shardingDataSource" data-source-names="demo_primary_ds_0,demo_primary_ds_1,demo_primary_ds_0_replica_0, demo_primary_ds_0_replica_1,demo_primary_ds_1_replica_0, demo_primary_ds_1_replica_1" rule-refs="shardingRule, primaryReplicaReplicationRule">
         <props>
             <prop key="sql-show">false</prop>
         </props>

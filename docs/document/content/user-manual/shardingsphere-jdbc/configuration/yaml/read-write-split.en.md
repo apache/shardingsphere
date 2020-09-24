@@ -9,10 +9,10 @@ weight = 2
 dataSource: # Omit data source configuration
 
 rules:
-- !MASTER_SLAVE
+- !PRIMARY_REPLICA_REPLICATION
   dataSources:
     <data-source-name> (+): # Logic data source name of master slave
-      masterDataSourceName: # Master data source name
+      primaryDataSourceName: # Primary data source name
       slaveDataSourceNames: 
         - <slave-data-source-name> (+) # Slave data source name
       loadBalancerName: # Load balance algorithm name

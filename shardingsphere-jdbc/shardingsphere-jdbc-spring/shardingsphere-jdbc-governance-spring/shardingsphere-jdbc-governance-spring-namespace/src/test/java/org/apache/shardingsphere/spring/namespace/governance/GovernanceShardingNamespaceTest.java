@@ -43,7 +43,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/shardingGovernance.xml")
+@ContextConfiguration(locations = "classpath:META-INF/rdb/sharding-governance.xml")
 public class GovernanceShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @BeforeClass

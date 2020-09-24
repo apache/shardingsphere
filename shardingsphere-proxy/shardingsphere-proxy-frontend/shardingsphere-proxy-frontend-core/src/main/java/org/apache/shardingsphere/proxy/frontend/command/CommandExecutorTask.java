@@ -27,7 +27,7 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.hook.RootInvokeHook;
 import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
-import org.apache.shardingsphere.replication.primaryreplica.route.engine.impl.MasterVisitedManager;
+import org.apache.shardingsphere.replication.primaryreplica.route.engine.impl.PrimaryVisitedManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -120,7 +120,7 @@ public final class CommandExecutorTask implements Runnable {
     
     private Collection<SQLException> closeExecutionResources() {
         Collection<SQLException> result = new LinkedList<>();
-        MasterVisitedManager.clear();
+        PrimaryVisitedManager.clear();
         result.addAll(backendConnection.closeResultSets());
         result.addAll(backendConnection.closeStatements());
         return result;

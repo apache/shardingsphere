@@ -23,5 +23,5 @@
         <column name="item_id" />
         <column name="stateName" />
     </metadata>
-    <row values="1000,10,init_slave,100000,null" />
+    <row values="1000,10,init_replica,100000,null" />
 </dataset>
