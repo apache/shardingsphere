@@ -35,7 +35,7 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
                 each.getConnection().close();
             }
         } catch (final SQLException ex) {
-            throw new PrepareFailedException("Datasources can't connected!", ex);
+            throw new PrepareFailedException("Data Sources can't connected!", ex);
         }
     }
 }

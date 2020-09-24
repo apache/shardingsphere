@@ -42,27 +42,27 @@ public final class DataSourceManager implements AutoCloseable {
     private final Map<DataSourceConfiguration, DataSourceWrapper> cachedDataSources = new ConcurrentHashMap<>();
 
     @Getter
-    private final Map<DataSourceConfiguration, DataSourceWrapper> sourceDatasources = new ConcurrentHashMap<>();
+    private final Map<DataSourceConfiguration, DataSourceWrapper> sourceDataSources = new ConcurrentHashMap<>();
 
     public DataSourceManager(final List<SyncConfiguration> syncConfigs) {
-        createDatasources(syncConfigs);
+        createDataSources(syncConfigs);
     }
     
-    private void createDatasources(final List<SyncConfiguration> syncConfigs) {
-        createSourceDatasources(syncConfigs);
-        createTargetDatasources(syncConfigs.iterator().next().getImporterConfiguration().getDataSourceConfiguration());
+    private void createDataSources(final List<SyncConfiguration> syncConfigs) {
+        createSourceDataSources(syncConfigs);
+        createTargetDataSources(syncConfigs.iterator().next().getImporterConfiguration().getDataSourceConfiguration());
     }
     
-    private void createSourceDatasources(final List<SyncConfiguration> syncConfigs) {
+    private void createSourceDataSources(final List<SyncConfiguration> syncConfigs) {
         for (SyncConfiguration syncConfiguration : syncConfigs) {
             DataSourceConfiguration dataSourceConfig = syncConfiguration.getDumperConfiguration().getDataSourceConfiguration();
             DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
             cachedDataSources.put(dataSourceConfig, dataSource);
-            sourceDatasources.put(dataSourceConfig, dataSource);
+            sourceDataSources.put(dataSourceConfig, dataSource);
         }
     }
     
-    private void createTargetDatasources(final DataSourceConfiguration dataSourceConfig) {
+    private void createTargetDataSources(final DataSourceConfiguration dataSourceConfig) {
         cachedDataSources.put(dataSourceConfig, dataSourceFactory.newInstance(dataSourceConfig));
     }
     
@@ -99,6 +99,6 @@ public final class DataSourceManager implements AutoCloseable {
             }
         }
         cachedDataSources.clear();
-        sourceDatasources.clear();
+        sourceDataSources.clear();
     }
 }

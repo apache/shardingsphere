@@ -66,7 +66,7 @@ public final class ShardingScalingJobPreparer {
     public void prepare(final ShardingScalingJob shardingScalingJob) {
         String databaseType = shardingScalingJob.getSyncConfigurations().get(0).getDumperConfiguration().getDataSourceConfiguration().getDatabaseType().getName();
         try (DataSourceManager dataSourceManager = new DataSourceManager(shardingScalingJob.getSyncConfigurations())) {
-            checkDatasources(databaseType, dataSourceManager);
+            checkDataSources(databaseType, dataSourceManager);
             ResumeBreakPointManager resumeBreakPointManager = getResumeBreakPointManager(databaseType, shardingScalingJob);
             if (resumeBreakPointManager.isResumable()) {
                 syncPositionResumer.resumePosition(shardingScalingJob, dataSourceManager, resumeBreakPointManager);
@@ -86,11 +86,11 @@ public final class ShardingScalingJobPreparer {
         return ResumeBreakPointManagerFactory.newInstance(databaseType, String.format("/%s/position/%d", shardingScalingJob.getJobName(), shardingScalingJob.getShardingItem()));
     }
     
-    private void checkDatasources(final String databaseType, final DataSourceManager dataSourceManager) {
+    private void checkDataSources(final String databaseType, final DataSourceManager dataSourceManager) {
         DataSourceChecker dataSourceChecker = DataSourceCheckerCheckerFactory.newInstanceDataSourceChecker(databaseType);
         dataSourceChecker.checkConnection(dataSourceManager.getCachedDataSources().values());
-        dataSourceChecker.checkPrivilege(dataSourceManager.getSourceDatasources().values());
-        dataSourceChecker.checkVariable(dataSourceManager.getSourceDatasources().values());
+        dataSourceChecker.checkPrivilege(dataSourceManager.getSourceDataSources().values());
+        dataSourceChecker.checkVariable(dataSourceManager.getSourceDataSources().values());
     }
     
     private void initInventoryDataTasks(final ShardingScalingJob shardingScalingJob, final DataSourceManager dataSourceManager) {

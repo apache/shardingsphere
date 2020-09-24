@@ -29,15 +29,15 @@ public final class DataConsistencyCheckResult {
     
     private final long sourceCount;
     
-    private final long destinationCount;
+    private final long targetCount;
     
     private final boolean countValid;
     
     private boolean dataValid;
     
-    public DataConsistencyCheckResult(final long sourceCount, final long destinationCount) {
+    public DataConsistencyCheckResult(final long sourceCount, final long targetCount) {
         this.sourceCount = sourceCount;
-        this.destinationCount = destinationCount;
-        countValid = sourceCount == destinationCount;
+        this.targetCount = targetCount;
+        countValid = sourceCount == targetCount;
     }
 }

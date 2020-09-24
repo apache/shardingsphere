@@ -59,7 +59,7 @@ public final class AbstractDataConsistencyCheckerTest {
         initTableData(shardingScalingJob.getSyncConfigurations().get(0).getImporterConfiguration().getDataSourceConfiguration());
         Map<String, DataConsistencyCheckResult> resultMap = dataConsistencyChecker.countCheck();
         assertTrue(resultMap.get("t1").isCountValid());
-        assertThat(resultMap.get("t1").getSourceCount(), is(resultMap.get("t1").getDestinationCount()));
+        assertThat(resultMap.get("t1").getSourceCount(), is(resultMap.get("t1").getTargetCount()));
     }
     
     @SneakyThrows(SQLException.class)

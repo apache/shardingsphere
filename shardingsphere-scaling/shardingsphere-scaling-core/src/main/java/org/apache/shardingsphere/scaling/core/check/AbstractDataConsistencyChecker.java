@@ -62,10 +62,10 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
     
     private DataConsistencyCheckResult countCheck(final String table) {
         try (DataSourceWrapper sourceDataSource = getSourceDataSource();
-             DataSourceWrapper destinationDataSource = getDestinationDataSource()) {
+             DataSourceWrapper targetDataSource = getTargetDataSource()) {
             long sourceCount = count(sourceDataSource, table);
-            long destinationCount = count(destinationDataSource, table);
-            return new DataConsistencyCheckResult(sourceCount, destinationCount);
+            long targetCount = count(targetDataSource, table);
+            return new DataConsistencyCheckResult(sourceCount, targetCount);
         } catch (IOException ex) {
             throw new DataCheckFailException(String.format("table %s count check failed.", table), ex);
         }
@@ -85,7 +85,7 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
     protected DataSourceWrapper getSourceDataSource() {
         try {
             Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(
-                    ConfigurationYamlConverter.loadDataSourceConfigurations(shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getSourceDatasource()));
+                    ConfigurationYamlConverter.loadDataSourceConfigurations(shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getSourceDataSource()));
             ShardingRuleConfiguration ruleConfiguration = ConfigurationYamlConverter.loadShardingRuleConfiguration(shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getSourceRule());
             return new DataSourceWrapper(ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Lists.newArrayList(ruleConfiguration), null));
         } catch (SQLException ex) {
@@ -93,8 +93,8 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
         }
     }
     
-    protected DataSourceWrapper getDestinationDataSource() {
-        RuleConfiguration.YamlDataSourceParameter parameter = shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getDestinationDataSources();
+    protected DataSourceWrapper getTargetDataSource() {
+        RuleConfiguration.YamlDataSourceParameter parameter = shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getTargetDataSources();
         return new DataSourceWrapper(new DataSourceFactory().newInstance(new JDBCDataSourceConfiguration(parameter.getUrl(), parameter.getUsername(), parameter.getPassword())));
     }
     

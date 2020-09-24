@@ -83,24 +83,16 @@ public final class MySQLDataSourceCheckerTest {
         verify(preparedStatement, Mockito.times(1)).executeQuery();
     }
     
-    @Test
+    @Test(expected = PrepareFailedException.class)
     public void assertCheckPrivilegeLackPrivileges() throws SQLException {
         when(resultSet.next()).thenReturn(false);
-        try {
-            dataSourceChecker.checkPrivilege(dataSources);
-        } catch (final PrepareFailedException ex) {
-            assertThat(ex.getMessage(), is("Source datasource is lack of REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges."));
-        }
+        dataSourceChecker.checkPrivilege(dataSources);
     }
     
-    @Test
+    @Test(expected = PrepareFailedException.class)
     public void assertCheckPrivilegeFailure() throws SQLException {
         when(resultSet.next()).thenThrow(new SQLException(""));
-        try {
-            dataSourceChecker.checkPrivilege(dataSources);
-        } catch (final PrepareFailedException ex) {
-            assertThat(ex.getMessage(), is("Source datasource check privileges failed."));
-        }
+        dataSourceChecker.checkPrivilege(dataSources);
     }
     
     @Test
@@ -111,24 +103,16 @@ public final class MySQLDataSourceCheckerTest {
         verify(preparedStatement, Mockito.times(2)).executeQuery();
     }
     
-    @Test
+    @Test(expected = PrepareFailedException.class)
     public void assertCheckVariableWithWrongVariable() throws SQLException {
         when(resultSet.next()).thenReturn(true, true);
         when(resultSet.getString(2)).thenReturn("OFF", "ROW");
-        try {
-            dataSourceChecker.checkVariable(dataSources);
-        } catch (final PrepareFailedException ex) {
-            assertThat(ex.getMessage(), is("Source datasource required LOG_BIN = ON, now is OFF"));
-        }
+        dataSourceChecker.checkVariable(dataSources);
     }
     
-    @Test
+    @Test(expected = PrepareFailedException.class)
     public void assertCheckVariableFailure() throws SQLException {
         when(resultSet.next()).thenThrow(new SQLException(""));
-        try {
-            dataSourceChecker.checkVariable(dataSources);
-        } catch (final PrepareFailedException ex) {
-            assertThat(ex.getMessage(), is("Source datasource check variables failed."));
-        }
+        dataSourceChecker.checkVariable(dataSources);
     }
 }

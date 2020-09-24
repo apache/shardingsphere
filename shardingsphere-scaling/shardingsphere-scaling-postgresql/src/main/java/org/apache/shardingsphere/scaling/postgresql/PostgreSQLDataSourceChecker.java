@@ -41,13 +41,13 @@ public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker
                     if (tables.next()) {
                         tableName = tables.getString(3);
                     } else {
-                        throw new PrepareFailedException("No tables find in the source datasource");
+                        throw new PrepareFailedException("No tables find in the source data source");
                     }
                     connection.prepareStatement(String.format("SELECT * FROM %s LIMIT 1", tableName)).executeQuery();
                 }
             }
         } catch (final SQLException ex) {
-            throw new PrepareFailedException("Datasources check failed!", ex);
+            throw new PrepareFailedException("Data Sources check failed!", ex);
         }
     }
     

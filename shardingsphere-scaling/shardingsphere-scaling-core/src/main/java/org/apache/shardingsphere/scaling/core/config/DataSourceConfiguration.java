@@ -33,9 +33,9 @@ public interface DataSourceConfiguration {
     DatabaseType getDatabaseType();
     
     /**
-     * Get datasource metadata.
+     * Get data source metadata.
      *
-     * @return datasource metadata.
+     * @return data source metadata.
      */
     DataSourceMetaData getDataSourceMetaData();
 }

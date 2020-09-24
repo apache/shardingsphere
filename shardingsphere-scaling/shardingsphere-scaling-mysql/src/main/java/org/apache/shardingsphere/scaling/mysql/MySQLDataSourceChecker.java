@@ -67,9 +67,9 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
                 }
             }
         } catch (final SQLException ex) {
-            throw new PrepareFailedException("Source datasource check privileges failed.", ex);
+            throw new PrepareFailedException("Source data source check privileges failed.", ex);
         }
-        throw new PrepareFailedException("Source datasource is lack of REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges.");
+        throw new PrepareFailedException("Source data source is lack of REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges.");
     }
     
     private boolean matchPrivileges(final String privilege) {
@@ -89,7 +89,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
                 checkVariable(connection, entry);
             }
         } catch (final SQLException ex) {
-            throw new PrepareFailedException("Source datasource check variables failed.", ex);
+            throw new PrepareFailedException("Source data source check variables failed.", ex);
         }
     }
     
@@ -99,7 +99,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
             resultSet.next();
             String value = resultSet.getString(2);
             if (!entry.getValue().equalsIgnoreCase(value)) {
-                throw new PrepareFailedException(String.format("Source datasource required %s = %s, now is %s", entry.getKey(), entry.getValue(), value));
+                throw new PrepareFailedException(String.format("Source data source required %s = %s, now is %s", entry.getKey(), entry.getValue(), value));
             }
         }
     }
