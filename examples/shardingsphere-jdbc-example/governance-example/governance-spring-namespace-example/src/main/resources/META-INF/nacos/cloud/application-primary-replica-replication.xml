@@ -32,20 +32,20 @@
     <import resource="classpath*:META-INF/nacos/registry-center.xml" />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     
-    <governance:data-source id="masterSlaveDataSource" reg-center-ref="regCenter"  data-source-names="" rule-refs=""/>
+    <governance:data-source id="primaryReplicaReplicationDataSource" reg-center-ref="regCenter" data-source-names="" rule-refs="" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="masterSlaveDataSource" />
+        <property name="dataSource" ref="primaryReplicaReplicationDataSource" />
     </bean>
     <tx:annotation-driven />
     
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="masterSlaveDataSource"/>
-        <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml"/>
+        <property name="dataSource" ref="primaryReplicaReplicationDataSource" />
+        <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml" />
     </bean>
     
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="org.apache.shardingsphere.example.core.mybatis.repository"/>
-        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="basePackage" value="org.apache.shardingsphere.example.core.mybatis.repository" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
     </bean>
 </beans>

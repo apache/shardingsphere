@@ -24,7 +24,7 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/governance
                            http://shardingsphere.apache.org/schema/shardingsphere/governance/governance.xsd 
                            ">
-    <import resource="namespace/sharding-master-slave-namespace.xml" />
+    <import resource="namespace/sharding-primary-replica-replication-namespace.xml" />
     
     <governance:reg-center id="regCenter" type="TestRegistry" server-lists="localhost:3181">
         <props>
@@ -32,7 +32,6 @@
             <prop key="operation-timeout-milliseconds">1000</prop>
         </props>
     </governance:reg-center>
-    
-    <governance:data-source id="dataSourceByDefaultStrategyGovernance" data-source-names="dbtbl_primary_0,dbtbl_0_replica_0,dbtbl_0_replica_1,dbtbl_primary_1,dbtbl_1_replica_0,dbtbl_1_replica_1" rule-refs="masterSlaveShardingDataSourceByDefaultStrategyShardingRule, masterSlaveShardingDataSourceByDefaultStrategyMasterSlaveRule" reg-center-ref="regCenter" />
-    <governance:data-source id="dataSourceByUserStrategyGovernance" data-source-names="dbtbl_primary_0,dbtbl_0_replica_0,dbtbl_0_replica_1,dbtbl_primary_1,dbtbl_1_replica_0,dbtbl_1_replica_1" rule-refs="masterSlaveShardingDataSourceByUserStrategyShardingRule, masterSlaveShardingDataSourceByUserStrategyMasterSlaveRule" reg-center-ref="regCenter" />
+    <governance:data-source id="dataSourceByDefaultStrategyGovernance" data-source-names="dbtbl_primary_0,dbtbl_0_replica_0,dbtbl_0_replica_1,dbtbl_primary_1,dbtbl_1_replica_0,dbtbl_1_replica_1" rule-refs="primaryReplicaReplicationShardingDataSourceByDefaultStrategyShardingRule, primaryReplicaReplicationShardingDataSourceByDefaultStrategy" reg-center-ref="regCenter" />
+    <governance:data-source id="dataSourceByUserStrategyGovernance" data-source-names="dbtbl_primary_0,dbtbl_0_replica_0,dbtbl_0_replica_1,dbtbl_primary_1,dbtbl_1_replica_0,dbtbl_1_replica_1" rule-refs="primaryReplicaReplicationShardingDataSourceByUserStrategyShardingRule, primaryReplicaReplicationShardingDataSourceByUserStrategy" reg-center-ref="regCenter" />
 </beans>
