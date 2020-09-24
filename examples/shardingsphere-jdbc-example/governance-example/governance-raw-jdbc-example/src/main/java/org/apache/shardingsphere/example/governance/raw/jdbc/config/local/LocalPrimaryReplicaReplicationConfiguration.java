@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.raw.jdbc.config;
+package org.apache.shardingsphere.example.governance.raw.jdbc.config.local;
 
-import org.apache.shardingsphere.replication.primaryreplica.api.config.rule.PrimaryReplicaReplicationDataSourceRuleConfiguration;
-import org.apache.shardingsphere.replication.primaryreplica.api.config.PrimaryReplicaReplicationRuleConfiguration;
+import org.apache.shardingsphere.driver.governance.api.GovernanceShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.replication.primaryreplica.api.config.PrimaryReplicaReplicationRuleConfiguration;
+import org.apache.shardingsphere.replication.primaryreplica.api.config.rule.PrimaryReplicaReplicationDataSourceRuleConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -31,18 +32,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public final class MasterSlaveConfiguration implements ExampleConfiguration {
+public final class LocalPrimaryReplicaReplicationConfiguration implements ExampleConfiguration {
+    
+    private final GovernanceConfiguration governanceConfig;
+    
+    public LocalPrimaryReplicaReplicationConfiguration(final GovernanceConfiguration governanceConfig) {
+        this.governanceConfig = governanceConfig;
+    }
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        PrimaryReplicaReplicationDataSourceRuleConfiguration dataSourceConfiguration = new PrimaryReplicaReplicationDataSourceRuleConfiguration(
+        PrimaryReplicaReplicationDataSourceRuleConfiguration dataSourceConfig = new PrimaryReplicaReplicationDataSourceRuleConfiguration(
                 "demo_primary_replica_ds", "demo_primary_ds", Arrays.asList("demo_replica_ds_0", "demo_replica_ds_1"), null);
-        PrimaryReplicaReplicationRuleConfiguration masterSlaveRuleConfig = new PrimaryReplicaReplicationRuleConfiguration(Collections.singleton(dataSourceConfiguration), Collections.emptyMap());
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(masterSlaveRuleConfig), new Properties());
+        PrimaryReplicaReplicationRuleConfiguration ruleConfig = new PrimaryReplicaReplicationRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap());
+        return GovernanceShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(ruleConfig), new Properties(), governanceConfig);
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>();
+        Map<String, DataSource> result = new HashMap<>(3, 1);
         result.put("demo_primary_ds", DataSourceUtil.createDataSource("demo_primary_ds"));
         result.put("demo_replica_ds_0", DataSourceUtil.createDataSource("demo_replica_ds_0"));
         result.put("demo_replica_ds_1", DataSourceUtil.createDataSource("demo_replica_ds_1"));

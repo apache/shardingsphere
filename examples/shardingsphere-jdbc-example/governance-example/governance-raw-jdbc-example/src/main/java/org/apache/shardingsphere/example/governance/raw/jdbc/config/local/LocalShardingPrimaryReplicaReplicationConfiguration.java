@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.raw.jdbc.config;
+package org.apache.shardingsphere.example.governance.raw.jdbc.config.local;
 
-import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.governance.api.GovernanceShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.replication.primaryreplica.api.config.PrimaryReplicaReplicationRuleConfiguration;
 import org.apache.shardingsphere.replication.primaryreplica.api.config.rule.PrimaryReplicaReplicationDataSourceRuleConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -31,33 +33,33 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
-public final class ShardingMasterSlaveConfigurationPrecise implements ExampleConfiguration {
+public final class LocalShardingPrimaryReplicaReplicationConfiguration implements ExampleConfiguration {
+    
+    private final GovernanceConfiguration governanceConfig;
+    
+    public LocalShardingPrimaryReplicaReplicationConfiguration(final GovernanceConfiguration governanceConfig) {
+        this.governanceConfig = governanceConfig;
+    }
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createMasterSlaveRuleConfiguration()), new Properties());
+        Collection<RuleConfiguration> configs = new LinkedList<>();
+        configs.add(getShardingRuleConfiguration());
+        configs.add(getPrimaryReplicaReplicationRuleConfiguration());
+        return GovernanceShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configs, new Properties(), governanceConfig);
     }
     
-    private static Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>();
-        result.put("demo_primary_ds_0", DataSourceUtil.createDataSource("demo_primary_ds_0"));
-        result.put("demo_primary_ds_0_replica_0", DataSourceUtil.createDataSource("demo_primary_ds_0_replica_0"));
-        result.put("demo_primary_ds_0_replica_1", DataSourceUtil.createDataSource("demo_primary_ds_0_replica_1"));
-        result.put("demo_primary_ds_1", DataSourceUtil.createDataSource("demo_primary_ds_1"));
-        result.put("demo_primary_ds_1_replica_0", DataSourceUtil.createDataSource("demo_primary_ds_1_replica_0"));
-        result.put("demo_primary_ds_1_replica_1", DataSourceUtil.createDataSource("demo_primary_ds_1_replica_1"));
-        return result;
-    }
-    
-    private ShardingRuleConfiguration createShardingRuleConfiguration() {
+    private ShardingRuleConfiguration getShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTables().add(createOrderTableRuleConfiguration());
-        result.getTables().add(createOrderItemTableRuleConfiguration());
+        result.getTables().add(getOrderTableRuleConfiguration());
+        result.getTables().add(getOrderItemTableRuleConfiguration());
         result.getBindingTableGroups().add("t_order, t_order_item");
         result.getBroadcastTables().add("t_address");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "standard_test_db"));
@@ -68,19 +70,21 @@ public final class ShardingMasterSlaveConfigurationPrecise implements ExampleCon
         return result;
     }
     
-    private static ShardingTableRuleConfiguration createOrderTableRuleConfiguration() {
+    private ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
+        result.setKeyGenerateStrategy(getKeyGeneratorConfiguration());
         return result;
     }
     
-    private static ShardingTableRuleConfiguration createOrderItemTableRuleConfiguration() {
-        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
-        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_item_id", "snowflake"));
-        return result;
+    private ShardingTableRuleConfiguration getOrderItemTableRuleConfiguration() {
+        return new ShardingTableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
     }
     
-    private static PrimaryReplicaReplicationRuleConfiguration createMasterSlaveRuleConfiguration() {
+    private static KeyGenerateStrategyConfiguration getKeyGeneratorConfiguration() {
+        return new KeyGenerateStrategyConfiguration("order_id", "snowflake");
+    }
+    
+    private PrimaryReplicaReplicationRuleConfiguration getPrimaryReplicaReplicationRuleConfiguration() {
         PrimaryReplicaReplicationDataSourceRuleConfiguration dataSourceConfiguration1 = new PrimaryReplicaReplicationDataSourceRuleConfiguration(
                 "ds_0", "demo_primary_ds_0", Arrays.asList("demo_primary_ds_0_replica_0", "demo_primary_ds_0_replica_1"), null);
         PrimaryReplicaReplicationDataSourceRuleConfiguration dataSourceConfiguration2 = new PrimaryReplicaReplicationDataSourceRuleConfiguration(
@@ -91,6 +95,17 @@ public final class ShardingMasterSlaveConfigurationPrecise implements ExampleCon
     private static Properties getProperties() {
         Properties result = new Properties();
         result.setProperty("worker-id", "123");
+        return result;
+    }
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>(6, 1);
+        result.put("demo_primary_ds_0", DataSourceUtil.createDataSource("demo_primary_ds_0"));
+        result.put("demo_primary_ds_0_replica_0", DataSourceUtil.createDataSource("demo_primary_ds_0_replica_0"));
+        result.put("demo_primary_ds_0_replica_1", DataSourceUtil.createDataSource("demo_primary_ds_0_replica_1"));
+        result.put("demo_primary_ds_1", DataSourceUtil.createDataSource("demo_primary_ds_1"));
+        result.put("demo_primary_ds_1_replica_0", DataSourceUtil.createDataSource("demo_primary_ds_1_replica_0"));
+        result.put("demo_primary_ds_1_replica_1", DataSourceUtil.createDataSource("demo_primary_ds_1_replica_1"));
         return result;
     }
 }

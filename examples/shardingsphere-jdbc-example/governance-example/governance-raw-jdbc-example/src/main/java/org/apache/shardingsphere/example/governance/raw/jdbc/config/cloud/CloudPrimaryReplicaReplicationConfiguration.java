@@ -24,16 +24,16 @@ import org.apache.shardingsphere.governance.repository.api.config.GovernanceConf
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-public final class CloudMasterSlaveConfiguration implements ExampleConfiguration {
+public final class CloudPrimaryReplicaReplicationConfiguration implements ExampleConfiguration {
     
-    private final GovernanceConfiguration governanceConfiguration;
+    private final GovernanceConfiguration governanceConfig;
     
-    public CloudMasterSlaveConfiguration(final GovernanceConfiguration governanceConfiguration) {
-        this.governanceConfiguration = governanceConfiguration;
+    public CloudPrimaryReplicaReplicationConfiguration(final GovernanceConfiguration governanceConfig) {
+        this.governanceConfig = governanceConfig;
     }
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return GovernanceShardingSphereDataSourceFactory.createDataSource(governanceConfiguration);
+        return GovernanceShardingSphereDataSourceFactory.createDataSource(governanceConfig);
     }
 }
