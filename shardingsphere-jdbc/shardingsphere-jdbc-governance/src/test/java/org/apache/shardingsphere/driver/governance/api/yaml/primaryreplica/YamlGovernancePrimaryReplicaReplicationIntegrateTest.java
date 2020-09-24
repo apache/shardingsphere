@@ -46,10 +46,10 @@ public final class YamlGovernancePrimaryReplicaReplicationIntegrateTest extends 
     @Parameters(name = "{index}:{0}-{1}")
     public static Collection<?> init() {
         return Arrays.asList(new Object[][]{
-                {"/yaml/integrate/ms/configWithPrimaryReplicaReplicationDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/ms/configWithPrimaryReplicaReplicationDataSourceWithoutProps.yaml", false},
-                {"/yaml/integrate/ms/configWithPrimaryReplicaReplicationDataSourceWithProps.yaml", true},
-                {"/yaml/integrate/ms/configWithPrimaryReplicaReplicationDataSourceWithProps.yaml", false},
+                {"/yaml/integrate/primary_replica_replication/configWithPrimaryReplicaReplicationDataSourceWithoutProps.yaml", true},
+                {"/yaml/integrate/primary_replica_replication/configWithPrimaryReplicaReplicationDataSourceWithoutProps.yaml", false},
+                {"/yaml/integrate/primary_replica_replication/configWithPrimaryReplicaReplicationDataSourceWithProps.yaml", true},
+                {"/yaml/integrate/primary_replica_replication/configWithPrimaryReplicaReplicationDataSourceWithProps.yaml", false},
         });
     }
     
