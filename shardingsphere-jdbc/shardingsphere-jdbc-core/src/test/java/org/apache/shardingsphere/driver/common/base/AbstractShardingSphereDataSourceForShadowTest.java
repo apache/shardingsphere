@@ -34,7 +34,7 @@ import java.util.Map;
 
 public abstract class AbstractShardingSphereDataSourceForShadowTest extends AbstractSQLTest {
     
-    private static ShardingSphereDataSource shadowDataSource;
+    private static ShardingSphereDataSource dataSource;
     
     private static final String CONFIG_SHADOW = "config-shadow.yaml";
     
@@ -42,14 +42,14 @@ public abstract class AbstractShardingSphereDataSourceForShadowTest extends Abst
     
     @BeforeClass
     public static void initShadowDataSource() throws SQLException, IOException {
-        if (null != shadowDataSource) {
+        if (null != dataSource) {
             return;
         }
-        shadowDataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG_SHADOW));
+        dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG_SHADOW));
     }
     
     private static Map<String, DataSource> getDataSources() {
-        return Maps.filterKeys(getDATABASE_TYPE_MAP().values().iterator().next(), SHADOW_DB_NAMES::contains);
+        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), SHADOW_DB_NAMES::contains);
     }
     
     private static File getFile(final String fileName) {
@@ -58,15 +58,15 @@ public abstract class AbstractShardingSphereDataSourceForShadowTest extends Abst
     }
     
     protected final ShardingSphereDataSource getShadowDataSource() {
-        return shadowDataSource;
+        return dataSource;
     }
     
     @AfterClass
     public static void close() throws Exception {
-        if (null == shadowDataSource) {
+        if (null == dataSource) {
             return;
         }
-        shadowDataSource.close();
-        shadowDataSource = null;
+        dataSource.close();
+        dataSource = null;
     }
 }

@@ -16,6 +16,6 @@
 #
 
 driverClassName: com.mysql.jdbc.Driver
-jdbcUrl: jdbc:mysql://localhost:3307/master_only
+jdbcUrl: jdbc:mysql://localhost:3307/primary_only
 username: root
 password: root

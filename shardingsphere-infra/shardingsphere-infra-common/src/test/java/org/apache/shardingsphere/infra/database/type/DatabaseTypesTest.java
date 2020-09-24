@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 public final class DatabaseTypesTest {
     
     @Test
-    public void assertGetTrunkDatabaseTypeNameWithMasterDatabaseType() {
+    public void assertGetTrunkDatabaseTypeNameWithTrunkDatabaseType() {
         assertThat(DatabaseTypes.getTrunkDatabaseTypeName(new MySQLDatabaseType()), is("MySQL"));
     }
     

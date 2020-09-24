@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-http\://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd=META-INF/namespace/master-slave.xsd
+http\://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication/primary-replica-replication.xsd=META-INF/namespace/primary-replica-replication.xsd

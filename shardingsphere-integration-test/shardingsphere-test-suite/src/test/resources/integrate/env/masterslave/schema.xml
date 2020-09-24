@@ -18,9 +18,9 @@
 
 <schema>
     <databases>
-        <database>master</database>
-        <database>slave_0</database>
-        <database>slave_1</database>
+        <database>primary_ds</database>
+        <database>replica_0</database>
+        <database>replica_1</database>
     </databases>
     <table-create>
         <sql>CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))</sql>

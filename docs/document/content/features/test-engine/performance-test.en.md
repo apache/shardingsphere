@@ -115,7 +115,7 @@ shardingRule:
 schemaName: sharding_db
 
 dataSources:
-  master_ds:
+  primary_ds:
     url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
@@ -123,7 +123,7 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  slave_ds_0:
+  replica_ds_0:
     url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
@@ -132,10 +132,10 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
 masterSlaveRule:
-  name: ms_ds
-  masterDataSourceName: master_ds
+  name: pr_ds
+  masterDataSourceName: primary_ds
   slaveDataSourceNames:
-    - slave_ds_0
+    - replica_ds_0
 ```
 
 #### Master Slave & Encrypt & Sharding Configuration
@@ -144,7 +144,7 @@ masterSlaveRule:
 schemaName: sharding_db
 
 dataSources:
-  master_ds_0:
+  primary_ds_0:
     url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
@@ -152,7 +152,7 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  slave_ds_0:
+  replica_ds_0:
     url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
@@ -160,7 +160,7 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  master_ds_1:
+  primary_ds_1:
     url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
@@ -168,7 +168,7 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  slave_ds_1:
+  replica_ds_1:
     url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
@@ -176,7 +176,7 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  master_ds_2:
+  primary_ds_2:
     url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
@@ -184,7 +184,7 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  slave_ds_2:
+  replica_ds_2:
     url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
@@ -192,7 +192,7 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  master_ds_3:
+  primary_ds_3:
     url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
@@ -200,7 +200,7 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  slave_ds_3:
+  replica_ds_3:
     url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
@@ -211,11 +211,11 @@ dataSources:
 shardingRule:
   tables:
     tbl:
-      actualDataNodes: ms_ds_${0..3}.tbl${0..1023}
+      actualDataNodes: pr_ds_${0..3}.tbl${0..1023}
       databaseStrategy:
         inline:
           shardingColumn: id
-          algorithmExpression: ms_ds_${id % 4}
+          algorithmExpression: pr_ds_${id % 4}
       tableStrategy:
         inline:
           shardingColumn: k
@@ -225,29 +225,29 @@ shardingRule:
         column: id
   bindingTables:
     - tbl
-  defaultDataSourceName: master_ds_1
+  defaultDataSourceName: primary_ds_1
   defaultTableStrategy:
     none:
   masterSlaveRules:
-    ms_ds_0:
-      masterDataSourceName: master_ds_0
+    pr_ds_0:
+      masterDataSourceName: primary_ds_0
       slaveDataSourceNames:
-        - slave_ds_0
+        - replica_ds_0
       loadBalanceAlgorithmType: ROUND_ROBIN
-    ms_ds_1:
-      masterDataSourceName: master_ds_1
+    pr_ds_1:
+      masterDataSourceName: primary_ds_1
       slaveDataSourceNames:
-        - slave_ds_1
+        - replica_ds_1
       loadBalanceAlgorithmType: ROUND_ROBIN
-    ms_ds_2:
-      masterDataSourceName: master_ds_2
+    pr_ds_2:
+      masterDataSourceName: primary_ds_2
       slaveDataSourceNames:
-        - slave_ds_2
+        - replica_ds_2
       loadBalanceAlgorithmType: ROUND_ROBIN
-    ms_ds_3:
-      masterDataSourceName: master_ds_3
+    pr_ds_3:
+      masterDataSourceName: primary_ds_3
       slaveDataSourceNames:
-        - slave_ds_3
+        - replica_ds_3
       loadBalanceAlgorithmType: ROUND_ROBIN
 encryptRule:
   encryptors:

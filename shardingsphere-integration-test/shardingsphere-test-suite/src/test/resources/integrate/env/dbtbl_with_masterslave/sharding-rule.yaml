@@ -19,9 +19,9 @@ rules:
 - !SHARDING
   tables:
     config:
-      actualDataNodes: db_ms_${0..9}.t_config
+      actualDataNodes: pr_ds_${0..9}.t_config
     t_order:
-      actualDataNodes: db_ms_${0..9}.t_order_${0..9}
+      actualDataNodes: pr_ds_${0..9}.t_order_${0..9}
       databaseStrategy:
         standard:
           shardingColumn: user_id
@@ -31,7 +31,7 @@ rules:
           shardingColumn: order_id
           shardingAlgorithmName: standard_test
     t_order_item:
-      actualDataNodes: db_ms_${0..9}.t_order_item_${0..9}
+      actualDataNodes: pr_ds_${0..9}.t_order_item_${0..9}
       databaseStrategy:
         standard:
           shardingColumn: user_id
@@ -54,57 +54,57 @@ rules:
     constant:
       type: Constant
       
-- !MASTER_SLAVE
+- !PRIMARY_REPLICA_REPLICATION
   dataSources:
-    db_ms_0:
-      masterDataSourceName: master_db_0
-      slaveDataSourceNames:
-        - slave_db_0
+    pr_ds_0:
+      primaryDataSourceName: primary_ds_0
+      replicaDataSourceNames:
+        - replica_ds_0
       loadBalancerName: roundRobin
-    db_ms_1:
-      masterDataSourceName: master_db_1
-      slaveDataSourceNames:
-        - slave_db_1
+    pr_ds_1:
+      primaryDataSourceName: primary_ds_1
+      replicaDataSourceNames:
+        - replica_ds_1
       loadBalancerName: roundRobin
-    db_ms_2:
-      masterDataSourceName: master_db_2
-      slaveDataSourceNames:
-        - slave_db_2
+    pr_ds_2:
+      primaryDataSourceName: primary_ds_2
+      replicaDataSourceNames:
+        - replica_ds_2
       loadBalancerName: roundRobin
-    db_ms_3:
-      masterDataSourceName: master_db_3
-      slaveDataSourceNames:
-        - slave_db_3
+    pr_ds_3:
+      primaryDataSourceName: primary_ds_3
+      replicaDataSourceNames:
+        - replica_ds_3
       loadBalancerName: roundRobin
-    db_ms_4:
-      masterDataSourceName: master_db_4
-      slaveDataSourceNames:
-        - slave_db_4
+    pr_ds_4:
+      primaryDataSourceName: primary_ds_4
+      replicaDataSourceNames:
+        - replica_ds_4
       loadBalancerName: roundRobin
-    db_ms_5:
-      masterDataSourceName: master_db_5
-      slaveDataSourceNames:
-        - slave_db_5
+    pr_ds_5:
+      primaryDataSourceName: primary_ds_5
+      replicaDataSourceNames:
+        - replica_ds_5
       loadBalancerName: roundRobin
-    db_ms_6:
-      masterDataSourceName: master_db_6
-      slaveDataSourceNames:
-        - slave_db_6
+    pr_ds_6:
+      primaryDataSourceName: primary_ds_6
+      replicaDataSourceNames:
+        - replica_ds_6
       loadBalancerName: roundRobin
-    db_ms_7:
-      masterDataSourceName: master_db_7
-      slaveDataSourceNames:
-        - slave_db_7
+    pr_ds_7:
+      primaryDataSourceName: primary_ds_7
+      replicaDataSourceNames:
+        - replica_ds_7
       loadBalancerName: roundRobin
-    db_ms_8:
-      masterDataSourceName: master_db_8
-      slaveDataSourceNames:
-        - slave_db_8
+    pr_ds_8:
+      primaryDataSourceName: primary_ds_8
+      replicaDataSourceNames:
+        - replica_ds_8
       loadBalancerName: roundRobin
-    db_ms_9:
-      masterDataSourceName: master_db_9
-      slaveDataSourceNames:
-        - slave_db_9
+    pr_ds_9:
+      primaryDataSourceName: primary_ds_9
+      replicaDataSourceNames:
+        - replica_ds_9
       loadBalancerName: roundRobin
   loadBalancers:
     roundRobin:
