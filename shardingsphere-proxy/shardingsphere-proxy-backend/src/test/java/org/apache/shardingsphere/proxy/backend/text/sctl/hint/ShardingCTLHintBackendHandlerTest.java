@@ -91,7 +91,7 @@ public final class ShardingCTLHintBackendHandlerTest {
     }
     
     @Test
-    public void assertSetMasterOnly() {
+    public void assertSetPrimaryOnly() {
         clearThreadLocal();
         String sql = "sctl:hint set primary_only=true ";
         ShardingCTLHintBackendHandler hintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);

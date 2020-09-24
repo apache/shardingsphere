@@ -46,7 +46,7 @@ public final class DataSourceStateChangedListenerTest {
     
     @Before
     public void setUp() {
-        dataSourceStateChangedListener = new DataSourceStateChangedListener(registryRepository, Arrays.asList("sharding_db", "masterslave_db", "encrypt_db"));
+        dataSourceStateChangedListener = new DataSourceStateChangedListener(registryRepository, Arrays.asList("sharding_db", "primary_replica_replication_db", "encrypt_db"));
     }
     
     @Test
