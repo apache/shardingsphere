@@ -39,45 +39,45 @@
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     
     <bean id="demo_primary_ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds_0?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds_0?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
     </bean>
     
     <bean id="demo_primary_ds_0_replica_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds_0_replica_0?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds_0_replica_0?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
     </bean>
     
     <bean id="demo_primary_ds_0_replica_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds_0_replica_1?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds_0_replica_1?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
     </bean>
     
     <bean id="demo_primary_ds_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds_1?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds_1?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
     </bean>
     
     <bean id="demo_primary_ds_1_replica_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds_1_replica_0?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds_1_replica_0?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
     </bean>
     
     <bean id="demo_primary_ds_1_replica_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds_1_replica_1?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds_1_replica_1?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
     </bean>
     
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="inlineDatabaseStrategyAlgorithm" />
@@ -123,12 +123,12 @@
             <sharding:broadcast-table-rule table="t_address"/>
         </sharding:broadcast-table-rules>
     </sharding:rule>
-    <primary-replica-replication:rule id="masterSlaveRule">
+    <primary-replica-replication:rule id="primaryReplicaReplicationRule">
         <primary-replica-replication:data-source-rule id="demo_pr_ds_0" primary-data-source-name="demo_primary_ds_0" replica-data-source-names="demo_primary_ds_0_replica_0, demo_primary_ds_0_replica_1" load-balance-algorithm-ref="randomStrategy" />
         <primary-replica-replication:data-source-rule id="demo_pr_ds_1" primary-data-source-name="demo_primary_ds_1" replica-data-source-names="demo_primary_ds_1_replica_0, demo_primary_ds_1_replica_1" load-balance-algorithm-ref="randomStrategy" />
     </primary-replica-replication:rule>
     
-    <shardingsphere:data-source id="shardingDataSource" data-source-names="demo_primary_ds_0,demo_primary_ds_0_replica_0,demo_primary_ds_0_replica_1,demo_primary_ds_1,demo_primary_ds_1_replica_0,demo_primary_ds_1_replica_1" rule-refs="shardingRule, masterSlaveRule">
+    <shardingsphere:data-source id="shardingDataSource" data-source-names="demo_primary_ds_0,demo_primary_ds_0_replica_0,demo_primary_ds_0_replica_1,demo_primary_ds_1,demo_primary_ds_1_replica_0,demo_primary_ds_1_replica_1" rule-refs="shardingRule, primaryReplicaReplicationRule">
         <props>
             <prop key="sql-show">false</prop>
         </props>

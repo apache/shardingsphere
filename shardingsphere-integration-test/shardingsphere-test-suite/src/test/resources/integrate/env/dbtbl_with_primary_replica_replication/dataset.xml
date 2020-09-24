@@ -360,7 +360,7 @@
     <row data-node="primary_ds_7.key_word" values="1, init" />
     <row data-node="primary_ds_8.key_word" values="1, init" />
     <row data-node="primary_ds_9.key_word" values="1, init" />
-    <row data-node="primary_ds_0.t_global" values="1, global_master" />
+    <row data-node="primary_ds_0.t_global" values="1, global_primary" />
     <row data-node="replica_ds_0.t_order_0" values="1000, 10, init_replica" />
     <row data-node="replica_ds_0.t_order_1" values="1001, 10, init_replica" />
     <row data-node="replica_ds_0.t_order_2" values="1002, 10, init_replica" />

@@ -36,9 +36,9 @@
                            ">
     <context:annotation-config />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.jpa"/>
-
+    
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="dataSource" ref="masterSlaveDataSource" />
+        <property name="dataSource" ref="primaryReplicaReplicationDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
@@ -81,5 +81,5 @@
         <primary-replica-replication:data-source-rule id="demo_ds" primary-data-source-name="demo_primary_ds" replica-data-source-names="demo_replica_ds_0, demo_replica_ds_1" load-balance-algorithm-ref="randomStrategy" />
     </primary-replica-replication:rule>
     
-    <shardingsphere:data-source id="masterSlaveDataSource" data-source-names="demo_primary_ds, demo_replica_ds_0, demo_replica_ds_1" rule-refs="primaryReplicaReplicationRule" />
+    <shardingsphere:data-source id="primaryReplicaReplicationDataSource" data-source-names="demo_primary_ds, demo_replica_ds_0, demo_replica_ds_1" rule-refs="primaryReplicaReplicationRule" />
 </beans>
