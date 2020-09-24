@@ -31,7 +31,7 @@ import java.sql.SQLException;
 public final class YamlConfigurationExampleMain {
     
     private static ShardingType shardingType = ShardingType.SHADOW;
-//    private static ShardingType shardingType = ShardingType.MASTER_SLAVE_SHADOW;
+//    private static ShardingType shardingType = ShardingType.PRIMARY_REPLICA_REPLICATION_SHADOW;
 //    private static ShardingType shardingType = ShardingType.ENCRYPT_SHADOW;
 //    private static ShardingType shardingType = ShardingType.SHARDING_SHADOW_DATABASES;
     

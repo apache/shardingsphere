@@ -66,7 +66,7 @@ public final class PrimaryReplicaReplicationDataSourceRule {
     /**
      * Get replica data source names.
      *
-     * @return available slave data source names
+     * @return available replica data source names
      */
     public List<String> getReplicaDataSourceNames() {
         return replicaDataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toList());

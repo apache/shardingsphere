@@ -37,9 +37,9 @@ public final class DataSourceFactory {
                 return new ShardingTablesConfigurationPrecise().getDataSource();
             case SHARDING_DATABASES_AND_TABLES:
                 return new ShardingDatabasesAndTablesConfigurationPrecise().getDataSource();
-            case MASTER_SLAVE:
+            case PRIMARY_REPLICA_REPLICATION:
                 return new PrimaryReplicaReplicationConfiguration().getDataSource();
-            case SHARDING_MASTER_SLAVE:
+            case SHARDING_PRIMARY_REPLICA_REPLICATION:
                 return new ShardingPrimaryReplicaReplicationConfigurationPrecise().getDataSource();
             default:
                 throw new UnsupportedOperationException(shardingType.name());

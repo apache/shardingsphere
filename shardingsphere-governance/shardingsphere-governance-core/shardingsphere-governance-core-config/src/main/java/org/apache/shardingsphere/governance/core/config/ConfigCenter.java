@@ -154,9 +154,9 @@ public final class ConfigCenter {
         Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data source in `%s` for governance.", schemaName);
         Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigurations = dataSourceConfigurations.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new DataSourceConfigurationYamlSwapper().swapToYamlConfiguration(entry.getValue())));
-        YamlDataSourceConfigurationWrap yamlDataSourceConfigurationWrap = new YamlDataSourceConfigurationWrap();
-        yamlDataSourceConfigurationWrap.setDataSources(yamlDataSourceConfigurations);
-        repository.persist(node.getDataSourcePath(schemaName), YamlEngine.marshal(yamlDataSourceConfigurationWrap));
+        YamlDataSourceConfigurationWrap yamlDataSourceConfigWrap = new YamlDataSourceConfigurationWrap();
+        yamlDataSourceConfigWrap.setDataSources(yamlDataSourceConfigurations);
+        repository.persist(node.getDataSourcePath(schemaName), YamlEngine.marshal(yamlDataSourceConfigWrap));
     }
     
     private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
@@ -181,7 +181,7 @@ public final class ConfigCenter {
             } else if (each instanceof AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration) {
                 AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration config = (AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration) each;
                 config.getDataSources().forEach(group -> Preconditions.checkState(
-                        !group.getPrimaryDataSourceName().isEmpty(), "No available master-slave rule configuration in `%s` for governance.", schemaName));
+                        !group.getPrimaryDataSourceName().isEmpty(), "No available primary-replica-replication rule configuration in `%s` for governance.", schemaName));
                 configurations.add(each);
             } else if (each instanceof AlgorithmProvidedEncryptRuleConfiguration) {
                 AlgorithmProvidedEncryptRuleConfiguration config = (AlgorithmProvidedEncryptRuleConfiguration) each;
@@ -190,7 +190,7 @@ public final class ConfigCenter {
             } else if (each instanceof PrimaryReplicaReplicationRuleConfiguration) {
                 PrimaryReplicaReplicationRuleConfiguration config = (PrimaryReplicaReplicationRuleConfiguration) each;
                 config.getDataSources().forEach(group -> Preconditions.checkState(
-                        !group.getPrimaryDataSourceName().isEmpty(), "No available master-slave rule configuration in `%s` for governance.", schemaName));
+                        !group.getPrimaryDataSourceName().isEmpty(), "No available primary-replica-replication rule configuration in `%s` for governance.", schemaName));
                 configurations.add(each);
             } else if (each instanceof EncryptRuleConfiguration) {
                 EncryptRuleConfiguration config = (EncryptRuleConfiguration) each;

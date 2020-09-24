@@ -23,7 +23,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.H
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintClearCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintErrorParameterCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintSetDatabaseShardingValueCommand;
-import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintSetMasterOnlyCommand;
+import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintSetPrimaryOnlyCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintShowStatusCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintShowTableStatusCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor.HintAddDatabaseShardingValueExecutor;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor.
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor.HintClearExecutor;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor.HintErrorParameterExecutor;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor.HintSetDatabaseShardingValueExecutor;
-import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor.HintSetMasterOnlyExecutor;
+import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor.HintSetPrimaryOnlyExecutor;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor.HintShowStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor.HintShowTableStatusExecutor;
 import org.junit.Test;
@@ -50,10 +50,10 @@ public final class HintCommandExecutorFactoryTest {
     private BackendConnection backendConnection;
     
     @Test
-    public void assertHintSetMasterOnlyExecutor() {
-        String sql = "sctl:hint set master_only=false";
-        HintCommand hintCommand = mock(HintSetMasterOnlyCommand.class);
-        assertThat(HintCommandExecutorFactory.newInstance(hintCommand, backendConnection, sql), instanceOf(HintSetMasterOnlyExecutor.class));
+    public void assertHintSetPrimaryOnlyExecutor() {
+        String sql = "sctl:hint set primary_only=false";
+        HintCommand hintCommand = mock(HintSetPrimaryOnlyCommand.class);
+        assertThat(HintCommandExecutorFactory.newInstance(hintCommand, backendConnection, sql), instanceOf(HintSetPrimaryOnlyExecutor.class));
     }
     
     @Test

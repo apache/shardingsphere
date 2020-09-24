@@ -41,15 +41,15 @@ public final class PrimaryReplicaReplicationDataSourceRouter {
      * @return data source name
      */
     public String route(final SQLStatement sqlStatement) {
-        if (isMasterRoute(sqlStatement)) {
+        if (isPrimaryRoute(sqlStatement)) {
             PrimaryVisitedManager.setPrimaryVisited();
             return rule.getPrimaryDataSourceName();
         }
         return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getPrimaryDataSourceName(), new ArrayList<>(rule.getReplicaDataSourceNames()));
     }
     
-    private boolean isMasterRoute(final SQLStatement sqlStatement) {
-        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || PrimaryVisitedManager.getPrimaryVisited() || HintManager.isMasterRouteOnly();
+    private boolean isPrimaryRoute(final SQLStatement sqlStatement) {
+        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || PrimaryVisitedManager.getPrimaryVisited() || HintManager.isPrimaryRouteOnly();
     }
     
     private boolean containsLockSegment(final SQLStatement sqlStatement) {

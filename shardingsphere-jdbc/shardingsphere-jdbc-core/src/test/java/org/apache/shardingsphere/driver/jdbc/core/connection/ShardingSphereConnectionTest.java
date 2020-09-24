@@ -63,11 +63,11 @@ public final class ShardingSphereConnectionTest {
     
     @BeforeClass
     public static void init() throws SQLException {
-        DataSource masterDataSource = mockDataSource();
-        DataSource slaveDataSource = mockDataSource();
+        DataSource primaryDataSource = mockDataSource();
+        DataSource replicaDataSource = mockDataSource();
         dataSourceMap = new HashMap<>(2, 1);
-        dataSourceMap.put("test_primary_ds", masterDataSource);
-        dataSourceMap.put("test_replica_ds", slaveDataSource);
+        dataSourceMap.put("test_primary_ds", primaryDataSource);
+        dataSourceMap.put("test_replica_ds", replicaDataSource);
     }
     
     private static DataSource mockDataSource() throws SQLException {

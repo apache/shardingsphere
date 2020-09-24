@@ -97,7 +97,7 @@ public final class DataNodeRouter {
         try {
             SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getRuleSchemaMetaData().getSchemaMetaData(), parameters, sqlStatement);
             return new RouteContext(sqlStatementContext, parameters, new RouteResult());
-            // TODO should pass parameters for master-slave
+            // TODO should pass parameters for primary-replica-replication
         } catch (final IndexOutOfBoundsException ex) {
             return new RouteContext(new CommonSQLStatementContext<>(sqlStatement), parameters, new RouteResult());
         }

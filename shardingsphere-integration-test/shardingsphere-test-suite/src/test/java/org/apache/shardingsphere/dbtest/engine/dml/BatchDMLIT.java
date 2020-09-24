@@ -55,8 +55,8 @@ public final class BatchDMLIT extends BatchIT {
     
     @Test
     public void assertExecuteBatch() throws JAXBException, IOException, SQLException, ParseException {
-        // TODO fix masterslave
-        if ("masterslave".equals(getRuleType())) {
+        // TODO fix primary_replica_replication
+        if ("primary_replica_replication".equals(getRuleType())) {
             return;
         }
         // TODO fix shadow
@@ -88,8 +88,8 @@ public final class BatchDMLIT extends BatchIT {
     
     @Test
     public void assertClearBatch() throws SQLException, ParseException {
-        // TODO fix masterslave
-        if ("masterslave".equals(getRuleType())) {
+        // TODO fix primary_replica_replication
+        if ("primary_replica_replication".equals(getRuleType())) {
             return;
         }
         // TODO fix shadow

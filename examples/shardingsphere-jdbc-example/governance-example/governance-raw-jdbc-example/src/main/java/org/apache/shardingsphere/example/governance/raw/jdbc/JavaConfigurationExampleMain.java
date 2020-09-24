@@ -39,14 +39,14 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /*
- * 1. Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ * 1. Please make sure primary-replication-replica data sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
  * 2. Please make sure sharding-governance-center-zookeeper-curator in your pom if registryCenterType = RegistryCenterType.ZOOKEEPER.
  * 3. Please make sure sharding-governance-center-nacos in your pom if registryCenterType = RegistryCenterType.NACOS.
  */
 public final class JavaConfigurationExampleMain {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
-//    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
+//    private static ShardingType shardingType = ShardingType.PRIMARY_REPLICA_REPLICATION;
 //    private static ShardingType shardingType = ShardingType.ENCRYPT;
 //    private static ShardingType shardingType = ShardingType.SHADOW;
     
@@ -73,7 +73,7 @@ public final class JavaConfigurationExampleMain {
                 configuration = loadConfigFromRegCenter 
                         ? new CloudShardingDatabasesAndTablesConfiguration(governanceConfig) : new LocalShardingDatabasesAndTablesConfiguration(governanceConfig);
                 break;
-            case MASTER_SLAVE:
+            case PRIMARY_REPLICA_REPLICATION:
                 configuration = loadConfigFromRegCenter ? new CloudPrimaryReplicaReplicationConfiguration(governanceConfig) : new LocalPrimaryReplicaReplicationConfiguration(governanceConfig);
                 break;
             case ENCRYPT:

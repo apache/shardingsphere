@@ -37,7 +37,7 @@ public final class HintShowStatusExecutor extends AbstractHintQueryExecutor<Hint
     @Override
     protected List<QueryHeader> createQueryHeaders() {
         List<QueryHeader> result = new ArrayList<>(2);
-        result.add(new QueryHeader("", "", "master_only", "", 5, Types.CHAR, 0, false, false, false, false));
+        result.add(new QueryHeader("", "", "primary_only", "", 5, Types.CHAR, 0, false, false, false, false));
         result.add(new QueryHeader("", "", "sharding_type", "", 255, Types.CHAR, 0, false, false, false, false));
         return result;
     }
@@ -45,13 +45,13 @@ public final class HintShowStatusExecutor extends AbstractHintQueryExecutor<Hint
     @Override
     protected MergedResult createMergedResult() {
         HintShardingType shardingType = HintManager.isDatabaseShardingOnly() ? HintShardingType.DATABASES_ONLY : HintShardingType.DATABASES_TABLES;
-        List<Object> row = createRow(HintManager.isMasterRouteOnly(), shardingType);
+        List<Object> row = createRow(HintManager.isPrimaryRouteOnly(), shardingType);
         return new MultipleLocalDataMergedResult(Collections.singletonList(row));
     }
     
-    private List<Object> createRow(final boolean masterOnly, final HintShardingType shardingType) {
+    private List<Object> createRow(final boolean primaryOnly, final HintShardingType shardingType) {
         List<Object> result = new ArrayList<>(2);
-        result.add(String.valueOf(masterOnly).toLowerCase());
+        result.add(String.valueOf(primaryOnly).toLowerCase());
         result.add(String.valueOf(shardingType).toLowerCase());
         return result;
     }
