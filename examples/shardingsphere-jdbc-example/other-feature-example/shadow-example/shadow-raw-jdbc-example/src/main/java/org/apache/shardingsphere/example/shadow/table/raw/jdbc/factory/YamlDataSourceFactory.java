@@ -36,7 +36,7 @@ public final class YamlDataSourceFactory {
             case ENCRYPT_SHADOW:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/encrypt-shadow-databases.yaml"));
             case PRIMARY_REPLICA_REPLICATION_SHADOW:
-                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/master-slave-shadow-databases.yaml"));
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/primary-replica-replication-shadow-databases.yaml"));
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }

@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 /*
- * 1. Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ * 1. Please make sure primary-replica-replication data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
  * 2. Please make sure sharding-governance-center-zookeeper-curator in your pom if registryCenterType = RegistryCenterType.ZOOKEEPER.
  * 3. Please make sure sharding-governance-center-nacos in your pom if registryCenterType = RegistryCenterType.NACOS.
  */
@@ -64,7 +64,7 @@ public final class YamlConfigurationExampleMain {
                 yamlFilePath = String.format("/META-INF/%s/%s/sharding-databases-tables.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
                 return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
             case PRIMARY_REPLICA_REPLICATION:
-                yamlFilePath = String.format("/META-INF/%s/%s/master-slave.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
+                yamlFilePath = String.format("/META-INF/%s/%s/primary-replica-replication.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
                 return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
             case ENCRYPT:
                 yamlFilePath = String.format("/META-INF/%s/%s/encrypt.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
