@@ -84,17 +84,17 @@ public final class ShardingSphereDataSourceTest {
     }
     
     @Test
-    public void assertGetDatabaseProductNameForMasterSlave() throws SQLException {
+    public void assertGetDatabaseProductNameForPrimaryReplicaReplication() throws SQLException {
         DataSource dataSource1 = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
-        DataSource masterDataSource = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
-        DataSource slaveDataSource = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
+        DataSource primaryDataSource = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
+        DataSource replicaDataSource = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
         DataSource dataSource3 = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
         Map<String, DataSource> dataSourceMap = new HashMap<>(4, 1);
         dataSourceMap.put("ds1", dataSource1);
-        dataSourceMap.put("masterDataSource", masterDataSource);
-        dataSourceMap.put("slaveDataSource", slaveDataSource);
+        dataSourceMap.put("primaryDataSource", primaryDataSource);
+        dataSourceMap.put("replicaDataSource", replicaDataSource);
         dataSourceMap.put("ds3", dataSource3);
-        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), masterDataSource.getConnection(), slaveDataSource.getConnection());
+        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), primaryDataSource.getConnection(), replicaDataSource.getConnection());
     }
     
     private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {
@@ -185,7 +185,7 @@ public final class ShardingSphereDataSourceTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         List<String> orderActualDataNodes = new LinkedList<>();
         for (String each : dataSourceMap.keySet()) {
-            orderActualDataNodes.add(each + ".table_${0..2}");
+            orderActualDataNodes.add(String.format("%s.table_${0..2}", each));
         }
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("logicTable", Joiner.on(",").join(orderActualDataNodes));
         result.getTables().add(tableRuleConfig);

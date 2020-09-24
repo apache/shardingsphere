@@ -16,7 +16,7 @@
   -->
 
 <dataset update-count="40">
-    <metadata data-nodes="master.t_order,slave_${0..1}.t_order">
+    <metadata data-nodes="primary_ds.t_order,replica_${0..1}.t_order">
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />
         <column name="status" type="varchar" />

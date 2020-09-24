@@ -45,7 +45,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 import org.apache.shardingsphere.jdbc.test.MockedDataSource;
-import org.apache.shardingsphere.replication.primaryreplica.rule.MasterSlaveRule;
+import org.apache.shardingsphere.replication.primaryreplica.rule.PrimaryReplicaReplicationRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -90,7 +90,7 @@ public final class GovernanceSchemaContextsTest {
     private SchemaContext schemaContext;
     
     @Mock
-    private MasterSlaveRule masterSlaveRule;
+    private PrimaryReplicaReplicationRule primaryReplicaReplicationRule;
     
     private Authentication authentication = new Authentication();
     
@@ -117,7 +117,7 @@ public final class GovernanceSchemaContextsTest {
         when(schemaContext.getSchema()).thenReturn(shardingSphereSchema);
         when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
         when(shardingSphereSchema.getMetaData()).thenReturn(shardingSphereMetaData);
-        when(shardingSphereSchema.getRules()).thenReturn(Collections.singletonList(masterSlaveRule));
+        when(shardingSphereSchema.getRules()).thenReturn(Collections.singletonList(primaryReplicaReplicationRule));
         return Collections.singletonMap("schema", schemaContext);
     }
     
@@ -162,7 +162,7 @@ public final class GovernanceSchemaContextsTest {
     private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
         MockedDataSource dataSource = new MockedDataSource();
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(3, 1);
-        result.put("ds_m", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
+        result.put("primary_ds", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         result.put("ds_0", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         result.put("ds_1", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         return result;
@@ -220,7 +220,7 @@ public final class GovernanceSchemaContextsTest {
     public void assertDisableStateChanged() {
         DisabledStateChangedEvent event = new DisabledStateChangedEvent(new GovernanceSchema("schema.ds_0"), true);
         governanceSchemaContexts.renew(event);
-        verify(masterSlaveRule, times(2)).updateRuleStatus(any(RuleChangedEvent.class));
+        verify(primaryReplicaReplicationRule, times(2)).updateRuleStatus(any(RuleChangedEvent.class));
     }
     
     @Test
@@ -234,7 +234,7 @@ public final class GovernanceSchemaContextsTest {
     private Map<String, DataSourceConfiguration> getChangedDataSourceConfigurations() {
         MockedDataSource dataSource = new MockedDataSource();
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(3, 1);
-        result.put("ds_m", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
+        result.put("primary_ds", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         result.put("ds_1", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         result.put("ds_2", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         return result;

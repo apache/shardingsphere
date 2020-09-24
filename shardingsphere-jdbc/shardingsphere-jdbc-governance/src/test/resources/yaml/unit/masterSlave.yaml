@@ -16,20 +16,20 @@
 #
 
 dataSources:
-  ds_m: !!org.apache.commons.dbcp2.BasicDataSource
+  primary_ds: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:ds_m;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:primary_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password:
-  ds_s: !!org.apache.commons.dbcp2.BasicDataSource
+  replica_ds: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:ds_s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:replica_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password:
 
 rules:
-- !MASTER_SLAVE
-  name: ms_ds
-  masterDataSourceName: ds_m
-  slaveDataSourceNames:
-    - ds_s
+- !PRIMARY_REPLICA_REPLICATION
+  name: pr_ds
+  primaryDataSourceName: primary_ds
+  replicaDataSourceNames:
+    - replica_ds

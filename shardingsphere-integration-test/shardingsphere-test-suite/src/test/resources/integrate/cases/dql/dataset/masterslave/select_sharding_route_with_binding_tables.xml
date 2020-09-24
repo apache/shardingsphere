@@ -23,12 +23,12 @@
         <column name="status" />
         <column name="creation_date" />
     </metadata>
-    <row values="100001, 1000, 10, init_slave" />
-    <row values="100002, 1000, 10, init_slave" />
-    <row values="100101, 1001, 10, init_slave" />
-    <row values="100102, 1001, 10, init_slave" />
-    <row values="110001, 1100, 11, init_slave" />
-    <row values="110002, 1100, 11, init_slave" />
-    <row values="110101, 1101, 11, init_slave" />
-    <row values="110102, 1101, 11, init_slave" />
+    <row values="100001, 1000, 10, init_replica" />
+    <row values="100002, 1000, 10, init_replica" />
+    <row values="100101, 1001, 10, init_replica" />
+    <row values="100102, 1001, 10, init_replica" />
+    <row values="110001, 1100, 11, init_replica" />
+    <row values="110002, 1100, 11, init_replica" />
+    <row values="110101, 1101, 11, init_replica" />
+    <row values="110102, 1101, 11, init_replica" />
 </dataset>

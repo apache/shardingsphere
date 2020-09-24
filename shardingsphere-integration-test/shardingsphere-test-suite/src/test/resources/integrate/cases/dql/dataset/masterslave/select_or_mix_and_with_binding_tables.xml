@@ -23,6 +23,6 @@
         <column name="status" />
         <column name="creation_date" />
     </metadata>
-    <row values="110001, 1100, 11, init_slave, 2017-08-08" />
-    <row values="110002, 1100, 11, init_slave, 2017-08-08" />
+    <row values="110001, 1100, 11, init_replica, 2017-08-08" />
+    <row values="110002, 1100, 11, init_replica, 2017-08-08" />
 </dataset>

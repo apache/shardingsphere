@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/sharding
+                           http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                           ">
+    <import resource="../datasource/data-source.xml" />
+    <import resource="../datasource/primary-replica-replication-data-source.xml" />
+    
+    <sharding:sharding-algorithm id="standardModuloDatabaseShardingAlgorithm" type="STANDARD_TEST_DB"/>
+    <sharding:sharding-algorithm id="standardModuloTableShardingAlgorithm" type="STANDARD_TEST_TBL"/>
+    <sharding:sharding-algorithm id="defaultComplexKeysShardingAlgorithm" type="COMPLEX_TEST"/>
+    <sharding:sharding-algorithm id="defaultHintShardingAlgorithm" type="HINT_TEST"/>
+    <sharding:sharding-algorithm id="inlineStrategyShardingAlgorithm" type="INLINE">
+        <props>
+            <prop key="algorithm-expression">t_order_${order_id % 4}</prop>
+        </props>
+    </sharding:sharding-algorithm>
+    
+    <sharding:key-generate-algorithm id="incrementAlgorithm" type="INCREMENT" />
+    
+    <sharding:standard-strategy id="standardStrategy" sharding-column="user_id" algorithm-ref="standardModuloDatabaseShardingAlgorithm" />
+    <sharding:complex-strategy id="complexStrategy" sharding-columns="order_id,user_id" algorithm-ref="defaultComplexKeysShardingAlgorithm" />
+    <sharding:standard-strategy id="inlineStrategy" sharding-column="order_id" algorithm-ref="inlineStrategyShardingAlgorithm" />
+    <sharding:hint-strategy id="hintStrategy" algorithm-ref="defaultHintShardingAlgorithm" />
+    <sharding:none-strategy id="noneStrategy" />
+    
+    <sharding:key-generate-strategy id="keyGenerateStrategy" column="order_id" algorithm-ref="incrementAlgorithm" />
+    
+    <sharding:rule id="simpleShardingDataSourceShardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" />
+        </sharding:table-rules>
+    </sharding:rule>
+    
+    <sharding:rule id="shardingRuleWithAttributesDataSourceShardingRule" default-database-strategy-ref="standardStrategy" default-table-strategy-ref="inlineStrategy" default-key-generate-strategy-ref="keyGenerateStrategy">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" />
+        </sharding:table-rules>
+    </sharding:rule>
+
+    <sharding:rule id="tableRuleWithAttributesDataSourceShardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generate-strategy-ref="keyGenerateStrategy" />
+        </sharding:table-rules>
+    </sharding:rule>
+    
+    <sharding:rule id="multiTableRulesDataSourceShardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" />
+            <sharding:table-rule logic-table="t_order_item" />
+        </sharding:table-rules>
+    </sharding:rule>
+    
+    <sharding:rule id="bindingTableRuleDatasourceShardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" />
+            <sharding:table-rule logic-table="t_order_item" />
+        </sharding:table-rules>
+        <sharding:binding-table-rules>
+            <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
+        </sharding:binding-table-rules>
+    </sharding:rule>
+    
+    <sharding:rule id="multiBindingTableRulesDatasourceShardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" />
+            <sharding:table-rule logic-table="t_order_item" />
+            <sharding:table-rule logic-table="t_user" />
+            <sharding:table-rule logic-table="t_user_detail" />
+        </sharding:table-rules>
+        <sharding:binding-table-rules>
+            <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
+            <sharding:binding-table-rule logic-tables="t_user, t_user_detail" />
+        </sharding:binding-table-rules>
+    </sharding:rule>
+    
+    <sharding:rule id="broadcastTableRuleDatasourceShardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" />
+            <sharding:table-rule logic-table="t_order_item" />
+        </sharding:table-rules>
+        <sharding:binding-table-rules>
+            <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
+        </sharding:binding-table-rules>
+        <sharding:broadcast-table-rules>
+            <sharding:broadcast-table-rule table="t_config" />
+        </sharding:broadcast-table-rules>
+    </sharding:rule>
+    
+    <sharding:rule id="multiBroadcastTableRulesDatasourceShardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" />
+            <sharding:table-rule logic-table="t_order_item" />
+        </sharding:table-rules>
+        <sharding:binding-table-rules>
+            <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
+        </sharding:binding-table-rules>
+        <sharding:broadcast-table-rules>
+            <sharding:broadcast-table-rule table="t_config1" />
+            <sharding:broadcast-table-rule table="t_config2" />
+        </sharding:broadcast-table-rules>
+    </sharding:rule>
+    
+    <sharding:rule id="propsDataSourceShardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" />
+        </sharding:table-rules>
+    </sharding:rule>
+</beans>

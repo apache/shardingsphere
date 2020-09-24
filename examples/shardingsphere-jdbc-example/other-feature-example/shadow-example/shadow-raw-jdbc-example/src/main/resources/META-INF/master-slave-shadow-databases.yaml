@@ -16,24 +16,24 @@
 #
 
 dataSources:
-  ds_master: !!com.zaxxer.hikari.HikariDataSource
+  primary_ds: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_master?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_primary_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password:
-  ds_slave: !!com.zaxxer.hikari.HikariDataSource
+  replica_ds: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_slave?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_replica_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password:
-  shadow_ds_master: !!com.zaxxer.hikari.HikariDataSource
+  shadow_primary_ds: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/demo_shadow_ds_master?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_shadow_primary_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password:
-  shadow_ds_slave: !!com.zaxxer.hikari.HikariDataSource
+  shadow_replica_ds: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/demo_shadow_ds_slave?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_shadow_replica_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password:
 
@@ -41,18 +41,18 @@ rules:
 - !SHADOW
   column: shadow
   sourceDataSourceNames:
-    - ds_master
-    - ds_slave
+    - primary_ds
+    - replica_ds
   shadowDataSourceNames:
-    - shadow_ds_master
-    - shadow_ds_slave
+    - shadow_primary_ds
+    - shadow_replica_ds
 
-- !MASTER_SLAVE
+- !PRIMARY_REPLICA_REPLICATION
   dataSources:
-    ms_ds:
-      name: ds_ms
-      masterDataSourceName: ds_master
-      slaveDataSourceNames: [ds_slave]
+    pr_ds:
+      name: pr_ds
+      primaryDataSourceName: primary_ds
+      replicaDataSourceNames: [replica_ds]
 
 props:
   sql-show: true

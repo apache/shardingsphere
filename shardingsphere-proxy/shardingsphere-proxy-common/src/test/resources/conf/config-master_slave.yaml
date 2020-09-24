@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: master_slave_db
+schemaName: primary_replica_db
 
 dataSourceCommon:
   username: root
@@ -28,19 +28,19 @@ dataSourceCommon:
   maintenanceIntervalMilliseconds: 30000
 
 dataSources:
-  master_ds:
-    url: jdbc:mysql://127.0.0.1:3306/master_ds
-  slave_ds_0:
-    url: jdbc:mysql://127.0.0.1:3306/slave_ds_0
-  slave_ds_1:
-    url: jdbc:mysql://127.0.0.1:3306/slave_ds_1
+  primary_ds:
+    url: jdbc:mysql://127.0.0.1:3306/primary_ds
+  replica_ds_0:
+    url: jdbc:mysql://127.0.0.1:3306/replica_ds_0
+  replica_ds_1:
+    url: jdbc:mysql://127.0.0.1:3306/replica_ds_1
 
 rules:
-- !MASTER_SLAVE
+- !PRIMARY_REPLICA_REPLICATION
   dataSources:
-    ms_ds: 
-      name: ms_ds
-      masterDataSourceName: master_ds
-      slaveDataSourceNames:
-        - slave_ds_0
-        - slave_ds_1
+    pr_ds: 
+      name: pr_ds
+      primaryDataSourceName: primary_ds
+      replicaDataSourceNames:
+        - replica_ds_0
+        - replica_ds_1

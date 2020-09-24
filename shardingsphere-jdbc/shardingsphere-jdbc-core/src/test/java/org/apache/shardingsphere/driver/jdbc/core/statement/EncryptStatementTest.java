@@ -168,7 +168,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
     }
     
     private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object plain) throws SQLException {
-        try (Connection conn = getDATABASE_TYPE_MAP().get(DatabaseTypes.getActualDatabaseType("H2")).get("encrypt").getConnection();
+        try (Connection conn = getDatabaseTypeMap().get(DatabaseTypes.getActualDatabaseType("H2")).get("encrypt").getConnection();
              Statement stmt = conn.createStatement()) {
             ResultSet resultSet = stmt.executeQuery(SELECT_SQL_TO_ASSERT);
             int count = 1;
