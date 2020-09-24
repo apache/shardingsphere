@@ -27,11 +27,11 @@ import lombok.Setter;
 @Getter
 public final class RuleConfiguration {
     
-    private String sourceDatasource;
+    private String sourceDataSource;
     
     private String sourceRule;
     
-    private YamlDataSourceParameter destinationDataSources;
+    private YamlDataSourceParameter targetDataSources;
     
     @Setter
     @Getter

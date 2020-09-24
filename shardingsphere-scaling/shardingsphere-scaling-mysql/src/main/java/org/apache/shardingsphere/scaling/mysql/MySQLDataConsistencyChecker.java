@@ -60,8 +60,8 @@ public final class MySQLDataConsistencyChecker extends AbstractDataConsistencyCh
     
     private boolean dataValid(final String actualTableName, final String logicTableName) {
         try (DataSourceWrapper sourceDataSource = getSourceDataSource();
-             DataSourceWrapper destinationDataSource = getDestinationDataSource()) {
-            return getColumns(actualTableName).stream().allMatch(each -> sumCrc32(sourceDataSource, logicTableName, each) == sumCrc32(destinationDataSource, logicTableName, each));
+             DataSourceWrapper targetDataSource = getTargetDataSource()) {
+            return getColumns(actualTableName).stream().allMatch(each -> sumCrc32(sourceDataSource, logicTableName, each) == sumCrc32(targetDataSource, logicTableName, each));
         } catch (IOException ex) {
             throw new DataCheckFailException(String.format("table %s data check failed.", logicTableName), ex);
         }

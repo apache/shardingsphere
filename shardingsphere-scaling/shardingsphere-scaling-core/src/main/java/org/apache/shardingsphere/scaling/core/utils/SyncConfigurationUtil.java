@@ -60,12 +60,12 @@ public final class SyncConfigurationUtil {
      */
     public static Collection<SyncConfiguration> toSyncConfigurations(final ScalingConfiguration scalingConfiguration) {
         Collection<SyncConfiguration> result = new LinkedList<>();
-        Map<String, DataSourceConfiguration> sourceDatasource = ConfigurationYamlConverter.loadDataSourceConfigurations(scalingConfiguration.getRuleConfiguration().getSourceDatasource());
+        Map<String, DataSourceConfiguration> sourceDataSource = ConfigurationYamlConverter.loadDataSourceConfigurations(scalingConfiguration.getRuleConfiguration().getSourceDataSource());
         ShardingRuleConfiguration sourceRule = ConfigurationYamlConverter.loadShardingRuleConfiguration(scalingConfiguration.getRuleConfiguration().getSourceRule());
-        Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDatasource.keySet());
+        Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDataSource.keySet());
         filterByShardingDataSourceTables(dataSourceTableNameMap, scalingConfiguration.getJobConfiguration());
         for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
-            DumperConfiguration dumperConfiguration = createDumperConfiguration(entry.getKey(), sourceDatasource.get(entry.getKey()), entry.getValue());
+            DumperConfiguration dumperConfiguration = createDumperConfiguration(entry.getKey(), sourceDataSource.get(entry.getKey()), entry.getValue());
             ImporterConfiguration importerConfiguration = createImporterConfiguration(scalingConfiguration, sourceRule);
             importerConfiguration.setRetryTimes(scalingConfiguration.getJobConfiguration().getRetryTimes());
             result.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), dumperConfiguration, importerConfiguration));
@@ -163,9 +163,9 @@ public final class SyncConfigurationUtil {
     private static ImporterConfiguration createImporterConfiguration(final ScalingConfiguration scalingConfiguration, final ShardingRuleConfiguration shardingRuleConfig) {
         ImporterConfiguration result = new ImporterConfiguration();
         JDBCDataSourceConfiguration importerDataSourceConfiguration = new JDBCDataSourceConfiguration(
-                scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUrl(),
-                scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUsername(),
-                scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getPassword());
+                scalingConfiguration.getRuleConfiguration().getTargetDataSources().getUrl(),
+                scalingConfiguration.getRuleConfiguration().getTargetDataSources().getUsername(),
+                scalingConfiguration.getRuleConfiguration().getTargetDataSources().getPassword());
         result.setDataSourceConfiguration(importerDataSourceConfiguration);
         result.setShardingColumnsMap(toShardingColumnsMap(shardingRuleConfig));
         return result;

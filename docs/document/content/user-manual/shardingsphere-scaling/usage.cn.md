@@ -53,14 +53,14 @@ PostgreSQL 需要开启 [test_decoding](https://www.postgresql.org/docs/9.4/test
 
 请求体：
 
-| Parameter                                         | Describe                                                     |
+| 参数                                               | 描述                                                     |
 | ------------------------------------------------- | ------------------------------------------------------------ |
-| ruleConfiguration.sourceDatasource                | 源端sharding sphere数据源相关配置                             |
+| ruleConfiguration.sourceDataSource                | 源端sharding sphere数据源相关配置                             |
 | ruleConfiguration.sourceRule                      | 源端sharding sphere表规则相关配置                             |
-| ruleConfiguration.destinationDataSources.name     | 目标端sharding proxy名称                                     |
-| ruleConfiguration.destinationDataSources.url      | 目标端sharding proxy jdbc url                                |
-| ruleConfiguration.destinationDataSources.username | 目标端sharding proxy用户名                                   |
-| ruleConfiguration.destinationDataSources.password | 目标端sharding proxy密码                                     |
+| ruleConfiguration.targetDataSources.name          | 目标端sharding proxy名称                                     |
+| ruleConfiguration.targetDataSources.url           | 目标端sharding proxy jdbc url                                |
+| ruleConfiguration.targetDataSources.username      | 目标端sharding proxy用户名                                   |
+| ruleConfiguration.targetDataSources.password      | 目标端sharding proxy密码                                     |
 | jobConfiguration.concurrency                      | 迁移并发度，举例：如果设置为3，则待迁移的表将会有三个线程同时对该表进行迁移，前提是该表有整数型主键 |
 
 示例：
@@ -71,20 +71,20 @@ curl -X POST \
   -H 'content-type: application/json' \
   -d '{
         "ruleConfiguration": {
-          "sourceDatasource":"
+          "sourceDataSource":"
             dataSources:
               ds_0:
                 dataSourceClassName: com.zaxxer.hikari.HikariDataSource
                 props:
                   driverClassName: com.mysql.jdbc.Driver
-                  jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling?useSSL=false
+                  jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_0?useSSL=false
                   username: scaling
                   password: scaling
               ds_1:
                 dataSourceClassName: com.zaxxer.hikari.HikariDataSource
                 props:
                   driverClassName: com.mysql.jdbc.Driver
-                  jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling?useSSL=false
+                  jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_1?useSSL=false
                   username: scaling
                   password: scaling
             ",
@@ -113,14 +113,13 @@ curl -X POST \
                   props:
                     algorithm-expression: t_order_$->{user_id % 2}
             ",
-          "destinationDataSources":{
+          "targetDataSources":{
             "username":"root",
             "password":"root",
             "url":"jdbc:mysql://127.0.0.1:3307/sharding_db?serverTimezone=UTC&useSSL=false"
           }
         },
         "jobConfiguration":{
-          "jobName": "jobName",
           "concurrency":"3"
         }
       }'
@@ -232,7 +231,7 @@ curl -X GET \
 
 请求体：
 
-| Parameter | Describe |
+| 参数      | 描述      |
 | --------- | -------- |
 | jobId     | job id   |
 
