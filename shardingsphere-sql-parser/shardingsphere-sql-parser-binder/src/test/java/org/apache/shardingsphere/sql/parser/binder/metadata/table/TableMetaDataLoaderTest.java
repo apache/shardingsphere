@@ -124,16 +124,6 @@ public final class TableMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadWithoutColumnMetaData() throws SQLException {
-        Optional<TableMetaData> actual = TableMetaDataLoader.loadWithoutColumnMetaData(dataSource, TEST_TABLE, "");
-        assertTrue(actual.isPresent());
-        Map<String, ColumnMetaData> columnMetaDataMap = actual.get().getColumns();
-        assertThat(columnMetaDataMap.size(), is(0));
-        Map<String, IndexMetaData> indexMetaDataMap = actual.get().getIndexes();
-        assertThat(indexMetaDataMap.size(), is(0));
-    }
-    
-    @Test
     public void assertTableNotExist() throws SQLException {
         when(databaseMetaData.getTables(TEST_CATALOG, null, TEST_TABLE, null)).thenReturn(tableNotExistResultSet);
         when(tableNotExistResultSet.next()).thenReturn(false);

@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -32,5 +33,5 @@ public final class YamlRuleSchemaMetaData implements YamlConfiguration {
 
     private YamlSchemaMetaData configuredSchemaMetaData;
 
-    private Map<String, YamlSchemaMetaData> unconfiguredSchemaMetaDataMap;
+    private Map<String, Collection<String>> unconfiguredSchemaMetaDataMap;
 }

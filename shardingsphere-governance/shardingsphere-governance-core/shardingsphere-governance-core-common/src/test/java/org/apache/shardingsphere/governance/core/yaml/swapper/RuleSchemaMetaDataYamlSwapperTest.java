@@ -48,7 +48,7 @@ public final class RuleSchemaMetaDataYamlSwapperTest {
         assertThat(yamlRuleSchemaMetaData.getConfiguredSchemaMetaData().getTables().get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
         assertThat(yamlRuleSchemaMetaData.getConfiguredSchemaMetaData().getTables().get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
         assertThat(yamlRuleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().keySet(), is(Collections.singleton("ds_0")));
-        assertThat(yamlRuleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0").getTables().keySet(), is(Collections.singleton("t_user")));
+        assertThat(yamlRuleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0"), is(Arrays.asList("t_user")));
     }
     
     @Test
