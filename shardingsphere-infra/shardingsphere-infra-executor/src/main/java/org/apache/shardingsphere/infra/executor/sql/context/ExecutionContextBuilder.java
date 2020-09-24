@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
@@ -118,7 +119,10 @@ public final class ExecutionContextBuilder {
     private static List<PrimaryKeyMetaData> getPrimaryKeyColumns(final ShardingSphereMetaData metaData, final List<String> actualTableNames) {
         List<PrimaryKeyMetaData> result = new LinkedList<>();
         for (String each: actualTableNames) {
-            result.add(new PrimaryKeyMetaData(each, metaData.getRuleSchemaMetaData().getSchemaMetaData().get(each).getPrimaryKeyColumns()));
+            TableMetaData tableMetaData = metaData.getRuleSchemaMetaData().getSchemaMetaData().get(each);
+            if (null != tableMetaData) {
+                result.add(new PrimaryKeyMetaData(each, tableMetaData.getPrimaryKeyColumns()));
+            }
         }
         return result;
     }
@@ -126,7 +130,10 @@ public final class ExecutionContextBuilder {
     private static List<PrimaryKeyMetaData> getPrimaryKeyColumns(final ShardingSphereMetaData metaData, final Collection<RouteMapper> tableMappers) {
         List<PrimaryKeyMetaData> result = new LinkedList<>();
         for (RouteMapper each: tableMappers) {
-            result.add(new PrimaryKeyMetaData(each.getLogicName(), metaData.getRuleSchemaMetaData().getSchemaMetaData().get(each.getLogicName()).getPrimaryKeyColumns()));
+            TableMetaData tableMetaData = metaData.getRuleSchemaMetaData().getSchemaMetaData().get(each.getLogicName());
+            if (null != tableMetaData) {
+                result.add(new PrimaryKeyMetaData(each.getLogicName(), tableMetaData.getPrimaryKeyColumns()));
+            }
         }
         return result;
     }
