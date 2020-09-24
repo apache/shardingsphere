@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.Generat
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -44,8 +45,10 @@ import java.sql.Types;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -66,92 +69,95 @@ public final class GeneratedKeyContextEngineTest {
     }
     
     @Test
-    public void assertMySQLCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration() {
+    public void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfigurationForMySQL() {
         assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(new MySQLInsertStatement());
     }
-
+    
     @Test
-    public void assertOracleCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration() {
+    public void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfigurationForOracle() {
         assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(new OracleInsertStatement());
     }
-
+    
     @Test
-    public void assertPostgreSQLCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration() {
+    public void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfigurationForPostgreSQL() {
         assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(new PostgreSQLInsertStatement());
     }
-
+    
     @Test
-    public void assertSQL92CreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration() {
+    public void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfigurationForSQL92() {
         assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(new SQL92InsertStatement());
     }
-
+    
     @Test
-    public void assertSQLServerCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration() {
+    public void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfigurationForSQLServer() {
         assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(new SQLServerInsertStatement());
     }
     
     private void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(final InsertStatement insertStatement) {
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl1")));
         insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
-        assertFalse(new GeneratedKeyContextEngine(schemaMetaData).createGenerateKeyContext(Collections.singletonList(1), insertStatement).isPresent());
+        assertFalse(new GeneratedKeyContextEngine(insertStatement, schemaMetaData).createGenerateKeyContext(Collections.emptyList(), 
+                Collections.emptyList(), Collections.singletonList(1)).isPresent());
     }
     
     @Test
-    public void assertMySQLCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration() {
+    public void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfigurationForMySQL() {
         assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(new MySQLInsertStatement());
     }
-
+    
     @Test
-    public void assertOracleCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration() {
+    public void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfigurationForOracle() {
         assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(new OracleInsertStatement());
     }
-
+    
     @Test
-    public void assertPostgreSQLCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration() {
+    public void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfigurationForPostgreSQL() {
         assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(new PostgreSQLInsertStatement());
     }
-
+    
     @Test
-    public void assertSQL92CreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration() {
+    public void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfigurationForSQL92() {
         assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(new SQL92InsertStatement());
     }
-
+    
     @Test
-    public void assertSQLServerCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration() {
+    public void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfigurationForSQLServer() {
         assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(new SQLServerInsertStatement());
     }
-
+    
     private void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(final InsertStatement insertStatement) {
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
-        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))));
-        Optional<GeneratedKeyContext> actual = new GeneratedKeyContextEngine(schemaMetaData).createGenerateKeyContext(Collections.singletonList(1), insertStatement);
+        List<ExpressionSegment> expressionSegments = Collections.singletonList(new LiteralExpressionSegment(0, 0, 1));
+        insertStatement.getValues().add(new InsertValuesSegment(0, 0, expressionSegments));
+        Optional<GeneratedKeyContext> actual = new GeneratedKeyContextEngine(insertStatement, schemaMetaData)
+                .createGenerateKeyContext(Collections.singletonList("id"), Collections.singletonList(expressionSegments), Collections.singletonList(1));
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(1));
     }
     
     @Test
-    public void assertMySQLCreateGenerateKeyContextWhenFind() {
+    public void assertCreateGenerateKeyContextWhenFindForMySQL() {
         assertCreateGenerateKeyContextWhenFind(new MySQLInsertStatement());
     }
-
+    
     @Test
-    public void assertOracleCreateGenerateKeyContextWhenFind() {
+    public void assertCreateGenerateKeyContextWhenFindForOracle() {
         assertCreateGenerateKeyContextWhenFind(new OracleInsertStatement());
     }
-
+    
     @Test
-    public void assertPostgreSQLCreateGenerateKeyContextWhenFind() {
+    public void assertCreateGenerateKeyContextWhenFindForPostgreSQL() {
         assertCreateGenerateKeyContextWhenFind(new PostgreSQLInsertStatement());
     }
-
+    
     @Test
-    public void assertSQL92CreateGenerateKeyContextWhenFind() {
+    public void assertCreateGenerateKeyContextWhenFindForSQL92() {
         assertCreateGenerateKeyContextWhenFind(new SQL92InsertStatement());
     }
-
+    
     @Test
-    public void assertSQLServerCreateGenerateKeyContextWhenFind() {
+    public void assertCreateGenerateKeyContextWhenFindForSQLServer() {
         assertCreateGenerateKeyContextWhenFind(new SQLServerInsertStatement());
     }
     
@@ -162,13 +168,16 @@ public final class GeneratedKeyContextEngineTest {
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(1, 2, 100))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(1, 2, "value"))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new CommonExpressionSegment(1, 2, "ignored value"))));
-        Optional<GeneratedKeyContext> actual = new GeneratedKeyContextEngine(schemaMetaData).createGenerateKeyContext(Collections.singletonList(1), insertStatement);
+        List<List<ExpressionSegment>> valueExpressions = insertStatement.getValues().stream().map(InsertValuesSegment::getValues).collect(Collectors.toList());
+        Optional<GeneratedKeyContext> actual = new GeneratedKeyContextEngine(insertStatement, schemaMetaData)
+                .createGenerateKeyContext(Collections.singletonList("id"), valueExpressions, Collections.singletonList(1));
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(3));
         Iterator<Comparable<?>> generatedValuesIterator = actual.get().getGeneratedValues().iterator();
         assertThat(generatedValuesIterator.next(), is((Comparable) 1));
         assertThat(generatedValuesIterator.next(), is((Comparable) 100));
         assertThat(generatedValuesIterator.next(), is((Comparable) "value"));
-        assertTrue(new GeneratedKeyContextEngine(schemaMetaData).createGenerateKeyContext(Collections.singletonList(1), insertStatement).isPresent());
+        assertTrue(new GeneratedKeyContextEngine(insertStatement, schemaMetaData).createGenerateKeyContext(Collections.emptyList(), 
+                Collections.emptyList(), Collections.singletonList(1)).isPresent());
     }
 }

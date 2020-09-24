@@ -30,7 +30,9 @@ import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementC
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
@@ -40,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatem
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,13 +70,14 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     public InsertStatementContext(final SchemaMetaData schemaMetaData, final List<Object> parameters, final InsertStatement sqlStatement) {
         super(sqlStatement);
-        columnNames = useDefaultColumns() ? schemaMetaData.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : InsertStatementHandler.getColumnNames(sqlStatement);
+        List<String> insertColumnNames = getInsertColumnNames(sqlStatement);
+        columnNames = useDefaultColumns() ? schemaMetaData.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames;
         AtomicInteger parametersOffset = new AtomicInteger(0);
         insertValueContexts = getInsertValueContexts(parameters, parametersOffset);
         insertSelectContext = getInsertSelectContext(schemaMetaData, parameters, parametersOffset).orElse(null);
         tablesContext = getTablesContext(sqlStatement);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
-        generatedKeyContext = new GeneratedKeyContextEngine(schemaMetaData).createGenerateKeyContext(parameters, sqlStatement).orElse(null);
+        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schemaMetaData).createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), parameters).orElse(null);
     }
     
     private TablesContext getTablesContext(final InsertStatement sqlStatement) {
@@ -87,7 +91,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private List<InsertValueContext> getInsertValueContexts(final List<Object> parameters, final AtomicInteger parametersOffset) {
         List<InsertValueContext> result = new LinkedList<>();
-        List<List<ExpressionSegment>> allValueExpressions = InsertStatementHandler.getAllValueExpressions(getSqlStatement());
+        List<List<ExpressionSegment>> allValueExpressions = getAllValueExpressions(getSqlStatement());
         for (Collection<ExpressionSegment> each : allValueExpressions) {
             InsertValueContext insertValueContext = new InsertValueContext(each, parameters, parametersOffset.get());
             result.add(insertValueContext);
@@ -191,5 +195,47 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         InsertStatement insertStatement = getSqlStatement();
         Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
         return setAssignment.isPresent() ? 1 : insertStatement.getValues().size();
+    }
+        
+    private List<String> getInsertColumnNames(final InsertStatement insertStatement) {
+        Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
+        return setAssignment.isPresent() ? getColumnNamesForSetAssignment(setAssignment.get()) : getColumnNamesForInsertColumns(insertStatement.getColumns());
+    }
+    
+    private static List<String> getColumnNamesForSetAssignment(final SetAssignmentSegment setAssignment) {
+        List<String> result = new LinkedList<>();
+        for (AssignmentSegment each : setAssignment.getAssignments()) {
+            result.add(each.getColumn().getIdentifier().getValue().toLowerCase());
+        }
+        return result;
+    }
+    
+    private static List<String> getColumnNamesForInsertColumns(final Collection<ColumnSegment> columns) {
+        List<String> result = new LinkedList<>();
+        for (ColumnSegment each : columns) {
+            result.add(each.getIdentifier().getValue().toLowerCase());
+        }
+        return result;
+    }
+    
+    private List<List<ExpressionSegment>> getAllValueExpressions(final InsertStatement insertStatement) {
+        Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
+        return setAssignment.isPresent() ? Collections.singletonList(getAllValueExpressionsFromSetAssignment(setAssignment.get())) : getAllValueExpressionsFromValues(insertStatement.getValues());
+    }
+    
+    private List<ExpressionSegment> getAllValueExpressionsFromSetAssignment(final SetAssignmentSegment setAssignment) {
+        List<ExpressionSegment> result = new ArrayList<>(setAssignment.getAssignments().size());
+        for (AssignmentSegment each : setAssignment.getAssignments()) {
+            result.add(each.getValue());
+        }
+        return result;
+    }
+    
+    private List<List<ExpressionSegment>> getAllValueExpressionsFromValues(final Collection<InsertValuesSegment> values) {
+        List<List<ExpressionSegment>> result = new ArrayList<>(values.size());
+        for (InsertValuesSegment each : values) {
+            result.add(each.getValues());
+        }
+        return result;
     }
 }

@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -39,19 +40,22 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class GeneratedKeyContextEngine {
     
+    private final InsertStatement insertStatement;
+    
     private final SchemaMetaData schemaMetaData;
     
     /**
      * Create generate key context.
      *
+     * @param columnNames column names
+     * @param valueExpressions value expressions
      * @param parameters SQL parameters
-     * @param insertStatement insert statement
      * @return generate key context
      */
-    public Optional<GeneratedKeyContext> createGenerateKeyContext(final List<Object> parameters, final InsertStatement insertStatement) {
+    public Optional<GeneratedKeyContext> createGenerateKeyContext(final List<String> columnNames, final List<List<ExpressionSegment>> valueExpressions, final List<Object> parameters) {
         String tableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
-        return findGenerateKeyColumn(tableName).map(generateKeyColumnName -> containsGenerateKey(insertStatement, generateKeyColumnName)
-                ? findGeneratedKey(parameters, insertStatement, generateKeyColumnName) : new GeneratedKeyContext(generateKeyColumnName, true));
+        return findGenerateKeyColumn(tableName).map(generateKeyColumnName -> containsGenerateKey(columnNames, generateKeyColumnName)
+                ? findGeneratedKey(columnNames, valueExpressions, parameters, generateKeyColumnName) : new GeneratedKeyContext(generateKeyColumnName, true));
     }
     
     private Optional<String> findGenerateKeyColumn(final String tableName) {
@@ -66,16 +70,29 @@ public final class GeneratedKeyContextEngine {
         return Optional.empty();
     }
     
-    private boolean containsGenerateKey(final InsertStatement insertStatement, final String generateKeyColumnName) {
-        List<String> columnNames = InsertStatementHandler.getColumnNames(insertStatement);
-        int valueCountForPerGroup = InsertStatementHandler.getValueCountForPerGroup(insertStatement);
-        return columnNames.isEmpty() ? schemaMetaData.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).size() == valueCountForPerGroup
+    private boolean containsGenerateKey(final List<String> columnNames, final String generateKeyColumnName) {
+        return columnNames.isEmpty() ? schemaMetaData.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).size() == getValueCountForPerGroup()
                 : columnNames.contains(generateKeyColumnName);
     }
     
-    private GeneratedKeyContext findGeneratedKey(final List<Object> parameters, final InsertStatement insertStatement, final String generateKeyColumnName) {
+    private int getValueCountForPerGroup() {
+        if (!insertStatement.getValues().isEmpty()) {
+            return insertStatement.getValues().iterator().next().getValues().size();
+        }
+        Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
+        if (setAssignment.isPresent()) {
+            return setAssignment.get().getAssignments().size();
+        }
+        if (insertStatement.getInsertSelect().isPresent()) {
+            return insertStatement.getInsertSelect().get().getSelect().getProjections().getProjections().size();
+        }
+        return 0;
+    }
+    
+    private GeneratedKeyContext findGeneratedKey(final List<String> columnNames, final List<List<ExpressionSegment>> valueExpressions, 
+                                                 final List<Object> parameters, final String generateKeyColumnName) {
         GeneratedKeyContext result = new GeneratedKeyContext(generateKeyColumnName, false);
-        for (ExpressionSegment each : findGenerateKeyExpressions(insertStatement, generateKeyColumnName)) {
+        for (ExpressionSegment each : findGenerateKeyExpressions(columnNames, valueExpressions, generateKeyColumnName)) {
             if (each instanceof ParameterMarkerExpressionSegment) {
                 result.getGeneratedValues().add((Comparable<?>) parameters.get(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex()));
             } else if (each instanceof LiteralExpressionSegment) {
@@ -85,17 +102,15 @@ public final class GeneratedKeyContextEngine {
         return result;
     }
     
-    private Collection<ExpressionSegment> findGenerateKeyExpressions(final InsertStatement insertStatement, final String generateKeyColumnName) {
+    private Collection<ExpressionSegment> findGenerateKeyExpressions(final List<String> columnNames, final List<List<ExpressionSegment>> valueExpressions, final String generateKeyColumnName) {
         Collection<ExpressionSegment> result = new LinkedList<>();
-        List<List<ExpressionSegment>> allValueExpressions = InsertStatementHandler.getAllValueExpressions(insertStatement);
-        for (List<ExpressionSegment> each : allValueExpressions) {
-            result.add(each.get(findGenerateKeyIndex(insertStatement, generateKeyColumnName.toLowerCase())));
+        for (List<ExpressionSegment> each : valueExpressions) {
+            result.add(each.get(findGenerateKeyIndex(columnNames, generateKeyColumnName.toLowerCase())));
         }
         return result;
     }
     
-    private int findGenerateKeyIndex(final InsertStatement insertStatement, final String generateKeyColumnName) {
-        List<String> columnNames = InsertStatementHandler.getColumnNames(insertStatement);
+    private int findGenerateKeyIndex(final List<String> columnNames, final String generateKeyColumnName) {
         return columnNames.isEmpty() ? schemaMetaData.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).indexOf(generateKeyColumnName) 
                 : columnNames.indexOf(generateKeyColumnName);
     }
