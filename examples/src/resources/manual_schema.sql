@@ -45,6 +45,8 @@ CREATE SCHEMA IF NOT EXISTS demo_primary_ds_1;
 CREATE SCHEMA IF NOT EXISTS demo_primary_ds_1_replica_0;
 CREATE SCHEMA IF NOT EXISTS demo_primary_ds_1_replica_1;
 
+CREATE SCHEMA IF NOT EXISTS shadow_demo_ds;
+
 -- Should sync from master-salve automatically
 -- CREATE TABLE IF NOT EXISTS demo_replica_ds_0.t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
 -- CREATE TABLE IF NOT EXISTS demo_replica_ds_1.t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
