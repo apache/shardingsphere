@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.mysql.visitor;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
@@ -386,7 +385,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     @Override
     public final ASTNode visitBitExpr(final BitExprContext ctx) {
         if (null != ctx.simpleExpr()) {
-            return createExpressionSegment(visit(ctx.simpleExpr()), ctx);
+            return visit(ctx.simpleExpr());
         }
         ExpressionSegment left = (ExpressionSegment) visit(ctx.getChild(0));
         ExpressionSegment right = (ExpressionSegment) visit(ctx.getChild(2));
@@ -396,7 +395,8 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         return result;
     }
     
-    private ASTNode createExpressionSegment(final ASTNode astNode, final ParserRuleContext context) {
+    private ExpressionSegment createLiteralExpression(final LiteralsContext context) {
+        ASTNode astNode = visit(context);
         if (astNode instanceof StringLiteralValue) {
             return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((StringLiteralValue) astNode).getValue());
         }
@@ -406,28 +406,24 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         if (astNode instanceof BooleanLiteralValue) {
             return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((BooleanLiteralValue) astNode).getValue());
         }
-        if (astNode instanceof ParameterMarkerValue) {
-            return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterMarkerValue) astNode).getValue());
-        }
-        if (astNode instanceof SubquerySegment) {
-            return new SubqueryExpressionSegment((SubquerySegment) astNode);
-        }
         if (astNode instanceof OtherLiteralValue) {
             return new CommonExpressionSegment(context.getStart().getStartIndex(), context.getStop().getStopIndex(), ((OtherLiteralValue) astNode).getValue());
         }
-        return astNode;
+        return new CommonExpressionSegment(context.getStart().getStartIndex(), context.getStop().getStopIndex(),
+                context.start.getInputStream().getText(new Interval(context.start.getStartIndex(), context.stop.getStopIndex())));
     }
     
     @Override
     public final ASTNode visitSimpleExpr(final SimpleExprContext ctx) {
         if (null != ctx.subquery()) {
-            return new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (MySQLSelectStatement) visit(ctx.subquery()));
+            SubquerySegment subquerySegment = new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (MySQLSelectStatement) visit(ctx.subquery()));
+            return new SubqueryExpressionSegment(subquerySegment);
         }
         if (null != ctx.parameterMarker()) {
-            return visit(ctx.parameterMarker());
+            return new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
         }
         if (null != ctx.literals()) {
-            return visit(ctx.literals());
+            return createLiteralExpression(ctx.literals());
         }
         if (null != ctx.intervalExpression()) {
             return visit(ctx.intervalExpression());
@@ -603,7 +599,8 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         if (null != ctx.caseExpression()) {
             visit(ctx.caseExpression());
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-            return new OtherLiteralValue(text);
+            return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
+//            return new OtherLiteralValue(text);
         }
         for (ExprContext each : ctx.expr()) {
             visit(each);

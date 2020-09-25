@@ -34,14 +34,13 @@ FILESIZE_LITERAL
 IDENTIFIER_
     : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
     |  BQ_ ~'`'+ BQ_
-    | (DQ_ ( '\\'. | '""' | ~('"'| '\\') )* DQ_)
     ;
 
 Y_N_
     : SQ_ ('Y' | 'N') SQ_
     ;
 
-STRING_ 
+STRING_
     : (DQ_ ( '\\'. | '""' | ~('"'| '\\') )* DQ_)
     | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
     ;
