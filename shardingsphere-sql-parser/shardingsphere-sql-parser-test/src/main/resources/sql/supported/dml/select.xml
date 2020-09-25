@@ -32,6 +32,7 @@
     <sql-case id="select_equal_with_same_sharding_column" value="SELECT * FROM t_order WHERE order_id = ? AND order_id = ?" />
     <sql-case id="select_in_with_same_sharding_column" value="SELECT * FROM t_order WHERE order_id IN (?, ?) AND order_id IN (?, ?) ORDER BY order_id" />
     <sql-case id="select_count_like_concat" value="SELECT count(0) as orders_count FROM t_order o WHERE o.status LIKE CONCAT('%%', ?, '%%') AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" />
+    <sql-case id="select_like_with_single_quotes" value="select id from admin where fullname like 'a%'" db-types="MySQL"/>
     <sql-case id="select_count_tilde_concat" value="SELECT count(0) as orders_count FROM t_order o WHERE o.status ~~ CONCAT('%%', ?, '%%') AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" db-types="PostgreSQL" />
     <sql-case id="select_sharding_route_with_binding_tables" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? ORDER BY i.item_id" />
     <sql-case id="select_full_route_with_binding_tables" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY i.item_id" />

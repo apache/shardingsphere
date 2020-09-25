@@ -322,7 +322,7 @@ columnDefinition
 storageOption
     : dataTypeGenericOption
     | AUTO_INCREMENT
-    | DEFAULT (literals | expr)
+    | DEFAULT expr
     | COLUMN_FORMAT (FIXED | DYNAMIC | DEFAULT)
     | STORAGE (DISK | MEMORY | DEFAULT)
     ;
@@ -414,7 +414,7 @@ alterSpecification
     | DROP CHECK ignoredIdentifier_
     | ALTER CHECK ignoredIdentifier_ NOT? ENFORCED
     | ALGORITHM EQ_? (DEFAULT | INSTANT | INPLACE | COPY)
-    | ALTER COLUMN? columnName (SET DEFAULT (literals | LP_ expr RP_) | DROP DEFAULT)
+    | ALTER COLUMN? columnName (SET DEFAULT expr | DROP DEFAULT)
     | ALTER INDEX indexName (VISIBLE | INVISIBLE)
     | changeColumnSpecification
     | modifyColumnSpecification
@@ -549,7 +549,7 @@ partitionLessThanValue_
     ;
 
 partitionValueList_
-    : literals (COMMA_ literals)*
+    : expr (COMMA_ expr)*
     ;
 
 partitionDefinitionOption_
