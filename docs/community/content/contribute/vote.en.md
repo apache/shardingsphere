@@ -33,7 +33,7 @@ https://github.com/apache/shardingsphere/pull/6211
 
 ### 2. Wait 3*24 hours to get vote result from commiunity committers
 
-### 3. PMC send vote result over email
+### 3. PMC sends vote result over email
 
 ```
 Example：
@@ -117,15 +117,15 @@ https://www.apache.org/foundation/policies/conduct.html
 Here is the guideline for all of the ShardingSphere committers:
 https://shardingsphere.apache.org/community/en/contribute/committer/
 ```
-### 7. New committer sign icla, this step refers to [Sign ICLA Guide](https://shardingsphere.apache.org/community/en/contribute/icla/)
+### 7. New committer signs iCLA, this step refers to [Sign ICLA Guide](https://shardingsphere.apache.org/community/en/contribute/icla/)
 
-### 8. New committer wait for secretary to create a new account
+### 8. New committer waits for secretary to create a new account
 
 ### 9. PMC adds new committer in roster
 
 https://whimsy.apache.org/roster/committee/shardingsphere
 
-### 10. New committer setup account, refers to the following link
+### 10. New committer could setup an account, refers to the following link
 
 https://gitbox.apache.org/setup/
 
@@ -149,5 +149,5 @@ to announce that he has accepted.
 Thanks for your contributions.
 ```
 
-### 12. New Committer update [Team](/en/team/) list。
+### 12. New Committer updates [Team](/en/team/) list。
 
