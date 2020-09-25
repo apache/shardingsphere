@@ -80,12 +80,7 @@
         </props>
     </sharding:sharding-algorithm>
 
-    <shadow:rule id="shadowRule" column="shadow">
-        <shadow:mappings>
-            <shadow:mapping product-data-source-name="ds_0" shadow-data-source-name="shadow_ds_0"/>
-            <shadow:mapping product-data-source-name="ds_1" shadow-data-source-name="shadow_ds_1"/>
-        </shadow:mappings>
-    </shadow:rule>
+    <shadow:rule id="shadowRule" column="shadow" sourceDataSourceNames="ds_0,ds_1" shadowDataSourceNames="shadow_ds_0,shadow_ds_1"/>
 
     <shardingsphere:data-source id="shardingShadowDataSource" data-source-names="ds_0,ds_1,shadow_ds_0,shadow_ds_1" rule-refs="shadowRule,shardingRule">
         <props>
