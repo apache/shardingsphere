@@ -66,13 +66,8 @@
         <property name="password" value=""/>
     </bean>
     
-    <shadow:rule id="shadowRule" column="shadow">
-        <shadow:mappings>
-            <shadow:mapping product-data-source-name="primary_ds" shadow-data-source-name="shadow_primary_ds" />
-            <shadow:mapping product-data-source-name="replica_ds" shadow-data-source-name="shadow_replica_ds" />
-        </shadow:mappings>
-    </shadow:rule>
-    
+    <shadow:rule id="shadowRule" column="shadow" sourceDataSourceNames="primary_ds,replica_ds" shadowDataSourceNames="shadow_primary_ds,shadow_replica_ds"/>
+
     <shardingsphere:data-source id="shadowDataSource" data-source-names="primary_ds,replica_ds,shadow_primary_ds,shadow_replica_ds" rule-refs="shadowRule,primaryReplicaReplicationRule">
         <props>
             <prop key="sql-show">true</prop>

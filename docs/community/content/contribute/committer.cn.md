@@ -9,13 +9,6 @@ chapter = true
 ShardingSphere社区遵循[Apache Community’s process](http://community.apache.org/newcommitter.html) 来接收新的提交者。
 当您积极参地与ShardingSphere社区之后，项目管理委员会和项目官方提交者会根据您的表现发起吸纳您成为官方提交者和项目管理委员会成员的流程。
 
-流程如下：
-
- - 在 @private 邮件列表讨论并投票，由现有的PMC成员发起；
- - 如果投票通过，对候选人发布邀请并抄送@private 邮件列表；
- - 新提交者成员签署ICLA，申请Apache ID和邮箱；
- - 更新[提交者名单](/cn/team/)。
-
 ## 提交者责任
 
  - 开发新功能；

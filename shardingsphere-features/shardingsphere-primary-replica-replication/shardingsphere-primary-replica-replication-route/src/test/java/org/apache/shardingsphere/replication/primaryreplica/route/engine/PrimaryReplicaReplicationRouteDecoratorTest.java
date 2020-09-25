@@ -158,7 +158,7 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
     
     private RouteContext mockSQLRouteContext(final SQLStatement sqlStatement) {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        return new RouteContext(sqlStatementContext, Collections.emptyList(), mockRouteResult());
+        return new RouteContext(new RouteContext(sqlStatementContext, Collections.emptyList()), mockRouteResult(), null, null);
     }
     
     private RouteResult mockRouteResult() {
@@ -171,11 +171,11 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
     
     private RouteContext mockSQLRouteContextWithoutRouteUnits(final SQLStatement sqlStatement) {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        return new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
+        return new RouteContext(sqlStatementContext, Collections.emptyList());
     }
     
     private RouteContext mockSQLRouteContextWithoutRouteUnitsAndWithParameters(final SQLStatement sqlStatement) {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        return new RouteContext(sqlStatementContext, Collections.singletonList("true"), new RouteResult());
+        return new RouteContext(sqlStatementContext, Collections.singletonList("true"));
     }
 }
