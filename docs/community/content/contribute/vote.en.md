@@ -6,7 +6,7 @@ chapter = true
 
 ## Processes on accepting a new committer are:
 
-### 1. Start the discussion and vote in @private. Only current PMC member could nominate.
+**1. Start the discussion and vote in @private. Only current PMC member could nominate**
 
 ```
 Example：
@@ -31,9 +31,9 @@ https://github.com/apache/shardingsphere/pull/6211
 [^ means these words are subject to change in different case]
 ```
 
-### 2. Wait 3*24 hours to get vote result from commiunity committers
+**2. Wait 3*24 hours to get vote result from commiunity committers**
 
-### 3. PMC sends vote result over email
+**3. PMC sends vote result over email**
 
 ```
 Example：
@@ -52,7 +52,7 @@ I am glad to receive your votes, and the voting result is,
 Therefore, I will send the invitation to （nomiee）.
 ```
 
-### 4. If the vote passes, send an offer to become a committer with @private CC’ed
+**4. If the vote passes, send an offer to become a committer with @private CC’ed**
 
 ```
 To: (nominee email address)
@@ -85,9 +85,9 @@ Best wishes,
 (PMC)
 
 ```
-### 5. Nominee replies the invitation, including content like accept the offer and give thanks.
+**5. Nominee replies the invitation, including content like accept the offer and give thanks**
 
-### 6. PMC replies the email
+**6. PMC replies the email**
 ```
 Hi (nominee),
 
@@ -117,19 +117,15 @@ https://www.apache.org/foundation/policies/conduct.html
 Here is the guideline for all of the ShardingSphere committers:
 https://shardingsphere.apache.org/community/en/contribute/committer/
 ```
-### 7. New committer signs iCLA, this step refers to [Sign ICLA Guide](https://shardingsphere.apache.org/community/en/contribute/icla/)
+**7. New committer signs iCLA, this step refers to [Sign ICLA Guide](https://shardingsphere.apache.org/community/en/contribute/icla/)**
 
-### 8. New committer waits for secretary to create a new account
+**8. New committer waits for secretary to create a new account**
 
-### 9. PMC adds new committer in roster
+**9. PMC adds new committer in [roster](https://whimsy.apache.org/roster/committee/shardingsphere)**
 
-https://whimsy.apache.org/roster/committee/shardingsphere
+**10. New committer could setup an account, refers to [apache setup](https://gitbox.apache.org/setup/)**
 
-### 10. New committer could setup an account, refers to the following link
-
-https://gitbox.apache.org/setup/
-
-### 11. PMC announces new committer in the community  
+**11. PMC announces new committer in the community**  
 
 ```
 To: dev@shardingsphere.apache.org
@@ -149,5 +145,5 @@ to announce that he has accepted.
 Thanks for your contributions.
 ```
 
-### 12. New Committer updates [Team](/en/team/) list。
+**12. New Committer updates [Team](/en/team/) list**
 
