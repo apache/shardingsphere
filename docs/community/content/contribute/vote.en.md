@@ -11,11 +11,11 @@ chapter = true
 ```
 Example：
 
-to：private@shardingsphere.apache.org
+To：private@shardingsphere.apache.org
 
-title： [VOTE] New committer: （nominee）
+Title： [VOTE] New committer: （nominee）
 
-content：
+Content：
 
 Hi, everyone
 
@@ -31,18 +31,18 @@ https://github.com/apache/shardingsphere/pull/6211
 [^ means these words are subject to change in different case]
 ```
 
-### 2. Wait 3*24 hours to get vote result
+### 2. Wait 3*24 hours to get vote result from commiunity committers
 
-### 3. Send vote result over email
+### 3. PMC send vote result over email
 
 ```
 Example：
 
-to: private@shardingsphere.apache.org
+To: private@shardingsphere.apache.org
 
-title: [RESULT] [VOTE] New committer: （nominee）
+Title: [RESULT] [VOTE] New committer: （nominee）
 
-content:
+Content:
 
 Hi all PMCs, 
 
@@ -55,13 +55,13 @@ Therefore, I will send the invitation to （nomiee）.
 ### 4. If the vote passes, send an offer to become a committer with @private CC’ed
 
 ```
-to: (nominee email address)
+To: (nominee email address)
 
 cc: private@shardingsphere.apache.org
 
-title Invitation to become ShardingSphere committer: （nominee）
+Title Invitation to become ShardingSphere committer: （nominee）
 
-content:
+Content:
 
 Hello （nominee）,
 
@@ -119,9 +119,9 @@ https://shardingsphere.apache.org/community/en/contribute/committer/
 ```
 ### 7. New committer sign icla, this step refers to [Sign ICLA Guide](https://shardingsphere.apache.org/community/en/contribute/icla/)
 
-### 8. wait for secretary to create a new account
+### 8. New committer wait for secretary to create a new account
 
-### 9. VP adds new committer in roster
+### 9. PMC adds new committer in roster
 
 https://whimsy.apache.org/roster/committee/shardingsphere
 
@@ -132,11 +132,11 @@ https://gitbox.apache.org/setup/
 ### 11. PMC announces new committer in the community  
 
 ```
-to: dev@shardingsphere.apache.org
+To: dev@shardingsphere.apache.org
 
-title: [ANNOUNCE] New committer: （nominee）
+Title: [ANNOUNCE] New committer: （nominee）
 
-content:
+Content:
 
 Hi community,
 
@@ -149,5 +149,5 @@ to announce that he has accepted.
 Thanks for your contributions.
 ```
 
-### 12. Update [Team](/en/team/) list。
+### 12. New Committer update [Team](/en/team/) list。
 
