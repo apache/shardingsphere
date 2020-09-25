@@ -11,11 +11,11 @@ chapter = true
 ```
 例如：
 
-to：private@shardingsphere.apache.org
+To：private@shardingsphere.apache.org
 
-title： [VOTE] New committer: （提名者）
+Title： [VOTE] New committer: （提名者）
 
-content：
+Content：
 
 Hi, everyone
 
@@ -31,18 +31,18 @@ https://github.com/apache/shardingsphere/pull/6211
 [^ means these words are subject to change in different case]
 ```
 
-### 2. 等待3*24h社区投票
+### 2. 等待3*24h社区Committer投票
 
-### 3. 总结社区投票结果并发布邮件
+### 3. PMC成员总结社区投票结果并发布邮件
 
 ```
 例如：
 
-to: private@shardingsphere.apache.org
+To: private@shardingsphere.apache.org
 
-title: [RESULT] [VOTE] New committer: （提名者）
+Title: [RESULT] [VOTE] New committer: （提名者）
 
-content:
+Content:
 
 Hi all PMCs, 
 
@@ -55,13 +55,13 @@ Therefore, I will send the invitation to （提名者）.
 ### 4. 如果投票通过，对提名者发布邀请函并抄送@private 邮件列表给发送邀请函
 
 ```
-to: 提名者邮箱
+To: 提名者邮箱
 
 cc: private@shardingsphere.apache.org
 
-title Invitation to become ShardingSphere committer: （提名者）
+Title： Invitation to become ShardingSphere committer: （提名者）
 
-content:
+Content:
 
 Hello （提名者）,
 
@@ -85,7 +85,7 @@ Best wishes,
 (PMC)
 
 ```
-### 5. 准committer回复邀请函内容，回复表达同意与感谢
+### 5. 准Committer回复邀请函内容，回复表达同意与感谢
 
 ### 6. PMC做出回复
 ```
@@ -117,26 +117,26 @@ https://www.apache.org/foundation/policies/conduct.html
 Here is the guideline for all of the ShardingSphere committers:
 https://shardingsphere.apache.org/community/en/contribute/committer/
 ```
-### 7. 准committer签署icla 具体步骤参考[签署iCLA指南](https://shardingsphere.apache.org/community/cn/contribute/icla/)
+### 7. 准Committer签署iCLA 具体步骤参考[签署iCLA指南](https://shardingsphere.apache.org/community/cn/contribute/icla/)
 
-### 8. 等待secretary通知创建账户
+### 8. 等待Secretary通知创建账户
 
-### 9. vp添加新committer到roster
+### 9. PMC添加新Committer到roster
 
 https://whimsy.apache.org/roster/committee/shardingsphere
 
-### 10. 新committer开通github权限，完成下方链接内容
+### 10. 新Committer开通github权限，完成下方链接内容
 
 https://gitbox.apache.org/setup/
 
-### 11. pmc在社区宣布并欢迎新的committer加入
+### 11. PMC在社区宣布并欢迎新的committer加入
 
 ```
-to: dev@shardingsphere.apache.org
+To: dev@shardingsphere.apache.org
 
-title: [ANNOUNCE] New committer: （提名者）
+Title: [ANNOUNCE] New committer: （提名者）
 
-content:
+Content:
 
 Hi community,
 
@@ -149,5 +149,5 @@ to announce that he has accepted.
 Thanks for your contributions.
 ```
 
-### 12. 更新[提交者名单](/cn/team/)。
+### 12. 新Commiter更新[提交者名单](/cn/team/)。
 
