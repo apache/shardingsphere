@@ -20,12 +20,11 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertColumnsToken;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertColumnsToken;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -40,7 +39,7 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEn
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof InsertStatementContext) {
-            return (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getInsertColumns().isPresent() && !((InsertStatement) sqlStatementContext.getSqlStatement()).useDefaultColumns();
+            return (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getInsertColumns().isPresent() && !(((InsertStatementContext) sqlStatementContext)).useDefaultColumns();
         }
         return false;
     }

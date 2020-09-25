@@ -17,45 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
-
-import java.util.List;
 
 /**
  * Oracle insert statement.
  */
 public final class OracleInsertStatement extends InsertStatement implements OracleStatement {
-
-    @Override
-    public boolean useDefaultColumns() {
-        return getColumns().isEmpty();
-    }
-
-    @Override
-    public List<String> getColumnNames() {
-        return getColumnNamesForInsertColumns();
-    }
-
-    @Override
-    public int getValueListCount() {
-        return getValues().size();
-    }
-
-    @Override
-    public int getValueCountForPerGroup() {
-        if (!getValues().isEmpty()) {
-            return getValues().iterator().next().getValues().size();
-        }
-        if (getInsertSelect().isPresent()) {
-            return getInsertSelect().get().getSelect().getProjections().getProjections().size();
-        }
-        return 0;
-    }
-
-    @Override
-    public List<List<ExpressionSegment>> getAllValueExpressions() {
-        return getAllValueExpressionsFromValues();
-    }
 }

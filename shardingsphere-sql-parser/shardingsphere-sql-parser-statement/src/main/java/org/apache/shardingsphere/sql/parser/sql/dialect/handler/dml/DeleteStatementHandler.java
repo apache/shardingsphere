@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.helper.dml;
+package org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -28,10 +28,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import java.util.Optional;
 
 /**
- * DeleteStatement helper class for different dialect SQLStatements.
+ * DeleteStatement handler for different dialect SQLStatements.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DeleteStatementHelper {
+public final class DeleteStatementHandler {
 
     /**
      * Get OrderBySegment.

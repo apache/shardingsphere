@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.helper.dml;
+package org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -33,10 +33,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.
 import java.util.Optional;
 
 /**
- * InsertStatement helper class for different dialect SQLStatements.
+ * InsertStatement handler for different dialect SQLStatements.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InsertStatementHelper {
+public final class InsertStatementHandler {
 
     /**
      * Get OnDuplicateKeyColumnsSegment.
