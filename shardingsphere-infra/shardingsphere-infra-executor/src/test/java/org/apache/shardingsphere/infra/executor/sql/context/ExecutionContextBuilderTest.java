@@ -78,6 +78,34 @@ public final class ExecutionContextBuilderTest {
         expected.add(expectedUnit1);
         expected.add(expectedUnit2);
         assertThat(actual, is(expected));
+        assertThat(actual.iterator().next().getSqlUnit().getSqlRuntimeContext().getPrimaryKeyMetaDatas().size(), is(1));
+    }
+    
+    @Test
+    public void assertBuildRouteSQLRewriteResultWithEmptyPrimaryKeyMeta() {
+        RouteUnit routeUnit2 = new RouteUnit(new RouteMapper("logicName2", "actualName2"), Collections.singletonList(new RouteMapper("logicName2", "actualName2")));
+        SQLRewriteUnit sqlRewriteUnit2 = new SQLRewriteUnit("sql2", Collections.singletonList("parameter2"));
+        Map<RouteUnit, SQLRewriteUnit> sqlRewriteUnits = new HashMap<>(2, 1);
+        sqlRewriteUnits.put(routeUnit2, sqlRewriteUnit2);
+        RuleSchemaMetaData ruleSchemaMetaData = buildRuleSchemaMetaDataWithoutPrimaryKey();
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(mock(DataSourceMetaDatas.class), ruleSchemaMetaData, "sharding_db");
+        Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(metaData, new RouteSQLRewriteResult(sqlRewriteUnits), mock(SQLStatementContext.class));
+        ExecutionUnit expectedUnit2 = new ExecutionUnit("actualName2", new SQLUnit("sql2", Collections.singletonList("parameter2")));
+        Collection<ExecutionUnit> expected = new LinkedHashSet<>(1, 1);
+        expected.add(expectedUnit2);
+        assertThat(actual, is(expected));
+        assertThat(actual.iterator().next().getSqlUnit().getSqlRuntimeContext().getPrimaryKeyMetaDatas().size(), is(0));
+    }
+    
+    private RuleSchemaMetaData buildRuleSchemaMetaDataWithoutPrimaryKey() {
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
+        tableMetaDataMap.put("logicName1", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false),
+                new ColumnMetaData("user_id", Types.INTEGER, "int", false, false, false),
+                new ColumnMetaData("status", Types.INTEGER, "int", false, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
+        Map<String, Collection<String>> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
+        unconfiguredSchemaMetaDataMap.put("ds_0", Arrays.asList("t_category"));
+        return new RuleSchemaMetaData(new SchemaMetaData(tableMetaDataMap), unconfiguredSchemaMetaDataMap);
     }
     
     private RuleSchemaMetaData buildRuleSchemaMetaData() {

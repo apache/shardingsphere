@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
 
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 
 /**
  * Base generated key token generator.
@@ -30,8 +29,8 @@ public abstract class BaseGeneratedKeyTokenGenerator implements OptionalSQLToken
     @Override
     public final boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertStatementContext && ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext().isPresent()
-                && ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext().get().isGenerated() && isGenerateSQLToken(((InsertStatementContext) sqlStatementContext).getSqlStatement());
+                && ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext().get().isGenerated() && isGenerateSQLToken((InsertStatementContext) sqlStatementContext);
     }
     
-    protected abstract boolean isGenerateSQLToken(InsertStatement insertStatement);
+    protected abstract boolean isGenerateSQLToken(InsertStatementContext insertStatementContext);
 }

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.ParameterMarkerGene
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.helper.dml.InsertStatementHelper;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,8 +40,8 @@ public final class GeneratedKeyAssignmentTokenGenerator extends BaseGeneratedKey
     private List<Object> parameters;
     
     @Override
-    protected boolean isGenerateSQLToken(final InsertStatement insertStatement) {
-        return InsertStatementHelper.getSetAssignmentSegment(insertStatement).isPresent();
+    protected boolean isGenerateSQLToken(final InsertStatementContext insertStatementContext) {
+        return InsertStatementHandler.getSetAssignmentSegment(insertStatementContext.getSqlStatement()).isPresent();
     }
     
     @Override
@@ -49,8 +49,8 @@ public final class GeneratedKeyAssignmentTokenGenerator extends BaseGeneratedKey
         Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
         Preconditions.checkState(generatedKey.isPresent());
         InsertStatement insertStatement = insertStatementContext.getSqlStatement();
-        Preconditions.checkState(InsertStatementHelper.getSetAssignmentSegment(insertStatement).isPresent());
-        int startIndex = InsertStatementHelper.getSetAssignmentSegment(insertStatement).get().getStopIndex() + 1;
+        Preconditions.checkState(InsertStatementHandler.getSetAssignmentSegment(insertStatement).isPresent());
+        int startIndex = InsertStatementHandler.getSetAssignmentSegment(insertStatement).get().getStopIndex() + 1;
         return parameters.isEmpty() ? new LiteralGeneratedKeyAssignmentToken(startIndex, generatedKey.get().getColumnName(), generatedKey.get().getGeneratedValues().iterator().next())
                 : new ParameterMarkerGeneratedKeyAssignmentToken(startIndex, generatedKey.get().getColumnName());
     }

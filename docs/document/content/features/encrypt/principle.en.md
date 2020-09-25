@@ -131,7 +131,7 @@ Such a simple and rough way, based on historical experience, will definitely not
 
 Then another relatively safe approach is to rebuild a pre-release environment exactly like the production environment, 
 and then encrypt the **Inventory plaintext data** of the production environment through the relevant migration and washing tools and store it in the pre-release environment. 
-The **Increment data** is encrypted by tools such as MySQL master-slave replication and the business party ’s own development, 
+The **Increment data** is encrypted by tools such as MySQL primary-replica replication and the business party ’s own development, 
 encrypted and stored in the database of the pre-release environment, and then the refactored code can be deployed to the pre-release environment. 
 In this way, the production environment is a set of environment for **modified/queries with plain text as the core**; 
 the pre-release environment is a set of **encrypt/decrypt queries modified with ciphertext as the core**. 

@@ -17,45 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Statement;
-
-import java.util.List;
 
 /**
  * SQL92 insert statement.
  */
 public final class SQL92InsertStatement extends InsertStatement implements SQL92Statement {
-
-    @Override
-    public boolean useDefaultColumns() {
-        return getColumns().isEmpty();
-    }
-
-    @Override
-    public List<String> getColumnNames() {
-        return getColumnNamesForInsertColumns();
-    }
-
-    @Override
-    public int getValueListCount() {
-        return getValues().size();
-    }
-
-    @Override
-    public int getValueCountForPerGroup() {
-        if (!getValues().isEmpty()) {
-            return getValues().iterator().next().getValues().size();
-        }
-        if (getInsertSelect().isPresent()) {
-            return getInsertSelect().get().getSelect().getProjections().getProjections().size();
-        }
-        return 0;
-    }
-
-    @Override
-    public List<List<ExpressionSegment>> getAllValueExpressions() {
-        return getAllValueExpressionsFromValues();
-    }
 }

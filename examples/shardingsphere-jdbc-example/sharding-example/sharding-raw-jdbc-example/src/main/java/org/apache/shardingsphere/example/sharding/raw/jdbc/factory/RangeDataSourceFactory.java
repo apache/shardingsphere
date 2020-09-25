@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc.factory;
 
-import org.apache.shardingsphere.example.sharding.raw.jdbc.config.MasterSlaveConfiguration;
+import org.apache.shardingsphere.example.sharding.raw.jdbc.config.PrimaryReplicaReplicationConfiguration;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ShardingDatabasesAndTablesConfigurationRange;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ShardingDatabasesConfigurationRange;
-import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ShardingMasterSlaveConfigurationRange;
+import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ShardingPrimaryReplicaReplicationConfigurationRange;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ShardingTablesConfigurationRange;
 import org.apache.shardingsphere.example.type.ShardingType;
 
@@ -37,10 +37,10 @@ public final class RangeDataSourceFactory {
                 return new ShardingTablesConfigurationRange().getDataSource();
             case SHARDING_DATABASES_AND_TABLES:
                 return new ShardingDatabasesAndTablesConfigurationRange().getDataSource();
-            case MASTER_SLAVE:
-                return new MasterSlaveConfiguration().getDataSource();
-            case SHARDING_MASTER_SLAVE:
-                return new ShardingMasterSlaveConfigurationRange().getDataSource();
+            case PRIMARY_REPLICA_REPLICATION:
+                return new PrimaryReplicaReplicationConfiguration().getDataSource();
+            case SHARDING_PRIMARY_REPLICA_REPLICATION:
+                return new ShardingPrimaryReplicaReplicationConfigurationRange().getDataSource();
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }

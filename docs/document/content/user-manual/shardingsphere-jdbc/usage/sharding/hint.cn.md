@@ -105,7 +105,7 @@ try (HintManager hintManager = HintManager.getInstance();
 
 #### 设置主库路由
 
-- 使用 `hintManager.setMasterRouteOnly` 设置主库路由。
+- 使用 `hintManager.setPrimaryRouteOnly` 设置主库路由。
 
 #### 清除分片键值
 
@@ -119,7 +119,7 @@ try (
         HintManager hintManager = HintManager.getInstance();
         Connection conn = dataSource.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-    hintManager.setMasterRouteOnly();
+    hintManager.setPrimaryRouteOnly();
     try (ResultSet rs = preparedStatement.executeQuery()) {
         while (rs.next()) {
             // ...

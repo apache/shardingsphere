@@ -43,11 +43,11 @@ public final class DataNodesTest {
     
     private final String logicTableName2 = "dept";
     
-    private final Collection<String> dataSourceNames1 = Arrays.asList("master_db_1", "master_db_2", "slave_db_1", "slave_db_2");
+    private final Collection<String> dataSourceNames1 = Arrays.asList("primary_db_1", "primary_db_2", "replica_db_1", "replica_db_2");
     
-    private final Collection<String> dataSourceNames2 = Arrays.asList("master_db_3", "slave_db_3");
+    private final Collection<String> dataSourceNames2 = Arrays.asList("primary_db_3", "replica_db_3");
     
-    private final String logicDataSourceName = "master_db_1";
+    private final String logicDataSourceName = "primary_db_1";
     
     private final Collection<String> replicaDataSourceNames = Arrays.asList("route_db_1", "route_db_2");
     

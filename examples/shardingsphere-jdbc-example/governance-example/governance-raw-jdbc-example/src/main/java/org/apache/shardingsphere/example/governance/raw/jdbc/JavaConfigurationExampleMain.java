@@ -24,11 +24,11 @@ import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.GovernanceRepositoryConfigurationUtil;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudEncryptConfiguration;
-import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudMasterSlaveConfiguration;
+import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudPrimaryReplicaReplicationConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudShadowConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudShardingDatabasesAndTablesConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalEncryptConfiguration;
-import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalMasterSlaveConfiguration;
+import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalPrimaryReplicaReplicationConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalShadowConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalShardingDatabasesAndTablesConfiguration;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
@@ -39,14 +39,14 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /*
- * 1. Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ * 1. Please make sure primary-replication-replica data sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
  * 2. Please make sure sharding-governance-center-zookeeper-curator in your pom if registryCenterType = RegistryCenterType.ZOOKEEPER.
  * 3. Please make sure sharding-governance-center-nacos in your pom if registryCenterType = RegistryCenterType.NACOS.
  */
 public final class JavaConfigurationExampleMain {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
-//    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
+//    private static ShardingType shardingType = ShardingType.PRIMARY_REPLICA_REPLICATION;
 //    private static ShardingType shardingType = ShardingType.ENCRYPT;
 //    private static ShardingType shardingType = ShardingType.SHADOW;
     
@@ -66,21 +66,21 @@ public final class JavaConfigurationExampleMain {
     }
     
     private static DataSource getDataSource(final ShardingType shardingType, final boolean loadConfigFromRegCenter) throws SQLException {
-        GovernanceConfiguration governanceConfiguration = getGovernanceConfiguration(registryCenterType, shardingType);
+        GovernanceConfiguration governanceConfig = getGovernanceConfiguration(registryCenterType, shardingType);
         ExampleConfiguration configuration;
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 configuration = loadConfigFromRegCenter 
-                        ? new CloudShardingDatabasesAndTablesConfiguration(governanceConfiguration) : new LocalShardingDatabasesAndTablesConfiguration(governanceConfiguration);
+                        ? new CloudShardingDatabasesAndTablesConfiguration(governanceConfig) : new LocalShardingDatabasesAndTablesConfiguration(governanceConfig);
                 break;
-            case MASTER_SLAVE:
-                configuration = loadConfigFromRegCenter ? new CloudMasterSlaveConfiguration(governanceConfiguration) : new LocalMasterSlaveConfiguration(governanceConfiguration);
+            case PRIMARY_REPLICA_REPLICATION:
+                configuration = loadConfigFromRegCenter ? new CloudPrimaryReplicaReplicationConfiguration(governanceConfig) : new LocalPrimaryReplicaReplicationConfiguration(governanceConfig);
                 break;
             case ENCRYPT:
-                configuration = loadConfigFromRegCenter ? new CloudEncryptConfiguration(governanceConfiguration) : new LocalEncryptConfiguration(governanceConfiguration);
+                configuration = loadConfigFromRegCenter ? new CloudEncryptConfiguration(governanceConfig) : new LocalEncryptConfiguration(governanceConfig);
                 break;
             case SHADOW:
-                configuration = loadConfigFromRegCenter ? new CloudShadowConfiguration(governanceConfiguration) : new LocalShadowConfiguration(governanceConfiguration);
+                configuration = loadConfigFromRegCenter ? new CloudShadowConfiguration(governanceConfig) : new LocalShadowConfiguration(governanceConfig);
                 break;
             default:
                 throw new UnsupportedOperationException(shardingType.name());

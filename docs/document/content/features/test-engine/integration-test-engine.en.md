@@ -32,7 +32,7 @@ Firstly, setup configuration file `/shardingsphere-test-suite/src/test/resources
 run.additional.cases=false
 
 # sharding rule, could define multiple rules
-sharding.rule.type=db,tbl,dbtbl_with_masterslave,masterslave
+sharding.rule.type=db,tbl,dbtbl_with_primary_replica_replication,primary_replica_replication
 
 # database type, could define multiple databases(H2,MySQL,Oracle,SQLServer,PostgreSQL)
 databases=MySQL,PostgreSQL

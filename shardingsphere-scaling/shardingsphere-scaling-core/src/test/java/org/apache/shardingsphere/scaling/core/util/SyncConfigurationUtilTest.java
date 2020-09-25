@@ -20,7 +20,6 @@ package org.apache.shardingsphere.scaling.core.util;
 import com.google.gson.Gson;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManagerTest;
 import org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +49,7 @@ public final class SyncConfigurationUtilTest {
     }
     
     private void initConfig(final String configFile) {
-        InputStream fileInputStream = DataSourceManagerTest.class.getResourceAsStream(configFile);
+        InputStream fileInputStream = SyncConfigurationUtilTest.class.getResourceAsStream(configFile);
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
         scalingConfiguration = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
     }

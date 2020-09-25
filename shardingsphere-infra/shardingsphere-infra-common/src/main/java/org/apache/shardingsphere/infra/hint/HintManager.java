@@ -40,7 +40,7 @@ public final class HintManager implements AutoCloseable {
     
     private boolean databaseShardingOnly;
     
-    private boolean masterRouteOnly;
+    private boolean primaryRouteOnly;
     
     /**
      * Get a new instance for {@code HintManager}.
@@ -139,19 +139,19 @@ public final class HintManager implements AutoCloseable {
     }
     
     /**
-     * Set database operation force route to master database only.
+     * Set database operation force route to primary database only.
      */
-    public void setMasterRouteOnly() {
-        masterRouteOnly = true;
+    public void setPrimaryRouteOnly() {
+        primaryRouteOnly = true;
     }
     
     /**
-     * Judge whether route to master database only or not.
+     * Judge whether route to primary database only or not.
      *
-     * @return route to master database only or not
+     * @return route to primary database only or not
      */
-    public static boolean isMasterRouteOnly() {
-        return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().masterRouteOnly;
+    public static boolean isPrimaryRouteOnly() {
+        return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().primaryRouteOnly;
     }
     
     /**

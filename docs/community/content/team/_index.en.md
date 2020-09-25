@@ -44,6 +44,7 @@ chapter = true
 | Xiao Yu         | yu199195                |
 | Haoran Meng     | menghaoranss            |
 | Jingshang Lu    | jingshanglu             |
+| Zhengqiang Duan | strongduanmu            |
 
 ## Contributors
 

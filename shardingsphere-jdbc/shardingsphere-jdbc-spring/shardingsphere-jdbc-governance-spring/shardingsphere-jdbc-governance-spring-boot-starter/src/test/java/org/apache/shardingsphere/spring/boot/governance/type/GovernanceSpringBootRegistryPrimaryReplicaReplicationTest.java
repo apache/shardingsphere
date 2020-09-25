@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = GovernanceSpringBootRegistryPrimaryReplicaReplicationTest.class)
 @SpringBootApplication
-@ActiveProfiles("registry-masterslave")
+@ActiveProfiles("registry-primary-replica-replication")
 public class GovernanceSpringBootRegistryPrimaryReplicaReplicationTest {
     
     private static final String DATA_SOURCE_FILE = "yaml/primary-replica-replication-databases.yaml";

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.replication.primaryreplica.rule.PrimaryReplicaReplicationDataSourceRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.helper.dml.SelectStatementHelper;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 import java.util.ArrayList;
 
@@ -41,18 +41,18 @@ public final class PrimaryReplicaReplicationDataSourceRouter {
      * @return data source name
      */
     public String route(final SQLStatement sqlStatement) {
-        if (isMasterRoute(sqlStatement)) {
+        if (isPrimaryRoute(sqlStatement)) {
             PrimaryVisitedManager.setPrimaryVisited();
             return rule.getPrimaryDataSourceName();
         }
         return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getPrimaryDataSourceName(), new ArrayList<>(rule.getReplicaDataSourceNames()));
     }
     
-    private boolean isMasterRoute(final SQLStatement sqlStatement) {
-        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || PrimaryVisitedManager.getPrimaryVisited() || HintManager.isMasterRouteOnly();
+    private boolean isPrimaryRoute(final SQLStatement sqlStatement) {
+        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || PrimaryVisitedManager.getPrimaryVisited() || HintManager.isPrimaryRouteOnly();
     }
     
     private boolean containsLockSegment(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof SelectStatement && SelectStatementHelper.getLockSegment((SelectStatement) sqlStatement).isPresent();
+        return sqlStatement instanceof SelectStatement && SelectStatementHandler.getLockSegment((SelectStatement) sqlStatement).isPresent();
     }
 }

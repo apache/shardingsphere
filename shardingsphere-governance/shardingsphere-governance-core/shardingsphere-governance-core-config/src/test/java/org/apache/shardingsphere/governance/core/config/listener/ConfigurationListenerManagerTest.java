@@ -47,7 +47,7 @@ public final class ConfigurationListenerManagerTest {
     
     @Test
     public void assertInitListeners() {
-        ConfigurationListenerManager actual = new ConfigurationListenerManager(configurationRepository, Arrays.asList("sharding_db", "masterslave_db"));
+        ConfigurationListenerManager actual = new ConfigurationListenerManager(configurationRepository, Arrays.asList("sharding_db", "primary_replica_replication_db"));
         setField(actual, "schemaChangedListener", schemaChangedListener);
         setField(actual, "propertiesChangedListener", propertiesChangedListener);
         setField(actual, "authenticationChangedListener", authenticationChangedListener);

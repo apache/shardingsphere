@@ -96,9 +96,9 @@ public final class ProxyConfigurationLoaderTest {
         assertThat(actual.getName(), is("pr_ds"));
         assertThat(actual.getPrimaryDataSourceName(), is("primary_ds"));
         assertThat(actual.getReplicaDataSourceNames().size(), is(2));
-        Iterator<String> slaveDataSourceNames = actual.getReplicaDataSourceNames().iterator();
-        assertThat(slaveDataSourceNames.next(), is("replica_ds_0"));
-        assertThat(slaveDataSourceNames.next(), is("replica_ds_1"));
+        Iterator<String> replicaDataSourceNames = actual.getReplicaDataSourceNames().iterator();
+        assertThat(replicaDataSourceNames.next(), is("replica_ds_0"));
+        assertThat(replicaDataSourceNames.next(), is("replica_ds_1"));
     }
     
     private void assertEncryptRuleConfiguration(final YamlProxyRuleConfiguration actual) {

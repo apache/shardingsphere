@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.check;
 
+import java.util.Map;
+
 /**
  * Data consistency checker interface.
  */
@@ -25,14 +27,14 @@ public interface DataConsistencyChecker {
     /**
      * Check each table count is valid.
      *
-     * @return count is valid or not.
+     * @return count check result
      */
-    boolean countCheck();
+    Map<String, DataConsistencyCheckResult> countCheck();
     
     /**
      * Check each table data is valid.
      *
-     * @return data is valid or not.
+     * @return data is valid or not
      */
-    boolean dataCheck();
+    Map<String, Boolean> dataCheck();
 }

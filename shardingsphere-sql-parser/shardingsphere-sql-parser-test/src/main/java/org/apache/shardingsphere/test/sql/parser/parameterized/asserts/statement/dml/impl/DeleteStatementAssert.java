@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.helper.dml.DeleteStatementHelper;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.DeleteStatementHandler;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.limit.LimitClauseAssert;
@@ -69,7 +69,7 @@ public final class DeleteStatementAssert {
     }
     
     private static void assertOrderByClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
-        Optional<OrderBySegment> orderBySegment = DeleteStatementHelper.getOrderBySegment(actual);
+        Optional<OrderBySegment> orderBySegment = DeleteStatementHandler.getOrderBySegment(actual);
         if (null != expected.getOrderByClause()) {
             assertTrue(assertContext.getText("Actual order by segment should exist."), orderBySegment.isPresent());
             OrderByClauseAssert.assertIs(assertContext, orderBySegment.get(), expected.getOrderByClause());
@@ -79,7 +79,7 @@ public final class DeleteStatementAssert {
     }
 
     private static void assertLimitClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
-        Optional<LimitSegment> limitSegment = DeleteStatementHelper.getLimitSegment(actual);
+        Optional<LimitSegment> limitSegment = DeleteStatementHandler.getLimitSegment(actual);
         if (null != expected.getLimitClause()) {
             assertTrue(assertContext.getText("Actual limit segment should exist."), limitSegment.isPresent());
             LimitClauseAssert.assertRowCount(assertContext, limitSegment.get().getRowCount().orElse(null), expected.getLimitClause().getRowCount());

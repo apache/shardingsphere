@@ -12,7 +12,7 @@ JAVA，JDK 1.8+.
 
 The migration scene we support：
 
-| Source                     | Destination          | Support |
+| Source                     | Target          | Support |
 | -------------------------- | -------------------- | ------- |
 | MySQL(5.1.15 ~ 5.7.x)      | ShardingSphere-Proxy | Yes     |
 | PostgreSQL(9.4 ~ )         | ShardingSphere-Proxy | Yes     |
@@ -55,12 +55,12 @@ Body：
 
 | Parameter                                         | Describe                                        |
 |---------------------------------------------------|-------------------------------------------------|
-| ruleConfiguration.sourceDatasource                | source sharding sphere data source configuration |
+| ruleConfiguration.sourceDataSource                | source sharding sphere data source configuration |
 | ruleConfiguration.sourceRule                      | source sharding sphere table rule configuration  |
-| ruleConfiguration.destinationDataSources.name     | destination sharding proxy name                 |
-| ruleConfiguration.destinationDataSources.url      | destination sharding proxy jdbc url             |
-| ruleConfiguration.destinationDataSources.username | destination sharding proxy username             |
-| ruleConfiguration.destinationDataSources.password | destination sharding proxy password             |
+| ruleConfiguration.targetDataSources.name          | target sharding proxy name                      |
+| ruleConfiguration.targetDataSources.url           | target sharding proxy jdbc url                  |
+| ruleConfiguration.targetDataSources.username      | target sharding proxy username                  |
+| ruleConfiguration.targetDataSources.password      | target sharding proxy password                  |
 | jobConfiguration.concurrency                      | sync task proposed concurrency                  |
 
 Example：
@@ -71,20 +71,20 @@ curl -X POST \
   -H 'content-type: application/json' \
   -d '{
         "ruleConfiguration": {
-          "sourceDatasource":"
+          "sourceDataSource":"
             dataSources:
               ds_0:
                 dataSourceClassName: com.zaxxer.hikari.HikariDataSource
                 props:
                   driverClassName: com.mysql.jdbc.Driver
-                  jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling?useSSL=false
+                  jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_0?useSSL=false
                   username: scaling
                   password: scaling
               ds_1:
                 dataSourceClassName: com.zaxxer.hikari.HikariDataSource
                 props:
                   driverClassName: com.mysql.jdbc.Driver
-                  jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling?useSSL=false
+                  jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_1?useSSL=false
                   username: scaling
                   password: scaling
             ",
@@ -113,14 +113,13 @@ curl -X POST \
                   props:
                     algorithm-expression: t_order_$->{user_id % 2}
             ",
-          "destinationDataSources":{
+          "targetDataSources":{
             "username":"root",
             "password":"root",
             "url":"jdbc:mysql://127.0.0.1:3307/sharding_db?serverTimezone=UTC&useSSL=false"
           }
         },
         "jobConfiguration":{
-          "jobName": "jobName",
           "concurrency":"3"
         }
       }'

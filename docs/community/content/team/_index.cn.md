@@ -44,6 +44,7 @@ chapter = true
 | 肖宇   | yu199195    |
 | 孟浩然 | menghaoranss|
 | 陆敬尚 | jingshanglu |
+| 端正强 | strongduanmu|
 
 ## 贡献者
 
