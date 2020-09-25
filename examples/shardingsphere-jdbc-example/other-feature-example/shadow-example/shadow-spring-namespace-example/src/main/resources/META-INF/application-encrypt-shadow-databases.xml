@@ -52,11 +52,7 @@
         <property name="password" value=""/>
     </bean>
     
-    <shadow:rule id="shadowRule" column="shadow">
-        <shadow:mappings>
-            <shadow:mapping product-data-source-name="ds" shadow-data-source-name="shadow_ds"/>
-        </shadow:mappings>
-    </shadow:rule>
+    <shadow:rule id="shadowRule" column="shadow" sourceDataSourceNames="ds" shadowDataSourceNames="shadow_ds"/>
     
     <encrypt:encrypt-algorithm id="name_encryptor" type="AES">
         <props>
