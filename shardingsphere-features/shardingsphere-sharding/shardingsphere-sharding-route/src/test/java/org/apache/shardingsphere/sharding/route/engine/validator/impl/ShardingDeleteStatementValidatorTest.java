@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.DeleteStatementContext;
@@ -76,7 +75,7 @@ public final class ShardingDeleteStatementValidatorTest {
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("order")));
         sqlStatement.setTableSegment(tableSegment);
         SQLStatementContext<DeleteStatement> sqlStatementContext = new DeleteStatementContext(sqlStatement);
-        RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
+        RouteContext routeContext = new RouteContext(sqlStatementContext, Collections.emptyList());
         new ShardingDeleteStatementValidator().preValidate(shardingRule, routeContext, mock(ShardingSphereMetaData.class));
     }
 }

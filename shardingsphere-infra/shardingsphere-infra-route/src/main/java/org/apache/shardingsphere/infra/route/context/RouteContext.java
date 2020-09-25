@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.route.context;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
@@ -29,7 +28,6 @@ import java.util.Map;
 /**
  * Route context.
  */
-@RequiredArgsConstructor
 @Getter
 public final class RouteContext {
     
@@ -41,8 +39,16 @@ public final class RouteContext {
     
     private final Map<Class<? extends ShardingSphereRule>, RouteStageContext> routeStageContexts = new LinkedHashMap<>();
     
+    public RouteContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
+        this.sqlStatementContext = sqlStatementContext;
+        this.parameters = parameters;
+        routeResult = new RouteResult();
+    }
+    
     public RouteContext(final RouteContext parent, final RouteResult routeResult, final RouteStageContext nextRouteStageContext, final Class<? extends ShardingSphereRule> ruleType) {
-        this(parent.sqlStatementContext, parent.parameters, routeResult);
+        sqlStatementContext = parent.sqlStatementContext;
+        parameters = parent.parameters;
+        this.routeResult = routeResult;
         addBeforeRouteStageContexts(parent.routeStageContexts);
         addNextRouteStageContext(ruleType, nextRouteStageContext);
     }
