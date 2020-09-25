@@ -28,8 +28,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
@@ -86,20 +84,11 @@ public final class DataNodeRouter {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private RouteContext executeRoute(final SQLStatement sqlStatement, final List<Object> parameters) {
-        RouteContext result = createRouteContext(sqlStatement, parameters);
+        RouteContext result = new RouteContext(SQLStatementContextFactory.newInstance(metaData.getRuleSchemaMetaData().getSchemaMetaData(), parameters, sqlStatement), parameters, new RouteResult());
         for (Entry<ShardingSphereRule, RouteDecorator> entry : decorators.entrySet()) {
             result = entry.getValue().decorate(result, metaData, entry.getKey(), props);
         }
         return new UnconfiguredSchemaRouteDecorator().decorate(result, metaData);
     }
     
-    private RouteContext createRouteContext(final SQLStatement sqlStatement, final List<Object> parameters) {
-        try {
-            SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getRuleSchemaMetaData().getSchemaMetaData(), parameters, sqlStatement);
-            return new RouteContext(sqlStatementContext, parameters, new RouteResult());
-            // TODO should pass parameters for primary-replica-replication
-        } catch (final IndexOutOfBoundsException ex) {
-            return new RouteContext(new CommonSQLStatementContext<>(sqlStatement), parameters, new RouteResult());
-        }
-    }
 }
