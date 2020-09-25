@@ -1,10 +1,10 @@
 +++ 
-title = "Accept a new committer process" 
+title = "New committer voting process" 
 weight = 12
 chapter = true 
 +++
 
-## Processes on accepting a new committer are:
+## Voting process of becoming a new committer
 
 **1. Start the discussion and vote in @private. Only current PMC member could nominate**
 
