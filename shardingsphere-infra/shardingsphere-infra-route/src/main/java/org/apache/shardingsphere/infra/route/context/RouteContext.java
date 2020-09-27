@@ -32,24 +32,4 @@ public final class RouteContext {
     private final RouteResult routeResult = new RouteResult();
     
     private final Map<Class<? extends ShardingSphereRule>, RouteStageContext> routeStageContexts = new LinkedHashMap<>();
-    
-    /**
-     * Add next route stage context.
-     *
-     * @param ruleType rule type
-     * @param nextRouteStageContext next route stage contexts
-     */
-    public void addNextRouteStageContext(final Class<? extends ShardingSphereRule> ruleType, final RouteStageContext nextRouteStageContext) {
-        routeStageContexts.put(ruleType, nextRouteStageContext);
-    }
-    
-    /**
-     * Get route stage context by rule type.
-     *
-     * @param ruleType rule type
-     * @return route stage context
-     */
-    public RouteStageContext getRouteStageContext(final Class<? extends ShardingSphereRule> ruleType) {
-        return routeStageContexts.get(ruleType);
-    }
 }

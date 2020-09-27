@@ -54,7 +54,7 @@ public final class ConsensusReplicationExecuteGroupDecorator implements RawExecu
                 return inputGroups;
             }
         }
-        RouteStageContext routeStageContext = routeContext.getRouteStageContext(getTypeClass());
+        RouteStageContext routeStageContext = routeContext.getRouteStageContexts().get(getTypeClass());
         ConsensusReplicationRouteStageContext replicaRouteStageContext = (ConsensusReplicationRouteStageContext) routeStageContext;
         Map<String, ConsensusReplicationGroup> replicaGroups = replicaRouteStageContext.getReplicaGroups();
         for (InputGroup<RawSQLExecuteUnit> each : inputGroups) {
