@@ -30,6 +30,8 @@ DROP SCHEMA IF EXISTS demo_primary_ds_1;
 DROP SCHEMA IF EXISTS demo_primary_ds_1_replica_0;
 DROP SCHEMA IF EXISTS demo_primary_ds_1_replica_1;
 
+DROP SCHEMA IF EXISTS shadow_demo_ds;
+
 CREATE SCHEMA IF NOT EXISTS demo_ds;
 CREATE SCHEMA IF NOT EXISTS demo_ds_0;
 CREATE SCHEMA IF NOT EXISTS demo_ds_1;
