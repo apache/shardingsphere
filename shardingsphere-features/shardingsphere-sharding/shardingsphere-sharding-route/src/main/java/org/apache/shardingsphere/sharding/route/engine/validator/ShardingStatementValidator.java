@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -46,7 +46,7 @@ public interface ShardingStatementValidator<T extends SQLStatement> {
      * Validate whether sharding operation is supported after route.
      *
      * @param sqlStatement SQL statement
-     * @param routeResult route result
+     * @param routeContext route context
      */
-    void postValidate(T sqlStatement, RouteResult routeResult);
+    void postValidate(T sqlStatement, RouteContext routeContext);
 }

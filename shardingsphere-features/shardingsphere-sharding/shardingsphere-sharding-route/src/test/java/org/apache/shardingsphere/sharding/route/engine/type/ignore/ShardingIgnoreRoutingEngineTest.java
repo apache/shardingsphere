@@ -17,20 +17,21 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.ignore;
 
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class ShardingIgnoreRoutingEngineTest {
-
+    
     @Test
     public void assertRoute() {
         ShardingIgnoreRoutingEngine ignoreRoutingEngine = new ShardingIgnoreRoutingEngine();
-        ignoreRoutingEngine.route(mock(ShardingRule.class));
-        assertThat(ignoreRoutingEngine.route(mock(ShardingRule.class)), instanceOf(RouteResult.class));
+        RouteContext routeContext = new RouteContext();
+        ignoreRoutingEngine.route(routeContext, mock(ShardingRule.class));
+        assertTrue(routeContext.getRouteUnits().isEmpty());
+        assertTrue(routeContext.getRouteStageContexts().isEmpty());
     }
 }

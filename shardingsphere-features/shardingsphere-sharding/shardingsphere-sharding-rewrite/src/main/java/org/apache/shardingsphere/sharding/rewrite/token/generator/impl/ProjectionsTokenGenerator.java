@@ -66,7 +66,7 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
     
     private Map<RouteUnit, Collection<String>> getDerivedProjectionTexts(final SelectStatementContext selectStatementContext) {
         Map<RouteUnit, Collection<String>> result = new HashMap<>();
-        for (RouteUnit routeUnit : routeContext.getRouteResult().getRouteUnits()) {
+        for (RouteUnit routeUnit : routeContext.getRouteUnits()) {
             Collection<String> projectionTexts = getDerivedProjectionTextsByRouteUnit(selectStatementContext, routeUnit);
             if (!projectionTexts.isEmpty()) {
                 result.put(routeUnit, projectionTexts);
@@ -104,8 +104,7 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
         Preconditions.checkState(projection.getDerivedProjection() instanceof ColumnOrderByItemSegment);
         ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) projection.getDerivedProjection();
         ColumnOrderByItemSegment newColumnOrderByItem = generateNewColumnOrderByItem(columnOrderByItemSegment, routeUnit, tableExtractor);
-        String result = new StringBuilder().append(newColumnOrderByItem.getText()).append(" AS ").append(projection.getAlias().get()).append(" ").toString();
-        return result;
+        return newColumnOrderByItem.getText() + " AS " + projection.getAlias().get() + " ";
     }
     
     private Optional<String> getActualTables(final RouteUnit routeUnit, final String logicalTableName) {
@@ -133,7 +132,6 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
         IdentifierValue newOwnerIdentifier = new IdentifierValue(newOwnerString);
         OwnerSegment newOwner = new OwnerSegment(0, 0, newOwnerIdentifier);
         newColumnSegment.setOwner(newOwner);
-        ColumnOrderByItemSegment result = new ColumnOrderByItemSegment(newColumnSegment, old.getOrderDirection());
-        return result;
+        return new ColumnOrderByItemSegment(newColumnSegment, old.getOrderDirection());
     }
 }

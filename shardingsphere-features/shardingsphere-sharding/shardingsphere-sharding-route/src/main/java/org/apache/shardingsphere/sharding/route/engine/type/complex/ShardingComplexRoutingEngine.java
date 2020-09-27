@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.complex;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
@@ -42,29 +42,29 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
     private final Collection<String> logicTables;
     
     private final ShardingConditions shardingConditions;
-
+    
     private final ConfigurationProperties props;
     
     @Override
-    public RouteResult route(final ShardingRule shardingRule) {
-        Collection<RouteResult> result = new ArrayList<>(logicTables.size());
+    public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
+        Collection<RouteContext> routeContexts = new ArrayList<>(logicTables.size());
         Collection<String> bindingTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (String each : logicTables) {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent()) {
                 if (!bindingTableNames.contains(each)) {
-                    result.add(new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), shardingConditions, props).route(shardingRule));
+                    new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), shardingConditions, props).route(routeContext, shardingRule);
+                    routeContexts.add(routeContext);
                 }
                 shardingRule.findBindingTableRule(each).ifPresent(bindingTableRule -> bindingTableNames.addAll(
                     bindingTableRule.getTableRules().stream().map(TableRule::getLogicTable).collect(Collectors.toList())));
             }
         }
-        if (result.isEmpty()) {
+        if (routeContexts.isEmpty()) {
             throw new ShardingSphereException("Cannot find table rule and default data source with logic tables: '%s'", logicTables);
         }
-        if (1 == result.size()) {
-            return result.iterator().next();
+        if (1 != routeContexts.size()) {
+            new ShardingCartesianRoutingEngine(routeContexts).route(routeContext, shardingRule);
         }
-        return new ShardingCartesianRoutingEngine(result).route(shardingRule);
     }
 }

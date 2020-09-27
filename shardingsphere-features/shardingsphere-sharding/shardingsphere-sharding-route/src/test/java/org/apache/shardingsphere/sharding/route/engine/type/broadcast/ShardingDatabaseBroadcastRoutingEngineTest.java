@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -40,10 +39,10 @@ public final class ShardingDatabaseBroadcastRoutingEngineTest {
     public void assertRoute() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}"));
-        RouteResult routeResult = shardingDatabaseBroadcastRoutingEngine.route(new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1")));
-        List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
-        assertThat(routeResult, instanceOf(RouteResult.class));
-        assertThat(routeResult.getRouteUnits().size(), is(2));
+        RouteContext routeContext = new RouteContext();
+        shardingDatabaseBroadcastRoutingEngine.route(routeContext, new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1")));
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(2));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds0"));
         assertThat(routeUnits.get(1).getDataSourceMapper().getActualName(), is("ds1"));
     }

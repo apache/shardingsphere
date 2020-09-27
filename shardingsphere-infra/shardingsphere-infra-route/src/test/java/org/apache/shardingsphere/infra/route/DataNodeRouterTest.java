@@ -66,8 +66,8 @@ public final class DataNodeRouterTest {
         DataNodeRouter router = new DataNodeRouter(metaData, props, Collections.singletonList(new RouteRuleFixture()));
         setSPIRoutingHook(router);
         RouteContext actual = router.route(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
-        assertThat(actual.getRouteResult().getRouteUnits().size(), is(1));
-        RouteUnit routeUnit = actual.getRouteResult().getRouteUnits().iterator().next();
+        assertThat(actual.getRouteUnits().size(), is(1));
+        RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("ds"));
         assertThat(routeUnit.getDataSourceMapper().getActualName(), is("ds_0"));
         assertTrue(routeUnit.getTableMappers().isEmpty());

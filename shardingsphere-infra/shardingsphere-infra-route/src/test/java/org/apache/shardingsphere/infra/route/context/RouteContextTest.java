@@ -35,7 +35,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class RouteResultTest {
+public final class RouteContextTest {
     
     private static final String DATASOURCE_NAME_0 = "ds0";
     
@@ -45,16 +45,16 @@ public final class RouteResultTest {
     
     private static final String ACTUAL_TABLE = "table_0";
     
-    private RouteResult singleRouteResult;
+    private RouteContext singleRouteContext;
     
-    private RouteResult multiRouteResult;
+    private RouteContext multiRouteContext;
     
     @Before
     public void setUp() {
-        singleRouteResult = new RouteResult();
-        multiRouteResult = new RouteResult();
-        multiRouteResult.getRouteUnits().addAll(mockRouteUnits());
-        singleRouteResult.getRouteUnits().add(mockRouteUnit(DATASOURCE_NAME_0));
+        singleRouteContext = new RouteContext();
+        multiRouteContext = new RouteContext();
+        multiRouteContext.getRouteUnits().addAll(mockRouteUnits());
+        singleRouteContext.getRouteUnits().add(mockRouteUnit(DATASOURCE_NAME_0));
     }
     
     private Collection<RouteUnit> mockRouteUnits() {
@@ -70,16 +70,16 @@ public final class RouteResultTest {
     
     @Test
     public void assertIsSingleRouting() {
-        assertTrue(singleRouteResult.isSingleRouting());
-        assertFalse(multiRouteResult.isSingleRouting());
+        assertTrue(singleRouteContext.isSingleRouting());
+        assertFalse(multiRouteContext.isSingleRouting());
     }
     
     @Test
     public void assertGetActualDataSourceNames() {
-        Collection<String> actual = singleRouteResult.getActualDataSourceNames();
+        Collection<String> actual = singleRouteContext.getActualDataSourceNames();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(DATASOURCE_NAME_0));
-        actual = multiRouteResult.getActualDataSourceNames();
+        actual = multiRouteContext.getActualDataSourceNames();
         assertThat(actual.size(), is(2));
         Iterator<String> iterator = actual.iterator();
         assertThat(iterator.next(), is(DATASOURCE_NAME_0));
@@ -90,7 +90,7 @@ public final class RouteResultTest {
     public void assertGetActualTableNameGroups() {
         Set<String> logicTableSet = new HashSet<>();
         logicTableSet.add(LOGIC_TABLE);
-        List<Set<String>> actual = multiRouteResult.getActualTableNameGroups(DATASOURCE_NAME_1, logicTableSet);
+        List<Set<String>> actual = multiRouteContext.getActualTableNameGroups(DATASOURCE_NAME_1, logicTableSet);
         assertThat(actual.size(), is(1));
         assertTrue(actual.get(0).contains(ACTUAL_TABLE));
     }
@@ -98,7 +98,7 @@ public final class RouteResultTest {
     @Test
     public void assertGetDataSourceLogicTablesMap() {
         List<String> dataSources = Lists.newArrayList(DATASOURCE_NAME_0, DATASOURCE_NAME_1);
-        Map<String, Set<String>> actual = multiRouteResult.getDataSourceLogicTablesMap(dataSources);
+        Map<String, Set<String>> actual = multiRouteContext.getDataSourceLogicTablesMap(dataSources);
         assertThat(actual.size(), is(2));
         assertThat(actual.get(DATASOURCE_NAME_0).size(), is(1));
         assertThat(actual.get(DATASOURCE_NAME_0).iterator().next(), is(LOGIC_TABLE));
@@ -108,13 +108,13 @@ public final class RouteResultTest {
     
     @Test
     public void assertFindTableMapper() {
-        Optional<RouteMapper> actual = multiRouteResult.findTableMapper(DATASOURCE_NAME_1, ACTUAL_TABLE);
+        Optional<RouteMapper> actual = multiRouteContext.findTableMapper(DATASOURCE_NAME_1, ACTUAL_TABLE);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE)));
     }
     
     @Test
     public void assertTableMapperNotFound() {
-        assertFalse(singleRouteResult.findTableMapper(DATASOURCE_NAME_1, ACTUAL_TABLE).isPresent());
+        assertFalse(singleRouteContext.findTableMapper(DATASOURCE_NAME_1, ACTUAL_TABLE).isPresent());
     }
 }
