@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sqlserver.visitor.impl;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentValueContext;
@@ -44,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Ord
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputClause_Context;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputTableName_Context;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputWithColumn_Context;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputWithColumns_Context;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionsContext;
@@ -158,9 +158,9 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         OutputSegment result = new OutputSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         if (null != ctx.outputWithColumns_()) {
             OutputWithColumns_Context outputWithColumnsContext = ctx.outputWithColumns_();
-            List<SQLServerStatementParser.OutputWithColumn_Context> outputWithColumnContexts = outputWithColumnsContext.outputWithColumn_();
+            List<OutputWithColumn_Context> outputWithColumnContexts = outputWithColumnsContext.outputWithColumn_();
             Collection<ColumnProjectionSegment> outputColumns = new LinkedList<>();
-            for (SQLServerStatementParser.OutputWithColumn_Context each : outputWithColumnContexts) {
+            for (OutputWithColumn_Context each : outputWithColumnContexts) {
                 ColumnSegment column = new ColumnSegment(each.start.getStartIndex(), each.stop.getStopIndex(), new IdentifierValue(each.name().getText()));
                 ColumnProjectionSegment outputColumn = new ColumnProjectionSegment(column);
                 if (null != each.alias()) {
