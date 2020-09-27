@@ -114,7 +114,7 @@ public final class InsertStatementAssert {
             assertFalse(assertContext.getText("Actual on duplicate key columns segment should not exist."), onDuplicateKeyColumnsSegment.isPresent());
         }
     }
-
+    
     private static void assertWithClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         Optional<WithSegment> withSegment = InsertStatementHandler.getWithSegment(actual);
         if (null != expected.getWithClause()) {
@@ -124,9 +124,9 @@ public final class InsertStatementAssert {
             assertFalse(assertContext.getText("Actual with segment should not exist."), withSegment.isPresent());
         }
     }
-
+    
     private static void assertOutputClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
-        Optional<OutputSegment> outputSegment = InsertStatementHelper.getOutputSegment(actual);
+        Optional<OutputSegment> outputSegment = InsertStatementHandler.getOutputSegment(actual);
         if (null != expected.getOutputClause()) {
             assertTrue(assertContext.getText("Actual output segment should exist."), outputSegment.isPresent());
             OutputClauseAssert.assertIs(assertContext, outputSegment.get(), expected.getOutputClause());
