@@ -87,10 +87,7 @@ public final class ExecutionContextBuilder {
     }
     
     private static List<String> getLogicTableNames(final Collection<RouteMapper> tableMappers) {
-        if (null == tableMappers) {
-            return Collections.emptyList();
-        }
-        return tableMappers.stream().map(RouteMapper::getLogicName).collect(Collectors.toList());
+        return null == tableMappers ? Collections.emptyList() : tableMappers.stream().map(RouteMapper::getLogicName).collect(Collectors.toList());
     }
     
     private static List<String> getActualTableNames(final SQLStatementContext<?> sqlStatementContext) {
@@ -116,23 +113,16 @@ public final class ExecutionContextBuilder {
         return getPrimaryKeyColumns(metaData, getActualTableNames(sqlStatementContext));
     }
     
+    private static List<PrimaryKeyMetaData> getPrimaryKeyColumns(final ShardingSphereMetaData metaData, final Collection<RouteMapper> tableMappers) {
+        return getPrimaryKeyColumns(metaData, getLogicTableNames(tableMappers));
+    }
+    
     private static List<PrimaryKeyMetaData> getPrimaryKeyColumns(final ShardingSphereMetaData metaData, final List<String> actualTableNames) {
         List<PrimaryKeyMetaData> result = new LinkedList<>();
         for (String each: actualTableNames) {
             TableMetaData tableMetaData = metaData.getRuleSchemaMetaData().getSchemaMetaData().get(each);
             if (null != tableMetaData) {
                 result.add(new PrimaryKeyMetaData(each, tableMetaData.getPrimaryKeyColumns()));
-            }
-        }
-        return result;
-    }
-    
-    private static List<PrimaryKeyMetaData> getPrimaryKeyColumns(final ShardingSphereMetaData metaData, final Collection<RouteMapper> tableMappers) {
-        List<PrimaryKeyMetaData> result = new LinkedList<>();
-        for (RouteMapper each: tableMappers) {
-            TableMetaData tableMetaData = metaData.getRuleSchemaMetaData().getSchemaMetaData().get(each.getLogicName());
-            if (null != tableMetaData) {
-                result.add(new PrimaryKeyMetaData(each.getLogicName(), tableMetaData.getPrimaryKeyColumns()));
             }
         }
         return result;
