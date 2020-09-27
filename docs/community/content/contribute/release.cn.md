@@ -304,7 +304,7 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin
 
 **检查发布文件内容**
 
-#### 对比源码包与Github上tag的内容差异
+**对比源码包与Github上tag的内容差异**
 
 ```
 curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere/archive/${RELEASE.VERSION}.zip
@@ -313,7 +313,7 @@ unzip apache-shardingsphere-${RELEASE.VERSION}-src.zip
 diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RELEASE.VERSION}
 ```
 
-#### 检查源码包的文件内容
+**检查源码包的文件内容**
 
 - 检查源码包是否包含由于包含不必要文件，致使tarball过于庞大
 - 存在`LICENSE`和`NOTICE`文件
@@ -323,7 +323,7 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RE
 - 能够正确编译，单元测试可以通过 (./mvnw install)
 - 检查是否有多余文件或文件夹，例如空文件夹等
 
-#### 检查二进制包的文件内容
+**检查二进制包的文件内容**
 
 解压缩`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz`，`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz`和
 `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz`
