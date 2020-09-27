@@ -7,7 +7,7 @@ chapter = true
 ## 提交者提名
 
 ShardingSphere社区遵循[Apache Community’s process](http://community.apache.org/newcommitter.html) 来接收新的提交者。
-当您积极参地与ShardingSphere社区之后，项目管理委员会和项目官方提交者会根据您的表现发起吸纳您成为官方提交者和项目管理委员会成员的流程。
+当您积极地参与ShardingSphere社区之后，项目管理委员会和项目官方提交者会根据您的表现发起吸纳您成为官方提交者和项目管理委员会成员的流程。
 
 ## 提交者责任
 
@@ -22,13 +22,15 @@ ShardingSphere社区遵循[Apache Community’s process](http://community.apache
 
 ## 日常工作
 
-1. committer需要每天查看社区待处理的Pull Request和issue列表，指定给合适的committer，即assignee。
+1. Committer需要每天查看社区待处理的Pull Request和Issue列表，指定给合适的Committer，即Assignee。
 
-2. assignee在被分配issue后，需要进行如下判断：
+2. Assignee在被分配issue后，需要进行如下判断：
 
  - 判断是否是长期issue，如是，则标记为pending。
  - 判断issue类型，如：bug，enhancement，discussion等。
  - 判断Milestone，并标记。
+
+3. Committer提交的PR，需要根据PR类型和时间标注label和milestone。
 
 **注意**
 
