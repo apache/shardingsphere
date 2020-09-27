@@ -90,7 +90,7 @@ ShardingSphere文档使用Markdown编写，并使用Hugo进行处理生成html�
 
 任何拥有Github帐户的人都可以针对ShardingSphere文档提出问题（错误报告）。如果您发现错误，即使您不知道如何修复它，也应提出问题。
 
-**如何提出问题**
+**如何提出问题？**
 
 1. 附加出现问题的文档链接。
 
@@ -104,7 +104,7 @@ ShardingSphere文档使用Markdown编写，并使用Hugo进行处理生成html�
 
 ## 提交更改
 
-**操作步骤**
+**操作步骤如下:**
 
 1. 首先，你需要在master分支目录结构中定位出你要操作的文件。
 1. 文件操作完成后，提pull request到master分支。
