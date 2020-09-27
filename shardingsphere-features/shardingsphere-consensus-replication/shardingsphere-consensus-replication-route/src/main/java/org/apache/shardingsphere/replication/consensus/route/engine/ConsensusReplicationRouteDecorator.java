@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -39,10 +40,10 @@ import java.util.Optional;
 public final class ConsensusReplicationRouteDecorator implements RouteDecorator<ConsensusReplicationRule> {
     
     @Override
-    public void decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ConsensusReplicationRule consensusReplicationRule, final ConfigurationProperties props) {
+    public void decorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
+                         final ShardingSphereMetaData metaData, final ConsensusReplicationRule consensusReplicationRule, final ConfigurationProperties props) {
         Map<String, ConsensusReplicationGroup> replicaGroups = new HashMap<>();
         String schemaName = metaData.getSchemaName();
-        SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
             ConsensusReplicationTableRule replicaRoutingRule = consensusReplicationRule.getReplicaTableRules().iterator().next();
             ConsensusReplicationGroup replicaGroup = new ConsensusReplicationGroup(replicaRoutingRule.getPhysicsTable(), replicaRoutingRule.getReplicaGroupId(), replicaRoutingRule.getReplicaPeers(),

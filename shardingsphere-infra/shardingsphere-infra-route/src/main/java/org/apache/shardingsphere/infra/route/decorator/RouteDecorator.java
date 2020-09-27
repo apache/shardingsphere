@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.infra.route.decorator;
 
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+
+import java.util.List;
 
 /**
  * Route decorator.
@@ -34,9 +37,11 @@ public interface RouteDecorator<T extends ShardingSphereRule> extends OrderedSPI
      * Decorate route context.
      * 
      * @param routeContext route context
+     * @param sqlStatementContext SQL statement context
+     * @param parameters SQL parameters
      * @param metaData meta data of ShardingSphere
      * @param rule rule
      * @param props configuration properties
      */
-    void decorate(RouteContext routeContext, ShardingSphereMetaData metaData, T rule, ConfigurationProperties props);
+    void decorate(RouteContext routeContext, SQLStatementContext<?> sqlStatementContext, List<Object> parameters, ShardingSphereMetaData metaData, T rule, ConfigurationProperties props);
 }
