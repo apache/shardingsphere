@@ -30,7 +30,7 @@ ShardingSphere社区遵循[Apache Community’s process](http://community.apache
  - 判断issue类型，如：bug，enhancement，discussion等。
  - 判断Milestone，并标记。
 
-3. Committer提交的PR，需要根据PR类型和时间标注label和milestone。
+3. Committer提交的PR，需要根据PR类型和时间标注label 和 milestone。
 
 **注意**
 
