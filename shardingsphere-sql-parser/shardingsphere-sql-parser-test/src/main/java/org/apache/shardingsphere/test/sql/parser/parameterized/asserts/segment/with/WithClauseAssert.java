@@ -46,8 +46,8 @@ public final class WithClauseAssert {
      * @param expected expected with clause
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final WithSegment actual, final ExpectedWithClause expected) {
-        assertNotNull(assertContext.getText("On duplicate key columns should exist."), expected);
-        assertThat(assertContext.getText("On duplicate key columns size assertion error: "), 
+        assertNotNull(assertContext.getText("With clause should exist."), expected);
+        assertThat(assertContext.getText("With clause common table expressions size assertion error: "), 
                 actual.getCommonTableExpressions().size(), is(expected.getCommonTableExpressions().size()));
         int count = 0;
         for (CommonTableExpressionSegment each : actual.getCommonTableExpressions()) {
