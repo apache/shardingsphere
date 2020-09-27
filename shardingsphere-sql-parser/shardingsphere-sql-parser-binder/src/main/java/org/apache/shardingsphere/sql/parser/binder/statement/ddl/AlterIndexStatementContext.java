@@ -25,9 +25,11 @@ import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterIndexStatementHandler;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Alter index statement context.
@@ -39,16 +41,18 @@ public final class AlterIndexStatementContext extends CommonSQLStatementContext<
     
     public AlterIndexStatementContext(final AlterIndexStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable());
+        SimpleTableSegment simpleTableSegment = AlterIndexStatementHandler.getSimpleTableSegment(sqlStatement).orElse(null);
+        tablesContext = new TablesContext(simpleTableSegment);
     }
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return null == getSqlStatement().getTable() ? Collections.emptyList() : Collections.singletonList(getSqlStatement().getTable());
+        Optional<SimpleTableSegment> simpleTableSegment = AlterIndexStatementHandler.getSimpleTableSegment(getSqlStatement());
+        return simpleTableSegment.isPresent() ? Collections.singletonList(simpleTableSegment.get()) : Collections.emptyList();
     }
     
     @Override
     public Collection<IndexSegment> getIndexes() {
-        return null == getSqlStatement().getIndex() ? Collections.emptyList() : Collections.singletonList(getSqlStatement().getIndex());
+        return getSqlStatement().getIndex().isPresent() ? Collections.singletonList(getSqlStatement().getIndex().get()) : Collections.emptyList();
     }
 }
