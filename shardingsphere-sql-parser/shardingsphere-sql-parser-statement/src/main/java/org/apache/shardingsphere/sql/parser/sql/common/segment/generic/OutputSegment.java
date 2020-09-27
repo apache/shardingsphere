@@ -34,15 +34,15 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 @Getter
 public final class OutputSegment implements SQLSegment {
-
+    
     private final int startIndex;
-
+    
     private final int stopIndex;
     
     @Setter
     private TableNameSegment tableName;
     
     private Collection<ColumnProjectionSegment> outputColumns = new LinkedList<>();
-
+    
     private Collection<ColumnSegment> tableColumns = new LinkedList<>();
 }

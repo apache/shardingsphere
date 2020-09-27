@@ -38,7 +38,7 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InsertStatementHandler {
-
+    
     /**
      * Get OnDuplicateKeyColumnsSegment.
      *
@@ -51,7 +51,7 @@ public final class InsertStatementHandler {
         }
         return Optional.empty();
     }
-
+    
     /**
      * Get SetAssignmentSegment.
      *
@@ -64,7 +64,7 @@ public final class InsertStatementHandler {
         }
         return Optional.empty();
     }
-
+    
     /**
      * Get WithSegment.
      *
@@ -80,7 +80,7 @@ public final class InsertStatementHandler {
         }
         return Optional.empty();
     }
-
+    
     /**
      * Get OutputSegment.
      * 

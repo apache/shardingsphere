@@ -33,7 +33,7 @@ public final class ExpectedOutputClause extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "output-table")
     private ExpectedSimpleTable outputTable;
-
+    
     @XmlElement(name = "output-columns")
     private ExpectedOutputColumn outputColumns;
     

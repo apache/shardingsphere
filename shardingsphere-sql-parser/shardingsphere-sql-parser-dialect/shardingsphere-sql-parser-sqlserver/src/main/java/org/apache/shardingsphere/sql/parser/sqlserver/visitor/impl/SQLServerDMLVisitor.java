@@ -152,7 +152,7 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitOutputClause_(final OutputClause_Context ctx) {
         OutputSegment result = new OutputSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
@@ -183,7 +183,7 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
         SQLServerInsertStatement result = new SQLServerInsertStatement();

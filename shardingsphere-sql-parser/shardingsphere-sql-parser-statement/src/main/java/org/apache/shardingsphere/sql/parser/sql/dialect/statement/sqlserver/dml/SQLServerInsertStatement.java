@@ -36,7 +36,7 @@ public final class SQLServerInsertStatement extends InsertStatement implements S
     private WithSegment withSegment;
     
     private OutputSegment outputSegment;
-
+    
     /**
      * Get with segment.
      *

@@ -32,7 +32,7 @@ import java.util.List;
 @Getter
 @Setter
 public final class ExpectedOutputColumn extends AbstractExpectedSQLSegment {
-
+    
     @XmlElement(name = "column-projection")
     private final List<ExpectedColumnProjection> columnProjections = new LinkedList<>();
 }

@@ -36,7 +36,7 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OutputClauseAssert {
-
+    
     /**
      * Assert actual output segment is correct with expected output clause.
      *
@@ -67,7 +67,7 @@ public final class OutputClauseAssert {
             count++;
         }
     }
-
+    
     private static void assertOutputColumnSegment(final SQLCaseAssertContext assertContext, final ColumnProjectionSegment actual, final ExpectedColumnProjection expected) { 
         assertThat(assertContext.getText("Output column name assertion error: "), 
                 actual.getColumn().getIdentifier().getValue(), is(expected.getName()));
@@ -79,7 +79,7 @@ public final class OutputClauseAssert {
                 actual.getTableName().getIdentifier().getValue(), is(expected.getOutputTable().getName()));
         SQLSegmentAssert.assertIs(assertContext, actual.getTableName(), expected.getOutputTable());
     }
-
+    
     private static void assertOutputTableColumnSegment(final SQLCaseAssertContext assertContext, final OutputSegment actual, final ExpectedOutputClause expected) {
         assertThat(assertContext.getText("Output table columns size assertion error: "),
                 actual.getTableColumns().size(), is(expected.getOutputTableColumns().getColumns().size()));
