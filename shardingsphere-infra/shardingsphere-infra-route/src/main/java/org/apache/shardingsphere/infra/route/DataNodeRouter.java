@@ -82,7 +82,7 @@ public final class DataNodeRouter {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private RouteContext doRoute(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
-        RouteContext result = new RouteContext(sqlStatementContext, parameters);
+        RouteContext result = new RouteContext();
         for (Entry<ShardingSphereRule, RouteDecorator> entry : decorators.entrySet()) {
             entry.getValue().decorate(result, sqlStatementContext, parameters, metaData, entry.getKey(), props);
         }

@@ -19,10 +19,8 @@ package org.apache.shardingsphere.infra.route.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,19 +29,9 @@ import java.util.Map;
 @Getter
 public final class RouteContext {
     
-    private final SQLStatementContext<?> sqlStatementContext;
-    
-    private final List<Object> parameters;
-    
-    private final RouteResult routeResult;
+    private final RouteResult routeResult = new RouteResult();
     
     private final Map<Class<? extends ShardingSphereRule>, RouteStageContext> routeStageContexts = new LinkedHashMap<>();
-    
-    public RouteContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
-        this.sqlStatementContext = sqlStatementContext;
-        this.parameters = parameters;
-        routeResult = new RouteResult();
-    }
     
     /**
      * Add next route stage context.

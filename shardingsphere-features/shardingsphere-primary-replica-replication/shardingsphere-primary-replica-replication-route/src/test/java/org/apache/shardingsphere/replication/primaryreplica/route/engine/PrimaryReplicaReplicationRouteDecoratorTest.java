@@ -68,14 +68,8 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
     @Mock
     private SQLStatementContext<SQLStatement> sqlStatementContext;
     
-    @Mock
-    private InsertStatement insertStatement;
-    
-    @Mock
-    private MySQLSelectStatement selectStatement;
-    
     private PrimaryReplicaReplicationRouteDecorator routeDecorator;
-
+    
     static {
         ShardingSphereServiceLoader.register(RouteDecorator.class);
     }
@@ -94,7 +88,7 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
     
     @Test
     public void assertDecorateToPrimary() {
-        RouteContext actual = mockSQLRouteContext(insertStatement);
+        RouteContext actual = mockRouteContext();
         routeDecorator.decorate(actual, mock(SQLStatementContext.class), Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_PRIMARY_REPLICA_DATASOURCE_NAME));
@@ -103,7 +97,7 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
     
     @Test
     public void assertDecorateToPrimaryWithoutRouteUnits() {
-        RouteContext actual = mockSQLRouteContextWithoutRouteUnits(insertStatement);
+        RouteContext actual = new RouteContext();
         routeDecorator.decorate(actual, mock(SQLStatementContext.class), Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
@@ -111,7 +105,9 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
     
     @Test
     public void assertDecorateToReplica() {
-        RouteContext actual = mockSQLRouteContext(selectStatement);
+        RouteContext actual = mockRouteContext();
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.empty());
         routeDecorator.decorate(actual, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
@@ -121,7 +117,9 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
     
     @Test
     public void assertDecorateToReplicaWithoutRouteUnits() {
-        RouteContext actual = mockSQLRouteContextWithoutRouteUnits(selectStatement);
+        RouteContext actual = new RouteContext();
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.empty());
         routeDecorator.decorate(actual, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
@@ -130,7 +128,9 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
     
     @Test
     public void assertLockDecorateToPrimary() {
-        RouteContext actual = mockSQLRouteContext(selectStatement);
+        RouteContext actual = mockRouteContext();
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
         routeDecorator.decorate(actual, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
@@ -140,7 +140,9 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
     
     @Test
     public void assertLockDecorateToPrimaryWithoutRouteUnits() {
-        RouteContext actual = mockSQLRouteContextWithoutRouteUnits(selectStatement);
+        RouteContext actual = new RouteContext();
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
         routeDecorator.decorate(actual, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
@@ -149,33 +151,20 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
     
     @Test
     public void assertDecorateToPrimaryWithoutRouteUnitsAndWithParameters() {
-        RouteContext actual = mockSQLRouteContextWithoutRouteUnitsAndWithParameters(insertStatement);
-        routeDecorator.decorate(actual, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
+        RouteContext actual = new RouteContext();
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(InsertStatement.class));
+        routeDecorator.decorate(actual, sqlStatementContext, Collections.singletonList("true"), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
     }
     
-    private RouteContext mockSQLRouteContext(final SQLStatement sqlStatement) {
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        RouteContext result = new RouteContext(sqlStatementContext, Collections.emptyList());
-        mockRouteResult(result.getRouteResult());
-        result.addNextRouteStageContext(null, null);
-        return result;
-    }
-    
-    private void mockRouteResult(final RouteResult routeResult) {
+    private RouteContext mockRouteContext() {
+        RouteContext result = new RouteContext();
+        RouteResult routeResult = result.getRouteResult();
         RouteUnit routeUnit = new RouteUnit(new RouteMapper(DATASOURCE_NAME, DATASOURCE_NAME), Collections.singletonList(new RouteMapper("table", "table_0")));
         routeResult.getRouteUnits().add(routeUnit);
         routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(NON_PRIMARY_REPLICA_DATASOURCE_NAME, NON_PRIMARY_REPLICA_DATASOURCE_NAME), Collections.emptyList()));
-    }
-    
-    private RouteContext mockSQLRouteContextWithoutRouteUnits(final SQLStatement sqlStatement) {
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        return new RouteContext(sqlStatementContext, Collections.emptyList());
-    }
-    
-    private RouteContext mockSQLRouteContextWithoutRouteUnitsAndWithParameters(final SQLStatement sqlStatement) {
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        return new RouteContext(sqlStatementContext, Collections.singletonList("true"));
+        result.addNextRouteStageContext(null, null);
+        return result;
     }
 }
