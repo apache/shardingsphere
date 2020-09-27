@@ -38,8 +38,8 @@ public final class ConnectionStatus {
      */
     public void switchToReleased() {
         if (isUsing) {
-            resourceLock.doNotify();
             isUsing = false;
+            resourceLock.doNotify();
         }
     }
     
