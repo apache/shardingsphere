@@ -44,8 +44,10 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
         Optional<TableMetaData> tableMetaData = callback.load(tableName);
         if (tableMetaData.isPresent()) {
             metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().put(tableName, tableMetaData.get());
+            metaData.getRuleSchemaMetaData().getSchemaMetaData().put(tableName, tableMetaData.get());
         } else {
             refreshUnconfiguredMetaData(metaData, dataSourceMap, tableName);
+            metaData.getRuleSchemaMetaData().getSchemaMetaData().put(tableName, new TableMetaData());
         }
     }
     

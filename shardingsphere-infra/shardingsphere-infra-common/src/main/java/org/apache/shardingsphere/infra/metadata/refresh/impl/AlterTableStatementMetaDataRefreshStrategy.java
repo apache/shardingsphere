@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.TableMetaDataLoaderCallback;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterTableStatementContext;
 
 import javax.sql.DataSource;
@@ -39,7 +40,12 @@ public final class AlterTableStatementMetaDataRefreshStrategy implements MetaDat
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         SchemaMetaData schemaMetaData = metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData();
         if (null != schemaMetaData && schemaMetaData.containsTable(tableName)) {
-            callback.load(tableName).ifPresent(tableMetaData -> metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().put(tableName, tableMetaData));
+            callback.load(tableName).ifPresent(tableMetaData -> alterMetaData(metaData, tableName, tableMetaData));
         }
+    }
+    
+    private void alterMetaData(final ShardingSphereMetaData metaData, final String tableName, final TableMetaData tableMetaData) {
+        metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().put(tableName, tableMetaData);
+        metaData.getRuleSchemaMetaData().getSchemaMetaData().put(tableName, tableMetaData);
     }
 }
