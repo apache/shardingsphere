@@ -15,31 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterIndexStatement;
 
 import java.util.Optional;
 
 /**
- * SQLServer drop index statement.
+ * AlterIndexStatement handler for different dialect SQLStatements.
  */
-@Getter
-@Setter
-public final class SQLServerDropIndexStatement extends DropIndexStatement implements SQLServerStatement {
-    
-    private SimpleTableSegment table;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AlterIndexStatementHandler {
     
     /**
-     * Get simple table segment.
+     * Get SimpleTableSegment.
      *
-     * @return simple table segment
+     * @param alterIndexStatement AlterIndexStatement
+     * @return SimpleTableSegment
      */
-    public Optional<SimpleTableSegment> getTable() {
-        return Optional.ofNullable(table);
+    public static Optional<SimpleTableSegment> getSimpleTableSegment(final AlterIndexStatement alterIndexStatement) {
+        if (alterIndexStatement instanceof SQLServerStatement) {
+            return ((SQLServerAlterIndexStatement) alterIndexStatement).getTable();
+        }
+        return Optional.empty();
     }
 }

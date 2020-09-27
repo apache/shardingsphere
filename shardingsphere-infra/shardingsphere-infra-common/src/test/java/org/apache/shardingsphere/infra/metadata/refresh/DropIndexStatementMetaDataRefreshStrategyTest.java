@@ -27,8 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropIndexStatement;
 import org.junit.Test;
 
@@ -43,28 +41,21 @@ import static org.mockito.Mockito.mock;
 public final class DropIndexStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
     @Test
-    public void refreshMySQLDropIndexMetaData() throws SQLException {
-        refreshMetaData(new MySQLDropIndexStatement());
+    public void refreshMetaDataForMySQL() throws SQLException {
+        MySQLDropIndexStatement dropIndexStatement = new MySQLDropIndexStatement();
+        dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        refreshMetaData(dropIndexStatement);
     }
-
+    
     @Test
-    public void refreshOracleDropIndexMetaData() throws SQLException {
-        refreshMetaData(new OracleDropIndexStatement());
+    public void refreshMetaDataForSQLServer() throws SQLException {
+        SQLServerDropIndexStatement dropIndexStatement = new SQLServerDropIndexStatement();
+        dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        refreshMetaData(dropIndexStatement);
     }
-
-    @Test
-    public void refreshPostgreSQLDropIndexMetaData() throws SQLException {
-        refreshMetaData(new PostgreSQLDropIndexStatement());
-    }
-
-    @Test
-    public void refreshSQLServerDropIndexMetaData() throws SQLException {
-        refreshMetaData(new SQLServerDropIndexStatement());
-    }
-
+    
     private void refreshMetaData(final DropIndexStatement dropIndexStatement) throws SQLException {
         dropIndexStatement.getIndexes().add(new IndexSegment(1, 2, new IdentifierValue("index")));
-        dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         MetaDataRefreshStrategy<DropIndexStatementContext> metaDataRefreshStrategy = new DropIndexStatementMetaDataRefreshStrategy();
         DropIndexStatementContext dropIndexStatementContext = new DropIndexStatementContext(dropIndexStatement);
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), dropIndexStatementContext, tableName -> Optional.empty());
@@ -72,30 +63,23 @@ public final class DropIndexStatementMetaDataRefreshStrategyTest extends Abstrac
     }
     
     @Test
-    public void assertMySQLRemoveIndexes() throws SQLException {
-        assertRemoveIndexes(new MySQLDropIndexStatement());
+    public void assertRemoveIndexesForMySQL() throws SQLException {
+        MySQLDropIndexStatement dropIndexStatement = new MySQLDropIndexStatement();
+        dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        assertRemoveIndexes(dropIndexStatement);
     }
-
+    
     @Test
-    public void assertOracleRemoveIndexes() throws SQLException {
-        assertRemoveIndexes(new OracleDropIndexStatement());
+    public void assertRemoveIndexesForSQLServer() throws SQLException {
+        SQLServerDropIndexStatement dropIndexStatement = new SQLServerDropIndexStatement();
+        dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        assertRemoveIndexes(dropIndexStatement);
     }
-
-    @Test
-    public void assertPostgreSQLRemoveIndexes() throws SQLException {
-        assertRemoveIndexes(new PostgreSQLDropIndexStatement());
-    }
-
-    @Test
-    public void assertSQLServerRemoveIndexes() throws SQLException {
-        assertRemoveIndexes(new SQLServerDropIndexStatement());
-    }
-
+    
     private void assertRemoveIndexes(final DropIndexStatement dropIndexStatement) throws SQLException {
         dropIndexStatement.getIndexes().add(new IndexSegment(1, 2, new IdentifierValue("index")));
         dropIndexStatement.getIndexes().add(new IndexSegment(2, 3, new IdentifierValue("t_order_index")));
         dropIndexStatement.getIndexes().add(new IndexSegment(3, 4, new IdentifierValue("order_id_index")));
-        dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         Map<String, IndexMetaData> actualIndex = getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes();
         actualIndex.put("t_order_index", new IndexMetaData("t_order_index"));
         actualIndex.put("order_id_index", new IndexMetaData("order_id_index"));
