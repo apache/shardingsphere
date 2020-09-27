@@ -45,23 +45,6 @@ public final class RouteContext {
         routeResult = new RouteResult();
     }
     
-    public RouteContext(final RouteContext parent, final RouteResult routeResult, final RouteStageContext nextRouteStageContext, final Class<? extends ShardingSphereRule> ruleType) {
-        sqlStatementContext = parent.sqlStatementContext;
-        parameters = parent.parameters;
-        this.routeResult = routeResult;
-        addBeforeRouteStageContexts(parent.routeStageContexts);
-        addNextRouteStageContext(ruleType, nextRouteStageContext);
-    }
-    
-    /**
-     * Add before route stage context.
-     *
-     * @param beforeRouteStageContexts before route stage contexts
-     */
-    public void addBeforeRouteStageContexts(final Map<Class<? extends ShardingSphereRule>, RouteStageContext> beforeRouteStageContexts) {
-        routeStageContexts.putAll(beforeRouteStageContexts);
-    }
-    
     /**
      * Add next route stage context.
      *
