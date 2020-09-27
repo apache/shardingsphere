@@ -98,8 +98,7 @@
         </sharding:broadcast-table-rules>
     </sharding:rule>
     
-    <shardingsphere:data-source id="realShardingDatabasesTablesDataSource" data-source-names="demo_ds_0, demo_ds_1" rule-refs="shardingRule" />
-    <governance:data-source id="shardingDatabasesTablesDataSource" data-source-names="realShardingDatabasesTablesDataSource" reg-center-ref="regCenter" rule-refs="shardingRule" />
+    <governance:data-source id="shardingDatabasesTablesDataSource" data-source-names="demo_ds_0, demo_ds_1" reg-center-ref="regCenter" rule-refs="shardingRule" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="shardingDatabasesTablesDataSource" />
