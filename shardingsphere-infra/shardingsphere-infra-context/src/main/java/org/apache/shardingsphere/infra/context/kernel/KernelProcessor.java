@@ -27,6 +27,8 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.DataNodeRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import java.util.Collection;
@@ -46,10 +48,11 @@ public final class KernelProcessor {
     public ExecutionContext generateExecutionContext(final LogicSQLContext logicSQLContext, final ConfigurationProperties props) {
         Collection<ShardingSphereRule> rules = logicSQLContext.getSchemaContext().getSchema().getRules();
         DataNodeRouter router = new DataNodeRouter(logicSQLContext.getSchemaContext().getSchema().getMetaData(), props, rules);
-        RouteContext routeContext = router.route(logicSQLContext.getSqlStatement(), logicSQLContext.getSql(), logicSQLContext.getParameters());
+        SchemaMetaData schemaMetaData = logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getSchemaMetaData();
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, logicSQLContext.getParameters(), logicSQLContext.getSqlStatement());
+        RouteContext routeContext = router.route(sqlStatementContext, logicSQLContext.getSql(), logicSQLContext.getParameters());
         SQLRewriteEntry rewriteEntry = new SQLRewriteEntry(logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(), props, rules);
-        SQLRewriteResult rewriteResult = rewriteEntry.rewrite(logicSQLContext.getSql(), logicSQLContext.getParameters(), routeContext);
-        SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
+        SQLRewriteResult rewriteResult = rewriteEntry.rewrite(logicSQLContext.getSql(), logicSQLContext.getParameters(), sqlStatementContext, routeContext);
         Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(logicSQLContext.getSchemaContext().getSchema().getMetaData(), rewriteResult, sqlStatementContext);
         return new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
     }

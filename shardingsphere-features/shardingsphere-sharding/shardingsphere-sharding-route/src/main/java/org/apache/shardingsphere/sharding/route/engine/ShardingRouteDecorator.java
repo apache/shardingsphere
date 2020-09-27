@@ -59,12 +59,11 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public void decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ShardingRule shardingRule, final ConfigurationProperties props) {
-        SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
-        List<Object> parameters = routeContext.getParameters();
+    public void decorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
+                         final ShardingSphereMetaData metaData, final ShardingRule shardingRule, final ConfigurationProperties props) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         Optional<ShardingStatementValidator> shardingStatementValidator = ShardingStatementValidatorFactory.newInstance(sqlStatement);
-        shardingStatementValidator.ifPresent(validator -> validator.preValidate(shardingRule, routeContext, metaData));
+        shardingStatementValidator.ifPresent(validator -> validator.preValidate(shardingRule, sqlStatementContext, parameters, metaData));
         ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData(), shardingRule);
         boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatementContext, shardingRule);
         if (sqlStatement instanceof DMLStatement && needMergeShardingValues) {

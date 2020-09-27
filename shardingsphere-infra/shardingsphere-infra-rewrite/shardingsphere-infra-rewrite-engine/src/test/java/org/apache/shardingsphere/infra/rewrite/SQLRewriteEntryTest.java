@@ -49,7 +49,7 @@ public final class SQLRewriteEntryTest {
     public void assertRewriteForGenericSQLRewriteResult() {
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(metaData, props, Collections.emptyList());
         RouteContext routeContext = new RouteContext(mock(SQLStatementContext.class), Collections.singletonList(1));
-        GenericSQLRewriteResult sqlRewriteResult = (GenericSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), routeContext);
+        GenericSQLRewriteResult sqlRewriteResult = (GenericSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), mock(SQLStatementContext.class), routeContext);
         assertThat(sqlRewriteResult.getSqlRewriteUnit().getSql(), is("SELECT ?"));
         assertThat(sqlRewriteResult.getSqlRewriteUnit().getParameters(), is(Collections.singletonList(1)));
     }
@@ -60,7 +60,7 @@ public final class SQLRewriteEntryTest {
         RouteContext routeContext = new RouteContext(mock(SQLStatementContext.class), Collections.singletonList(1));
         routeContext.getRouteResult().getRouteUnits().addAll(Arrays.asList(mock(RouteUnit.class), mock(RouteUnit.class)));
         routeContext.addNextRouteStageContext(null, null);
-        RouteSQLRewriteResult sqlRewriteResult = (RouteSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), routeContext);
+        RouteSQLRewriteResult sqlRewriteResult = (RouteSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), mock(SQLStatementContext.class), routeContext);
         assertThat(sqlRewriteResult.getSqlRewriteUnits().size(), is(2));
     }
 }

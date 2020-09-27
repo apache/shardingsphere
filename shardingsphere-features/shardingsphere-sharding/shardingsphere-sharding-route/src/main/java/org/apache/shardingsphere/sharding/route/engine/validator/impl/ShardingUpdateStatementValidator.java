@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -46,21 +45,20 @@ import java.util.Optional;
 public final class ShardingUpdateStatementValidator implements ShardingStatementValidator<UpdateStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final RouteContext routeContext, final ShardingSphereMetaData metaData) {
-        SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<UpdateStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereMetaData metaData) {
         if (1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
             throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
         }
-        UpdateStatement sqlStatement = (UpdateStatement) sqlStatementContext.getSqlStatement();
+        UpdateStatement sqlStatement = sqlStatementContext.getSqlStatement();
         String tableName = sqlStatementContext.getTablesContext().getTables().iterator().next().getTableName().getIdentifier().getValue();
         for (AssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
             String shardingColumn = each.getColumn().getIdentifier().getValue();
             if (shardingRule.isShardingColumn(shardingColumn, tableName)) {
-                Optional<Object> shardingColumnSetAssignmentValue = getShardingColumnSetAssignmentValue(each, routeContext.getParameters());
+                Optional<Object> shardingColumnSetAssignmentValue = getShardingColumnSetAssignmentValue(each, parameters);
                 Optional<Object> shardingValue = Optional.empty();
                 Optional<WhereSegment> whereSegmentOptional = sqlStatement.getWhere();
                 if (whereSegmentOptional.isPresent()) {
-                    shardingValue = getShardingValue(whereSegmentOptional.get(), routeContext.getParameters(), shardingColumn);
+                    shardingValue = getShardingValue(whereSegmentOptional.get(), parameters, shardingColumn);
                 }
                 if (shardingColumnSetAssignmentValue.isPresent() && shardingValue.isPresent() && shardingColumnSetAssignmentValue.get().equals(shardingValue.get())) {
                     continue;
