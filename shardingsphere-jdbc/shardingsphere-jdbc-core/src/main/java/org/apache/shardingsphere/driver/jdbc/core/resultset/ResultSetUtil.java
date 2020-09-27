@@ -87,8 +87,8 @@ public final class ResultSetUtil {
         String val = value.toString();
         try {
             return new URL(val);
-        } catch (MalformedURLException mfe) {
-            throw new ShardingSphereException("Unsupported Date type: URL");
+        } catch (MalformedURLException ex) {
+            throw new ShardingSphereException("Unsupported Date type: URL value %s", value);
         }
     }
     
