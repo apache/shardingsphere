@@ -39,7 +39,7 @@
     <import resource="classpath*:META-INF/zookeeper/registry-center.xml" />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     
-    <bean id="demo_ds_encrypt" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+    <bean id="demo_ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds"/>
         <property name="username" value="root"/>
@@ -60,13 +60,11 @@
         </encrypt:table>
     </encrypt:rule>
     
-    <shardingsphere:data-source id="realEncryptDataSource" data-source-names="dbtbl_0" rule-refs="encryptRule">
+    <governance:data-source id="encryptDataSource" data-source-names="demo_ds" reg-center-ref="regCenter" rule-refs="encryptRule">
         <props>
             <prop key="query-with-cipher-column">true</prop>
         </props>
-    </shardingsphere:data-source>
-    
-    <governance:data-source id="encryptDataSource" data-source-ref="realEncryptDataSource" reg-center-ref="regCenter" />
+    </governance:data-source>
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="encryptDataSource" />

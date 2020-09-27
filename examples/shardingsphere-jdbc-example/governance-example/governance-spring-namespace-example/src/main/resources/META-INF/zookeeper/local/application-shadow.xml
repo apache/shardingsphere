@@ -53,15 +53,9 @@
         <property name="password" value=""/>
     </bean>
     
-    <shadow:rule id="shadowRule" column="shadow">
-        <shadow:mappings>
-            <shadow:mapping product-data-source-name="demo_ds" shadow-data-source-name="shadow_demo_ds"/>
-        </shadow:mappings>
-    </shadow:rule>
+    <shadow:rule id="shadowRule" column="shadow" sourceDataSourceNames="demo_ds" shadowDataSourceNames="shadow_demo_ds"/>
     
-    <shardingsphere:data-source id="realShadowDataSource" data-source-names="demo_ds,shadow_demo_ds" rule-refs="shadowRule" />
-    
-    <governance:data-source id="shadowDataSource" data-source-ref="realShadowDataSource" reg-center-ref="regCenter" />
+    <governance:data-source id="shadowDataSource" data-source-names="demo_ds,shadow_demo_ds" reg-center-ref="regCenter" rule-refs="shadowRule"/>
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="shadowDataSource" />
