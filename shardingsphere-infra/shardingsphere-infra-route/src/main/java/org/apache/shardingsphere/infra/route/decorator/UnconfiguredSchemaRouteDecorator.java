@@ -36,15 +36,13 @@ public final class UnconfiguredSchemaRouteDecorator {
      *
      * @param routeContext route context
      * @param metaData meta data of ShardingSphere
-     * @return decorated route context
      */
-    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData) {
+    public void decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData) {
         if (isNeedUnconfiguredSchema(routeContext.getSqlStatementContext().getSqlStatement())) {
             for (String each : metaData.getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().keySet()) {
                 routeContext.getRouteResult().getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
             }
         }
-        return routeContext;
     }
     
     // TODO use dynamic config to judge UnconfiguredSchema

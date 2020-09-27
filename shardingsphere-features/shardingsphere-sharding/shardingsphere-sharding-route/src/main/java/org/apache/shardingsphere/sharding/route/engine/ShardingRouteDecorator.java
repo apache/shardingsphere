@@ -59,7 +59,7 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ShardingRule shardingRule, final ConfigurationProperties props) {
+    public void decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ShardingRule shardingRule, final ConfigurationProperties props) {
         SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         List<Object> parameters = routeContext.getParameters();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
@@ -74,7 +74,9 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
         ShardingRouteEngine shardingRouteEngine = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
         RouteResult routeResult = shardingRouteEngine.route(shardingRule);
         shardingStatementValidator.ifPresent(validator -> validator.postValidate(sqlStatement, routeResult));
-        return new RouteContext(routeContext, routeResult, new DefaultRouteStageContext(), getTypeClass());
+        routeContext.getRouteResult().getOriginalDataNodes().addAll(routeResult.getOriginalDataNodes());
+        routeContext.getRouteResult().getRouteUnits().addAll(routeResult.getRouteUnits());
+        routeContext.addNextRouteStageContext(getTypeClass(), new DefaultRouteStageContext());
     }
 
     private ShardingConditions getShardingConditions(final List<Object> parameters, 

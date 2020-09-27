@@ -87,9 +87,9 @@ public final class DataNodeRouter {
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getRuleSchemaMetaData().getSchemaMetaData(), parameters, sqlStatement);
         RouteContext result = new RouteContext(sqlStatementContext, parameters);
         for (Entry<ShardingSphereRule, RouteDecorator> entry : decorators.entrySet()) {
-            result = entry.getValue().decorate(result, metaData, entry.getKey(), props);
+            entry.getValue().decorate(result, metaData, entry.getKey(), props);
         }
-        return new UnconfiguredSchemaRouteDecorator().decorate(result, metaData);
+        new UnconfiguredSchemaRouteDecorator().decorate(result, metaData);
+        return result;
     }
-    
 }

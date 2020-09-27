@@ -45,30 +45,35 @@ import java.util.List;
 public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
     
     @Override
-    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ShadowRule shadowRule, final ConfigurationProperties props) {
-        return routeContext.getRouteResult().getRouteUnits().isEmpty() ? getRouteContext(routeContext, shadowRule) : getRouteContextWithRouteResult(routeContext, shadowRule);
+    public void decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ShadowRule shadowRule, final ConfigurationProperties props) {
+        if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
+            decorateRouteContext(routeContext, shadowRule);
+            return;
+        }
+        decorateRouteContextWithRouteResult(routeContext, shadowRule);
     }
     
-    private RouteContext getRouteContext(final RouteContext routeContext, final ShadowRule shadowRule) {
+    private void decorateRouteContext(final RouteContext routeContext, final ShadowRule shadowRule) {
         SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        RouteResult routeResult = new RouteResult();
+        RouteResult routeResult = routeContext.getRouteResult();
         if (!(sqlStatement instanceof DMLStatement)) {
             shadowRule.getShadowMappings().forEach((key, value) -> {
                 routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(key, key), Collections.emptyList()));
                 routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(value, value), Collections.emptyList()));
             });
-            return new RouteContext(routeContext, routeResult, new DefaultRouteStageContext(), getTypeClass());
+            routeContext.addNextRouteStageContext(getTypeClass(), new DefaultRouteStageContext());
+            return;
         }
         if (isShadow(routeContext, shadowRule)) {
             shadowRule.getShadowMappings().values().forEach(each -> routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
         } else {
             shadowRule.getShadowMappings().keySet().forEach(each -> routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
         }
-        return new RouteContext(routeContext, routeResult, new DefaultRouteStageContext(), getTypeClass());
+        routeContext.addNextRouteStageContext(getTypeClass(), new DefaultRouteStageContext());
     }
     
-    private RouteContext getRouteContextWithRouteResult(final RouteContext routeContext, final ShadowRule shadowRule) {
+    private void decorateRouteContextWithRouteResult(final RouteContext routeContext, final ShadowRule shadowRule) {
         SQLStatement sqlStatement = routeContext.getSqlStatementContext().getSqlStatement();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         if (!(sqlStatement instanceof DMLStatement)) {
@@ -77,7 +82,7 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
                 toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), shadowDataSourceName), each.getTableMappers()));
             }
             routeContext.getRouteResult().getRouteUnits().addAll(toBeAdded);
-            return routeContext;
+            return;
         }
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         if (isShadow(routeContext, shadowRule)) {
@@ -89,7 +94,6 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
         }
         routeContext.getRouteResult().getRouteUnits().removeAll(toBeRemoved);
         routeContext.getRouteResult().getRouteUnits().addAll(toBeAdded);
-        return routeContext;
     }
     
     private boolean isShadow(final RouteContext routeContext, final ShadowRule shadowRule) {
