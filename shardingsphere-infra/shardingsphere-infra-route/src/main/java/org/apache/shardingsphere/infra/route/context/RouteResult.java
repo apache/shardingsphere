@@ -19,10 +19,12 @@ package org.apache.shardingsphere.infra.route.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +42,8 @@ public final class RouteResult {
     private final Collection<Collection<DataNode>> originalDataNodes = new LinkedList<>();
     
     private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
+    
+    private final Map<Class<? extends ShardingSphereRule>, RouteStageContext> routeStageContexts = new LinkedHashMap<>();
     
     /**
      * Judge is route for single database and table only or not.

@@ -18,10 +18,6 @@
 package org.apache.shardingsphere.infra.route.context;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Route context.
@@ -30,6 +26,4 @@ import java.util.Map;
 public final class RouteContext {
     
     private final RouteResult routeResult = new RouteResult();
-    
-    private final Map<Class<? extends ShardingSphereRule>, RouteStageContext> routeStageContexts = new LinkedHashMap<>();
 }
