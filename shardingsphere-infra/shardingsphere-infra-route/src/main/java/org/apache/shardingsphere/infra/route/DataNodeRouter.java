@@ -85,10 +85,11 @@ public final class DataNodeRouter {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private RouteContext doRoute(final SQLStatement sqlStatement, final List<Object> parameters) {
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getRuleSchemaMetaData().getSchemaMetaData(), parameters, sqlStatement);
-        RouteContext routeContext = new RouteContext(sqlStatementContext, parameters);
+        RouteContext result = new RouteContext(sqlStatementContext, parameters);
         for (Entry<ShardingSphereRule, RouteDecorator> entry : decorators.entrySet()) {
-            entry.getValue().decorate(routeContext, metaData, entry.getKey(), props);
+            entry.getValue().decorate(result, metaData, entry.getKey(), props);
         }
-        return new UnconfiguredSchemaRouteDecorator().decorate(routeContext, metaData);
+        new UnconfiguredSchemaRouteDecorator().decorate(result, metaData);
+        return result;
     }
 }
