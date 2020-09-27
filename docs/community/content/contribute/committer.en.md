@@ -33,6 +33,4 @@ After a contributor participate ShardingSphere community actively, PMC and Commi
  
 3. Pull Request that committer submits needs to mark labels and milestone based on the type and time.
 
-**Notice**
-
-At least one committer is expected to be in the assignee list of that issue before it is completed.
+> To be noticed: At least one committer is expected to be in the assignee list of that issue before it is completed.
