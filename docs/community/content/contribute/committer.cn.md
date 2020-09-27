@@ -32,6 +32,4 @@ ShardingSphere社区遵循[Apache Community’s process](http://community.apache
 
 3. Committer提交的PR，需要根据PR类型和时间标注label 和 milestone。
 
-**注意**
-
-无论是否是社区issue，都必须有assignee，直到issue完成。
+> 注意: 无论是否是社区issue，都必须有assignee，直到issue完成。
