@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
@@ -76,6 +77,19 @@ public final class InsertStatementHelper {
         }
         if (insertStatement instanceof SQLServerStatement) {
             return ((SQLServerInsertStatement) insertStatement).getWithSegment();
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Get OutputSegment.
+     * 
+     * @param insertStatement InsertStatement
+     * @return OutputSegment
+     */
+    public static Optional<OutputSegment> getOutputSegment(final InsertStatement insertStatement) {
+        if (insertStatement instanceof SQLServerStatement) {
+            return ((SQLServerInsertStatement) insertStatement).getOutputSegment();
         }
         return Optional.empty();
     }

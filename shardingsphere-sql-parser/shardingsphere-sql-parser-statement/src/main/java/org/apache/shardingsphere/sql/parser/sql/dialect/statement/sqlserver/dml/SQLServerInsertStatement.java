@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
@@ -35,6 +36,8 @@ import java.util.Optional;
 public final class SQLServerInsertStatement extends InsertStatement implements SQLServerStatement {
     
     private WithSegment withSegment;
+    
+    private OutputSegment outputSegment;
 
     /**
      * Get with segment.
@@ -44,7 +47,16 @@ public final class SQLServerInsertStatement extends InsertStatement implements S
     public Optional<WithSegment> getWithSegment() {
         return Optional.ofNullable(withSegment);
     }
-
+    
+    /**
+     * Get output segment.
+     * 
+     * @return output segment.
+     */
+    public Optional<OutputSegment> getOutputSegment() {
+        return Optional.ofNullable(outputSegment);
+    }
+    
     @Override
     public boolean useDefaultColumns() {
         return getColumns().isEmpty();
