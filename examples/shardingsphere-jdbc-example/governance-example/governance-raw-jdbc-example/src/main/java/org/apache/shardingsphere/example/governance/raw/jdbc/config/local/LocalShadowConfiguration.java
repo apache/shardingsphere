@@ -46,8 +46,8 @@ public final class LocalShadowConfiguration implements ExampleConfiguration {
     
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
-        result.put("ds", DataSourceUtil.createDataSource("ds"));
-        result.put("shadow_ds", DataSourceUtil.createDataSource("shadow_ds"));
+        result.put("ds", DataSourceUtil.createDataSource("demo_ds"));
+        result.put("shadow_ds", DataSourceUtil.createDataSource("shadow_demo_ds"));
         return result;
     }
     
