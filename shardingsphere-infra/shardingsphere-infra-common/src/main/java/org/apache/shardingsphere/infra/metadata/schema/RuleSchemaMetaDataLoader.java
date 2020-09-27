@@ -160,9 +160,13 @@ public final class RuleSchemaMetaDataLoader {
         schemaMetaData.merge(new SchemaMetaData(tableMetaDataMap));
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData) {
-        return OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class).entrySet().stream()
-                .map(entry -> entry.getValue().decorate(tableName, tableMetaData, entry.getKey())).reduce((first, second) -> second).orElse(tableMetaData);
+        Map<ShardingSphereRule, RuleMetaDataDecorator> decorators = OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class);
+        TableMetaData result = null;
+        for (Entry<ShardingSphereRule, RuleMetaDataDecorator> entry : decorators.entrySet()) {
+            result = entry.getValue().decorate(tableName, null == result ? tableMetaData : result, entry.getKey());
+        }
+        return Optional.ofNullable(result).orElse(tableMetaData);
     }
 }
