@@ -164,7 +164,6 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
         RouteUnit routeUnit = new RouteUnit(new RouteMapper(DATASOURCE_NAME, DATASOURCE_NAME), Collections.singletonList(new RouteMapper("table", "table_0")));
         routeResult.getRouteUnits().add(routeUnit);
         routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(NON_PRIMARY_REPLICA_DATASOURCE_NAME, NON_PRIMARY_REPLICA_DATASOURCE_NAME), Collections.emptyList()));
-        result.addNextRouteStageContext(null, null);
         return result;
     }
 }
