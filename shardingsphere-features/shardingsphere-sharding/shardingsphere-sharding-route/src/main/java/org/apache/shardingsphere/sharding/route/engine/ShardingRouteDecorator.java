@@ -74,6 +74,8 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
         ShardingRouteEngine shardingRouteEngine = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
         RouteResult routeResult = shardingRouteEngine.route(shardingRule);
         shardingStatementValidator.ifPresent(validator -> validator.postValidate(sqlStatement, routeResult));
+        routeContext.getRouteResult().getOriginalDataNodes().addAll(routeResult.getOriginalDataNodes());
+        routeContext.getRouteResult().getRouteUnits().addAll(routeResult.getRouteUnits());
         routeContext.addNextRouteStageContext(getTypeClass(), new DefaultRouteStageContext());
         return routeContext;
     }

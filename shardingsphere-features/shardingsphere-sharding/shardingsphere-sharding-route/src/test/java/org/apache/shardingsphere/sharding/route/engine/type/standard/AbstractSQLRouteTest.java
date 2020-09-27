@@ -83,7 +83,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
                 new ColumnMetaData("c_date", Types.TIMESTAMP, "timestamp", false, false, false)), Collections.emptySet()));
         tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
         Map<String, Collection<String>> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
-        unconfiguredSchemaMetaDataMap.put("ds_0", Arrays.asList("t_category"));
+        unconfiguredSchemaMetaDataMap.put("ds_0", Collections.singletonList("t_category"));
         return new RuleSchemaMetaData(new SchemaMetaData(tableMetaDataMap), unconfiguredSchemaMetaDataMap);
     }
 }

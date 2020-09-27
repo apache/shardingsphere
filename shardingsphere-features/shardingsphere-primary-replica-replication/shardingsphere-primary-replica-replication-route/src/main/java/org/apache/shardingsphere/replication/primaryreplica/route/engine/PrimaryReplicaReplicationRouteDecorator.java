@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.DefaultRouteStageContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
 import org.apache.shardingsphere.replication.primaryreplica.constant.PrimaryReplicaReplicationOrder;
@@ -45,8 +44,7 @@ public final class PrimaryReplicaReplicationRouteDecorator implements RouteDecor
     public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final PrimaryReplicaReplicationRule rule, final ConfigurationProperties props) {
         if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
             String dataSourceName = new PrimaryReplicaReplicationDataSourceRouter(rule.getSingleDataSourceRule()).route(routeContext.getSqlStatementContext().getSqlStatement());
-            RouteResult routeResult = new RouteResult();
-            routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
+            routeContext.getRouteResult().getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
             routeContext.addNextRouteStageContext(getTypeClass(), new DefaultRouteStageContext());
             return routeContext;
         }

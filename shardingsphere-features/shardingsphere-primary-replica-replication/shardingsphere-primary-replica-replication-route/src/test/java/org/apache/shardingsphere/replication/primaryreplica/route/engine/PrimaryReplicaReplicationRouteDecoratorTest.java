@@ -158,15 +158,16 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
     
     private RouteContext mockSQLRouteContext(final SQLStatement sqlStatement) {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        return new RouteContext(new RouteContext(sqlStatementContext, Collections.emptyList()), mockRouteResult(), null, null);
+        RouteContext result = new RouteContext(sqlStatementContext, Collections.emptyList());
+        mockRouteResult(result.getRouteResult());
+        result.addNextRouteStageContext(null, null);
+        return result;
     }
     
-    private RouteResult mockRouteResult() {
-        RouteResult result = new RouteResult();
+    private void mockRouteResult(final RouteResult routeResult) {
         RouteUnit routeUnit = new RouteUnit(new RouteMapper(DATASOURCE_NAME, DATASOURCE_NAME), Collections.singletonList(new RouteMapper("table", "table_0")));
-        result.getRouteUnits().add(routeUnit);
-        result.getRouteUnits().add(new RouteUnit(new RouteMapper(NON_PRIMARY_REPLICA_DATASOURCE_NAME, NON_PRIMARY_REPLICA_DATASOURCE_NAME), Collections.emptyList()));
-        return result;
+        routeResult.getRouteUnits().add(routeUnit);
+        routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(NON_PRIMARY_REPLICA_DATASOURCE_NAME, NON_PRIMARY_REPLICA_DATASOURCE_NAME), Collections.emptyList()));
     }
     
     private RouteContext mockSQLRouteContextWithoutRouteUnits(final SQLStatement sqlStatement) {

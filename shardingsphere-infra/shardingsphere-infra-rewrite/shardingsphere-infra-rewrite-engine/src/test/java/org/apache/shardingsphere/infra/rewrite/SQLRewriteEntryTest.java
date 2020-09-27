@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -58,9 +57,9 @@ public final class SQLRewriteEntryTest {
     @Test
     public void assertRewriteForRouteSQLRewriteResult() {
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(metaData, props, Collections.emptyList());
-        RouteResult routeResult = new RouteResult();
-        routeResult.getRouteUnits().addAll(Arrays.asList(mock(RouteUnit.class), mock(RouteUnit.class)));
-        RouteContext routeContext = new RouteContext(new RouteContext(mock(SQLStatementContext.class), Collections.singletonList(1)), routeResult, null, null);
+        RouteContext routeContext = new RouteContext(mock(SQLStatementContext.class), Collections.singletonList(1));
+        routeContext.getRouteResult().getRouteUnits().addAll(Arrays.asList(mock(RouteUnit.class), mock(RouteUnit.class)));
+        routeContext.addNextRouteStageContext(null, null);
         RouteSQLRewriteResult sqlRewriteResult = (RouteSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), routeContext);
         assertThat(sqlRewriteResult.getSqlRewriteUnits().size(), is(2));
     }

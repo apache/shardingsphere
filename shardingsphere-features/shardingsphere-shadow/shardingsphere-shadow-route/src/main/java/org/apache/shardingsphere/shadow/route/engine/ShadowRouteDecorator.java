@@ -52,7 +52,7 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
     private RouteContext getRouteContext(final RouteContext routeContext, final ShadowRule shadowRule) {
         SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        RouteResult routeResult = new RouteResult();
+        RouteResult routeResult = routeContext.getRouteResult();
         if (!(sqlStatement instanceof DMLStatement)) {
             shadowRule.getShadowMappings().forEach((key, value) -> {
                 routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(key, key), Collections.emptyList()));
