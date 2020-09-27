@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.route.fixture.rule.RouteFailureRuleFixtur
 import org.apache.shardingsphere.infra.route.fixture.rule.RouteRuleFixture;
 import org.apache.shardingsphere.infra.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,7 +65,7 @@ public final class DataNodeRouterTest {
     public void assertRouteSuccess() {
         DataNodeRouter router = new DataNodeRouter(metaData, props, Collections.singletonList(new RouteRuleFixture()));
         setSPIRoutingHook(router);
-        RouteContext actual = router.route(mock(SQLStatement.class), "SELECT 1", Collections.emptyList());
+        RouteContext actual = router.route(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
         assertThat(actual.getRouteResult().getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteResult().getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("ds"));
@@ -80,7 +80,7 @@ public final class DataNodeRouterTest {
         DataNodeRouter router = new DataNodeRouter(metaData, props, Collections.singletonList(new RouteFailureRuleFixture()));
         setSPIRoutingHook(router);
         try {
-            router.route(mock(SQLStatement.class), "SELECT 1", Collections.emptyList());
+            router.route(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
         } catch (final UnsupportedOperationException ex) {
             verify(routingHook).start("SELECT 1");
             verify(routingHook).finishFailure(ex);

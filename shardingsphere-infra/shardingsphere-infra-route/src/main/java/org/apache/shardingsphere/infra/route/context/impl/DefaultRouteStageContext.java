@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.context;
+package org.apache.shardingsphere.infra.route.context.impl;
+
+import org.apache.shardingsphere.infra.route.context.RouteStageContext;
 
 /**
  * Default route stage context.
