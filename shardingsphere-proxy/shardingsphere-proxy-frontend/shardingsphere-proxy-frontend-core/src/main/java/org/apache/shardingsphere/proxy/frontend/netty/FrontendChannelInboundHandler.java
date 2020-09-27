@@ -23,7 +23,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.replication.primaryreplica.route.engine.impl.MasterVisitedManager;
+import org.apache.shardingsphere.replication.primaryreplica.route.engine.impl.PrimaryVisitedManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationResult;
@@ -97,7 +97,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     private void closeAllResources(final ChannelHandlerContext context) {
         databaseProtocolFrontendEngine.release(backendConnection);
-        MasterVisitedManager.clear();
+        PrimaryVisitedManager.clear();
         backendConnection.closeResultSets();
         backendConnection.closeStatements();
         backendConnection.closeConnections(true);

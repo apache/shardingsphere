@@ -44,6 +44,6 @@ public final class DataSourceFactory {
         result.setJdbcUrl(dataSourceConfiguration.getJdbcUrl());
         result.setUsername(dataSourceConfiguration.getUsername());
         result.setPassword(dataSourceConfiguration.getPassword());
-        return new HikariDataSourceWrapper(result);
+        return new DataSourceWrapper(result);
     }
 }

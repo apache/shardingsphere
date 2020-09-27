@@ -18,9 +18,13 @@
 package org.apache.shardingsphere.scaling.core.fixture;
 
 import org.apache.shardingsphere.scaling.core.check.AbstractDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSqlBuilder;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+
+import java.util.Collections;
+import java.util.Map;
 
 public final class FixtureDataConsistencyChecker extends AbstractDataConsistencyChecker implements DataConsistencyChecker {
     
@@ -29,13 +33,13 @@ public final class FixtureDataConsistencyChecker extends AbstractDataConsistency
     }
     
     @Override
-    public boolean countCheck() {
+    public Map<String, DataConsistencyCheckResult> countCheck() {
         return super.countCheck();
     }
     
     @Override
-    public boolean dataCheck() {
-        return false;
+    public Map<String, Boolean> dataCheck() {
+        return Collections.emptyMap();
     }
     
     @Override
@@ -45,7 +49,7 @@ public final class FixtureDataConsistencyChecker extends AbstractDataConsistency
             protected String getLeftIdentifierQuoteString() {
                 return "`";
             }
-    
+            
             @Override
             protected String getRightIdentifierQuoteString() {
                 return "`";

@@ -18,8 +18,12 @@
 package org.apache.shardingsphere.scaling.fixture;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.scaling.core.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
+
+import java.util.Collections;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public final class FixtureDataConsistencyChecker implements DataConsistencyChecker {
@@ -27,12 +31,12 @@ public final class FixtureDataConsistencyChecker implements DataConsistencyCheck
     private final ShardingScalingJob shardingScalingJob;
     
     @Override
-    public boolean countCheck() {
-        return false;
+    public Map<String, DataConsistencyCheckResult> countCheck() {
+        return Collections.emptyMap();
     }
     
     @Override
-    public boolean dataCheck() {
-        return false;
+    public Map<String, Boolean> dataCheck() {
+        return Collections.emptyMap();
     }
 }

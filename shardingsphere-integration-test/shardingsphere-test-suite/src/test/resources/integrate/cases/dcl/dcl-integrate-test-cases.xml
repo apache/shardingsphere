@@ -145,7 +145,7 @@
     <dcl-test-case sql="REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'user_dev'@'localhost'" db-types="MySQL"/>
     <dcl-test-case sql="REVOKE select, insert ON * FROM 'user_dev'@'localhost'" db-types="MySQL"/>
     <dcl-test-case sql="REVOKE select, insert ON t_order FROM 'user_dev'@'localhost'" db-types="MySQL"/>
-    <dcl-test-case sql="REVOKE select, insert ON master.t_order FROM 'user_dev'@'localhost'" db-types="MySQL"/>
+    <dcl-test-case sql="REVOKE select, insert ON primary_ds.t_order FROM 'user_dev'@'localhost'" db-types="MySQL"/>
     <dcl-test-case sql="REVOKE ALL PRIVILEGES ON *.* FROM user_dev" db-types="MySQL"/>
     <dcl-test-case sql="REVOKE ALL PRIVILEGES (order_id) ON TABLE t_order FROM role2" db-types="PostgreSQL"/>
     <dcl-test-case sql="REVOKE ALL PRIVILEGES (order_id) ON TABLE t_order FROM role2, role3" db-types="PostgreSQL"/>

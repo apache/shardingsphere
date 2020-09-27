@@ -36,7 +36,7 @@ Comparison with Sharding-JDBC & Sharding-Sidecar:
 
 ![](https://shardingsphere.apache.org/blog/img/comparsion_en.jpg)
 
-They can work individually and cooperate each other, which achieve same purpose through different architecture and point of penetration. Its core functions are based on same implementation, such as data sharding, read-write splitting and base transaction. 
+They can work individually and cooperate each other, which achieve same purpose through different architecture and point of penetration. Its core functions based on same implementation, such as data sharding, primary-replica replication and base transaction. 
 
 For instance, Sharding-JDBC highly supports many kinds of ORM framework for Java development technology stack scenarios. It's quite convenient to import data sharding ability to your system. DBA retrieves and manages data by deploying a Sharding-Proxy instance.
 
@@ -50,7 +50,7 @@ The whole architecture can be divided into three components: Frontend, Core-modu
 
 *   Core-module: After getting decoded command of MySQL, it starts to parse/rewrite/route/conflate SQL through Sharding-Core.
    
-*   Backend:  it's interacted with real database by Hikari pool of BIO. Its performance declines on condition of one master more slaves or large scale to database cluster in the way of BIO, so we will provide way of NIO to connect real database in the future.
+*   Backend:  it's interacted with real database by Hikari pool of BIO. Its performance declines on condition of one primary more replicas or large scale to database cluster in the way of BIO, so we will provide way of NIO to connect real database in the future.
   
 
 ![](https://shardingsphere.apache.org/blog/img/proxy_architecture1_en.jpg)

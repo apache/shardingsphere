@@ -19,13 +19,17 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterIndexStatementHandler;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterIndexStatementTestCase;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import java.util.Optional;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Alter index statement assert.
@@ -46,11 +50,12 @@ public final class AlterIndexStatementAssert {
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final AlterIndexStatement actual, final AlterIndexStatementTestCase expected) {
+        Optional<SimpleTableSegment> tableSegment = AlterIndexStatementHandler.getSimpleTableSegment(actual);
         if (null != expected.getTable()) {
-            assertNotNull(assertContext.getText("Actual table segment should exist."), actual.getTable());
-            TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
+            assertTrue(assertContext.getText("Actual table segment should exist."), tableSegment.isPresent());
+            TableAssert.assertIs(assertContext, tableSegment.get(), expected.getTable());
         } else {
-            assertNull(assertContext.getText("Actual table segment should not exist."), actual.getTable());
+            assertFalse(assertContext.getText("Actual table segment should not exist."), tableSegment.isPresent());
         }
     }
     

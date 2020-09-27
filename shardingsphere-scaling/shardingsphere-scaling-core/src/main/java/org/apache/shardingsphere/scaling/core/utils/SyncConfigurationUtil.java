@@ -60,12 +60,12 @@ public final class SyncConfigurationUtil {
      */
     public static Collection<SyncConfiguration> toSyncConfigurations(final ScalingConfiguration scalingConfiguration) {
         Collection<SyncConfiguration> result = new LinkedList<>();
-        Map<String, DataSourceConfiguration> sourceDatasource = ConfigurationYamlConverter.loadDataSourceConfigurations(scalingConfiguration.getRuleConfiguration().getSourceDatasource());
+        Map<String, DataSourceConfiguration> sourceDataSource = ConfigurationYamlConverter.loadDataSourceConfigurations(scalingConfiguration.getRuleConfiguration().getSourceDataSource());
         ShardingRuleConfiguration sourceRule = ConfigurationYamlConverter.loadShardingRuleConfiguration(scalingConfiguration.getRuleConfiguration().getSourceRule());
-        Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDatasource.keySet());
+        Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDataSource.keySet());
         filterByShardingDataSourceTables(dataSourceTableNameMap, scalingConfiguration.getJobConfiguration());
         for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
-            DumperConfiguration dumperConfiguration = createDumperConfiguration(entry.getKey(), sourceDatasource.get(entry.getKey()), entry.getValue());
+            DumperConfiguration dumperConfiguration = createDumperConfiguration(entry.getKey(), sourceDataSource.get(entry.getKey()), entry.getValue());
             ImporterConfiguration importerConfiguration = createImporterConfiguration(scalingConfiguration, sourceRule);
             importerConfiguration.setRetryTimes(scalingConfiguration.getJobConfiguration().getRetryTimes());
             result.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), dumperConfiguration, importerConfiguration));
@@ -118,12 +118,12 @@ public final class SyncConfigurationUtil {
     
     private static Map<String, Map<String, String>> toDataSourceTableNameMap(final TableRule tableRule) {
         Map<String, Map<String, String>> result = new HashMap<>();
-        for (Entry<String, Collection<String>> each : tableRule.getDatasourceToTablesMap().entrySet()) {
-            Map<String, String> tableNameMap = result.get(each.getKey());
+        for (Entry<String, Collection<String>> entry : tableRule.getDatasourceToTablesMap().entrySet()) {
+            Map<String, String> tableNameMap = result.get(entry.getKey());
             if (null == tableNameMap) {
-                result.put(each.getKey(), toTableNameMap(tableRule.getLogicTable(), each.getValue()));
+                result.put(entry.getKey(), toTableNameMap(tableRule.getLogicTable(), entry.getValue()));
             } else {
-                tableNameMap.putAll(toTableNameMap(tableRule.getLogicTable(), each.getValue()));
+                tableNameMap.putAll(toTableNameMap(tableRule.getLogicTable(), entry.getValue()));
             }
         }
         return result;
@@ -138,12 +138,12 @@ public final class SyncConfigurationUtil {
     }
     
     private static void mergeDataSourceTableNameMap(final Map<String, Map<String, String>> mergedResult, final Map<String, Map<String, String>> newDataSourceTableNameMap) {
-        for (Entry<String, Map<String, String>> each : newDataSourceTableNameMap.entrySet()) {
-            Map<String, String> tableNameMap = mergedResult.get(each.getKey());
+        for (Entry<String, Map<String, String>> entry : newDataSourceTableNameMap.entrySet()) {
+            Map<String, String> tableNameMap = mergedResult.get(entry.getKey());
             if (null == tableNameMap) {
-                mergedResult.put(each.getKey(), each.getValue());
+                mergedResult.put(entry.getKey(), entry.getValue());
             } else {
-                tableNameMap.putAll(each.getValue());
+                tableNameMap.putAll(entry.getValue());
             }
         }
     }
@@ -163,9 +163,9 @@ public final class SyncConfigurationUtil {
     private static ImporterConfiguration createImporterConfiguration(final ScalingConfiguration scalingConfiguration, final ShardingRuleConfiguration shardingRuleConfig) {
         ImporterConfiguration result = new ImporterConfiguration();
         JDBCDataSourceConfiguration importerDataSourceConfiguration = new JDBCDataSourceConfiguration(
-                scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUrl(),
-                scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUsername(),
-                scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getPassword());
+                scalingConfiguration.getRuleConfiguration().getTargetDataSources().getUrl(),
+                scalingConfiguration.getRuleConfiguration().getTargetDataSources().getUsername(),
+                scalingConfiguration.getRuleConfiguration().getTargetDataSources().getPassword());
         result.setDataSourceConfiguration(importerDataSourceConfiguration);
         result.setShardingColumnsMap(toShardingColumnsMap(shardingRuleConfig));
         return result;

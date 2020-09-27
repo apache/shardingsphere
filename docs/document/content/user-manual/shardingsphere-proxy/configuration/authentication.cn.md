@@ -13,5 +13,5 @@ authentication:
       password: root # 自定义用户名
     sharding: # 自定义用户名
       password: sharding # 自定义用户名
-      authorizedSchemas: sharding_db, masterslave_db # 该用户授权可访问的数据库，多个用逗号分隔。缺省将拥有 root 权限，可访问全部数据库。
+      authorizedSchemas: sharding_db, primary_replica_replication_db # 该用户授权可访问的数据库，多个用逗号分隔。缺省将拥有 root 权限，可访问全部数据库。
 ```

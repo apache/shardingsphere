@@ -471,6 +471,13 @@
         </where>
     </select>
 
+    <select sql-case-id="select_like_with_single_quotes" >
+        <projections start-index="7" stop-index="8">
+            <column-projection name="id" start-index="7" stop-index="8"/>
+        </projections>
+        <where></where>
+    </select>
+
     <select sql-case-id="select_count_tilde_concat" parameters="'init', 1, 2, 9, 10">
         <table-reference>
             <table-factor>

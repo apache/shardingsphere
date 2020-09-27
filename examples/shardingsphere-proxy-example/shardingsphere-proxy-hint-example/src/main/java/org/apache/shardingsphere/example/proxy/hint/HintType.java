@@ -19,5 +19,5 @@ package org.apache.shardingsphere.example.proxy.hint;
 
 public enum HintType {
     
-    DATABASE_ONLY, DATABASE_TABLES, MASTER_ONLY
+    DATABASE_ONLY, DATABASE_TABLES, PRIMARY_ONLY
 }

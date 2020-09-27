@@ -22,16 +22,13 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -74,65 +71,5 @@ public abstract class InsertStatement extends AbstractSQLStatement implements DM
      */
     public Optional<SubquerySegment> getInsertSelect() {
         return Optional.ofNullable(insertSelect);
-    }
-    
-    /**
-     * Judge is use default columns or not.
-     * 
-     * @return is use default columns or not
-     */
-    public abstract boolean useDefaultColumns();
-    
-    /**
-     * Get column names.
-     *
-     * @return column names
-     */
-    public abstract List<String> getColumnNames();
-    
-    /**
-     * Get value list count.
-     *
-     * @return value list count
-     */
-    public abstract int getValueListCount();
-    
-    /**
-     * Get value count for per value list.
-     * 
-     * @return value count
-     */
-    public abstract int getValueCountForPerGroup();
-    
-    /**
-     * Get all value expressions.
-     * 
-     * @return all value expressions
-     */
-    public abstract List<List<ExpressionSegment>> getAllValueExpressions();
-
-    /**
-     * Get column names for insert columns.
-     * 
-     * @return column names
-     */
-    protected List<String> getColumnNamesForInsertColumns() {
-        List<String> result = new LinkedList<>();
-        for (ColumnSegment each : getColumns()) {
-            result.add(each.getIdentifier().getValue().toLowerCase());
-        }
-        return result;
-    }
-
-    /**
-     * Get all value expressions from values.
-     * @return all value expressions
-     */
-    protected List<List<ExpressionSegment>> getAllValueExpressionsFromValues() {
-        List<List<ExpressionSegment>> result = new ArrayList<>(values.size());
-        for (InsertValuesSegment each : values) {
-            result.add(each.getValues());
-        }
-        return result;
     }
 }

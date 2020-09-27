@@ -52,7 +52,7 @@ public final class SQLStatementContextFactoryTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, null, null));
         selectStatement.setProjections(projectionsSegment);
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(SchemaMetaData.class), null, selectStatement);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mock(SchemaMetaData.class), null, selectStatement);
         assertNotNull(sqlStatementContext);
         assertTrue(sqlStatementContext instanceof SelectStatementContext);
     }
@@ -87,14 +87,14 @@ public final class SQLStatementContextFactoryTest {
     
     private void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(final InsertStatement insertStatement) {
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(SchemaMetaData.class), null, insertStatement);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mock(SchemaMetaData.class), null, insertStatement);
         assertNotNull(sqlStatementContext);
         assertTrue(sqlStatementContext instanceof InsertStatementContext);
     }
     
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementNotInstanceOfSelectStatementAndInsertStatement() {
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(SchemaMetaData.class), null, mock(SQLStatement.class));
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mock(SchemaMetaData.class), null, mock(SQLStatement.class));
         assertNotNull(sqlStatementContext);
         assertTrue(sqlStatementContext instanceof CommonSQLStatementContext);
     }

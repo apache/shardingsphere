@@ -67,17 +67,25 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
     private Map<RouteUnit, Collection<String>> getDerivedProjectionTexts(final SelectStatementContext selectStatementContext) {
         Map<RouteUnit, Collection<String>> result = new HashMap<>();
         for (RouteUnit routeUnit : routeContext.getRouteResult().getRouteUnits()) {
-            result.put(routeUnit, new LinkedList<>());
-            for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
-                if (each instanceof AggregationProjection && !((AggregationProjection) each).getDerivedAggregationProjections().isEmpty()) {
-                    result.get(routeUnit).addAll(((AggregationProjection) each).getDerivedAggregationProjections().stream().map(this::getDerivedProjectionText).collect(Collectors.toList()));
-                } else if (each instanceof DerivedProjection && ((DerivedProjection) each).getDerivedProjection() instanceof ColumnOrderByItemSegment) {
-                    TableExtractor tableExtractor = new TableExtractor();
-                    tableExtractor.extractTablesFromSelect(selectStatementContext.getSqlStatement());
-                    result.get(routeUnit).add(getDerivedProjectionTextFromColumnOrderByItemSegment((DerivedProjection) each, tableExtractor, routeUnit));
-                } else if (each instanceof DerivedProjection) {
-                    result.get(routeUnit).add(getDerivedProjectionText(each));
-                }
+            Collection<String> projectionTexts = getDerivedProjectionTextsByRouteUnit(selectStatementContext, routeUnit);
+            if (!projectionTexts.isEmpty()) {
+                result.put(routeUnit, projectionTexts);
+            }
+        }
+        return result;
+    }
+    
+    private Collection<String> getDerivedProjectionTextsByRouteUnit(final SelectStatementContext selectStatementContext, final RouteUnit routeUnit) {
+        Collection<String> result = new LinkedList<>();
+        for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
+            if (each instanceof AggregationProjection && !((AggregationProjection) each).getDerivedAggregationProjections().isEmpty()) {
+                result.addAll(((AggregationProjection) each).getDerivedAggregationProjections().stream().map(this::getDerivedProjectionText).collect(Collectors.toList()));
+            } else if (each instanceof DerivedProjection && ((DerivedProjection) each).getDerivedProjection() instanceof ColumnOrderByItemSegment) {
+                TableExtractor tableExtractor = new TableExtractor();
+                tableExtractor.extractTablesFromSelect(selectStatementContext.getSqlStatement());
+                result.add(getDerivedProjectionTextFromColumnOrderByItemSegment((DerivedProjection) each, tableExtractor, routeUnit));
+            } else if (each instanceof DerivedProjection) {
+                result.add(getDerivedProjectionText(each));
             }
         }
         return result;

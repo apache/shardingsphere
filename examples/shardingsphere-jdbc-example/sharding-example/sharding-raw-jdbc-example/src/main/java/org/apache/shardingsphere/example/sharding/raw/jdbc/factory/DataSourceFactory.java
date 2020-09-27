@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc.factory;
 
-import org.apache.shardingsphere.example.sharding.raw.jdbc.config.MasterSlaveConfiguration;
+import org.apache.shardingsphere.example.sharding.raw.jdbc.config.PrimaryReplicaReplicationConfiguration;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ShardingDatabasesAndTablesConfigurationPrecise;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ShardingDatabasesConfigurationPrecise;
-import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ShardingMasterSlaveConfigurationPrecise;
+import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ShardingPrimaryReplicaReplicationConfigurationPrecise;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ShardingTablesConfigurationPrecise;
 import org.apache.shardingsphere.example.type.ShardingType;
 
@@ -37,10 +37,10 @@ public final class DataSourceFactory {
                 return new ShardingTablesConfigurationPrecise().getDataSource();
             case SHARDING_DATABASES_AND_TABLES:
                 return new ShardingDatabasesAndTablesConfigurationPrecise().getDataSource();
-            case MASTER_SLAVE:
-                return new MasterSlaveConfiguration().getDataSource();
-            case SHARDING_MASTER_SLAVE:
-                return new ShardingMasterSlaveConfigurationPrecise().getDataSource();
+            case PRIMARY_REPLICA_REPLICATION:
+                return new PrimaryReplicaReplicationConfiguration().getDataSource();
+            case SHARDING_PRIMARY_REPLICA_REPLICATION:
+                return new ShardingPrimaryReplicaReplicationConfigurationPrecise().getDataSource();
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }

@@ -17,11 +17,29 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+
+import java.util.Optional;
 
 /**
  * MySQL drop index statement.
  */
+@Getter
+@Setter
 public final class MySQLDropIndexStatement extends DropIndexStatement implements MySQLStatement {
+    
+    private SimpleTableSegment table;
+    
+    /**
+     * Get simple table segment.
+     *
+     * @return simple table segment
+     */
+    public Optional<SimpleTableSegment> getTable() {
+        return Optional.ofNullable(table);
+    }
 }

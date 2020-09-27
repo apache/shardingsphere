@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 import java.util.Collection;
@@ -34,6 +33,4 @@ import java.util.LinkedList;
 public abstract class DropIndexStatement extends AbstractSQLStatement implements DDLStatement {
     
     private final Collection<IndexSegment> indexes = new LinkedList<>();
-    
-    private SimpleTableSegment table;
 }

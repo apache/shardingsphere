@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.route;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
 import org.apache.shardingsphere.infra.route.decorator.UnconfiguredSchemaRouteDecorator;
 import org.apache.shardingsphere.infra.route.hook.SPIRoutingHook;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -73,7 +71,7 @@ public final class DataNodeRouter {
     public RouteContext route(final SQLStatement sqlStatement, final String sql, final List<Object> parameters) {
         routingHook.start(sql);
         try {
-            RouteContext result = executeRoute(sqlStatement, parameters);
+            RouteContext result = doRoute(sqlStatement, parameters);
             routingHook.finishSuccess(result, metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData());
             return result;
             // CHECKSTYLE:OFF
@@ -85,21 +83,13 @@ public final class DataNodeRouter {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private RouteContext executeRoute(final SQLStatement sqlStatement, final List<Object> parameters) {
-        RouteContext result = createRouteContext(sqlStatement, parameters);
+    private RouteContext doRoute(final SQLStatement sqlStatement, final List<Object> parameters) {
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getRuleSchemaMetaData().getSchemaMetaData(), parameters, sqlStatement);
+        RouteContext result = new RouteContext(sqlStatementContext, parameters);
         for (Entry<ShardingSphereRule, RouteDecorator> entry : decorators.entrySet()) {
             result = entry.getValue().decorate(result, metaData, entry.getKey(), props);
         }
         return new UnconfiguredSchemaRouteDecorator().decorate(result, metaData);
     }
     
-    private RouteContext createRouteContext(final SQLStatement sqlStatement, final List<Object> parameters) {
-        try {
-            SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getRuleSchemaMetaData().getSchemaMetaData(), parameters, sqlStatement);
-            return new RouteContext(sqlStatementContext, parameters, new RouteResult());
-            // TODO should pass parameters for master-slave
-        } catch (final IndexOutOfBoundsException ex) {
-            return new RouteContext(new CommonSQLStatementContext<>(sqlStatement), parameters, new RouteResult());
-        }
-    }
 }

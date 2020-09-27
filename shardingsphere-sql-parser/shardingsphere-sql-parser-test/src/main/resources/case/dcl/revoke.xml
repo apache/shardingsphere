@@ -31,8 +31,8 @@
     </revoke>
     
     <revoke sql-case-id="revoke_user_with_hostname_on_db_and_table">
-        <table name="t_order" start-index="25" stop-index="38">
-            <owner name="master" start-index="25" stop-index="30" />
+        <table name="t_order" start-index="25" stop-index="42">
+            <owner name="primary_ds" start-index="25" stop-index="34" />
         </table>
     </revoke>
     

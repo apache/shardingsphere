@@ -24,7 +24,9 @@ import org.apache.shardingsphere.infra.metadata.refresh.TableMetaDataLoaderCallb
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropIndexStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropIndexStatementHandler;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -43,9 +45,10 @@ public final class DropIndexStatementMetaDataRefreshStrategy implements MetaData
                                 final Map<String, DataSource> dataSourceMap, final DropIndexStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) {
         DropIndexStatement dropIndexStatement = sqlStatementContext.getSqlStatement();
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
-        String tableName = dropIndexStatement.getTable().getTableName().getIdentifier().getValue();
+        Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(dropIndexStatement);
+        String tableName = simpleTableSegment.map(tableSegment -> tableSegment.getTableName().getIdentifier().getValue()).orElse("");
         TableMetaData tableMetaData = metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().get(tableName);
-        if (null != dropIndexStatement.getTable()) {
+        if (simpleTableSegment.isPresent()) {
             indexNames.forEach(each -> tableMetaData.getIndexes().remove(each));
         }
         for (String each : indexNames) {

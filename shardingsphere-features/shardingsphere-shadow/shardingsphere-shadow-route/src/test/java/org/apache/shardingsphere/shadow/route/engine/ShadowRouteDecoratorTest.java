@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -152,17 +151,17 @@ public final class ShadowRouteDecoratorTest {
         InsertValueContext insertValueContext = mock(InsertValueContext.class);
         when(insertValueContext.getValue(0)).thenReturn(true);
         when(sqlStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
-        return new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
+        return new RouteContext(sqlStatementContext, Collections.emptyList());
     }
     
     private RouteContext mockSQLRouteContext() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(insertStatement);
-        return new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
+        return new RouteContext(sqlStatementContext, Collections.emptyList());
     }
     
     private RouteContext mockNonDMLSQLRouteContext() {
         when(createTableStatementContext.getSqlStatement()).thenReturn(createTableStatement);
-        return new RouteContext(createTableStatementContext, Collections.emptyList(), new RouteResult());
+        return new RouteContext(createTableStatementContext, Collections.emptyList());
     }
 
     private RouteUnit mockRouteUnit() {

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.schema;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
@@ -29,24 +28,36 @@ import java.util.Map;
 /**
  * Rule schema meta data.
  */
-@RequiredArgsConstructor
-@Getter
 public final class RuleSchemaMetaData {
     
+    @Getter
     private final SchemaMetaData configuredSchemaMetaData;
     
+    @Getter
     private final Map<String, Collection<String>> unconfiguredSchemaMetaDataMap;
+    
+    private final SchemaMetaData allSchemaMetaData;
+    
+    public RuleSchemaMetaData(final SchemaMetaData configuredSchemaMetaData, final Map<String, Collection<String>> unconfiguredSchemaMetaDataMap) {
+        this.configuredSchemaMetaData = configuredSchemaMetaData;
+        this.unconfiguredSchemaMetaDataMap = unconfiguredSchemaMetaDataMap;
+        allSchemaMetaData = createSchemaMetaData();
+    }
+    
+    private SchemaMetaData createSchemaMetaData() {
+        SchemaMetaData result = new SchemaMetaData();
+        unconfiguredSchemaMetaDataMap.values().stream().flatMap(Collection::stream).forEach(tableName -> result.put(tableName, new TableMetaData()));
+        result.merge(configuredSchemaMetaData);
+        return result;
+    }
     
     /**
      * Get schema meta data.
-     * 
+     *
      * @return schema meta data
      */
     public SchemaMetaData getSchemaMetaData() {
-        SchemaMetaData result = new SchemaMetaData();
-        unconfiguredSchemaMetaDataMap.values().stream().flatMap(tableNames -> tableNames.stream()).forEach(tableName -> result.put(tableName, new TableMetaData()));
-        result.merge(configuredSchemaMetaData);
-        return result;
+        return allSchemaMetaData;
     }
     
     /**

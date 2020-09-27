@@ -10,7 +10,7 @@ Example for 2.x or 3.x or 4.x please see tags in `https://github.com/apache/shar
 
 - *The manual schema initial script is in `https://github.com/apache/shardingsphere-example/blob/dev/src/resources/manual_schema.sql`, please execute it before you first run the example.*
 
-- *Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.*
+- *Please make sure primary-replica replication data sync on MySQL is running correctly. Otherwise this example will query empty data from the replica.*
 
 ## Before start the example if you want use `dev` branch
 
@@ -68,7 +68,7 @@ shardingsphere-example
 
 | Example | Description |
 |---------|-------------|
-| [sharding](shardingsphere-jdbc-example/sharding-example) | show how to use sharding-table\sharding-database\master-slave with ShardingSphere-JDBC |
+| [sharding](shardingsphere-jdbc-example/sharding-example) | show how to use sharding-table\sharding-database\primary-replica-replication with ShardingSphere-JDBC |
 | [springboot jpa](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example) | show how to use SpringBoot JPA with ShardingSphere |
 | [springboot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | show how to use SpringBoot Mybatis with ShardingSphere |
 | [governance](shardingsphere-jdbc-example/governance-example) | show how to use ShardingSphere governance |

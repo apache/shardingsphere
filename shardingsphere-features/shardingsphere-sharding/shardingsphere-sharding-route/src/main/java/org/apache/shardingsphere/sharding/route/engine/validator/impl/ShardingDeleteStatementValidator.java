@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.helper.dml.DeleteStatementHelper;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.DeleteStatementHandler;
 
 /**
  * Sharding delete statement validator.
@@ -43,7 +43,7 @@ public final class ShardingDeleteStatementValidator implements ShardingStatement
     
     @Override
     public void postValidate(final DeleteStatement sqlStatement, final RouteResult routeResult) {
-        if (DeleteStatementHelper.getLimitSegment(sqlStatement).isPresent() && routeResult.getRouteUnits().size() > 1) {
+        if (DeleteStatementHandler.getLimitSegment(sqlStatement).isPresent() && routeResult.getRouteUnits().size() > 1) {
             throw new ShardingSphereException("DELETE ... LIMIT can not support sharding route to multiple data nodes.");
         }
     }

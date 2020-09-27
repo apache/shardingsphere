@@ -75,7 +75,7 @@ public final class InsertClauseShardingConditionEngine {
         }
         Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
         if (generatedKey.isPresent() && generatedKey.get().isGenerated()) {
-            generatedKey.get().getGeneratedValues().addAll(getGeneratedKeys(tableName, insertStatementContext.getSqlStatement().getValueListCount()));
+            generatedKey.get().getGeneratedValues().addAll(getGeneratedKeys(tableName, insertStatementContext.getValueListCount()));
             if (shardingRule.isShardingColumn(generatedKey.get().getColumnName(), tableName)) {
                 appendGeneratedKeyCondition(generatedKey.get(), tableName, result);
             }

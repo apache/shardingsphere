@@ -11,7 +11,7 @@ Users can add sharding values to HintManager, and those values only take effect 
 Usage of hint:
 
 * Sharding columns are not in SQL and table definition, but in external business logic.
-* Some operations forced to do in the master database.
+* Some operations forced to do in the primary database.
 
 ## Usage
 
@@ -97,15 +97,15 @@ try (HintManager hintManager = HintManager.getInstance();
 }
 ```
 
-### Master Route with Hint
+### Primary Route with Hint
 
 #### Get HintManager
 
 Be the same as sharding based on hint.
 
-#### Configure Master Database Route
+#### Configure Primary Database Route
 
-- Use `hintManager.setMasterRouteOnly` to configure master database route.
+- Use `hintManager.setPrimaryRouteOnly` to configure primary database route.
 
 #### Clean Hint Value
 
@@ -119,7 +119,7 @@ try (
         HintManager hintManager = HintManager.getInstance();
         Connection conn = dataSource.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-    hintManager.setMasterRouteOnly();
+    hintManager.setPrimaryRouteOnly();
     try (ResultSet rs = preparedStatement.executeQuery()) {
         while (rs.next()) {
             // ...

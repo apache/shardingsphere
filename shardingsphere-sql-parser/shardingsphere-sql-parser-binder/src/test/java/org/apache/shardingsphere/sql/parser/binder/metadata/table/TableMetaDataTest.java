@@ -60,4 +60,10 @@ public final class TableMetaDataTest {
         assertTrue(tableMetaData.isPrimaryKey(0));
         assertFalse(tableMetaData.isPrimaryKey(1));
     }
+    
+    @Test
+    public void assertEmptyColumnsWithDefaultConstructor() {
+        tableMetaData = new TableMetaData();
+        assertThat(tableMetaData.getColumns(), is(Collections.emptyMap()));
+    }
 }

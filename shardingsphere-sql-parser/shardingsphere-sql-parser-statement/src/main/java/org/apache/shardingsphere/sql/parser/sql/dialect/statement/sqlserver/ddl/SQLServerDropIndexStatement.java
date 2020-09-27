@@ -17,11 +17,29 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+
+import java.util.Optional;
 
 /**
  * SQLServer drop index statement.
  */
+@Getter
+@Setter
 public final class SQLServerDropIndexStatement extends DropIndexStatement implements SQLServerStatement {
+    
+    private SimpleTableSegment table;
+    
+    /**
+     * Get simple table segment.
+     *
+     * @return simple table segment
+     */
+    public Optional<SimpleTableSegment> getTable() {
+        return Optional.ofNullable(table);
+    }
 }

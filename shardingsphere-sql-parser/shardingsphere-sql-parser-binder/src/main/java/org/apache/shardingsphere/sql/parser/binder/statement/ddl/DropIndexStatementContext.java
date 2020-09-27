@@ -25,9 +25,11 @@ import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropIndexStatementHandler;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Drop index statement context.
@@ -39,12 +41,14 @@ public final class DropIndexStatementContext extends CommonSQLStatementContext<D
     
     public DropIndexStatementContext(final DropIndexStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable());
+        SimpleTableSegment simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(sqlStatement).orElse(null);
+        tablesContext = new TablesContext(simpleTableSegment);
     }
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return null == getSqlStatement().getTable() ? Collections.emptyList() : Collections.singletonList(getSqlStatement().getTable());
+        Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(getSqlStatement());
+        return simpleTableSegment.isPresent() ? Collections.singletonList(simpleTableSegment.get()) : Collections.emptyList();
     }
     
     @Override

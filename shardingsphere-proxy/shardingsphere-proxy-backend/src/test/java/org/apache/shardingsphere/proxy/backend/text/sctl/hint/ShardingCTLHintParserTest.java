@@ -22,7 +22,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.H
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintClearCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintErrorParameterCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintSetDatabaseShardingValueCommand;
-import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintSetMasterOnlyCommand;
+import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintSetPrimaryOnlyCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintShowStatusCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintShowTableStatusCommand;
 import org.junit.Test;
@@ -38,16 +38,16 @@ import static org.junit.Assert.assertTrue;
 public final class ShardingCTLHintParserTest {
     
     @Test
-    public void assertValidSetMasterOnlySQL() {
-        String sql = "sctl:hint set master_only=true ";
+    public void assertValidSetPrimaryOnlySQL() {
+        String sql = "sctl:hint set primary_only=true ";
         Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
         assertTrue(actual.isPresent());
-        assertTrue(((HintSetMasterOnlyCommand) actual.get().getHintCommand()).isMasterOnly());
+        assertTrue(((HintSetPrimaryOnlyCommand) actual.get().getHintCommand()).isPrimaryOnly());
     }
     
     @Test
-    public void assertInValidSetMasterOnlySQL() {
-        String sql = "sctl:hint set master_only1=true ";
+    public void assertInValidSetPrimaryOnlySQL() {
+        String sql = "sctl:hint set primary_only1=true ";
         Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
         assertTrue(actual.isPresent());
         assertThat(actual.get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));

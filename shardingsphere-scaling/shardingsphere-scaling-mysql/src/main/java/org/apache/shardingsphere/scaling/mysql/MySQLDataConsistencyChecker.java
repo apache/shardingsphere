@@ -19,22 +19,23 @@ package org.apache.shardingsphere.scaling.mysql;
 
 import org.apache.shardingsphere.scaling.core.check.AbstractDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * MySQL data consistency checker.
@@ -46,40 +47,38 @@ public final class MySQLDataConsistencyChecker extends AbstractDataConsistencyCh
     }
     
     @Override
-    public boolean dataCheck() {
-        return getShardingScalingJob().getSyncConfigurations().stream().allMatch(each -> dataValid(each.getDumperConfiguration().getTableNameMap()));
-    }
-    
-    private boolean dataValid(final Map<String, String> tableNameMap) {
-        return distinctByValue(tableNameMap).entrySet().stream().allMatch(entry -> getColumns(entry.getKey()).stream().allMatch(columnValid(entry.getValue())));
+    public Map<String, Boolean> dataCheck() {
+        return distinctByValue(getShardingScalingJob().getSyncConfigurations()
+                .stream().flatMap(each -> each.getDumperConfiguration().getTableNameMap().entrySet().stream()).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u)))
+                .entrySet().stream().collect(Collectors.toMap(Entry::getValue, entry -> dataValid(entry.getKey(), entry.getValue())));
     }
     
     private Map<String, String> distinctByValue(final Map<String, String> tableNameMap) {
-        Map<String, String> result = new HashMap<>();
-        Set<String> set = new HashSet<>();
-        for (Entry<String, String> entry : tableNameMap.entrySet()) {
-            if (set.add(entry.getValue())) {
-                result.put(entry.getKey(), entry.getValue());
-            }
+        Set<String> distinctSet = new HashSet<>();
+        return tableNameMap.entrySet().stream().filter(entry -> distinctSet.add(entry.getValue())).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u));
+    }
+    
+    private boolean dataValid(final String actualTableName, final String logicTableName) {
+        try (DataSourceWrapper sourceDataSource = getSourceDataSource();
+             DataSourceWrapper targetDataSource = getTargetDataSource()) {
+            return getColumns(actualTableName).stream().allMatch(each -> sumCrc32(sourceDataSource, logicTableName, each) == sumCrc32(targetDataSource, logicTableName, each));
+        } catch (IOException ex) {
+            throw new DataCheckFailException(String.format("table %s data check failed.", logicTableName), ex);
         }
-        return result;
     }
     
     private List<String> getColumns(final String tableName) {
         List<String> result = new ArrayList<>();
-        try (Connection connection = getSourceDataSource().getConnection();
+        try (DataSourceWrapper sourceDataSource = getSourceDataSource();
+             Connection connection = sourceDataSource.getConnection();
              ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), null, tableName, "%")) {
             while (resultSet.next()) {
                 result.add(resultSet.getString(4));
             }
-        } catch (SQLException ex) {
+        } catch (SQLException | IOException ex) {
             throw new DataCheckFailException("get columns failed.", ex);
         }
         return result;
-    }
-    
-    private Predicate<? super String> columnValid(final String tableName) {
-        return each -> sumCrc32(getSourceDataSource(), tableName, each) == sumCrc32(getDestinationDataSource(), tableName, each);
     }
     
     private long sumCrc32(final DataSource dataSource, final String tableName, final String column) {

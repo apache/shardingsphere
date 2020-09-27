@@ -46,17 +46,14 @@ public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRule
     public YamlRuleSchemaMetaData swapToYamlConfiguration(final RuleSchemaMetaData metaData) {
         YamlRuleSchemaMetaData result = new YamlRuleSchemaMetaData();
         result.setConfiguredSchemaMetaData(convertYamlSchema(metaData.getConfiguredSchemaMetaData()));
-        Map<String, YamlSchemaMetaData> unconfigured = metaData.getUnconfiguredSchemaMetaDataMap().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> convertUnconfiguredYamlSchema(entry.getValue())));
-        result.setUnconfiguredSchemaMetaDataMap(unconfigured);
+        result.setUnconfiguredSchemaMetaDataMap(metaData.getUnconfiguredSchemaMetaDataMap());
         return result;
     }
     
     @Override
     public RuleSchemaMetaData swapToObject(final YamlRuleSchemaMetaData yamlConfig) {
         SchemaMetaData configured = Optional.ofNullable(yamlConfig.getConfiguredSchemaMetaData()).map(this::convertSchema).orElse(new SchemaMetaData());
-        Map<String, Collection<String>> unconfigured = Optional.ofNullable(yamlConfig.getUnconfiguredSchemaMetaDataMap()).map(e -> e.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> convertUnconfiguredSchema(entry.getValue())))).orElse(new HashMap<>());
+        Map<String, Collection<String>> unconfigured = Optional.ofNullable(yamlConfig.getUnconfiguredSchemaMetaDataMap()).orElse(new HashMap<>());
         return new RuleSchemaMetaData(configured, unconfigured);
     }
 
@@ -64,10 +61,6 @@ public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRule
         return new SchemaMetaData(schema.getTables().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertTable(entry.getValue()))));
     }
     
-    private Collection<String> convertUnconfiguredSchema(final YamlSchemaMetaData schema) {
-        return schema.getTables().keySet().stream().collect(Collectors.toList());
-    }
-
     private TableMetaData convertTable(final YamlTableMetaData table) {
         return new TableMetaData(convertColumns(table.getColumns()), convertIndexes(table.getIndexes()));
     }
@@ -95,12 +88,6 @@ public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRule
         return result;
     }
     
-    private YamlSchemaMetaData convertUnconfiguredYamlSchema(final Collection<String> tableNames) {
-        SchemaMetaData schemaMetaData = new SchemaMetaData();
-        tableNames.forEach(table -> schemaMetaData.put(table, new TableMetaData()));
-        return convertYamlSchema(schemaMetaData);
-    }
-
     private YamlTableMetaData convertYamlTable(final TableMetaData table) {
         YamlTableMetaData result = new YamlTableMetaData();
         result.setColumns(convertYamlColumns(table.getColumns()));

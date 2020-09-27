@@ -41,7 +41,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/encryptGovernance.xml")
+@ContextConfiguration(locations = "classpath:META-INF/rdb/encrypt-governance.xml")
 public final class GovernanceEncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @BeforeClass

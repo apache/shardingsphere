@@ -82,8 +82,7 @@ public final class SQLStatementContextFactory {
      * @param sqlStatement SQL statement
      * @return SQL statement context
      */
-    @SuppressWarnings("unchecked")
-    public static SQLStatementContext newInstance(final SchemaMetaData schemaMetaData, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public static SQLStatementContext<?> newInstance(final SchemaMetaData schemaMetaData, final List<Object> parameters, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof DMLStatement) {
             return getDMLStatementContext(schemaMetaData, parameters, (DMLStatement) sqlStatement);
         }
@@ -96,10 +95,10 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof DALStatement) {
             return getDALStatementContext((DALStatement) sqlStatement);
         }
-        return new CommonSQLStatementContext(sqlStatement);
+        return new CommonSQLStatementContext<>(sqlStatement);
     }
     
-    private static SQLStatementContext getDMLStatementContext(final SchemaMetaData schemaMetaData, final List<Object> parameters, final DMLStatement sqlStatement) {
+    private static SQLStatementContext<?> getDMLStatementContext(final SchemaMetaData schemaMetaData, final List<Object> parameters, final DMLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             return new SelectStatementContext(schemaMetaData, parameters, (SelectStatement) sqlStatement);
         }
@@ -118,8 +117,7 @@ public final class SQLStatementContextFactory {
         throw new UnsupportedOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }
     
-    @SuppressWarnings("unchecked")
-    private static SQLStatementContext getDDLStatementContext(final DDLStatement sqlStatement) {
+    private static SQLStatementContext<?> getDDLStatementContext(final DDLStatement sqlStatement) {
         if (sqlStatement instanceof CreateTableStatement) {
             return new CreateTableStatementContext((CreateTableStatement) sqlStatement);
         }
@@ -141,11 +139,10 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof TruncateStatement) {
             return new TruncateStatementContext((TruncateStatement) sqlStatement);
         }
-        return new CommonSQLStatementContext(sqlStatement);
+        return new CommonSQLStatementContext<>(sqlStatement);
     }
     
-    @SuppressWarnings("unchecked")
-    private static SQLStatementContext getDCLStatementContext(final DCLStatement sqlStatement) {
+    private static SQLStatementContext<?> getDCLStatementContext(final DCLStatement sqlStatement) {
         if (sqlStatement instanceof GrantStatement) {
             return new GrantStatementContext((GrantStatement) sqlStatement);
         }
@@ -155,11 +152,10 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof SQLServerDenyUserStatement) {
             return new DenyUserStatementContext((SQLServerDenyUserStatement) sqlStatement);
         }
-        return new CommonSQLStatementContext(sqlStatement);
+        return new CommonSQLStatementContext<>(sqlStatement);
     }
     
-    @SuppressWarnings("unchecked")
-    private static SQLStatementContext getDALStatementContext(final DALStatement sqlStatement) {
+    private static SQLStatementContext<?> getDALStatementContext(final DALStatement sqlStatement) {
         if (sqlStatement instanceof MySQLDescribeStatement) {
             return new DescribeStatementContext((MySQLDescribeStatement) sqlStatement);
         }
@@ -172,6 +168,6 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof MySQLShowIndexStatement) {
             return new ShowIndexStatementContext((MySQLShowIndexStatement) sqlStatement);
         }
-        return new CommonSQLStatementContext(sqlStatement);
+        return new CommonSQLStatementContext<>(sqlStatement);
     }
 }
