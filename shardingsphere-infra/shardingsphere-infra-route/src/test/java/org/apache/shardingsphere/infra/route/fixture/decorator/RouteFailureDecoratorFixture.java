@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.route.fixture.rule.RouteFailureRuleFixtur
 public final class RouteFailureDecoratorFixture implements RouteDecorator<RouteFailureRuleFixture> {
     
     @Override
-    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final RouteFailureRuleFixture rule, final ConfigurationProperties props) {
+    public void decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final RouteFailureRuleFixture rule, final ConfigurationProperties props) {
         throw new UnsupportedOperationException("Route failure.");
     }
     

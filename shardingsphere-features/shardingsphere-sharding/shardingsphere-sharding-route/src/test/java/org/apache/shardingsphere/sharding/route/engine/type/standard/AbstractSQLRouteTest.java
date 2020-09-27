@@ -17,14 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
-import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTest;
-import org.apache.shardingsphere.sql.parser.engine.StandardSQLParserEngine;
-import org.apache.shardingsphere.sql.parser.engine.SQLParserEngineFactory;
-import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
@@ -33,6 +25,13 @@ import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.route.DataNodeRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTest;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.engine.SQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.engine.StandardSQLParserEngine;
 
 import java.sql.Types;
 import java.util.Arrays;
@@ -53,9 +52,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildRuleSchemaMetaData(), "sharding_db");
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         StandardSQLParserEngine standardSqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
-        RouteContext routeContext = new DataNodeRouter(metaData, props, Collections.singletonList(shardingRule)).route(standardSqlParserEngine.parse(sql, false), sql, parameters);
-        ShardingRouteDecorator shardingRouteDecorator = new ShardingRouteDecorator();
-        RouteContext result = shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, props);
+        RouteContext result = new DataNodeRouter(metaData, props, Collections.singletonList(shardingRule)).route(standardSqlParserEngine.parse(sql, false), sql, parameters);
         assertThat(result.getRouteResult().getRouteUnits().size(), is(1));
         return result;
     }

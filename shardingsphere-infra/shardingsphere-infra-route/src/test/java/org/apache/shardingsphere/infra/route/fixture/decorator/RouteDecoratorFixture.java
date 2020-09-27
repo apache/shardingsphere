@@ -31,10 +31,9 @@ import java.util.Collections;
 public final class RouteDecoratorFixture implements RouteDecorator<RouteRuleFixture> {
     
     @Override
-    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final RouteRuleFixture rule, final ConfigurationProperties props) {
+    public void decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final RouteRuleFixture rule, final ConfigurationProperties props) {
         routeContext.getRouteResult().getRouteUnits().add(new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.emptyList()));
         routeContext.addNextRouteStageContext(getTypeClass(), new DefaultRouteStageContext());
-        return routeContext;
     }
     
     @Override

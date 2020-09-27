@@ -41,12 +41,12 @@ import java.util.Optional;
 public final class PrimaryReplicaReplicationRouteDecorator implements RouteDecorator<PrimaryReplicaReplicationRule> {
     
     @Override
-    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final PrimaryReplicaReplicationRule rule, final ConfigurationProperties props) {
+    public void decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final PrimaryReplicaReplicationRule rule, final ConfigurationProperties props) {
         if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
             String dataSourceName = new PrimaryReplicaReplicationDataSourceRouter(rule.getSingleDataSourceRule()).route(routeContext.getSqlStatementContext().getSqlStatement());
             routeContext.getRouteResult().getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
             routeContext.addNextRouteStageContext(getTypeClass(), new DefaultRouteStageContext());
-            return routeContext;
+            return;
         }
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
@@ -61,7 +61,6 @@ public final class PrimaryReplicaReplicationRouteDecorator implements RouteDecor
         }
         routeContext.getRouteResult().getRouteUnits().removeAll(toBeRemoved);
         routeContext.getRouteResult().getRouteUnits().addAll(toBeAdded);
-        return routeContext;
     }
     
     @Override
