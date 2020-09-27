@@ -48,8 +48,8 @@ public final class ConsensusReplicationRouteDecorator implements RouteDecorator<
             ConsensusReplicationGroup replicaGroup = new ConsensusReplicationGroup(replicaRoutingRule.getPhysicsTable(), replicaRoutingRule.getReplicaGroupId(), replicaRoutingRule.getReplicaPeers(),
                     replicaRoutingRule.getDataSourceName());
             replicaGroups.put(ConsensusReplicationGroup.BLANK_CONSENSUS_REPLICATION_GROUP_KEY, replicaGroup);
-            return new RouteContext(
-                    routeContext, routeContext.getRouteResult(), new ConsensusReplicationRouteStageContext(schemaName, replicaGroups, sqlStatementContext.isReadOnly()), getTypeClass());
+            routeContext.addNextRouteStageContext(getTypeClass(), new ConsensusReplicationRouteStageContext(schemaName, replicaGroups, sqlStatementContext.isReadOnly()));
+            return routeContext;
         }
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
             Collection<RouteMapper> routeMappers = each.getTableMappers();
@@ -62,7 +62,8 @@ public final class ConsensusReplicationRouteDecorator implements RouteDecorator<
                 routeReplicaGroups(routeMappers, consensusReplicationRule, replicaGroups);
             }
         }
-        return new RouteContext(routeContext, routeContext.getRouteResult(), new ConsensusReplicationRouteStageContext(schemaName, replicaGroups, sqlStatementContext.isReadOnly()), getTypeClass());
+        routeContext.addNextRouteStageContext(getTypeClass(), new ConsensusReplicationRouteStageContext(schemaName, replicaGroups, sqlStatementContext.isReadOnly()));
+        return routeContext;
     }
     
     private void routeReplicaGroups(final Collection<RouteMapper> routeMappers, final ConsensusReplicationRule replicaRule, final Map<String, ConsensusReplicationGroup> replicaGroups) {

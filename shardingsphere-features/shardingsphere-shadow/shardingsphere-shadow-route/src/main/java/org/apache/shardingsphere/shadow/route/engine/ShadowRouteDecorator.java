@@ -58,14 +58,16 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
                 routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(key, key), Collections.emptyList()));
                 routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(value, value), Collections.emptyList()));
             });
-            return new RouteContext(routeContext, routeResult, new DefaultRouteStageContext(), getTypeClass());
+            routeContext.addNextRouteStageContext(getTypeClass(), new DefaultRouteStageContext());
+            return routeContext;
         }
         if (isShadow(routeContext, shadowRule)) {
             shadowRule.getShadowMappings().values().forEach(each -> routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
         } else {
             shadowRule.getShadowMappings().keySet().forEach(each -> routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
         }
-        return new RouteContext(routeContext, routeResult, new DefaultRouteStageContext(), getTypeClass());
+        routeContext.addNextRouteStageContext(getTypeClass(), new DefaultRouteStageContext());
+        return routeContext;
     }
     
     private RouteContext getRouteContextWithRouteResult(final RouteContext routeContext, final ShadowRule shadowRule) {

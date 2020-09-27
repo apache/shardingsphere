@@ -47,7 +47,8 @@ public final class PrimaryReplicaReplicationRouteDecorator implements RouteDecor
             String dataSourceName = new PrimaryReplicaReplicationDataSourceRouter(rule.getSingleDataSourceRule()).route(routeContext.getSqlStatementContext().getSqlStatement());
             RouteResult routeResult = new RouteResult();
             routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
-            return new RouteContext(routeContext, routeResult, new DefaultRouteStageContext(), getTypeClass());
+            routeContext.addNextRouteStageContext(getTypeClass(), new DefaultRouteStageContext());
+            return routeContext;
         }
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
