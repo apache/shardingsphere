@@ -125,3 +125,4 @@ DROP DATABASE sharding_db
 3. `CREATE DB` just create the logic sharding schema rather than create the actual databases in MySQL instance (**TODO**).
 4. Add more `auto sharding algorithms`
 5. Improvement in `ShardingAlgorithmPropertiesUtil` (**TODO**).
+6. Synchronized execution for all the clients is necessary (**TODO**).

@@ -127,3 +127,4 @@ DROP DATABASE sharding_db
 3. `CREATE DB`只会创建`逻辑的分布式数据库`，所以需要用户提前创建好真实的数据库（**TODO**）。
 4. `自动分片算法`会持续增加，从而覆盖用户各大分片场景。
 5. 重构`ShardingAlgorithmPropertiesUtil`（**TODO**）。
+6. 保证所有客户端完成RDL执行（**TODO**）。
