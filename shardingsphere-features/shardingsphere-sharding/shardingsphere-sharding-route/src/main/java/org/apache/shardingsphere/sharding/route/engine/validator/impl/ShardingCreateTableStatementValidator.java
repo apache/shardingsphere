@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -43,6 +43,6 @@ public final class ShardingCreateTableStatementValidator implements ShardingStat
     }
     
     @Override
-    public void postValidate(final CreateTableStatement sqlStatement, final RouteResult routeResult) {
+    public void postValidate(final CreateTableStatement sqlStatement, final RouteContext routeContext) {
     }
 }
