@@ -175,6 +175,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         Map<String, SchemaContext> schemas = new HashMap<>(schemaContexts.getSchemaContextMap());
         schemas.remove(event.getSchemaName());
         schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
+        governanceFacade.getConfigCenter().deleteSchema(event.getSchemaName());
     }
     
     /**

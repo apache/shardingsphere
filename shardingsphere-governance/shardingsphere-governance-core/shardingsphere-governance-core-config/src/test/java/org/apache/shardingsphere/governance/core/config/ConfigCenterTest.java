@@ -533,4 +533,11 @@ public final class ConfigCenterTest {
         configCenter.renew(event);
         verify(configurationRepository).persist(eq("/schemas/sharding_db/table"), anyString());
     }
+    
+    @Test
+    public void assertDeleteSchema() {
+        ConfigCenter configCenter = new ConfigCenter(configurationRepository);
+        configCenter.deleteSchema("sharding_db");
+        verify(configurationRepository).delete(eq("/schemas/sharding_db"));
+    }
 }
