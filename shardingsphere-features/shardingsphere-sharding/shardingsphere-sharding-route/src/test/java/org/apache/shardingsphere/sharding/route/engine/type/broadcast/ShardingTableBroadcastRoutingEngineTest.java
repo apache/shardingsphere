@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -92,7 +93,8 @@ public final class ShardingTableBroadcastRoutingEngineTest {
     public void assertRouteForNormalDDL() {
         DDLStatement ddlStatement = mock(DDLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(ddlStatement);
-        RouteResult actual = tableBroadcastRoutingEngine.route(shardingRule);
+        RouteContext routeContext = new RouteContext();
+        RouteResult actual = tableBroadcastRoutingEngine.route(routeContext, shardingRule);
         assertRouteResult(actual);
     }
     
@@ -120,7 +122,8 @@ public final class ShardingTableBroadcastRoutingEngineTest {
         IndexSegment indexSegment = new IndexSegment(0, 0, new IdentifierValue("no_index"));
         when(indexStatement.getIndexes()).thenReturn(Lists.newArrayList(indexSegment));
         when(sqlStatementContext.getSqlStatement()).thenReturn(indexStatement);
-        tableBroadcastRoutingEngine.route(shardingRule);
+        RouteContext routeContext = new RouteContext();
+        tableBroadcastRoutingEngine.route(routeContext, shardingRule);
     }
     
     @Test
@@ -147,7 +150,8 @@ public final class ShardingTableBroadcastRoutingEngineTest {
         IndexSegment indexSegment = new IndexSegment(0, 0, new IdentifierValue("index_name"));
         when(indexStatement.getIndexes()).thenReturn(Lists.newArrayList(indexSegment));
         when(sqlStatementContext.getSqlStatement()).thenReturn(indexStatement);
-        RouteResult actual = tableBroadcastRoutingEngine.route(shardingRule);
+        RouteContext routeContext = new RouteContext();
+        RouteResult actual = tableBroadcastRoutingEngine.route(routeContext, shardingRule);
         assertRouteResult(actual);
     }
     

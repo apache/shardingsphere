@@ -20,14 +20,15 @@ package org.apache.shardingsphere.sharding.route.engine.type.unicast;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,7 +47,7 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
     private final Collection<String> logicTables;
     
     @Override
-    public RouteResult route(final ShardingRule shardingRule) {
+    public RouteResult route(final RouteContext routeContext, final ShardingRule shardingRule) {
         RouteResult result = new RouteResult();
         String dataSourceName = getRandomDataSourceName(shardingRule.getDataSourceNames());
         RouteMapper dataSourceMapper = new RouteMapper(dataSourceName, dataSourceName);
@@ -92,6 +93,8 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
             dataSourceName = getRandomDataSourceName(availableDatasourceNames);
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), tableMappers));
         }
+        routeContext.getRouteResult().getOriginalDataNodes().addAll(result.getOriginalDataNodes());
+        routeContext.getRouteResult().getRouteUnits().addAll(result.getRouteUnits());
         return result;
     }
     

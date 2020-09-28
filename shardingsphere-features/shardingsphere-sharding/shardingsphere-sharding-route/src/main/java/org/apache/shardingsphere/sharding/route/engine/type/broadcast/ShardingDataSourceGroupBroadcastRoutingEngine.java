@@ -19,12 +19,13 @@ package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,13 +39,15 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class ShardingDataSourceGroupBroadcastRoutingEngine implements ShardingRouteEngine {
     
     @Override
-    public RouteResult route(final ShardingRule shardingRule) {
+    public RouteResult route(final RouteContext routeContext, final ShardingRule shardingRule) {
         RouteResult result = new RouteResult();
         Collection<Set<String>> broadcastDataSourceGroup = getBroadcastDataSourceGroup(getDataSourceGroup(shardingRule));
         for (Set<String> each : broadcastDataSourceGroup) {
             String dataSourceName = getRandomDataSourceName(each);
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.emptyList()));
         }
+        routeContext.getRouteResult().getOriginalDataNodes().addAll(result.getOriginalDataNodes());
+        routeContext.getRouteResult().getRouteUnits().addAll(result.getRouteUnits());
         return result;
     }
     

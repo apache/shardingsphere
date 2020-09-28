@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
@@ -70,10 +69,8 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
             mergeShardingConditions(shardingConditions);
         }
         ShardingRouteEngine shardingRouteEngine = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
-        RouteResult routeResult = shardingRouteEngine.route(shardingRule);
+        shardingRouteEngine.route(routeContext, shardingRule);
         shardingStatementValidator.ifPresent(validator -> validator.postValidate(sqlStatement, routeContext));
-        routeContext.getRouteResult().getOriginalDataNodes().addAll(routeResult.getOriginalDataNodes());
-        routeContext.getRouteResult().getRouteUnits().addAll(routeResult.getRouteUnits());
     }
 
     private ShardingConditions getShardingConditions(final List<Object> parameters, 

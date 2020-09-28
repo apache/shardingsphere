@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.complex;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTest;
@@ -42,7 +43,8 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
     public void assertRoutingForBindingTables() {
         ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Arrays.asList("t_order", "t_order_item"), 
                 createShardingConditions("t_order"), new ConfigurationProperties(new Properties()));
-        RouteResult routeResult = complexRoutingEngine.route(createBindingShardingRule());
+        RouteContext routeContext = new RouteContext();
+        RouteResult routeResult = complexRoutingEngine.route(routeContext, createBindingShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
@@ -56,7 +58,8 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
     public void assertRoutingForShardingTableJoinBroadcastTable() {
         ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Arrays.asList("t_order", "t_config"),
                 createShardingConditions("t_order"), new ConfigurationProperties(new Properties()));
-        RouteResult routeResult = complexRoutingEngine.route(createBroadcastShardingRule());
+        RouteContext routeContext = new RouteContext();
+        RouteResult routeResult = complexRoutingEngine.route(routeContext, createBroadcastShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
@@ -70,6 +73,7 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
     public void assertRoutingForNonLogicTable() {
         ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Collections.emptyList(), 
                 createShardingConditions("t_order"), new ConfigurationProperties(new Properties()));
-        complexRoutingEngine.route(mock(ShardingRule.class));
+        RouteContext routeContext = new RouteContext();
+        complexRoutingEngine.route(routeContext, mock(ShardingRule.class));
     }
 }

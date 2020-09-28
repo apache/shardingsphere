@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.sharding.route.engine.type.unconfigured;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.List;
@@ -43,7 +44,7 @@ public final class ShardingUnconfiguredTablesRoutingEngine implements ShardingRo
     private final Map<String, Collection<String>> unconfiguredSchemaMetaDataMap;
     
     @Override
-    public RouteResult route(final ShardingRule shardingRule) {
+    public RouteResult route(final RouteContext routeContext, final ShardingRule shardingRule) {
         Optional<String> dataSourceName = findDataSourceName();
         if (!dataSourceName.isPresent()) {
             throw new ShardingSphereException("Can not route tables for `%s`, please make sure the tables are in same schema.", logicTables);
@@ -51,6 +52,8 @@ public final class ShardingUnconfiguredTablesRoutingEngine implements ShardingRo
         RouteResult result = new RouteResult();
         List<RouteMapper> routingTables = logicTables.stream().map(table -> new RouteMapper(table, table)).collect(Collectors.toList());
         result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName.get(), dataSourceName.get()), routingTables));
+        routeContext.getRouteResult().getOriginalDataNodes().addAll(result.getOriginalDataNodes());
+        routeContext.getRouteResult().getRouteUnits().addAll(result.getRouteUnits());
         return result;
     }
     

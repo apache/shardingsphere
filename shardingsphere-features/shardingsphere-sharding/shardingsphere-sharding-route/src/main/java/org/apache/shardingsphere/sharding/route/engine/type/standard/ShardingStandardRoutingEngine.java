@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.hint.HintManager;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -59,8 +60,11 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     private final Collection<Collection<DataNode>> originalDataNodes = new LinkedList<>();
     
     @Override
-    public RouteResult route(final ShardingRule shardingRule) {
-        return generateRouteResult(getDataNodes(shardingRule, shardingRule.getTableRule(logicTableName)));
+    public RouteResult route(final RouteContext routeContext, final ShardingRule shardingRule) {
+        RouteResult result = generateRouteResult(getDataNodes(shardingRule, shardingRule.getTableRule(logicTableName)));
+        routeContext.getRouteResult().getOriginalDataNodes().addAll(result.getOriginalDataNodes());
+        routeContext.getRouteResult().getRouteUnits().addAll(result.getRouteUnits());
+        return result;
     }
     
     private RouteResult generateRouteResult(final Collection<DataNode> routedDataNodes) {

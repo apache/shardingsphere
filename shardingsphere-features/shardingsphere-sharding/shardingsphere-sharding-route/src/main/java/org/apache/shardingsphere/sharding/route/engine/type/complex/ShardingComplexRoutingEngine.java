@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.complex;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
@@ -42,18 +43,19 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
     private final Collection<String> logicTables;
     
     private final ShardingConditions shardingConditions;
-
+    
     private final ConfigurationProperties props;
     
     @Override
-    public RouteResult route(final ShardingRule shardingRule) {
+    public RouteResult route(final RouteContext routeContext, final ShardingRule shardingRule) {
         Collection<RouteResult> result = new ArrayList<>(logicTables.size());
         Collection<String> bindingTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        RouteContext newRouteContext = new RouteContext();
         for (String each : logicTables) {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent()) {
                 if (!bindingTableNames.contains(each)) {
-                    result.add(new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), shardingConditions, props).route(shardingRule));
+                    result.add(new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), shardingConditions, props).route(newRouteContext, shardingRule));
                 }
                 shardingRule.findBindingTableRule(each).ifPresent(bindingTableRule -> bindingTableNames.addAll(
                     bindingTableRule.getTableRules().stream().map(TableRule::getLogicTable).collect(Collectors.toList())));
@@ -63,8 +65,14 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
             throw new ShardingSphereException("Cannot find table rule and default data source with logic tables: '%s'", logicTables);
         }
         if (1 == result.size()) {
+            routeContext.getRouteResult().getOriginalDataNodes().addAll(newRouteContext.getRouteResult().getOriginalDataNodes());
+            routeContext.getRouteResult().getRouteUnits().addAll(newRouteContext.getRouteResult().getRouteUnits());
             return result.iterator().next();
         }
-        return new ShardingCartesianRoutingEngine(result).route(shardingRule);
+        newRouteContext = new RouteContext();
+        RouteResult result1 = new ShardingCartesianRoutingEngine(result).route(newRouteContext, shardingRule);
+        routeContext.getRouteResult().getOriginalDataNodes().addAll(newRouteContext.getRouteResult().getOriginalDataNodes());
+        routeContext.getRouteResult().getRouteUnits().addAll(newRouteContext.getRouteResult().getRouteUnits());
+        return result1;
     }
 }

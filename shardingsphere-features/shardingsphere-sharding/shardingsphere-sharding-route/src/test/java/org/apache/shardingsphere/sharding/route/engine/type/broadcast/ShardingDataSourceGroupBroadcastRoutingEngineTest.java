@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -74,7 +75,8 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngineTest {
         shards.add(Arrays.asList("ds1", "ds2", "ds3"));
         List<TableRule> tableRules = mockTableRules(shards);
         when(shardingRule.getTableRules()).thenReturn(tableRules);
-        RouteResult actual = shardingDataSourceGroupBroadcastRoutingEngine.route(shardingRule);
+        RouteContext routeContext = new RouteContext();
+        RouteResult actual = shardingDataSourceGroupBroadcastRoutingEngine.route(routeContext, shardingRule);
         assertThat(actual.getRouteUnits().size(), is(1));
         Iterator<RouteUnit> iterator = actual.getRouteUnits().iterator();
         assertThat(Arrays.asList("ds1", "ds2", "ds3"), hasItems(iterator.next().getDataSourceMapper().getActualName()));

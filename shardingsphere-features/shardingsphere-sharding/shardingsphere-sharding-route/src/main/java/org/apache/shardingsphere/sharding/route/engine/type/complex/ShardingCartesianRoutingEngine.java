@@ -19,11 +19,12 @@ package org.apache.shardingsphere.sharding.route.engine.type.complex;
 
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,13 +47,15 @@ public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine
     private final Collection<RouteResult> routeResults;
     
     @Override
-    public RouteResult route(final ShardingRule shardingRule) {
+    public RouteResult route(final RouteContext routeContext, final ShardingRule shardingRule) {
         RouteResult result = new RouteResult();
         for (Entry<String, Set<String>> entry : getDataSourceLogicTablesMap().entrySet()) {
             List<Set<String>> actualTableGroups = getActualTableGroups(entry.getKey(), entry.getValue());
             List<Set<RouteMapper>> routingTableGroups = toRoutingTableGroups(entry.getKey(), actualTableGroups);
             result.getRouteUnits().addAll(getRouteUnits(entry.getKey(), Sets.cartesianProduct(routingTableGroups)));
         }
+        routeContext.getRouteResult().getOriginalDataNodes().addAll(result.getOriginalDataNodes());
+        routeContext.getRouteResult().getRouteUnits().addAll(result.getRouteUnits());
         return result;
     }
     

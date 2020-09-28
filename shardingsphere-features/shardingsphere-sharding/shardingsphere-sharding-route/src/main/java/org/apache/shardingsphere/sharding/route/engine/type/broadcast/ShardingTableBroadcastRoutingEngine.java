@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -47,11 +48,13 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
     private final SQLStatementContext sqlStatementContext;
     
     @Override
-    public RouteResult route(final ShardingRule shardingRule) {
+    public RouteResult route(final RouteContext routeContext, final ShardingRule shardingRule) {
         RouteResult result = new RouteResult();
         for (String each : getLogicTableNames()) {
             result.getRouteUnits().addAll(getAllRouteUnits(shardingRule, each));
         }
+        routeContext.getRouteResult().getOriginalDataNodes().addAll(result.getOriginalDataNodes());
+        routeContext.getRouteResult().getRouteUnits().addAll(result.getRouteUnits());
         return result;
     }
     

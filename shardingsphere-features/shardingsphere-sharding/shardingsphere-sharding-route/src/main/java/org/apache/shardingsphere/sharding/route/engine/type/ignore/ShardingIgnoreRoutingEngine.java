@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.ignore;
 
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 
 /**
  * Sharding ignore routing engine.
@@ -27,7 +28,7 @@ import org.apache.shardingsphere.infra.route.context.RouteResult;
 public final class ShardingIgnoreRoutingEngine implements ShardingRouteEngine {
     
     @Override
-    public RouteResult route(final ShardingRule shardingRule) {
+    public RouteResult route(final RouteContext routeContext, final ShardingRule shardingRule) {
         return new RouteResult();
     }
 }
