@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
@@ -61,19 +60,12 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     @Override
     public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
-        RouteResult result = generateRouteResult(getDataNodes(shardingRule, shardingRule.getTableRule(logicTableName)));
-        routeContext.getOriginalDataNodes().addAll(result.getOriginalDataNodes());
-        routeContext.getRouteUnits().addAll(result.getRouteUnits());
-    }
-    
-    private RouteResult generateRouteResult(final Collection<DataNode> routedDataNodes) {
-        RouteResult result = new RouteResult();
-        result.getOriginalDataNodes().addAll(originalDataNodes);
-        for (DataNode each : routedDataNodes) {
-            result.getRouteUnits().add(
+        Collection<DataNode> dataNodes = getDataNodes(shardingRule, shardingRule.getTableRule(logicTableName));
+        routeContext.getOriginalDataNodes().addAll(originalDataNodes);
+        for (DataNode each : dataNodes) {
+            routeContext.getRouteUnits().add(
                     new RouteUnit(new RouteMapper(each.getDataSourceName(), each.getDataSourceName()), Collections.singletonList(new RouteMapper(logicTableName, each.getTableName()))));
         }
-        return result;
     }
     
     private Collection<DataNode> getDataNodes(final ShardingRule shardingRule, final TableRule tableRule) {

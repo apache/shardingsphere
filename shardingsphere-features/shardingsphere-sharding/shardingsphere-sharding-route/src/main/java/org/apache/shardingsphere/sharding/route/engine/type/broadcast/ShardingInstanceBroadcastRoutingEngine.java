@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -38,13 +37,10 @@ public final class ShardingInstanceBroadcastRoutingEngine implements ShardingRou
     
     @Override
     public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
-        RouteResult result = new RouteResult();
         for (String each : shardingRule.getDataSourceNames()) {
             if (dataSourceMetaDatas.getAllInstanceDataSourceNames().contains(each)) {
-                result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
+                routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
             }
         }
-        routeContext.getOriginalDataNodes().addAll(result.getOriginalDataNodes());
-        routeContext.getRouteUnits().addAll(result.getRouteUnits());
     }
 }

@@ -21,7 +21,6 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -48,14 +47,11 @@ public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine
     
     @Override
     public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
-        RouteResult result = new RouteResult();
         for (Entry<String, Set<String>> entry : getDataSourceLogicTablesMap().entrySet()) {
             List<Set<String>> actualTableGroups = getActualTableGroups(entry.getKey(), entry.getValue());
             List<Set<RouteMapper>> routingTableGroups = toRoutingTableGroups(entry.getKey(), actualTableGroups);
-            result.getRouteUnits().addAll(getRouteUnits(entry.getKey(), Sets.cartesianProduct(routingTableGroups)));
+            routeContext.getRouteUnits().addAll(getRouteUnits(entry.getKey(), Sets.cartesianProduct(routingTableGroups)));
         }
-        routeContext.getOriginalDataNodes().addAll(result.getOriginalDataNodes());
-        routeContext.getRouteUnits().addAll(result.getRouteUnits());
     }
     
     private Map<String, Set<String>> getDataSourceLogicTablesMap() {
