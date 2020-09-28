@@ -428,6 +428,13 @@
         </order-by>
     </select>
 
+    <select sql-case-id="select_with_N_string_in_expression">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <where></where>
+    </select>
+
     <select sql-case-id="select_count_like_concat" parameters="'init', 1, 2, 9, 10">
         <table-reference>
             <table-factor>
