@@ -182,5 +182,5 @@ outputWithAaterisk_
     ;
 
 outputTableName_
-    : (AT_? name) | tableName
+    : (AT_ name) | tableName
     ;

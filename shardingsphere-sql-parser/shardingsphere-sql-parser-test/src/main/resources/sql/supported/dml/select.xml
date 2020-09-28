@@ -31,6 +31,7 @@
     <sql-case id="select_comparison_symbol_with_single_table" value="SELECT * FROM t_order WHERE user_id &gt;= ? AND user_id &lt;= ? AND order_id &gt;= ? AND order_id &lt;= ? ORDER BY user_id, order_id" />
     <sql-case id="select_equal_with_same_sharding_column" value="SELECT * FROM t_order WHERE order_id = ? AND order_id = ?" />
     <sql-case id="select_in_with_same_sharding_column" value="SELECT * FROM t_order WHERE order_id IN (?, ?) AND order_id IN (?, ?) ORDER BY order_id" />
+    <sql-case id="select_with_N_string_in_expression" value="SELECT * FROM t_order WHERE is_deleted = 'N'" />
     <sql-case id="select_count_like_concat" value="SELECT count(0) as orders_count FROM t_order o WHERE o.status LIKE CONCAT('%%', ?, '%%') AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" />
     <sql-case id="select_like_with_single_quotes" value="select id from admin where fullname like 'a%'" db-types="MySQL"/>
     <sql-case id="select_count_tilde_concat" value="SELECT count(0) as orders_count FROM t_order o WHERE o.status ~~ CONCAT('%%', ?, '%%') AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" db-types="PostgreSQL" />
