@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
@@ -49,6 +50,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -206,11 +208,12 @@ public final class ShardingCTLHintBackendHandlerTest {
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {
-        SchemaContext result = mock(SchemaContext.class);
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
-        when(result.getSchema()).thenReturn(shardingSphereSchema);
-        when(shardingSphereSchema.getMetaData()).thenReturn(new ShardingSphereMetaData(mock(DataSourceMetaDatas.class), 
+        when(shardingSphereSchema.getMetaData()).thenReturn(new ShardingSphereMetaData(mock(DataSourceMetaDatas.class),
                 new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap.of("user", mock(TableMetaData.class))), Collections.emptyMap()), "sharding_db"));
+        when(shardingSphereSchema.getRules()).thenReturn(Collections.singleton(mock(ShardingSphereRule.class)));
+        when(shardingSphereSchema.getDataSources()).thenReturn(Collections.singletonMap("ds", mock(DataSource.class)));
+        SchemaContext result = new SchemaContext("schema", shardingSphereSchema, null);
         return Collections.singletonMap("schema", result);
     }
     

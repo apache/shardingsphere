@@ -18,13 +18,15 @@
 package org.apache.shardingsphere.proxy.backend.text.sctl.explain;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
+import org.apache.shardingsphere.infra.context.sql.LogicSQLContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.infra.context.sql.LogicSQLContext;
-import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
+import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
@@ -60,6 +62,12 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
             throw new InvalidShardingCTLFormatException(sql);
         }
         SchemaContext schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
+        if (null == schemaContext) {
+            throw new NoDatabaseSelectedException();
+        }
+        if (!schemaContext.isComplete()) {
+            throw new RuleNotExistsException();
+        }
         SQLStatement sqlStatement = schemaContext.getRuntimeContext().getSqlParserEngine().parse(explainStatement.get().getSql(), false);
         LogicSQLContext logicSQLContext = new LogicSQLContext(schemaContext, explainStatement.get().getSql(), Collections.emptyList(), sqlStatement);
         executionUnits = new KernelProcessor().generateExecutionContext(logicSQLContext, ProxyContext.getInstance().getSchemaContexts().getProps()).getExecutionUnits().iterator();

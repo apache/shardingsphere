@@ -91,7 +91,9 @@ public final class BroadcastBackendHandlerTest {
     private Map<String, SchemaContext> getSchemaContextMap() {
         Map<String, SchemaContext> result = new HashMap<>(10);
         for (int i = 0; i < 10; i++) {
-            result.put(String.format(SCHEMA_PATTERN, i), mock(SchemaContext.class));
+            SchemaContext schemaContext = mock(SchemaContext.class);
+            when(schemaContext.isComplete()).thenReturn(true);
+            result.put(String.format(SCHEMA_PATTERN, i), schemaContext);
         }
         return result;
     }

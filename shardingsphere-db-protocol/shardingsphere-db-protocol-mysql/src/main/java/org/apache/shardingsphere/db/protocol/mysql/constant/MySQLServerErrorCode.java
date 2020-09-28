@@ -50,6 +50,8 @@ public enum MySQLServerErrorCode implements SQLErrorCode {
     
     ER_NOT_SUPPORTED_YET(1235, "42000", "This version of ShardingProxy doesn't yet support this SQL. '%s'"),
     
+    ER_SP_DOES_NOT_EXIST(1305, "42000", "Message: Datasource or ShardingSphere rule does not exist"),
+    
     ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE(3176, "HY000", 
             "Please do not modify the %s table with an XA transaction. This is an internal system table used to store GTIDs for committed transactions. " 
                     + "Although modifying it can lead to an inconsistent GTID state, if neccessary you can modify it with a non-XA transaction.");
