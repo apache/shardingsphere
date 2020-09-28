@@ -233,8 +233,10 @@ diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src-release sharding
 
 **检查二进制包的文件内容**
 
-解压缩`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz`，`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-executor-bin.tar.gz`
-和`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz`
+解压缩
+`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz`，
+`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-executor-bin.tar.gz`和
+`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz`
 进行如下检查:
 
 - 存在`LICENSE`和`NOTICE`文件
