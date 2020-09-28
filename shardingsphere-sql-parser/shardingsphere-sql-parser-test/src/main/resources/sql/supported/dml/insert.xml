@@ -73,4 +73,5 @@
     <sql-case id="insert_with_top_percent" value="INSERT TOP(10) PERCENT t_order (order_id, user_id) SELECT order_id, user_id FROM t_order" db-types="SQLServer" />
     <sql-case id="insert_with_columnname_uuid" value="insert into t_order (id,uuid) values (?, ?)" db-types="PostgreSQL" />
     <sql-case id="insert_with_output_clause" value="INSERT INTO t_order (order_id, user_id) OUTPUT INSERTED.order_id, INSERTED.user_id INTO @MyTableVar (temp_order_id, temp_user_id) VALUES (?, ?)" db-types="SQLServer" />
+    <sql-case id="insert_with_output_clause_without_output_table_columns" value="INSERT INTO t_order (order_id, user_id) OUTPUT INSERTED.order_id, INSERTED.user_id INTO @MyTableVar VALUES (?, ?)" db-types="SQLServer" />
 </sql-cases>
