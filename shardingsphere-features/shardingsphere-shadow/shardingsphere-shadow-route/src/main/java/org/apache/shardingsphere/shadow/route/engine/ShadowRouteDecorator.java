@@ -48,7 +48,7 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
             decorateRouteContext(routeContext, sqlStatementContext, parameters, shadowRule);
             return;
         }
-        decorateRouteContextWithRouteResult(routeContext, sqlStatementContext, parameters, shadowRule);
+        decorateRouteContextWithRouteUnits(routeContext, sqlStatementContext, parameters, shadowRule);
     }
     
     private void decorateRouteContext(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final ShadowRule shadowRule) {
@@ -66,7 +66,7 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
         }
     }
     
-    private void decorateRouteContextWithRouteResult(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final ShadowRule shadowRule) {
+    private void decorateRouteContextWithRouteUnits(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final ShadowRule shadowRule) {
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         if (!(sqlStatementContext.getSqlStatement() instanceof DMLStatement)) {
             for (RouteUnit each : routeContext.getRouteUnits()) {
