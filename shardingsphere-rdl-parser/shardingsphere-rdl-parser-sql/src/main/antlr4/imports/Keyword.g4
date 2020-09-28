@@ -31,6 +31,6 @@ DATASOURCES
     : D A T A S O U R C E S
     ;
     
-SHARDINGRULES
-    : S H A R D I N G R U L E S
+SHARDINGRULE
+    : S H A R D I N G R U L E
     ;

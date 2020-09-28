@@ -23,8 +23,8 @@ createDataSources
     : CREATE DATASOURCES LP dataSource (COMMA dataSource)* RP
     ;
 
-createShardingRules
-    : CREATE SHARDINGRULES LP tableRule (COMMA tableRule)* RP
+createShardingRule
+    : CREATE SHARDINGRULE LP tableRule (COMMA tableRule)* RP
     ;
 
 tableRule

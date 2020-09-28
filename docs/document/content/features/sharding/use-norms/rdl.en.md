@@ -123,6 +123,7 @@ DROP DATABASE sharding_db
 1. Currently, `DROP DB` only removes` the logic sharding schema` instead of removing the actual databases in MySQL instance (**TODO**).
 2. `DROP TABLE` will drop `the logic sharding table` and `the corresponding actual tables` in MySQL instance together.
 3. `CREATE DB` just create the logic sharding schema rather than create the actual databases in MySQL instance (**TODO**).
-4. Add more `auto sharding algorithms`
+4. Add more `auto sharding algorithms`(**TODO**).
 5. Improvement in `ShardingAlgorithmPropertiesUtil` (**TODO**).
 6. Synchronized execution for all the clients is necessary (**TODO**).
+7. Support to execute `ALTER DB`, `ALTER TABLE` (**TODO**).
