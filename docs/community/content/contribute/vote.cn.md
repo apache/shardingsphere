@@ -6,20 +6,20 @@ chapter = true
 
 ## 提交者选举流程
 
-**1. 在 @private 邮件列表讨论并投票，投票由现有的PMC成员发起，邮件内容主要陈述提名者的活动和社区贡献**
+**1. 在 @private 邮件列表讨论并投票，投票由现有的PMC成员发起，邮件内容主要陈述提名者的活动和社区贡献。**
 
 ```
 例如：
 
 To：private@shardingsphere.apache.org
 
-Title： [VOTE] New committer: （提名者）
+Title： [VOTE] New committer: (提名者)
 
 Content：
 
 Hi, everyone
 
-This is ^a formal vote^ about inviting （提名者）as our new committer. 
+This is ^a formal vote^ about inviting (提名者) as our new committer. 
 He/She really made an effort to improve ShardingSphere Parser and fix many issues. 
 The following links will direct you to his/her work.
 
@@ -30,16 +30,16 @@ https://github.com/apache/shardingsphere/pull/6211
 
 [^ means these words are subject to change in different case]
 ```
-**2. 等待3*24h社区Committer投票**
+**2. 等待3*24h社区Committer投票。**
 
-**3. PMC成员总结社区投票结果并发布邮件**
+**3. PMC成员总结社区投票结果并发布邮件。**
 
 ```
 例如：
 
 To: private@shardingsphere.apache.org
 
-Title: [RESULT] [VOTE] New committer: （提名者）
+Title: [RESULT] [VOTE] New committer: (提名者)
 
 Content:
 
@@ -48,21 +48,21 @@ Hi all PMCs,
 I am glad to receive your votes, and the voting result is,
 6   +1 votes, 0   +/-1 votes, 0   -1 votes
 
-Therefore, I will send the invitation to （提名者）.
+Therefore, I will send the invitation to (提名者).
 ```
 
-**4. 如果投票通过，对提名者发布邀请函并抄送@private 邮件列表给发送邀请函**
+**4. 如果投票通过，对提名者发布邀请函并抄送@private 邮件列表给发送邀请函。**
 
 ```
-To: 提名者邮箱
+To: (提名者邮箱)
 
 cc: private@shardingsphere.apache.org
 
-Title： Invitation to become ShardingSphere committer: （提名者）
+Title： Invitation to become ShardingSphere committer: (提名者)
 
 Content:
 
-Hello （提名者）,
+Hello (提名者),
 
 The ShardingSphere Project Management Committee (PMC) hereby offers you committer privileges to the project. These privileges are offered on the understanding that you'll use them reasonably and with common sense. We like to work on trust
 rather than unnecessary constraints.
@@ -84,9 +84,9 @@ Best wishes,
 (PMC)
 
 ```
-**5. 准Committer回复邀请函内容，回复表达同意与感谢**
+**5. 准Committer回复邀请函内容，回复表达同意与感谢。**
 
-**6. PMC做出回复**
+**6. PMC做出回复。**
 ```
 Hi (提名者),
 
@@ -96,7 +96,7 @@ You need to send a Contributor License Agreement to the ASF. Normally you would 
 http://www.apache.org/licenses/#clas
 
 You need to choose a preferred ASF user name and alternatives. In order to ensure it is available you can view a list of taken ids at
-http://people.apache.org/committer-inde(.ht
+http://people.apache.org/committer-index.html
 Please notify us when you have submitted the CLA and by what means you did so. This will enable us to monitor its progress.
 
 We will arrange for your Apache user account when the CLA has been recorded.
@@ -116,33 +116,33 @@ https://www.apache.org/foundation/policies/conduct.html
 Here is the guideline for all of the ShardingSphere committers:
 https://shardingsphere.apache.org/community/en/contribute/committer/
 ```
-**7. 准Committer签署iCLA 具体步骤参考[签署iCLA指南](https://shardingsphere.apache.org/community/cn/contribute/icla/)**
+**7. 准Committer签署iCLA 具体步骤参考[签署iCLA指南](https://shardingsphere.apache.org/community/cn/contribute/icla/)。**
 
-**8. 等待Secretary通知创建账户**
+**8. 等待Secretary通知创建账户。**
 
-**9. PMC添加新Committer到[roster](https://whimsy.apache.org/roster/committee/shardingsphere)**
+**9. PMC添加新Committer到[roster](https://whimsy.apache.org/roster/committee/shardingsphere)。**
 
-**10. 新Committer开通github权限，完成[Setup](https://gitbox.apache.org/setup/)内容**
+**10. 新Committer开通github权限，完成[Setup](https://gitbox.apache.org/setup/)内容。**
 
-**11. PMC在社区宣布并欢迎新的Committer加入**
+**11. PMC在社区宣布并欢迎新的Committer加入。**
 
 ```
 To: dev@shardingsphere.apache.org
 
-Title: [ANNOUNCE] New committer: （提名者）
+Title: [ANNOUNCE] New committer: (提名者)
 
 Content:
 
 Hi community,
 
 The Project Management Committee (PMC) for Apache ShardingSphere
-has invited （提名者）to become a committer and we are pleased 
+has invited (提名者) to become a committer and we are pleased 
 to announce that he has accepted.
 
-（提名者） is active in ShardingSphere community, hope see your further interactions with the community! 
+(提名者) is active in ShardingSphere community, hope see your further interactions with the community! 
 
 Thanks for your contributions.
 ```
 
-**12. 新Commiter更新[提交者名单](/cn/team/)**
+**12. 新Commiter更新[提交者名单](/cn/team/)。**
 

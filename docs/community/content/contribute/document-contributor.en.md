@@ -9,10 +9,10 @@ In the contributor guide, we have mentioned how to submit Issues and pull reques
 
 ## Precondition
 
-- Familiar with [Official website](https://shardingsphere.apache.org)
-- Familiar with [Collaborating with issues and pull requests](https://help.github.com/categories/collaborating-with-issues-and-pull-requests/)
-- Familiar with [Markdown](https://www.markdownguide.org/getting-started)
-- Familiar with [Hugo](https://gohugo.io/)
+- Familiar with [Official website](https://shardingsphere.apache.org).
+- Familiar with [Collaborating with issues and pull requests](https://help.github.com/categories/collaborating-with-issues-and-pull-requests/).
+- Familiar with [Markdown](https://www.markdownguide.org/getting-started).
+- Familiar with [Hugo](https://gohugo.io/).
 
 ## Fork document
 Fork the master branch of [ShardingSphere](https://github.com/apache/shardingsphere).
@@ -76,20 +76,20 @@ shardingsphere
 
 The ShardingSphere document is written in markdown, processed in Hugo, generated HTML, deployed in [asf-site](https://github.com/apache/shardingsphere-doc/tree/asf-site)   branch, and the source code is located in [Github](https://github.com/apache/shardingsphere/tree/master).
 
-- [Latest version Official course](https://shardingsphere.apache.org/document/current/en/overview/) source is stored in `/document/`
-- [Community introduction and contribution](https://shardingsphere.apache.org/community/en/contribute/) related document sources are stored in `/community/content/`
+- [Latest version Official course](https://shardingsphere.apache.org/document/current/en/overview/) source is stored in `/document/`.
+- [Community introduction and contribution](https://shardingsphere.apache.org/community/en/contribute/) related document sources are stored in `/community/content/`.
 
 You can submit questions, edit content, and view other people's changes from [Github](https://github.com/apache/shardingsphere/issues).
 
 ## Page template
 
-The page template is located in the `layouts/partials/` directory in themes
+The page template is located in the `layouts/partials/` directory in themes.
 
 ## Ask specific and searchable questions
 
 Anyone with a GitHub account can ask questions (error reports) about shardingsphere documents. If you find an error, ask questions even if you don't know how to fix it.
 
-### How to ask questions
+**How to ask questions?**
 
 1. Attach the problem document link.
 1. Describe the problem in detail.
@@ -99,7 +99,7 @@ Anyone with a GitHub account can ask questions (error reports) about shardingsph
 
 ## Submission changes
 
-### Operation steps
+**Operation steps:**
 
 1. Locate the file you want to operate in the master branch directory structure.
 1. After the file operation is completed, pull request is raised to the master branch.
