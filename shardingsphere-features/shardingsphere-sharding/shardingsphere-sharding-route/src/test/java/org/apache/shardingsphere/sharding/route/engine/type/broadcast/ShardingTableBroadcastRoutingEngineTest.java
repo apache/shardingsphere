@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -95,7 +94,7 @@ public final class ShardingTableBroadcastRoutingEngineTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(ddlStatement);
         RouteContext routeContext = new RouteContext();
         tableBroadcastRoutingEngine.route(routeContext, shardingRule);
-        assertRouteResult(routeContext.getRouteResult());
+        assertRouteContext(routeContext);
     }
     
     @Test(expected = IllegalStateException.class)
@@ -152,10 +151,10 @@ public final class ShardingTableBroadcastRoutingEngineTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(indexStatement);
         RouteContext routeContext = new RouteContext();
         tableBroadcastRoutingEngine.route(routeContext, shardingRule);
-        assertRouteResult(routeContext.getRouteResult());
+        assertRouteContext(routeContext);
     }
     
-    private void assertRouteResult(final RouteResult actual) {
+    private void assertRouteContext(final RouteContext actual) {
         assertThat(actual.getActualDataSourceNames().size(), is(2));
         assertThat(actual.getRouteUnits().size(), is(6));
         Iterator<RouteUnit> routeUnits = actual.getRouteUnits().iterator();

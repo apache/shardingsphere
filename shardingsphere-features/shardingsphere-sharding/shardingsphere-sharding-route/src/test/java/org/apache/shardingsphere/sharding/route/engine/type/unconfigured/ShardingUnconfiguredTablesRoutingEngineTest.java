@@ -53,8 +53,8 @@ public final class ShardingUnconfiguredTablesRoutingEngineTest {
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
         RouteContext routeContext = new RouteContext();
         shardingDefaultDatabaseRoutingEngine.route(routeContext, shardingRule);
-        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteResult().getRouteUnits());
-        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(2));
         Iterator<RouteMapper> tableMappers = routeUnits.get(0).getTableMappers().iterator();

@@ -31,8 +31,8 @@ public final class ShardingIgnoreRoutingEngineTest {
         ShardingIgnoreRoutingEngine ignoreRoutingEngine = new ShardingIgnoreRoutingEngine();
         RouteContext routeContext = new RouteContext();
         ignoreRoutingEngine.route(routeContext, mock(ShardingRule.class));
-        assertTrue(routeContext.getRouteResult().getRouteUnits().isEmpty());
-        assertTrue(routeContext.getRouteResult().getOriginalDataNodes().isEmpty());
+        assertTrue(routeContext.getRouteUnits().isEmpty());
+        assertTrue(routeContext.getOriginalDataNodes().isEmpty());
         assertTrue(routeContext.getRouteStageContexts().isEmpty());
     }
 }

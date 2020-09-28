@@ -51,8 +51,8 @@ public final class ShardingUnicastRoutingEngineTest {
         ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(Collections.singleton("t_order"));
         RouteContext routeContext = new RouteContext();
         unicastRoutingEngine.route(routeContext, shardingRule);
-        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
-        assertFalse("ds2".equalsIgnoreCase(routeContext.getRouteResult().getRouteUnits().iterator().next().getDataSourceMapper().getLogicName()));
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+        assertFalse("ds2".equalsIgnoreCase(routeContext.getRouteUnits().iterator().next().getDataSourceMapper().getLogicName()));
     }
 
     @Test
@@ -60,7 +60,7 @@ public final class ShardingUnicastRoutingEngineTest {
         ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(Collections.singleton("t_config"));
         RouteContext routeContext = new RouteContext();
         unicastRoutingEngine.route(routeContext, shardingRule);
-        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
+        assertThat(routeContext.getRouteUnits().size(), is(1));
     }
 
     @Test
@@ -68,7 +68,7 @@ public final class ShardingUnicastRoutingEngineTest {
         ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         unicastRoutingEngine.route(routeContext, shardingRule);
-        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
+        assertThat(routeContext.getRouteUnits().size(), is(1));
     }
     
     @Test
@@ -79,7 +79,7 @@ public final class ShardingUnicastRoutingEngineTest {
         ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(sets);
         RouteContext routeContext = new RouteContext();
         unicastRoutingEngine.route(routeContext, shardingRule);
-        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
+        assertThat(routeContext.getRouteUnits().size(), is(1));
     }
     
     @Test(expected = ShardingSphereConfigurationException.class)
@@ -98,6 +98,6 @@ public final class ShardingUnicastRoutingEngineTest {
         ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(Collections.singleton("t_other"));
         RouteContext routeContext = new RouteContext();
         unicastRoutingEngine.route(routeContext, shardingRule);
-        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
+        assertThat(routeContext.getRouteUnits().size(), is(1));
     }
 }

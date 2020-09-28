@@ -53,8 +53,8 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
         for (String each : getLogicTableNames()) {
             result.getRouteUnits().addAll(getAllRouteUnits(shardingRule, each));
         }
-        routeContext.getRouteResult().getOriginalDataNodes().addAll(result.getOriginalDataNodes());
-        routeContext.getRouteResult().getRouteUnits().addAll(result.getRouteUnits());
+        routeContext.getOriginalDataNodes().addAll(result.getOriginalDataNodes());
+        routeContext.getRouteUnits().addAll(result.getRouteUnits());
     }
     
     private Collection<String> getLogicTableNames() {

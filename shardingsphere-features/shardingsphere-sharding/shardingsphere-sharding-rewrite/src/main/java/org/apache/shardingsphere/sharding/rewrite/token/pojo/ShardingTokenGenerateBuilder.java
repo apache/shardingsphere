@@ -85,7 +85,7 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
     }
     
     private void addSQLTokenGenerator(final Collection<SQLTokenGenerator> sqlTokenGenerators, final SQLTokenGenerator toBeAddedSQLTokenGenerator) {
-        if (toBeAddedSQLTokenGenerator instanceof IgnoreForSingleRoute && routeContext.getRouteResult().isSingleRouting()) {
+        if (toBeAddedSQLTokenGenerator instanceof IgnoreForSingleRoute && routeContext.isSingleRouting()) {
             return;
         }
         sqlTokenGenerators.add(toBeAddedSQLTokenGenerator);

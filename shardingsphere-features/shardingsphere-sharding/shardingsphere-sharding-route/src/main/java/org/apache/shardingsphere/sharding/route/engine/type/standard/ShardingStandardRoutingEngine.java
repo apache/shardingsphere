@@ -62,8 +62,8 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     @Override
     public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
         RouteResult result = generateRouteResult(getDataNodes(shardingRule, shardingRule.getTableRule(logicTableName)));
-        routeContext.getRouteResult().getOriginalDataNodes().addAll(result.getOriginalDataNodes());
-        routeContext.getRouteResult().getRouteUnits().addAll(result.getRouteUnits());
+        routeContext.getOriginalDataNodes().addAll(result.getOriginalDataNodes());
+        routeContext.getRouteUnits().addAll(result.getRouteUnits());
     }
     
     private RouteResult generateRouteResult(final Collection<DataNode> routedDataNodes) {

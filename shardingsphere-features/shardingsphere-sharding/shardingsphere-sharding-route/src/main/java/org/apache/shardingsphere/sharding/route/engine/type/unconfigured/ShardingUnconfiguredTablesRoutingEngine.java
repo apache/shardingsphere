@@ -52,8 +52,8 @@ public final class ShardingUnconfiguredTablesRoutingEngine implements ShardingRo
         RouteResult result = new RouteResult();
         List<RouteMapper> routingTables = logicTables.stream().map(table -> new RouteMapper(table, table)).collect(Collectors.toList());
         result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName.get(), dataSourceName.get()), routingTables));
-        routeContext.getRouteResult().getOriginalDataNodes().addAll(result.getOriginalDataNodes());
-        routeContext.getRouteResult().getRouteUnits().addAll(result.getRouteUnits());
+        routeContext.getOriginalDataNodes().addAll(result.getOriginalDataNodes());
+        routeContext.getRouteUnits().addAll(result.getRouteUnits());
     }
     
     private Optional<String> findDataSourceName() {

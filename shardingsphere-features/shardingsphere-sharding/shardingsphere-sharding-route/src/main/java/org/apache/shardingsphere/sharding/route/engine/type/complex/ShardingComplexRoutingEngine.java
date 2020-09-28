@@ -66,13 +66,13 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
         }
         if (1 == routeContexts.size()) {
             RouteContext newRouteContext = routeContexts.iterator().next();
-            routeContext.getRouteResult().getOriginalDataNodes().addAll(newRouteContext.getRouteResult().getOriginalDataNodes());
-            routeContext.getRouteResult().getRouteUnits().addAll(newRouteContext.getRouteResult().getRouteUnits());
+            routeContext.getOriginalDataNodes().addAll(newRouteContext.getOriginalDataNodes());
+            routeContext.getRouteUnits().addAll(newRouteContext.getRouteUnits());
             return;
         }
         RouteContext newRouteContext = new RouteContext();
         new ShardingCartesianRoutingEngine(routeContexts).route(newRouteContext, shardingRule);
-        routeContext.getRouteResult().getOriginalDataNodes().addAll(newRouteContext.getRouteResult().getOriginalDataNodes());
-        routeContext.getRouteResult().getRouteUnits().addAll(newRouteContext.getRouteResult().getRouteUnits());
+        routeContext.getOriginalDataNodes().addAll(newRouteContext.getOriginalDataNodes());
+        routeContext.getRouteUnits().addAll(newRouteContext.getRouteUnits());
     }
 }

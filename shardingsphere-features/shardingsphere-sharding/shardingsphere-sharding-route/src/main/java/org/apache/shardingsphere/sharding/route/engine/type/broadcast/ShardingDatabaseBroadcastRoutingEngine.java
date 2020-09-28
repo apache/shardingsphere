@@ -37,7 +37,7 @@ public final class ShardingDatabaseBroadcastRoutingEngine implements ShardingRou
         for (String each : shardingRule.getDataSourceNames()) {
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
         }
-        routeContext.getRouteResult().getOriginalDataNodes().addAll(result.getOriginalDataNodes());
-        routeContext.getRouteResult().getRouteUnits().addAll(result.getRouteUnits());
+        routeContext.getOriginalDataNodes().addAll(result.getOriginalDataNodes());
+        routeContext.getRouteUnits().addAll(result.getRouteUnits());
     }
 }

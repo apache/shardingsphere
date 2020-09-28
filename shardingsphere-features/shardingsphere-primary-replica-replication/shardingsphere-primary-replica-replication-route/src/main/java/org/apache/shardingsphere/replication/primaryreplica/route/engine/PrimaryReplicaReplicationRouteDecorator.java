@@ -44,14 +44,14 @@ public final class PrimaryReplicaReplicationRouteDecorator implements RouteDecor
     @Override
     public void decorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters,
                          final ShardingSphereMetaData metaData, final PrimaryReplicaReplicationRule rule, final ConfigurationProperties props) {
-        if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
+        if (routeContext.getRouteUnits().isEmpty()) {
             String dataSourceName = new PrimaryReplicaReplicationDataSourceRouter(rule.getSingleDataSourceRule()).route(sqlStatementContext.getSqlStatement());
-            routeContext.getRouteResult().getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
+            routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
             return;
         }
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
-        for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
+        for (RouteUnit each : routeContext.getRouteUnits()) {
             String dataSourceName = each.getDataSourceMapper().getLogicName();
             Optional<PrimaryReplicaReplicationDataSourceRule> dataSourceRule = rule.findDataSourceRule(dataSourceName);
             if (dataSourceRule.isPresent() && dataSourceRule.get().getName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
@@ -60,8 +60,8 @@ public final class PrimaryReplicaReplicationRouteDecorator implements RouteDecor
                 toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), actualDataSourceName), each.getTableMappers()));
             }
         }
-        routeContext.getRouteResult().getRouteUnits().removeAll(toBeRemoved);
-        routeContext.getRouteResult().getRouteUnits().addAll(toBeAdded);
+        routeContext.getRouteUnits().removeAll(toBeRemoved);
+        routeContext.getRouteUnits().addAll(toBeAdded);
     }
     
     @Override

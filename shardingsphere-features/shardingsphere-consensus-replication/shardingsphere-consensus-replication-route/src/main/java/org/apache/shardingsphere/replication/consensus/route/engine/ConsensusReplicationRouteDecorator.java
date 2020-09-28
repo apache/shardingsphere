@@ -44,7 +44,7 @@ public final class ConsensusReplicationRouteDecorator implements RouteDecorator<
                          final ShardingSphereMetaData metaData, final ConsensusReplicationRule consensusReplicationRule, final ConfigurationProperties props) {
         Map<String, ConsensusReplicationGroup> replicaGroups = new HashMap<>();
         String schemaName = metaData.getSchemaName();
-        if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
+        if (routeContext.getRouteUnits().isEmpty()) {
             ConsensusReplicationTableRule replicaRoutingRule = consensusReplicationRule.getReplicaTableRules().iterator().next();
             ConsensusReplicationGroup replicaGroup = new ConsensusReplicationGroup(replicaRoutingRule.getPhysicsTable(), replicaRoutingRule.getReplicaGroupId(), replicaRoutingRule.getReplicaPeers(),
                     replicaRoutingRule.getDataSourceName());
@@ -52,7 +52,7 @@ public final class ConsensusReplicationRouteDecorator implements RouteDecorator<
             routeContext.getRouteStageContexts().put(getTypeClass(), new ConsensusReplicationRouteStageContext(schemaName, replicaGroups, sqlStatementContext.isReadOnly()));
             return;
         }
-        for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
+        for (RouteUnit each : routeContext.getRouteUnits()) {
             Collection<RouteMapper> routeMappers = each.getTableMappers();
             if (null == routeMappers || routeMappers.isEmpty()) {
                 ConsensusReplicationTableRule tableRule = consensusReplicationRule.getReplicaTableRules().iterator().next();

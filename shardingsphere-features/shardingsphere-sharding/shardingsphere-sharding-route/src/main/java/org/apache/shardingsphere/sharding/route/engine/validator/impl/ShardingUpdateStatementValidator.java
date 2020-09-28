@@ -70,7 +70,7 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
 
     @Override
     public void postValidate(final UpdateStatement sqlStatement, final RouteContext routeContext) {
-        if (UpdateStatementHandler.getLimitSegment(sqlStatement).isPresent() && routeContext.getRouteResult().getRouteUnits().size() > 1) {
+        if (UpdateStatementHandler.getLimitSegment(sqlStatement).isPresent() && routeContext.getRouteUnits().size() > 1) {
             throw new ShardingSphereException("UPDATE ... LIMIT can not support sharding route to multiple data nodes.");
         }
     }

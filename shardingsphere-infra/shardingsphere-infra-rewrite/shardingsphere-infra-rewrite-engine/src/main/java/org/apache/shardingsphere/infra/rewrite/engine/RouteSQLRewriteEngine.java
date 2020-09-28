@@ -47,8 +47,8 @@ public final class RouteSQLRewriteEngine {
      * @return SQL rewrite result
      */
     public RouteSQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
-        Map<RouteUnit, SQLRewriteUnit> result = new LinkedHashMap<>(routeContext.getRouteResult().getRouteUnits().size(), 1);
-        for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
+        Map<RouteUnit, SQLRewriteUnit> result = new LinkedHashMap<>(routeContext.getRouteUnits().size(), 1);
+        for (RouteUnit each : routeContext.getRouteUnits()) {
             result.put(each, new SQLRewriteUnit(new RouteSQLBuilder(sqlRewriteContext, each).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder(), routeContext, each)));
         }
         return new RouteSQLRewriteResult(result);
@@ -58,14 +58,14 @@ public final class RouteSQLRewriteEngine {
         if (parameterBuilder instanceof StandardParameterBuilder) {
             return parameterBuilder.getParameters();
         }
-        return routeContext.getRouteResult().getOriginalDataNodes().isEmpty()
+        return routeContext.getOriginalDataNodes().isEmpty()
                 ? ((GroupedParameterBuilder) parameterBuilder).getParameters() : buildRouteParameters((GroupedParameterBuilder) parameterBuilder, routeContext, routeUnit);
     }
     
     private List<Object> buildRouteParameters(final GroupedParameterBuilder parameterBuilder, final RouteContext routeContext, final RouteUnit routeUnit) {
         List<Object> result = new LinkedList<>();
         int count = 0;
-        for (Collection<DataNode> each : routeContext.getRouteResult().getOriginalDataNodes()) {
+        for (Collection<DataNode> each : routeContext.getOriginalDataNodes()) {
             if (isInSameDataNode(each, routeUnit)) {
                 result.addAll(parameterBuilder.getParameters(count));
             }

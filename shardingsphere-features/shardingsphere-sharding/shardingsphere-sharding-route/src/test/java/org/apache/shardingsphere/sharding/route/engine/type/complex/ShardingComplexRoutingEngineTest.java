@@ -43,8 +43,8 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
                 createShardingConditions("t_order"), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
         complexRoutingEngine.route(routeContext, createBindingShardingRule());
-        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteResult().getRouteUnits());
-        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
@@ -57,8 +57,8 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
                 createShardingConditions("t_order"), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
         complexRoutingEngine.route(routeContext, createBroadcastShardingRule());
-        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteResult().getRouteUnits());
-        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_1"));

@@ -43,7 +43,7 @@ public final class RouteSQLRewriteEngineTest {
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(SchemaMetaData.class), mock(SQLStatementContext.class), "SELECT ?", Collections.singletonList(1));
         RouteUnit routeUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
         RouteContext routeContext = new RouteContext();
-        routeContext.getRouteResult().getRouteUnits().add(routeUnit);
+        routeContext.getRouteUnits().add(routeUnit);
         RouteSQLRewriteResult actual = new RouteSQLRewriteEngine().rewrite(sqlRewriteContext, routeContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("SELECT ?"));
@@ -57,7 +57,7 @@ public final class RouteSQLRewriteEngineTest {
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(SchemaMetaData.class), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
         RouteUnit routeUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
         RouteContext routeContext = new RouteContext();
-        routeContext.getRouteResult().getRouteUnits().add(routeUnit);
+        routeContext.getRouteUnits().add(routeUnit);
         RouteSQLRewriteResult actual = new RouteSQLRewriteEngine().rewrite(sqlRewriteContext, routeContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("INSERT INTO tbl VALUES (?)"));
@@ -71,9 +71,9 @@ public final class RouteSQLRewriteEngineTest {
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(SchemaMetaData.class), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
         RouteUnit routeUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
         RouteContext routeContext = new RouteContext();
-        routeContext.getRouteResult().getRouteUnits().add(routeUnit);
+        routeContext.getRouteUnits().add(routeUnit);
         // TODO check why data node is "ds.tbl_0", not "ds_0.tbl_0"
-        routeContext.getRouteResult().getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds.tbl_0")));
+        routeContext.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds.tbl_0")));
         RouteSQLRewriteResult actual = new RouteSQLRewriteEngine().rewrite(sqlRewriteContext, routeContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("INSERT INTO tbl VALUES (?)"));
@@ -87,8 +87,8 @@ public final class RouteSQLRewriteEngineTest {
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(SchemaMetaData.class), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
         RouteUnit routeUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
         RouteContext routeContext = new RouteContext();
-        routeContext.getRouteResult().getRouteUnits().add(routeUnit);
-        routeContext.getRouteResult().getOriginalDataNodes().add(Collections.emptyList());
+        routeContext.getRouteUnits().add(routeUnit);
+        routeContext.getOriginalDataNodes().add(Collections.emptyList());
         RouteSQLRewriteResult actual = new RouteSQLRewriteEngine().rewrite(sqlRewriteContext, routeContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("INSERT INTO tbl VALUES (?)"));
@@ -102,8 +102,8 @@ public final class RouteSQLRewriteEngineTest {
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(SchemaMetaData.class), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
         RouteUnit routeUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
         RouteContext routeContext = new RouteContext();
-        routeContext.getRouteResult().getRouteUnits().add(routeUnit);
-        routeContext.getRouteResult().getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_1.tbl_1")));
+        routeContext.getRouteUnits().add(routeUnit);
+        routeContext.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_1.tbl_1")));
         RouteSQLRewriteResult actual = new RouteSQLRewriteEngine().rewrite(sqlRewriteContext, routeContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("INSERT INTO tbl VALUES (?)"));

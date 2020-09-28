@@ -46,8 +46,8 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", new ShardingConditions(Collections.emptyList()));
         RouteContext routeContext = new RouteContext();
         standardRoutingEngine.route(routeContext, createBasedShardingRule());
-        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteResult().getRouteUnits());
-        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(4));
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(4));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_0"));
@@ -71,8 +71,8 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createShardingConditions("t_order"));
         RouteContext routeContext = new RouteContext();
         standardRoutingEngine.route(routeContext, createBasedShardingRule());
-        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteResult().getRouteUnits());
-        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
@@ -87,8 +87,8 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         hintManager.addTableShardingValue("t_hint_test", 1);
         RouteContext routeContext = new RouteContext();
         standardRoutingEngine.route(routeContext, createHintShardingRule());
-        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteResult().getRouteUnits());
-        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_hint_test_1"));
@@ -102,8 +102,8 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         hintManager.addDatabaseShardingValue("t_hint_ds_test", 1);
         RouteContext routeContext = new RouteContext();
         standardRoutingEngine.route(routeContext, createMixedShardingRule());
-        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteResult().getRouteUnits());
-        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_hint_ds_test_1"));
@@ -117,8 +117,8 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         hintManager.addDatabaseShardingValue("t_hint_ds_test", 1);
         RouteContext routeContext = new RouteContext();
         standardRoutingEngine.route(routeContext, createMixedShardingRule());
-        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteResult().getRouteUnits());
-        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(2));
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(2));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_hint_ds_test_0"));
@@ -136,8 +136,8 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         hintManager.addTableShardingValue("t_hint_table_test", 1);
         RouteContext routeContext = new RouteContext();
         standardRoutingEngine.route(routeContext, createMixedShardingRule());
-        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteResult().getRouteUnits());
-        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_hint_table_test_1"));
@@ -151,8 +151,8 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         hintManager.addTableShardingValue("t_hint_table_test", 1);
         RouteContext routeContext = new RouteContext();
         standardRoutingEngine.route(routeContext, createMixedShardingRule());
-        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteResult().getRouteUnits());
-        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(2));
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(2));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_hint_table_test_1"));
