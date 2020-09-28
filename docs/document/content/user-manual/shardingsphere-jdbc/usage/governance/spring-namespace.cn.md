@@ -44,9 +44,13 @@ weight = 4
      </util:properties>
      <governance:reg-center id="regCenter" type="Zookeeper" server-lists="localhost:2181" />
      <governance:config-center id="configCenter" type="ZooKeeper" server-lists="localhost:2182" />
-     <governance:data-source id="shardingDatabasesTablesDataSource" data-source-names="realShardingDatabasesTablesDataSource" reg-center-ref="regCenter" config-center-ref="configCenter" overwrite="true" />
-     <governance:data-source id="primaryReplicaReplicationDataSource" data-source-names="realPrimaryReplicaReplicationDataSource" reg-center-ref="regCenter" config-center-ref="configCenter" overwrite="true" />
-     <governance:data-source id="encryptDataSource" data-source-names="realEncryptDataSource" reg-center-ref="regCenter" config-center-ref="configCenter" overwrite="true" />
+     <governance:data-source id="shardingDatabasesTablesDataSource" data-source-names="demo_ds_0, demo_ds_1" reg-center-ref="regCenter" config-center-ref="configCenter" rule-refs="shardingRule" overwrite="true" />
+     <governance:data-source id="primaryReplicaReplicationDataSource" data-source-names="demo_primary_ds, demo_replica_ds_0, demo_replica_ds_1" reg-center-ref="regCenter" config-center-ref="configCenter" rule-refs="primaryReplicaRule" overwrite="true" />
+     <governance:data-source id="encryptDataSource" data-source-names="demo_ds" reg-center-ref="regCenter" config-center-ref="configCenter" rule-refs="encryptRule" overwrite="true" >
+        <props>
+            <prop key="query-with-cipher-column">true</prop>
+        </props>
+     </governance:data-source>
 </beans>
 ```
 
