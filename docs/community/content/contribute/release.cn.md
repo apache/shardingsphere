@@ -325,7 +325,9 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RE
 
 **检查二进制包的文件内容**
 
-解压缩`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz`，`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz`和
+解压缩
+`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz`，
+`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz`和
 `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz`
 进行如下检查:
 
