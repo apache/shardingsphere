@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -90,7 +89,7 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
     public void assertDecorateToPrimary() {
         RouteContext actual = mockRouteContext();
         routeDecorator.decorate(actual, mock(SQLStatementContext.class), Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
-        Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
+        Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_PRIMARY_REPLICA_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
     }
@@ -99,7 +98,7 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
     public void assertDecorateToPrimaryWithoutRouteUnits() {
         RouteContext actual = new RouteContext();
         routeDecorator.decorate(actual, mock(SQLStatementContext.class), Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
-        Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
+        Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
     }
     
@@ -110,7 +109,7 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.empty());
         routeDecorator.decorate(actual, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
-        Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
+        Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_PRIMARY_REPLICA_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(REPLICA_DATASOURCE));
     }
@@ -122,7 +121,7 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.empty());
         routeDecorator.decorate(actual, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
-        Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
+        Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(REPLICA_DATASOURCE));
     }
     
@@ -133,7 +132,7 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
         routeDecorator.decorate(actual, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
-        Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
+        Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_PRIMARY_REPLICA_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
     }
@@ -145,7 +144,7 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
         routeDecorator.decorate(actual, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
-        Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
+        Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
     }
     
@@ -154,16 +153,15 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
         RouteContext actual = new RouteContext();
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(InsertStatement.class));
         routeDecorator.decorate(actual, sqlStatementContext, Collections.singletonList("true"), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
-        Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
+        Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
     }
     
     private RouteContext mockRouteContext() {
         RouteContext result = new RouteContext();
-        RouteResult routeResult = result.getRouteResult();
         RouteUnit routeUnit = new RouteUnit(new RouteMapper(DATASOURCE_NAME, DATASOURCE_NAME), Collections.singletonList(new RouteMapper("table", "table_0")));
-        routeResult.getRouteUnits().add(routeUnit);
-        routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(NON_PRIMARY_REPLICA_DATASOURCE_NAME, NON_PRIMARY_REPLICA_DATASOURCE_NAME), Collections.emptyList()));
+        result.getRouteUnits().add(routeUnit);
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(NON_PRIMARY_REPLICA_DATASOURCE_NAME, NON_PRIMARY_REPLICA_DATASOURCE_NAME), Collections.emptyList()));
         return result;
     }
 }

@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.unconfigured;
 
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,7 +33,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -52,10 +51,10 @@ public final class ShardingUnconfiguredTablesRoutingEngineTest {
     public void assertRoute() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
-        RouteResult routeResult = shardingDefaultDatabaseRoutingEngine.route(shardingRule);
-        List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
-        assertThat(routeResult, instanceOf(RouteResult.class));
-        assertThat(routeResult.getRouteUnits().size(), is(1));
+        RouteContext routeContext = new RouteContext();
+        shardingDefaultDatabaseRoutingEngine.route(routeContext, shardingRule);
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(2));
         Iterator<RouteMapper> tableMappers = routeUnits.get(0).getTableMappers().iterator();

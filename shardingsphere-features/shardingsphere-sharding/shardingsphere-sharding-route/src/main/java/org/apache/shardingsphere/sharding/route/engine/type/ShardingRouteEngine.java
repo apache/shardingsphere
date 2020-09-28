@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type;
 
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 
 /**
  * Sharding route engine.
@@ -28,8 +28,8 @@ public interface ShardingRouteEngine {
     /**
      * Route.
      *
+     * @param routeContext route context
      * @param shardingRule sharding rule
-     * @return route result
      */
-    RouteResult route(ShardingRule shardingRule);
+    void route(RouteContext routeContext, ShardingRule shardingRule);
 }

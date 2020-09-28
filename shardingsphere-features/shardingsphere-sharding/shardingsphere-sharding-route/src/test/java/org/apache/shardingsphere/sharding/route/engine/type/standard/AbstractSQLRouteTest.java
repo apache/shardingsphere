@@ -57,7 +57,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
                 metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData(), parameters, standardSqlParserEngine.parse(sql, false));
         RouteContext result = new DataNodeRouter(metaData, props, Collections.singletonList(shardingRule)).route(sqlStatementContext, sql, parameters);
-        assertThat(result.getRouteResult().getRouteUnits().size(), is(1));
+        assertThat(result.getRouteUnits().size(), is(1));
         return result;
     }
     

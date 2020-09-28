@@ -22,14 +22,12 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.InsertClauseShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.WhereClauseShardingConditionEngine;
-import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngineFactory;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidatorFactory;
@@ -69,11 +67,8 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
             checkSubqueryShardingValues(sqlStatementContext, shardingRule, shardingConditions);
             mergeShardingConditions(shardingConditions);
         }
-        ShardingRouteEngine shardingRouteEngine = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
-        RouteResult routeResult = shardingRouteEngine.route(shardingRule);
-        shardingStatementValidator.ifPresent(validator -> validator.postValidate(sqlStatement, routeResult));
-        routeContext.getRouteResult().getOriginalDataNodes().addAll(routeResult.getOriginalDataNodes());
-        routeContext.getRouteResult().getRouteUnits().addAll(routeResult.getRouteUnits());
+        ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props).route(routeContext, shardingRule);
+        shardingStatementValidator.ifPresent(validator -> validator.postValidate(sqlStatement, routeContext));
     }
 
     private ShardingConditions getShardingConditions(final List<Object> parameters, 

@@ -42,7 +42,7 @@ public final class UnconfiguredSchemaRouteDecorator {
     public void decorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereMetaData metaData) {
         if (isNeedUnconfiguredSchema(sqlStatementContext.getSqlStatement())) {
             for (String each : metaData.getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().keySet()) {
-                routeContext.getRouteResult().getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
+                routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
             }
         }
     }

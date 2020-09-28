@@ -66,7 +66,7 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
     
     private Map<RouteUnit, Collection<String>> getDerivedProjectionTexts(final SelectStatementContext selectStatementContext) {
         Map<RouteUnit, Collection<String>> result = new HashMap<>();
-        for (RouteUnit routeUnit : routeContext.getRouteResult().getRouteUnits()) {
+        for (RouteUnit routeUnit : routeContext.getRouteUnits()) {
             Collection<String> projectionTexts = getDerivedProjectionTextsByRouteUnit(selectStatementContext, routeUnit);
             if (!projectionTexts.isEmpty()) {
                 result.put(routeUnit, projectionTexts);
