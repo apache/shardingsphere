@@ -47,7 +47,7 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
     private final Collection<String> logicTables;
     
     @Override
-    public RouteResult route(final RouteContext routeContext, final ShardingRule shardingRule) {
+    public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
         RouteResult result = new RouteResult();
         String dataSourceName = getRandomDataSourceName(shardingRule.getDataSourceNames());
         RouteMapper dataSourceMapper = new RouteMapper(dataSourceName, dataSourceName);
@@ -63,7 +63,9 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
             String logicTableName = logicTables.iterator().next();
             if (!shardingRule.findTableRule(logicTableName).isPresent()) {
                 result.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.emptyList()));
-                return result;
+                routeContext.getRouteResult().getOriginalDataNodes().addAll(result.getOriginalDataNodes());
+                routeContext.getRouteResult().getRouteUnits().addAll(result.getRouteUnits());
+                return;
             }
             DataNode dataNode = shardingRule.getDataNode(logicTableName);
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataNode.getDataSourceName(), dataNode.getDataSourceName()),
@@ -95,7 +97,6 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
         }
         routeContext.getRouteResult().getOriginalDataNodes().addAll(result.getOriginalDataNodes());
         routeContext.getRouteResult().getRouteUnits().addAll(result.getRouteUnits());
-        return result;
     }
     
     private String getRandomDataSourceName(final Collection<String> dataSourceNames) {

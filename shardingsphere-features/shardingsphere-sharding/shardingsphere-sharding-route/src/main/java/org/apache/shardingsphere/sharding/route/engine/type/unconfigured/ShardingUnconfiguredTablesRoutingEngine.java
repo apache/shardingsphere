@@ -44,7 +44,7 @@ public final class ShardingUnconfiguredTablesRoutingEngine implements ShardingRo
     private final Map<String, Collection<String>> unconfiguredSchemaMetaDataMap;
     
     @Override
-    public RouteResult route(final RouteContext routeContext, final ShardingRule shardingRule) {
+    public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
         Optional<String> dataSourceName = findDataSourceName();
         if (!dataSourceName.isPresent()) {
             throw new ShardingSphereException("Can not route tables for `%s`, please make sure the tables are in same schema.", logicTables);
@@ -54,7 +54,6 @@ public final class ShardingUnconfiguredTablesRoutingEngine implements ShardingRo
         result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName.get(), dataSourceName.get()), routingTables));
         routeContext.getRouteResult().getOriginalDataNodes().addAll(result.getOriginalDataNodes());
         routeContext.getRouteResult().getRouteUnits().addAll(result.getRouteUnits());
-        return result;
     }
     
     private Optional<String> findDataSourceName() {

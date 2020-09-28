@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.route.engine.type.unicast;
 
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -31,7 +30,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -52,28 +50,25 @@ public final class ShardingUnicastRoutingEngineTest {
     public void assertRoutingForShardingTable() {
         ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(Collections.singleton("t_order"));
         RouteContext routeContext = new RouteContext();
-        RouteResult routeResult = unicastRoutingEngine.route(routeContext, shardingRule);
-        assertThat(routeResult, instanceOf(RouteResult.class));
-        assertThat(routeResult.getRouteUnits().size(), is(1));
-        assertFalse("ds2".equalsIgnoreCase(routeResult.getRouteUnits().iterator().next().getDataSourceMapper().getLogicName()));
+        unicastRoutingEngine.route(routeContext, shardingRule);
+        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
+        assertFalse("ds2".equalsIgnoreCase(routeContext.getRouteResult().getRouteUnits().iterator().next().getDataSourceMapper().getLogicName()));
     }
 
     @Test
     public void assertRoutingForBroadcastTable() {
         ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(Collections.singleton("t_config"));
         RouteContext routeContext = new RouteContext();
-        RouteResult routeResult = unicastRoutingEngine.route(routeContext, shardingRule);
-        assertThat(routeResult, instanceOf(RouteResult.class));
-        assertThat(routeResult.getRouteUnits().size(), is(1));
+        unicastRoutingEngine.route(routeContext, shardingRule);
+        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
     }
 
     @Test
     public void assertRoutingForNoTable() {
         ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(Collections.emptyList());
         RouteContext routeContext = new RouteContext();
-        RouteResult routeResult = unicastRoutingEngine.route(routeContext, shardingRule);
-        assertThat(routeResult, instanceOf(RouteResult.class));
-        assertThat(routeResult.getRouteUnits().size(), is(1));
+        unicastRoutingEngine.route(routeContext, shardingRule);
+        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
     }
     
     @Test
@@ -83,9 +78,8 @@ public final class ShardingUnicastRoutingEngineTest {
         sets.add("t_config");
         ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(sets);
         RouteContext routeContext = new RouteContext();
-        RouteResult routeResult = unicastRoutingEngine.route(routeContext, shardingRule);
-        assertThat(routeResult, instanceOf(RouteResult.class));
-        assertThat(routeResult.getRouteUnits().size(), is(1));
+        unicastRoutingEngine.route(routeContext, shardingRule);
+        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
     }
     
     @Test(expected = ShardingSphereConfigurationException.class)
@@ -103,8 +97,7 @@ public final class ShardingUnicastRoutingEngineTest {
     public void assertRoutingForTableWithoutTableRule() {
         ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(Collections.singleton("t_other"));
         RouteContext routeContext = new RouteContext();
-        RouteResult routeResult = unicastRoutingEngine.route(routeContext, shardingRule);
-        assertThat(routeResult, instanceOf(RouteResult.class));
-        assertThat(routeResult.getRouteUnits().size(), is(1));
+        unicastRoutingEngine.route(routeContext, shardingRule);
+        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
     }
 }

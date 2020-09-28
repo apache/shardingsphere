@@ -37,7 +37,7 @@ public final class ShardingInstanceBroadcastRoutingEngine implements ShardingRou
     private final DataSourceMetaDatas dataSourceMetaDatas;
     
     @Override
-    public RouteResult route(final RouteContext routeContext, final ShardingRule shardingRule) {
+    public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
         RouteResult result = new RouteResult();
         for (String each : shardingRule.getDataSourceNames()) {
             if (dataSourceMetaDatas.getAllInstanceDataSourceNames().contains(each)) {
@@ -46,6 +46,5 @@ public final class ShardingInstanceBroadcastRoutingEngine implements ShardingRou
         }
         routeContext.getRouteResult().getOriginalDataNodes().addAll(result.getOriginalDataNodes());
         routeContext.getRouteResult().getRouteUnits().addAll(result.getRouteUnits());
-        return result;
     }
 }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.route.engine.type.complex;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -32,7 +31,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -46,7 +44,6 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
         RouteContext routeContext = new RouteContext();
         complexRoutingEngine.route(routeContext, createBindingShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteResult().getRouteUnits());
-        assertThat(routeContext.getRouteResult(), instanceOf(RouteResult.class));
         assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
@@ -61,7 +58,6 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
         RouteContext routeContext = new RouteContext();
         complexRoutingEngine.route(routeContext, createBroadcastShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteResult().getRouteUnits());
-        assertThat(routeContext.getRouteResult(), instanceOf(RouteResult.class));
         assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));

@@ -48,14 +48,13 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
     private final SQLStatementContext sqlStatementContext;
     
     @Override
-    public RouteResult route(final RouteContext routeContext, final ShardingRule shardingRule) {
+    public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
         RouteResult result = new RouteResult();
         for (String each : getLogicTableNames()) {
             result.getRouteUnits().addAll(getAllRouteUnits(shardingRule, each));
         }
         routeContext.getRouteResult().getOriginalDataNodes().addAll(result.getOriginalDataNodes());
         routeContext.getRouteResult().getRouteUnits().addAll(result.getRouteUnits());
-        return result;
     }
     
     private Collection<String> getLogicTableNames() {

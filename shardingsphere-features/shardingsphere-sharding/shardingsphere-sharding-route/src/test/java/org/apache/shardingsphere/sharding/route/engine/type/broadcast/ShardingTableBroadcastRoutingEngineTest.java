@@ -94,8 +94,8 @@ public final class ShardingTableBroadcastRoutingEngineTest {
         DDLStatement ddlStatement = mock(DDLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(ddlStatement);
         RouteContext routeContext = new RouteContext();
-        RouteResult actual = tableBroadcastRoutingEngine.route(routeContext, shardingRule);
-        assertRouteResult(actual);
+        tableBroadcastRoutingEngine.route(routeContext, shardingRule);
+        assertRouteResult(routeContext.getRouteResult());
     }
     
     @Test(expected = IllegalStateException.class)
@@ -151,8 +151,8 @@ public final class ShardingTableBroadcastRoutingEngineTest {
         when(indexStatement.getIndexes()).thenReturn(Lists.newArrayList(indexSegment));
         when(sqlStatementContext.getSqlStatement()).thenReturn(indexStatement);
         RouteContext routeContext = new RouteContext();
-        RouteResult actual = tableBroadcastRoutingEngine.route(routeContext, shardingRule);
-        assertRouteResult(actual);
+        tableBroadcastRoutingEngine.route(routeContext, shardingRule);
+        assertRouteResult(routeContext.getRouteResult());
     }
     
     private void assertRouteResult(final RouteResult actual) {

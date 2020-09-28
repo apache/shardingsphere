@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -41,9 +40,9 @@ public final class ShardingDatabaseBroadcastRoutingEngineTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}"));
         RouteContext routeContext = new RouteContext();
-        RouteResult routeResult = shardingDatabaseBroadcastRoutingEngine.route(routeContext, new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1")));
-        List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
-        assertThat(routeResult.getRouteUnits().size(), is(2));
+        shardingDatabaseBroadcastRoutingEngine.route(routeContext, new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1")));
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteResult().getRouteUnits());
+        assertThat(routeContext.getRouteResult().getRouteUnits().size(), is(2));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds0"));
         assertThat(routeUnits.get(1).getDataSourceMapper().getActualName(), is("ds1"));
     }

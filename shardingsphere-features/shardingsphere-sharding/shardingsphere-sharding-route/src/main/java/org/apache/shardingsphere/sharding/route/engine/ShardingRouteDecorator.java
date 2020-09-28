@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.InsertClauseShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.WhereClauseShardingConditionEngine;
-import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngineFactory;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidatorFactory;
@@ -68,8 +67,7 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
             checkSubqueryShardingValues(sqlStatementContext, shardingRule, shardingConditions);
             mergeShardingConditions(shardingConditions);
         }
-        ShardingRouteEngine shardingRouteEngine = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
-        shardingRouteEngine.route(routeContext, shardingRule);
+        ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props).route(routeContext, shardingRule);
         shardingStatementValidator.ifPresent(validator -> validator.postValidate(sqlStatement, routeContext));
     }
 
