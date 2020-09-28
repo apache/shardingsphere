@@ -30,6 +30,8 @@ ShardingSphere社区遵循[Apache Community’s process](http://community.apache
  - 判断issue类型，如：bug，enhancement，discussion等。
  - 判断Milestone，并标记。
 
-3. Committer提交的PR，需要根据PR类型和时间标注label 和 milestone。
+3. Committer提交的Pull Request，需要根据PR类型和时间标注label 和 milestone。
+
+4. Committer review Pull Request时，可以进行squash and merge to master的操作, 如果有问题可以加上 change request 或者@相关人员协助处理。
 
 > 注意: 无论是否是社区issue，都必须有assignee，直到issue完成。
