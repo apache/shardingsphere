@@ -359,7 +359,7 @@ public final class ConfigCenter {
     }
     
     /**
-     * Delete schema
+     * Delete schema.
      * 
      * @param schemaName schema name
      */
