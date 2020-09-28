@@ -24,7 +24,6 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
@@ -54,10 +53,7 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
     @Override
     public BackendResponse execute() throws SQLException {
         SchemaContext schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
-        if (null == schemaContext) {
-            throw new NoDatabaseSelectedException();
-        }
-        if (!schemaContext.isComplete()) {
+        if (null == schemaContext || !schemaContext.isComplete()) {
             return getDefaultQueryResponse(backendConnection.getSchemaName());
         }
         // TODO Get all tables from meta data.

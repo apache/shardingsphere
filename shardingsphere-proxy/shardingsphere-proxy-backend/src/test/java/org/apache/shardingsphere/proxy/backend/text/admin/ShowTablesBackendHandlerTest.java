@@ -90,6 +90,20 @@ public final class ShowTablesBackendHandlerTest {
     }
     
     @Test
+    public void assertExecuteShowTablesWithNonExistsSchema() throws SQLException, NoSuchFieldException, IllegalAccessException {
+        BackendConnection backendConnection = mock(BackendConnection.class);
+        when(backendConnection.getUsername()).thenReturn("root");
+        when(backendConnection.getSchemaName()).thenReturn("no_exists");
+        Field backendConnectionField = tablesBackendHandler.getClass().getDeclaredField("backendConnection");
+        backendConnectionField.setAccessible(true);
+        backendConnectionField.set(tablesBackendHandler, backendConnection);
+        QueryResponse actual = (QueryResponse) tablesBackendHandler.execute();
+        assertThat(actual, instanceOf(QueryResponse.class));
+        assertThat(actual.getQueryHeaders().size(), is(1));
+        assertThat(actual.getQueryResults().size(), is(0));
+    }
+    
+    @Test
     public void assertShowTablesUsingStream() throws SQLException {
         tablesBackendHandler.execute();
         while (tablesBackendHandler.next()) {
