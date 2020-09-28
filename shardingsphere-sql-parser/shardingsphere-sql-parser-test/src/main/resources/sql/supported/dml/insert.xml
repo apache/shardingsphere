@@ -75,4 +75,5 @@
     <sql-case id="insert_with_output_clause" value="INSERT INTO t_order (order_id, user_id) OUTPUT INSERTED.order_id, INSERTED.user_id INTO @MyTableVar (temp_order_id, temp_user_id) VALUES (?, ?)" db-types="SQLServer" />
     <sql-case id="insert_with_output_clause_without_output_table_columns" value="INSERT INTO t_order (order_id, user_id) OUTPUT INSERTED.order_id, INSERTED.user_id INTO @MyTableVar VALUES (?, ?)" db-types="SQLServer" />
     <sql-case id="insert_with_output_clause_without_output_table" value="INSERT INTO t_order (order_id, user_id) OUTPUT INSERTED.order_id, INSERTED.user_id VALUES (?, ?)" db-types="SQLServer" />
+    <sql-case id="insert_with_output_clause_column_shorthand" value="INSERT INTO t_order (order_id, user_id) OUTPUT INSERTED.* VALUES (?, ?)" db-types="SQLServer" />
 </sql-cases>
