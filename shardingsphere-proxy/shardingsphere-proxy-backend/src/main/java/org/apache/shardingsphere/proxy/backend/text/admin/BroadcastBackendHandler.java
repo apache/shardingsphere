@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
@@ -48,6 +49,9 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
         String originalSchema = backendConnection.getSchemaName();
         for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
             backendConnection.setCurrentSchema(each);
+            if (!ProxyContext.getInstance().getSchema(each).isComplete()) {
+                throw new RuleNotExistsException();
+            }
             databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection).execute();
         }
         backendConnection.setCurrentSchema(originalSchema);

@@ -19,21 +19,18 @@ package org.apache.shardingsphere.proxy.backend.text.query;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collections;
 
 /**
  * Backend handler with query.
@@ -58,14 +55,10 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
             throw new NoDatabaseSelectedException();
         }
         if (!schemaContext.isComplete()) {
-            return getDefaultQueryResponse(backendConnection.getSchemaName());
+            throw new RuleNotExistsException();
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);
         return databaseCommunicationEngine.execute();
-    }
-    
-    private QueryResponse getDefaultQueryResponse(final String schemaName) {
-        return new QueryResponse(Collections.singletonList(new QueryHeader(schemaName, "", "", "", 255, Types.VARCHAR, 0, false, false, false, false)));
     }
     
     @Override
