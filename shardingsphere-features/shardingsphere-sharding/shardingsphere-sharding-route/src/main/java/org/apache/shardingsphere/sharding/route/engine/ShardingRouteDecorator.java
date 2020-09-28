@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.route.context.impl.DefaultRouteStageContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
@@ -75,7 +74,6 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
         shardingStatementValidator.ifPresent(validator -> validator.postValidate(sqlStatement, routeResult));
         routeContext.getRouteResult().getOriginalDataNodes().addAll(routeResult.getOriginalDataNodes());
         routeContext.getRouteResult().getRouteUnits().addAll(routeResult.getRouteUnits());
-        routeContext.addNextRouteStageContext(getTypeClass(), new DefaultRouteStageContext());
     }
 
     private ShardingConditions getShardingConditions(final List<Object> parameters, 

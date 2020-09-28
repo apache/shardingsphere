@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.route.context.impl.DefaultRouteStageContext;
 import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
 import org.apache.shardingsphere.replication.primaryreplica.constant.PrimaryReplicaReplicationOrder;
 import org.apache.shardingsphere.replication.primaryreplica.route.engine.impl.PrimaryReplicaReplicationDataSourceRouter;
@@ -48,7 +47,6 @@ public final class PrimaryReplicaReplicationRouteDecorator implements RouteDecor
         if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
             String dataSourceName = new PrimaryReplicaReplicationDataSourceRouter(rule.getSingleDataSourceRule()).route(sqlStatementContext.getSqlStatement());
             routeContext.getRouteResult().getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
-            routeContext.addNextRouteStageContext(getTypeClass(), new DefaultRouteStageContext());
             return;
         }
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();

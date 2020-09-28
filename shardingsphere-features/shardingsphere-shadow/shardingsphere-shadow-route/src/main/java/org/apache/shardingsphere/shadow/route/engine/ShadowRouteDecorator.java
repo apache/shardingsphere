@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.route.context.impl.DefaultRouteStageContext;
 import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.route.engine.judge.ShadowDataSourceJudgeEngine;
@@ -60,7 +59,6 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
                 routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(key, key), Collections.emptyList()));
                 routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(value, value), Collections.emptyList()));
             });
-            routeContext.addNextRouteStageContext(getTypeClass(), new DefaultRouteStageContext());
             return;
         }
         if (isShadow(sqlStatementContext, parameters, shadowRule)) {
@@ -68,7 +66,6 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
         } else {
             shadowRule.getShadowMappings().keySet().forEach(each -> routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
         }
-        routeContext.addNextRouteStageContext(getTypeClass(), new DefaultRouteStageContext());
     }
     
     private void decorateRouteContextWithRouteResult(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final ShadowRule shadowRule) {

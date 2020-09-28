@@ -59,7 +59,6 @@ public final class SQLRewriteEntryTest {
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(metaData, props, Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteResult().getRouteUnits().addAll(Arrays.asList(mock(RouteUnit.class), mock(RouteUnit.class)));
-        routeContext.addNextRouteStageContext(null, null);
         RouteSQLRewriteResult sqlRewriteResult = (RouteSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), mock(SQLStatementContext.class), routeContext);
         assertThat(sqlRewriteResult.getSqlRewriteUnits().size(), is(2));
     }
