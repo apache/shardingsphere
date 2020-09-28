@@ -1453,7 +1453,7 @@
             </value>
         </values>
     </insert>
-
+    
     <insert sql-case-id="insert_with_default_values">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="20" stop-index="46">
@@ -1462,12 +1462,12 @@
             <column name="status" start-index="40" stop-index="45" />
         </columns>
     </insert>
-
+    
     <insert sql-case-id="insert_without_columns_with_default_values">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="19" stop-index="19" />
     </insert>
-
+    
     <insert sql-case-id="insert_with_top">
         <table name="t_order" start-index="15" stop-index="21" />
         <columns start-index="23" stop-index="41">
@@ -1486,7 +1486,7 @@
             </projections>
         </select>
     </insert>
-
+    
     <insert sql-case-id="insert_with_top_percent">
         <table name="t_order" start-index="23" stop-index="29" />
         <columns start-index="31" stop-index="49">
@@ -1505,7 +1505,7 @@
             </projections>
         </select>
     </insert>
-
+    
     <insert sql-case-id="insert_with_output_clause" parameters="1, 1">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="20" stop-index="38">
@@ -1540,7 +1540,7 @@
             </value>
         </values>
     </insert>
-
+    
     <insert sql-case-id="insert_with_output_clause_without_output_table_columns" parameters="1, 1">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="20" stop-index="38">
@@ -1571,7 +1571,7 @@
             </value>
         </values>
     </insert>
-
+    
     <insert sql-case-id="insert_with_output_clause_without_output_table" parameters="1, 1">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="20" stop-index="38">
@@ -1601,7 +1601,7 @@
             </value>
         </values>
     </insert>
-
+    
     <insert sql-case-id="insert_with_output_clause_column_shorthand" parameters="1, 1">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="20" stop-index="38">
