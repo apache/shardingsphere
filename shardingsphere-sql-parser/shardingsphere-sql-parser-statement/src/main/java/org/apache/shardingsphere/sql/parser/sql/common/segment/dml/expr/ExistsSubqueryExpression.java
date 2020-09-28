@@ -19,14 +19,19 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 
 @RequiredArgsConstructor
 @Getter
-public final class NotExpression implements ExpressionSegment {
+public class ExistsSubqueryExpression implements ExpressionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final ExpressionSegment expression;
+    private final SubquerySegment subquery;
+    
+    @Setter
+    private boolean not;
 }

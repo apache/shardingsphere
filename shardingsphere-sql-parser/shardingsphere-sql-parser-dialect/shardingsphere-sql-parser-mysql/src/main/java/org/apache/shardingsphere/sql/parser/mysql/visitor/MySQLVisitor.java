@@ -73,6 +73,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSe
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
@@ -253,9 +254,6 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         if (null != ctx.booleanPrimary()) {
             return visit(ctx.booleanPrimary());
         }
-        if (null != ctx.LP_()) {
-            return visit(ctx.expr(0));
-        }
         if (null != ctx.XOR()) {
             ExpressionSegment left = (ExpressionSegment) visit(ctx.expr(0));
             ExpressionSegment right = (ExpressionSegment) visit(ctx.expr(1));
@@ -272,10 +270,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
             return result;
         }
-        NotExpression result = new NotExpression();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        result.setExpression((ExpressionSegment) visit(ctx.expr(0)));
+        NotExpression result = new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)));
         return result;
     }
     
@@ -416,7 +411,10 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     @Override
     public final ASTNode visitSimpleExpr(final SimpleExprContext ctx) {
         if (null != ctx.subquery()) {
-            SubquerySegment subquerySegment = new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (MySQLSelectStatement) visit(ctx.subquery()));
+            SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().getStart().getStartIndex(), ctx.subquery().getStop().getStopIndex(), (MySQLSelectStatement) visit(ctx.subquery()));
+            if (null != ctx.EXISTS()) {
+                return new ExistsSubqueryExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
+            }
             return new SubqueryExpressionSegment(subquerySegment);
         }
         if (null != ctx.parameterMarker()) {
@@ -436,6 +434,17 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         }
         if (null != ctx.matchExpression_()) {
             return visit(ctx.matchExpression_());
+        }
+        if (null != ctx.notOperator_()) {
+            ASTNode expression = visit(ctx.simpleExpr(0));
+            if (expression instanceof ExistsSubqueryExpression) {
+                ((ExistsSubqueryExpression) expression).setNot(true);
+                return expression;
+            }
+            return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) expression);
+        }
+        if (null != ctx.LP_() && 1 == ctx.expr().size()) {
+            return visit(ctx.expr(0));
         }
         return visitRemainSimpleExpr(ctx);
     }

@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
@@ -106,6 +107,9 @@ public final class TableExtractor {
             for (ExpressionSegment each : ((ListExpression) expressionSegment).getItems()) {
                 extractTablesFromExpression(each);
             }
+        }
+        if (expressionSegment instanceof ExistsSubqueryExpression) {
+            extractTablesFromSelect(((ExistsSubqueryExpression) expressionSegment).getSubquery().getSelect());
         }
         if (expressionSegment instanceof BetweenExpression) {
             extractTablesFromExpression(((BetweenExpression) expressionSegment).getLeft());

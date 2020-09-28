@@ -314,11 +314,10 @@ triggerOrder
     ;
 
 expr
-    : expr logicalOperator expr
+    : booleanPrimary
+    | expr logicalOperator expr
     | expr XOR expr
     | notOperator_ expr
-    | LP_ expr RP_
-    | booleanPrimary
     ;
 
 logicalOperator
@@ -377,7 +376,7 @@ simpleExpr
     | simpleExpr COLLATE (STRING_ | identifier)
     | variable
     | simpleExpr OR_ simpleExpr
-    | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
+    | (PLUS_ | MINUS_ | TILDE_ | notOperator_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_

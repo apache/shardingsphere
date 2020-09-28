@@ -238,10 +238,7 @@ public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
             BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
             return result;
         }
-        NotExpression result = new NotExpression();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        result.setExpression((ExpressionSegment) visit(ctx.expr(0)));
+        NotExpression result = new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)));
         return result;
     }
     
