@@ -249,7 +249,8 @@ public final class ConfigCenter {
     
     private void persistSchema(final String schemaName, final boolean isDrop) {
         String schemaNames = repository.get(node.getSchemasPath());
-        Collection<String> schemas = new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
+        Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() 
+                : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
         if (isDrop) {
             schemas.remove(schemaName);
         } else if (!schemas.contains(schemaName)) {
@@ -355,6 +356,15 @@ public final class ConfigCenter {
             return Optional.empty();
         }
         return Optional.of(new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(path, YamlRuleSchemaMetaData.class)));
+    }
+    
+    /**
+     * Delete schema
+     * 
+     * @param schemaName schema name
+     */
+    public void deleteSchema(final String schemaName) {
+        repository.delete(node.getSchemaNamePath(schemaName));
     }
     
     private boolean hasAuthentication() {
