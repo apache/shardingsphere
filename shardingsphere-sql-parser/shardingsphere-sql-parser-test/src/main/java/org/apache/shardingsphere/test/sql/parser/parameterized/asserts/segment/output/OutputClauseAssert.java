@@ -46,13 +46,13 @@ public final class OutputClauseAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final OutputSegment actual, final ExpectedOutputClause expected) {
         assertNotNull(assertContext.getText("Output clause should exist."), expected);
-        if (null != actual.getOutputColumns()) {
+        if (!actual.getOutputColumns().isEmpty()) {
             assertOutputColumnsSegment(assertContext, actual, expected);
         }
         if (null != actual.getTableName()) {
             assertOutputTableSegment(assertContext, actual, expected);
         }
-        if (null != actual.getTableColumns()) {
+        if (!actual.getTableColumns().isEmpty()) {
             assertOutputTableColumnSegment(assertContext, actual, expected);
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
