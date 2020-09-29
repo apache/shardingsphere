@@ -17,9 +17,19 @@
 
 package org.apache.shardingsphere.scaling.core.datasource;
 
+import com.google.common.collect.Lists;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ShardingSphereJDBCConfiguration;
+import org.apache.shardingsphere.scaling.core.utils.ConfigurationYamlConverter;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
  * Data source factory.
@@ -35,6 +45,8 @@ public final class DataSourceFactory {
     public DataSourceWrapper newInstance(final DataSourceConfiguration dataSourceConfiguration) {
         if (dataSourceConfiguration instanceof JDBCDataSourceConfiguration) {
             return newInstanceDataSourceByJDBC((JDBCDataSourceConfiguration) dataSourceConfiguration);
+        } else if (dataSourceConfiguration instanceof ShardingSphereJDBCConfiguration) {
+            return newInstanceDataSourceByShardingJDBC((ShardingSphereJDBCConfiguration) dataSourceConfiguration);
         }
         throw new UnsupportedOperationException("Unsupported data source configuration");
     }
@@ -45,5 +57,13 @@ public final class DataSourceFactory {
         result.setUsername(dataSourceConfiguration.getUsername());
         result.setPassword(dataSourceConfiguration.getPassword());
         return new DataSourceWrapper(result);
+    }
+    
+    @SneakyThrows
+    private DataSourceWrapper newInstanceDataSourceByShardingJDBC(final ShardingSphereJDBCConfiguration dataSourceConfiguration) {
+        Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(
+                ConfigurationYamlConverter.loadDataSourceConfigurations(dataSourceConfiguration.getDataSource()));
+        ShardingRuleConfiguration ruleConfiguration = ConfigurationYamlConverter.loadShardingRuleConfiguration(dataSourceConfiguration.getRule());
+        return new DataSourceWrapper(ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Lists.newArrayList(ruleConfiguration), null));
     }
 }

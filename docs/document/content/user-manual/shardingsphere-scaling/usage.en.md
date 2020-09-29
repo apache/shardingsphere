@@ -51,17 +51,42 @@ ShardingSphere-Scaling provides a simple HTTP API
 
 Interface description：POST /scaling/job/start
 
-Body：
+Body:
 
-| Parameter                                         | Describe                                        |
-|---------------------------------------------------|-------------------------------------------------|
-| ruleConfiguration.sourceDataSource                | source sharding sphere data source configuration |
-| ruleConfiguration.sourceRule                      | source sharding sphere table rule configuration  |
-| ruleConfiguration.targetDataSources.name          | target sharding proxy name                      |
-| ruleConfiguration.targetDataSources.url           | target sharding proxy jdbc url                  |
-| ruleConfiguration.targetDataSources.username      | target sharding proxy username                  |
-| ruleConfiguration.targetDataSources.password      | target sharding proxy password                  |
-| jobConfiguration.concurrency                      | sync task proposed concurrency                  |
+| Parameter                                         | Describe                                                     |
+| ------------------------------------------------- | ------------------------------------------------------------ |
+| ruleConfiguration.source                          | source data source configuration                             |
+| ruleConfiguration.target                          | target data source configuration                             |
+| jobConfiguration.concurrency                      | sync task proposed concurrency                               |
+
+Data source configuration:
+
+| Parameter                                         | Describe                                                     |
+| ------------------------------------------------- | ------------------------------------------------------------ |
+| type                                              | data source type(available parameters:shardingSphereJdbc、jdbc)|
+| parameter                                         | data source parameter                                        |
+
+Parameter configuration:
+
+type = shardingSphereJdbc 
+
+| Parameter                                         | Describe                                                     |
+| ------------------------------------------------- | ------------------------------------------------------------ |
+| dataSource                                        | sharding sphere data source configuration                    |
+| rule                                              | sharding sphere data source table rule                       |
+
+type = jdbc 
+
+| Parameter                                         | Describe                                                     |
+| ------------------------------------------------- | ------------------------------------------------------------ |
+| name                                              | jdbc name                                                    |
+| ruleConfiguration.targetDataSources.url           | jdbc url                                                     |
+| ruleConfiguration.targetDataSources.username      | jdbc username                                                |
+| ruleConfiguration.targetDataSources.password      | jdbc password                                                |
+
+*** Notice ***
+
+Currently source type must shardingSphereJdbc
 
 Example：
 
@@ -71,52 +96,60 @@ curl -X POST \
   -H 'content-type: application/json' \
   -d '{
         "ruleConfiguration": {
-          "sourceDataSource":"
-            dataSources:
-              ds_0:
-                dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-                props:
-                  driverClassName: com.mysql.jdbc.Driver
-                  jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_0?useSSL=false
-                  username: scaling
-                  password: scaling
-              ds_1:
-                dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-                props:
-                  driverClassName: com.mysql.jdbc.Driver
-                  jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_1?useSSL=false
-                  username: scaling
-                  password: scaling
-            ",
-          "sourceRule":"
-            rules:
-            - !SHARDING
-              tables:
-                t_order:
-                  actualDataNodes: ds_$->{0..1}.t_order_$->{0..1}
-                  databaseStrategy:
-                    standard:
-                      shardingColumn: order_id
-                      shardingAlgorithmName: t_order_db_algorith
-                  logicTable: t_order
-                  tableStrategy:
-                    standard:
-                      shardingColumn: user_id
-                      shardingAlgorithmName: t_order_tbl_algorith
-              shardingAlgorithms:
-                t_order_db_algorith:
-                  type: INLINE
-                  props:
-                    algorithm-expression: ds_$->{order_id % 2}
-                t_order_tbl_algorith:
-                  type: INLINE
-                  props:
-                    algorithm-expression: t_order_$->{user_id % 2}
-            ",
-          "targetDataSources":{
-            "username":"root",
-            "password":"root",
-            "url":"jdbc:mysql://127.0.0.1:3307/sharding_db?serverTimezone=UTC&useSSL=false"
+          "source": {
+            "type": "shardingSphereJdbc",
+            "parameter": {
+              "dataSource":"
+                dataSources:
+                  ds_0:
+                    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+                    props:
+                      driverClassName: com.mysql.jdbc.Driver
+                      jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_0?useSSL=false
+                      username: scaling
+                      password: scaling
+                  ds_1:
+                    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+                    props:
+                      driverClassName: com.mysql.jdbc.Driver
+                      jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_1?useSSL=false
+                      username: scaling
+                      password: scaling
+                ",
+              "rule":"
+                rules:
+                - !SHARDING
+                  tables:
+                    t_order:
+                      actualDataNodes: ds_$->{0..1}.t_order_$->{0..1}
+                      databaseStrategy:
+                        standard:
+                          shardingColumn: order_id
+                          shardingAlgorithmName: t_order_db_algorith
+                      logicTable: t_order
+                      tableStrategy:
+                        standard:
+                          shardingColumn: user_id
+                          shardingAlgorithmName: t_order_tbl_algorith
+                  shardingAlgorithms:
+                    t_order_db_algorith:
+                      type: INLINE
+                      props:
+                        algorithm-expression: ds_$->{order_id % 2}
+                    t_order_tbl_algorith:
+                      type: INLINE
+                      props:
+                        algorithm-expression: t_order_$->{user_id % 2}
+                "
+            }
+          },
+          "target": {
+              "type": "jdbc",
+              "parameter": {
+                "username": "root",
+                "password": "root",
+                "url": "jdbc:mysql://127.0.0.1:3307/sharding_db?serverTimezone=UTC&useSSL=false"
+              }
           }
         },
         "jobConfiguration":{

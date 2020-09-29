@@ -17,21 +17,14 @@
 
 package org.apache.shardingsphere.scaling.core.check;
 
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
-import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSqlBuilder;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
-import org.apache.shardingsphere.scaling.core.utils.ConfigurationYamlConverter;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -83,19 +76,11 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
     }
     
     protected DataSourceWrapper getSourceDataSource() {
-        try {
-            Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(
-                    ConfigurationYamlConverter.loadDataSourceConfigurations(shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getSourceDataSource()));
-            ShardingRuleConfiguration ruleConfiguration = ConfigurationYamlConverter.loadShardingRuleConfiguration(shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getSourceRule());
-            return new DataSourceWrapper(ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Lists.newArrayList(ruleConfiguration), null));
-        } catch (SQLException ex) {
-            throw new DataCheckFailException("get source data source failed.", ex);
-        }
+        return new DataSourceFactory().newInstance(shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getSource().toTypedDataSourceConfiguration());
     }
     
     protected DataSourceWrapper getTargetDataSource() {
-        RuleConfiguration.YamlDataSourceParameter parameter = shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getTargetDataSources();
-        return new DataSourceWrapper(new DataSourceFactory().newInstance(new JDBCDataSourceConfiguration(parameter.getUrl(), parameter.getUsername(), parameter.getPassword())));
+        return new DataSourceFactory().newInstance(shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getTarget().toTypedDataSourceConfiguration());
     }
     
     protected abstract AbstractSqlBuilder getSqlBuilder();

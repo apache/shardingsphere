@@ -31,7 +31,7 @@ import java.util.logging.Logger;
  * Data source wrapper is for abstract standard jdbc and sharding jdbc.
  */
 @RequiredArgsConstructor
-public class DataSourceWrapper implements DataSource, AutoCloseable {
+public final class DataSourceWrapper implements DataSource, AutoCloseable {
     
     private final DataSource dataSource;
     

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ShardingSphereJDBCConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -60,8 +61,9 @@ public final class SyncConfigurationUtil {
      */
     public static Collection<SyncConfiguration> toSyncConfigurations(final ScalingConfiguration scalingConfiguration) {
         Collection<SyncConfiguration> result = new LinkedList<>();
-        Map<String, DataSourceConfiguration> sourceDataSource = ConfigurationYamlConverter.loadDataSourceConfigurations(scalingConfiguration.getRuleConfiguration().getSourceDataSource());
-        ShardingRuleConfiguration sourceRule = ConfigurationYamlConverter.loadShardingRuleConfiguration(scalingConfiguration.getRuleConfiguration().getSourceRule());
+        ShardingSphereJDBCConfiguration shardingSphereJDBCConfiguration = (ShardingSphereJDBCConfiguration) scalingConfiguration.getRuleConfiguration().getSource().toTypedDataSourceConfiguration();
+        Map<String, DataSourceConfiguration> sourceDataSource = ConfigurationYamlConverter.loadDataSourceConfigurations(shardingSphereJDBCConfiguration.getDataSource());
+        ShardingRuleConfiguration sourceRule = ConfigurationYamlConverter.loadShardingRuleConfiguration(shardingSphereJDBCConfiguration.getRule());
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDataSource.keySet());
         filterByShardingDataSourceTables(dataSourceTableNameMap, scalingConfiguration.getJobConfiguration());
         for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
@@ -162,11 +164,7 @@ public final class SyncConfigurationUtil {
     
     private static ImporterConfiguration createImporterConfiguration(final ScalingConfiguration scalingConfiguration, final ShardingRuleConfiguration shardingRuleConfig) {
         ImporterConfiguration result = new ImporterConfiguration();
-        JDBCDataSourceConfiguration importerDataSourceConfiguration = new JDBCDataSourceConfiguration(
-                scalingConfiguration.getRuleConfiguration().getTargetDataSources().getUrl(),
-                scalingConfiguration.getRuleConfiguration().getTargetDataSources().getUsername(),
-                scalingConfiguration.getRuleConfiguration().getTargetDataSources().getPassword());
-        result.setDataSourceConfiguration(importerDataSourceConfiguration);
+        result.setDataSourceConfiguration(scalingConfiguration.getRuleConfiguration().getTarget().toTypedDataSourceConfiguration());
         result.setShardingColumnsMap(toShardingColumnsMap(shardingRuleConfig));
         return result;
     }
