@@ -46,6 +46,7 @@ public final class JDBCDataSourceConfiguration implements DataSourceConfiguratio
         databaseType = getDatabaseType();
     }
     
+    @Override
     public DatabaseType getDatabaseType() {
         if (null == databaseType) {
             databaseType = DatabaseTypes.getDatabaseTypeByURL(jdbcUrl);
