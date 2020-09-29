@@ -24,12 +24,10 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.scaling.core.utils.ConfigurationYamlConverter;
 
-import java.util.Map;
-
 @Getter
 @Setter
 @EqualsAndHashCode(exclude = "databaseType")
-public class ShardingSphereJDBCConfiguration implements DataSourceConfiguration {
+public final class ShardingSphereJDBCConfiguration implements DataSourceConfiguration {
     
     private String dataSource;
     
@@ -40,14 +38,13 @@ public class ShardingSphereJDBCConfiguration implements DataSourceConfiguration 
     public ShardingSphereJDBCConfiguration(final String dataSource, final String rule) {
         this.dataSource = dataSource;
         this.rule = rule;
-        this.databaseType = getDatabaseType();
+        databaseType = getDatabaseType();
     }
     
     @Override
     public DatabaseType getDatabaseType() {
         if (null == databaseType) {
-            Map<String, org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration> sourceDataSource = ConfigurationYamlConverter.loadDataSourceConfigurations(dataSource);
-            databaseType = DatabaseTypes.getDatabaseTypeByURL(sourceDataSource.values().iterator().next().getProps().get("jdbcUrl").toString());
+            databaseType = DatabaseTypes.getDatabaseTypeByURL(ConfigurationYamlConverter.loadDataSourceConfigurations(dataSource).values().iterator().next().getProps().get("jdbcUrl").toString());
         }
         return databaseType;
     }
