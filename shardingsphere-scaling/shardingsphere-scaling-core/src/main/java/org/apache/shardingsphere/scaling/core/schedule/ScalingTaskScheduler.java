@@ -88,6 +88,7 @@ public final class ScalingTaskScheduler implements Runnable {
             
             @Override
             public void onFailure(final Throwable throwable) {
+                log.error("Inventory task execute failed.", throwable);
                 stop();
                 shardingScalingJob.setStatus(SyncTaskControlStatus.MIGRATE_INVENTORY_DATA_FAILURE.name());
             }
@@ -117,6 +118,7 @@ public final class ScalingTaskScheduler implements Runnable {
             
             @Override
             public void onFailure(final Throwable throwable) {
+                log.error("Incremental task execute failed.", throwable);
                 stop();
                 shardingScalingJob.setStatus(SyncTaskControlStatus.SYNCHRONIZE_INCREMENTAL_DATA_FAILURE.name());
             }

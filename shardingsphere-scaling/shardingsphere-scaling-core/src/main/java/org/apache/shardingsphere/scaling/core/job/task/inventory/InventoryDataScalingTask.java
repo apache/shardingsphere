@@ -84,32 +84,25 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
     
     @Override
     public void start() {
-        try {
-            getEstimatedRows();
-            instanceDumper();
-            Importer importer = ImporterFactory.newInstance(importerConfiguration, dataSourceManager);
-            instanceChannel(importer);
-            Future<?> future = ScalingContext.getInstance().getImporterExecuteEngine().submit(importer, new ExecuteCallback() {
-                
-                @Override
-                public void onSuccess() {
-                }
-                
-                @Override
-                public void onFailure(final Throwable throwable) {
-                    log.error("get an error when migrating the inventory data", throwable);
-                    dumper.stop();
-                }
-            });
-            dumper.start();
-            waitForResult(future);
-            dataSourceManager.close();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.error("Inventory task start failed.", ex);
-            throw ex;
-        }
+        getEstimatedRows();
+        instanceDumper();
+        Importer importer = ImporterFactory.newInstance(importerConfiguration, dataSourceManager);
+        instanceChannel(importer);
+        Future<?> future = ScalingContext.getInstance().getImporterExecuteEngine().submit(importer, new ExecuteCallback() {
+            
+            @Override
+            public void onSuccess() {
+            }
+            
+            @Override
+            public void onFailure(final Throwable throwable) {
+                log.error("get an error when migrating the inventory data", throwable);
+                dumper.stop();
+            }
+        });
+        dumper.start();
+        waitForResult(future);
+        dataSourceManager.close();
     }
     
     private void getEstimatedRows() {
