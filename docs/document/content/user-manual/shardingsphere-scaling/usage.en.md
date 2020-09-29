@@ -63,7 +63,7 @@ Data source configuration:
 
 | Parameter                                         | Describe                                                     |
 | ------------------------------------------------- | ------------------------------------------------------------ |
-| type                                              | data source type(available parameters:shardingSphereJdbc、jdbc)|
+| type                                              | data source type(available parameters:shardingSphereJdbc,jdbc)|
 | parameter                                         | data source parameter                                        |
 
 Parameter configuration:
