@@ -40,7 +40,14 @@ public class ShardingSphereJDBCConfiguration implements DataSourceConfiguration 
     public ShardingSphereJDBCConfiguration(final String dataSource, final String rule) {
         this.dataSource = dataSource;
         this.rule = rule;
-        Map<String, org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration> sourceDataSource = ConfigurationYamlConverter.loadDataSourceConfigurations(dataSource);
-        this.databaseType = DatabaseTypes.getDatabaseTypeByURL(sourceDataSource.values().iterator().next().getProps().get("jdbcUrl").toString());
+        this.databaseType = getDatabaseType();
+    }
+    
+    public DatabaseType getDatabaseType() {
+        if (databaseType == null) {
+            Map<String, org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration> sourceDataSource = ConfigurationYamlConverter.loadDataSourceConfigurations(dataSource);
+            this.databaseType = DatabaseTypes.getDatabaseTypeByURL(sourceDataSource.values().iterator().next().getProps().get("jdbcUrl").toString());
+        }
+        return databaseType;
     }
 }

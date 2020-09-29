@@ -71,24 +71,31 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     
     @Override
     public void start() {
-        dumper = DumperFactory.newInstanceLogDumper(dumperConfiguration, getPositionManager().getPosition());
-        Collection<Importer> importers = instanceImporters();
-        instanceChannel(importers);
-        Future<?> future = ScalingContext.getInstance().getTaskExecuteEngine().submitAll(importers, new ExecuteCallback() {
-            
-            @Override
-            public void onSuccess() {
-            }
-            
-            @Override
-            public void onFailure(final Throwable throwable) {
-                log.error("get an error when migrating the increment data", throwable);
-                dumper.stop();
-            }
-        });
-        dumper.start();
-        waitForResult(future);
-        dataSourceManager.close();
+        try {
+            dumper = DumperFactory.newInstanceLogDumper(dumperConfiguration, getPositionManager().getPosition());
+            Collection<Importer> importers = instanceImporters();
+            instanceChannel(importers);
+            Future<?> future = ScalingContext.getInstance().getTaskExecuteEngine().submitAll(importers, new ExecuteCallback() {
+                
+                @Override
+                public void onSuccess() {
+                }
+                
+                @Override
+                public void onFailure(final Throwable throwable) {
+                    log.error("get an error when migrating the increment data", throwable);
+                    dumper.stop();
+                }
+            });
+            dumper.start();
+            waitForResult(future);
+            dataSourceManager.close();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("Incremental task start failed.", ex);
+            throw ex;
+        }
     }
     
     private List<Importer> instanceImporters() {
