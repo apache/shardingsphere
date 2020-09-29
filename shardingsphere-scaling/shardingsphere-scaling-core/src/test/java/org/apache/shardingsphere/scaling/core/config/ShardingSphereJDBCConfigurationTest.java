@@ -17,32 +17,20 @@
 
 package org.apache.shardingsphere.scaling.core.config;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.scaling.core.fixture.FixtureShardingSphereJDBCConfiguration;
+import org.junit.Test;
 
-/**
- * JDBC data source configuration.
- */
-@Getter
-@Setter
-@EqualsAndHashCode(exclude = "databaseType")
-public final class JDBCDataSourceConfiguration implements DataSourceConfiguration {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
+public class ShardingSphereJDBCConfigurationTest {
     
-    private String jdbcUrl;
-    
-    private String username;
-    
-    private String password;
-    
-    private DatabaseType databaseType;
-    
-    public JDBCDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
-        this.jdbcUrl = jdbcUrl;
-        this.username = username;
-        this.password = password;
-        databaseType = DatabaseTypes.getDatabaseTypeByURL(jdbcUrl);
+    @Test
+    public void assertShardingSphereJDBCDataSourceConfigurationDatabaseType() {
+        ShardingSphereJDBCConfiguration shardingSphereJDBCConfiguration = new ShardingSphereJDBCConfiguration(
+                FixtureShardingSphereJDBCConfiguration.DATA_SOURCE,
+                FixtureShardingSphereJDBCConfiguration.RULE);
+        assertThat(shardingSphereJDBCConfiguration.getDatabaseType(), instanceOf(H2DatabaseType.class));
     }
 }

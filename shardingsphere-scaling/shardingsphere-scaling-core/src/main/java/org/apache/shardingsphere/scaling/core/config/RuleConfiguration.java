@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.config;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,22 +29,31 @@ import lombok.Setter;
 @Getter
 public final class RuleConfiguration {
     
-    private String sourceDataSource;
+    private DataSourceConf source;
     
-    private String sourceRule;
-    
-    private YamlDataSourceParameter targetDataSources;
+    private DataSourceConf target;
     
     @Setter
     @Getter
-    public static final class YamlDataSourceParameter {
+    public static class DataSourceConf {
         
-        private String name;
+        private String type;
         
-        private String url;
-        
-        private String username;
-        
-        private String password;
+        private JsonObject parameter;
+    
+        /**
+         * Get typed data source configuration.
+         *
+         * @return data source configuration
+         */
+        public DataSourceConfiguration toTypedDataSourceConfiguration() {
+            if ("jdbc".equalsIgnoreCase(type)) {
+                return new Gson().fromJson(parameter, JDBCDataSourceConfiguration.class);
+            }
+            if ("shardingSphereJdbc".equalsIgnoreCase(type)) {
+                return new Gson().fromJson(parameter, ShardingSphereJDBCConfiguration.class);
+            }
+            throw new UnsupportedOperationException("Unsupported Data Source Type:" + type);
+        }
     }
 }

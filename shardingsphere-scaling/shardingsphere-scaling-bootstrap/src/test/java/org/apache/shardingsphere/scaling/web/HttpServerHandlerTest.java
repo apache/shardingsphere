@@ -78,6 +78,16 @@ public final class HttpServerHandlerTest {
     }
     
     @Test
+    public void assertShardingSphereJDBCTargetChannelReadStartSuccess() {
+        initConfig("/config_sharding_sphere_jdbc_target.json");
+        startScalingJob();
+        ArgumentCaptor<FullHttpResponse> argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
+        verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
+        FullHttpResponse fullHttpResponse = argumentCaptor.getValue();
+        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("{\"success\":true"));
+    }
+    
+    @Test
     public void assertChannelReadProgressFail() {
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/scaling/job/progress/9");
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
