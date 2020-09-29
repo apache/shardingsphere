@@ -118,8 +118,7 @@ public final class ResultSetUtil {
         if (needScale) {
             try {
                 return value.setScale(scale);
-            } catch (ArithmeticException ex) {
-                // try this if above fails
+            } catch (final ArithmeticException ex) {
                 return value.setScale(scale, BigDecimal.ROUND_HALF_UP);
             }
         }
