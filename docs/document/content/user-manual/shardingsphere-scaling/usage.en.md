@@ -80,7 +80,7 @@ type = jdbc
 | Parameter                                         | Describe                                                     |
 | ------------------------------------------------- | ------------------------------------------------------------ |
 | name                                              | jdbc name                                                    |
-| ruleConfiguration.targetDataSources.url           | jdbc url                                                     |
+| ruleConfiguration.targetDataSources.jdbcUrl           | jdbc url                                                     |
 | ruleConfiguration.targetDataSources.username      | jdbc username                                                |
 | ruleConfiguration.targetDataSources.password      | jdbc password                                                |
 
@@ -148,7 +148,7 @@ curl -X POST \
               "parameter": {
                 "username": "root",
                 "password": "root",
-                "url": "jdbc:mysql://127.0.0.1:3307/sharding_db?serverTimezone=UTC&useSSL=false"
+                "jdbcUrl": "jdbc:mysql://127.0.0.1:3307/sharding_db?serverTimezone=UTC&useSSL=false"
               }
           }
         },
