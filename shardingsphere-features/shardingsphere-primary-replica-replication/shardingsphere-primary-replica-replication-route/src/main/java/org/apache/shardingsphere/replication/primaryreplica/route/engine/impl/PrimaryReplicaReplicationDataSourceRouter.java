@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
-import java.util.ArrayList;
-
 /**
  * Data source router for primary-replica replication.
  */
@@ -45,7 +43,7 @@ public final class PrimaryReplicaReplicationDataSourceRouter {
             PrimaryVisitedManager.setPrimaryVisited();
             return rule.getPrimaryDataSourceName();
         }
-        return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getPrimaryDataSourceName(), new ArrayList<>(rule.getReplicaDataSourceNames()));
+        return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getPrimaryDataSourceName(), rule.getReplicaDataSourceNames());
     }
     
     private boolean isPrimaryRoute(final SQLStatement sqlStatement) {
