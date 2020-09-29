@@ -52,12 +52,12 @@ public class RuleConfigurationTest {
     }
     
     @Test
-    public void assertToShardingJDBConfiguration() {
+    public void assertToShardingSphereJDBConfiguration() {
         RuleConfiguration.DataSourceConf dataSourceConf = new RuleConfiguration.DataSourceConf();
         dataSourceConf.setType("shardingSphereJdbc");
         String dataSource = FixtureShardingSphereJDBCConfiguration.DATA_SOURCE;
         String rule = FixtureShardingSphereJDBCConfiguration.RULE;
-        dataSourceConf.setParameter(mockShardingJDBCConfiguration(dataSource, rule));
+        dataSourceConf.setParameter(mockShardingSphereJDBCConfiguration(dataSource, rule));
         DataSourceConfiguration actual = dataSourceConf.toTypedDataSourceConfiguration();
         assertThat(actual, instanceOf(ShardingSphereJDBCConfiguration.class));
         ShardingSphereJDBCConfiguration shardingSphereJDBCConfiguration = (ShardingSphereJDBCConfiguration) actual;
@@ -65,7 +65,7 @@ public class RuleConfigurationTest {
         assertThat(shardingSphereJDBCConfiguration.getRule(), is(rule));
     }
     
-    private JsonObject mockShardingJDBCConfiguration(final String dataSource, final String rule) {
+    private JsonObject mockShardingSphereJDBCConfiguration(final String dataSource, final String rule) {
         JsonObject result = new JsonObject();
         result.addProperty("dataSource", dataSource);
         result.addProperty("rule", rule);

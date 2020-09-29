@@ -46,7 +46,7 @@ public final class DataSourceFactory {
         if (dataSourceConfiguration instanceof JDBCDataSourceConfiguration) {
             return newInstanceDataSourceByJDBC((JDBCDataSourceConfiguration) dataSourceConfiguration);
         } else if (dataSourceConfiguration instanceof ShardingSphereJDBCConfiguration) {
-            return newInstanceDataSourceByShardingJDBC((ShardingSphereJDBCConfiguration) dataSourceConfiguration);
+            return newInstanceDataSourceByShardingSphereJDBC((ShardingSphereJDBCConfiguration) dataSourceConfiguration);
         }
         throw new UnsupportedOperationException("Unsupported data source configuration");
     }
@@ -60,7 +60,7 @@ public final class DataSourceFactory {
     }
     
     @SneakyThrows
-    private DataSourceWrapper newInstanceDataSourceByShardingJDBC(final ShardingSphereJDBCConfiguration dataSourceConfiguration) {
+    private DataSourceWrapper newInstanceDataSourceByShardingSphereJDBC(final ShardingSphereJDBCConfiguration dataSourceConfiguration) {
         Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(
                 ConfigurationYamlConverter.loadDataSourceConfigurations(dataSourceConfiguration.getDataSource()));
         ShardingRuleConfiguration ruleConfiguration = ConfigurationYamlConverter.loadShardingRuleConfiguration(dataSourceConfiguration.getRule());

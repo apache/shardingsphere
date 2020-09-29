@@ -78,8 +78,8 @@ public final class HttpServerHandlerTest {
     }
     
     @Test
-    public void assertShardingJDBCTargetChannelReadStartSuccess() {
-        initConfig("/config_shardingjdbc_target.json");
+    public void assertShardingSphereJDBCTargetChannelReadStartSuccess() {
+        initConfig("/config_sharding_sphere_jdbc_target.json");
         startScalingJob();
         ArgumentCaptor<FullHttpResponse> argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
