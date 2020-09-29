@@ -280,10 +280,11 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     
     private SchemaContext createAddedSchemaContext(final SchemaAddedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
-        Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, event.getDataSourceConfigurations()));
+        Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, 
+                governanceFacade.getConfigCenter().loadDataSourceConfigurations(schemaName)));
         DatabaseType databaseType = getDatabaseType(dataSourcesMap);
         SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(databaseType, dataSourcesMap, 
-                Collections.singletonMap(schemaName, event.getRuleConfigurations()), schemaContexts.getAuthentication(), schemaContexts.getProps().getProps());
+                Collections.singletonMap(schemaName, governanceFacade.getConfigCenter().loadRuleConfigurations(schemaName)), schemaContexts.getAuthentication(), schemaContexts.getProps().getProps());
         return schemaContextsBuilder.build().getSchemaContextMap().get(schemaName);
     }
     
