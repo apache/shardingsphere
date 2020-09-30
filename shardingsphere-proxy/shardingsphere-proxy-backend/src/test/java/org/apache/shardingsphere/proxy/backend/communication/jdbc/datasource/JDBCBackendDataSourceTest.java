@@ -23,8 +23,6 @@ import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
-import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
-import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.fixture.CallTimeRecordDataSource;
@@ -79,13 +77,9 @@ public final class JDBCBackendDataSourceTest {
     }
     
     private Map<String, SchemaContext> createSchemaContextMap() {
-        SchemaContext schemaContext = mock(SchemaContext.class);
-        ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
-        RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        when(shardingSphereSchema.getDataSources()).thenReturn(mockDataSources(2));
-        when(schemaContext.getSchema()).thenReturn(shardingSphereSchema);
+        SchemaContext schemaContext = mock(SchemaContext.class, RETURNS_DEEP_STUBS);
         when(schemaContext.getSchema().getName()).thenReturn("schema");
-        when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
+        when(schemaContext.getSchema().getDataSources()).thenReturn(mockDataSources(2));
         return Collections.singletonMap("schema", schemaContext);
     }
     
@@ -98,8 +92,7 @@ public final class JDBCBackendDataSourceTest {
     
     private TransactionContexts createTransactionContexts() {
         TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
-        ShardingTransactionManagerEngine transactionManagerEngine = mock(ShardingTransactionManagerEngine.class);
-        when(result.getEngines().get("schema")).thenReturn(transactionManagerEngine);
+        when(result.getEngines().get("schema")).thenReturn(mock(ShardingTransactionManagerEngine.class));
         return result;
     }
     
