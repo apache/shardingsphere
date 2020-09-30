@@ -36,6 +36,11 @@ public abstract class AbstractShardingTransactionManagerFixture implements Shard
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
     
+    /**
+     * Get invocations.
+     * 
+     * @return invocations
+     */
     public static Collection<TransactionOperationType> getInvocations() {
         return INVOCATIONS;
     }
