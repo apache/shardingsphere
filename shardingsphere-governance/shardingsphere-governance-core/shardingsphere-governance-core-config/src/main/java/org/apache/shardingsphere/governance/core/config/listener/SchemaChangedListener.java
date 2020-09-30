@@ -20,15 +20,14 @@ package org.apache.shardingsphere.governance.core.config.listener;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.commons.collections4.SetUtils;
-import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
+import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaDeletedEvent;
-import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlRuleSchemaMetaData;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
@@ -55,15 +54,12 @@ import java.util.stream.Collectors;
  */
 public final class SchemaChangedListener extends PostGovernanceRepositoryEventListener {
     
-    private final ConfigCenter configCenter;
-    
     private final ConfigCenterNode configurationNode;
     
     private final Collection<String> existedSchemaNames;
     
     public SchemaChangedListener(final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
         super(configurationRepository, new ConfigCenterNode().getAllSchemaConfigPaths(schemaNames));
-        configCenter = new ConfigCenter(configurationRepository);
         configurationNode = new ConfigCenterNode();
         existedSchemaNames = new LinkedHashSet<>(schemaNames);
     }
@@ -114,9 +110,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     
     private GovernanceEvent createAddedEvent(final String schemaName) {
         existedSchemaNames.add(schemaName);
-        return isOwnCompleteConfigurations(schemaName)
-                ? new SchemaAddedEvent(schemaName, configCenter.loadDataSourceConfigurations(schemaName), configCenter.loadRuleConfigurations(schemaName))
-                : new SchemaAddedEvent(schemaName, Collections.emptyMap(), Collections.emptyList());
+        return new SchemaAddedEvent(schemaName, Collections.emptyMap(), Collections.emptyList());
     }
     
     private GovernanceEvent createUpdatedEvent(final String schemaName, final DataChangedEvent event) {
@@ -149,9 +143,5 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     private GovernanceEvent createMetaDataChangedEvent(final DataChangedEvent event) {
         RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlRuleSchemaMetaData.class));
         return new MetaDataChangedEvent(existedSchemaNames, ruleSchemaMetaData);
-    }
-    
-    private boolean isOwnCompleteConfigurations(final String schemaName) {
-        return configCenter.hasDataSourceConfiguration(schemaName) && configCenter.hasRuleConfiguration(schemaName);
     }
 }

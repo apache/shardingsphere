@@ -53,6 +53,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -154,9 +155,11 @@ public final class GovernanceSchemaContextsTest {
     @Test
     @SneakyThrows
     public void assertSchemaAdd() {
-        SchemaAddedEvent event = new SchemaAddedEvent("schema_add", getDataSourceConfigurations(), new LinkedList<>());
+        SchemaAddedEvent event = new SchemaAddedEvent("schema_add", new HashMap<>(), new LinkedList<>());
+        when(configCenter.loadDataSourceConfigurations("schema_add")).thenReturn(getDataSourceConfigurations());
         governanceSchemaContexts.renew(event);
         assertNotNull(governanceSchemaContexts.getSchemaContextMap().get("schema_add"));
+        assertNotNull(governanceSchemaContexts.getSchemaContextMap().get("schema_add").getSchema().getDataSources());
     }
     
     private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
