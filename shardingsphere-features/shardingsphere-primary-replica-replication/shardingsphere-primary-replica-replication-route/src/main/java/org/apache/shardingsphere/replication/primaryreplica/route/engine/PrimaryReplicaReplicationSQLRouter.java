@@ -42,21 +42,17 @@ import java.util.Optional;
 public final class PrimaryReplicaReplicationSQLRouter implements SQLRouter<PrimaryReplicaReplicationRule> {
     
     @Override
-    public void decorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters,
-                         final ShardingSphereMetaData metaData, final PrimaryReplicaReplicationRule rule, final ConfigurationProperties props) {
-        if (routeContext.getRouteUnits().isEmpty()) {
-            firstDecorate(routeContext, sqlStatementContext, rule);
-        } else {
-            continueDecorate(routeContext, sqlStatementContext, rule);
-        }
-    }
-    
-    private void firstDecorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final PrimaryReplicaReplicationRule rule) {
+    public RouteContext createRouteContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
+                                           final ShardingSphereMetaData metaData, final PrimaryReplicaReplicationRule rule, final ConfigurationProperties props) {
+        RouteContext result = new RouteContext();
         String dataSourceName = new PrimaryReplicaReplicationDataSourceRouter(rule.getSingleDataSourceRule()).route(sqlStatementContext.getSqlStatement());
-        routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
+        return result;
     }
     
-    private void continueDecorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final PrimaryReplicaReplicationRule rule) {
+    @Override
+    public void decorateRouteContext(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
+                                     final ShardingSphereMetaData metaData, final PrimaryReplicaReplicationRule rule, final ConfigurationProperties props) {
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteUnits()) {
