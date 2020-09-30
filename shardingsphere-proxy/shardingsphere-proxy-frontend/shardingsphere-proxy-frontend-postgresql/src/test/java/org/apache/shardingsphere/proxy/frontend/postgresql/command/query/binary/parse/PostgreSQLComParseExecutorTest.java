@@ -73,13 +73,13 @@ public final class PostgreSQLComParseExecutorTest {
     
     private Map<String, SchemaContext> getSchemaContextMap() {
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        ShardingSphereSchema sphereSchema = mock(ShardingSphereSchema.class);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         ShardingSphereSQLParserEngine parserEngine = mock(ShardingSphereSQLParserEngine.class);
         SQLStatement sqlStatement = mock(SQLStatement.class);
         when(runtimeContext.getSqlParserEngine()).thenReturn(parserEngine);
         when(parserEngine.parse(eq("sql"), eq(true))).thenReturn(sqlStatement);
         when(sqlStatement.getParameterCount()).thenReturn(1);
-        SchemaContext schemaContext = new SchemaContext("name", sphereSchema, runtimeContext);
+        SchemaContext schemaContext = new SchemaContext(schema, runtimeContext);
         return Collections.singletonMap("schema", schemaContext);
     }
     

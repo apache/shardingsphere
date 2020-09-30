@@ -36,20 +36,20 @@ public final class SchemaContextTest {
     public void assertIsComplete() {
         ShardingSphereSchema schema = new ShardingSphereSchema("name", Collections.singleton(mock(RuleConfiguration.class)), 
                 Collections.singleton(mock(ShardingSphereRule.class)), Collections.singletonMap("ds", mock(DataSource.class)), mock(ShardingSphereMetaData.class));
-        assertTrue(new SchemaContext("name", schema, mock(RuntimeContext.class)).isComplete());
+        assertTrue(new SchemaContext(schema, mock(RuntimeContext.class)).isComplete());
     }
     
     @Test
     public void assertIsNotCompleteWithoutRule() {
         ShardingSphereSchema schema = new ShardingSphereSchema("name", Collections.emptyList(), 
                 Collections.emptyList(), Collections.singletonMap("ds", mock(DataSource.class)), mock(ShardingSphereMetaData.class));
-        assertFalse(new SchemaContext("name", schema, mock(RuntimeContext.class)).isComplete());
+        assertFalse(new SchemaContext(schema, mock(RuntimeContext.class)).isComplete());
     }
     
     @Test
     public void assertIsNotCompleteWithoutDataSource() {
         ShardingSphereSchema schema = new ShardingSphereSchema("name", Collections.singleton(mock(RuleConfiguration.class)),
                 Collections.singleton(mock(ShardingSphereRule.class)), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
-        assertFalse(new SchemaContext("name", schema, mock(RuntimeContext.class)).isComplete());
+        assertFalse(new SchemaContext(schema, mock(RuntimeContext.class)).isComplete());
     }
 }

@@ -211,7 +211,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
             String schemaName = entry.getKey();
             SchemaContext oldSchemaContext = entry.getValue();
             SchemaContext newSchemaContext = event.getSchemaNames().contains(schemaName) 
-                    ? new SchemaContext(oldSchemaContext.getSchema().getName(), getChangedShardingSphereSchema(oldSchemaContext.getSchema(), event.getRuleSchemaMetaData(), schemaName),
+                    ? new SchemaContext(getChangedShardingSphereSchema(oldSchemaContext.getSchema(), event.getRuleSchemaMetaData(), schemaName),
                     oldSchemaContext.getRuntimeContext()) : oldSchemaContext;
             newSchemaContexts.put(schemaName, newSchemaContext);
         }
@@ -292,7 +292,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         Map<String, SchemaContext> result = new HashMap<>(schemaContexts.getSchemaContextMap().size());
         for (Entry<String, SchemaContext> entry : schemaContexts.getSchemaContextMap().entrySet()) {
             RuntimeContext runtimeContext = entry.getValue().getRuntimeContext();
-            result.put(entry.getKey(), new SchemaContext(entry.getValue().getSchema().getName(), entry.getValue().getSchema(), new RuntimeContext(runtimeContext.getCachedDatabaseMetaData(),
+            result.put(entry.getKey(), new SchemaContext(entry.getValue().getSchema(), new RuntimeContext(runtimeContext.getCachedDatabaseMetaData(),
                     new ExecutorKernel(props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE)), runtimeContext.getSqlParserEngine())));
         }
         return result;

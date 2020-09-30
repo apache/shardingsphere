@@ -51,7 +51,7 @@ public final class StandardSchemaContextsTest {
         RuntimeContext runtimeContext = mock(RuntimeContext.class, RETURNS_DEEP_STUBS);
         ExecutorKernel executorKernel = mock(ExecutorKernel.class);
         when(runtimeContext.getExecutorKernel()).thenReturn(executorKernel);
-        SchemaContext schemaContext = new SchemaContext("logic_db", mock(ShardingSphereSchema.class), runtimeContext);
+        SchemaContext schemaContext = new SchemaContext(mock(ShardingSphereSchema.class), runtimeContext);
         StandardSchemaContexts standardSchemaContexts = new StandardSchemaContexts(
                 Collections.singletonMap("logic_db", schemaContext), new Authentication(), new ConfigurationProperties(new Properties()), mock(DatabaseType.class));
         standardSchemaContexts.close();

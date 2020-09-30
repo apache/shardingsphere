@@ -99,7 +99,7 @@ public final class SchemaContextsBuilder {
         Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
         RuntimeContext runtimeContext = new RuntimeContext(createCachedDatabaseMetaData(dataSources).orElse(null), 
                 executorKernel, ShardingSphereSQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType)));
-        return new SchemaContext(schemaName, createShardingSphereSchema(schemaName), runtimeContext);
+        return new SchemaContext(createShardingSphereSchema(schemaName), runtimeContext);
     }
     
     private Optional<CachedDatabaseMetaData> createCachedDatabaseMetaData(final Map<String, DataSource> dataSources) throws SQLException {
