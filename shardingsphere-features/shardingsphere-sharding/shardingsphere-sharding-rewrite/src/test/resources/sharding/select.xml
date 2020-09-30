@@ -27,6 +27,12 @@
         <output sql="SELECT * FROM t_account_0 WHERE account_id = 100" />
     </rewrite-assertion>
 
+    <rewrite-assertion id="select_with_not_exsist" db-type="MySQL">
+        <input sql="SELECT * FROM t_account a WHERE not exists (select * from t_account_detail where a.account_id=account_id and account_id=1000) and account_id = 100" />
+        <output sql="SELECT * FROM t_account_0 a WHERE not exists (select * from t_account_detail_0 where a.account_id=account_id and account_id=1000) and account_id = 100" />
+        <output sql="SELECT * FROM t_account_1 a WHERE not exists (select * from t_account_detail_1 where a.account_id=account_id and account_id=1000) and account_id = 100" />
+    </rewrite-assertion>
+
     <rewrite-assertion id="select_with_sum_fun">
         <input sql="SELECT SUM(DISTINCT account_id), SUM(account_id) FROM t_account WHERE account_id = 100" />
         <output sql="SELECT SUM(DISTINCT account_id), SUM(account_id) FROM t_account_0 WHERE account_id = 100" />
