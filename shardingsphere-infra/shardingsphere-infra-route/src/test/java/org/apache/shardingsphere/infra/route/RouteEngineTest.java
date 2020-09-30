@@ -45,7 +45,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DataNodeRouterTest {
+public final class RouteEngineTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData metaData;
@@ -63,9 +63,9 @@ public final class DataNodeRouterTest {
     
     @Test
     public void assertRouteSuccess() {
-        DataNodeRouter router = new DataNodeRouter(metaData, props, Collections.singletonList(new RouteRuleFixture()));
-        setSPIRoutingHook(router);
-        RouteContext actual = router.route(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
+        RouteEngine routeEngine = new RouteEngine(metaData, props, Collections.singletonList(new RouteRuleFixture()));
+        setSPIRoutingHook(routeEngine);
+        RouteContext actual = routeEngine.route(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("ds"));
@@ -77,10 +77,10 @@ public final class DataNodeRouterTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertRouteFailure() {
-        DataNodeRouter router = new DataNodeRouter(metaData, props, Collections.singletonList(new RouteFailureRuleFixture()));
-        setSPIRoutingHook(router);
+        RouteEngine routeEngine = new RouteEngine(metaData, props, Collections.singletonList(new RouteFailureRuleFixture()));
+        setSPIRoutingHook(routeEngine);
         try {
-            router.route(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
+            routeEngine.route(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
         } catch (final UnsupportedOperationException ex) {
             verify(routingHook).start("SELECT 1");
             verify(routingHook).finishFailure(ex);
@@ -89,9 +89,9 @@ public final class DataNodeRouterTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setSPIRoutingHook(final DataNodeRouter router) {
-        Field field = DataNodeRouter.class.getDeclaredField("routingHook");
+    private void setSPIRoutingHook(final RouteEngine routeEngine) {
+        Field field = RouteEngine.class.getDeclaredField("routingHook");
         field.setAccessible(true);
-        field.set(router, routingHook);
+        field.set(routeEngine, routingHook);
     }
 }

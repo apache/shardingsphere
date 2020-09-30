@@ -34,9 +34,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Data node router.
+ * Route engine.
  */
-public final class DataNodeRouter {
+public final class RouteEngine {
     
     static {
         ShardingSphereServiceLoader.register(RouteDecorator.class);
@@ -51,7 +51,7 @@ public final class DataNodeRouter {
     
     private final SPIRoutingHook routingHook;
     
-    public DataNodeRouter(final ShardingSphereMetaData metaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
+    public RouteEngine(final ShardingSphereMetaData metaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
         this.metaData = metaData;
         this.props = props;
         decorators = OrderedSPIRegistry.getRegisteredServices(rules, RouteDecorator.class);

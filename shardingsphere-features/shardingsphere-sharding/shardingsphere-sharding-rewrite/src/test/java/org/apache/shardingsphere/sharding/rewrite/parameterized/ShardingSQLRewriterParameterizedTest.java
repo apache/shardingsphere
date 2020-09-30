@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.infra.rewrite.parameterized.engine.AbstractSQLRewriterParameterizedTest;
 import org.apache.shardingsphere.infra.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
 import org.apache.shardingsphere.infra.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParametersBuilder;
-import org.apache.shardingsphere.infra.route.DataNodeRouter;
+import org.apache.shardingsphere.infra.route.RouteEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
@@ -84,7 +84,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         ConfigurationProperties props = new ConfigurationProperties(yamlRootRuleConfigs.getProps());
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
                 metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData(), getTestParameters().getInputParameters(), standardSqlParserEngine.parse(getTestParameters().getInputSQL(), false));
-        RouteContext routeContext = new DataNodeRouter(metaData, props, rules).route(
+        RouteContext routeContext = new RouteEngine(metaData, props, rules).route(
                 sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
                 props, rules).rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatementContext, routeContext);
