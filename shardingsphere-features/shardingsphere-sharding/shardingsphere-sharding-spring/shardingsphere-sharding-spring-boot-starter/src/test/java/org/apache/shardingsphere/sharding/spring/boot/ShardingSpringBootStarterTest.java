@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.junit.Test;
@@ -83,6 +84,7 @@ public class ShardingSpringBootStarterTest {
     
     private void assertShardingConfigurationTables() {
         assertThat(shardingRuleConfiguration.getTables().size(), is(2));
+        assertThat(shardingRuleConfiguration.getAutoTables().size(), is(1));
         List<ShardingTableRuleConfiguration> shardingTableRuleConfigurationList = Lists.newArrayList(shardingRuleConfiguration.getTables());
         assertThat(shardingTableRuleConfigurationList.get(0).getLogicTable(), is("t_order"));
         assertThat(shardingTableRuleConfigurationList.get(0).getActualDataNodes(), is("ds_$->{0..1}.t_order_$->{0..1}"));
@@ -98,6 +100,12 @@ public class ShardingSpringBootStarterTest {
         assertThat(shardingTableRuleConfigurationList.get(1).getTableShardingStrategy().getShardingAlgorithmName(), is("orderItemTableShardingAlgorithm"));
         assertThat(shardingTableRuleConfigurationList.get(1).getKeyGenerateStrategy().getColumn(), is("order_item_id"));
         assertThat(shardingTableRuleConfigurationList.get(1).getKeyGenerateStrategy().getKeyGeneratorName(), is("keyGenerator"));
+        List<ShardingAutoTableRuleConfiguration> autoShardingTableRuleConfigurationList = Lists.newArrayList(shardingRuleConfiguration.getAutoTables());
+        assertThat(autoShardingTableRuleConfigurationList.get(0).getLogicTable(), is("t_order_auto"));
+        assertThat(autoShardingTableRuleConfigurationList.get(0).getActualDataSources(), is("ds0, ds1"));
+        assertThat(autoShardingTableRuleConfigurationList.get(0).getShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
+        assertThat(((StandardShardingStrategyConfiguration) autoShardingTableRuleConfigurationList.get(0).getShardingStrategy()).getShardingColumn(), is("order_id"));
+        assertThat(autoShardingTableRuleConfigurationList.get(0).getShardingStrategy().getShardingAlgorithmName(), is("mod"));
     }
     
     private void assertShardingConfigurationBindingTableGroups() {
