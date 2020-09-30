@@ -56,37 +56,39 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public void decorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
-                         final ShardingSphereMetaData metaData, final ShardingRule shardingRule, final ConfigurationProperties props) {
+    public RouteContext createRouteContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
+                                           final ShardingSphereMetaData metaData, final ShardingRule rule, final ConfigurationProperties props) {
+        RouteContext result = new RouteContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         Optional<ShardingStatementValidator> shardingStatementValidator = ShardingStatementValidatorFactory.newInstance(sqlStatement);
-        shardingStatementValidator.ifPresent(validator -> validator.preValidate(shardingRule, sqlStatementContext, parameters, metaData));
-        ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData(), shardingRule);
-        boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatementContext, shardingRule);
+        shardingStatementValidator.ifPresent(validator -> validator.preValidate(rule, sqlStatementContext, parameters, metaData));
+        ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData(), rule);
+        boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatementContext, rule);
         if (sqlStatement instanceof DMLStatement && needMergeShardingValues) {
-            checkSubqueryShardingValues(sqlStatementContext, shardingRule, shardingConditions);
+            checkSubqueryShardingValues(sqlStatementContext, rule, shardingConditions);
             mergeShardingConditions(shardingConditions);
         }
-        ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props).route(routeContext, shardingRule);
-        shardingStatementValidator.ifPresent(validator -> validator.postValidate(sqlStatement, routeContext));
+        ShardingRouteEngineFactory.newInstance(rule, metaData, sqlStatementContext, shardingConditions, props).route(result, rule);
+        shardingStatementValidator.ifPresent(validator -> validator.postValidate(sqlStatement, result));
+        return result;
     }
     
     private ShardingConditions getShardingConditions(final List<Object> parameters, 
-                                                     final SQLStatementContext<?> sqlStatementContext, final SchemaMetaData schemaMetaData, final ShardingRule shardingRule) {
+                                                     final SQLStatementContext<?> sqlStatementContext, final SchemaMetaData schemaMetaData, final ShardingRule rule) {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
             if (sqlStatementContext instanceof InsertStatementContext) {
-                return new ShardingConditions(new InsertClauseShardingConditionEngine(shardingRule, schemaMetaData).createShardingConditions((InsertStatementContext) sqlStatementContext, parameters));
+                return new ShardingConditions(new InsertClauseShardingConditionEngine(rule, schemaMetaData).createShardingConditions((InsertStatementContext) sqlStatementContext, parameters));
             }
-            return new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, schemaMetaData).createShardingConditions(sqlStatementContext, parameters));
+            return new ShardingConditions(new WhereClauseShardingConditionEngine(rule, schemaMetaData).createShardingConditions(sqlStatementContext, parameters));
         }
         return new ShardingConditions(Collections.emptyList());
     }
     
-    private boolean isNeedMergeShardingValues(final SQLStatementContext<?> sqlStatementContext, final ShardingRule shardingRule) {
+    private boolean isNeedMergeShardingValues(final SQLStatementContext<?> sqlStatementContext, final ShardingRule rule) {
         boolean selectContainsSubquery = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsSubquery();
         boolean insertSelectContainsSubquery = sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()
                 && ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext().isContainsSubquery();
-        return (selectContainsSubquery || insertSelectContainsSubquery) && !shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty();
+        return (selectContainsSubquery || insertSelectContainsSubquery) && !rule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty();
     }
     
     private void checkSubqueryShardingValues(final SQLStatementContext<?> sqlStatementContext, final ShardingRule shardingRule, final ShardingConditions shardingConditions) {
@@ -151,6 +153,12 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
             shardingConditions.getConditions().clear();
             shardingConditions.getConditions().add(shardingCondition);
         }
+    }
+    
+    @Override
+    public void decorateRouteContext(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, 
+                                     final List<Object> parameters, final ShardingSphereMetaData metaData, final ShardingRule rule, final ConfigurationProperties props) {
+        // TODO
     }
     
     @Override
