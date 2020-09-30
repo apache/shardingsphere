@@ -34,6 +34,18 @@ import java.util.List;
 public interface SQLRouter<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
+     * Create route context.
+     *
+     * @param sqlStatementContext SQL statement context
+     * @param parameters SQL parameters
+     * @param metaData meta data of ShardingSphere
+     * @param rule rule
+     * @param props configuration properties
+     * @return route context
+     */
+    RouteContext createRouteContext(SQLStatementContext<?> sqlStatementContext, List<Object> parameters, ShardingSphereMetaData metaData, T rule, ConfigurationProperties props);
+    
+    /**
      * Decorate route context.
      * 
      * @param routeContext route context
@@ -43,5 +55,5 @@ public interface SQLRouter<T extends ShardingSphereRule> extends OrderedSPI<T> {
      * @param rule rule
      * @param props configuration properties
      */
-    void decorate(RouteContext routeContext, SQLStatementContext<?> sqlStatementContext, List<Object> parameters, ShardingSphereMetaData metaData, T rule, ConfigurationProperties props);
+    void decorateRouteContext(RouteContext routeContext, SQLStatementContext<?> sqlStatementContext, List<Object> parameters, ShardingSphereMetaData metaData, T rule, ConfigurationProperties props);
 }
