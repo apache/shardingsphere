@@ -46,7 +46,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SQLShadowRouterTest {
+public final class ShadowSQLRouterTest {
     
     private static final String SHADOW_COLUMN = "is_shadow";
     
@@ -54,13 +54,13 @@ public final class SQLShadowRouterTest {
     
     private static final String SHADOW_DATASOURCE = "shadow_ds";
     
-    private SQLShadowRouter sqlRouter;
+    private ShadowSQLRouter sqlRouter;
     
     private ShadowRule shadowRule;
     
     @Before
     public void setUp() {
-        sqlRouter = new SQLShadowRouter();
+        sqlRouter = new ShadowSQLRouter();
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration(SHADOW_COLUMN, Collections.singletonList(ACTUAL_DATASOURCE), Collections.singletonList(SHADOW_DATASOURCE));
         shadowRule = new ShadowRule(shadowRuleConfiguration);
     }

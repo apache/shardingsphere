@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shadow.route.engine.SQLShadowRouter
+org.apache.shardingsphere.shadow.route.engine.ShadowSQLRouter
