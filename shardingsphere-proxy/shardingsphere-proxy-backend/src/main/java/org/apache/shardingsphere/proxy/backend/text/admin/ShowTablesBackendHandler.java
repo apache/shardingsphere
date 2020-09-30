@@ -57,7 +57,7 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
         if (null == schemaContext) {
             throw new NoDatabaseSelectedException();
         }
-        if (!schemaContext.isComplete()) {
+        if (!schemaContext.getSchema().isComplete()) {
             return getDefaultQueryResponse(backendConnection.getSchemaName());
         }
         // TODO Get all tables from meta data.

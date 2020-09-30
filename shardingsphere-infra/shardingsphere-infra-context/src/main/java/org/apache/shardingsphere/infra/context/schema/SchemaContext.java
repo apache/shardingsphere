@@ -31,20 +31,4 @@ public final class SchemaContext {
     private final ShardingSphereSchema schema;
     
     private final RuntimeContext runtimeContext;
-    
-    /**
-     * Is complete schema context.
-     *
-     * @return is complete schema context or not
-     */
-    public boolean isComplete() {
-        return !schema.getRules().isEmpty() && !schema.getDataSources().isEmpty();
-    }
-    
-    /**
-     * Close executorKernel in runtimeContext.
-     */
-    public void close() {
-        runtimeContext.getExecutorKernel().close();
-    }
 }

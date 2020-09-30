@@ -68,7 +68,7 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
         if (null == schemaContext) {
             throw new NoDatabaseSelectedException();
         }
-        if (!schemaContext.isComplete()) {
+        if (!schemaContext.getSchema().isComplete()) {
             throw new RuleNotExistsException();
         }
         LogicSQLContext logicSQLContext = createLogicSQLContext(schemaContext, explainStatement.get());

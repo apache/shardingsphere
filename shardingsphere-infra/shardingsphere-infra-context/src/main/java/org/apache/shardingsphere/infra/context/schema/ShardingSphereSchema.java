@@ -46,6 +46,15 @@ public final class ShardingSphereSchema {
     private final ShardingSphereMetaData metaData;
     
     /**
+     * Is complete schema context.
+     *
+     * @return is complete schema context or not
+     */
+    public boolean isComplete() {
+        return !rules.isEmpty() && !dataSources.isEmpty();
+    }
+    
+    /**
      * Close data sources.
      * @param dataSources data sources
      * @throws SQLException exception

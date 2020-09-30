@@ -63,7 +63,7 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
         if (null == schemaContext) {
             throw new NoDatabaseSelectedException();
         }
-        if (!schemaContext.isComplete()) {
+        if (!schemaContext.getSchema().isComplete()) {
             throw new RuleNotExistsException();
         }
         Collection<String> tableNames = schemaContext.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames();

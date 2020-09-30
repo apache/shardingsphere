@@ -69,7 +69,7 @@ public final class ShowTablesBackendHandlerTest {
         Map<String, SchemaContext> result = new HashMap<>(10);
         for (int i = 0; i < 10; i++) {
             SchemaContext context = mock(SchemaContext.class);
-            when(context.isComplete()).thenReturn(false);
+            when(context.getSchema().isComplete()).thenReturn(false);
             result.put(String.format(SCHEMA_PATTERN, i), context);
         }
         return result;

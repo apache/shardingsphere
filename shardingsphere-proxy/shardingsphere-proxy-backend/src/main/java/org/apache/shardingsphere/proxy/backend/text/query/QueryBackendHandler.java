@@ -54,7 +54,7 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
         if (null == schemaContext) {
             throw new NoDatabaseSelectedException();
         }
-        if (!schemaContext.isComplete()) {
+        if (!schemaContext.getSchema().isComplete()) {
             throw new RuleNotExistsException();
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);

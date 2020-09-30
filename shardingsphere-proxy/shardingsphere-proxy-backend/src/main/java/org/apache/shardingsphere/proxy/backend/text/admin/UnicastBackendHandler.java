@@ -56,7 +56,7 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
             if (schemaContexts.isEmpty()) {
                 throw new NoDatabaseSelectedException();
             }
-            if (!schemaContexts.values().iterator().next().isComplete()) {
+            if (!schemaContexts.values().iterator().next().getSchema().isComplete()) {
                 throw new RuleNotExistsException();
             }
             // TODO we should remove set default ShardingSphere schema after parser can recognize all DAL broadcast SQL.
