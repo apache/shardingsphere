@@ -22,10 +22,6 @@ package org.apache.shardingsphere.scaling.core.exception;
  */
 public final class DataCheckFailException extends RuntimeException {
     
-    public DataCheckFailException(final String message) {
-        super(message);
-    }
-    
     public DataCheckFailException(final String message, final Throwable cause) {
         super(message, cause);
     }

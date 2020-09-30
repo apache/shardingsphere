@@ -43,6 +43,14 @@ public final class JDBCDataSourceConfiguration implements DataSourceConfiguratio
         this.jdbcUrl = jdbcUrl;
         this.username = username;
         this.password = password;
-        databaseType = DatabaseTypes.getDatabaseTypeByURL(jdbcUrl);
+        databaseType = getDatabaseType();
+    }
+    
+    @Override
+    public DatabaseType getDatabaseType() {
+        if (null == databaseType) {
+            databaseType = DatabaseTypes.getDatabaseTypeByURL(jdbcUrl);
+        }
+        return databaseType;
     }
 }

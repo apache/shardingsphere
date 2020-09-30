@@ -45,10 +45,18 @@ public final class PrimaryReplicaReplicationRouteDecorator implements RouteDecor
     public void decorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters,
                          final ShardingSphereMetaData metaData, final PrimaryReplicaReplicationRule rule, final ConfigurationProperties props) {
         if (routeContext.getRouteUnits().isEmpty()) {
-            String dataSourceName = new PrimaryReplicaReplicationDataSourceRouter(rule.getSingleDataSourceRule()).route(sqlStatementContext.getSqlStatement());
-            routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
-            return;
+            firstDecorate(routeContext, sqlStatementContext, rule);
+        } else {
+            continueDecorate(routeContext, sqlStatementContext, rule);
         }
+    }
+    
+    private void firstDecorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final PrimaryReplicaReplicationRule rule) {
+        String dataSourceName = new PrimaryReplicaReplicationDataSourceRouter(rule.getSingleDataSourceRule()).route(sqlStatementContext.getSqlStatement());
+        routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
+    }
+    
+    private void continueDecorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final PrimaryReplicaReplicationRule rule) {
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteUnits()) {

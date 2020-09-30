@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.utils;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.AccessLevel;
@@ -45,6 +46,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -61,18 +63,33 @@ public final class SyncConfigurationUtil {
      */
     public static Collection<SyncConfiguration> toSyncConfigurations(final ScalingConfiguration scalingConfiguration) {
         Collection<SyncConfiguration> result = new LinkedList<>();
-        ShardingSphereJDBCConfiguration shardingSphereJDBCConfiguration = (ShardingSphereJDBCConfiguration) scalingConfiguration.getRuleConfiguration().getSource().toTypedDataSourceConfiguration();
-        Map<String, DataSourceConfiguration> sourceDataSource = ConfigurationYamlConverter.loadDataSourceConfigurations(shardingSphereJDBCConfiguration.getDataSource());
-        ShardingRuleConfiguration sourceRule = ConfigurationYamlConverter.loadShardingRuleConfiguration(shardingSphereJDBCConfiguration.getRule());
+        ShardingSphereJDBCConfiguration sourceConfiguration = getSourceConfiguration(scalingConfiguration);
+        Map<String, DataSourceConfiguration> sourceDataSource = ConfigurationYamlConverter.loadDataSourceConfigurations(sourceConfiguration.getDataSource());
+        ShardingRuleConfiguration sourceRule = ConfigurationYamlConverter.loadShardingRuleConfiguration(sourceConfiguration.getRule());
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDataSource.keySet());
+        Optional<ShardingRuleConfiguration> targetRule = getTargetRuleConfiguration(scalingConfiguration);
         filterByShardingDataSourceTables(dataSourceTableNameMap, scalingConfiguration.getJobConfiguration());
         for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
             DumperConfiguration dumperConfiguration = createDumperConfiguration(entry.getKey(), sourceDataSource.get(entry.getKey()), entry.getValue());
-            ImporterConfiguration importerConfiguration = createImporterConfiguration(scalingConfiguration, sourceRule);
+            ImporterConfiguration importerConfiguration = createImporterConfiguration(scalingConfiguration, targetRule.orElse(sourceRule));
             importerConfiguration.setRetryTimes(scalingConfiguration.getJobConfiguration().getRetryTimes());
             result.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), dumperConfiguration, importerConfiguration));
         }
         return result;
+    }
+    
+    private static ShardingSphereJDBCConfiguration getSourceConfiguration(final ScalingConfiguration scalingConfiguration) {
+        org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration dataSourceConfiguration = scalingConfiguration.getRuleConfiguration().getSource().toTypedDataSourceConfiguration();
+        Preconditions.checkArgument(dataSourceConfiguration instanceof ShardingSphereJDBCConfiguration, "Only support ShardingSphere source data source.");
+        return (ShardingSphereJDBCConfiguration) dataSourceConfiguration;
+    }
+    
+    private static Optional<ShardingRuleConfiguration> getTargetRuleConfiguration(final ScalingConfiguration scalingConfiguration) {
+        org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration dataSourceConfiguration = scalingConfiguration.getRuleConfiguration().getTarget().toTypedDataSourceConfiguration();
+        if (dataSourceConfiguration instanceof ShardingSphereJDBCConfiguration) {
+            return Optional.of(ConfigurationYamlConverter.loadShardingRuleConfiguration(((ShardingSphereJDBCConfiguration) dataSourceConfiguration).getRule()));
+        }
+        return Optional.empty();
     }
     
     private static void filterByShardingDataSourceTables(final Map<String, Map<String, String>> dataSourceTableNameMap, final JobConfiguration jobConfiguration) {
