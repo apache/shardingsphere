@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route;
+package org.apache.shardingsphere.infra.route.engine;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DataNodeRouterTest {
+public final class SQLRouteEngineTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData metaData;
@@ -63,9 +63,9 @@ public final class DataNodeRouterTest {
     
     @Test
     public void assertRouteSuccess() {
-        DataNodeRouter router = new DataNodeRouter(metaData, props, Collections.singletonList(new RouteRuleFixture()));
-        setSPIRoutingHook(router);
-        RouteContext actual = router.route(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
+        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(metaData, props, Collections.singletonList(new RouteRuleFixture()));
+        setSPIRoutingHook(sqlRouteEngine);
+        RouteContext actual = sqlRouteEngine.route(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("ds"));
@@ -77,10 +77,10 @@ public final class DataNodeRouterTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertRouteFailure() {
-        DataNodeRouter router = new DataNodeRouter(metaData, props, Collections.singletonList(new RouteFailureRuleFixture()));
-        setSPIRoutingHook(router);
+        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(metaData, props, Collections.singletonList(new RouteFailureRuleFixture()));
+        setSPIRoutingHook(sqlRouteEngine);
         try {
-            router.route(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
+            sqlRouteEngine.route(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
         } catch (final UnsupportedOperationException ex) {
             verify(routingHook).start("SELECT 1");
             verify(routingHook).finishFailure(ex);
@@ -89,9 +89,9 @@ public final class DataNodeRouterTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setSPIRoutingHook(final DataNodeRouter router) {
-        Field field = DataNodeRouter.class.getDeclaredField("routingHook");
+    private void setSPIRoutingHook(final SQLRouteEngine sqlRouteEngine) {
+        Field field = SQLRouteEngine.class.getDeclaredField("routingHook");
         field.setAccessible(true);
-        field.set(router, routingHook);
+        field.set(sqlRouteEngine, routingHook);
     }
 }

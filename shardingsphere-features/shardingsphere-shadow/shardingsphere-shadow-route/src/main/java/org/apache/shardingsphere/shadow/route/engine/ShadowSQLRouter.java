@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
+import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.route.engine.judge.ShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.route.engine.judge.impl.PreparedShadowDataSourceJudgeEngine;
@@ -37,50 +37,46 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Route decorator for shadow.
+ * Shadow SQL router.
  */
-public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
+public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
     
     @Override
-    public void decorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters,
-                         final ShardingSphereMetaData metaData, final ShadowRule shadowRule, final ConfigurationProperties props) {
-        if (routeContext.getRouteUnits().isEmpty()) {
-            decorateRouteContext(routeContext, sqlStatementContext, parameters, shadowRule);
-            return;
-        }
-        decorateRouteContextWithRouteUnits(routeContext, sqlStatementContext, parameters, shadowRule);
-    }
-    
-    private void decorateRouteContext(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final ShadowRule shadowRule) {
+    public RouteContext createRouteContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
+                                           final ShardingSphereMetaData metaData, final ShadowRule rule, final ConfigurationProperties props) {
+        RouteContext result = new RouteContext();
         if (!(sqlStatementContext.getSqlStatement() instanceof DMLStatement)) {
-            shadowRule.getShadowMappings().forEach((key, value) -> {
-                routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(key, key), Collections.emptyList()));
-                routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(value, value), Collections.emptyList()));
+            rule.getShadowMappings().forEach((key, value) -> {
+                result.getRouteUnits().add(new RouteUnit(new RouteMapper(key, key), Collections.emptyList()));
+                result.getRouteUnits().add(new RouteUnit(new RouteMapper(value, value), Collections.emptyList()));
             });
-            return;
+            return result;
         }
-        if (isShadow(sqlStatementContext, parameters, shadowRule)) {
-            shadowRule.getShadowMappings().values().forEach(each -> routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
+        if (isShadow(sqlStatementContext, parameters, rule)) {
+            rule.getShadowMappings().values().forEach(each -> result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
         } else {
-            shadowRule.getShadowMappings().keySet().forEach(each -> routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
+            rule.getShadowMappings().keySet().forEach(each -> result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
         }
+        return result;
     }
     
-    private void decorateRouteContextWithRouteUnits(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final ShadowRule shadowRule) {
+    @Override
+    public void decorateRouteContext(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
+                                     final ShardingSphereMetaData metaData, final ShadowRule rule, final ConfigurationProperties props) {
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         if (!(sqlStatementContext.getSqlStatement() instanceof DMLStatement)) {
             for (RouteUnit each : routeContext.getRouteUnits()) {
-                String shadowDataSourceName = shadowRule.getShadowMappings().get(each.getDataSourceMapper().getActualName());
+                String shadowDataSourceName = rule.getShadowMappings().get(each.getDataSourceMapper().getActualName());
                 toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), shadowDataSourceName), each.getTableMappers()));
             }
             routeContext.getRouteUnits().addAll(toBeAdded);
             return;
         }
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
-        if (isShadow(sqlStatementContext, parameters, shadowRule)) {
+        if (isShadow(sqlStatementContext, parameters, rule)) {
             for (RouteUnit each : routeContext.getRouteUnits()) {
                 toBeRemoved.add(each);
-                String shadowDataSourceName = shadowRule.getShadowMappings().get(each.getDataSourceMapper().getActualName());
+                String shadowDataSourceName = rule.getShadowMappings().get(each.getDataSourceMapper().getActualName());
                 toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), shadowDataSourceName), each.getTableMappers()));
             }
         }
@@ -88,9 +84,9 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
         routeContext.getRouteUnits().addAll(toBeAdded);
     }
     
-    private boolean isShadow(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final ShadowRule shadowRule) {
-        ShadowDataSourceJudgeEngine shadowDataSourceRouter = parameters.isEmpty() ? new SimpleShadowDataSourceJudgeEngine(shadowRule, sqlStatementContext)
-                : new PreparedShadowDataSourceJudgeEngine(shadowRule, sqlStatementContext, parameters);
+    private boolean isShadow(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final ShadowRule rule) {
+        ShadowDataSourceJudgeEngine shadowDataSourceRouter = parameters.isEmpty()
+                ? new SimpleShadowDataSourceJudgeEngine(rule, sqlStatementContext) : new PreparedShadowDataSourceJudgeEngine(rule, sqlStatementContext, parameters);
         return shadowDataSourceRouter.isShadow();
     }
     

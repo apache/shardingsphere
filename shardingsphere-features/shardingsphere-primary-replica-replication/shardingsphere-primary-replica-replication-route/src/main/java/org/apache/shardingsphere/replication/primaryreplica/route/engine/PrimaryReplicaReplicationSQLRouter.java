@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
+import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.replication.primaryreplica.constant.PrimaryReplicaReplicationOrder;
 import org.apache.shardingsphere.replication.primaryreplica.route.engine.impl.PrimaryReplicaReplicationDataSourceRouter;
 import org.apache.shardingsphere.replication.primaryreplica.rule.PrimaryReplicaReplicationDataSourceRule;
@@ -37,26 +37,22 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Route decorator for primary-replica replication.
+ * Primary-replica replication SQL router.
  */
-public final class PrimaryReplicaReplicationRouteDecorator implements RouteDecorator<PrimaryReplicaReplicationRule> {
+public final class PrimaryReplicaReplicationSQLRouter implements SQLRouter<PrimaryReplicaReplicationRule> {
     
     @Override
-    public void decorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters,
-                         final ShardingSphereMetaData metaData, final PrimaryReplicaReplicationRule rule, final ConfigurationProperties props) {
-        if (routeContext.getRouteUnits().isEmpty()) {
-            firstDecorate(routeContext, sqlStatementContext, rule);
-        } else {
-            continueDecorate(routeContext, sqlStatementContext, rule);
-        }
-    }
-    
-    private void firstDecorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final PrimaryReplicaReplicationRule rule) {
+    public RouteContext createRouteContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
+                                           final ShardingSphereMetaData metaData, final PrimaryReplicaReplicationRule rule, final ConfigurationProperties props) {
+        RouteContext result = new RouteContext();
         String dataSourceName = new PrimaryReplicaReplicationDataSourceRouter(rule.getSingleDataSourceRule()).route(sqlStatementContext.getSqlStatement());
-        routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
+        return result;
     }
     
-    private void continueDecorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final PrimaryReplicaReplicationRule rule) {
+    @Override
+    public void decorateRouteContext(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
+                                     final ShardingSphereMetaData metaData, final PrimaryReplicaReplicationRule rule, final ConfigurationProperties props) {
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteUnits()) {

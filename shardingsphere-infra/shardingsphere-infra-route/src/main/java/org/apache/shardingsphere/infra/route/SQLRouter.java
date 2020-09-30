@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.decorator;
+package org.apache.shardingsphere.infra.route;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -27,11 +27,23 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 import java.util.List;
 
 /**
- * Route decorator.
+ * SQL Router.
  * 
  * @param <T> type of rule
  */
-public interface RouteDecorator<T extends ShardingSphereRule> extends OrderedSPI<T> {
+public interface SQLRouter<T extends ShardingSphereRule> extends OrderedSPI<T> {
+    
+    /**
+     * Create route context.
+     *
+     * @param sqlStatementContext SQL statement context
+     * @param parameters SQL parameters
+     * @param metaData meta data of ShardingSphere
+     * @param rule rule
+     * @param props configuration properties
+     * @return route context
+     */
+    RouteContext createRouteContext(SQLStatementContext<?> sqlStatementContext, List<Object> parameters, ShardingSphereMetaData metaData, T rule, ConfigurationProperties props);
     
     /**
      * Decorate route context.
@@ -43,5 +55,5 @@ public interface RouteDecorator<T extends ShardingSphereRule> extends OrderedSPI
      * @param rule rule
      * @param props configuration properties
      */
-    void decorate(RouteContext routeContext, SQLStatementContext<?> sqlStatementContext, List<Object> parameters, ShardingSphereMetaData metaData, T rule, ConfigurationProperties props);
+    void decorateRouteContext(RouteContext routeContext, SQLStatementContext<?> sqlStatementContext, List<Object> parameters, ShardingSphereMetaData metaData, T rule, ConfigurationProperties props);
 }

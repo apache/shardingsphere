@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.replication.primaryreplica.route.engine.PrimaryReplicaReplicationRouteDecorator
+org.apache.shardingsphere.infra.route.fixture.router.SQLRouterFixture
+org.apache.shardingsphere.infra.route.fixture.router.SQLRouterFailureFixture

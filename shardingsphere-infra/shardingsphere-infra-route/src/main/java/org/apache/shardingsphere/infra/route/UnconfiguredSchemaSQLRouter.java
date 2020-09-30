@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.decorator;
+package org.apache.shardingsphere.infra.route;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import java.util.Collections;
 
 /**
- * Unconfigured schema route decorator.
+ * Unconfigured schema SQL router.
  */
-public final class UnconfiguredSchemaRouteDecorator {
+public final class UnconfiguredSchemaSQLRouter {
     
     /**
      * Decorate route context.

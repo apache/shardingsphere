@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.route.fixture.decorator.RouteDecoratorFixture
-org.apache.shardingsphere.infra.route.fixture.decorator.RouteFailureDecoratorFixture
+org.apache.shardingsphere.shadow.route.engine.ShadowSQLRouter

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator
+org.apache.shardingsphere.sharding.route.engine.ShardingSQLRouter

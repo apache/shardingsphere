@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
-import org.apache.shardingsphere.infra.route.DataNodeRouter;
+import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -56,7 +56,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         StandardSQLParserEngine standardSqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
                 metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData(), parameters, standardSqlParserEngine.parse(sql, false));
-        RouteContext result = new DataNodeRouter(metaData, props, Collections.singletonList(shardingRule)).route(sqlStatementContext, sql, parameters);
+        RouteContext result = new SQLRouteEngine(metaData, props, Collections.singletonList(shardingRule)).route(sqlStatementContext, sql, parameters);
         assertThat(result.getRouteUnits().size(), is(1));
         return result;
     }

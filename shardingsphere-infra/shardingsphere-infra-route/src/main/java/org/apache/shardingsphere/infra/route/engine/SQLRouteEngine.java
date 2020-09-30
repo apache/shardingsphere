@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route;
+package org.apache.shardingsphere.infra.route.engine;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.route.SQLRouter;
+import org.apache.shardingsphere.infra.route.UnconfiguredSchemaSQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
-import org.apache.shardingsphere.infra.route.decorator.UnconfiguredSchemaRouteDecorator;
 import org.apache.shardingsphere.infra.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -34,12 +34,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Data node router.
+ * SQL route engine.
  */
-public final class DataNodeRouter {
+public final class SQLRouteEngine {
     
     static {
-        ShardingSphereServiceLoader.register(RouteDecorator.class);
+        ShardingSphereServiceLoader.register(SQLRouter.class);
     }
     
     private final ShardingSphereMetaData metaData;
@@ -47,14 +47,14 @@ public final class DataNodeRouter {
     private final ConfigurationProperties props;
     
     @SuppressWarnings("rawtypes")
-    private final Map<ShardingSphereRule, RouteDecorator> decorators;
+    private final Map<ShardingSphereRule, SQLRouter> decorators;
     
     private final SPIRoutingHook routingHook;
     
-    public DataNodeRouter(final ShardingSphereMetaData metaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
+    public SQLRouteEngine(final ShardingSphereMetaData metaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
         this.metaData = metaData;
         this.props = props;
-        decorators = OrderedSPIRegistry.getRegisteredServices(rules, RouteDecorator.class);
+        decorators = OrderedSPIRegistry.getRegisteredServices(rules, SQLRouter.class);
         routingHook = new SPIRoutingHook();
     }
     
@@ -82,11 +82,18 @@ public final class DataNodeRouter {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private RouteContext doRoute(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
-        RouteContext result = new RouteContext();
-        for (Entry<ShardingSphereRule, RouteDecorator> entry : decorators.entrySet()) {
-            entry.getValue().decorate(result, sqlStatementContext, parameters, metaData, entry.getKey(), props);
+        RouteContext result = null;
+        for (Entry<ShardingSphereRule, SQLRouter> entry : decorators.entrySet()) {
+            if (null == result) {
+                result = entry.getValue().createRouteContext(sqlStatementContext, parameters, metaData, entry.getKey(), props);
+            } else {
+                entry.getValue().decorateRouteContext(result, sqlStatementContext, parameters, metaData, entry.getKey(), props);
+            }
         }
-        new UnconfiguredSchemaRouteDecorator().decorate(result, sqlStatementContext, metaData);
+        if (null == result) {
+            result = new RouteContext();
+        }
+        new UnconfiguredSchemaSQLRouter().decorate(result, sqlStatementContext, metaData);
         return result;
     }
 }

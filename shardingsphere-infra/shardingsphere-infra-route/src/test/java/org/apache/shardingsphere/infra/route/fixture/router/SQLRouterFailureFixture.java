@@ -15,22 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.fixture.decorator;
+package org.apache.shardingsphere.infra.route.fixture.router;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
+import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.fixture.rule.RouteFailureRuleFixture;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import java.util.List;
 
-public final class RouteFailureDecoratorFixture implements RouteDecorator<RouteFailureRuleFixture> {
+public final class SQLRouterFailureFixture implements SQLRouter<RouteFailureRuleFixture> {
     
     @Override
-    public void decorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters,
-                         final ShardingSphereMetaData metaData, final RouteFailureRuleFixture rule, final ConfigurationProperties props) {
+    public RouteContext createRouteContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
+                                           final ShardingSphereMetaData metaData, final RouteFailureRuleFixture rule, final ConfigurationProperties props) {
+        throw new UnsupportedOperationException("Route failure.");
+    }
+    
+    @Override
+    public void decorateRouteContext(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
+                                     final ShardingSphereMetaData metaData, final RouteFailureRuleFixture rule, final ConfigurationProperties props) {
         throw new UnsupportedOperationException("Route failure.");
     }
     
