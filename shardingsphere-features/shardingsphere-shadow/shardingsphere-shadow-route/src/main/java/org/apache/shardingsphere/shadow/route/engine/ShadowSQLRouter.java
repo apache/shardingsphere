@@ -42,7 +42,8 @@ import java.util.List;
 public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
     
     @Override
-    public RouteContext createRouteContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final ShardingSphereMetaData metaData, final ShadowRule rule, final ConfigurationProperties props) {
+    public RouteContext createRouteContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
+                                           final ShardingSphereMetaData metaData, final ShadowRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
         if (!(sqlStatementContext.getSqlStatement() instanceof DMLStatement)) {
             rule.getShadowMappings().forEach((key, value) -> {
