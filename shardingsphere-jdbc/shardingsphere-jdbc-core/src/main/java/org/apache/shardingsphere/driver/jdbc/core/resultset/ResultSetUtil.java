@@ -25,6 +25,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -41,7 +43,7 @@ public final class ResultSetUtil {
     
     /**
      * Convert value via expected class type.
-     * 
+     *
      * @param value original value
      * @param convertType expected class type
      * @return converted value
@@ -49,7 +51,7 @@ public final class ResultSetUtil {
     public static Object convertValue(final Object value, final Class<?> convertType) {
         if (null == value) {
             return convertNullValue(convertType);
-        } 
+        }
         if (value.getClass() == convertType) {
             return value;
         }
@@ -61,6 +63,9 @@ public final class ResultSetUtil {
         }
         if (LocalTime.class.equals(convertType)) {
             return convertLocalTimeValue(value);
+        }
+        if (URL.class.equals(convertType)) {
+            return convertURL(value);
         }
         if (value instanceof Number) {
             return convertNumberValue(value, convertType);
@@ -76,6 +81,48 @@ public final class ResultSetUtil {
         } else {
             return value;
         }
+    }
+    
+    private static Object convertURL(final Object value) {
+        String val = value.toString();
+        try {
+            return new URL(val);
+        } catch (final MalformedURLException ex) {
+            throw new ShardingSphereException("Unsupported Date type: URL value %s", value);
+        }
+    }
+    
+    /**
+     * Convert object to BigDecimal.
+     *
+     * @param value current db object
+     * @param needScale need scale
+     * @param scale scale size
+     * @return big decimal
+     */
+    public static Object convertBigDecimalValue(final Object value, final boolean needScale, final int scale) {
+        if (null == value) {
+            return convertNullValue(BigDecimal.class);
+        }
+        if (value.getClass() == BigDecimal.class) {
+            return adjustBigDecimalResult((BigDecimal) value, needScale, scale);
+        }
+        if (value instanceof Number || value instanceof String) {
+            BigDecimal bigDecimal = new BigDecimal(value.toString());
+            return adjustBigDecimalResult(bigDecimal, needScale, scale);
+        }
+        throw new ShardingSphereException("Unsupported Date type: BigDecimal value %s", value);
+    }
+  
+    private static BigDecimal adjustBigDecimalResult(final BigDecimal value, final boolean needScale, final int scale) {
+        if (needScale) {
+            try {
+                return value.setScale(scale);
+            } catch (final ArithmeticException ex) {
+                return value.setScale(scale, BigDecimal.ROUND_HALF_UP);
+            }
+        }
+        return value;
     }
 
     private static Object convertLocalDateTimeValue(final Object value) {

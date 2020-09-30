@@ -42,26 +42,6 @@ public final class UnSupportedDatabaseMetaDataResultSetTest {
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetBigDecimalWithIndex() throws SQLException {
-        databaseMetaDataResultSet.getBigDecimal(1);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetBigDecimalWithLabel() throws SQLException {
-        databaseMetaDataResultSet.getBigDecimal("");
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetBigDecimalWithIndexAndScale() throws SQLException {
-        databaseMetaDataResultSet.getBigDecimal(1, 1);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetBigDecimalWithLabelAndScale() throws SQLException {
-        databaseMetaDataResultSet.getBigDecimal("", 1);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetAsciiStreamWithIndex() throws SQLException {
         databaseMetaDataResultSet.getAsciiStream(1);
     }
@@ -164,16 +144,6 @@ public final class UnSupportedDatabaseMetaDataResultSetTest {
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetTimestampWithLabelAndCalendar() throws SQLException {
         databaseMetaDataResultSet.getTimestamp("", null);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetURLWithIndex() throws SQLException {
-        databaseMetaDataResultSet.getURL(1);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetURLWithLabel() throws SQLException {
-        databaseMetaDataResultSet.getURL("");
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)

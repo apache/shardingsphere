@@ -20,10 +20,13 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -31,6 +34,7 @@ import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class ResultSetUtilTest {
@@ -40,7 +44,7 @@ public final class ResultSetUtilTest {
         assertThat(ResultSetUtil.convertValue(object, String.class), is(object.toString()));
         assertThat(ResultSetUtil.convertValue("1", int.class), is("1"));
     }
-
+    
     @Test
     public void assertConvertLocalDateTime() {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -100,13 +104,51 @@ public final class ResultSetUtilTest {
     public void assertConvertByteArrayValueSuccess() {
         byte[] bytesValue = {};
         assertThat(ResultSetUtil.convertValue(bytesValue, byte.class), is(bytesValue));
-        assertThat(ResultSetUtil.convertValue(new byte[] {1}, byte.class), is((byte) 1));
+        assertThat(ResultSetUtil.convertValue(new byte[]{1}, byte.class), is((byte) 1));
         assertThat(ResultSetUtil.convertValue(Shorts.toByteArray((short) 1), short.class), is((short) 1));
         assertThat(ResultSetUtil.convertValue(Ints.toByteArray(1), int.class), is(1));
         assertThat(ResultSetUtil.convertValue(Longs.toByteArray(1L), long.class), is(1L));
         assertThat(ResultSetUtil.convertValue(Longs.toByteArray(1L), double.class), is(1.0d));
         assertThat(ResultSetUtil.convertValue(Longs.toByteArray(1L), float.class), is(1.0f));
         assertThat(ResultSetUtil.convertValue(Longs.toByteArray(1L), BigDecimal.class), is(new BigDecimal("1")));
+    }
+    
+    @SneakyThrows(MalformedURLException.class)
+    @Test
+    public void assertConvertURLValue() {
+        String urlString = "http://apache.org";
+        URL url = (URL) ResultSetUtil.convertValue(urlString, URL.class);
+        assertNotNull(url);
+        assertThat(url, is(new URL(urlString)));
+    }
+    
+    @Test(expected = ShardingSphereException.class)
+    public void assertConvertURLValueError() {
+        String urlString = "no-exist:apache.org";
+        ResultSetUtil.convertValue(urlString, URL.class);
+    }
+    
+    @Test
+    public void assertConvertBigDecimalValue() {
+        BigDecimal bigDecimal = (BigDecimal) ResultSetUtil.convertBigDecimalValue("12", false, 0);
+        assertThat(bigDecimal, is(BigDecimal.valueOf(12)));
+    }
+    
+    @Test
+    public void assertConvertBigDecimalValueNull() {
+        BigDecimal bigDecimal = (BigDecimal) ResultSetUtil.convertBigDecimalValue(null, false, 0);
+        assertNull(bigDecimal);
+    }
+    
+    @Test
+    public void assertConvertBigDecimalValueWithScale() {
+        BigDecimal bigDecimal = (BigDecimal) ResultSetUtil.convertBigDecimalValue("12.243", true, 2);
+        assertThat(bigDecimal, is(BigDecimal.valueOf(12.24)));
+    }
+    
+    @Test(expected = ShardingSphereException.class)
+    public void assertConvertBigDecimalValueError() {
+        ResultSetUtil.convertBigDecimalValue(new Date(), true, 2);
     }
     
     @Test(expected = ShardingSphereException.class)

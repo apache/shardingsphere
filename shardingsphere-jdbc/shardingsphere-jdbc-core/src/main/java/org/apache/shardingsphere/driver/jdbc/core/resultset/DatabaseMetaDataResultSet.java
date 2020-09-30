@@ -22,6 +22,8 @@ import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedData
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
+import java.math.BigDecimal;
+import java.net.URL;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -141,6 +143,32 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     public boolean wasNull() throws SQLException {
         checkClosed();
         return false;
+    }
+    
+    @Override
+    public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
+        return getBigDecimal(columnIndex, true, scale);
+    }
+    
+    @Override
+    public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
+        return getBigDecimal(findColumn(columnLabel), scale);
+    }
+    
+    @Override
+    public BigDecimal getBigDecimal(final int columnIndex) throws SQLException {
+        return getBigDecimal(columnIndex, false, 0);
+    }
+    
+    private BigDecimal getBigDecimal(final int columnIndex, final boolean needScale, final int scale) throws SQLException {
+        checkClosed();
+        checkColumnIndex(columnIndex);
+        return (BigDecimal) ResultSetUtil.convertBigDecimalValue(currentDatabaseMetaDataObject.getObject(columnIndex), needScale, scale);
+    }
+    
+    @Override
+    public BigDecimal getBigDecimal(final String columnLabel) throws SQLException {
+        return getBigDecimal(findColumn(columnLabel));
     }
     
     @Override
@@ -295,6 +323,18 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     @Override
     public Timestamp getTimestamp(final String columnLabel) throws SQLException {
         return getTimestamp(findColumn(columnLabel));
+    }
+    
+    @Override
+    public URL getURL(final int columnIndex) throws SQLException {
+        checkClosed();
+        checkColumnIndex(columnIndex);
+        return (URL) ResultSetUtil.convertValue(currentDatabaseMetaDataObject.getObject(columnIndex), URL.class);
+    }
+    
+    @Override
+    public URL getURL(final String columnLabel) throws SQLException {
+        return getURL(findColumn(columnLabel));
     }
     
     @Override
