@@ -43,18 +43,18 @@ chapter = true
 | ShardingMetaDataDecorator | Used to update sharding meta data    |
 | EncryptMetaDataDecorator  | Used to update encryption meta data  |
 
-## RouteDecorator
+## SQLRouter
 
-| *SPI Name*                | *Description*                                   |
-| ------------------------- | ----------------------------------------------- |
-| RouteDecorator            | Used to process routing results                 |
+| *SPI Name*           | *Description*                                   |
+| -------------------- | ----------------------------------------------- |
+| SQLRouter            | Used to process routing results                 |
 
-| *Implementation Class*                  | *Description*                                               |
-| --------------------------------------- | ----------------------------------------------------------- |
-| ShardingRouteDecorator                  | Used to process sharding routing results                    |
-| PrimaryReplicaReplicationRouteDecorator | Used to process primary-replica replication routing results |
-| ConsensusReplicationRouteDecorator      | Used to process consensus replication routing results       |
-| ShadowRouteDecorator                    | Used to process shadow database routing results             |
+| *Implementation Class*             | *Description*                                               |
+| ---------------------------------- | ----------------------------------------------------------- |
+| ShardingSQLRouter                  | Used to process sharding routing results                    |
+| PrimaryReplicaReplicationSQLRouter | Used to process primary-replica replication routing results |
+| ConsensusReplicationSQLRouter      | Used to process consensus replication routing results       |
+| ShadowRouteSQLRouter               | Used to process shadow database routing results             |
 
 ## SQLRewriteContextDecorator
 
