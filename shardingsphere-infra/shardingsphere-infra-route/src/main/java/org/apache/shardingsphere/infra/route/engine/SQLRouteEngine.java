@@ -82,9 +82,16 @@ public final class SQLRouteEngine {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private RouteContext doRoute(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
-        RouteContext result = new RouteContext();
+        RouteContext result = null;
         for (Entry<ShardingSphereRule, SQLRouter> entry : decorators.entrySet()) {
-            entry.getValue().decorate(result, sqlStatementContext, parameters, metaData, entry.getKey(), props);
+            if (null == result) {
+                result = entry.getValue().createRouteContext(sqlStatementContext, parameters, metaData, entry.getKey(), props);
+            } else {
+                entry.getValue().decorateRouteContext(result, sqlStatementContext, parameters, metaData, entry.getKey(), props);
+            }
+        }
+        if (null == result) {
+            result = new RouteContext();
         }
         new UnconfiguredSchemaSQLRouter().decorate(result, sqlStatementContext, metaData);
         return result;
