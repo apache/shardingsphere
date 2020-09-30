@@ -15,35 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.fixture.decorator;
+package org.apache.shardingsphere.infra.route.fixture.router;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
-import org.apache.shardingsphere.infra.route.fixture.rule.RouteRuleFixture;
+import org.apache.shardingsphere.infra.route.RouteDecorator;
+import org.apache.shardingsphere.infra.route.fixture.rule.RouteFailureRuleFixture;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
-import java.util.Collections;
 import java.util.List;
 
-public final class RouteDecoratorFixture implements RouteDecorator<RouteRuleFixture> {
+public final class RouteFailureDecoratorFixture implements RouteDecorator<RouteFailureRuleFixture> {
     
     @Override
     public void decorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters,
-                         final ShardingSphereMetaData metaData, final RouteRuleFixture rule, final ConfigurationProperties props) {
-        routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.emptyList()));
+                         final ShardingSphereMetaData metaData, final RouteFailureRuleFixture rule, final ConfigurationProperties props) {
+        throw new UnsupportedOperationException("Route failure.");
     }
     
     @Override
     public int getOrder() {
-        return 0;
+        return 1;
     }
     
     @Override
-    public Class<RouteRuleFixture> getTypeClass() {
-        return RouteRuleFixture.class;
+    public Class<RouteFailureRuleFixture> getTypeClass() {
+        return RouteFailureRuleFixture.class;
     }
 }
