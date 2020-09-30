@@ -34,7 +34,9 @@ public final class SQLRouterFixture implements SQLRouter<RouteRuleFixture> {
     @Override
     public RouteContext createRouteContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
                                            final ShardingSphereMetaData metaData, final RouteRuleFixture rule, final ConfigurationProperties props) {
-        return new RouteContext();
+        RouteContext result = new RouteContext();
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.emptyList()));
+        return result;
     }
     
     @Override
