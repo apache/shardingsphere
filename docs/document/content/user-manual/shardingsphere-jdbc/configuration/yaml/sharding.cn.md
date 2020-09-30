@@ -27,6 +27,13 @@ rules:
       keyGenerateStrategy: # 分布式序列策略
         column: # 自增列名称，缺省表示不使用自增主键生成器
         keyGeneratorName: # 分布式序列算法名称
+  autoTables: # 自动分片表规则配置
+    t_order_auto: # 逻辑表名称
+      actualDataSources (?): # 数据源名称
+      shardingStrategy: # 切分策略
+        standard: # 用于单分片键的标准分片场景
+          shardingColumn: # 分片列名称
+          shardingAlgorithmName: # 自动分片算法名称
   bindingTables (+): # 绑定表规则列表
     - <logic_table_name_1, logic_table_name_2, ...> 
   broadcastTables (+): # 广播表规则列表
