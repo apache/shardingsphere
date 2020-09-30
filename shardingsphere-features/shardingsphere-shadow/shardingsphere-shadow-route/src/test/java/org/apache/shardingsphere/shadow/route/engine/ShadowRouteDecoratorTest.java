@@ -54,13 +54,13 @@ public final class ShadowRouteDecoratorTest {
     
     private static final String SHADOW_DATASOURCE = "shadow_ds";
     
-    private ShadowRouteDecorator routeDecorator;
+    private SQLShadowRouter routeDecorator;
     
     private ShadowRule shadowRule;
     
     @Before
     public void setUp() {
-        routeDecorator = new ShadowRouteDecorator();
+        routeDecorator = new SQLShadowRouter();
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration(SHADOW_COLUMN, Collections.singletonList(ACTUAL_DATASOURCE), Collections.singletonList(SHADOW_DATASOURCE));
         shadowRule = new ShadowRule(shadowRuleConfiguration);
     }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.route.RouteDecorator;
+import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.route.engine.judge.ShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.route.engine.judge.impl.PreparedShadowDataSourceJudgeEngine;
@@ -37,9 +37,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Route decorator for shadow.
+ * Shadow SQL router.
  */
-public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
+public final class SQLShadowRouter implements SQLRouter<ShadowRule> {
     
     @Override
     public void decorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters,

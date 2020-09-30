@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.route.RouteDecorator;
+import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.replication.primaryreplica.constant.PrimaryReplicaReplicationOrder;
 import org.apache.shardingsphere.replication.primaryreplica.route.engine.impl.PrimaryReplicaReplicationDataSourceRouter;
 import org.apache.shardingsphere.replication.primaryreplica.rule.PrimaryReplicaReplicationDataSourceRule;
@@ -37,9 +37,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Route decorator for primary-replica replication.
+ * Primary-replica replication SQL router.
  */
-public final class PrimaryReplicaReplicationRouteDecorator implements RouteDecorator<PrimaryReplicaReplicationRule> {
+public final class PrimaryReplicaReplicationSQLRouter implements SQLRouter<PrimaryReplicaReplicationRule> {
     
     @Override
     public void decorate(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters,

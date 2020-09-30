@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shadow.route.engine.ShadowRouteDecorator
+org.apache.shardingsphere.replication.primaryreplica.route.engine.PrimaryReplicaReplicationSQLRouter

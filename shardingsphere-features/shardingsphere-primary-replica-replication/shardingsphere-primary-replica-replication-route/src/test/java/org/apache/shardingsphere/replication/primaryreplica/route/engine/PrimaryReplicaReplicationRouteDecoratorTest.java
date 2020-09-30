@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.route.RouteDecorator;
+import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.replication.primaryreplica.api.config.PrimaryReplicaReplicationRuleConfiguration;
@@ -67,17 +67,17 @@ public final class PrimaryReplicaReplicationRouteDecoratorTest {
     @Mock
     private SQLStatementContext<SQLStatement> sqlStatementContext;
     
-    private PrimaryReplicaReplicationRouteDecorator routeDecorator;
+    private PrimaryReplicaReplicationSQLRouter routeDecorator;
     
     static {
-        ShardingSphereServiceLoader.register(RouteDecorator.class);
+        ShardingSphereServiceLoader.register(SQLRouter.class);
     }
     
     @Before
     public void setUp() {
         rule = new PrimaryReplicaReplicationRule(new PrimaryReplicaReplicationRuleConfiguration(Collections.singleton(
                 new PrimaryReplicaReplicationDataSourceRuleConfiguration(DATASOURCE_NAME, PRIMARY_DATASOURCE, Collections.singletonList(REPLICA_DATASOURCE), null)), Collections.emptyMap()));
-        routeDecorator = (PrimaryReplicaReplicationRouteDecorator) OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), RouteDecorator.class).get(rule);
+        routeDecorator = (PrimaryReplicaReplicationSQLRouter) OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLRouter.class).get(rule);
     }
     
     @After

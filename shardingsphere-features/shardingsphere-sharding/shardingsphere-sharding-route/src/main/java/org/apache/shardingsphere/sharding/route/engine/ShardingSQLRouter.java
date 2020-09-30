@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.RouteDecorator;
+import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
@@ -50,9 +50,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Sharding route decorator.
+ * Sharding SQL router.
  */
-public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule> {
+public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
@@ -70,7 +70,7 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
         ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props).route(routeContext, shardingRule);
         shardingStatementValidator.ifPresent(validator -> validator.postValidate(sqlStatement, routeContext));
     }
-
+    
     private ShardingConditions getShardingConditions(final List<Object> parameters, 
                                                      final SQLStatementContext<?> sqlStatementContext, final SchemaMetaData schemaMetaData, final ShardingRule shardingRule) {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
