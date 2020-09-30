@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.fixture;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
@@ -33,10 +32,13 @@ import java.util.Map;
 
 public abstract class AbstractShardingTransactionManagerFixture implements ShardingTransactionManager {
     
-    @Getter
     private static final Collection<TransactionOperationType> INVOCATIONS = new LinkedList<>();
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
+    
+    public static Collection<TransactionOperationType> getInvocations() {
+        return INVOCATIONS;
+    }
     
     @Override
     public final void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {

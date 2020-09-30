@@ -36,9 +36,9 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
+import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
-import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -75,6 +75,10 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class GovernanceSchemaContextsTest {
     
+    private final Authentication authentication = new Authentication();
+    
+    private final ConfigurationProperties props = new ConfigurationProperties(new Properties());
+    
     @Mock
     private DatabaseType databaseType;
     
@@ -93,10 +97,6 @@ public final class GovernanceSchemaContextsTest {
     @Mock
     private PrimaryReplicaReplicationRule primaryReplicaReplicationRule;
     
-    private Authentication authentication = new Authentication();
-    
-    private ConfigurationProperties configurationProperties = new ConfigurationProperties(new Properties());
-    
     private GovernanceSchemaContexts governanceSchemaContexts;
     
     @Before
@@ -106,7 +106,7 @@ public final class GovernanceSchemaContextsTest {
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
         when(governanceFacade.getConfigCenter()).thenReturn(configCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
-        governanceSchemaContexts = new GovernanceSchemaContexts(new StandardSchemaContexts(createSchemaContextMap(), authentication, configurationProperties, databaseType), governanceFacade);
+        governanceSchemaContexts = new GovernanceSchemaContexts(new StandardSchemaContexts(createSchemaContextMap(), authentication, props, databaseType), governanceFacade);
     }
     
     @SneakyThrows
@@ -144,7 +144,7 @@ public final class GovernanceSchemaContextsTest {
     
     @Test
     public void assertGetProps() {
-        assertThat(governanceSchemaContexts.getProps(), is(configurationProperties));
+        assertThat(governanceSchemaContexts.getProps(), is(props));
     }
     
     @Test
