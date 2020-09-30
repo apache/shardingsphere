@@ -38,7 +38,7 @@ import java.util.Optional;
 /**
  * Consensus replication SQL router.
  */
-public final class ConsensusReplicationRouter implements SQLRouter<ConsensusReplicationRule> {
+public final class ConsensusReplicationSQLRouter implements SQLRouter<ConsensusReplicationRule> {
     
     @Override
     public RouteContext createRouteContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
