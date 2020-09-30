@@ -46,7 +46,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ShadowRouteDecoratorTest {
+public final class SQLShadowRouterTest {
     
     private static final String SHADOW_COLUMN = "is_shadow";
     
@@ -54,13 +54,13 @@ public final class ShadowRouteDecoratorTest {
     
     private static final String SHADOW_DATASOURCE = "shadow_ds";
     
-    private SQLShadowRouter routeDecorator;
+    private SQLShadowRouter sqlRouter;
     
     private ShadowRule shadowRule;
     
     @Before
     public void setUp() {
-        routeDecorator = new SQLShadowRouter();
+        sqlRouter = new SQLShadowRouter();
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration(SHADOW_COLUMN, Collections.singletonList(ACTUAL_DATASOURCE), Collections.singletonList(SHADOW_DATASOURCE));
         shadowRule = new ShadowRule(shadowRuleConfiguration);
     }
@@ -68,7 +68,7 @@ public final class ShadowRouteDecoratorTest {
     @Test
     public void assertDecorateToShadowWithOutRouteUnit() {
         RouteContext actual = new RouteContext();
-        routeDecorator.decorate(actual, mockSQLStatementContextForShadow(), Collections.emptyList(), mock(ShardingSphereMetaData.class), shadowRule, new ConfigurationProperties(new Properties()));
+        sqlRouter.decorate(actual, mockSQLStatementContextForShadow(), Collections.emptyList(), mock(ShardingSphereMetaData.class), shadowRule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(SHADOW_DATASOURCE));
     }
@@ -76,7 +76,7 @@ public final class ShadowRouteDecoratorTest {
     @Test
     public void assertDecorateToActualWithOutRouteUnit() {
         RouteContext actual = new RouteContext();
-        routeDecorator.decorate(actual, mockSQLStatementContext(), Collections.emptyList(), mock(ShardingSphereMetaData.class), shadowRule, new ConfigurationProperties(new Properties()));
+        sqlRouter.decorate(actual, mockSQLStatementContext(), Collections.emptyList(), mock(ShardingSphereMetaData.class), shadowRule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(ACTUAL_DATASOURCE));
     }
@@ -84,7 +84,7 @@ public final class ShadowRouteDecoratorTest {
     @Test
     public void assertNonDMLStatementWithOutRouteUnit() {
         RouteContext actual = new RouteContext();
-        routeDecorator.decorate(actual, mockNonDMLSQLStatementContext(), Collections.emptyList(), mock(ShardingSphereMetaData.class), shadowRule, new ConfigurationProperties(new Properties()));
+        sqlRouter.decorate(actual, mockNonDMLSQLStatementContext(), Collections.emptyList(), mock(ShardingSphereMetaData.class), shadowRule, new ConfigurationProperties(new Properties()));
         assertThat(actual.getRouteUnits().size(), is(2));
         assertTrue(actual.getActualDataSourceNames().contains(SHADOW_DATASOURCE));
         assertTrue(actual.getActualDataSourceNames().contains(ACTUAL_DATASOURCE));
@@ -94,7 +94,7 @@ public final class ShadowRouteDecoratorTest {
     public void assertDecorateToShadowWithRouteUnit() {
         RouteContext actual = new RouteContext();
         actual.getRouteUnits().add(mockRouteUnit());
-        routeDecorator.decorate(actual, mockSQLStatementContextForShadow(), Collections.emptyList(), mock(ShardingSphereMetaData.class), shadowRule, new ConfigurationProperties(new Properties()));
+        sqlRouter.decorate(actual, mockSQLStatementContextForShadow(), Collections.emptyList(), mock(ShardingSphereMetaData.class), shadowRule, new ConfigurationProperties(new Properties()));
         assertThat(actual.getRouteUnits().size(), is(1));
         assertTrue(actual.getActualDataSourceNames().contains(SHADOW_DATASOURCE));
     }
@@ -103,7 +103,7 @@ public final class ShadowRouteDecoratorTest {
     public void assertDecorateToActualWithRouteUnit() {
         RouteContext actual = new RouteContext();
         actual.getRouteUnits().add(mockRouteUnit());
-        routeDecorator.decorate(actual, mockSQLStatementContext(), Collections.emptyList(), mock(ShardingSphereMetaData.class), shadowRule, new ConfigurationProperties(new Properties()));
+        sqlRouter.decorate(actual, mockSQLStatementContext(), Collections.emptyList(), mock(ShardingSphereMetaData.class), shadowRule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(ACTUAL_DATASOURCE));
     }
@@ -112,7 +112,7 @@ public final class ShadowRouteDecoratorTest {
     public void assertNonDMLStatementWithRouteUnit() {
         RouteContext actual = new RouteContext();
         actual.getRouteUnits().add(mockRouteUnit());
-        routeDecorator.decorate(actual, mockNonDMLSQLStatementContext(), Collections.emptyList(), mock(ShardingSphereMetaData.class), shadowRule, new ConfigurationProperties(new Properties()));
+        sqlRouter.decorate(actual, mockNonDMLSQLStatementContext(), Collections.emptyList(), mock(ShardingSphereMetaData.class), shadowRule, new ConfigurationProperties(new Properties()));
         assertThat(actual.getRouteUnits().size(), is(2));
         assertTrue(actual.getActualDataSourceNames().contains(SHADOW_DATASOURCE));
         assertTrue(actual.getActualDataSourceNames().contains(ACTUAL_DATASOURCE));
@@ -122,7 +122,7 @@ public final class ShadowRouteDecoratorTest {
     public void assertTableMapperWithRouteUnit() {
         RouteContext actual = new RouteContext();
         actual.getRouteUnits().add(mockRouteUnit());
-        routeDecorator.decorate(actual, mockSQLStatementContextForShadow(), Collections.emptyList(), mock(ShardingSphereMetaData.class), shadowRule, new ConfigurationProperties(new Properties()));
+        sqlRouter.decorate(actual, mockSQLStatementContextForShadow(), Collections.emptyList(), mock(ShardingSphereMetaData.class), shadowRule, new ConfigurationProperties(new Properties()));
         assertThat(actual.getRouteUnits().size(), is(1));
         assertTrue(actual.getActualDataSourceNames().contains(SHADOW_DATASOURCE));
         Collection<RouteMapper> tableMappers = actual.getRouteUnits().iterator().next().getTableMappers();
