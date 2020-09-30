@@ -88,7 +88,7 @@ public final class ResultSetUtil {
         try {
             return new URL(val);
         } catch (final MalformedURLException ex) {
-            throw new ShardingSphereException("Unsupported Date type: URL value %s", value);
+            throw new ShardingSphereException("Unsupported Date type: URL for value %s", val);
         }
     }
     
@@ -111,7 +111,7 @@ public final class ResultSetUtil {
             BigDecimal bigDecimal = new BigDecimal(value.toString());
             return adjustBigDecimalResult(bigDecimal, needScale, scale);
         }
-        throw new ShardingSphereException("Unsupported Date type: BigDecimal value %s", value);
+        throw new ShardingSphereException("Unsupported Date type: BigDecimal for value %s", value);
     }
   
     private static BigDecimal adjustBigDecimalResult(final BigDecimal value, final boolean needScale, final int scale) {
@@ -185,7 +185,7 @@ public final class ResultSetUtil {
             case "java.lang.String":
                 return value.toString();
             default:
-                throw new ShardingSphereException("Unsupported data type: %s", convertType);
+                throw new ShardingSphereException("Unsupported data type: %s for value %s", convertType, value);
         }
     }
     
@@ -201,7 +201,7 @@ public final class ResultSetUtil {
             case "java.lang.String":
                 return date.toString();
             default:
-                throw new ShardingSphereException("Unsupported Date type: %s", convertType);
+                throw new ShardingSphereException("Unsupported Date type: %s for value %s", convertType, value);
         }
     }
     
