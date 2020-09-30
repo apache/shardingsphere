@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import java.util.Collections;
 
 /**
- * Unconfigured schema router.
+ * Unconfigured schema SQL router.
  */
-public final class UnconfiguredSchemaRouter {
+public final class UnconfiguredSchemaSQLRouter {
     
     /**
      * Decorate route context.

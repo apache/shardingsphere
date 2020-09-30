@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
-import org.apache.shardingsphere.infra.route.decorator.UnconfiguredSchemaRouter;
+import org.apache.shardingsphere.infra.route.decorator.UnconfiguredSchemaSQLRouter;
 import org.apache.shardingsphere.infra.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -86,7 +86,7 @@ public final class SQLRouteEngine {
         for (Entry<ShardingSphereRule, RouteDecorator> entry : decorators.entrySet()) {
             entry.getValue().decorate(result, sqlStatementContext, parameters, metaData, entry.getKey(), props);
         }
-        new UnconfiguredSchemaRouter().decorate(result, sqlStatementContext, metaData);
+        new UnconfiguredSchemaSQLRouter().decorate(result, sqlStatementContext, metaData);
         return result;
     }
 }
