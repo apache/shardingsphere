@@ -34,9 +34,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Route engine.
+ * SQL route engine.
  */
-public final class RouteEngine {
+public final class SQLRouteEngine {
     
     static {
         ShardingSphereServiceLoader.register(RouteDecorator.class);
@@ -51,7 +51,7 @@ public final class RouteEngine {
     
     private final SPIRoutingHook routingHook;
     
-    public RouteEngine(final ShardingSphereMetaData metaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
+    public SQLRouteEngine(final ShardingSphereMetaData metaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
         this.metaData = metaData;
         this.props = props;
         decorators = OrderedSPIRegistry.getRegisteredServices(rules, RouteDecorator.class);

@@ -45,7 +45,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class RouteEngineTest {
+public final class SQLRouteEngineTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData metaData;
@@ -63,9 +63,9 @@ public final class RouteEngineTest {
     
     @Test
     public void assertRouteSuccess() {
-        RouteEngine routeEngine = new RouteEngine(metaData, props, Collections.singletonList(new RouteRuleFixture()));
-        setSPIRoutingHook(routeEngine);
-        RouteContext actual = routeEngine.route(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
+        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(metaData, props, Collections.singletonList(new RouteRuleFixture()));
+        setSPIRoutingHook(sqlRouteEngine);
+        RouteContext actual = sqlRouteEngine.route(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("ds"));
@@ -77,10 +77,10 @@ public final class RouteEngineTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertRouteFailure() {
-        RouteEngine routeEngine = new RouteEngine(metaData, props, Collections.singletonList(new RouteFailureRuleFixture()));
-        setSPIRoutingHook(routeEngine);
+        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(metaData, props, Collections.singletonList(new RouteFailureRuleFixture()));
+        setSPIRoutingHook(sqlRouteEngine);
         try {
-            routeEngine.route(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
+            sqlRouteEngine.route(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
         } catch (final UnsupportedOperationException ex) {
             verify(routingHook).start("SELECT 1");
             verify(routingHook).finishFailure(ex);
@@ -89,9 +89,9 @@ public final class RouteEngineTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setSPIRoutingHook(final RouteEngine routeEngine) {
-        Field field = RouteEngine.class.getDeclaredField("routingHook");
+    private void setSPIRoutingHook(final SQLRouteEngine sqlRouteEngine) {
+        Field field = SQLRouteEngine.class.getDeclaredField("routingHook");
         field.setAccessible(true);
-        field.set(routeEngine, routingHook);
+        field.set(sqlRouteEngine, routingHook);
     }
 }
