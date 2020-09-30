@@ -24,11 +24,9 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContextBuil
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
-import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import java.util.Collection;
@@ -48,8 +46,7 @@ public final class KernelProcessor {
     public ExecutionContext generateExecutionContext(final LogicSQLContext logicSQLContext, final ConfigurationProperties props) {
         Collection<ShardingSphereRule> rules = logicSQLContext.getSchemaContext().getSchema().getRules();
         SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(logicSQLContext.getSchemaContext().getSchema().getMetaData(), props, rules);
-        SchemaMetaData schemaMetaData = logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getSchemaMetaData();
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, logicSQLContext.getParameters(), logicSQLContext.getSqlStatement());
+        SQLStatementContext<?> sqlStatementContext = logicSQLContext.getSqlStatementContext();
         RouteContext routeContext = sqlRouteEngine.route(sqlStatementContext, logicSQLContext.getSql(), logicSQLContext.getParameters());
         SQLRewriteEntry rewriteEntry = new SQLRewriteEntry(logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(), props, rules);
         SQLRewriteResult rewriteResult = rewriteEntry.rewrite(logicSQLContext.getSql(), logicSQLContext.getParameters(), sqlStatementContext, routeContext);

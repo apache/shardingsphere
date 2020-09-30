@@ -68,6 +68,8 @@ public final class MySQLCommandExecutorFactory {
                 return new MySQLComFieldListPacketExecutor((MySQLComFieldListPacket) commandPacket, backendConnection);
             case COM_QUERY:
                 return new MySQLComQueryPacketExecutor((MySQLComQueryPacket) commandPacket, backendConnection);
+            case COM_PING:
+                return new MySQLComPingExecutor();
             case COM_STMT_PREPARE:
                 return new MySQLComStmtPrepareExecutor((MySQLComStmtPreparePacket) commandPacket, backendConnection);
             case COM_STMT_EXECUTE:
@@ -76,8 +78,6 @@ public final class MySQLCommandExecutorFactory {
                 return new MySQLComStmtResetExecutor((MySQLComStmtResetPacket) commandPacket);
             case COM_STMT_CLOSE:
                 return new MySQLComStmtCloseExecutor((MySQLComStmtClosePacket) commandPacket);
-            case COM_PING:
-                return new MySQLComPingExecutor();
             default:
                 return new MySQLUnsupportedCommandExecutor(commandPacketType);
         }

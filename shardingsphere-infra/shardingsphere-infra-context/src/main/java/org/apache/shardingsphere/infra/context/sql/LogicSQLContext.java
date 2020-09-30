@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.context.sql;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import java.util.List;
 
@@ -33,9 +33,9 @@ public final class LogicSQLContext {
     
     private final SchemaContext schemaContext;
     
+    private final SQLStatementContext<?> sqlStatementContext;
+    
     private final String sql;
     
     private final List<Object> parameters;
-    
-    private final SQLStatement sqlStatement;
 }
