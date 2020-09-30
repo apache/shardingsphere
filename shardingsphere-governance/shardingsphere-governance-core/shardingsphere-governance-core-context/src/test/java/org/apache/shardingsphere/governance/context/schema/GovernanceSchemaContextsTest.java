@@ -106,16 +106,16 @@ public final class GovernanceSchemaContextsTest {
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
         when(governanceFacade.getConfigCenter()).thenReturn(configCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
-        governanceSchemaContexts = new GovernanceSchemaContexts(new StandardSchemaContexts(getSchemaContextMap(), authentication, configurationProperties, databaseType), governanceFacade);
+        governanceSchemaContexts = new GovernanceSchemaContexts(new StandardSchemaContexts(createSchemaContextMap(), authentication, configurationProperties, databaseType), governanceFacade);
     }
     
     @SneakyThrows
-    private Map<String, SchemaContext> getSchemaContextMap() {
+    private Map<String, SchemaContext> createSchemaContextMap() {
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        when(schemaContext.getName()).thenReturn("schema");
         when(schemaContext.getSchema()).thenReturn(shardingSphereSchema);
+        when(schemaContext.getSchema().getName()).thenReturn("schema");
         when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
         when(shardingSphereSchema.getMetaData()).thenReturn(shardingSphereMetaData);
         when(shardingSphereSchema.getRules()).thenReturn(Collections.singletonList(primaryReplicaReplicationRule));

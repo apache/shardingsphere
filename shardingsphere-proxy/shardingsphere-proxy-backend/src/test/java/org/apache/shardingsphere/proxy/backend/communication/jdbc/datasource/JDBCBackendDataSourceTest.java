@@ -83,8 +83,8 @@ public final class JDBCBackendDataSourceTest {
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
         when(shardingSphereSchema.getDataSources()).thenReturn(mockDataSources(2));
-        when(schemaContext.getName()).thenReturn("schema");
         when(schemaContext.getSchema()).thenReturn(shardingSphereSchema);
+        when(schemaContext.getSchema().getName()).thenReturn("schema");
         when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
         return Collections.singletonMap("schema", schemaContext);
     }
