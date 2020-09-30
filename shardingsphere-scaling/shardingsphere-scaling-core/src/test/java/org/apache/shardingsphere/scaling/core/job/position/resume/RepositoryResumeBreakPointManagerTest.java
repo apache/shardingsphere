@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -53,12 +54,12 @@ public final class RepositoryResumeBreakPointManagerTest {
     @Test
     public void assertPersistIncrementalPosition() {
         repositoryResumeBreakPointManager.persistIncrementalPosition();
-        verify(registryRepository).persist("/base/incremental", "{}");
+        verify(registryRepository, atLeastOnce()).persist("/base/incremental", "{}");
     }
     
     @Test
     public void assertPersistInventoryPosition() {
         repositoryResumeBreakPointManager.persistInventoryPosition();
-        verify(registryRepository).persist("/base/inventory", "{\"unfinished\":{},\"finished\":[]}");
+        verify(registryRepository, atLeastOnce()).persist("/base/inventory", "{\"unfinished\":{},\"finished\":[]}");
     }
 }
