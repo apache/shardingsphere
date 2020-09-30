@@ -86,73 +86,71 @@ public final class PrimaryReplicaReplicationSQLRouterTest {
     }
     
     @Test
-    public void assertDecorateToPrimary() {
+    public void assertCreateRouteContextToPrimaryWithoutRouteUnits() {
+        RouteContext actual = sqlRouter.createRouteContext(mock(SQLStatementContext.class), 
+                Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
+        Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
+        assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
+    }
+    
+    @Test
+    public void assertDecorateRouteContextToPrimaryDataSource() {
         RouteContext actual = mockRouteContext();
-        sqlRouter.decorate(actual, mock(SQLStatementContext.class), Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
+        sqlRouter.decorateRouteContext(actual, mock(SQLStatementContext.class), Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_PRIMARY_REPLICA_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
     }
     
     @Test
-    public void assertDecorateToPrimaryWithoutRouteUnits() {
-        RouteContext actual = new RouteContext();
-        sqlRouter.decorate(actual, mock(SQLStatementContext.class), Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
+    public void assertCreateRouteContextToReplicaDataSource() {
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        when(selectStatement.getLock()).thenReturn(Optional.empty());
+        RouteContext actual = sqlRouter.createRouteContext(sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
-        assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
+        assertThat(routedDataSourceNames.next(), is(REPLICA_DATASOURCE));
     }
     
     @Test
-    public void assertDecorateToReplica() {
+    public void assertDecorateRouteContextToReplicaDataSource() {
         RouteContext actual = mockRouteContext();
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.empty());
-        sqlRouter.decorate(actual, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
+        sqlRouter.decorateRouteContext(actual, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_PRIMARY_REPLICA_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(REPLICA_DATASOURCE));
     }
     
     @Test
-    public void assertDecorateToReplicaWithoutRouteUnits() {
-        RouteContext actual = new RouteContext();
+    public void assertCreateRouteContextToPrimaryDataSourceWithLock() {
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
-        when(selectStatement.getLock()).thenReturn(Optional.empty());
-        sqlRouter.decorate(actual, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
+        when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
+        RouteContext actual = sqlRouter.createRouteContext(sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
-        assertThat(routedDataSourceNames.next(), is(REPLICA_DATASOURCE));
+        assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
     }
     
     @Test
-    public void assertLockDecorateToPrimary() {
+    public void assertDecorateRouteContextToPrimaryDataSourceWithLock() {
         RouteContext actual = mockRouteContext();
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
-        sqlRouter.decorate(actual, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
+        sqlRouter.decorateRouteContext(actual, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_PRIMARY_REPLICA_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
     }
     
     @Test
-    public void assertLockDecorateToPrimaryWithoutRouteUnits() {
-        RouteContext actual = new RouteContext();
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
-        when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
-        sqlRouter.decorate(actual, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
-        Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
-        assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
-    }
-    
-    @Test
-    public void assertDecorateToPrimaryWithoutRouteUnitsAndWithParameters() {
-        RouteContext actual = new RouteContext();
+    public void assertCreateRouteContextToPrimaryDataSource() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(InsertStatement.class));
-        sqlRouter.decorate(actual, sqlStatementContext, Collections.singletonList("true"), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
+        RouteContext actual = sqlRouter.createRouteContext(
+                sqlStatementContext, Collections.singletonList("true"), mock(ShardingSphereMetaData.class), rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
     }
