@@ -28,8 +28,6 @@ import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
 @Getter
 public final class SchemaContext {
     
-    private final String name;
-    
     private final ShardingSphereSchema schema;
     
     private final RuntimeContext runtimeContext;
