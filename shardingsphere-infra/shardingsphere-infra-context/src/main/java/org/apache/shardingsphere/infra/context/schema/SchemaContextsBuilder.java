@@ -99,7 +99,7 @@ public final class SchemaContextsBuilder {
         Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
         RuntimeContext runtimeContext = new RuntimeContext(createCachedDatabaseMetaData(dataSources).orElse(null), 
                 executorKernel, ShardingSphereSQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType)));
-        return new SchemaContext(schemaName, createShardingSphereSchema(schemaName), runtimeContext);
+        return new SchemaContext(createShardingSphereSchema(schemaName), runtimeContext);
     }
     
     private Optional<CachedDatabaseMetaData> createCachedDatabaseMetaData(final Map<String, DataSource> dataSources) throws SQLException {
@@ -115,7 +115,7 @@ public final class SchemaContextsBuilder {
         Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
         Collection<RuleConfiguration> ruleConfigs = this.ruleConfigs.get(schemaName);
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(ruleConfigs, dataSources.keySet());
-        return new ShardingSphereSchema(ruleConfigs, rules, dataSources, createMetaData(schemaName, dataSources, rules));
+        return new ShardingSphereSchema(schemaName, ruleConfigs, rules, dataSources, createMetaData(schemaName, dataSources, rules));
     }
     
     private ShardingSphereMetaData createMetaData(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {

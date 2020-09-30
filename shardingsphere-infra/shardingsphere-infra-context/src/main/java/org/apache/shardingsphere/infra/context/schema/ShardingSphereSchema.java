@@ -35,6 +35,8 @@ import java.util.Map;
 @Getter
 public final class ShardingSphereSchema {
     
+    private final String name;
+    
     private final Collection<RuleConfiguration> configurations;
     
     private final Collection<ShardingSphereRule> rules;

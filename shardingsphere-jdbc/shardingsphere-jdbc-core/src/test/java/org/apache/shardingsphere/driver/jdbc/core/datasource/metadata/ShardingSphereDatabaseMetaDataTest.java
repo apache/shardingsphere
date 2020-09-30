@@ -23,8 +23,6 @@ import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResu
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.runtime.CachedDatabaseMetaData;
-import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
-import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -50,6 +48,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -93,14 +92,10 @@ public final class ShardingSphereDatabaseMetaDataTest {
         when(shardingSphereConnection.getConnection(anyString())).thenReturn(connection);
         when(shardingSphereConnection.getDataSourceMap()).thenReturn(dataSourceMap);
         when(shardingSphereConnection.getSchemaContexts()).thenReturn(schemaContexts);
-        SchemaContext schemaContext = mock(SchemaContext.class);
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        RuntimeContext runtimeContext = mock(RuntimeContext.class);
+        SchemaContext schemaContext = mock(SchemaContext.class, RETURNS_DEEP_STUBS);
         when(schemaContexts.getDefaultSchemaContext()).thenReturn(schemaContext);
-        when(schemaContext.getSchema()).thenReturn(schema);
-        when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
-        when(runtimeContext.getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
-        when(schema.getRules()).thenReturn(Collections.singletonList(mockShardingRule()));
+        when(schemaContext.getRuntimeContext().getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
+        when(schemaContext.getSchema().getRules()).thenReturn(Collections.singletonList(mockShardingRule()));
         shardingSphereDatabaseMetaData = new ShardingSphereDatabaseMetaData(shardingSphereConnection);
     }
     

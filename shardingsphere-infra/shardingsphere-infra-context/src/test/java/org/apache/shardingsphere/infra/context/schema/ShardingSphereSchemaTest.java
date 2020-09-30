@@ -25,6 +25,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,8 +49,8 @@ public final class ShardingSphereSchemaTest {
     private DataSource dataSource2;
     
     @Test
-    public void assertCloseDataSources() throws Exception {
-        new ShardingSphereSchema(Collections.emptyList(), Collections.emptyList(), createDataSources(), mock(ShardingSphereMetaData.class)).closeDataSources(Arrays.asList("ds_0", "ds_2"));
+    public void assertCloseDataSources() throws SQLException, IOException {
+        new ShardingSphereSchema("name", Collections.emptyList(), Collections.emptyList(), createDataSources(), mock(ShardingSphereMetaData.class)).closeDataSources(Arrays.asList("ds_0", "ds_2"));
         verify(dataSource0).close();
         verify(dataSource1, times(0)).close();
     }

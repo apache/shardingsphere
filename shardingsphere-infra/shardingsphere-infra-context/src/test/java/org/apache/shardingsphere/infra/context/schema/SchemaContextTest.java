@@ -22,34 +22,34 @@ import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import javax.sql.DataSource;
 import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class SchemaContextTest {
     
     @Test
     public void assertIsComplete() {
-        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singleton(Mockito.mock(RuleConfiguration.class)), 
-                Collections.singleton(Mockito.mock(ShardingSphereRule.class)), Collections.singletonMap("ds", Mockito.mock(DataSource.class)), Mockito.mock(ShardingSphereMetaData.class));
-        assertTrue(new SchemaContext("name", schema, Mockito.mock(RuntimeContext.class)).isComplete());
+        ShardingSphereSchema schema = new ShardingSphereSchema("name", Collections.singleton(mock(RuleConfiguration.class)), 
+                Collections.singleton(mock(ShardingSphereRule.class)), Collections.singletonMap("ds", mock(DataSource.class)), mock(ShardingSphereMetaData.class));
+        assertTrue(new SchemaContext(schema, mock(RuntimeContext.class)).isComplete());
     }
     
     @Test
     public void assertIsNotCompleteWithoutRule() {
-        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.emptyList(), 
-                Collections.emptyList(), Collections.singletonMap("ds", Mockito.mock(DataSource.class)), Mockito.mock(ShardingSphereMetaData.class));
-        assertFalse(new SchemaContext("name", schema, Mockito.mock(RuntimeContext.class)).isComplete());
+        ShardingSphereSchema schema = new ShardingSphereSchema("name", Collections.emptyList(), 
+                Collections.emptyList(), Collections.singletonMap("ds", mock(DataSource.class)), mock(ShardingSphereMetaData.class));
+        assertFalse(new SchemaContext(schema, mock(RuntimeContext.class)).isComplete());
     }
     
     @Test
     public void assertIsNotCompleteWithoutDataSource() {
-        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singleton(Mockito.mock(RuleConfiguration.class)),
-                Collections.singleton(Mockito.mock(ShardingSphereRule.class)), Collections.emptyMap(), Mockito.mock(ShardingSphereMetaData.class));
-        assertFalse(new SchemaContext("name", schema, Mockito.mock(RuntimeContext.class)).isComplete());
+        ShardingSphereSchema schema = new ShardingSphereSchema("name", Collections.singleton(mock(RuleConfiguration.class)),
+                Collections.singleton(mock(ShardingSphereRule.class)), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
+        assertFalse(new SchemaContext(schema, mock(RuntimeContext.class)).isComplete());
     }
 }

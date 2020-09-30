@@ -66,7 +66,7 @@ public final class QueryHeaderBuilder {
     }
     
     private static QueryHeader build(final ResultSetMetaData resultSetMetaData, final SchemaContext schema, final String columnName, final int columnIndex) throws SQLException {
-        String schemaName = schema.getName();
+        String schemaName = schema.getSchema().getName();
         String actualTableName = resultSetMetaData.getTableName(columnIndex);
         Optional<DataNodeRoutedRule> dataNodeRoutedRule = schema.getSchema().getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
         String tableName;

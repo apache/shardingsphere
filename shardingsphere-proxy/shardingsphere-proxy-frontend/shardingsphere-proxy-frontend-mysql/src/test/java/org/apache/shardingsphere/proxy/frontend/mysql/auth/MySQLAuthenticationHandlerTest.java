@@ -132,7 +132,7 @@ public final class MySQLAuthenticationHandlerTest {
             String name = String.format(SCHEMA_PATTERN, i);
             ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
             RuntimeContext runtimeContext = mock(RuntimeContext.class);
-            result.put(name, new SchemaContext(name, schema, runtimeContext));
+            result.put(name, new SchemaContext(schema, runtimeContext));
         }
         return result;
     }

@@ -51,83 +51,83 @@ public final class QueryHeaderBuilderTest {
     
     @Test
     public void assertQueryHeaderSchema() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchemaContext(), 1);
         assertThat(header.getSchema(), is("sharding_schema"));
     }
     
     @Test
     public void assertQueryHeaderTable() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchemaContext(), 1);
         assertThat(header.getTable(), is("t_logic_order"));
     }
     
     @Test
     public void assertQueryHeaderColumnLabel() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchemaContext(), 1);
         assertThat(header.getColumnLabel(), is("order_id"));
     }
     
     @Test
     public void assertQueryHeaderColumnNameWithoutProjectionsContext() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchemaContext(), 1);
         assertThat(header.getColumnName(), is("order_id"));
     }
     
     @Test
     public void assertQueryHeaderColumnNameFromProjectionsContext() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createProjectionsContext(), createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createProjectionsContext(), createResultSetMetaData(), createSchemaContext(), 1);
         assertThat(header.getColumnName(), is("order_id"));
     }
     
     @Test
     public void assertQueryHeaderColumnNameFromMetaData() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createProjectionsContext(), createResultSetMetaData(), getSchemaContext(), 2);
+        QueryHeader header = QueryHeaderBuilder.build(createProjectionsContext(), createResultSetMetaData(), createSchemaContext(), 2);
         assertThat(header.getColumnName(), is("expr"));
     }
     
     @Test
     public void assertQueryHeaderColumnLength() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchemaContext(), 1);
         assertThat(header.getColumnLength(), is(1));
     }
     
     @Test
     public void assertQueryHeaderColumnType() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchemaContext(), 1);
         assertThat(header.getColumnType(), is(Types.INTEGER));
     }
     
     @Test
     public void assertQueryHeaderDecimals() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchemaContext(), 1);
         assertThat(header.getDecimals(), is(1));
     }
     
     @Test
     public void assertQueryHeaderSigned() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchemaContext(), 1);
         assertTrue(header.isSigned());
     }
     
     @Test
     public void assertQueryHeaderPrimaryKey() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchemaContext(), 1);
         assertTrue(header.isPrimaryKey());
     }
     
     @Test
     public void assertQueryHeaderNotNull() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchemaContext(), 1);
         assertTrue(header.isNotNull());
     }
     
     @Test
     public void assertQueryHeaderAutoIncrement() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchemaContext(), 1);
         assertTrue(header.isAutoIncrement());
     }
     
-    private SchemaContext getSchemaContext() {
+    private SchemaContext createSchemaContext() {
         SchemaContext result = mock(SchemaContext.class);
         ColumnMetaData columnMetaData = new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false);
         SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
@@ -145,7 +145,7 @@ public final class QueryHeaderBuilderTest {
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));
         when(shardingSphereSchema.getRules()).thenReturn(Collections.singletonList(shardingRule));
-        when(result.getName()).thenReturn("sharding_schema");
+        when(result.getSchema().getName()).thenReturn("sharding_schema");
         return result;
     }
     

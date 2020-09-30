@@ -95,7 +95,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             refreshStrategy.get().refreshMetaData(logicSQLContext.getSchemaContext().getSchema().getMetaData(), ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
                     logicSQLContext.getSchemaContext().getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
             GovernanceEventBus.getInstance().post(
-                    new MetaDataPersistEvent(logicSQLContext.getSchemaContext().getName(), logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData()));
+                    new MetaDataPersistEvent(logicSQLContext.getSchemaContext().getSchema().getName(), logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData()));
         }
     }
     

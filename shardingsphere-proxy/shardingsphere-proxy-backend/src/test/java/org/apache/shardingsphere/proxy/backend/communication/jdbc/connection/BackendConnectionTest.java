@@ -108,7 +108,7 @@ public final class BackendConnectionTest {
         for (int i = 0; i < 10; i++) {
             String name = String.format(SCHEMA_PATTERN, i);
             RuntimeContext runtimeContext = mock(RuntimeContext.class);
-            SchemaContext schemaContext = new SchemaContext(name, mock(ShardingSphereSchema.class), runtimeContext);
+            SchemaContext schemaContext = new SchemaContext(mock(ShardingSphereSchema.class), runtimeContext);
             result.put(name, schemaContext);
         }
         return result;
