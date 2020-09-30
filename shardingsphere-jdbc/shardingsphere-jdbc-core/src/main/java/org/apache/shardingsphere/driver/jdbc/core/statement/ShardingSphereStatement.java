@@ -49,7 +49,10 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.S
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -278,10 +281,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private ExecutionContext createExecutionContext(final String sql) throws SQLException {
         clearStatements();
-        SchemaContext schemaContext = schemaContexts.getDefaultSchemaContext();
-        SQLStatement sqlStatement = schemaContext.getRuntimeContext().getSqlParserEngine().parse(sql, false);
-        LogicSQLContext logicSQLContext = new LogicSQLContext(schemaContext, sql, Collections.emptyList(), sqlStatement);
-        ExecutionContext result = new KernelProcessor().generateExecutionContext(logicSQLContext, schemaContexts.getProps());
+        ExecutionContext result = new KernelProcessor().generateExecutionContext(createLogicSQLContext(sql), schemaContexts.getProps());
         logSQL(sql, schemaContexts.getProps(), result);
         return result;
     }
@@ -297,6 +297,14 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         if (props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             SQLLogger.logSQL(sql, props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
         }
+    }
+    
+    private LogicSQLContext createLogicSQLContext(final String sql) {
+        SchemaContext schemaContext = schemaContexts.getDefaultSchemaContext();
+        SchemaMetaData schemaMetaData = schemaContext.getSchema().getMetaData().getRuleSchemaMetaData().getSchemaMetaData();
+        SQLStatement sqlStatement = schemaContext.getRuntimeContext().getSqlParserEngine().parse(sql, false);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, Collections.emptyList(), sqlStatement);
+        return new LogicSQLContext(schemaContext, sqlStatementContext, sql, Collections.emptyList());
     }
     
     private Collection<InputGroup<StatementExecuteUnit>> getInputGroups() throws SQLException {

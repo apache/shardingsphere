@@ -51,7 +51,10 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.S
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -253,11 +256,17 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private ExecutionContext createExecutionContext() {
-        LogicSQLContext logicSQLContext = new LogicSQLContext(schemaContexts.getDefaultSchemaContext(), sql, new ArrayList<>(getParameters()), sqlStatement);
-        ExecutionContext result = new KernelProcessor().generateExecutionContext(logicSQLContext, schemaContexts.getProps());
+        ExecutionContext result = new KernelProcessor().generateExecutionContext(createLogicSQLContext(), schemaContexts.getProps());
         findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.addAll(generatedKey.getGeneratedValues()));
         logSQL(result);
         return result;
+    }
+    
+    private LogicSQLContext createLogicSQLContext() {
+        List<Object> parameters = new ArrayList<>(getParameters());
+        SchemaMetaData schemaMetaData = schemaContexts.getDefaultSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getSchemaMetaData();
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, parameters, sqlStatement);
+        return new LogicSQLContext(schemaContexts.getDefaultSchemaContext(), sqlStatementContext, sql, parameters);
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
