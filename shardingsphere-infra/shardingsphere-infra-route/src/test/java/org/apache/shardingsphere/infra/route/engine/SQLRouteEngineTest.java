@@ -20,11 +20,13 @@ package org.apache.shardingsphere.infra.route.engine;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.fixture.rule.RouteFailureRuleFixture;
 import org.apache.shardingsphere.infra.route.fixture.rule.RouteRuleFixture;
 import org.apache.shardingsphere.infra.route.hook.SPIRoutingHook;
+import org.apache.shardingsphere.infra.sql.LogicSQL;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.junit.Before;
@@ -63,9 +65,11 @@ public final class SQLRouteEngineTest {
     
     @Test
     public void assertRouteSuccess() {
-        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(metaData, props, Collections.singletonList(new RouteRuleFixture()));
+        ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(new RouteRuleFixture()), Collections.emptyMap(), metaData);
+        LogicSQL logicSQL = new LogicSQL(schema, mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
+        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(props, Collections.singleton(new RouteRuleFixture()));
         setSPIRoutingHook(sqlRouteEngine);
-        RouteContext actual = sqlRouteEngine.route(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
+        RouteContext actual = sqlRouteEngine.route(logicSQL);
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("ds"));
@@ -77,10 +81,12 @@ public final class SQLRouteEngineTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertRouteFailure() {
-        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(metaData, props, Collections.singletonList(new RouteFailureRuleFixture()));
+        ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(new RouteRuleFixture()), Collections.emptyMap(), metaData);
+        LogicSQL logicSQL = new LogicSQL(schema, mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
+        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(props, Collections.singleton(new RouteFailureRuleFixture()));
         setSPIRoutingHook(sqlRouteEngine);
         try {
-            sqlRouteEngine.route(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
+            sqlRouteEngine.route(logicSQL);
         } catch (final UnsupportedOperationException ex) {
             verify(routingHook).start("SELECT 1");
             verify(routingHook).finishFailure(ex);

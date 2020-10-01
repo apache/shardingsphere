@@ -18,20 +18,18 @@
 package org.apache.shardingsphere.replication.consensus.route.engine;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.sql.LogicSQL;
 import org.apache.shardingsphere.replication.consensus.constant.ConsensusReplicationOrder;
 import org.apache.shardingsphere.replication.consensus.rule.ConsensusReplicationRule;
 import org.apache.shardingsphere.replication.consensus.rule.ConsensusReplicationTableRule;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -41,20 +39,19 @@ import java.util.Optional;
 public final class ConsensusReplicationSQLRouter implements SQLRouter<ConsensusReplicationRule> {
     
     @Override
-    public RouteContext createRouteContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
-                                           final ShardingSphereMetaData metaData, final ConsensusReplicationRule rule, final ConfigurationProperties props) {
+    public RouteContext createRouteContext(final LogicSQL logicSQL, final ConsensusReplicationRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
         ConsensusReplicationTableRule replicaRoutingRule = rule.getReplicaTableRules().iterator().next();
         ConsensusReplicationGroup replicaGroup = new ConsensusReplicationGroup(replicaRoutingRule.getPhysicsTable(), replicaRoutingRule.getReplicaGroupId(), replicaRoutingRule.getReplicaPeers(),
                 replicaRoutingRule.getDataSourceName());
         Map<String, ConsensusReplicationGroup> replicaGroups = Collections.singletonMap(ConsensusReplicationGroup.BLANK_CONSENSUS_REPLICATION_GROUP_KEY, replicaGroup);
-        result.getRouteStageContexts().put(getTypeClass(), new ConsensusReplicationRouteStageContext(metaData.getSchemaName(), replicaGroups, sqlStatementContext.isReadOnly()));
+        result.getRouteStageContexts().put(getTypeClass(), 
+                new ConsensusReplicationRouteStageContext(logicSQL.getSchema().getMetaData().getSchemaName(), replicaGroups, logicSQL.getSqlStatementContext().isReadOnly()));
         return result;
     }
     
     @Override
-    public void decorateRouteContext(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
-                                     final ShardingSphereMetaData metaData, final ConsensusReplicationRule rule, final ConfigurationProperties props) {
+    public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ConsensusReplicationRule rule, final ConfigurationProperties props) {
         Map<String, ConsensusReplicationGroup> replicaGroups = new HashMap<>();
         for (RouteUnit each : routeContext.getRouteUnits()) {
             Collection<RouteMapper> routeMappers = each.getTableMappers();
@@ -67,7 +64,8 @@ public final class ConsensusReplicationSQLRouter implements SQLRouter<ConsensusR
                 routeReplicaGroups(routeMappers, rule, replicaGroups);
             }
         }
-        routeContext.getRouteStageContexts().put(getTypeClass(), new ConsensusReplicationRouteStageContext(metaData.getSchemaName(), replicaGroups, sqlStatementContext.isReadOnly()));
+        routeContext.getRouteStageContexts().put(getTypeClass(), 
+                new ConsensusReplicationRouteStageContext(logicSQL.getSchema().getMetaData().getSchemaName(), replicaGroups, logicSQL.getSqlStatementContext().isReadOnly()));
     }
     
     private void routeReplicaGroups(final Collection<RouteMapper> routeMappers, final ConsensusReplicationRule rule, final Map<String, ConsensusReplicationGroup> replicaGroups) {

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.route.engine;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.UnconfiguredSchemaSQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -26,10 +25,9 @@ import org.apache.shardingsphere.infra.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.sql.LogicSQL;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -42,8 +40,6 @@ public final class SQLRouteEngine {
         ShardingSphereServiceLoader.register(SQLRouter.class);
     }
     
-    private final ShardingSphereMetaData metaData;
-    
     private final ConfigurationProperties props;
     
     @SuppressWarnings("rawtypes")
@@ -51,8 +47,7 @@ public final class SQLRouteEngine {
     
     private final SPIRoutingHook routingHook;
     
-    public SQLRouteEngine(final ShardingSphereMetaData metaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
-        this.metaData = metaData;
+    public SQLRouteEngine(final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
         this.props = props;
         decorators = OrderedSPIRegistry.getRegisteredServices(rules, SQLRouter.class);
         routingHook = new SPIRoutingHook();
@@ -61,16 +56,14 @@ public final class SQLRouteEngine {
     /**
      * Route SQL.
      *
-     * @param sqlStatementContext SQL statement context
-     * @param sql SQL
-     * @param parameters SQL parameters
+     * @param logicSQL logic SQL
      * @return route context
      */
-    public RouteContext route(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters) {
-        routingHook.start(sql);
+    public RouteContext route(final LogicSQL logicSQL) {
+        routingHook.start(logicSQL.getSql());
         try {
-            RouteContext result = doRoute(sqlStatementContext, parameters);
-            routingHook.finishSuccess(result, metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData());
+            RouteContext result = doRoute(logicSQL);
+            routingHook.finishSuccess(result, logicSQL.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData());
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
@@ -81,19 +74,19 @@ public final class SQLRouteEngine {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private RouteContext doRoute(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
+    private RouteContext doRoute(final LogicSQL logicSQL) {
         RouteContext result = null;
         for (Entry<ShardingSphereRule, SQLRouter> entry : decorators.entrySet()) {
             if (null == result) {
-                result = entry.getValue().createRouteContext(sqlStatementContext, parameters, metaData, entry.getKey(), props);
+                result = entry.getValue().createRouteContext(logicSQL, entry.getKey(), props);
             } else {
-                entry.getValue().decorateRouteContext(result, sqlStatementContext, parameters, metaData, entry.getKey(), props);
+                entry.getValue().decorateRouteContext(result, logicSQL, entry.getKey(), props);
             }
         }
         if (null == result) {
             result = new RouteContext();
         }
-        new UnconfiguredSchemaSQLRouter().decorate(result, sqlStatementContext, metaData);
+        new UnconfiguredSchemaSQLRouter().decorate(result, logicSQL);
         return result;
     }
 }
