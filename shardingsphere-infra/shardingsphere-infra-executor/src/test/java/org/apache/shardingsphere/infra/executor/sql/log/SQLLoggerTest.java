@@ -20,7 +20,9 @@ package org.apache.shardingsphere.infra.executor.sql.log;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.sql.LogicSQLContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +36,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,6 +48,8 @@ import static org.mockito.Mockito.mock;
 public final class SQLLoggerTest {
     
     private static final String SQL = "SELECT * FROM t_user";
+    
+    private final LogicSQLContext logicSQLContext = new LogicSQLContext(mock(ShardingSphereSchema.class), null, SQL, Collections.emptyList());
     
     private Collection<ExecutionUnit> executionUnits;
     
@@ -63,7 +68,7 @@ public final class SQLLoggerTest {
     
     @Test
     public void assertLogNormalSQLWithoutParameter() {
-        SQLLogger.logSQL(SQL, false, new ExecutionContext(null, executionUnits, mock(RouteContext.class)));
+        SQLLogger.logSQL(logicSQLContext, false, new ExecutionContext(null, executionUnits, mock(RouteContext.class)));
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
@@ -76,7 +81,7 @@ public final class SQLLoggerTest {
     public void assertLogNormalSQLWithParameters() {
         List<Object> parameters = executionUnits.iterator().next().getSqlUnit().getParameters();
         parameters.add("parameter");
-        SQLLogger.logSQL(SQL, false, new ExecutionContext(null, executionUnits, mock(RouteContext.class)));
+        SQLLogger.logSQL(logicSQLContext, false, new ExecutionContext(null, executionUnits, mock(RouteContext.class)));
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
@@ -87,7 +92,7 @@ public final class SQLLoggerTest {
     
     @Test
     public void assertLogSimpleSQL() {
-        SQLLogger.logSQL(SQL, true, new ExecutionContext(null, executionUnits, mock(RouteContext.class)));
+        SQLLogger.logSQL(logicSQLContext, true, new ExecutionContext(null, executionUnits, mock(RouteContext.class)));
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});

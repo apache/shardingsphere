@@ -256,9 +256,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private ExecutionContext createExecutionContext() {
-        ExecutionContext result = new KernelProcessor().generateExecutionContext(createLogicSQLContext(), schemaContexts.getProps());
+        LogicSQLContext logicSQL = createLogicSQLContext();
+        ExecutionContext result = new KernelProcessor().generateExecutionContext(logicSQL, schemaContexts.getProps());
         findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.addAll(generatedKey.getGeneratedValues()));
-        logSQL(result);
+        logSQL(logicSQL, result);
         return result;
     }
     
@@ -308,9 +309,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 ? ((InsertStatementContext) executionContext.getSqlStatementContext()).getGeneratedKeyContext() : Optional.empty();
     }
     
-    private void logSQL(final ExecutionContext executionContext) {
+    private void logSQL(final LogicSQLContext logicSQL, final ExecutionContext executionContext) {
         if (schemaContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
-            SQLLogger.logSQL(sql, schemaContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
+            SQLLogger.logSQL(logicSQL, schemaContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
         }
     }
     

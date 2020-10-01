@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.sql.LogicSQLContext;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -35,15 +36,15 @@ import java.util.Set;
 public final class SQLLogger {
     
     /**
-     * Print SQL log.
+     * Log SQL.
      * 
      * @param logicSQL logic SQL
      * @param showSimple whether show SQL in simple style
      * @param executionContext Execution context
      */
-    public static void logSQL(final String logicSQL, final boolean showSimple, final ExecutionContext executionContext) {
-        log("Logic SQL: {}", logicSQL);
-        log("SQLStatement: {}", executionContext.getSqlStatementContext());
+    public static void logSQL(final LogicSQLContext logicSQL, final boolean showSimple, final ExecutionContext executionContext) {
+        log("Logic SQL: {}", logicSQL.getSql());
+        log("SQLStatement: {}", logicSQL.getSqlStatementContext());
         if (showSimple) {
             logSimpleMode(executionContext.getExecutionUnits());
         } else {

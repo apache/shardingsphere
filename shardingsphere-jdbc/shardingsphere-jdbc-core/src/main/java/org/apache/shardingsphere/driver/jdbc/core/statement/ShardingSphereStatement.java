@@ -281,8 +281,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private ExecutionContext createExecutionContext(final String sql) throws SQLException {
         clearStatements();
-        ExecutionContext result = new KernelProcessor().generateExecutionContext(createLogicSQLContext(sql), schemaContexts.getProps());
-        logSQL(sql, schemaContexts.getProps(), result);
+        LogicSQLContext logicSQL = createLogicSQLContext(sql);
+        ExecutionContext result = new KernelProcessor().generateExecutionContext(logicSQL, schemaContexts.getProps());
+        logSQL(logicSQL, schemaContexts.getProps(), result);
         return result;
     }
     
@@ -293,9 +294,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         statements.clear();
     }
     
-    private void logSQL(final String sql, final ConfigurationProperties props, final ExecutionContext executionContext) {
+    private void logSQL(final LogicSQLContext logicSQL, final ConfigurationProperties props, final ExecutionContext executionContext) {
         if (props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
-            SQLLogger.logSQL(sql, props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
+            SQLLogger.logSQL(logicSQL, props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
         }
     }
     
