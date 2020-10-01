@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.communication;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
-import org.apache.shardingsphere.infra.context.sql.LogicSQLContext;
+import org.apache.shardingsphere.infra.sql.LogicSQLContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine.jdbc.JDBCExecuteEngine;
