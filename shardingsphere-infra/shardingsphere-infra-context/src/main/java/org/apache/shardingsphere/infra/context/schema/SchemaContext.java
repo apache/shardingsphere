@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.context.schema;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 
 /**
  * Schema context.
