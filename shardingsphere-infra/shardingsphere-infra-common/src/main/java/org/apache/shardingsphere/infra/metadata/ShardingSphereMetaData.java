@@ -29,8 +29,6 @@ import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 @Getter
 public final class ShardingSphereMetaData {
     
-    private final String schemaName;
-    
     private final DataSourcesMetaData dataSourcesMetaData;
     
     private final RuleSchemaMetaData ruleSchemaMetaData;
