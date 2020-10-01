@@ -334,7 +334,8 @@ generatedOption
     ;
 
 dataTypeGenericOption
-    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition | referenceDefinition | COMMENT STRING_
+    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition | referenceDefinition 
+    | COMMENT STRING_ | ON UPDATE CURRENT_TIMESTAMP (LP_ NUMBER_ RP_)*
     ;
 
 checkConstraintDefinition

@@ -67,6 +67,16 @@
         <output sql="INSERT INTO t_account_1(amount, status, account_id) VALUES (1000, 'test🍎😀', 1)" />
     </rewrite-assertion>
     
+    <rewrite-assertion id="insert_values_with_columns_with_binary_operation_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account (account_id, amount, status) VALUES (?, ?, ?)" parameters="100, account_id + 100, OK" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) VALUES (?, ?, ?)" parameters="100, account_id + 100, OK" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="insert_values_with_columns_with_binary_operation_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account (account_id, amount, status) VALUES (100, account_id + 100, OK)" />
+        <output sql="INSERT INTO t_account_0 (account_id, amount, status) VALUES (100, account_id + 100, OK)" />
+    </rewrite-assertion>
+    
     <rewrite-assertion id="insert_multiple_values_with_columns_with_id_for_parameters">
         <input sql="INSERT INTO t_account (account_id, amount, status) VALUES (100, 0, 'OK'), (?, ?, ?), (102, 2000, 'OK'), (?, ?, ?), (?, ?, ?), (105, 5000, 'OK')" parameters="101, 1000, OK, 103, 3000, OK, 104, 4000, OK" />
         <output sql="INSERT INTO t_account_0 (account_id, amount, status) VALUES (100, 0, 'OK'), (102, 2000, 'OK'), (?, ?, ?)" parameters="104, 4000, OK" />
