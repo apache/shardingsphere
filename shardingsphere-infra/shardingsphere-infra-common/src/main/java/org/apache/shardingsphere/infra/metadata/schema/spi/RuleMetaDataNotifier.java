@@ -27,6 +27,7 @@ public interface RuleMetaDataNotifier extends OrderedSPI<RuleSchemaMetaData> {
     
     /**
      * Notify rule meta data changed.
+     * 
      * @param schemaName schema name
      * @param metaData meta data
      */

@@ -43,7 +43,7 @@ public abstract class AbstractMetaDataRefreshStrategyTest {
     private ShardingSphereMetaData buildMetaData() {
         SchemaMetaData schemaMetaData = new SchemaMetaData(ImmutableMap.of(
                 "t_order", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", 1, "String", false, false, false)), Collections.singletonList(new IndexMetaData("index")))));
-        return new ShardingSphereMetaData("sharding_db", null, new RuleSchemaMetaData(schemaMetaData, ImmutableMap.of("t_order_item", Lists.newArrayList("t_order_item"))));
+        return new ShardingSphereMetaData(null, new RuleSchemaMetaData(schemaMetaData, ImmutableMap.of("t_order_item", Lists.newArrayList("t_order_item"))));
     }
 }
 

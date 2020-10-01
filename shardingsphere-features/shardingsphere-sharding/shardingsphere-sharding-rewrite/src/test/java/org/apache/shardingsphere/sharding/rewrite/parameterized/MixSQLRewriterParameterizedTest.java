@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.datasource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
@@ -121,7 +121,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
         when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
         when(ruleSchemaMetaData.getSchemaMetaData()).thenReturn(schemaMetaData);
-        return new ShardingSphereMetaData("sharding_db", mock(DataSourcesMetaData.class), ruleSchemaMetaData);
+        return new ShardingSphereMetaData(mock(DataSourcesMetaData.class), ruleSchemaMetaData);
     }
     
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {

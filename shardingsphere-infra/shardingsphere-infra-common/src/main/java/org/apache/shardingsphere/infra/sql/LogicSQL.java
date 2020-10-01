@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.sql;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import java.util.List;

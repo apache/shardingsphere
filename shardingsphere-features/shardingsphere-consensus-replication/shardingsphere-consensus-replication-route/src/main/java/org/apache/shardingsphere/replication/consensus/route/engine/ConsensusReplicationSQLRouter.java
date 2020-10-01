@@ -46,7 +46,7 @@ public final class ConsensusReplicationSQLRouter implements SQLRouter<ConsensusR
                 replicaRoutingRule.getDataSourceName());
         Map<String, ConsensusReplicationGroup> replicaGroups = Collections.singletonMap(ConsensusReplicationGroup.BLANK_CONSENSUS_REPLICATION_GROUP_KEY, replicaGroup);
         result.getRouteStageContexts().put(getTypeClass(), 
-                new ConsensusReplicationRouteStageContext(logicSQL.getSchema().getMetaData().getSchemaName(), replicaGroups, logicSQL.getSqlStatementContext().isReadOnly()));
+                new ConsensusReplicationRouteStageContext(logicSQL.getSchema().getName(), replicaGroups, logicSQL.getSqlStatementContext().isReadOnly()));
         return result;
     }
     
@@ -65,7 +65,7 @@ public final class ConsensusReplicationSQLRouter implements SQLRouter<ConsensusR
             }
         }
         routeContext.getRouteStageContexts().put(getTypeClass(), 
-                new ConsensusReplicationRouteStageContext(logicSQL.getSchema().getMetaData().getSchemaName(), replicaGroups, logicSQL.getSqlStatementContext().isReadOnly()));
+                new ConsensusReplicationRouteStageContext(logicSQL.getSchema().getName(), replicaGroups, logicSQL.getSqlStatementContext().isReadOnly()));
     }
     
     private void routeReplicaGroups(final Collection<RouteMapper> routeMappers, final ConsensusReplicationRule rule, final Map<String, ConsensusReplicationGroup> replicaGroups) {

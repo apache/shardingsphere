@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.hint.HintManager;
@@ -207,8 +207,8 @@ public final class ShardingCTLHintBackendHandlerTest {
     
     private Map<String, SchemaContext> getSchemaContextMap() {
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
-        when(shardingSphereSchema.getMetaData()).thenReturn(new ShardingSphereMetaData("sharding_db", mock(DataSourcesMetaData.class),
-                new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap.of("user", mock(TableMetaData.class))), Collections.emptyMap())));
+        when(shardingSphereSchema.getMetaData()).thenReturn(
+                new ShardingSphereMetaData(mock(DataSourcesMetaData.class), new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap.of("user", mock(TableMetaData.class))), Collections.emptyMap())));
         when(shardingSphereSchema.isComplete()).thenReturn(true);
         SchemaContext result = new SchemaContext(shardingSphereSchema, null);
         return Collections.singletonMap("schema", result);

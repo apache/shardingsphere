@@ -43,7 +43,7 @@ import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.SchemaContextsBuilder;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
@@ -299,7 +299,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     }
     
     private ShardingSphereSchema getChangedShardingSphereSchema(final ShardingSphereSchema oldShardingSphereSchema, final RuleSchemaMetaData newRuleSchemaMetaData, final String schemaName) {
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(schemaName, oldShardingSphereSchema.getMetaData().getDataSourcesMetaData(), newRuleSchemaMetaData);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(oldShardingSphereSchema.getMetaData().getDataSourcesMetaData(), newRuleSchemaMetaData);
         return new ShardingSphereSchema(schemaName, oldShardingSphereSchema.getConfigurations(), oldShardingSphereSchema.getRules(), oldShardingSphereSchema.getDataSources(), metaData);
     }
     
