@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
-import org.apache.shardingsphere.infra.sql.LogicSQLContext;
+import org.apache.shardingsphere.infra.sql.LogicSQL;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ExecutorConstant;
@@ -256,18 +256,18 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private ExecutionContext createExecutionContext() {
-        LogicSQLContext logicSQL = createLogicSQLContext();
+        LogicSQL logicSQL = createLogicSQL();
         ExecutionContext result = new KernelProcessor().generateExecutionContext(logicSQL, schemaContexts.getProps());
         findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.addAll(generatedKey.getGeneratedValues()));
         logSQL(logicSQL, result);
         return result;
     }
     
-    private LogicSQLContext createLogicSQLContext() {
+    private LogicSQL createLogicSQL() {
         List<Object> parameters = new ArrayList<>(getParameters());
         SchemaMetaData schemaMetaData = schemaContexts.getDefaultSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getSchemaMetaData();
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, parameters, sqlStatement);
-        return new LogicSQLContext(schemaContexts.getDefaultSchemaContext().getSchema(), sqlStatementContext, sql, parameters);
+        return new LogicSQL(schemaContexts.getDefaultSchemaContext().getSchema(), sqlStatementContext, sql, parameters);
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
@@ -309,7 +309,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 ? ((InsertStatementContext) executionContext.getSqlStatementContext()).getGeneratedKeyContext() : Optional.empty();
     }
     
-    private void logSQL(final LogicSQLContext logicSQL, final ExecutionContext executionContext) {
+    private void logSQL(final LogicSQL logicSQL, final ExecutionContext executionContext) {
         if (schemaContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             SQLLogger.logSQL(logicSQL, schemaContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
         }

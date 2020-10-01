@@ -25,11 +25,11 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 import java.util.List;
 
 /**
- * Logic SQL context.
+ * Logic SQL.
  */
 @RequiredArgsConstructor
 @Getter
-public final class LogicSQLContext {
+public final class LogicSQL {
     
     private final ShardingSphereSchema schema;
     

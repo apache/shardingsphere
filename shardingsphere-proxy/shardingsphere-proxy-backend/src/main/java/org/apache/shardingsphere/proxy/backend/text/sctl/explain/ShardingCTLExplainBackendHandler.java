@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.sctl.explain;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
-import org.apache.shardingsphere.infra.sql.LogicSQLContext;
+import org.apache.shardingsphere.infra.sql.LogicSQL;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -71,19 +71,19 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
         if (!schemaContext.getSchema().isComplete()) {
             throw new RuleNotExistsException();
         }
-        LogicSQLContext logicSQLContext = createLogicSQLContext(schemaContext, explainStatement.get());
-        executionUnits = new KernelProcessor().generateExecutionContext(logicSQLContext, ProxyContext.getInstance().getSchemaContexts().getProps()).getExecutionUnits().iterator();
+        LogicSQL logicSQL = createLogicSQL(schemaContext, explainStatement.get());
+        executionUnits = new KernelProcessor().generateExecutionContext(logicSQL, ProxyContext.getInstance().getSchemaContexts().getProps()).getExecutionUnits().iterator();
         queryHeaders = new ArrayList<>(2);
         queryHeaders.add(new QueryHeader("", "", "datasource_name", "", 255, Types.CHAR, 0, false, false, false, false));
         queryHeaders.add(new QueryHeader("", "", "sql", "", 255, Types.CHAR, 0, false, false, false, false));
         return new QueryResponse(queryHeaders);
     }
     
-    private LogicSQLContext createLogicSQLContext(final SchemaContext schemaContext, final ShardingCTLExplainStatement explainStatement) {
+    private LogicSQL createLogicSQL(final SchemaContext schemaContext, final ShardingCTLExplainStatement explainStatement) {
         SchemaMetaData schemaMetaData = schemaContext.getSchema().getMetaData().getRuleSchemaMetaData().getSchemaMetaData();
         SQLStatement sqlStatement = schemaContext.getRuntimeContext().getSqlParserEngine().parse(explainStatement.getSql(), false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, Collections.emptyList(), sqlStatement);
-        return new LogicSQLContext(schemaContext.getSchema(), sqlStatementContext, explainStatement.getSql(), Collections.emptyList());
+        return new LogicSQL(schemaContext.getSchema(), sqlStatementContext, explainStatement.getSql(), Collections.emptyList());
     }
     
     @Override
