@@ -123,7 +123,7 @@ public final class SchemaContextsBuilder {
         long start = System.currentTimeMillis();
         DataSourceMetaDatas dataSourceMetas = new DataSourceMetaDatas(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
         RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataLoader(rules).load(databaseType, dataSourceMap, props);
-        ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData, schemaName);
+        ShardingSphereMetaData result = new ShardingSphereMetaData(schemaName, dataSourceMetas, ruleSchemaMetaData);
         log.info("Load meta data for schema {} finished, cost {} milliseconds.", schemaName, System.currentTimeMillis() - start);
         return result;
     }

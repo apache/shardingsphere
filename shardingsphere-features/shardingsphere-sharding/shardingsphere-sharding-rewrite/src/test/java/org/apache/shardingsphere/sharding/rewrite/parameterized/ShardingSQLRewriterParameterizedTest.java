@@ -116,7 +116,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
         when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
         when(ruleSchemaMetaData.getSchemaMetaData()).thenReturn(schemaMetaData);
-        return new ShardingSphereMetaData(mock(DataSourceMetaDatas.class), ruleSchemaMetaData, "sharding_db");
+        return new ShardingSphereMetaData("sharding_db", mock(DataSourceMetaDatas.class), ruleSchemaMetaData);
     }
     
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {

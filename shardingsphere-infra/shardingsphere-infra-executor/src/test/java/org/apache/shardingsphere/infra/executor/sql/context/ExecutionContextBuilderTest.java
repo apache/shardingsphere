@@ -55,7 +55,7 @@ public final class ExecutionContextBuilderTest {
         DataSourceMetaDatas dataSourceMetaDatas = mock(DataSourceMetaDatas.class);
         String firstDataSourceName = "firstDataSourceName";
         when(dataSourceMetaDatas.getAllInstanceDataSourceNames()).thenReturn(Arrays.asList(firstDataSourceName, "lastDataSourceName"));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(dataSourceMetaDatas, buildRuleSchemaMetaData(), "sharding_db");
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", dataSourceMetaDatas, buildRuleSchemaMetaData());
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(metaData, genericSQLRewriteResult, mock(SQLStatementContext.class));
         Collection<ExecutionUnit> expected = Collections.singletonList(new ExecutionUnit(firstDataSourceName, new SQLUnit(sql, parameters)));
         assertThat(actual, is(expected));
@@ -70,7 +70,7 @@ public final class ExecutionContextBuilderTest {
         Map<RouteUnit, SQLRewriteUnit> sqlRewriteUnits = new HashMap<>(2, 1);
         sqlRewriteUnits.put(routeUnit1, sqlRewriteUnit1);
         sqlRewriteUnits.put(routeUnit2, sqlRewriteUnit2);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(mock(DataSourceMetaDatas.class), buildRuleSchemaMetaData(), "sharding_db");
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", mock(DataSourceMetaDatas.class), buildRuleSchemaMetaData());
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(metaData, new RouteSQLRewriteResult(sqlRewriteUnits), mock(SQLStatementContext.class));
         ExecutionUnit expectedUnit1 = new ExecutionUnit("actualName1", new SQLUnit("sql1", Collections.singletonList("parameter1")));
         ExecutionUnit expectedUnit2 = new ExecutionUnit("actualName2", new SQLUnit("sql2", Collections.singletonList("parameter2")));
@@ -88,7 +88,7 @@ public final class ExecutionContextBuilderTest {
         Map<RouteUnit, SQLRewriteUnit> sqlRewriteUnits = new HashMap<>(2, 1);
         sqlRewriteUnits.put(routeUnit2, sqlRewriteUnit2);
         RuleSchemaMetaData ruleSchemaMetaData = buildRuleSchemaMetaDataWithoutPrimaryKey();
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(mock(DataSourceMetaDatas.class), ruleSchemaMetaData, "sharding_db");
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", mock(DataSourceMetaDatas.class), ruleSchemaMetaData);
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(metaData, new RouteSQLRewriteResult(sqlRewriteUnits), mock(SQLStatementContext.class));
         ExecutionUnit expectedUnit2 = new ExecutionUnit("actualName2", new SQLUnit("sql2", Collections.singletonList("parameter2")));
         Collection<ExecutionUnit> expected = new LinkedHashSet<>(1, 1);
@@ -104,7 +104,7 @@ public final class ExecutionContextBuilderTest {
                 new ColumnMetaData("status", Types.INTEGER, "int", false, false, false)), Collections.emptySet()));
         tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
         Map<String, Collection<String>> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
-        unconfiguredSchemaMetaDataMap.put("ds_0", Arrays.asList("t_category"));
+        unconfiguredSchemaMetaDataMap.put("ds_0", Collections.singletonList("t_category"));
         return new RuleSchemaMetaData(new SchemaMetaData(tableMetaDataMap), unconfiguredSchemaMetaDataMap);
     }
     
@@ -120,7 +120,7 @@ public final class ExecutionContextBuilderTest {
                 new ColumnMetaData("c_date", Types.TIMESTAMP, "timestamp", false, false, false)), Collections.emptySet()));
         tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
         Map<String, Collection<String>> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
-        unconfiguredSchemaMetaDataMap.put("ds_0", Arrays.asList("t_category"));
+        unconfiguredSchemaMetaDataMap.put("ds_0", Collections.singletonList("t_category"));
         return new RuleSchemaMetaData(new SchemaMetaData(tableMetaDataMap), unconfiguredSchemaMetaDataMap);
     }
 }
