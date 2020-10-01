@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.parameterized;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.datasource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.datasource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
@@ -101,6 +102,6 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
         RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
         when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
         when(ruleSchemaMetaData.getSchemaMetaData()).thenReturn(schemaMetaData);
-        return new ShardingSphereMetaData(mock(DataSourcesMetaData.class), ruleSchemaMetaData);
+        return new ShardingSphereMetaData(mock(DataSourcesMetaData.class), ruleSchemaMetaData, mock(CachedDatabaseMetaData.class));
     }
 }

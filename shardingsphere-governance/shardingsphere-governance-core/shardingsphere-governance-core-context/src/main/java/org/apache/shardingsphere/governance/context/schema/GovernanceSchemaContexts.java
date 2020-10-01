@@ -292,14 +292,15 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         Map<String, SchemaContext> result = new HashMap<>(schemaContexts.getSchemaContextMap().size());
         for (Entry<String, SchemaContext> entry : schemaContexts.getSchemaContextMap().entrySet()) {
             RuntimeContext runtimeContext = entry.getValue().getRuntimeContext();
-            result.put(entry.getKey(), new SchemaContext(entry.getValue().getSchema(), new RuntimeContext(runtimeContext.getCachedDatabaseMetaData(),
-                    new ExecutorKernel(props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE)), runtimeContext.getSqlParserEngine())));
+            result.put(entry.getKey(), new SchemaContext(
+                    entry.getValue().getSchema(), new RuntimeContext(new ExecutorKernel(props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE)), runtimeContext.getSqlParserEngine())));
         }
         return result;
     }
     
     private ShardingSphereSchema getChangedShardingSphereSchema(final ShardingSphereSchema oldShardingSphereSchema, final RuleSchemaMetaData newRuleSchemaMetaData, final String schemaName) {
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(oldShardingSphereSchema.getMetaData().getDataSourcesMetaData(), newRuleSchemaMetaData);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                oldShardingSphereSchema.getMetaData().getDataSourcesMetaData(), newRuleSchemaMetaData, oldShardingSphereSchema.getMetaData().getCachedDatabaseMetaData());
         return new ShardingSphereSchema(schemaName, oldShardingSphereSchema.getConfigurations(), oldShardingSphereSchema.getRules(), oldShardingSphereSchema.getDataSources(), metaData);
     }
     

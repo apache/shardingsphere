@@ -29,8 +29,6 @@ import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine
 @Getter
 public final class RuntimeContext {
     
-    private final CachedDatabaseMetaData cachedDatabaseMetaData;
-    
     private final ExecutorKernel executorKernel;
     
     private final ShardingSphereSQLParserEngine sqlParserEngine;
