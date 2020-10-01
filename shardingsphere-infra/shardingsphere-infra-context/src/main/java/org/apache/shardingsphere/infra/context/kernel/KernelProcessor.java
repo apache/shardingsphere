@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.context.kernel;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.sql.LogicSQLContext;
+import org.apache.shardingsphere.infra.sql.LogicSQL;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -39,18 +39,18 @@ public final class KernelProcessor {
     /**
      * Generate execution context.
      *
-     * @param logicSQLContext logic SQL context
+     * @param logicSQL logic SQL
      * @param props configuration properties
      * @return execution context
      */
-    public ExecutionContext generateExecutionContext(final LogicSQLContext logicSQLContext, final ConfigurationProperties props) {
-        Collection<ShardingSphereRule> rules = logicSQLContext.getSchemaContext().getSchema().getRules();
-        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(logicSQLContext.getSchemaContext().getSchema().getMetaData(), props, rules);
-        SQLStatementContext<?> sqlStatementContext = logicSQLContext.getSqlStatementContext();
-        RouteContext routeContext = sqlRouteEngine.route(sqlStatementContext, logicSQLContext.getSql(), logicSQLContext.getParameters());
-        SQLRewriteEntry rewriteEntry = new SQLRewriteEntry(logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(), props, rules);
-        SQLRewriteResult rewriteResult = rewriteEntry.rewrite(logicSQLContext.getSql(), logicSQLContext.getParameters(), sqlStatementContext, routeContext);
-        Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(logicSQLContext.getSchemaContext().getSchema().getMetaData(), rewriteResult, sqlStatementContext);
+    public ExecutionContext generateExecutionContext(final LogicSQL logicSQL, final ConfigurationProperties props) {
+        Collection<ShardingSphereRule> rules = logicSQL.getSchema().getRules();
+        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(props, rules);
+        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+        RouteContext routeContext = sqlRouteEngine.route(logicSQL);
+        SQLRewriteEntry rewriteEntry = new SQLRewriteEntry(logicSQL.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(), props, rules);
+        SQLRewriteResult rewriteResult = rewriteEntry.rewrite(logicSQL.getSql(), logicSQL.getParameters(), sqlStatementContext, routeContext);
+        Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(logicSQL.getSchema().getMetaData(), rewriteResult, sqlStatementContext);
         return new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
     }
 }

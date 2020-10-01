@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.communication;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
-import org.apache.shardingsphere.infra.context.sql.LogicSQLContext;
+import org.apache.shardingsphere.infra.sql.LogicSQL;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine.jdbc.JDBCExecuteEngine;
@@ -62,8 +62,8 @@ public final class DatabaseCommunicationEngineFactory {
      * @return text protocol backend handler
      */
     public DatabaseCommunicationEngine newTextProtocolInstance(final SQLStatement sqlStatement, final String sql, final BackendConnection backendConnection) {
-        LogicSQLContext logicSQLContext = createLogicSQLContext(sqlStatement, sql, Collections.emptyList(), backendConnection);
-        return new JDBCDatabaseCommunicationEngine(logicSQLContext, new JDBCExecuteEngine(backendConnection, new StatementAccessor()));
+        LogicSQL logicSQL = createLogicSQL(sqlStatement, sql, Collections.emptyList(), backendConnection);
+        return new JDBCDatabaseCommunicationEngine(logicSQL, new JDBCExecuteEngine(backendConnection, new StatementAccessor()));
     }
     
     /**
@@ -76,14 +76,14 @@ public final class DatabaseCommunicationEngineFactory {
      * @return binary protocol backend handler
      */
     public DatabaseCommunicationEngine newBinaryProtocolInstance(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
-        LogicSQLContext logicSQLContext = createLogicSQLContext(sqlStatement, sql, new ArrayList<>(parameters), backendConnection);
-        return new JDBCDatabaseCommunicationEngine(logicSQLContext, new JDBCExecuteEngine(backendConnection, new PreparedStatementAccessor()));
+        LogicSQL logicSQL = createLogicSQL(sqlStatement, sql, new ArrayList<>(parameters), backendConnection);
+        return new JDBCDatabaseCommunicationEngine(logicSQL, new JDBCExecuteEngine(backendConnection, new PreparedStatementAccessor()));
     }
     
-    private LogicSQLContext createLogicSQLContext(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
+    private LogicSQL createLogicSQL(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
         SchemaContext schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
         SchemaMetaData schemaMetaData = schemaContext.getSchema().getMetaData().getRuleSchemaMetaData().getSchemaMetaData();
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, parameters, sqlStatement);
-        return new LogicSQLContext(schemaContext, sqlStatementContext, sql, parameters);
+        return new LogicSQL(schemaContext.getSchema(), sqlStatementContext, sql, parameters);
     }
 }

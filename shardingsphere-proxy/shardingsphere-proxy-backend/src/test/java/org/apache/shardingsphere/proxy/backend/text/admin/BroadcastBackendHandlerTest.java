@@ -47,6 +47,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -91,8 +92,8 @@ public final class BroadcastBackendHandlerTest {
     private Map<String, SchemaContext> getSchemaContextMap() {
         Map<String, SchemaContext> result = new HashMap<>(10);
         for (int i = 0; i < 10; i++) {
-            SchemaContext schemaContext = mock(SchemaContext.class);
-            when(schemaContext.isComplete()).thenReturn(true);
+            SchemaContext schemaContext = mock(SchemaContext.class, RETURNS_DEEP_STUBS);
+            when(schemaContext.getSchema().isComplete()).thenReturn(true);
             result.put(String.format(SCHEMA_PATTERN, i), schemaContext);
         }
         return result;

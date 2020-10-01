@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.context.schema;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 
 /**
  * Schema context.
@@ -31,20 +32,4 @@ public final class SchemaContext {
     private final ShardingSphereSchema schema;
     
     private final RuntimeContext runtimeContext;
-    
-    /**
-     * Is complete schema context.
-     *
-     * @return is complete schema context or not
-     */
-    public boolean isComplete() {
-        return !schema.getRules().isEmpty() && !schema.getDataSources().isEmpty();
-    }
-    
-    /**
-     * Close executorKernel in runtimeContext.
-     */
-    public void close() {
-        runtimeContext.getExecutorKernel().close();
-    }
 }

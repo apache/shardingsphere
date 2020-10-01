@@ -15,27 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.sql;
+package org.apache.shardingsphere.infra.metadata.fixture.datasource;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.context.schema.SchemaContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import javax.sql.DataSource;
+import java.io.Closeable;
 
-import java.util.List;
-
-/**
- * Logic SQL context.
- */
-@RequiredArgsConstructor
-@Getter
-public final class LogicSQLContext {
-    
-    private final SchemaContext schemaContext;
-    
-    private final SQLStatementContext<?> sqlStatementContext;
-    
-    private final String sql;
-    
-    private final List<Object> parameters;
+public interface CloseableDataSource extends DataSource, Closeable {
 }

@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.schema;
+package org.apache.shardingsphere.infra.metadata.schema;
 
-import org.apache.shardingsphere.infra.context.fixture.CloseableDataSource;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.fixture.datasource.CloseableDataSource;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -32,6 +34,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -47,6 +51,27 @@ public final class ShardingSphereSchemaTest {
     
     @Mock
     private DataSource dataSource2;
+    
+    @Test
+    public void assertIsComplete() {
+        ShardingSphereSchema schema = new ShardingSphereSchema("name", Collections.singleton(mock(RuleConfiguration.class)),
+                Collections.singleton(mock(ShardingSphereRule.class)), Collections.singletonMap("ds", mock(DataSource.class)), mock(ShardingSphereMetaData.class));
+        assertTrue(schema.isComplete());
+    }
+    
+    @Test
+    public void assertIsNotCompleteWithoutRule() {
+        ShardingSphereSchema schema = new ShardingSphereSchema("name", Collections.emptyList(),
+                Collections.emptyList(), Collections.singletonMap("ds", mock(DataSource.class)), mock(ShardingSphereMetaData.class));
+        assertFalse(schema.isComplete());
+    }
+    
+    @Test
+    public void assertIsNotCompleteWithoutDataSource() {
+        ShardingSphereSchema schema = new ShardingSphereSchema("name", Collections.singleton(mock(RuleConfiguration.class)),
+                Collections.singleton(mock(ShardingSphereRule.class)), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
+        assertFalse(schema.isComplete());
+    }
     
     @Test
     public void assertCloseDataSources() throws SQLException, IOException {

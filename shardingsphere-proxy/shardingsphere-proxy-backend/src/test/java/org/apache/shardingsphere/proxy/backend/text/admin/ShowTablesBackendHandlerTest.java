@@ -43,6 +43,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -68,8 +69,8 @@ public final class ShowTablesBackendHandlerTest {
     private Map<String, SchemaContext> getSchemaContextMap() {
         Map<String, SchemaContext> result = new HashMap<>(10);
         for (int i = 0; i < 10; i++) {
-            SchemaContext context = mock(SchemaContext.class);
-            when(context.isComplete()).thenReturn(false);
+            SchemaContext context = mock(SchemaContext.class, RETURNS_DEEP_STUBS);
+            when(context.getSchema().isComplete()).thenReturn(false);
             result.put(String.format(SCHEMA_PATTERN, i), context);
         }
         return result;

@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.shadow.route.engine;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.route.SQLRouter;
+import org.apache.shardingsphere.infra.sql.LogicSQL;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.route.engine.judge.ShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.route.engine.judge.impl.PreparedShadowDataSourceJudgeEngine;
@@ -42,17 +42,16 @@ import java.util.List;
 public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
     
     @Override
-    public RouteContext createRouteContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
-                                           final ShardingSphereMetaData metaData, final ShadowRule rule, final ConfigurationProperties props) {
+    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShadowRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
-        if (!(sqlStatementContext.getSqlStatement() instanceof DMLStatement)) {
+        if (!(logicSQL.getSqlStatementContext().getSqlStatement() instanceof DMLStatement)) {
             rule.getShadowMappings().forEach((key, value) -> {
                 result.getRouteUnits().add(new RouteUnit(new RouteMapper(key, key), Collections.emptyList()));
                 result.getRouteUnits().add(new RouteUnit(new RouteMapper(value, value), Collections.emptyList()));
             });
             return result;
         }
-        if (isShadow(sqlStatementContext, parameters, rule)) {
+        if (isShadow(logicSQL.getSqlStatementContext(), logicSQL.getParameters(), rule)) {
             rule.getShadowMappings().values().forEach(each -> result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
         } else {
             rule.getShadowMappings().keySet().forEach(each -> result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
@@ -61,10 +60,9 @@ public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
     }
     
     @Override
-    public void decorateRouteContext(final RouteContext routeContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, 
-                                     final ShardingSphereMetaData metaData, final ShadowRule rule, final ConfigurationProperties props) {
+    public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ShadowRule rule, final ConfigurationProperties props) {
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
-        if (!(sqlStatementContext.getSqlStatement() instanceof DMLStatement)) {
+        if (!(logicSQL.getSqlStatementContext().getSqlStatement() instanceof DMLStatement)) {
             for (RouteUnit each : routeContext.getRouteUnits()) {
                 String shadowDataSourceName = rule.getShadowMappings().get(each.getDataSourceMapper().getActualName());
                 toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), shadowDataSourceName), each.getTableMappers()));
@@ -73,7 +71,7 @@ public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
             return;
         }
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
-        if (isShadow(sqlStatementContext, parameters, rule)) {
+        if (isShadow(logicSQL.getSqlStatementContext(), logicSQL.getParameters(), rule)) {
             for (RouteUnit each : routeContext.getRouteUnits()) {
                 toBeRemoved.add(each);
                 String shadowDataSourceName = rule.getShadowMappings().get(each.getDataSourceMapper().getActualName());

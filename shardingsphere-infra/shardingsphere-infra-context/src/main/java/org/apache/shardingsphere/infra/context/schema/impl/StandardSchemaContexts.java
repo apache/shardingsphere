@@ -64,6 +64,6 @@ public final class StandardSchemaContexts implements SchemaContexts {
     
     @Override
     public void close() {
-        schemaContextMap.values().forEach(SchemaContext::close);
+        schemaContextMap.values().forEach(schemaContext -> schemaContext.getRuntimeContext().getExecutorKernel().close());
     }
 }
