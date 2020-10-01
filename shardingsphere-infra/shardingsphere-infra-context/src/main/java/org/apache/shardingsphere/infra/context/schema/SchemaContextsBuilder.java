@@ -97,19 +97,8 @@ public final class SchemaContextsBuilder {
     }
     
     private SchemaContext createSchemaContext(final String schemaName) throws SQLException {
-        Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
-        RuntimeContext runtimeContext = new RuntimeContext(createCachedDatabaseMetaData(dataSources).orElse(null), 
-                executorKernel, ShardingSphereSQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType)));
+        RuntimeContext runtimeContext = new RuntimeContext(executorKernel, ShardingSphereSQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType)));
         return new SchemaContext(createShardingSphereSchema(schemaName), runtimeContext);
-    }
-    
-    private Optional<CachedDatabaseMetaData> createCachedDatabaseMetaData(final Map<String, DataSource> dataSources) throws SQLException {
-        if (dataSources.isEmpty()) {
-            return Optional.empty();
-        }
-        try (Connection connection = dataSources.values().iterator().next().getConnection()) {
-            return Optional.of(new CachedDatabaseMetaData(connection.getMetaData()));
-        }
     }
     
     private ShardingSphereSchema createShardingSphereSchema(final String schemaName) throws SQLException {
@@ -123,7 +112,8 @@ public final class SchemaContextsBuilder {
         long start = System.currentTimeMillis();
         DataSourcesMetaData dataSourceMetas = new DataSourcesMetaData(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
         RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataLoader(rules).load(databaseType, dataSourceMap, props);
-        ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
+        CachedDatabaseMetaData cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSources.get(schemaName)).orElse(null);
+        ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData, cachedDatabaseMetaData);
         log.info("Load meta data for schema {} finished, cost {} milliseconds.", schemaName, System.currentTimeMillis() - start);
         return result;
     }
@@ -138,5 +128,14 @@ public final class SchemaContextsBuilder {
             }
         }
         return result;
+    }
+    
+    private Optional<CachedDatabaseMetaData> createCachedDatabaseMetaData(final Map<String, DataSource> dataSources) throws SQLException {
+        if (dataSources.isEmpty()) {
+            return Optional.empty();
+        }
+        try (Connection connection = dataSources.values().iterator().next().getConnection()) {
+            return Optional.of(new CachedDatabaseMetaData(connection.getMetaData()));
+        }
     }
 }

@@ -24,13 +24,14 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.datasource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.datasource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
@@ -207,8 +208,8 @@ public final class ShardingCTLHintBackendHandlerTest {
     
     private Map<String, SchemaContext> getSchemaContextMap() {
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
-        when(shardingSphereSchema.getMetaData()).thenReturn(
-                new ShardingSphereMetaData(mock(DataSourcesMetaData.class), new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap.of("user", mock(TableMetaData.class))), Collections.emptyMap())));
+        when(shardingSphereSchema.getMetaData()).thenReturn(new ShardingSphereMetaData(mock(DataSourcesMetaData.class), 
+                new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap.of("user", mock(TableMetaData.class))), Collections.emptyMap()), mock(CachedDatabaseMetaData.class)));
         when(shardingSphereSchema.isComplete()).thenReturn(true);
         SchemaContext result = new SchemaContext(shardingSphereSchema, null);
         return Collections.singletonMap("schema", result);

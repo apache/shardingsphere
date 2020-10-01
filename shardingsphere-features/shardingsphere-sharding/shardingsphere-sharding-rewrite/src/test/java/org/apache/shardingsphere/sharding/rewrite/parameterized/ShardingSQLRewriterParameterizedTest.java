@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sharding.rewrite.parameterized;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.datasource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.datasource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.sql.LogicSQL;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -116,7 +117,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
         when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
         when(ruleSchemaMetaData.getSchemaMetaData()).thenReturn(schemaMetaData);
-        return new ShardingSphereMetaData(mock(DataSourcesMetaData.class), ruleSchemaMetaData);
+        return new ShardingSphereMetaData(mock(DataSourcesMetaData.class), ruleSchemaMetaData, mock(CachedDatabaseMetaData.class));
     }
     
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {

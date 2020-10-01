@@ -57,7 +57,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     private DatabaseMetaData currentDatabaseMetaData;
     
     public ShardingSphereDatabaseMetaData(final AbstractConnectionAdapter connection) {
-        super(connection.getSchemaContexts().getDefaultSchemaContext().getRuntimeContext().getCachedDatabaseMetaData());
+        super(connection.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getCachedDatabaseMetaData());
         this.connection = connection;
         rules = connection.getSchemaContexts().getDefaultSchemaContext().getSchema().getRules();
         datasourceNames = connection.getDataSourceMap().keySet();

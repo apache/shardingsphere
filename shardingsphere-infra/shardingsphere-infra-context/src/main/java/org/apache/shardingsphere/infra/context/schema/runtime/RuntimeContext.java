@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.context.schema.runtime;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
-import org.apache.shardingsphere.infra.metadata.datasource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 
 /**
@@ -29,8 +28,6 @@ import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine
 @RequiredArgsConstructor
 @Getter
 public final class RuntimeContext {
-    
-    private final CachedDatabaseMetaData cachedDatabaseMetaData;
     
     private final ExecutorKernel executorKernel;
     
