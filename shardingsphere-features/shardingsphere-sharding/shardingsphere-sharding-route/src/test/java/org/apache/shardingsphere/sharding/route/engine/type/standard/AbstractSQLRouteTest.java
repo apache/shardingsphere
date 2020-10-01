@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
+import org.apache.shardingsphere.infra.metadata.datasource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
@@ -65,7 +65,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         return result;
     }
     
-    private DataSourceMetaDatas buildDataSourceMetas() {
+    private DataSourcesMetaData buildDataSourceMetas() {
         Map<String, DatabaseAccessConfiguration> dataSourceInfoMap = new HashMap<>(3, 1);
         DatabaseAccessConfiguration mainDatabaseAccessConfig = new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
         DatabaseAccessConfiguration databaseAccessConfiguration0 = new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
@@ -73,7 +73,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         dataSourceInfoMap.put("main", mainDatabaseAccessConfig);
         dataSourceInfoMap.put("ds_0", databaseAccessConfiguration0);
         dataSourceInfoMap.put("ds_1", databaseAccessConfiguration1);
-        return new DataSourceMetaDatas(DatabaseTypes.getActualDatabaseType("MySQL"), dataSourceInfoMap);
+        return new DataSourcesMetaData(DatabaseTypes.getActualDatabaseType("MySQL"), dataSourceInfoMap);
     }
     
     private RuleSchemaMetaData buildRuleSchemaMetaData() {

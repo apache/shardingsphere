@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContext
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
+import org.apache.shardingsphere.infra.metadata.datasource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -207,7 +207,7 @@ public final class ShardingCTLHintBackendHandlerTest {
     
     private Map<String, SchemaContext> getSchemaContextMap() {
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
-        when(shardingSphereSchema.getMetaData()).thenReturn(new ShardingSphereMetaData("sharding_db", mock(DataSourceMetaDatas.class),
+        when(shardingSphereSchema.getMetaData()).thenReturn(new ShardingSphereMetaData("sharding_db", mock(DataSourcesMetaData.class),
                 new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap.of("user", mock(TableMetaData.class))), Collections.emptyMap())));
         when(shardingSphereSchema.isComplete()).thenReturn(true);
         SchemaContext result = new SchemaContext(shardingSphereSchema, null);

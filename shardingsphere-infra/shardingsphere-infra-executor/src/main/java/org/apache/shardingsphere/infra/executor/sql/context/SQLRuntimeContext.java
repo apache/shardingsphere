@@ -39,7 +39,7 @@ public final class SQLRuntimeContext {
     
     private final List<String> actualTables;
     
-    private final List<PrimaryKeyMetaData> primaryKeyMetaDatas;
+    private final List<PrimaryKeyMetaData> primaryKeysMetaData;
     
     @Setter
     private boolean readOnly;

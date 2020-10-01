@@ -31,15 +31,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class DataSourceMetaDatasTest {
+public final class DataSourcesMetaDataTest {
     
     @Test
     public void assertGetAllInstanceDataSourceNamesForShardingRuleByDifferentDataSource() {
         Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap = new HashMap<>(2, 1);
         databaseAccessConfigurationMap.put("ds_0", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_0", "test"));
         databaseAccessConfigurationMap.put("ds_1", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3307/db_1", "test"));
-        DataSourceMetaDatas dataSourceMetaDatas = new DataSourceMetaDatas(DatabaseTypes.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
-        Collection<String> allInstanceDataSourceNames = dataSourceMetaDatas.getAllInstanceDataSourceNames();
+        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypes.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
+        Collection<String> allInstanceDataSourceNames = dataSourcesMetaData.getAllInstanceDataSourceNames();
         assertNotNull(allInstanceDataSourceNames);
         assertThat(allInstanceDataSourceNames.size(), is(2));
         assertTrue(allInstanceDataSourceNames.contains("ds_0") && allInstanceDataSourceNames.contains("ds_1"));
@@ -50,8 +50,8 @@ public final class DataSourceMetaDatasTest {
         Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap = new HashMap<>(2, 1);
         databaseAccessConfigurationMap.put("ds_0", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_0", "test"));
         databaseAccessConfigurationMap.put("ds_1", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_1", "test"));
-        DataSourceMetaDatas dataSourceMetaDatas = new DataSourceMetaDatas(DatabaseTypes.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
-        Collection<String> allInstanceDataSourceNames = dataSourceMetaDatas.getAllInstanceDataSourceNames();
+        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypes.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
+        Collection<String> allInstanceDataSourceNames = dataSourcesMetaData.getAllInstanceDataSourceNames();
         assertNotNull(allInstanceDataSourceNames);
         assertThat(allInstanceDataSourceNames.size(), is(1));
         assertTrue(allInstanceDataSourceNames.contains("ds_0") || allInstanceDataSourceNames.contains("ds_1"));
@@ -62,8 +62,8 @@ public final class DataSourceMetaDatasTest {
         Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap = new HashMap<>(2, 1);
         databaseAccessConfigurationMap.put("ds_0", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_0", "test"));
         databaseAccessConfigurationMap.put("ds_1", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_1", "test"));
-        DataSourceMetaDatas dataSourceMetaDatas = new DataSourceMetaDatas(DatabaseTypes.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
-        assertThat(dataSourceMetaDatas.getDataSourceMetaData("ds_0").getCatalog(), is("db_0"));
+        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypes.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
+        assertThat(dataSourcesMetaData.getDataSourceMetaData("ds_0").getCatalog(), is("db_0"));
     }
     
     @Test
@@ -71,7 +71,7 @@ public final class DataSourceMetaDatasTest {
         Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap = new HashMap<>(2, 1);
         databaseAccessConfigurationMap.put("ds_0", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_0", "test"));
         databaseAccessConfigurationMap.put("ds_1", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_1", "test"));
-        DataSourceMetaDatas dataSourceMetaDatas = new DataSourceMetaDatas(DatabaseTypes.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
-        assertNull(dataSourceMetaDatas.getDataSourceMetaData("ds_0").getSchema());
+        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypes.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
+        assertNull(dataSourcesMetaData.getDataSourceMetaData("ds_0").getSchema());
     }
 }
