@@ -266,7 +266,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         List<Object> parameters = new ArrayList<>(getParameters());
         SchemaMetaData schemaMetaData = schemaContexts.getDefaultSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getSchemaMetaData();
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, parameters, sqlStatement);
-        return new LogicSQLContext(schemaContexts.getDefaultSchemaContext(), sqlStatementContext, sql, parameters);
+        return new LogicSQLContext(schemaContexts.getDefaultSchemaContext().getSchema(), sqlStatementContext, sql, parameters);
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {

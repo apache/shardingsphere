@@ -85,24 +85,24 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return merge(executionContext.getSqlStatementContext());
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private void refreshTableMetaData(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         if (null == sqlStatementContext) {
             return;
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
-            refreshStrategy.get().refreshMetaData(logicSQLContext.getSchemaContext().getSchema().getMetaData(), ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
-                    logicSQLContext.getSchemaContext().getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
+            refreshStrategy.get().refreshMetaData(logicSQLContext.getSchema().getMetaData(), ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
+                    logicSQLContext.getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
             GovernanceEventBus.getInstance().post(
-                    new MetaDataPersistEvent(logicSQLContext.getSchemaContext().getSchema().getName(), logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData()));
+                    new MetaDataPersistEvent(logicSQLContext.getSchema().getName(), logicSQLContext.getSchema().getMetaData().getRuleSchemaMetaData()));
         }
     }
     
     private Optional<TableMetaData> loadTableMetaData(final String tableName) throws SQLException {
-        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(logicSQLContext.getSchemaContext().getSchema().getRules());
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(logicSQLContext.getSchema().getRules());
         return loader.load(ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
-                logicSQLContext.getSchemaContext().getSchema().getDataSources(), tableName, ProxyContext.getInstance().getSchemaContexts().getProps());
+                logicSQLContext.getSchema().getDataSources(), tableName, ProxyContext.getInstance().getSchemaContexts().getProps());
     }
     
     private BackendResponse merge(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
@@ -122,14 +122,14 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private boolean isNeedAccumulate(final SQLStatementContext<?> sqlStatementContext) {
         Optional<DataNodeRoutedRule> dataNodeRoutedRule =
-                logicSQLContext.getSchemaContext().getSchema().getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
+                logicSQLContext.getSchema().getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
         return dataNodeRoutedRule.isPresent() && dataNodeRoutedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
-                logicSQLContext.getSchemaContext().getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(), 
-                ProxyContext.getInstance().getSchemaContexts().getProps(), logicSQLContext.getSchemaContext().getSchema().getRules());
+                logicSQLContext.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(), 
+                ProxyContext.getInstance().getSchemaContexts().getProps(), logicSQLContext.getSchema().getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     

@@ -304,7 +304,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         SchemaMetaData schemaMetaData = schemaContext.getSchema().getMetaData().getRuleSchemaMetaData().getSchemaMetaData();
         SQLStatement sqlStatement = schemaContext.getRuntimeContext().getSqlParserEngine().parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, Collections.emptyList(), sqlStatement);
-        return new LogicSQLContext(schemaContext, sqlStatementContext, sql, Collections.emptyList());
+        return new LogicSQLContext(schemaContext.getSchema(), sqlStatementContext, sql, Collections.emptyList());
     }
     
     private Collection<InputGroup<StatementExecuteUnit>> getInputGroups() throws SQLException {

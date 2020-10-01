@@ -84,6 +84,6 @@ public final class DatabaseCommunicationEngineFactory {
         SchemaContext schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
         SchemaMetaData schemaMetaData = schemaContext.getSchema().getMetaData().getRuleSchemaMetaData().getSchemaMetaData();
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, parameters, sqlStatement);
-        return new LogicSQLContext(schemaContext, sqlStatementContext, sql, parameters);
+        return new LogicSQLContext(schemaContext.getSchema(), sqlStatementContext, sql, parameters);
     }
 }

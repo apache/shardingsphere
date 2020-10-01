@@ -83,7 +83,7 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
         SchemaMetaData schemaMetaData = schemaContext.getSchema().getMetaData().getRuleSchemaMetaData().getSchemaMetaData();
         SQLStatement sqlStatement = schemaContext.getRuntimeContext().getSqlParserEngine().parse(explainStatement.getSql(), false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, Collections.emptyList(), sqlStatement);
-        return new LogicSQLContext(schemaContext, sqlStatementContext, explainStatement.getSql(), Collections.emptyList());
+        return new LogicSQLContext(schemaContext.getSchema(), sqlStatementContext, explainStatement.getSql(), Collections.emptyList());
     }
     
     @Override
