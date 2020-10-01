@@ -113,7 +113,7 @@ public final class ShardingRouteEngineFactory {
     private static ShardingRouteEngine getDCLRoutingEngine(final SQLStatementContext sqlStatementContext, final ShardingSphereMetaData metaData) {
         return isDCLForSingleTable(sqlStatementContext) 
                 ? new ShardingTableBroadcastRoutingEngine(metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData(), sqlStatementContext)
-                : new ShardingInstanceBroadcastRoutingEngine(metaData.getDataSourceMetaDatas());
+                : new ShardingInstanceBroadcastRoutingEngine(metaData.getDataSourcesMetaData());
     }
     
     private static boolean isDCLForSingleTable(final SQLStatementContext sqlStatementContext) {

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
+import org.apache.shardingsphere.infra.metadata.datasource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 
 /**
@@ -31,7 +31,7 @@ public final class ShardingSphereMetaData {
     
     private final String schemaName;
     
-    private final DataSourceMetaDatas dataSourceMetaDatas;
+    private final DataSourcesMetaData dataSourcesMetaData;
     
     private final RuleSchemaMetaData ruleSchemaMetaData;
 }
