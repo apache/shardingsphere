@@ -111,7 +111,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         return executeUpdate(inputGroups, (statement, sql) -> statement.executeUpdate(sql, columnNames), sqlStatementContext);
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private int executeUpdate(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final Updater updater, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback sqlExecutorCallback = new DefaultSQLExecutorCallback<Integer>(getSchemaContexts().getDatabaseType(), isExceptionThrown) {
@@ -122,7 +122,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
             }
         };
         List<Integer> results = getSqlExecutor().execute(inputGroups, sqlExecutorCallback);
-        refreshTableMetaData(getSchemaContexts().getDefaultSchemaContext(), sqlStatementContext);
+        refreshTableMetaData(getSchemaContexts().getDefaultSchemaContext().getSchema(), sqlStatementContext);
         if (isNeedAccumulate(
                 getSchemaContexts().getDefaultSchemaContext().getSchema().getRules().stream().filter(rule -> rule instanceof DataNodeRoutedRule).collect(Collectors.toList()), sqlStatementContext)) {
             return accumulate(results);
@@ -174,7 +174,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         return execute(inputGroups, (statement, sql) -> statement.execute(sql, columnNames), sqlStatementContext);
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private boolean execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final Executor executor, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback sqlExecutorCallback = new DefaultSQLExecutorCallback<Boolean>(getSchemaContexts().getDatabaseType(), isExceptionThrown) {
@@ -185,7 +185,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
             }
         };
         List<Boolean> result = getSqlExecutor().execute(inputGroups, sqlExecutorCallback);
-        refreshTableMetaData(getSchemaContexts().getDefaultSchemaContext(), sqlStatementContext);
+        refreshTableMetaData(getSchemaContexts().getDefaultSchemaContext().getSchema(), sqlStatementContext);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;
         }
