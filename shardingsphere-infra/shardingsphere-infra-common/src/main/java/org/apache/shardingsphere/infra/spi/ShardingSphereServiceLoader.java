@@ -35,16 +35,16 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereServiceLoader {
     
-    private static final Map<Class<?>, Collection<Class<?>>> SERVICE_MAP = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, Collection<Class<?>>> SERVICES = new ConcurrentHashMap<>();
     
     /**
-     * Register SPI service into map for new instance.
+     * Register service.
      *
-     * @param service service type
+     * @param service service class
      * @param <T> type of service
      */
     public static <T> void register(final Class<T> service) {
-        if (SERVICE_MAP.containsKey(service)) {
+        if (SERVICES.containsKey(service)) {
             return;
         }
         for (T each : ServiceLoader.load(service)) {
@@ -53,7 +53,7 @@ public final class ShardingSphereServiceLoader {
     }
     
     private static <T> void registerServiceClass(final Class<T> service, final T instance) {
-        Collection<Class<?>> serviceClasses = SERVICE_MAP.computeIfAbsent(service, unused -> new LinkedHashSet<>());
+        Collection<Class<?>> serviceClasses = SERVICES.computeIfAbsent(service, unused -> new LinkedHashSet<>());
         serviceClasses.add(instance.getClass());
     }
     
@@ -66,7 +66,7 @@ public final class ShardingSphereServiceLoader {
      */
     @SuppressWarnings("unchecked")
     public static <T> Collection<T> newServiceInstances(final Class<T> service) {
-        return SERVICE_MAP.containsKey(service) ? SERVICE_MAP.get(service).stream().map(each -> (T) newServiceInstance(each)).collect(Collectors.toList()) : Collections.emptyList();
+        return SERVICES.containsKey(service) ? SERVICES.get(service).stream().map(each -> (T) newServiceInstance(each)).collect(Collectors.toList()) : Collections.emptyList();
     }
     
     private static Object newServiceInstance(final Class<?> clazz) {
