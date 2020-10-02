@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepare;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
@@ -24,8 +25,6 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.p
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.infra.context.schema.SchemaContext;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
@@ -38,20 +37,14 @@ import java.util.LinkedList;
 /**
  * COM_STMT_PREPARE command executor for MySQL.
  */
+@RequiredArgsConstructor
 public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     private static final MySQLBinaryStatementRegistry PREPARED_STATEMENT_REGISTRY = MySQLBinaryStatementRegistry.getInstance();
     
     private final MySQLComStmtPreparePacket packet;
     
-    private final SchemaContext schema;
-    
     private int currentSequenceId;
-    
-    public MySQLComStmtPrepareExecutor(final MySQLComStmtPreparePacket packet, final BackendConnection backendConnection) {
-        this.packet = packet;
-        schema = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
-    }
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
