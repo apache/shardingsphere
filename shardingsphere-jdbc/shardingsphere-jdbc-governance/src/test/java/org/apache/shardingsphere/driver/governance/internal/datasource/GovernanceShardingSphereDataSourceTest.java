@@ -64,8 +64,8 @@ public final class GovernanceShardingSphereDataSourceTest {
     @BeforeClass
     public static void setUp() throws SQLException, IOException, URISyntaxException {
         SchemaContexts schemaContexts = getShardingSphereDataSource().getSchemaContexts();
-        GovernanceShardingSphereDataSource governanceDataSource = new GovernanceShardingSphereDataSource(schemaContexts.getDefaultSchemaContext().getSchema().getDataSources(),
-                schemaContexts.getDefaultSchemaContext().getSchema().getConfigurations(), schemaContexts.getProps().getProps(), getGovernanceConfiguration());
+        GovernanceShardingSphereDataSource governanceDataSource = new GovernanceShardingSphereDataSource(schemaContexts.getDefaultSchema().getDataSources(),
+                schemaContexts.getDefaultSchema().getConfigurations(), schemaContexts.getProps().getProps(), getGovernanceConfiguration());
         governanceSchemaContexts = (GovernanceSchemaContexts) governanceDataSource.getSchemaContexts();
     }
     
@@ -98,7 +98,7 @@ public final class GovernanceShardingSphereDataSourceTest {
     @Test
     public void assertRenewRules() throws SQLException {
         governanceSchemaContexts.renew(new RuleConfigurationsChangedEvent(DefaultSchema.LOGIC_NAME, Arrays.asList(getShardingRuleConfiguration(), getPrimaryReplicaReplicationRuleConfiguration())));
-        assertThat(((ShardingRule) governanceSchemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next()).getTableRules().size(), is(1));
+        assertThat(((ShardingRule) governanceSchemaContexts.getDefaultSchema().getRules().iterator().next()).getTableRules().size(), is(1));
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
@@ -117,7 +117,7 @@ public final class GovernanceShardingSphereDataSourceTest {
     @Test
     public void assertRenewDataSource() throws SQLException {
         governanceSchemaContexts.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
-        assertThat(governanceSchemaContexts.getDefaultSchemaContext().getSchema().getDataSources().size(), is(3));
+        assertThat(governanceSchemaContexts.getDefaultSchema().getDataSources().size(), is(3));
     }
     
     private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {

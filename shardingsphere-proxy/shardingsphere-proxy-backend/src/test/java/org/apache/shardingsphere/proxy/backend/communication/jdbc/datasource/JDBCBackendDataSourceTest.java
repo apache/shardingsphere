@@ -21,12 +21,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.fixture.CallTimeRecordDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
@@ -72,15 +74,15 @@ public final class JDBCBackendDataSourceTest {
     private void setSchemaContexts() {
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxyContext.getInstance(),
-                new StandardSchemaContexts(createSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(createSchemas(), 
+                mock(ShardingSphereSQLParserEngine.class), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
-    private Map<String, SchemaContext> createSchemaContextMap() {
-        SchemaContext schemaContext = mock(SchemaContext.class, RETURNS_DEEP_STUBS);
-        when(schemaContext.getSchema().getName()).thenReturn("schema");
-        when(schemaContext.getSchema().getDataSources()).thenReturn(mockDataSources(2));
-        return Collections.singletonMap("schema", schemaContext);
+    private Map<String, ShardingSphereSchema> createSchemas() {
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        when(schema.getName()).thenReturn("schema");
+        when(schema.getDataSources()).thenReturn(mockDataSources(2));
+        return Collections.singletonMap("schema", schema);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

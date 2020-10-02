@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.schema.runtime;
+package org.apache.shardingsphere.infra.metadata.datasource;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

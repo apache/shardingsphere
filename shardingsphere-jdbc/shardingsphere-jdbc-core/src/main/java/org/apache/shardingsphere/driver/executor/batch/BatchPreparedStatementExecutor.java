@@ -128,7 +128,7 @@ public final class BatchPreparedStatementExecutor {
         };
         List<int[]> results = sqlExecutor.execute(inputGroups, callback);
         return isNeedAccumulate(
-                schemaContexts.getDefaultSchemaContext().getSchema().getRules().stream().filter(rule -> rule instanceof DataNodeRoutedRule).collect(Collectors.toList()), sqlStatementContext)
+                schemaContexts.getDefaultSchema().getRules().stream().filter(rule -> rule instanceof DataNodeRoutedRule).collect(Collectors.toList()), sqlStatementContext)
                 ? accumulate(results) : results.get(0);
     }
     

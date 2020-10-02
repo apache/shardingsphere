@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.schema.runtime;
+package org.apache.shardingsphere.infra.metadata.datasource;
 
 import lombok.Getter;
 
@@ -443,7 +443,7 @@ public final class CachedDatabaseMetaData {
     private boolean isGeneratedKeyAlwaysReturned(final DatabaseMetaData databaseMetaData) throws SQLException {
         try {
             return databaseMetaData.generatedKeyAlwaysReturned();
-        } catch (final AbstractMethodError ignore) {
+        } catch (final AbstractMethodError ignored) {
             return false;
         }
     }

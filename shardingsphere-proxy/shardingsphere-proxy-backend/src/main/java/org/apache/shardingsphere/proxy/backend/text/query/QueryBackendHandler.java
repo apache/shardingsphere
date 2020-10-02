@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.query;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.context.schema.SchemaContext;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -50,11 +50,11 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public BackendResponse execute() throws SQLException {
-        SchemaContext schemaContext = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
-        if (null == schemaContext) {
+        ShardingSphereSchema schema = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
+        if (null == schema) {
             throw new NoDatabaseSelectedException();
         }
-        if (!schemaContext.getSchema().isComplete()) {
+        if (!schema.isComplete()) {
             throw new RuleNotExistsException();
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);

@@ -19,14 +19,14 @@ package org.apache.shardingsphere.proxy.init.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.SchemaContextsBuilder;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.factory.JDBCRawBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -97,10 +97,10 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private TransactionContexts createTransactionContexts(final SchemaContexts schemaContexts) {
-        Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(schemaContexts.getSchemaContextMap().size(), 1);
-        for (Entry<String, SchemaContext> entry : schemaContexts.getSchemaContextMap().entrySet()) {
+        Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(schemaContexts.getSchemas().size(), 1);
+        for (Entry<String, ShardingSphereSchema> entry : schemaContexts.getSchemas().entrySet()) {
             ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
-            engine.init(schemaContexts.getDatabaseType(), entry.getValue().getSchema().getDataSources());
+            engine.init(schemaContexts.getDatabaseType(), entry.getValue().getDataSources());
             transactionManagerEngines.put(entry.getKey(), engine);
         }
         return new StandardTransactionContexts(transactionManagerEngines);

@@ -63,11 +63,11 @@ public class GovernanceSpringBootPrimaryReplicaReplicationTest {
         Field field = GovernanceShardingSphereDataSource.class.getDeclaredField("schemaContexts");
         field.setAccessible(true);
         SchemaContexts schemaContexts = (SchemaContexts) field.get(dataSource);
-        for (DataSource each : schemaContexts.getDefaultSchemaContext().getSchema().getDataSources().values()) {
+        for (DataSource each : schemaContexts.getDefaultSchema().getDataSources().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
             assertThat(((BasicDataSource) each).getUsername(), is("sa"));
         }
-        Collection<ShardingSphereRule> rules = schemaContexts.getDefaultSchemaContext().getSchema().getRules();
+        Collection<ShardingSphereRule> rules = schemaContexts.getDefaultSchema().getRules();
         assertThat(rules.size(), is(1));
         assertPrimaryReplicaReplicationRule((PrimaryReplicaReplicationRule) rules.iterator().next());
     }

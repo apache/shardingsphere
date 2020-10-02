@@ -24,13 +24,13 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPlu
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
-import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -123,16 +123,16 @@ public final class MySQLAuthenticationHandlerTest {
     }
     
     private SchemaContexts getSchemaContexts(final Authentication authentication) {
-        return new StandardSchemaContexts(getSchemaContextMap(), authentication, new ConfigurationProperties(new Properties()), new MySQLDatabaseType());
+        return new StandardSchemaContexts(getSchemas(), 
+                mock(ShardingSphereSQLParserEngine.class), mock(ExecutorKernel.class), authentication, new ConfigurationProperties(new Properties()), new MySQLDatabaseType());
     }
     
-    private Map<String, SchemaContext> getSchemaContextMap() {
-        Map<String, SchemaContext> result = new HashMap<>(10);
+    private Map<String, ShardingSphereSchema> getSchemas() {
+        Map<String, ShardingSphereSchema> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             String name = String.format(SCHEMA_PATTERN, i);
             ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-            RuntimeContext runtimeContext = mock(RuntimeContext.class);
-            result.put(name, new SchemaContext(schema, runtimeContext));
+            result.put(name, schema);
         }
         return result;
     }

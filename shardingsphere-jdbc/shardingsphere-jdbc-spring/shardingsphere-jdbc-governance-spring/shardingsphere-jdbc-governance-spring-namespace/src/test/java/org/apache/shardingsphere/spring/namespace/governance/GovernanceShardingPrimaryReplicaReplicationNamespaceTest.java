@@ -59,12 +59,12 @@ public class GovernanceShardingPrimaryReplicaReplicationNamespaceTest extends Ab
     private Map<String, DataSource> getDataSourceMap(final String dataSourceName) {
         GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
         SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "schemaContexts");
-        return schemaContexts.getDefaultSchemaContext().getSchema().getDataSources();
+        return schemaContexts.getDefaultSchema().getDataSources();
     }
     
     private ShardingRule getShardingRule(final String dataSourceName) {
         GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
         SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "schemaContexts");
-        return (ShardingRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
+        return (ShardingRule) schemaContexts.getDefaultSchema().getRules().iterator().next();
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.context;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.datasource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.datasource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
@@ -55,7 +56,7 @@ public final class ExecutionContextBuilderTest {
         DataSourcesMetaData dataSourcesMetaData = mock(DataSourcesMetaData.class);
         String firstDataSourceName = "firstDataSourceName";
         when(dataSourcesMetaData.getAllInstanceDataSourceNames()).thenReturn(Arrays.asList(firstDataSourceName, "lastDataSourceName"));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(dataSourcesMetaData, buildRuleSchemaMetaData());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(dataSourcesMetaData, buildRuleSchemaMetaData(), mock(CachedDatabaseMetaData.class));
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(metaData, genericSQLRewriteResult, mock(SQLStatementContext.class));
         Collection<ExecutionUnit> expected = Collections.singletonList(new ExecutionUnit(firstDataSourceName, new SQLUnit(sql, parameters)));
         assertThat(actual, is(expected));
@@ -70,7 +71,7 @@ public final class ExecutionContextBuilderTest {
         Map<RouteUnit, SQLRewriteUnit> sqlRewriteUnits = new HashMap<>(2, 1);
         sqlRewriteUnits.put(routeUnit1, sqlRewriteUnit1);
         sqlRewriteUnits.put(routeUnit2, sqlRewriteUnit2);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(mock(DataSourcesMetaData.class), buildRuleSchemaMetaData());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(mock(DataSourcesMetaData.class), buildRuleSchemaMetaData(), mock(CachedDatabaseMetaData.class));
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(metaData, new RouteSQLRewriteResult(sqlRewriteUnits), mock(SQLStatementContext.class));
         ExecutionUnit expectedUnit1 = new ExecutionUnit("actualName1", new SQLUnit("sql1", Collections.singletonList("parameter1")));
         ExecutionUnit expectedUnit2 = new ExecutionUnit("actualName2", new SQLUnit("sql2", Collections.singletonList("parameter2")));
@@ -88,7 +89,7 @@ public final class ExecutionContextBuilderTest {
         Map<RouteUnit, SQLRewriteUnit> sqlRewriteUnits = new HashMap<>(2, 1);
         sqlRewriteUnits.put(routeUnit2, sqlRewriteUnit2);
         RuleSchemaMetaData ruleSchemaMetaData = buildRuleSchemaMetaDataWithoutPrimaryKey();
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(mock(DataSourcesMetaData.class), ruleSchemaMetaData);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(mock(DataSourcesMetaData.class), ruleSchemaMetaData, mock(CachedDatabaseMetaData.class));
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(metaData, new RouteSQLRewriteResult(sqlRewriteUnits), mock(SQLStatementContext.class));
         ExecutionUnit expectedUnit2 = new ExecutionUnit("actualName2", new SQLUnit("sql2", Collections.singletonList("parameter2")));
         Collection<ExecutionUnit> expected = new LinkedHashSet<>(1, 1);

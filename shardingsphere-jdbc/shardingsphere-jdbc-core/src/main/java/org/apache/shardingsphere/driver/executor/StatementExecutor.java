@@ -122,9 +122,9 @@ public final class StatementExecutor extends AbstractStatementExecutor {
             }
         };
         List<Integer> results = getSqlExecutor().execute(inputGroups, sqlExecutorCallback);
-        refreshTableMetaData(getSchemaContexts().getDefaultSchemaContext().getSchema(), sqlStatementContext);
+        refreshTableMetaData(getSchemaContexts().getDefaultSchema(), sqlStatementContext);
         if (isNeedAccumulate(
-                getSchemaContexts().getDefaultSchemaContext().getSchema().getRules().stream().filter(rule -> rule instanceof DataNodeRoutedRule).collect(Collectors.toList()), sqlStatementContext)) {
+                getSchemaContexts().getDefaultSchema().getRules().stream().filter(rule -> rule instanceof DataNodeRoutedRule).collect(Collectors.toList()), sqlStatementContext)) {
             return accumulate(results);
         }
         return null == results.get(0) ? 0 : results.get(0);
@@ -185,7 +185,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
             }
         };
         List<Boolean> result = getSqlExecutor().execute(inputGroups, sqlExecutorCallback);
-        refreshTableMetaData(getSchemaContexts().getDefaultSchemaContext().getSchema(), sqlStatementContext);
+        refreshTableMetaData(getSchemaContexts().getDefaultSchema(), sqlStatementContext);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;
         }
