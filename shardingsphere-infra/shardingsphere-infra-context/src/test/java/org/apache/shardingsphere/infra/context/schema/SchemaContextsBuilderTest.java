@@ -44,7 +44,7 @@ public final class SchemaContextsBuilderTest {
         DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("FixtureDB");
         SchemaContexts actual = new SchemaContextsBuilder(databaseType, Collections.emptyMap(), Collections.emptyMap(), null).build();
         assertThat(actual.getDatabaseType(), CoreMatchers.is(databaseType));
-        assertTrue(actual.getSchemaContextMap().isEmpty());
+        assertTrue(actual.getSchemas().isEmpty());
         assertTrue(actual.getAuthentication().getUsers().isEmpty());
         assertTrue(actual.getProps().getProps().isEmpty());
         assertFalse(actual.isCircuitBreak());
@@ -59,7 +59,7 @@ public final class SchemaContextsBuilderTest {
                 Collections.singletonMap("logic_db", Collections.singleton(new FixtureRuleConfiguration())), props).build();
         assertThat(actual.getDatabaseType(), CoreMatchers.is(databaseType));
         assertRules(actual);
-        assertTrue(actual.getSchemaContextMap().get("logic_db").getSchema().getDataSources().isEmpty());
+        assertTrue(actual.getSchemas().get("logic_db").getDataSources().isEmpty());
         assertTrue(actual.getAuthentication().getUsers().isEmpty());
         assertThat(actual.getProps().getProps().size(), CoreMatchers.is(1));
         assertThat(actual.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), CoreMatchers.is(1));
@@ -83,12 +83,12 @@ public final class SchemaContextsBuilderTest {
     }
     
     private void assertRules(final SchemaContexts actual) {
-        assertThat(actual.getSchemaContextMap().get("logic_db").getSchema().getRules().size(), CoreMatchers.is(1));
-        assertThat(actual.getSchemaContextMap().get("logic_db").getSchema().getRules().iterator().next(), CoreMatchers.instanceOf(FixtureRule.class));
+        assertThat(actual.getSchemas().get("logic_db").getRules().size(), CoreMatchers.is(1));
+        assertThat(actual.getSchemas().get("logic_db").getRules().iterator().next(), CoreMatchers.instanceOf(FixtureRule.class));
     }
     
     private void assertDataSources(final SchemaContexts actual) {
-        assertThat(actual.getSchemaContextMap().get("logic_db").getSchema().getDataSources().size(), CoreMatchers.is(1));
-        assertThat(actual.getSchemaContextMap().get("logic_db").getSchema().getDataSources().get("ds"), CoreMatchers.instanceOf(MockedDataSource.class));
+        assertThat(actual.getSchemas().get("logic_db").getDataSources().size(), CoreMatchers.is(1));
+        assertThat(actual.getSchemas().get("logic_db").getDataSources().get("ds"), CoreMatchers.instanceOf(MockedDataSource.class));
     }
 }

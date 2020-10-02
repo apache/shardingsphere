@@ -80,7 +80,7 @@ public final class ShardingSphereConnectionTest {
         schemaContexts = mock(StandardSchemaContexts.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schemaContexts.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
-        when(schemaContexts.getDefaultSchemaContext().getSchema()).thenReturn(schema);
+        when(schemaContexts.getDefaultSchema()).thenReturn(schema);
         transactionContexts = mock(TransactionContexts.class);
         when(transactionContexts.getDefaultTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();

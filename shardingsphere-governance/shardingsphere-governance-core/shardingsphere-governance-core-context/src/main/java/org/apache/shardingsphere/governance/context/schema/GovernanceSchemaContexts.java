@@ -19,6 +19,7 @@ package org.apache.shardingsphere.governance.context.schema;
 
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.event.model.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.governance.core.event.model.props.PropertiesCha
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaDeletedEvent;
-import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
@@ -37,13 +37,9 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.SchemaContextsBuilder;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
-import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
@@ -52,6 +48,8 @@ import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -84,8 +82,8 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     }
     
     private void disableDataSources() {
-        schemaContexts.getSchemaContextMap().forEach((key, value)
-            -> value.getSchema().getRules().stream().filter(each -> each instanceof StatusContainedRule).forEach(each -> disableDataSources(key, (StatusContainedRule) each)));
+        schemaContexts.getSchemas().forEach((key, value)
+            -> value.getRules().stream().filter(each -> each instanceof StatusContainedRule).forEach(each -> disableDataSources(key, (StatusContainedRule) each)));
     }
     
     private void disableDataSources(final String schemaName, final StatusContainedRule rule) {
@@ -98,8 +96,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     }
     
     private void persistMetaData() {
-        schemaContexts.getSchemaContextMap().forEach((key, value) -> governanceFacade.getConfigCenter()
-            .persistMetaData(key, value.getSchema().getMetaData().getRuleSchemaMetaData()));
+        schemaContexts.getSchemas().forEach((key, value) -> governanceFacade.getConfigCenter().persistMetaData(key, value.getMetaData().getRuleSchemaMetaData()));
     }
     
     @Override
@@ -118,13 +115,23 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     }
     
     @Override
-    public Map<String, SchemaContext> getSchemaContextMap() {
-        return schemaContexts.getSchemaContextMap();
+    public Map<String, ShardingSphereSchema> getSchemas() {
+        return schemaContexts.getSchemas();
     }
     
     @Override
-    public SchemaContext getDefaultSchemaContext() {
-        return schemaContexts.getDefaultSchemaContext();
+    public ShardingSphereSchema getDefaultSchema() {
+        return schemaContexts.getDefaultSchema();
+    }
+    
+    @Override
+    public ShardingSphereSQLParserEngine getSqlParserEngine() {
+        return schemaContexts.getSqlParserEngine();
+    }
+    
+    @Override
+    public ExecutorKernel getExecutorKernel() {
+        return schemaContexts.getExecutorKernel();
     }
     
     @Override
@@ -156,13 +163,13 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final SchemaAddedEvent event) throws SQLException {
-        Map<String, SchemaContext> schemas = new HashMap<>(schemaContexts.getSchemaContextMap());
+        Map<String, ShardingSphereSchema> schemas = new HashMap<>(schemaContexts.getSchemas());
         schemas.put(event.getSchemaName(), createAddedSchemaContext(event));
-        schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
-        governanceFacade.getConfigCenter().persistMetaData(event.getSchemaName(), 
-                schemaContexts.getSchemaContextMap().get(event.getSchemaName()).getSchema().getMetaData().getRuleSchemaMetaData());
+        schemaContexts = new StandardSchemaContexts(schemas, 
+                schemaContexts.getSqlParserEngine(), schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
+        governanceFacade.getConfigCenter().persistMetaData(event.getSchemaName(), schemaContexts.getSchemas().get(event.getSchemaName()).getMetaData().getRuleSchemaMetaData());
         GovernanceEventBus.getInstance().post(
-                new DataSourceChangeCompletedEvent(event.getSchemaName(), schemaContexts.getDatabaseType(), schemas.get(event.getSchemaName()).getSchema().getDataSources()));
+                new DataSourceChangeCompletedEvent(event.getSchemaName(), schemaContexts.getDatabaseType(), schemas.get(event.getSchemaName()).getDataSources()));
     }
     
     /**
@@ -172,9 +179,10 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final SchemaDeletedEvent event) {
-        Map<String, SchemaContext> schemas = new HashMap<>(schemaContexts.getSchemaContextMap());
+        Map<String, ShardingSphereSchema> schemas = new HashMap<>(schemaContexts.getSchemas());
         schemas.remove(event.getSchemaName());
-        schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
+        schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getSqlParserEngine(), schemaContexts.getExecutorKernel(), 
+                schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
         governanceFacade.getConfigCenter().deleteSchema(event.getSchemaName());
     }
     
@@ -186,7 +194,8 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     @Subscribe
     public synchronized void renew(final PropertiesChangedEvent event) {
         ConfigurationProperties props = new ConfigurationProperties(event.getProps());
-        schemaContexts = new StandardSchemaContexts(getChangedSchemaContexts(props), schemaContexts.getAuthentication(), props, schemaContexts.getDatabaseType());
+        schemaContexts = new StandardSchemaContexts(getChangedSchemas(), schemaContexts.getSqlParserEngine(), schemaContexts.getExecutorKernel(), 
+                schemaContexts.getAuthentication(), props, schemaContexts.getDatabaseType());
     }
     
     /**
@@ -196,7 +205,8 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final AuthenticationChangedEvent event) {
-        schemaContexts = new StandardSchemaContexts(schemaContexts.getSchemaContextMap(), event.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
+        schemaContexts = new StandardSchemaContexts(schemaContexts.getSchemas(), schemaContexts.getSqlParserEngine(), schemaContexts.getExecutorKernel(), 
+                event.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
     }
     
     /**
@@ -206,16 +216,15 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final MetaDataChangedEvent event) {
-        Map<String, SchemaContext> newSchemaContexts = new HashMap<>(schemaContexts.getSchemaContextMap().size(), 1);
-        for (Entry<String, SchemaContext> entry : schemaContexts.getSchemaContextMap().entrySet()) {
+        Map<String, ShardingSphereSchema> newSchemas = new HashMap<>(schemaContexts.getSchemas().size(), 1);
+        for (Entry<String, ShardingSphereSchema> entry : schemaContexts.getSchemas().entrySet()) {
             String schemaName = entry.getKey();
-            SchemaContext oldSchemaContext = entry.getValue();
-            SchemaContext newSchemaContext = event.getSchemaNames().contains(schemaName) 
-                    ? new SchemaContext(getChangedShardingSphereSchema(oldSchemaContext.getSchema(), event.getRuleSchemaMetaData(), schemaName),
-                    oldSchemaContext.getRuntimeContext()) : oldSchemaContext;
-            newSchemaContexts.put(schemaName, newSchemaContext);
+            ShardingSphereSchema oldSchema = entry.getValue();
+            ShardingSphereSchema newSchema = event.getSchemaNames().contains(schemaName) ? getChangedShardingSphereSchema(oldSchema, event.getRuleSchemaMetaData(), schemaName) : oldSchema;
+            newSchemas.put(schemaName, newSchema);
         }
-        schemaContexts = new StandardSchemaContexts(newSchemaContexts, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
+        schemaContexts = new StandardSchemaContexts(newSchemas, schemaContexts.getSqlParserEngine(), schemaContexts.getExecutorKernel(), 
+                schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
     }
     
     /**
@@ -226,12 +235,13 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationsChangedEvent event) throws SQLException {
-        Map<String, SchemaContext> newSchemaContexts = new HashMap<>(schemaContexts.getSchemaContextMap());
+        Map<String, ShardingSphereSchema> newSchemaContexts = new HashMap<>(schemaContexts.getSchemas());
         String schemaName = event.getSchemaName();
         newSchemaContexts.remove(schemaName);
-        newSchemaContexts.put(schemaName, getChangedSchemaContext(schemaContexts.getSchemaContextMap().get(schemaName), event.getRuleConfigurations()));
-        schemaContexts = new StandardSchemaContexts(newSchemaContexts, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
-        governanceFacade.getConfigCenter().persistMetaData(schemaName, newSchemaContexts.get(schemaName).getSchema().getMetaData().getRuleSchemaMetaData());
+        newSchemaContexts.put(schemaName, getChangedSchema(schemaContexts.getSchemas().get(schemaName), event.getRuleConfigurations()));
+        schemaContexts = new StandardSchemaContexts(newSchemaContexts, schemaContexts.getSqlParserEngine(), schemaContexts.getExecutorKernel(), 
+                schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
+        governanceFacade.getConfigCenter().persistMetaData(schemaName, newSchemaContexts.get(schemaName).getMetaData().getRuleSchemaMetaData());
     }
     
     /**
@@ -243,12 +253,13 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     @Subscribe
     public synchronized void renew(final DataSourceChangedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
-        Map<String, SchemaContext> newSchemaContexts = new HashMap<>(schemaContexts.getSchemaContextMap());
-        newSchemaContexts.remove(schemaName);
-        newSchemaContexts.put(schemaName, getChangedSchemaContext(schemaContexts.getSchemaContextMap().get(schemaName), event.getDataSourceConfigurations()));
-        schemaContexts = new StandardSchemaContexts(newSchemaContexts, schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
+        Map<String, ShardingSphereSchema> newSchemas = new HashMap<>(schemaContexts.getSchemas());
+        newSchemas.remove(schemaName);
+        newSchemas.put(schemaName, getChangedSchema(schemaContexts.getSchemas().get(schemaName), event.getDataSourceConfigurations()));
+        schemaContexts = new StandardSchemaContexts(newSchemas, schemaContexts.getSqlParserEngine(), schemaContexts.getExecutorKernel(), 
+                schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
         GovernanceEventBus.getInstance().post(
-                new DataSourceChangeCompletedEvent(event.getSchemaName(), schemaContexts.getDatabaseType(), newSchemaContexts.get(event.getSchemaName()).getSchema().getDataSources()));
+                new DataSourceChangeCompletedEvent(event.getSchemaName(), schemaContexts.getDatabaseType(), newSchemas.get(event.getSchemaName()).getDataSources()));
     }
     
     /**
@@ -259,7 +270,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     @Subscribe
     public synchronized void renew(final DisabledStateChangedEvent event) {
         GovernanceSchema governanceSchema = event.getGovernanceSchema();
-        Collection<ShardingSphereRule> rules = schemaContexts.getSchemaContextMap().get(governanceSchema.getSchemaName()).getSchema().getRules();
+        Collection<ShardingSphereRule> rules = schemaContexts.getSchemas().get(governanceSchema.getSchemaName()).getRules();
         for (ShardingSphereRule each : rules) {
             if (each instanceof StatusContainedRule) {
                 ((StatusContainedRule) each).updateRuleStatus(new DataSourceNameDisabledEvent(governanceSchema.getDataSourceName(), event.isDisabled()));
@@ -274,53 +285,50 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final CircuitStateChangedEvent event) {
-        schemaContexts = new StandardSchemaContexts(
-                schemaContexts.getSchemaContextMap(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType(), event.isCircuitBreak());
+        schemaContexts = new StandardSchemaContexts(schemaContexts.getSchemas(), schemaContexts.getSqlParserEngine(), 
+                schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType(), event.isCircuitBreak());
     }
     
-    private SchemaContext createAddedSchemaContext(final SchemaAddedEvent event) throws SQLException {
+    private ShardingSphereSchema createAddedSchemaContext(final SchemaAddedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, 
                 governanceFacade.getConfigCenter().loadDataSourceConfigurations(schemaName)));
         DatabaseType databaseType = getDatabaseType(dataSourcesMap);
         SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(databaseType, dataSourcesMap, 
                 Collections.singletonMap(schemaName, governanceFacade.getConfigCenter().loadRuleConfigurations(schemaName)), schemaContexts.getAuthentication(), schemaContexts.getProps().getProps());
-        return schemaContextsBuilder.build().getSchemaContextMap().get(schemaName);
+        return schemaContextsBuilder.build().getSchemas().get(schemaName);
     }
     
-    private Map<String, SchemaContext> getChangedSchemaContexts(final ConfigurationProperties props) {
-        Map<String, SchemaContext> result = new HashMap<>(schemaContexts.getSchemaContextMap().size());
-        for (Entry<String, SchemaContext> entry : schemaContexts.getSchemaContextMap().entrySet()) {
-            RuntimeContext runtimeContext = entry.getValue().getRuntimeContext();
-            result.put(entry.getKey(), new SchemaContext(
-                    entry.getValue().getSchema(), new RuntimeContext(new ExecutorKernel(props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE)), runtimeContext.getSqlParserEngine())));
+    private Map<String, ShardingSphereSchema> getChangedSchemas() {
+        Map<String, ShardingSphereSchema> result = new HashMap<>(schemaContexts.getSchemas().size());
+        for (Entry<String, ShardingSphereSchema> entry : schemaContexts.getSchemas().entrySet()) {
+            result.put(entry.getKey(), entry.getValue());
         }
         return result;
     }
     
-    private ShardingSphereSchema getChangedShardingSphereSchema(final ShardingSphereSchema oldShardingSphereSchema, final RuleSchemaMetaData newRuleSchemaMetaData, final String schemaName) {
+    private ShardingSphereSchema getChangedShardingSphereSchema(final ShardingSphereSchema oldSchema, final RuleSchemaMetaData newRuleSchemaMetaData, final String schemaName) {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                oldShardingSphereSchema.getMetaData().getDataSourcesMetaData(), newRuleSchemaMetaData, oldShardingSphereSchema.getMetaData().getCachedDatabaseMetaData());
-        return new ShardingSphereSchema(schemaName, oldShardingSphereSchema.getConfigurations(), oldShardingSphereSchema.getRules(), oldShardingSphereSchema.getDataSources(), metaData);
+                oldSchema.getMetaData().getDataSourcesMetaData(), newRuleSchemaMetaData, oldSchema.getMetaData().getCachedDatabaseMetaData());
+        return new ShardingSphereSchema(schemaName, oldSchema.getConfigurations(), oldSchema.getRules(), oldSchema.getDataSources(), metaData);
     }
     
-    private SchemaContext getChangedSchemaContext(final SchemaContext oldSchemaContext, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
-        ShardingSphereSchema oldSchema = oldSchemaContext.getSchema();
-        SchemaContextsBuilder builder = new SchemaContextsBuilder(schemaContexts.getDatabaseType(), Collections.singletonMap(oldSchemaContext.getSchema().getName(), oldSchema.getDataSources()),
-                Collections.singletonMap(oldSchemaContext.getSchema().getName(), ruleConfigs), schemaContexts.getAuthentication(), schemaContexts.getProps().getProps());
-        return builder.build().getSchemaContextMap().values().iterator().next();
+    private ShardingSphereSchema getChangedSchema(final ShardingSphereSchema oldSchema, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+        SchemaContextsBuilder builder = new SchemaContextsBuilder(schemaContexts.getDatabaseType(), Collections.singletonMap(oldSchema.getName(), oldSchema.getDataSources()),
+                Collections.singletonMap(oldSchema.getName(), ruleConfigs), schemaContexts.getAuthentication(), schemaContexts.getProps().getProps());
+        return builder.build().getSchemas().values().iterator().next();
     }
     
-    private SchemaContext getChangedSchemaContext(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSourceConfigs) throws SQLException {
-        Collection<String> deletedDataSources = getDeletedDataSources(oldSchemaContext, newDataSourceConfigs);
-        Map<String, DataSource> modifiedDataSources = getModifiedDataSources(oldSchemaContext, newDataSourceConfigs);
-        oldSchemaContext.getSchema().closeDataSources(deletedDataSources);
-        oldSchemaContext.getSchema().closeDataSources(modifiedDataSources.keySet());
-        Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(oldSchemaContext.getSchema().getName(), 
-                getNewDataSources(oldSchemaContext.getSchema().getDataSources(), getAddedDataSources(oldSchemaContext, newDataSourceConfigs), modifiedDataSources, deletedDataSources));
+    private ShardingSphereSchema getChangedSchema(final ShardingSphereSchema oldSchema, final Map<String, DataSourceConfiguration> newDataSourceConfigs) throws SQLException {
+        Collection<String> deletedDataSources = getDeletedDataSources(oldSchema, newDataSourceConfigs);
+        Map<String, DataSource> modifiedDataSources = getModifiedDataSources(oldSchema, newDataSourceConfigs);
+        oldSchema.closeDataSources(deletedDataSources);
+        oldSchema.closeDataSources(modifiedDataSources.keySet());
+        Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(oldSchema.getName(), 
+                getNewDataSources(oldSchema.getDataSources(), getAddedDataSources(oldSchema, newDataSourceConfigs), modifiedDataSources, deletedDataSources));
         return new SchemaContextsBuilder(schemaContexts.getDatabaseType(), dataSourcesMap,
-                Collections.singletonMap(oldSchemaContext.getSchema().getName(), oldSchemaContext.getSchema().getConfigurations()), schemaContexts.getAuthentication(), 
-                schemaContexts.getProps().getProps()).build().getSchemaContextMap().get(oldSchemaContext.getSchema().getName());
+                Collections.singletonMap(oldSchema.getName(), oldSchema.getConfigurations()), schemaContexts.getAuthentication(), 
+                schemaContexts.getProps().getProps()).build().getSchemas().get(oldSchema.getName());
     }
     
     private Map<String, DataSource> getNewDataSources(final Map<String, DataSource> oldDataSources, 
@@ -333,19 +341,19 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         return result;
     }
     
-    private Collection<String> getDeletedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
-        Collection<String> result = new LinkedList<>(oldSchemaContext.getSchema().getDataSources().keySet());
+    private Collection<String> getDeletedDataSources(final ShardingSphereSchema oldSchema, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
+        Collection<String> result = new LinkedList<>(oldSchema.getDataSources().keySet());
         result.removeAll(newDataSourceConfigs.keySet());
         return result;
     }
     
-    private Map<String, DataSource> getAddedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
-        return DataSourceConverter.getDataSourceMap(Maps.filterKeys(newDataSourceConfigs, each -> !oldSchemaContext.getSchema().getDataSources().containsKey(each)));
+    private Map<String, DataSource> getAddedDataSources(final ShardingSphereSchema oldSchema, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
+        return DataSourceConverter.getDataSourceMap(Maps.filterKeys(newDataSourceConfigs, each -> !oldSchema.getDataSources().containsKey(each)));
     }
     
-    private Map<String, DataSource> getModifiedDataSources(final SchemaContext oldSchemaContext, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
+    private Map<String, DataSource> getModifiedDataSources(final ShardingSphereSchema oldSchema, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
         Map<String, DataSourceConfiguration> modifiedDataSourceConfigs = newDataSourceConfigs.entrySet().stream()
-                .filter(entry -> isModifiedDataSource(oldSchemaContext.getSchema().getDataSources(), entry.getKey(), entry.getValue()))
+                .filter(entry -> isModifiedDataSource(oldSchema.getDataSources(), entry.getKey(), entry.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (key, repeatKey) -> key, LinkedHashMap::new));
         return DataSourceConverter.getDataSourceMap(modifiedDataSourceConfigs);
     }

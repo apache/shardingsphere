@@ -52,7 +52,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
         this.packet = packet;
         schemaName = backendConnection.getSchemaName();
         String sql = String.format(SQL, packet.getTable(), schemaName);
-        SQLStatement sqlStatement = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName()).getRuntimeContext().getSqlParserEngine().parse(sql, false);
+        SQLStatement sqlStatement = ProxyContext.getInstance().getSchemaContexts().getSqlParserEngine().parse(sql, false);
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(sqlStatement, sql, backendConnection);
     }
     

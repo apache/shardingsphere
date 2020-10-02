@@ -90,7 +90,7 @@ public class GovernancePrimaryReplicaReplicationNamespaceTest extends AbstractJU
     private PrimaryReplicaReplicationRule getPrimaryReplicaReplicationRule(final String dataSourceName) {
         GovernanceShardingSphereDataSource dataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
         SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(dataSource, "schemaContexts");
-        return (PrimaryReplicaReplicationRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
+        return (PrimaryReplicaReplicationRule) schemaContexts.getDefaultSchema().getRules().iterator().next();
     }
     
     @Test
