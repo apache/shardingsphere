@@ -38,9 +38,9 @@ public final class ShardingSphereServiceLoader {
     private static final Map<Class<?>, Collection<Class<?>>> SERVICE_MAP = new ConcurrentHashMap<>();
     
     /**
-     * Register SPI service into map for new instance.
+     * Register service.
      *
-     * @param service service type
+     * @param service service class
      * @param <T> type of service
      */
     public static <T> void register(final Class<T> service) {
