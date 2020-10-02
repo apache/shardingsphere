@@ -43,13 +43,13 @@ public final class SQLRouteEngine {
     private final ConfigurationProperties props;
     
     @SuppressWarnings("rawtypes")
-    private final Map<ShardingSphereRule, SQLRouter> decorators;
+    private final Map<ShardingSphereRule, SQLRouter> routers;
     
     private final SPIRoutingHook routingHook;
     
     public SQLRouteEngine(final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
         this.props = props;
-        decorators = OrderedSPIRegistry.getRegisteredServices(rules, SQLRouter.class);
+        routers = OrderedSPIRegistry.getRegisteredServices(rules, SQLRouter.class);
         routingHook = new SPIRoutingHook();
     }
     
@@ -76,7 +76,7 @@ public final class SQLRouteEngine {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private RouteContext doRoute(final LogicSQL logicSQL) {
         RouteContext result = null;
-        for (Entry<ShardingSphereRule, SQLRouter> entry : decorators.entrySet()) {
+        for (Entry<ShardingSphereRule, SQLRouter> entry : routers.entrySet()) {
             if (null == result) {
                 result = entry.getValue().createRouteContext(logicSQL, entry.getKey(), props);
             } else {
