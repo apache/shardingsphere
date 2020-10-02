@@ -17,16 +17,8 @@
 
 package org.apache.shardingsphere.infra.context.schema.runtime;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
-
 /**
  * Runtime context.
  */
-@RequiredArgsConstructor
-@Getter
 public final class RuntimeContext {
-    
-    private final ShardingSphereSQLParserEngine sqlParserEngine;
 }

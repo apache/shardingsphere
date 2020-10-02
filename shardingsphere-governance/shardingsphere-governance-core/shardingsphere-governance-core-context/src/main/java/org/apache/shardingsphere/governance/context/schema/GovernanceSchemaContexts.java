@@ -308,8 +308,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     private Map<String, SchemaContext> getChangedSchemaContexts() {
         Map<String, SchemaContext> result = new HashMap<>(schemaContexts.getSchemaContextMap().size());
         for (Entry<String, SchemaContext> entry : schemaContexts.getSchemaContextMap().entrySet()) {
-            RuntimeContext runtimeContext = entry.getValue().getRuntimeContext();
-            result.put(entry.getKey(), new SchemaContext(entry.getValue().getSchema(), new RuntimeContext(schemaContexts.getSqlParserEngine())));
+            result.put(entry.getKey(), new SchemaContext(entry.getValue().getSchema(), new RuntimeContext()));
         }
         return result;
     }
