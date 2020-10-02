@@ -42,6 +42,8 @@ public final class StandardSchemaContexts implements SchemaContexts {
     
     private final Map<String, SchemaContext> schemaContextMap;
     
+    private final ShardingSphereSQLParserEngine sqlParserEngine;
+    
     private final ExecutorKernel executorKernel;
     
     private final Authentication authentication;
@@ -52,24 +54,19 @@ public final class StandardSchemaContexts implements SchemaContexts {
     
     private final boolean isCircuitBreak;
     
-    public StandardSchemaContexts(final ExecutorKernel executorKernel) {
+    public StandardSchemaContexts() {
         // TODO MySQLDatabaseType is invalid because it can not update again
-        this(new HashMap<>(), executorKernel, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType(), false);
+        this(new HashMap<>(), null, null, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType(), false);
     }
     
-    public StandardSchemaContexts(final Map<String, SchemaContext> schemaContextMap, final ExecutorKernel executorKernel, 
+    public StandardSchemaContexts(final Map<String, SchemaContext> schemaContextMap, final ShardingSphereSQLParserEngine sqlParserEngine, final ExecutorKernel executorKernel, 
                                   final Authentication authentication, final ConfigurationProperties props, final DatabaseType databaseType) {
-        this(schemaContextMap, executorKernel, authentication, props, databaseType, false);
+        this(schemaContextMap, sqlParserEngine, executorKernel, authentication, props, databaseType, false);
     }
     
     @Override
     public SchemaContext getDefaultSchemaContext() {
         return schemaContextMap.get(DefaultSchema.LOGIC_NAME);
-    }
-    
-    @Override
-    public ShardingSphereSQLParserEngine getSQLParserEngine() {
-        return schemaContextMap.values().iterator().next().getRuntimeContext().getSqlParserEngine();
     }
     
     @Override

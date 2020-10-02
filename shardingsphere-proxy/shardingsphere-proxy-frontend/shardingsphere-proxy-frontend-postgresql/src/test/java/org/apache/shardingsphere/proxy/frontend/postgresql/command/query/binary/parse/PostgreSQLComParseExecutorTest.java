@@ -64,8 +64,8 @@ public final class PostgreSQLComParseExecutorTest {
         when(backendConnection.getConnectionId()).thenReturn(1);
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxyContext.getInstance(),
-                new StandardSchemaContexts(getSchemaContextMap(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(getSchemaContextMap(),
+                mockSQLParserEngine(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         BinaryStatementRegistry.getInstance().register(1);
         PostgreSQLComParseExecutor actual = new PostgreSQLComParseExecutor(parsePacket, backendConnection);
         assertThat(actual.execute().iterator().next(), instanceOf(PostgreSQLParseCompletePacket.class));
@@ -74,13 +74,16 @@ public final class PostgreSQLComParseExecutorTest {
     private Map<String, SchemaContext> getSchemaContextMap() {
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        ShardingSphereSQLParserEngine parserEngine = mock(ShardingSphereSQLParserEngine.class);
-        SQLStatement sqlStatement = mock(SQLStatement.class);
-        when(runtimeContext.getSqlParserEngine()).thenReturn(parserEngine);
-        when(parserEngine.parse(eq("sql"), eq(true))).thenReturn(sqlStatement);
-        when(sqlStatement.getParameterCount()).thenReturn(1);
         SchemaContext schemaContext = new SchemaContext(schema, runtimeContext);
         return Collections.singletonMap("schema", schemaContext);
+    }
+    
+    private ShardingSphereSQLParserEngine mockSQLParserEngine() {
+        ShardingSphereSQLParserEngine result = mock(ShardingSphereSQLParserEngine.class);
+        SQLStatement sqlStatement = mock(SQLStatement.class);
+        when(result.parse(eq("sql"), eq(true))).thenReturn(sqlStatement);
+        when(sqlStatement.getParameterCount()).thenReturn(1);
+        return result;
     }
     
     @Test

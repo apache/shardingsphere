@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -39,7 +40,7 @@ public final class StandardSchemaContextsTest {
     
     @Test
     public void assertGetDefaultSchemaContext() {
-        StandardSchemaContexts standardSchemaContexts = new StandardSchemaContexts(mock(ExecutorKernel.class));
+        StandardSchemaContexts standardSchemaContexts = new StandardSchemaContexts();
         SchemaContext expected = mock(SchemaContext.class);
         standardSchemaContexts.getSchemaContextMap().put("logic_db", expected);
         assertThat(standardSchemaContexts.getDefaultSchemaContext(), is(expected));
@@ -48,10 +49,11 @@ public final class StandardSchemaContextsTest {
     @Test
     public void assertClose() {
         RuntimeContext runtimeContext = mock(RuntimeContext.class, RETURNS_DEEP_STUBS);
+        ShardingSphereSQLParserEngine sqlParserEngine = mock(ShardingSphereSQLParserEngine.class);
         ExecutorKernel executorKernel = mock(ExecutorKernel.class);
         SchemaContext schemaContext = new SchemaContext(mock(ShardingSphereSchema.class), runtimeContext);
         StandardSchemaContexts standardSchemaContexts = new StandardSchemaContexts(
-                Collections.singletonMap("logic_db", schemaContext), executorKernel, new Authentication(), new ConfigurationProperties(new Properties()), mock(DatabaseType.class));
+                Collections.singletonMap("logic_db", schemaContext), sqlParserEngine, executorKernel, new Authentication(), new ConfigurationProperties(new Properties()), mock(DatabaseType.class));
         standardSchemaContexts.close();
         verify(executorKernel).close();
     }

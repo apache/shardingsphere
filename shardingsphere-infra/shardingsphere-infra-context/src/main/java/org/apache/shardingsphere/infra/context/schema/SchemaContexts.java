@@ -57,7 +57,7 @@ public interface SchemaContexts extends Closeable {
      * 
      * @return SQL parser engine
      */
-    ShardingSphereSQLParserEngine getSQLParserEngine();
+    ShardingSphereSQLParserEngine getSqlParserEngine();
     
     /**
      * Get executor kernel.
