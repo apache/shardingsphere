@@ -128,6 +128,11 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     }
     
     @Override
+    public ExecutorKernel getExecutorKernel() {
+        return schemaContexts.getExecutorKernel();
+    }
+    
+    @Override
     public Authentication getAuthentication() {
         return schemaContexts.getAuthentication();
     }

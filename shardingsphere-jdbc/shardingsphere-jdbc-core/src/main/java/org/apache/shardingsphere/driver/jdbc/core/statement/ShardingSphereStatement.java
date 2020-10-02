@@ -107,9 +107,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         schemaContexts = connection.getSchemaContexts();
         statements = new LinkedList<>();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
-        statementExecutor = new StatementExecutor(connection.getDataSourceMap(), schemaContexts, 
-                new SQLExecutor(schemaContexts.getDefaultSchemaContext().getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction()));
-        rawExecutor = new RawJDBCExecutor(schemaContexts.getDefaultSchemaContext().getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
+        statementExecutor = new StatementExecutor(connection.getDataSourceMap(), schemaContexts, new SQLExecutor(schemaContexts.getExecutorKernel(), connection.isHoldTransaction()));
+        rawExecutor = new RawJDBCExecutor(schemaContexts.getExecutorKernel(), connection.isHoldTransaction());
     }
     
     @Override

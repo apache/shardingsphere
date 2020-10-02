@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.context.schema;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 
 import java.io.Closeable;
 import java.util.Map;
@@ -49,6 +50,13 @@ public interface SchemaContexts extends Closeable {
      * @return default schema context
      */
     SchemaContext getDefaultSchemaContext();
+    
+    /**
+     * Get executor kernel.
+     * 
+     * @return executor kernel
+     */
+    ExecutorKernel getExecutorKernel();
     
     /**
      * Get authentication.
