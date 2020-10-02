@@ -21,12 +21,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.context.schema.SchemaContext;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 
 import java.util.HashMap;
@@ -40,7 +40,7 @@ import java.util.Properties;
 @Getter
 public final class StandardSchemaContexts implements SchemaContexts {
     
-    private final Map<String, SchemaContext> schemaContextMap;
+    private final Map<String, ShardingSphereSchema> schemas;
     
     private final ShardingSphereSQLParserEngine sqlParserEngine;
     
@@ -59,14 +59,14 @@ public final class StandardSchemaContexts implements SchemaContexts {
         this(new HashMap<>(), null, null, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType(), false);
     }
     
-    public StandardSchemaContexts(final Map<String, SchemaContext> schemaContextMap, final ShardingSphereSQLParserEngine sqlParserEngine, final ExecutorKernel executorKernel, 
+    public StandardSchemaContexts(final Map<String, ShardingSphereSchema> schemas, final ShardingSphereSQLParserEngine sqlParserEngine, final ExecutorKernel executorKernel, 
                                   final Authentication authentication, final ConfigurationProperties props, final DatabaseType databaseType) {
-        this(schemaContextMap, sqlParserEngine, executorKernel, authentication, props, databaseType, false);
+        this(schemas, sqlParserEngine, executorKernel, authentication, props, databaseType, false);
     }
     
     @Override
-    public SchemaContext getDefaultSchemaContext() {
-        return schemaContextMap.get(DefaultSchema.LOGIC_NAME);
+    public ShardingSphereSchema getDefaultSchema() {
+        return schemas.get(DefaultSchema.LOGIC_NAME);
     }
     
     @Override

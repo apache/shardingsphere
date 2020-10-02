@@ -21,7 +21,6 @@ import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -101,16 +100,15 @@ public final class BackendConnectionTest {
     private void setSchemaContexts() throws ReflectiveOperationException {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), new StandardSchemaContexts(createSchemaContextMap(), 
+        field.set(ProxyContext.getInstance(), new StandardSchemaContexts(createSchemas(), 
                 mock(ShardingSphereSQLParserEngine.class), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
-    private Map<String, SchemaContext> createSchemaContextMap() {
-        Map<String, SchemaContext> result = new HashMap<>(10);
+    private Map<String, ShardingSphereSchema> createSchemas() {
+        Map<String, ShardingSphereSchema> result = new HashMap<>(10);
         for (int i = 0; i < 10; i++) {
             String name = String.format(SCHEMA_PATTERN, i);
-            SchemaContext schemaContext = new SchemaContext(mock(ShardingSphereSchema.class));
-            result.put(name, schemaContext);
+            result.put(name, mock(ShardingSphereSchema.class));
         }
         return result;
     }

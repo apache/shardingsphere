@@ -28,7 +28,6 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -166,16 +165,16 @@ public final class MySQLFrontendEngineTest {
     }
     
     private SchemaContexts getSchemaContexts(final Authentication authentication) {
-        return new StandardSchemaContexts(getSchemaContextMap(), 
+        return new StandardSchemaContexts(getSchemas(), 
                 mock(ShardingSphereSQLParserEngine.class), mock(ExecutorKernel.class), authentication, new ConfigurationProperties(new Properties()), new MySQLDatabaseType());
     }
     
-    private Map<String, SchemaContext> getSchemaContextMap() {
-        Map<String, SchemaContext> result = new HashMap<>(10, 1);
+    private Map<String, ShardingSphereSchema> getSchemas() {
+        Map<String, ShardingSphereSchema> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             String name = String.format(SCHEMA, i);
             ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-            result.put(name, new SchemaContext(schema));
+            result.put(name, schema);
         }
         return result;
     }

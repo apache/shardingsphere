@@ -19,11 +19,11 @@ package org.apache.shardingsphere.proxy.backend.context;
 
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.jdbc.test.MockedDataSource;
 import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -45,7 +45,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -60,7 +59,7 @@ public final class ProxyContextTest {
         mockDataSourceMap.put("ds_2", new MockedDataSource());
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(mockSchemaContextMap(mockDataSourceMap),
+        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(mockSchemas(mockDataSourceMap),
                 mock(ShardingSphereSQLParserEngine.class), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         Optional<DataSource> actual = ProxyContext.getInstance().getDataSourceSample();
         assertThat(actual, is(Optional.of(mockDataSourceMap.get("ds_1"))));
@@ -78,10 +77,10 @@ public final class ProxyContextTest {
     
     @Test
     public void assertSchemaExists() throws NoSuchFieldException, IllegalAccessException {
-        Map<String, SchemaContext> schemaContextsMap = mockSchemaContextMap(Collections.emptyMap());
+        Map<String, ShardingSphereSchema> schemas = mockSchemas(Collections.emptyMap());
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(schemaContextsMap, 
+        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(schemas, 
                 mock(ShardingSphereSQLParserEngine.class), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         assertTrue(ProxyContext.getInstance().schemaExists("schema"));
         assertFalse(ProxyContext.getInstance().schemaExists("schema_2"));
@@ -89,39 +88,39 @@ public final class ProxyContextTest {
     
     @Test
     public void assertGetSchema() throws NoSuchFieldException, IllegalAccessException {
-        Map<String, SchemaContext> schemaContextsMap = mockSchemaContextMap(Collections.emptyMap());
+        Map<String, ShardingSphereSchema> schemas = mockSchemas(Collections.emptyMap());
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(schemaContextsMap, 
+        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(schemas, 
                 mock(ShardingSphereSQLParserEngine.class), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         assertNull(ProxyContext.getInstance().getSchema(null));
         assertNull(ProxyContext.getInstance().getSchema(""));
         assertNull(ProxyContext.getInstance().getSchema("schema1"));
-        assertThat(schemaContextsMap.get("schema"), is(ProxyContext.getInstance().getSchema("schema")));
+        assertThat(schemas.get("schema"), is(ProxyContext.getInstance().getSchema("schema")));
     }
     
     @Test
     public void assertGetAllSchemaNames() throws NoSuchFieldException, IllegalAccessException {
-        Map<String, SchemaContext> schemaContextsMap = createSchemaContextMap();
+        Map<String, ShardingSphereSchema> schemas = createSchemas();
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(schemaContextsMap, 
+        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(schemas, 
                 mock(ShardingSphereSQLParserEngine.class), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
-        assertThat(new LinkedHashSet<>(ProxyContext.getInstance().getAllSchemaNames()), is(schemaContextsMap.keySet()));
+        assertThat(new LinkedHashSet<>(ProxyContext.getInstance().getAllSchemaNames()), is(schemas.keySet()));
     }
     
-    private Map<String, SchemaContext> createSchemaContextMap() {
-        Map<String, SchemaContext> result = new LinkedHashMap<>(10, 1);
+    private Map<String, ShardingSphereSchema> createSchemas() {
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
-            result.put(String.format(SCHEMA_PATTERN, i), mock(SchemaContext.class));
+            result.put(String.format(SCHEMA_PATTERN, i), mock(ShardingSphereSchema.class));
         }
         return result;
     }
     
-    private Map<String, SchemaContext> mockSchemaContextMap(final Map<String, DataSource> mockDataSourceMap) {
-        SchemaContext schemaContext = mock(SchemaContext.class, RETURNS_DEEP_STUBS);
-        when(schemaContext.getSchema().getName()).thenReturn("schema");
-        when(schemaContext.getSchema().getDataSources()).thenReturn(mockDataSourceMap);
-        return Collections.singletonMap("schema", schemaContext);
+    private Map<String, ShardingSphereSchema> mockSchemas(final Map<String, DataSource> mockDataSourceMap) {
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.getName()).thenReturn("schema");
+        when(schema.getDataSources()).thenReturn(mockDataSourceMap);
+        return Collections.singletonMap("schema", schema);
     }
 }

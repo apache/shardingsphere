@@ -72,7 +72,7 @@ public class GovernanceSpringBootRegistryPrimaryReplicaReplicationTest {
         Field field = GovernanceShardingSphereDataSource.class.getDeclaredField("schemaContexts");
         field.setAccessible(true);
         SchemaContexts schemaContexts = (SchemaContexts) field.get(dataSource);
-        for (DataSource each : schemaContexts.getDefaultSchemaContext().getSchema().getDataSources().values()) {
+        for (DataSource each : schemaContexts.getDefaultSchema().getDataSources().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
             assertThat(((BasicDataSource) each).getUsername(), is("sa"));
         }

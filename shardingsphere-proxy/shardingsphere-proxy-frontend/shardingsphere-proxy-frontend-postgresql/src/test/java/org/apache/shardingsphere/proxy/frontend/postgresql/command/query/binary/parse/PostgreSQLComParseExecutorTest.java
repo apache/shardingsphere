@@ -22,7 +22,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bin
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLParseCompletePacket;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
@@ -63,17 +62,16 @@ public final class PostgreSQLComParseExecutorTest {
         when(backendConnection.getConnectionId()).thenReturn(1);
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(getSchemaContextMap(),
+        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(getSchemas(),
                 mockSQLParserEngine(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         BinaryStatementRegistry.getInstance().register(1);
         PostgreSQLComParseExecutor actual = new PostgreSQLComParseExecutor(parsePacket, backendConnection);
         assertThat(actual.execute().iterator().next(), instanceOf(PostgreSQLParseCompletePacket.class));
     }
     
-    private Map<String, SchemaContext> getSchemaContextMap() {
+    private Map<String, ShardingSphereSchema> getSchemas() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        SchemaContext schemaContext = new SchemaContext(schema);
-        return Collections.singletonMap("schema", schemaContext);
+        return Collections.singletonMap("schema", schema);
     }
     
     private ShardingSphereSQLParserEngine mockSQLParserEngine() {

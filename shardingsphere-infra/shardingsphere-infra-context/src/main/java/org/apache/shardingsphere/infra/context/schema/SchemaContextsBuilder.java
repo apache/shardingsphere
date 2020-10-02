@@ -92,11 +92,11 @@ public final class SchemaContextsBuilder {
      * @return schema contexts
      */
     public SchemaContexts build() throws SQLException {
-        Map<String, SchemaContext> schemaContexts = new LinkedHashMap<>(ruleConfigs.size(), 1);
+        Map<String, ShardingSphereSchema> schemas = new LinkedHashMap<>(ruleConfigs.size(), 1);
         for (String each : ruleConfigs.keySet()) {
-            schemaContexts.put(each, new SchemaContext(createShardingSphereSchema(each)));
+            schemas.put(each, createShardingSphereSchema(each));
         }
-        return new StandardSchemaContexts(schemaContexts, sqlParserEngine, executorKernel, authentication, props, databaseType);
+        return new StandardSchemaContexts(schemas, sqlParserEngine, executorKernel, authentication, props, databaseType);
     }
     
     private ShardingSphereSchema createShardingSphereSchema(final String schemaName) throws SQLException {

@@ -163,7 +163,7 @@ public class GovernanceShardingNamespaceTest extends AbstractJUnit4SpringContext
     public void assertDefaultActualDataNodes() {
         GovernanceShardingSphereDataSource multiTableRulesDataSource = applicationContext.getBean("multiTableRulesDataSourceGovernance", GovernanceShardingSphereDataSource.class);
         SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(multiTableRulesDataSource, "schemaContexts");
-        ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
+        ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultSchema().getRules().iterator().next();
         assertThat(shardingRule.getTableRules().size(), is(2));
         Iterator<TableRule> tableRules = shardingRule.getTableRules().iterator();
         TableRule orderRule = tableRules.next();
@@ -179,12 +179,12 @@ public class GovernanceShardingNamespaceTest extends AbstractJUnit4SpringContext
     private Map<String, DataSource> getDataSourceMap(final String dataSourceName) {
         GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
         SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "schemaContexts");
-        return schemaContexts.getDefaultSchemaContext().getSchema().getDataSources();
+        return schemaContexts.getDefaultSchema().getDataSources();
     }
     
     private ShardingRule getShardingRule(final String dataSourceName) {
         GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
         SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "schemaContexts");
-        return (ShardingRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
+        return (ShardingRule) schemaContexts.getDefaultSchema().getRules().iterator().next();
     }
 }

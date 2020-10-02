@@ -69,7 +69,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     private Collection<ShardingSphereRule> getRules() {
         ShardingSphereConnection connection = statement instanceof ShardingSpherePreparedStatement
                 ? ((ShardingSpherePreparedStatement) statement).getConnection() : ((ShardingSphereStatement) statement).getConnection();
-        return connection.getSchemaContexts().getDefaultSchemaContext().getSchema().getRules();
+        return connection.getSchemaContexts().getDefaultSchema().getRules();
     }
     
     @Override
