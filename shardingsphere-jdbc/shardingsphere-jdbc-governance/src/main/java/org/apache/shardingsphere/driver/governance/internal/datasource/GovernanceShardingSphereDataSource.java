@@ -152,6 +152,6 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     }
     
     private Map<String, DataSource> getDataSourceMap() {
-        return schemaContexts.getSchemaContextMap().get(DefaultSchema.LOGIC_NAME).getSchema().getDataSources();
+        return schemaContexts.getDefaultSchemaContext().getSchema().getDataSources();
     }
 }
