@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
-import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
@@ -95,14 +94,9 @@ public final class SchemaContextsBuilder {
     public SchemaContexts build() throws SQLException {
         Map<String, SchemaContext> schemaContexts = new LinkedHashMap<>(ruleConfigs.size(), 1);
         for (String each : ruleConfigs.keySet()) {
-            schemaContexts.put(each, createSchemaContext(each));
+            schemaContexts.put(each, new SchemaContext(createShardingSphereSchema(each)));
         }
         return new StandardSchemaContexts(schemaContexts, sqlParserEngine, executorKernel, authentication, props, databaseType);
-    }
-    
-    private SchemaContext createSchemaContext(final String schemaName) throws SQLException {
-        RuntimeContext runtimeContext = new RuntimeContext();
-        return new SchemaContext(createShardingSphereSchema(schemaName), runtimeContext);
     }
     
     private ShardingSphereSchema createShardingSphereSchema(final String schemaName) throws SQLException {

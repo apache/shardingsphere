@@ -146,7 +146,7 @@ public final class RDLBackendHandlerTest {
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {
-        SchemaContext result = new SchemaContext(null, null);
+        SchemaContext result = new SchemaContext(null);
         return Collections.singletonMap("schema", result);
     }
     

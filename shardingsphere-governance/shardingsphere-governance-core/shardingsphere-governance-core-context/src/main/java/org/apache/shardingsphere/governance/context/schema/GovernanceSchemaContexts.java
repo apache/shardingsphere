@@ -41,7 +41,6 @@ import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.SchemaContextsBuilder;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
-import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
@@ -225,8 +224,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
             String schemaName = entry.getKey();
             SchemaContext oldSchemaContext = entry.getValue();
             SchemaContext newSchemaContext = event.getSchemaNames().contains(schemaName) 
-                    ? new SchemaContext(getChangedShardingSphereSchema(oldSchemaContext.getSchema(), event.getRuleSchemaMetaData(), schemaName),
-                    oldSchemaContext.getRuntimeContext()) : oldSchemaContext;
+                    ? new SchemaContext(getChangedShardingSphereSchema(oldSchemaContext.getSchema(), event.getRuleSchemaMetaData(), schemaName)) : oldSchemaContext;
             newSchemaContexts.put(schemaName, newSchemaContext);
         }
         schemaContexts = new StandardSchemaContexts(newSchemaContexts, schemaContexts.getSqlParserEngine(), schemaContexts.getExecutorKernel(), 
@@ -308,7 +306,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     private Map<String, SchemaContext> getChangedSchemaContexts() {
         Map<String, SchemaContext> result = new HashMap<>(schemaContexts.getSchemaContextMap().size());
         for (Entry<String, SchemaContext> entry : schemaContexts.getSchemaContextMap().entrySet()) {
-            result.put(entry.getKey(), new SchemaContext(entry.getValue().getSchema(), new RuntimeContext()));
+            result.put(entry.getKey(), new SchemaContext(entry.getValue().getSchema()));
         }
         return result;
     }

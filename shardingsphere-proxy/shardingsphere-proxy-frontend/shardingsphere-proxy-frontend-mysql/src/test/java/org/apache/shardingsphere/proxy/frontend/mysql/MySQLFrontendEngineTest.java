@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
-import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
@@ -176,8 +175,7 @@ public final class MySQLFrontendEngineTest {
         for (int i = 0; i < 10; i++) {
             String name = String.format(SCHEMA, i);
             ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-            RuntimeContext runtimeContext = mock(RuntimeContext.class);
-            result.put(name, new SchemaContext(schema, runtimeContext));
+            result.put(name, new SchemaContext(schema));
         }
         return result;
     }

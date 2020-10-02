@@ -5,7 +5,6 @@ import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
-import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -64,10 +63,9 @@ public final class ShardingCTLExplainBackendHandlerTest {
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {
-        RuntimeContext runtimeContext = new RuntimeContext();
         ShardingSphereSchema schema = new ShardingSphereSchema("schema", Collections.emptyList(),
                 Collections.singleton(mock(ShardingSphereRule.class)), Collections.singletonMap("ds0", mock(DataSource.class)), mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS));
-        return Collections.singletonMap("schema", new SchemaContext(schema, runtimeContext));
+        return Collections.singletonMap("schema", new SchemaContext(schema));
     }
     
     @Test

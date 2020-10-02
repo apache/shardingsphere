@@ -37,7 +37,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
-import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
@@ -116,10 +115,8 @@ public final class GovernanceSchemaContextsTest {
     private Map<String, SchemaContext> createSchemaContextMap() {
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
-        RuntimeContext runtimeContext = mock(RuntimeContext.class);
         when(schemaContext.getSchema()).thenReturn(shardingSphereSchema);
         when(schemaContext.getSchema().getName()).thenReturn("schema");
-        when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
         when(shardingSphereSchema.getMetaData()).thenReturn(shardingSphereMetaData);
         when(shardingSphereSchema.getRules()).thenReturn(Collections.singletonList(primaryReplicaReplicationRule));
         return Collections.singletonMap("schema", schemaContext);

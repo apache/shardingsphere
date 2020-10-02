@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.context.schema;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 
 /**
@@ -30,6 +29,4 @@ import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 public final class SchemaContext {
     
     private final ShardingSphereSchema schema;
-    
-    private final RuntimeContext runtimeContext;
 }

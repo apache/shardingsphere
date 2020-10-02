@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.context.schema.impl;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
-import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
@@ -32,7 +31,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -48,10 +46,9 @@ public final class StandardSchemaContextsTest {
     
     @Test
     public void assertClose() {
-        RuntimeContext runtimeContext = mock(RuntimeContext.class, RETURNS_DEEP_STUBS);
         ShardingSphereSQLParserEngine sqlParserEngine = mock(ShardingSphereSQLParserEngine.class);
         ExecutorKernel executorKernel = mock(ExecutorKernel.class);
-        SchemaContext schemaContext = new SchemaContext(mock(ShardingSphereSchema.class), runtimeContext);
+        SchemaContext schemaContext = new SchemaContext(mock(ShardingSphereSchema.class));
         StandardSchemaContexts standardSchemaContexts = new StandardSchemaContexts(
                 Collections.singletonMap("logic_db", schemaContext), sqlParserEngine, executorKernel, new Authentication(), new ConfigurationProperties(new Properties()), mock(DatabaseType.class));
         standardSchemaContexts.close();

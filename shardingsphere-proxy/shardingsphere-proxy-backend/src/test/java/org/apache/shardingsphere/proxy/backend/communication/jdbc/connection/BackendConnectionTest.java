@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
-import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
@@ -110,8 +109,7 @@ public final class BackendConnectionTest {
         Map<String, SchemaContext> result = new HashMap<>(10);
         for (int i = 0; i < 10; i++) {
             String name = String.format(SCHEMA_PATTERN, i);
-            RuntimeContext runtimeContext = mock(RuntimeContext.class);
-            SchemaContext schemaContext = new SchemaContext(mock(ShardingSphereSchema.class), runtimeContext);
+            SchemaContext schemaContext = new SchemaContext(mock(ShardingSphereSchema.class));
             result.put(name, schemaContext);
         }
         return result;
