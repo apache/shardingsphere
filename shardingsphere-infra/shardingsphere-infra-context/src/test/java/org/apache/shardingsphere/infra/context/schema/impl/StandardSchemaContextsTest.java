@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -34,13 +34,12 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public final class StandardSchemaContextsTest {
     
     @Test
     public void assertGetDefaultSchemaContext() {
-        StandardSchemaContexts standardSchemaContexts = new StandardSchemaContexts();
+        StandardSchemaContexts standardSchemaContexts = new StandardSchemaContexts(mock(ExecutorKernel.class));
         SchemaContext expected = mock(SchemaContext.class);
         standardSchemaContexts.getSchemaContextMap().put("logic_db", expected);
         assertThat(standardSchemaContexts.getDefaultSchemaContext(), is(expected));
@@ -50,10 +49,9 @@ public final class StandardSchemaContextsTest {
     public void assertClose() {
         RuntimeContext runtimeContext = mock(RuntimeContext.class, RETURNS_DEEP_STUBS);
         ExecutorKernel executorKernel = mock(ExecutorKernel.class);
-        when(runtimeContext.getExecutorKernel()).thenReturn(executorKernel);
         SchemaContext schemaContext = new SchemaContext(mock(ShardingSphereSchema.class), runtimeContext);
         StandardSchemaContexts standardSchemaContexts = new StandardSchemaContexts(
-                Collections.singletonMap("logic_db", schemaContext), new Authentication(), new ConfigurationProperties(new Properties()), mock(DatabaseType.class));
+                Collections.singletonMap("logic_db", schemaContext), executorKernel, new Authentication(), new ConfigurationProperties(new Properties()), mock(DatabaseType.class));
         standardSchemaContexts.close();
         verify(executorKernel).close();
     }

@@ -93,7 +93,7 @@ public final class SchemaContextsBuilder {
         for (String each : ruleConfigs.keySet()) {
             schemaContexts.put(each, createSchemaContext(each));
         }
-        return new StandardSchemaContexts(schemaContexts, authentication, props, databaseType);
+        return new StandardSchemaContexts(schemaContexts, executorKernel, authentication, props, databaseType);
     }
     
     private SchemaContext createSchemaContext(final String schemaName) throws SQLException {

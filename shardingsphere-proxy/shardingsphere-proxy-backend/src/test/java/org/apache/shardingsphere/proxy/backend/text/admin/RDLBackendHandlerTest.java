@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
@@ -61,8 +62,8 @@ public final class RDLBackendHandlerTest {
     public void setUp() {
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxyContext.getInstance(),
-                new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        schemaContexts.set(ProxyContext.getInstance(), 
+                new StandardSchemaContexts(getSchemaContextMap(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     @Test
@@ -187,7 +188,7 @@ public final class RDLBackendHandlerTest {
             when(mockedSchemaContexts.getSchemaContextMap()).thenReturn(Collections.singletonMap("schema", mock(SchemaContext.class)));
             schemaContexts.set(ProxyContext.getInstance(), mockedSchemaContexts);
         } else {
-            schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts());
+            schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(mock(ExecutorKernel.class)));
         }
     }
     

@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationResultBuilder;
 import org.junit.Before;
@@ -141,7 +142,7 @@ public final class MySQLAuthenticationEngineTest {
         field.setAccessible(true);
         field.set(ProxyContext.getInstance(), 
                 new StandardSchemaContexts(Collections.singletonMap("sharding_db", mock(SchemaContext.class)),
-                        new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                        mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     private MySQLPacketPayload getPayload(final String username, final String database, final byte[] authResponse) {

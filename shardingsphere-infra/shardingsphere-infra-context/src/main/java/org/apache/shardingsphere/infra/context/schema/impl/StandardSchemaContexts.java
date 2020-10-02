@@ -41,6 +41,8 @@ public final class StandardSchemaContexts implements SchemaContexts {
     
     private final Map<String, SchemaContext> schemaContextMap;
     
+    private final ExecutorKernel executorKernel;
+    
     private final Authentication authentication;
     
     private final ConfigurationProperties props;
@@ -49,13 +51,14 @@ public final class StandardSchemaContexts implements SchemaContexts {
     
     private final boolean isCircuitBreak;
     
-    public StandardSchemaContexts() {
+    public StandardSchemaContexts(final ExecutorKernel executorKernel) {
         // TODO MySQLDatabaseType is invalid because it can not update again
-        this(new HashMap<>(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType(), false);
+        this(new HashMap<>(), executorKernel, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType(), false);
     }
     
-    public StandardSchemaContexts(final Map<String, SchemaContext> schemaContextMap, final Authentication authentication, final ConfigurationProperties props, final DatabaseType databaseType) {
-        this(schemaContextMap, authentication, props, databaseType, false);
+    public StandardSchemaContexts(final Map<String, SchemaContext> schemaContextMap, final ExecutorKernel executorKernel, 
+                                  final Authentication authentication, final ConfigurationProperties props, final DatabaseType databaseType) {
+        this(schemaContextMap, executorKernel, authentication, props, databaseType, false);
     }
     
     @Override
@@ -64,12 +67,7 @@ public final class StandardSchemaContexts implements SchemaContexts {
     }
     
     @Override
-    public ExecutorKernel getExecutorKernel() {
-        return getDefaultSchemaContext().getRuntimeContext().getExecutorKernel();
-    }
-    
-    @Override
     public void close() {
-        getExecutorKernel().close();
+        executorKernel.close();
     }
 }
