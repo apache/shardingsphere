@@ -97,7 +97,7 @@ public final class SchemaContextsBuilder {
     }
     
     private SchemaContext createSchemaContext(final String schemaName) throws SQLException {
-        RuntimeContext runtimeContext = new RuntimeContext(executorKernel, ShardingSphereSQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType)));
+        RuntimeContext runtimeContext = new RuntimeContext(ShardingSphereSQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType)));
         return new SchemaContext(createShardingSphereSchema(schemaName), runtimeContext);
     }
     

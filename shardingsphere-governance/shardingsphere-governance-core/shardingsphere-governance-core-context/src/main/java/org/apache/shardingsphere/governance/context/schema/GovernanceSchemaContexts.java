@@ -19,6 +19,7 @@ package org.apache.shardingsphere.governance.context.schema;
 
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.event.model.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.governance.core.event.model.props.PropertiesCha
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaDeletedEvent;
-import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
@@ -37,13 +37,11 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.SchemaContextsBuilder;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
@@ -52,6 +50,7 @@ import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -191,7 +190,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     @Subscribe
     public synchronized void renew(final PropertiesChangedEvent event) {
         ConfigurationProperties props = new ConfigurationProperties(event.getProps());
-        schemaContexts = new StandardSchemaContexts(getChangedSchemaContexts(props), schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), props, schemaContexts.getDatabaseType());
+        schemaContexts = new StandardSchemaContexts(getChangedSchemaContexts(), schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), props, schemaContexts.getDatabaseType());
     }
     
     /**
@@ -297,12 +296,11 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         return schemaContextsBuilder.build().getSchemaContextMap().get(schemaName);
     }
     
-    private Map<String, SchemaContext> getChangedSchemaContexts(final ConfigurationProperties props) {
+    private Map<String, SchemaContext> getChangedSchemaContexts() {
         Map<String, SchemaContext> result = new HashMap<>(schemaContexts.getSchemaContextMap().size());
         for (Entry<String, SchemaContext> entry : schemaContexts.getSchemaContextMap().entrySet()) {
             RuntimeContext runtimeContext = entry.getValue().getRuntimeContext();
-            result.put(entry.getKey(), new SchemaContext(
-                    entry.getValue().getSchema(), new RuntimeContext(new ExecutorKernel(props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE)), runtimeContext.getSqlParserEngine())));
+            result.put(entry.getKey(), new SchemaContext(entry.getValue().getSchema(), new RuntimeContext(runtimeContext.getSqlParserEngine())));
         }
         return result;
     }
