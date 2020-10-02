@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,6 +65,11 @@ public final class StandardSchemaContexts implements SchemaContexts {
     @Override
     public SchemaContext getDefaultSchemaContext() {
         return schemaContextMap.get(DefaultSchema.LOGIC_NAME);
+    }
+    
+    @Override
+    public ShardingSphereSQLParserEngine getSQLParserEngine() {
+        return schemaContextMap.values().iterator().next().getRuntimeContext().getSqlParserEngine();
     }
     
     @Override

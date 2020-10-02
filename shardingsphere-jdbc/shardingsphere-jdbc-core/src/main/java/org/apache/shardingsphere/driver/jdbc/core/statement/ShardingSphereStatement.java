@@ -302,7 +302,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private LogicSQL createLogicSQL(final String sql) {
         SchemaContext schemaContext = schemaContexts.getDefaultSchemaContext();
         SchemaMetaData schemaMetaData = schemaContext.getSchema().getMetaData().getRuleSchemaMetaData().getSchemaMetaData();
-        SQLStatement sqlStatement = schemaContext.getRuntimeContext().getSqlParserEngine().parse(sql, false);
+        SQLStatement sqlStatement = schemaContexts.getSQLParserEngine().parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, Collections.emptyList(), sqlStatement);
         return new LogicSQL(schemaContext.getSchema(), sqlStatementContext, sql, Collections.emptyList());
     }

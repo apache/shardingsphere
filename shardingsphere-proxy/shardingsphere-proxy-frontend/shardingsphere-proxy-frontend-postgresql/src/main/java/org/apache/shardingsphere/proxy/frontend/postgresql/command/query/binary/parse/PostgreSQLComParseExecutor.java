@@ -22,7 +22,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bin
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.ConnectionScopeBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLParseCompletePacket;
-import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -38,20 +37,17 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     
     private final PostgreSQLComParsePacket packet;
     
-    private final SchemaContext schema;
-    
     private final ConnectionScopeBinaryStatementRegistry binaryStatementRegistry;
     
     public PostgreSQLComParseExecutor(final PostgreSQLComParsePacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
-        schema = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
         binaryStatementRegistry = BinaryStatementRegistry.getInstance().get(backendConnection.getConnectionId());
     }
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
         if (!packet.getSql().isEmpty()) {
-            SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(packet.getSql(), true);
+            SQLStatement sqlStatement = ProxyContext.getInstance().getSchemaContexts().getSQLParserEngine().parse(packet.getSql(), true);
             binaryStatementRegistry.register(packet.getStatementId(), packet.getSql(), sqlStatement.getParameterCount(), packet.getBinaryStatementParameterTypes());
         }
         return Collections.singletonList(new PostgreSQLParseCompletePacket());

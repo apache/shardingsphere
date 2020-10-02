@@ -51,6 +51,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -124,6 +125,11 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     @Override
     public SchemaContext getDefaultSchemaContext() {
         return schemaContexts.getDefaultSchemaContext();
+    }
+    
+    @Override
+    public ShardingSphereSQLParserEngine getSQLParserEngine() {
+        return schemaContexts.getSQLParserEngine();
     }
     
     @Override

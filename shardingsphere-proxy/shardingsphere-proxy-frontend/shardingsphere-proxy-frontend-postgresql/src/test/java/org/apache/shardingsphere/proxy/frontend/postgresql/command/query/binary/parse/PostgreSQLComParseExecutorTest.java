@@ -61,7 +61,6 @@ public final class PostgreSQLComParseExecutorTest {
     public void assertNewInstance() throws NoSuchFieldException, IllegalAccessException {
         when(parsePacket.getSql()).thenReturn("sql");
         when(parsePacket.getStatementId()).thenReturn("2");
-        when(backendConnection.getSchemaName()).thenReturn("schema");
         when(backendConnection.getConnectionId()).thenReturn(1);
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
@@ -87,7 +86,6 @@ public final class PostgreSQLComParseExecutorTest {
     @Test
     public void assertGetSqlWithNull() {
         when(parsePacket.getSql()).thenReturn("");
-        when(backendConnection.getSchemaName()).thenReturn("schemaName");
         when(backendConnection.getConnectionId()).thenReturn(1);
         PostgreSQLComParseExecutor actual = new PostgreSQLComParseExecutor(parsePacket, backendConnection);
         assertThat(actual.execute().iterator().next(), instanceOf(PostgreSQLParseCompletePacket.class));
