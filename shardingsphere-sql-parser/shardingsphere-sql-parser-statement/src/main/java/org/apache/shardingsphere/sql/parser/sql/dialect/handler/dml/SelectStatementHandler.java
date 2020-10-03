@@ -36,16 +36,16 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.
 import java.util.Optional;
 
 /**
- * SelectStatement helper class for different dialect SQLStatements.
+ * Select statement helper class for different dialect SQL statements.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SelectStatementHandler {
 
     /**
-     * Get LimitSegment.
+     * Get limit segment.
      *
-     * @param selectStatement SelectStatement
-     * @return LimitSegment
+     * @param selectStatement select statement
+     * @return limit segment
      */
     public static Optional<LimitSegment> getLimitSegment(final SelectStatement selectStatement) {
         if (selectStatement instanceof MySQLStatement) {
@@ -64,10 +64,10 @@ public final class SelectStatementHandler {
     }
 
     /**
-     * Get LockSegment.
+     * Get lock segment.
      *
-     * @param selectStatement SelectStatement
-     * @return LockSegment
+     * @param selectStatement select statement
+     * @return lock segment
      */
     public static Optional<LockSegment> getLockSegment(final SelectStatement selectStatement) {
         if (selectStatement instanceof MySQLStatement) {

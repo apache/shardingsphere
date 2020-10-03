@@ -28,16 +28,16 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import java.util.Optional;
 
 /**
- * UpdateStatement helper class for different dialect SQLStatements.
+ * Update statement helper class for different dialect SQL statements.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UpdateStatementHandler {
 
     /**
-     * Get OrderBySegment.
+     * Get order by segment.
      *
-     * @param updateStatement UpdateStatement
-     * @return OrderBySegment
+     * @param updateStatement update statement
+     * @return order by segment
      */
     public static Optional<OrderBySegment> getOrderBySegment(final UpdateStatement updateStatement) {
         if (updateStatement instanceof MySQLStatement) {
@@ -47,10 +47,10 @@ public final class UpdateStatementHandler {
     }
 
     /**
-     * Get LimitSegment.
+     * Get limit segment.
      *
-     * @param updateStatement UpdateStatement
-     * @return LimitSegment
+     * @param updateStatement update statement
+     * @return limit segment
      */
     public static Optional<LimitSegment> getLimitSegment(final UpdateStatement updateStatement) {
         if (updateStatement instanceof MySQLStatement) {
