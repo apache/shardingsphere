@@ -40,7 +40,7 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SelectStatementHandler {
-
+    
     /**
      * Get limit segment.
      *
@@ -62,7 +62,7 @@ public final class SelectStatementHandler {
         }
         return Optional.empty();
     }
-
+    
     /**
      * Get lock segment.
      *

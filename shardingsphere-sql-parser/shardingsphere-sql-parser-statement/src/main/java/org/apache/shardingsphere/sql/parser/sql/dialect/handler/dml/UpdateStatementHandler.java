@@ -32,7 +32,7 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UpdateStatementHandler {
-
+    
     /**
      * Get order by segment.
      *
@@ -45,7 +45,7 @@ public final class UpdateStatementHandler {
         }
         return Optional.empty();
     }
-
+    
     /**
      * Get limit segment.
      *
