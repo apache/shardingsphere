@@ -56,21 +56,21 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     private final SchemaMetaData schemaMetaData;
     
     @Override
-    public List<ShardingCondition> createShardingConditions(final InsertStatementContext insertStatementContext, final List<Object> parameters) {
+    public List<ShardingCondition> createShardingConditions(final InsertStatementContext sqlStatementContext, final List<Object> parameters) {
         List<ShardingCondition> result = new LinkedList<>();
-        String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        Collection<String> columnNames = getColumnNames(insertStatementContext);
-        for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
+        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        Collection<String> columnNames = getColumnNames(sqlStatementContext);
+        for (InsertValueContext each : sqlStatementContext.getInsertValueContexts()) {
             result.add(createShardingCondition(tableName, columnNames.iterator(), each, parameters));
         }
-        if (null != insertStatementContext.getInsertSelectContext()) {
-            SelectStatementContext selectStatementContext = insertStatementContext.getInsertSelectContext().getSelectStatementContext();
+        if (null != sqlStatementContext.getInsertSelectContext()) {
+            SelectStatementContext selectStatementContext = sqlStatementContext.getInsertSelectContext().getSelectStatementContext();
             List<ShardingCondition> shardingConditions = new WhereClauseShardingConditionEngine(shardingRule, schemaMetaData).createShardingConditions(selectStatementContext, parameters);
             result.addAll(shardingConditions);
         }
-        Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
+        Optional<GeneratedKeyContext> generatedKey = sqlStatementContext.getGeneratedKeyContext();
         if (generatedKey.isPresent() && generatedKey.get().isGenerated()) {
-            generatedKey.get().getGeneratedValues().addAll(getGeneratedKeys(tableName, insertStatementContext.getValueListCount()));
+            generatedKey.get().getGeneratedValues().addAll(getGeneratedKeys(tableName, sqlStatementContext.getValueListCount()));
             if (shardingRule.isShardingColumn(generatedKey.get().getColumnName(), tableName)) {
                 appendGeneratedKeyCondition(generatedKey.get(), tableName, result);
             }
