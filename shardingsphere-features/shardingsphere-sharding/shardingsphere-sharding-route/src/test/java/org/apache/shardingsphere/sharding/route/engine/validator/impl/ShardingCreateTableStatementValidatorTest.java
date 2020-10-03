@@ -40,10 +40,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShardingCreateTableStatementValidatorTest {
-
+    
     @Mock
     private ShardingRule shardingRule;
-
+    
     @Test(expected = TableExistsException.class)
     public void assertValidateMySQLCreateTable() {
         MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
