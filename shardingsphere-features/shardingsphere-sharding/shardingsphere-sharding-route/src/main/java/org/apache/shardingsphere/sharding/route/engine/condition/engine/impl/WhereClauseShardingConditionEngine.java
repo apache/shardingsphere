@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.condition.engine;
+package org.apache.shardingsphere.sharding.route.engine.condition.engine.impl;
 
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseRout
 import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
+import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGeneratorFactory;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
@@ -56,19 +57,13 @@ import java.util.Optional;
  * Sharding condition engine for where clause.
  */
 @RequiredArgsConstructor
-public final class WhereClauseShardingConditionEngine {
+public final class WhereClauseShardingConditionEngine implements ShardingConditionEngine<SQLStatementContext<?>> {
     
     private final ShardingRule shardingRule;
     
     private final SchemaMetaData schemaMetaData;
     
-    /**
-     * Create sharding conditions.
-     * 
-     * @param sqlStatementContext SQL statement context
-     * @param parameters SQL parameters
-     * @return sharding conditions
-     */
+    @Override
     public List<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
         if (!(sqlStatementContext instanceof WhereAvailable)) {
             return Collections.emptyList();

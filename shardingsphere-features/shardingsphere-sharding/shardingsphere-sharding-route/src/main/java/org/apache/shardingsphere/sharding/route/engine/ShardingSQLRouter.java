@@ -26,8 +26,9 @@ import org.apache.shardingsphere.infra.sql.LogicSQL;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
-import org.apache.shardingsphere.sharding.route.engine.condition.engine.InsertClauseShardingConditionEngine;
-import org.apache.shardingsphere.sharding.route.engine.condition.engine.WhereClauseShardingConditionEngine;
+import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
+import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.InsertClauseShardingConditionEngine;
+import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngineFactory;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidatorFactory;
@@ -61,8 +62,7 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
         SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
         Optional<ShardingStatementValidator> validator = ShardingStatementValidatorFactory.newInstance(sqlStatement);
         validator.ifPresent(v -> v.preValidate(rule, logicSQL.getSqlStatementContext(), logicSQL.getParameters(), logicSQL.getSchema().getMetaData()));
-        ShardingConditions shardingConditions = getShardingConditions(
-                logicSQL.getParameters(), logicSQL.getSqlStatementContext(), logicSQL.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(), rule);
+        ShardingConditions shardingConditions = getShardingConditions(logicSQL, rule);
         boolean needMergeShardingValues = isNeedMergeShardingValues(logicSQL.getSqlStatementContext(), rule);
         if (sqlStatement instanceof DMLStatement && needMergeShardingValues) {
             checkSubqueryShardingValues(logicSQL.getSqlStatementContext(), rule, shardingConditions);
@@ -73,15 +73,22 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
         return result;
     }
     
-    private ShardingConditions getShardingConditions(final List<Object> parameters, 
-                                                     final SQLStatementContext<?> sqlStatementContext, final SchemaMetaData schemaMetaData, final ShardingRule rule) {
-        if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
-            if (sqlStatementContext instanceof InsertStatementContext) {
-                return new ShardingConditions(new InsertClauseShardingConditionEngine(rule, schemaMetaData).createShardingConditions((InsertStatementContext) sqlStatementContext, parameters));
-            }
-            return new ShardingConditions(new WhereClauseShardingConditionEngine(rule, schemaMetaData).createShardingConditions(sqlStatementContext, parameters));
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private ShardingConditions getShardingConditions(final LogicSQL logicSQL, final ShardingRule rule) {
+        List<ShardingCondition> shardingConditions;
+        if (logicSQL.getSqlStatementContext().getSqlStatement() instanceof DMLStatement) {
+            ShardingConditionEngine shardingConditionEngine = createShardingConditionEngine(logicSQL, rule);
+            shardingConditions = shardingConditionEngine.createShardingConditions(logicSQL.getSqlStatementContext(), logicSQL.getParameters());
+        } else {
+            shardingConditions = Collections.emptyList();
         }
-        return new ShardingConditions(Collections.emptyList());
+        return new ShardingConditions(shardingConditions);
+    }
+    
+    private ShardingConditionEngine<?> createShardingConditionEngine(final LogicSQL logicSQL, final ShardingRule rule) {
+        SchemaMetaData schemaMetaData = logicSQL.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData();
+        return logicSQL.getSqlStatementContext() instanceof InsertStatementContext 
+                ? new InsertClauseShardingConditionEngine(rule, schemaMetaData) : new WhereClauseShardingConditionEngine(rule, schemaMetaData);
     }
     
     private boolean isNeedMergeShardingValues(final SQLStatementContext<?> sqlStatementContext, final ShardingRule rule) {

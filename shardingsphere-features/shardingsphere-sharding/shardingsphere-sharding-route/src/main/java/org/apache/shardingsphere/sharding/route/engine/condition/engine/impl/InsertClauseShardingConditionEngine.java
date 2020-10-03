@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.condition.engine;
+package org.apache.shardingsphere.sharding.route.engine.condition.engine.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
+import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.spi.SPITimeService;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
@@ -48,19 +49,13 @@ import java.util.stream.IntStream;
  * Sharding condition engine for insert clause.
  */
 @RequiredArgsConstructor
-public final class InsertClauseShardingConditionEngine {
+public final class InsertClauseShardingConditionEngine implements ShardingConditionEngine<InsertStatementContext> {
     
     private final ShardingRule shardingRule;
     
     private final SchemaMetaData schemaMetaData;
     
-    /**
-     * Create sharding conditions.
-     * 
-     * @param insertStatementContext insert statement context
-     * @param parameters SQL parameters
-     * @return sharding conditions
-     */
+    @Override
     public List<ShardingCondition> createShardingConditions(final InsertStatementContext insertStatementContext, final List<Object> parameters) {
         List<ShardingCondition> result = new LinkedList<>();
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
