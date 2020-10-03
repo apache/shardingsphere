@@ -29,16 +29,16 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.
 import java.util.Optional;
 
 /**
- * DropIndexStatement handler for different dialect SQLStatements.
+ * Drop index statement handler for different dialect SQL statements.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DropIndexStatementHandler {
     
     /**
-     * Get SimpleTableSegment.
+     * Get simple table segment.
      *
-     * @param dropIndexStatement DropIndexStatement
-     * @return SimpleTableSegment
+     * @param dropIndexStatement drop index statement
+     * @return simple table segment
      */
     public static Optional<SimpleTableSegment> getSimpleTableSegment(final DropIndexStatement dropIndexStatement) {
         if (dropIndexStatement instanceof MySQLStatement) {

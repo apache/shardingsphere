@@ -27,16 +27,16 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.
 import java.util.Optional;
 
 /**
- * AlterIndexStatement handler for different dialect SQLStatements.
+ * Alter index statement handler for different dialect SQL statements.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterIndexStatementHandler {
     
     /**
-     * Get SimpleTableSegment.
+     * Get simple table segment.
      *
-     * @param alterIndexStatement AlterIndexStatement
-     * @return SimpleTableSegment
+     * @param alterIndexStatement alter index statement
+     * @return simple table segment
      */
     public static Optional<SimpleTableSegment> getSimpleTableSegment(final AlterIndexStatement alterIndexStatement) {
         if (alterIndexStatement instanceof SQLServerStatement) {

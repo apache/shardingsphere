@@ -26,16 +26,16 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
 
 /**
- * CreateTableStatement handler for different dialect SQLStatements.
+ * Create table statement handler for different dialect SQL statements.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CreateTableStatementHandler {
-
+    
     /**
-     * Judge whether contains NotExistClause.
+     * Judge whether contains not exist clause.
      *
-     * @param createTableStatement CreateTableStatement
-     * @return whether contains NotExistClause
+     * @param createTableStatement create table statement
+     * @return contains not exist clause or not
      */
     public static boolean containsNotExistClause(final CreateTableStatement createTableStatement) {
         if (createTableStatement instanceof MySQLStatement) {
