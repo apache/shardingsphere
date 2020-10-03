@@ -36,7 +36,7 @@ public final class CreateTableStatementHandler implements SQLStatementHandler {
      * Judge whether contains if not exist clause.
      *
      * @param createTableStatement create table statement
-     * @return contains not exist clause or not
+     * @return contains if not exist clause or not
      */
     public static boolean containsIfNotExistClause(final CreateTableStatement createTableStatement) {
         if (createTableStatement instanceof MySQLStatement) {
