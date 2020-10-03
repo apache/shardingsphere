@@ -56,14 +56,14 @@ public final class ShardingInsertStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
-
+    
     @Test(expected = ShardingSphereException.class)
     public void assertValidateInsertModifyMultiTables() {
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(new SchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement());
         sqlStatementContext.getTablesContext().getTables().addAll(createMultiTablesContext().getTables());
         new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class));
     }
-
+    
     @Test
     public void assertValidateOnDuplicateKeyWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);

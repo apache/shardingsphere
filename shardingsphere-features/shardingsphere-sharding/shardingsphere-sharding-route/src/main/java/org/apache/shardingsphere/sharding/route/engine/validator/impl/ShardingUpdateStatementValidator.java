@@ -67,14 +67,7 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
             }
         }
     }
-
-    @Override
-    public void postValidate(final UpdateStatement sqlStatement, final RouteContext routeContext) {
-        if (UpdateStatementHandler.getLimitSegment(sqlStatement).isPresent() && routeContext.getRouteUnits().size() > 1) {
-            throw new ShardingSphereException("UPDATE ... LIMIT can not support sharding route to multiple data nodes.");
-        }
-    }
-
+    
     private Optional<Object> getShardingColumnSetAssignmentValue(final AssignmentSegment assignmentSegment, final List<Object> parameters) {
         ExpressionSegment segment = assignmentSegment.getValue();
         int shardingSetAssignIndex = -1;
@@ -157,5 +150,12 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
             }
         }
         return Optional.empty();
+    }
+    
+    @Override
+    public void postValidate(final UpdateStatement sqlStatement, final RouteContext routeContext) {
+        if (UpdateStatementHandler.getLimitSegment(sqlStatement).isPresent() && routeContext.getRouteUnits().size() > 1) {
+            throw new ShardingSphereException("UPDATE ... LIMIT can not support sharding route to multiple data nodes.");
+        }
     }
 }

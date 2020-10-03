@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 
@@ -31,8 +32,8 @@ import java.util.Optional;
  * Update statement helper class for different dialect SQL statements.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class UpdateStatementHandler {
-
+public final class UpdateStatementHandler implements SQLStatementHandler {
+    
     /**
      * Get order by segment.
      *
@@ -45,7 +46,7 @@ public final class UpdateStatementHandler {
         }
         return Optional.empty();
     }
-
+    
     /**
      * Get limit segment.
      *

@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
 
@@ -31,7 +32,7 @@ import java.util.Optional;
  * Delete statement handler for different dialect SQL statements.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DeleteStatementHandler {
+public final class DeleteStatementHandler implements SQLStatementHandler {
     
     /**
      * Get order by segment.

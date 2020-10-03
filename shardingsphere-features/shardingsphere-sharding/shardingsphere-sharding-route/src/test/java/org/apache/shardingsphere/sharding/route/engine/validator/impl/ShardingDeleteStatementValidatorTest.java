@@ -38,30 +38,30 @@ import java.util.Collections;
 import static org.mockito.Mockito.mock;
 
 public final class ShardingDeleteStatementValidatorTest {
-
+    
     @Mock
     private ShardingRule shardingRule;
-
+    
     @Test(expected = ShardingSphereException.class)
     public void assertValidateMySQLDeleteModifyMultiTables() {
         assertValidateDeleteModifyMultiTables(new MySQLDeleteStatement());
     }
-
+    
     @Test(expected = ShardingSphereException.class)
     public void assertValidateOracleDeleteModifyMultiTables() {
         assertValidateDeleteModifyMultiTables(new OracleDeleteStatement());
     }
-
+    
     @Test(expected = ShardingSphereException.class)
     public void assertValidatePostgreSQLDeleteModifyMultiTables() {
         assertValidateDeleteModifyMultiTables(new PostgreSQLDeleteStatement());
     }
-
+    
     @Test(expected = ShardingSphereException.class)
     public void assertValidateSQL92DeleteModifyMultiTables() {
         assertValidateDeleteModifyMultiTables(new SQL92DeleteStatement());
     }
-
+    
     @Test(expected = ShardingSphereException.class)
     public void assertValidateSQLServerDeleteModifyMultiTables() {
         assertValidateDeleteModifyMultiTables(new SQLServerDeleteStatement());

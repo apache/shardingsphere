@@ -64,10 +64,6 @@ public final class ShardingInsertStatementValidator implements ShardingStatement
         }
     }
     
-    @Override
-    public void postValidate(final InsertStatement sqlStatement, final RouteContext routeContext) {
-    }
-    
     private boolean isUpdateShardingKey(final ShardingRule shardingRule, final OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment, final String tableName) {
         for (AssignmentSegment each : onDuplicateKeyColumnsSegment.getColumns()) {
             if (shardingRule.isShardingColumn(each.getColumn().getIdentifier().getValue(), tableName)) {
@@ -87,5 +83,9 @@ public final class ShardingInsertStatementValidator implements ShardingStatement
     
     private boolean isAllSameTables(final Collection<String> tableNames) {
         return 1 == tableNames.stream().distinct().count();
+    }
+    
+    @Override
+    public void postValidate(final InsertStatement sqlStatement, final RouteContext routeContext) {
     }
 }

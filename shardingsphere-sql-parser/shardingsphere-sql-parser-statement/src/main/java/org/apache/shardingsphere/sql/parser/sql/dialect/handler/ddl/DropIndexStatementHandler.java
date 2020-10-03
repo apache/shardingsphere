@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
@@ -32,7 +33,7 @@ import java.util.Optional;
  * Drop index statement handler for different dialect SQL statements.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DropIndexStatementHandler {
+public final class DropIndexStatementHandler implements SQLStatementHandler {
     
     /**
      * Get simple table segment.

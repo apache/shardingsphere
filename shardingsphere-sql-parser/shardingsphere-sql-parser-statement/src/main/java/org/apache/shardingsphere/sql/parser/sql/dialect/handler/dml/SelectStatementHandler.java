@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
@@ -39,8 +40,8 @@ import java.util.Optional;
  * Select statement helper class for different dialect SQL statements.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SelectStatementHandler {
-
+public final class SelectStatementHandler implements SQLStatementHandler {
+    
     /**
      * Get limit segment.
      *
@@ -62,7 +63,7 @@ public final class SelectStatementHandler {
         }
         return Optional.empty();
     }
-
+    
     /**
      * Get lock segment.
      *
