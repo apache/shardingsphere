@@ -32,9 +32,9 @@ public final class ExpressionBuilder {
     private final ExpressionSegment expression;
     
     /**
-     * Extract andPredicates.
+     * Extract and predicates.
      *
-     * @return OrPredicateSegment.
+     * @return Or predicate segment.
      */
     public OrPredicateSegment extractAndPredicates() {
         OrPredicateSegment result = new OrPredicateSegment();
