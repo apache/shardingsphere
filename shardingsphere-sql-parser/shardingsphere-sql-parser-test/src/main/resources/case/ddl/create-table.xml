@@ -1437,4 +1437,14 @@
             <column name="num" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_enum_and_character_set">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" primary-key="true" start-index="22" stop-index="45">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="ENUM" start-index="48" stop-index="87">
+            <column name="status" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>

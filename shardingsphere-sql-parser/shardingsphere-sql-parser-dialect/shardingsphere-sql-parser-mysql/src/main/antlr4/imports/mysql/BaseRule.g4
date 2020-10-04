@@ -588,7 +588,7 @@ collectionOptions
     ;
 
 characterSet_
-    : (CHARSET | CHAR SET) EQ_? ignoredIdentifier_
+    : (CHARSET | CHAR SET | CHARACTER SET) EQ_? ignoredIdentifier_
     ;
 
 collateClause_
