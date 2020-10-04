@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpres
 import java.util.Optional;
 
 /**
- * Column extract from expression
+ * Column extract from expression.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ColumnExtractFromExpression {
