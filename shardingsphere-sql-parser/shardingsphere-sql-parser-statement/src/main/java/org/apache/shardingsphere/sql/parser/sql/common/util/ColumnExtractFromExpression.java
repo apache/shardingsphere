@@ -27,14 +27,17 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpres
 
 import java.util.Optional;
 
+/**
+ * Column extract from expression
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ColumnExtractFromExpression {
     
     /**
-     * Get left value if left value of expression is ColumnSegment.
+     * Get left value if left value of expression is column segment.
      *
-     * @param expression ExpressionSegment.
-     * @return ColumnSegment.
+     * @param expression expression segment
+     * @return column segment
      */
     public static Optional<ColumnSegment> extract(final ExpressionSegment expression) {
         if (expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment) {
