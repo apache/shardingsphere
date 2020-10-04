@@ -93,7 +93,8 @@ public final class DALBackendHandlerFactoryTest {
         assertFieldOfInstance(unicastBackendHandler, "backendConnection", is(backendConnection));
     }
     
-    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
     private <S, T> void assertFieldOfInstance(final S classInstance, final String fieldName, final Matcher<T> matcher) {
         Field field = classInstance.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);

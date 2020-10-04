@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.merge.dal.impl;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.merge.dal.impl.fixture.TestStatementContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
@@ -41,8 +40,7 @@ import static org.mockito.Mockito.when;
 public final class DecoratedEncryptColumnsMergedResultTest {
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertNewValidResult() {
+    public void assertNewValidResult() throws SQLException {
         TestStatementContext testStatementContext = mock(TestStatementContext.class);
         SimpleTableSegment simpleTableSegment = mock(SimpleTableSegment.class);
         IdentifierValue identifierValue = mock(IdentifierValue.class);

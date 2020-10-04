@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,8 +51,7 @@ public final class MySQLPositionManagerTest {
     private Connection connection;
     
     @Before
-    @SneakyThrows(SQLException.class)
-    public void setUp() {
+    public void setUp() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         PreparedStatement positionStatement = mockPositionStatement();
         when(connection.prepareStatement("SHOW MASTER STATUS")).thenReturn(positionStatement);

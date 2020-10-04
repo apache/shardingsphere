@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.jdbc.executor.impl;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
@@ -71,8 +70,7 @@ public final class DefaultSQLExecutorCallbackTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void execute() throws SQLException {
+    public void assertExecute() throws SQLException, NoSuchFieldException, IllegalAccessException {
         SQLExecutorCallback<?> sqlExecutorCallback = new DefaultSQLExecutorCallback<Integer>(DatabaseTypes.getActualDatabaseType("MySQL"), true) {
             
             @Override

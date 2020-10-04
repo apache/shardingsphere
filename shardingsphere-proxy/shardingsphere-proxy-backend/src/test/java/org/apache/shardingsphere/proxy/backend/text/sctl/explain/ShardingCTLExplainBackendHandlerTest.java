@@ -1,6 +1,5 @@
 package org.apache.shardingsphere.proxy.backend.text.sctl.explain;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
@@ -50,8 +49,7 @@ public final class ShardingCTLExplainBackendHandlerTest {
     private ShardingCTLExplainBackendHandler handler;
     
     @Before
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void setUp() {
+    public void setUp() throws IllegalAccessException, NoSuchFieldException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         handler = new ShardingCTLExplainBackendHandler("sctl:explain select 1", connection);

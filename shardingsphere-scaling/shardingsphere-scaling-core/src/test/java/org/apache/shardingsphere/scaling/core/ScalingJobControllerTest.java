@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
@@ -110,8 +109,7 @@ public final class ScalingJobControllerTest {
     }
     
     @Test
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void assertOnlyIncrementalDataTasks() {
+    public void assertOnlyIncrementalDataTasks() throws NoSuchFieldException, IllegalAccessException {
         ReflectionUtil.setFieldValue(ResumeBreakPointManagerFactory.class, null, "clazz", IncrementalPositionResumeBreakPointManager.class);
         ShardingScalingJob shardingScalingJob = mockShardingScalingJob();
         scalingJobController.start(shardingScalingJob);

@@ -47,6 +47,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -124,8 +125,7 @@ public final class SeataATShardingTransactionManagerTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetConnection() {
+    public void assertGetConnection() throws SQLException {
         Connection actual = seataATShardingTransactionManager.getConnection("demo_ds");
         assertThat(actual, instanceOf(ConnectionProxy.class));
     }

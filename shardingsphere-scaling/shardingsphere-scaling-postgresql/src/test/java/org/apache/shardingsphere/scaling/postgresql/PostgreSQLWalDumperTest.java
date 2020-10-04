@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.postgresql;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -81,8 +80,7 @@ public final class PostgreSQLWalDumperTest {
     }
     
     @Test
-    @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
-    public void assertStart() {
+    public void assertStart() throws SQLException, NoSuchFieldException, IllegalAccessException {
         try {
             ReflectionUtil.setFieldValueToClass(postgreSQLWalDumper, "logicalReplication", logicalReplication);
             when(logicalReplication.createPgConnection(jdbcDataSourceConfig)).thenReturn(pgConnection);

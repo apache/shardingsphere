@@ -74,7 +74,7 @@ public final class SPIRoutingHookTest {
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private RoutingHook getFixtureHook() {
         Field routingHooksField = SPIRoutingHook.class.getDeclaredField("routingHooks");
         routingHooksField.setAccessible(true);

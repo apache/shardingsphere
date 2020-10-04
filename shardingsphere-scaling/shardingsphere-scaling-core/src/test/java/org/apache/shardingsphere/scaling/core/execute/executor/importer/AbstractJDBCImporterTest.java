@@ -19,7 +19,6 @@ package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
@@ -98,8 +97,7 @@ public final class AbstractJDBCImporterTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertWriteInsertDataRecord() {
+    public void assertWriteInsertDataRecord() throws SQLException {
         DataRecord insertRecord = getDataRecord("INSERT");
         when(sqlBuilder.buildInsertSQL(insertRecord)).thenReturn(INSERT_SQL);
         when(connection.prepareStatement(INSERT_SQL)).thenReturn(preparedStatement);

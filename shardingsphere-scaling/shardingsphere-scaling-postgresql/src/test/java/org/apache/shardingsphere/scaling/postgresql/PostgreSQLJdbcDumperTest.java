@@ -66,8 +66,7 @@ public final class PostgreSQLJdbcDumperTest {
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertCreatePreparedStatement() {
+    public void assertCreatePreparedStatement() throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(mockDumperConfiguration().getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = postgreSQLJdbcDumper.createPreparedStatement(connection, "SELECT * FROM t_order")) {

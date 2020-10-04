@@ -40,7 +40,6 @@ public final class DumperFactory {
      * @param dataSourceManager data source factory
      * @return JDBC dumper
      */
-    @SneakyThrows
     public static JDBCDumper newInstanceJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
         return newInstanceJdbcDumper(inventoryDumperConfig.getDataSourceConfiguration().getDatabaseType().getName(), inventoryDumperConfig, dataSourceManager);
     }
@@ -53,7 +52,7 @@ public final class DumperFactory {
      * @param dataSourceManager data source factory
      * @return JDBC dumper
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public static JDBCDumper newInstanceJdbcDumper(final String databaseType, final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
         return scalingEntry.getJdbcDumperClass().getConstructor(InventoryDumperConfiguration.class, DataSourceManager.class).newInstance(inventoryDumperConfig, dataSourceManager);
@@ -66,7 +65,6 @@ public final class DumperFactory {
      * @param position position
      * @return log dumper
      */
-    @SneakyThrows
     public static LogDumper newInstanceLogDumper(final DumperConfiguration dumperConfig, final Position position) {
         return newInstanceLogDumper(dumperConfig.getDataSourceConfiguration().getDatabaseType().getName(), dumperConfig, position);
     }
@@ -79,7 +77,7 @@ public final class DumperFactory {
      * @param position position
      * @return log dumper
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public static LogDumper newInstanceLogDumper(final String databaseType, final DumperConfiguration dumperConfig, final Position position) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
         return scalingEntry.getLogDumperClass().getConstructor(DumperConfiguration.class, Position.class).newInstance(dumperConfig, position);

@@ -144,18 +144,16 @@ public final class NacosRepositoryTest {
         verify(configService).removeConfig("sharding.test", group);
     }
     
-    @SneakyThrows
     @Test
-    public void assertDeleteWhenThrowException() {
+    public void assertDeleteWhenThrowException() throws NacosException {
         when(configService.getConfig(eq("sharding.test"), eq(group), anyLong())).thenReturn("value");
         doThrow(NacosException.class).when(configService).removeConfig(eq("sharding.test"), eq(group));
         REPOSITORY.delete("/sharding/test");
         assertNotNull(REPOSITORY.get("/sharding/test"));
     }
     
-    @SneakyThrows
     @Test
-    public void assertWatchWhenThrowException() {
+    public void assertWatchWhenThrowException() throws NacosException {
         ChangedType[] actualType = {null};
         doThrow(NacosException.class).when(configService).addListener(anyString(), anyString(), any(Listener.class));
         DataChangedEventListener listener = dataChangedEvent -> actualType[0] = dataChangedEvent.getChangedType();
@@ -164,8 +162,7 @@ public final class NacosRepositoryTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertPersistWhenThrowException() {
+    public void assertPersistWhenThrowException() throws NacosException {
         String value = "value";
         doThrow(NacosException.class).when(configService).publishConfig(eq("sharding.test"), eq(group), eq(value));
         REPOSITORY.persist("/sharding/test", value);

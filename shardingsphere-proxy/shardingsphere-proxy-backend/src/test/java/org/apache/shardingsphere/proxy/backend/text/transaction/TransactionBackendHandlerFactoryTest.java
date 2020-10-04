@@ -64,7 +64,8 @@ public final class TransactionBackendHandlerFactoryTest {
         assertThat(TransactionBackendHandlerFactory.newInstance(null, mock(TCLStatement.class), null), instanceOf(BroadcastBackendHandler.class));
     }
     
-    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
     private <S, T> void assertFieldOfInstance(final S classInstance, final String fieldName, final Matcher<T> matcher) {
         Field field = classInstance.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
@@ -72,7 +73,7 @@ public final class TransactionBackendHandlerFactoryTest {
         assertThat(value, matcher);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private BackendTransactionManager getBackendTransactionManager(final TransactionBackendHandler transactionBackendHandler) {
         Field field = transactionBackendHandler.getClass().getDeclaredField("backendTransactionManager");
         field.setAccessible(true);

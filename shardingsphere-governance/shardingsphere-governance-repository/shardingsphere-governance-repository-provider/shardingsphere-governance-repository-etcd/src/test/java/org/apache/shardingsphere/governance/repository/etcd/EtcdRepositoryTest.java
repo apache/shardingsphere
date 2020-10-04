@@ -228,8 +228,7 @@ public final class EtcdRepositoryTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetKeyWhenThrowInterruptedException() {
+    public void assertGetKeyWhenThrowInterruptedException() throws ExecutionException, InterruptedException {
         doThrow(InterruptedException.class).when(getFuture).get();
         try {
             repository.get("key");
@@ -241,8 +240,7 @@ public final class EtcdRepositoryTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetKeyWhenThrowExecutionException() {
+    public void assertGetKeyWhenThrowExecutionException() throws ExecutionException, InterruptedException {
         doThrow(ExecutionException.class).when(getFuture).get();
         try {
             repository.get("key");
@@ -254,8 +252,7 @@ public final class EtcdRepositoryTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetChildrenKeysWhenThrowInterruptedException() {
+    public void assertGetChildrenKeysWhenThrowInterruptedException() throws ExecutionException, InterruptedException {
         doThrow(InterruptedException.class).when(getFuture).get();
         try {
             repository.getChildrenKeys("/key/key1");
@@ -267,8 +264,7 @@ public final class EtcdRepositoryTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetChildrenKeysWhenThrowExecutionException() {
+    public void assertGetChildrenKeysWhenThrowExecutionException() throws ExecutionException, InterruptedException {
         doThrow(ExecutionException.class).when(getFuture).get();
         try {
             repository.getChildrenKeys("/key/key1");

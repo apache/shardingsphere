@@ -36,7 +36,7 @@ public final class FieldUtil {
      * @param fieldName field name to be settled
      * @param fieldValue field value to be settled
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public static void setField(final Object target, final String fieldName, final Object fieldValue) {
         Field field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);

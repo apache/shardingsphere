@@ -38,6 +38,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -258,7 +260,7 @@ public final class SchemaChangedListenerTest {
         assertTrue(((MetaDataChangedEvent) actual.get()).getRuleSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames().contains("t_order"));
     }
     
-    @SneakyThrows
+    @SneakyThrows({IOException.class, URISyntaxException.class})
     private String readYAML(final String yamlFile) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }

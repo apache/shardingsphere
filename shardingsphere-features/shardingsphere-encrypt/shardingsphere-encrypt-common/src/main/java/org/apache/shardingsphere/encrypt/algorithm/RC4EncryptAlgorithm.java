@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.algorithm;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -49,7 +48,6 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
     private Properties props = new Properties();
     
     @Override
-    @SneakyThrows
     public void init() {
         reset();
         setKey(StringUtils.getBytesUtf8(props.getProperty(RC4_KEY)));

@@ -36,7 +36,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
@@ -87,7 +89,7 @@ public class GovernanceSpringBootRegistryEncryptTest {
         assertThat(encryptAlgorithmConfig.getType(), is("AES"));
     }
     
-    @SneakyThrows
+    @SneakyThrows({IOException.class, URISyntaxException.class})
     private static String readYAML(final String yamlFile) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }

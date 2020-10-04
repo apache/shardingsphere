@@ -161,14 +161,14 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         assertThat(actual, is(expected));
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setSequence(final SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm, final Number value) {
         Field sequence = SnowflakeKeyGenerateAlgorithm.class.getDeclaredField("sequence");
         sequence.setAccessible(true);
         sequence.set(keyGenerateAlgorithm, value);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setLastMilliseconds(final SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm, final Number value) {
         Field lastMilliseconds = SnowflakeKeyGenerateAlgorithm.class.getDeclaredField("lastMilliseconds");
         lastMilliseconds.setAccessible(true);
@@ -216,8 +216,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertSetWorkerIdSuccess() {
+    public void assertSetWorkerIdSuccess() throws NoSuchFieldException, IllegalAccessException {
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         Properties props = new Properties();
         props.setProperty("worker-id", String.valueOf(1L));
@@ -229,8 +228,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertSetMaxTolerateTimeDifferenceMilliseconds() {
+    public void assertSetMaxTolerateTimeDifferenceMilliseconds() throws NoSuchFieldException, IllegalAccessException {
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         Properties props = new Properties();
         props.setProperty("max-tolerate-time-difference-milliseconds", String.valueOf(1));

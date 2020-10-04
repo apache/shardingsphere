@@ -60,7 +60,7 @@ public final class MySQLAuthenticationHandlerTest {
         initAuthPluginDataForAuthenticationHandler();
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void initAuthPluginDataForAuthenticationHandler() {
         MySQLAuthPluginData authPluginData = new MySQLAuthPluginData(part1, part2);
         Field field = MySQLAuthenticationHandler.class.getDeclaredField("authPluginData");
@@ -108,14 +108,13 @@ public final class MySQLAuthenticationHandlerTest {
         assertThat(authenticationHandler.getAuthPluginData().getAuthPluginData(), is(Bytes.concat(part1, part2)));
     }
     
-    @SneakyThrows
     private void setAuthentication(final ProxyUser proxyUser) {
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", proxyUser);
         initProxyContext(authentication);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void initProxyContext(final Authentication authentication) {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);

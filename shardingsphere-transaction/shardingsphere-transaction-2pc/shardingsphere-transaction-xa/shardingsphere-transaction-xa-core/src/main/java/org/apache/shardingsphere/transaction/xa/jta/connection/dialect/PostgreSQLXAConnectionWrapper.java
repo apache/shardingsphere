@@ -25,13 +25,14 @@ import org.postgresql.xa.PGXAConnection;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * PostgreSQL XA connection wrapper.
  */
 public final class PostgreSQLXAConnectionWrapper implements XAConnectionWrapper {
     
-    @SneakyThrows
+    @SneakyThrows({SQLException.class, ClassNotFoundException.class})
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
         BaseConnection physicalConnection = (BaseConnection) connection.unwrap(Class.forName("org.postgresql.core.BaseConnection"));

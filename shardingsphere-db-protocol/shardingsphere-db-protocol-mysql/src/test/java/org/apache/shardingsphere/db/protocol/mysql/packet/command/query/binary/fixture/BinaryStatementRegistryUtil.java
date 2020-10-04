@@ -32,7 +32,7 @@ public final class BinaryStatementRegistryUtil {
     /**
      * Reset {@code MySQLBinaryStatementRegistry}.
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public static void reset() {
         Field statementIdAssignerField = MySQLBinaryStatementRegistry.class.getDeclaredField("statementIdAssigner");
         statementIdAssignerField.setAccessible(true);

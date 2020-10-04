@@ -25,6 +25,7 @@ import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * XA connection wrapper for MySQL.
@@ -36,7 +37,7 @@ public final class MySQLXAConnectionWrapper implements XAConnectionWrapper {
     
     private static final String MYSQL_XA_DATASOURCE_8 = "com.mysql.cj.jdbc.MysqlXADataSource";
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
         Connection physicalConnection = unwrapPhysicalConnection(xaDataSource.getClass().getName(), connection);
@@ -45,7 +46,7 @@ public final class MySQLXAConnectionWrapper implements XAConnectionWrapper {
         return (XAConnection) method.invoke(xaDataSource, physicalConnection);
     }
     
-    @SneakyThrows
+    @SneakyThrows({SQLException.class, ClassNotFoundException.class})
     private Connection unwrapPhysicalConnection(final String xaDataSourceClassName, final Connection connection) {
         switch (xaDataSourceClassName) {
             case MYSQL_XA_DATASOURCE_5:

@@ -64,7 +64,7 @@ public final class MockSeataServer {
     /**
      * start.
      */
-    @SneakyThrows
+    @SneakyThrows(InterruptedException.class)
     public void start() {
         bootstrap.group(bossGroup, workerGroup)
             .channel(NioServerSocketChannel.class)
@@ -90,7 +90,6 @@ public final class MockSeataServer {
     /**
      * shutdown.
      */
-    @SneakyThrows
     public void shutdown() {
         if (initialized.get()) {
             bossGroup.shutdownGracefully();

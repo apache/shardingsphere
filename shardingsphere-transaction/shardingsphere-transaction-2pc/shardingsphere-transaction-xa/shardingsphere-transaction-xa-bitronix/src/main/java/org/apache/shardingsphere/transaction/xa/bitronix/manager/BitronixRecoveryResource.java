@@ -30,6 +30,7 @@ import javax.naming.Reference;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAResource;
+import java.sql.SQLException;
 
 /**
  * Bitronix recovery resource.
@@ -54,7 +55,7 @@ public final class BitronixRecoveryResource extends ResourceBean implements XARe
         return resourceName;
     }
     
-    @SneakyThrows
+    @SneakyThrows(SQLException.class)
     @Override
     public XAResourceHolderState startRecovery() {
         xaConnection = xaDataSource.getXAConnection();
@@ -62,7 +63,7 @@ public final class BitronixRecoveryResource extends ResourceBean implements XARe
         return new XAResourceHolderState(singleXAResourceHolder, this);
     }
     
-    @SneakyThrows
+    @SneakyThrows(SQLException.class)
     @Override
     public void endRecovery() {
         if (null != xaConnection) {
