@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.text.sctl.hint;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
@@ -168,8 +167,7 @@ public final class ShardingCTLHintBackendHandlerTest {
     }
     
     @Test
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void assertShowTableStatus() throws SQLException {
+    public void assertShowTableStatus() throws SQLException, NoSuchFieldException, IllegalAccessException {
         clearThreadLocal();
         when(backendConnection.getSchemaName()).thenReturn("schema");
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");

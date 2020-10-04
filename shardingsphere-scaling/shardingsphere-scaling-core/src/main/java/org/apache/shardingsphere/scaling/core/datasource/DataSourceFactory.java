@@ -29,6 +29,7 @@ import org.apache.shardingsphere.scaling.core.utils.ConfigurationYamlConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -59,7 +60,7 @@ public final class DataSourceFactory {
         return new DataSourceWrapper(result);
     }
     
-    @SneakyThrows
+    @SneakyThrows(SQLException.class)
     private DataSourceWrapper newInstanceDataSourceByShardingSphereJDBC(final ShardingSphereJDBCConfiguration dataSourceConfig) {
         Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(
                 ConfigurationYamlConverter.loadDataSourceConfigurations(dataSourceConfig.getDataSource()));

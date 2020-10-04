@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.spring.boot.governance.type;
 
-import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
@@ -57,8 +56,7 @@ public class GovernanceSpringBootPrimaryReplicaReplicationTest {
     }
     
     @Test
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void assertDataSource() {
+    public void assertDataSource() throws NoSuchFieldException, IllegalAccessException {
         assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
         Field field = GovernanceShardingSphereDataSource.class.getDeclaredField("schemaContexts");
         field.setAccessible(true);

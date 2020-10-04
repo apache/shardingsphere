@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
@@ -144,7 +145,7 @@ public final class MemoryQueryResult implements QueryResult {
         return getInputStream(currentRow.get(columnIndex - 1));
     }
     
-    @SneakyThrows
+    @SneakyThrows(IOException.class)
     private InputStream getInputStream(final Object value) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);

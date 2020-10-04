@@ -63,16 +63,14 @@ public final class LogicalReplicationTest {
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertCreatePgConnectionSuccess() {
+    public void assertCreatePgConnectionSuccess() throws SQLException {
         Connection pgConnection = logicalReplication.createPgConnection(
                 new JDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
         assertFalse(pgConnection.isClosed());
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertCreateReplicationStreamSuccess() {
+    public void assertCreateReplicationStreamSuccess() throws SQLException {
         LogSequenceNumber startPosition = LogSequenceNumber.valueOf(100L);
         when(pgConnection.unwrap(PGConnection.class)).thenReturn(pgConnection);
         when(pgConnection.getReplicationAPI()).thenReturn(pgReplicationConnection);

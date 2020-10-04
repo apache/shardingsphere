@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.infra.executor.sql.jdbc.queryresult;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.MemoryQueryResult;
 import org.hamcrest.core.Is;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
@@ -336,16 +336,14 @@ public final class MemoryQueryResultTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetInputStream() {
+    public void assertGetInputStream() throws SQLException, IOException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
         InputStream inputStream = queryResult.getInputStream(1, "Unicode");
         assertThat(inputStream.read(), is(getInputStream(1).read()));
     }
     
-    @SneakyThrows
-    private InputStream getInputStream(final Object value) {
+    private InputStream getInputStream(final Object value) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
         objectOutputStream.writeObject(value);

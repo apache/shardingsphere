@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -56,8 +55,7 @@ public final class ShowTablesBackendHandlerTest {
     private ShowTablesBackendHandler tablesBackendHandler;
     
     @Before
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void setUp() {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
         BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getUsername()).thenReturn("root");
         tablesBackendHandler = new ShowTablesBackendHandler("show tables", mock(SQLStatement.class), backendConnection);

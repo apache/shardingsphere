@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.context.schema;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.event.model.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
@@ -52,6 +51,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -110,7 +110,6 @@ public final class GovernanceSchemaContextsTest {
                 new StandardSchemaContexts(createSchemas(), mock(ShardingSphereSQLParserEngine.class), mock(ExecutorKernel.class), authentication, props, databaseType), governanceFacade);
     }
     
-    @SneakyThrows
     private Map<String, ShardingSphereSchema> createSchemas() {
         when(schema.getName()).thenReturn("schema");
         when(schema.getMetaData()).thenReturn(mock(ShardingSphereMetaData.class));
@@ -149,8 +148,7 @@ public final class GovernanceSchemaContextsTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertSchemaAdd() {
+    public void assertSchemaAdd() throws SQLException {
         SchemaAddedEvent event = new SchemaAddedEvent("schema_add", new HashMap<>(), new LinkedList<>());
         when(configCenter.loadDataSourceConfigurations("schema_add")).thenReturn(getDataSourceConfigurations());
         governanceSchemaContexts.renew(event);
@@ -207,8 +205,7 @@ public final class GovernanceSchemaContextsTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertRuleConfigurationsChanged() {
+    public void assertRuleConfigurationsChanged() throws SQLException {
         assertThat(governanceSchemaContexts.getSchemas().get("schema"), is(schema));
         RuleConfigurationsChangedEvent event = new RuleConfigurationsChangedEvent("schema", new LinkedList<>());
         governanceSchemaContexts.renew(event);
@@ -223,8 +220,7 @@ public final class GovernanceSchemaContextsTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertDataSourceChanged() {
+    public void assertDataSourceChanged() throws SQLException {
         DataSourceChangedEvent event = new DataSourceChangedEvent("schema", getChangedDataSourceConfigurations());
         governanceSchemaContexts.renew(event);
         assertTrue(governanceSchemaContexts.getSchemas().get("schema").getDataSources().containsKey("ds_2"));

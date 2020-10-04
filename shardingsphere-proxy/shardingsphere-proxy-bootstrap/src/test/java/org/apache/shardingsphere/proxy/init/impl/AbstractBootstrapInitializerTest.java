@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.init.impl;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
@@ -33,6 +32,7 @@ import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.sql.SQLException;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -64,9 +64,8 @@ public abstract class AbstractBootstrapInitializerTest {
     
     protected abstract void prepareSpecifiedInitializer();
     
-    @SneakyThrows
     @Test
-    public final void assertInit() {
+    public final void assertInit() throws NoSuchFieldException, IllegalAccessException, SQLException {
         Field field = AbstractBootstrapInitializer.class.getDeclaredField("shardingSphereProxy");
         field.setAccessible(true);
         Field modifiersField = Field.class.getDeclaredField("modifiers");

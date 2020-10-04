@@ -44,7 +44,7 @@ public final class ParseTreeVisitorFactory {
         return createParseTreeVisitor(SQLParserConfigurationRegistry.getInstance().getSQLParserConfiguration(databaseTypeName), visitorRule.getType());
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private static ParseTreeVisitor createParseTreeVisitor(final SQLParserConfiguration config, final SQLStatementType type) {
         SQLVisitorFacade visitorFacade = config.getVisitorFacadeClass().getConstructor().newInstance();
         switch (type) {

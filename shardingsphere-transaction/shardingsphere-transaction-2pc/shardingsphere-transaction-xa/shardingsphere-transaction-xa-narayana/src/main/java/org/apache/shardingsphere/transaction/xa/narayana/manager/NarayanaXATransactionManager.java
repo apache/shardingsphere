@@ -26,6 +26,8 @@ import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
 
 import javax.sql.XADataSource;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
 /**
@@ -56,7 +58,7 @@ public final class NarayanaXATransactionManager implements XATransactionManager 
         xaRecoveryModule.removeXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(xaDataSource));
     }
     
-    @SneakyThrows
+    @SneakyThrows({SystemException.class, RollbackException.class})
     @Override
     public void enlistResource(final SingleXAResource singleXAResource) {
         transactionManager.getTransaction().enlistResource(singleXAResource.getDelegate());

@@ -135,7 +135,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
         return ((currentMilliseconds - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (workerId << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
     }
     
-    @SneakyThrows
+    @SneakyThrows(InterruptedException.class)
     private boolean waitTolerateTimeDifferenceIfNeed(final long currentMilliseconds) {
         if (lastMilliseconds <= currentMilliseconds) {
             return false;

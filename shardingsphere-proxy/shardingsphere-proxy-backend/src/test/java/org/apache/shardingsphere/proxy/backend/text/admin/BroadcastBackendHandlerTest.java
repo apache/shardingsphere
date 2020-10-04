@@ -70,8 +70,7 @@ public final class BroadcastBackendHandlerTest {
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Before
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void setUp() {
+    public void setUp() throws IllegalAccessException, NoSuchFieldException {
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
         schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(getSchemas(), 

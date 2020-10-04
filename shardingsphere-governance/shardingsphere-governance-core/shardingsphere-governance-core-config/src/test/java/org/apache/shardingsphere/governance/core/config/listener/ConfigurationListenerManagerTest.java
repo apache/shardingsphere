@@ -55,8 +55,8 @@ public final class ConfigurationListenerManagerTest {
         verify(propertiesChangedListener).watch(ChangedType.UPDATED);
         verify(authenticationChangedListener).watch(ChangedType.UPDATED);
     }
-
-    @SneakyThrows
+    
+    @SneakyThrows(ReflectiveOperationException.class)
     private static void setField(final Object target, final String fieldName, final Object fieldValue) {
         Field field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);

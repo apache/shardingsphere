@@ -78,8 +78,7 @@ public final class MySQLJdbcDumperTest {
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertReadValue() {
+    public void assertReadValue() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
@@ -92,8 +91,7 @@ public final class MySQLJdbcDumperTest {
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertCreatePreparedStatement() {
+    public void assertCreatePreparedStatement() throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(mockDumperConfiguration().getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = mySQLJdbcDumper.createPreparedStatement(connection, "SELECT * FROM t_order")) {

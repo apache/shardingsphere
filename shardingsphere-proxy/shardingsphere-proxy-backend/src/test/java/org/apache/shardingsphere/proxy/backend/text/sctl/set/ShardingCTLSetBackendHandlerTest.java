@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.sctl.set;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
@@ -52,8 +51,7 @@ public final class ShardingCTLSetBackendHandlerTest {
     private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Before
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void setUp() {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
         schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(getSchemas(), 

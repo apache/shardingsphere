@@ -59,7 +59,7 @@ public final class YamlDataSourceParameterMerger {
         }
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private static Object getValue(final Field field, final Class<?> clazz, final Object source) {
         String fieldName = field.getName();
         String firstLetter = fieldName.substring(0, 1).toUpperCase();
@@ -73,7 +73,7 @@ public final class YamlDataSourceParameterMerger {
         return getMethod.invoke(source);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private static void setValue(final Field field, final Class<?> clazz, final Object source, final Map<String, Object> commonProps) {
         String fieldName = field.getName();
         String firstLetter = fieldName.substring(0, 1).toUpperCase();

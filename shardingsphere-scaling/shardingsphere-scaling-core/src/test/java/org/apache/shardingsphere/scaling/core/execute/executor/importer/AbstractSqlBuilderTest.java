@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 
 import com.google.common.collect.Sets;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
-import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
+import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
+import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,7 +35,6 @@ public class AbstractSqlBuilderTest {
     private AbstractSQLBuilder sqlBuilder;
     
     @Before
-    @SneakyThrows
     public void setUp() {
         sqlBuilder = new AbstractSQLBuilder() {
             
@@ -53,32 +51,32 @@ public class AbstractSqlBuilderTest {
     }
     
     @Test
-    public void assertBuildInsertSql() {
+    public void assertBuildInsertSQL() {
         String actual = sqlBuilder.buildInsertSQL(mockDataRecord("t1"));
         assertThat(actual, is("INSERT INTO `t1`(`id`,`sc`,`c1`,`c2`,`c3`) VALUES(?,?,?,?,?)"));
     }
     
     @Test
-    public void assertBuildUpdateSqlWithPrimaryKey() {
+    public void assertBuildUpdateSQLWithPrimaryKey() {
         String actual = sqlBuilder.buildUpdateSQL(mockDataRecord("t2"), RecordUtil.extractPrimaryColumns(mockDataRecord("t2")));
         assertThat(actual, is("UPDATE `t2` SET `c1` = ?,`c2` = ?,`c3` = ? WHERE `id` = ?"));
     }
     
     @Test
-    public void assertBuildUpdateSqlWithShardingColumns() {
+    public void assertBuildUpdateSQLWithShardingColumns() {
         DataRecord dataRecord = mockDataRecord("t2");
         String actual = sqlBuilder.buildUpdateSQL(dataRecord, mockConditionColumns(dataRecord));
         assertThat(actual, is("UPDATE `t2` SET `c1` = ?,`c2` = ?,`c3` = ? WHERE `id` = ? and `sc` = ?"));
     }
     
     @Test
-    public void assertBuildDeleteSqlWithPrimaryKey() {
+    public void assertBuildDeleteSQLWithPrimaryKey() {
         String actual = sqlBuilder.buildDeleteSQL(mockDataRecord("t3"), RecordUtil.extractPrimaryColumns(mockDataRecord("t3")));
         assertThat(actual, is("DELETE FROM `t3` WHERE `id` = ?"));
     }
     
     @Test
-    public void assertBuildDeleteSqlWithConditionColumns() {
+    public void assertBuildDeleteSQLWithConditionColumns() {
         DataRecord dataRecord = mockDataRecord("t3");
         String actual = sqlBuilder.buildDeleteSQL(dataRecord, mockConditionColumns(dataRecord));
         assertThat(actual, is("DELETE FROM `t3` WHERE `id` = ? and `sc` = ?"));

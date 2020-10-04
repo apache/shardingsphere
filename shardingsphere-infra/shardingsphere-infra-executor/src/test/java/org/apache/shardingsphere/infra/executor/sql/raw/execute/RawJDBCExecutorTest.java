@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.raw.execute;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.ExecuteQueryResult;
@@ -42,16 +41,14 @@ import static org.mockito.Mockito.when;
 public final class RawJDBCExecutorTest {
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertExecuteForResultEmpty() {
+    public void assertExecuteForResultEmpty() throws SQLException {
         ExecutorKernel kernel = mock(ExecutorKernel.class);
         RawJDBCExecutor executor = new RawJDBCExecutor(kernel, true);
         assertFalse(executor.execute(null, null));
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertExecuteForExecuteQueryResult() {
+    public void assertExecuteForExecuteQueryResult() throws SQLException {
         ExecutorKernel kernel = mock(ExecutorKernel.class);
         when(kernel.execute(any(), any(), any(), anyBoolean())).thenReturn(Collections.singletonList(new ExecuteQueryResult(null, null)));
         RawJDBCExecutor executor = new RawJDBCExecutor(kernel, true);
@@ -59,8 +56,7 @@ public final class RawJDBCExecutorTest {
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertExecuteQueryForExecuteQueryResult() {
+    public void assertExecuteQueryForExecuteQueryResult() throws SQLException {
         ExecutorKernel kernel = mock(ExecutorKernel.class);
         ExecuteQueryResult executeQueryResult = mock(ExecuteQueryResult.class);
         QueryResult queryResult = mock(QueryResult.class);
@@ -72,8 +68,7 @@ public final class RawJDBCExecutorTest {
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertExecuteUpdate() {
+    public void assertExecuteUpdate() throws SQLException {
         ExecutorKernel kernel = mock(ExecutorKernel.class);
         ExecuteUpdateResult executeUpdateResult1 = new ExecuteUpdateResult(1, 2);
         ExecuteUpdateResult executeUpdateResult2 = new ExecuteUpdateResult(3, 4);
@@ -83,8 +78,7 @@ public final class RawJDBCExecutorTest {
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertExecuteNotThrownSQLException() {
+    public void assertExecuteNotThrownSQLException() throws SQLException {
         ExecutorKernel kernel = mock(ExecutorKernel.class);
         when(kernel.execute(any(), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
         RawJDBCExecutor rawJDBCExecutor = new RawJDBCExecutor(kernel, false);

@@ -23,7 +23,6 @@ import io.opentracing.mock.MockTracer;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import io.opentracing.util.ThreadLocalActiveSpanSource;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
 import org.apache.shardingsphere.tracing.opentracing.constant.ShardingErrorLogTags;
 import org.junit.AfterClass;
@@ -47,8 +46,7 @@ public abstract class BaseOpenTracingHookTest {
     }
     
     @AfterClass
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static void releaseTracer() {
+    public static void releaseTracer() throws NoSuchFieldException, IllegalAccessException {
         Field field = GlobalTracer.class.getDeclaredField("tracer");
         field.setAccessible(true);
         field.set(GlobalTracer.class, NoopTracerFactory.create());

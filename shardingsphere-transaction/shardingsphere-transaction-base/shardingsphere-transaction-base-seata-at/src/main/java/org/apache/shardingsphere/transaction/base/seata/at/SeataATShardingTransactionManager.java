@@ -20,6 +20,7 @@ package org.apache.shardingsphere.transaction.base.seata.at;
 import com.google.common.base.Preconditions;
 import io.seata.config.FileConfiguration;
 import io.seata.core.context.RootContext;
+import io.seata.core.exception.TransactionException;
 import io.seata.core.rpc.netty.RmRpcClient;
 import io.seata.core.rpc.netty.TmRpcClient;
 import io.seata.rm.RMClient;
@@ -94,7 +95,7 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     }
     
     @Override
-    @SneakyThrows
+    @SneakyThrows(TransactionException.class)
     public void begin() {
         Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
         GlobalTransaction globalTransaction = GlobalTransactionContext.getCurrentOrCreate();
@@ -103,7 +104,7 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     }
     
     @Override
-    @SneakyThrows
+    @SneakyThrows(TransactionException.class)
     public void commit() {
         Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
         try {
@@ -115,7 +116,7 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     }
     
     @Override
-    @SneakyThrows
+    @SneakyThrows(TransactionException.class)
     public void rollback() {
         Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
         try {

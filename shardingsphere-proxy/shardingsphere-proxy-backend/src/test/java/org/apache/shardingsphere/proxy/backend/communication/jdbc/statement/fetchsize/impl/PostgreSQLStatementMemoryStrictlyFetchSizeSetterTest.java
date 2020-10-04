@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.fetchsize.impl;
 
-import lombok.SneakyThrows;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -30,9 +30,8 @@ import static org.mockito.Mockito.verify;
 
 public final class PostgreSQLStatementMemoryStrictlyFetchSizeSetterTest {
     
-    @SneakyThrows
     @Test
-    public void assertSetFetchSize() {
+    public void assertSetFetchSize() throws SQLException {
         Statement statement = mock(Statement.class);
         new PostgreSQLStatementMemoryStrictlyFetchSizeSetter().setFetchSize(statement);
         verify(statement, times(1)).setFetchSize(1);

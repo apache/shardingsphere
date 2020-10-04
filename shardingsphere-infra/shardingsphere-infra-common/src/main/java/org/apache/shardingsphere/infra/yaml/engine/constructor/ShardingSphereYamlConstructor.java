@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.yaml.engine.constructor;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.yaml.snakeyaml.TypeDescription;
@@ -39,7 +38,6 @@ public final class ShardingSphereYamlConstructor extends Constructor {
     
     private final Map<Class, Construct> typeConstructs = new HashMap<>();
     
-    @SneakyThrows
     public ShardingSphereYamlConstructor(final Class<?> rootClass) {
         super(rootClass);
         ShardingSphereServiceLoader.newServiceInstances(ShardingSphereYamlConstruct.class).forEach(each -> typeConstructs.put(each.getType(), each));
