@@ -55,10 +55,10 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
         keys.forEach(each -> {
             String type = environment.getProperty(preFix + each + ".type");
             Map<String, Object> propsMap = PropertyUtil.handle(environment, preFix + each + ".props", Map.class);
-            YamlShardingSphereAlgorithmConfiguration configuration = new YamlShardingSphereAlgorithmConfiguration();
-            configuration.setType(type);
-            configuration.getProps().putAll(propsMap);
-            shardingAlgorithmMap.put(each, configuration);
+            YamlShardingSphereAlgorithmConfiguration config = new YamlShardingSphereAlgorithmConfiguration();
+            config.setType(type);
+            config.getProps().putAll(propsMap);
+            shardingAlgorithmMap.put(each, config);
         });
         ShardingSphereServiceLoader.register(algorithmClass);
         shardingAlgorithmMap.forEach((k, v) -> {

@@ -74,7 +74,7 @@ public final class DataSourceManagerTest {
     private void initConfig(final String configFile) {
         InputStream fileInputStream = DataSourceManagerTest.class.getResourceAsStream(configFile);
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-        ScalingConfiguration scalingConfiguration = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
-        syncConfigurations = (List<SyncConfiguration>) SyncConfigurationUtil.toSyncConfigurations(scalingConfiguration);
+        ScalingConfiguration scalingConfig = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
+        syncConfigurations = (List<SyncConfiguration>) SyncConfigurationUtil.toSyncConfigurations(scalingConfig);
     }
 }

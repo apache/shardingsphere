@@ -64,11 +64,11 @@ public final class MySQLBinlogDumperTest {
     @Before
     public void setUp() {
         ScalingContext.getInstance().init(new ServerConfiguration());
-        DumperConfiguration dumperConfiguration = mockDumperConfiguration();
-        initTableData(dumperConfiguration);
+        DumperConfiguration dumperConfig = mockDumperConfiguration();
+        initTableData(dumperConfig);
         channel = new MemoryChannel(records -> {
         });
-        mySQLBinlogDumper = new MySQLBinlogDumper(dumperConfiguration, new BinlogPosition("binlog-000001", 4L));
+        mySQLBinlogDumper = new MySQLBinlogDumper(dumperConfig, new BinlogPosition("binlog-000001", 4L));
         mySQLBinlogDumper.setChannel(channel);
     }
     

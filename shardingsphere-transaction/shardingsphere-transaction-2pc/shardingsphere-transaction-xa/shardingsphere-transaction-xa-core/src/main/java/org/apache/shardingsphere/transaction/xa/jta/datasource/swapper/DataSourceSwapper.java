@@ -111,8 +111,8 @@ public final class DataSourceSwapper {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setProperties(final XADataSource xaDataSource, final Map<String, Object> databaseAccessConfiguration) {
-        for (Entry<String, Object> entry : databaseAccessConfiguration.entrySet()) {
+    private void setProperties(final XADataSource xaDataSource, final Map<String, Object> databaseAccessConfig) {
+        for (Entry<String, Object> entry : databaseAccessConfig.entrySet()) {
             Optional<Method> method = findSetterMethod(xaDataSource.getClass().getMethods(), entry.getKey());
             if (method.isPresent()) {
                 method.get().invoke(xaDataSource, entry.getValue());

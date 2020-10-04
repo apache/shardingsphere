@@ -32,7 +32,7 @@ public final class ScalingContext {
     
     private static final ScalingContext INSTANCE = new ScalingContext();
     
-    private ServerConfiguration serverConfiguration;
+    private ServerConfiguration serverConfig;
     
     private ShardingScalingExecuteEngine taskExecuteEngine;
     
@@ -50,11 +50,11 @@ public final class ScalingContext {
     /**
      * Initialize ShardingSphere-Scaling context.
      *
-     * @param serverConfiguration serverConfiguration
+     * @param serverConfig server configuration
      */
-    public void init(final ServerConfiguration serverConfiguration) {
-        this.serverConfiguration = serverConfiguration;
+    public void init(final ServerConfiguration serverConfig) {
+        this.serverConfig = serverConfig;
         taskExecuteEngine = ShardingScalingExecuteEngine.newCachedThreadInstance();
-        importerExecuteEngine = ShardingScalingExecuteEngine.newFixedThreadInstance(serverConfiguration.getWorkerThread());
+        importerExecuteEngine = ShardingScalingExecuteEngine.newFixedThreadInstance(serverConfig.getWorkerThread());
     }
 }

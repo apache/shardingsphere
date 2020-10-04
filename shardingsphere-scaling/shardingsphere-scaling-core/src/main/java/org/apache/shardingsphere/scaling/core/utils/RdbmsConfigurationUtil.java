@@ -32,12 +32,12 @@ public final class RdbmsConfigurationUtil {
     /**
      * Get SQL where condition whit primary key.
      *
-     * @param inventoryDumperConfiguration rdbms configuration
+     * @param inventoryDumperConfig rdbms configuration
      * @return SQL where condition
      */
     @SuppressWarnings("unchecked")
-    public static String getWhereCondition(final InventoryDumperConfiguration inventoryDumperConfiguration) {
-        return getWhereCondition(inventoryDumperConfiguration.getPrimaryKey(), inventoryDumperConfiguration.getPositionManager());
+    public static String getWhereCondition(final InventoryDumperConfiguration inventoryDumperConfig) {
+        return getWhereCondition(inventoryDumperConfig.getPrimaryKey(), inventoryDumperConfig.getPositionManager());
     }
     
     private static String getWhereCondition(final String primaryKey, final PositionManager<PrimaryKeyPosition> positionManager) {

@@ -30,20 +30,19 @@ public class DataSourceFactoryTest {
     
     @Test
     public void assertNewJDBCInstance() {
-        JDBCDataSourceConfiguration jdbcDataSourceConfiguration = new JDBCDataSourceConfiguration(
+        JDBCDataSourceConfiguration jdbcDataSourceConfig = new JDBCDataSourceConfiguration(
                 "jdbc:h2:mem:test_db_2;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL",
                 "root",
                 "password");
-        DataSourceWrapper actual = new DataSourceFactory().newInstance(jdbcDataSourceConfiguration);
+        DataSourceWrapper actual = new DataSourceFactory().newInstance(jdbcDataSourceConfig);
         assertThat(actual, is(notNullValue()));
     }
     
     @Test
     public void assertNewShardingSphereJDBCInstance() {
-        ShardingSphereJDBCConfiguration shardingSphereJDBCConfiguration = new ShardingSphereJDBCConfiguration(
-                FixtureShardingSphereJDBCConfiguration.DATA_SOURCE,
-                FixtureShardingSphereJDBCConfiguration.RULE);
-        DataSourceWrapper actual = new DataSourceFactory().newInstance(shardingSphereJDBCConfiguration);
+        ShardingSphereJDBCConfiguration shardingSphereJDBCConfig = new ShardingSphereJDBCConfiguration(
+                FixtureShardingSphereJDBCConfiguration.DATA_SOURCE, FixtureShardingSphereJDBCConfiguration.RULE);
+        DataSourceWrapper actual = new DataSourceFactory().newInstance(shardingSphereJDBCConfig);
         assertThat(actual, is(notNullValue()));
     }
 }

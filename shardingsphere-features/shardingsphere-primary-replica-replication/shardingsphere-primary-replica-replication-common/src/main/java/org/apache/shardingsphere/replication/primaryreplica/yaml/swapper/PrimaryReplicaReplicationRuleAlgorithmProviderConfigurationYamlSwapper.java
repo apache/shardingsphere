@@ -63,9 +63,9 @@ public final class PrimaryReplicaReplicationRuleAlgorithmProviderConfigurationYa
         for (Entry<String, YamlPrimaryReplicaReplicationDataSourceRuleConfiguration> entry : yamlConfig.getDataSources().entrySet()) {
             dataSources.add(swapToObject(entry.getKey(), entry.getValue()));
         }
-        AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration ruleConfiguration = new AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration();
-        ruleConfiguration.setDataSources(dataSources);
-        return ruleConfiguration;
+        AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration ruleConfig = new AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration();
+        ruleConfig.setDataSources(dataSources);
+        return ruleConfig;
     }
     
     private PrimaryReplicaReplicationDataSourceRuleConfiguration swapToObject(final String name, final YamlPrimaryReplicaReplicationDataSourceRuleConfiguration yamlDataSourceRuleConfig) {

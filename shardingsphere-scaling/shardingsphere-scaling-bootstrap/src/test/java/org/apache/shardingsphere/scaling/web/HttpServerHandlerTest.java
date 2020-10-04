@@ -59,7 +59,7 @@ public final class HttpServerHandlerTest {
     
     private HttpServerHandler httpServerHandler;
     
-    private ScalingConfiguration scalingConfiguration;
+    private ScalingConfiguration scalingConfig;
     
     @Before
     public void setUp() {
@@ -159,7 +159,7 @@ public final class HttpServerHandlerTest {
     }
 
     private void startScalingJob() {
-        ByteBuf byteBuf = Unpooled.copiedBuffer(GSON.toJson(scalingConfiguration), CharsetUtil.UTF_8);
+        ByteBuf byteBuf = Unpooled.copiedBuffer(GSON.toJson(scalingConfig), CharsetUtil.UTF_8);
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/scaling/job/start", byteBuf);
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
     }
@@ -167,6 +167,6 @@ public final class HttpServerHandlerTest {
     private void initConfig(final String configFile) {
         InputStream fileInputStream = HttpServerHandlerTest.class.getResourceAsStream(configFile);
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-        scalingConfiguration = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
+        scalingConfig = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
     }
 }

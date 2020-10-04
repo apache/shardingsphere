@@ -52,9 +52,9 @@ import java.util.concurrent.atomic.AtomicLong;
 @Slf4j
 public final class InventoryDataScalingTask extends AbstractShardingScalingExecutor<InventoryPosition> implements ScalingTask<InventoryPosition> {
     
-    private final InventoryDumperConfiguration inventoryDumperConfiguration;
+    private final InventoryDumperConfiguration inventoryDumperConfig;
     
-    private final ImporterConfiguration importerConfiguration;
+    private final ImporterConfiguration importerConfig;
     
     private final DataSourceManager dataSourceManager;
     
@@ -64,29 +64,29 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
     
     private Dumper dumper;
     
-    public InventoryDataScalingTask(final InventoryDumperConfiguration inventoryDumperConfiguration, final ImporterConfiguration importerConfiguration) {
-        this(inventoryDumperConfiguration, importerConfiguration, new DataSourceManager());
+    public InventoryDataScalingTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig) {
+        this(inventoryDumperConfig, importerConfig, new DataSourceManager());
     }
     
     @SuppressWarnings("unchecked")
-    public InventoryDataScalingTask(final InventoryDumperConfiguration inventoryDumperConfiguration, final ImporterConfiguration importerConfiguration, final DataSourceManager dataSourceManager) {
-        this.inventoryDumperConfiguration = inventoryDumperConfiguration;
-        this.importerConfiguration = importerConfiguration;
+    public InventoryDataScalingTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
+        this.inventoryDumperConfig = inventoryDumperConfig;
+        this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
-        setTaskId(generateSyncTaskId(inventoryDumperConfiguration));
-        setPositionManager(inventoryDumperConfiguration.getPositionManager());
+        setTaskId(generateSyncTaskId(inventoryDumperConfig));
+        setPositionManager(inventoryDumperConfig.getPositionManager());
     }
     
-    private String generateSyncTaskId(final InventoryDumperConfiguration inventoryDumperConfiguration) {
-        String result = String.format("%s.%s", inventoryDumperConfiguration.getDataSourceName(), inventoryDumperConfiguration.getTableName());
-        return null == inventoryDumperConfiguration.getSpiltNum() ? result : result + "#" + inventoryDumperConfiguration.getSpiltNum();
+    private String generateSyncTaskId(final InventoryDumperConfiguration inventoryDumperConfig) {
+        String result = String.format("%s.%s", inventoryDumperConfig.getDataSourceName(), inventoryDumperConfig.getTableName());
+        return null == inventoryDumperConfig.getSpiltNum() ? result : result + "#" + inventoryDumperConfig.getSpiltNum();
     }
     
     @Override
     public void start() {
         getEstimatedRows();
         instanceDumper();
-        Importer importer = ImporterFactory.newInstance(importerConfiguration, dataSourceManager);
+        Importer importer = ImporterFactory.newInstance(importerConfig, dataSourceManager);
         instanceChannel(importer);
         Future<?> future = ScalingContext.getInstance().getImporterExecuteEngine().submit(importer, new ExecuteCallback() {
             
@@ -106,11 +106,11 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
     }
     
     private void getEstimatedRows() {
-        DataSource dataSource = dataSourceManager.getDataSource(inventoryDumperConfiguration.getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(inventoryDumperConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection()) {
             ResultSet resultSet = connection.prepareStatement(String.format("SELECT COUNT(*) FROM %s %s",
-                    inventoryDumperConfiguration.getTableName(),
-                    RdbmsConfigurationUtil.getWhereCondition(inventoryDumperConfiguration)))
+                    inventoryDumperConfig.getTableName(),
+                    RdbmsConfigurationUtil.getWhereCondition(inventoryDumperConfig)))
                     .executeQuery();
             resultSet.next();
             estimatedRows = resultSet.getInt(1);
@@ -120,7 +120,7 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
     }
     
     private void instanceDumper() {
-        dumper = DumperFactory.newInstanceJdbcDumper(inventoryDumperConfiguration, dataSourceManager);
+        dumper = DumperFactory.newInstanceJdbcDumper(inventoryDumperConfig, dataSourceManager);
     }
     
     private void instanceChannel(final Importer importer) {

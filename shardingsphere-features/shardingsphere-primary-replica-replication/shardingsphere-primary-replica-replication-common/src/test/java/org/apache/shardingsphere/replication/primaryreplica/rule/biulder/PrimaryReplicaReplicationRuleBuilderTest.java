@@ -42,9 +42,9 @@ public final class PrimaryReplicaReplicationRuleBuilderTest {
     @Test
     public void assertBuild() {
         PrimaryReplicaReplicationRuleConfiguration ruleConfig = mock(PrimaryReplicaReplicationRuleConfiguration.class);
-        PrimaryReplicaReplicationDataSourceRuleConfiguration ruleConfiguration = new PrimaryReplicaReplicationDataSourceRuleConfiguration("name", "primaryDataSourceName",
-                Collections.singletonList("name"), "loadBalancerName");
-        when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfiguration));
+        PrimaryReplicaReplicationDataSourceRuleConfiguration dataSourceRuleConfig = new PrimaryReplicaReplicationDataSourceRuleConfiguration(
+                "name", "primaryDataSourceName", Collections.singletonList("name"), "loadBalancerName");
+        when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(dataSourceRuleConfig));
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
         assertThat(builder.build(ruleConfig, Collections.emptyList()), instanceOf(PrimaryReplicaReplicationRule.class));
     }

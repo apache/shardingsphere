@@ -28,18 +28,18 @@ public final class JDBCDataSourceConfigurationTest {
     
     @Test
     public void assertJDBCDataSourceConfigurationEquals() {
-        JDBCDataSourceConfiguration sourceConfiguration = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
-        JDBCDataSourceConfiguration targetConfiguration = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
-        assertThat(sourceConfiguration, is(targetConfiguration));
-        sourceConfiguration.setDatabaseType(new MySQLDatabaseType());
-        targetConfiguration.setDatabaseType(new MySQLDatabaseType());
-        assertThat(sourceConfiguration, is(targetConfiguration));
+        JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
+        JDBCDataSourceConfiguration targetConfig = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
+        assertThat(sourceConfig, is(targetConfig));
+        sourceConfig.setDatabaseType(new MySQLDatabaseType());
+        targetConfig.setDatabaseType(new MySQLDatabaseType());
+        assertThat(sourceConfig, is(targetConfig));
     }
     
     @Test
     public void assertJDBCDataSourceConfigurationNotEquals() {
-        JDBCDataSourceConfiguration sourceConfiguration = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "sa", "root");
-        JDBCDataSourceConfiguration targetConfiguration = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
-        assertThat(sourceConfiguration, not(targetConfiguration));
+        JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "sa", "root");
+        JDBCDataSourceConfiguration targetConfig = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
+        assertThat(sourceConfig, not(targetConfig));
     }
 }

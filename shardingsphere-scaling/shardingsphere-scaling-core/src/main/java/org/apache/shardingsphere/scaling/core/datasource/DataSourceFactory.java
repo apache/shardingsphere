@@ -39,31 +39,31 @@ public final class DataSourceFactory {
     /**
      * New instance data source.
      *
-     * @param dataSourceConfiguration data source configuration
+     * @param dataSourceConfig data source configuration
      * @return new data source
      */
-    public DataSourceWrapper newInstance(final DataSourceConfiguration dataSourceConfiguration) {
-        if (dataSourceConfiguration instanceof JDBCDataSourceConfiguration) {
-            return newInstanceDataSourceByJDBC((JDBCDataSourceConfiguration) dataSourceConfiguration);
-        } else if (dataSourceConfiguration instanceof ShardingSphereJDBCConfiguration) {
-            return newInstanceDataSourceByShardingSphereJDBC((ShardingSphereJDBCConfiguration) dataSourceConfiguration);
+    public DataSourceWrapper newInstance(final DataSourceConfiguration dataSourceConfig) {
+        if (dataSourceConfig instanceof JDBCDataSourceConfiguration) {
+            return newInstanceDataSourceByJDBC((JDBCDataSourceConfiguration) dataSourceConfig);
+        } else if (dataSourceConfig instanceof ShardingSphereJDBCConfiguration) {
+            return newInstanceDataSourceByShardingSphereJDBC((ShardingSphereJDBCConfiguration) dataSourceConfig);
         }
         throw new UnsupportedOperationException("Unsupported data source configuration");
     }
     
-    private DataSourceWrapper newInstanceDataSourceByJDBC(final JDBCDataSourceConfiguration dataSourceConfiguration) {
+    private DataSourceWrapper newInstanceDataSourceByJDBC(final JDBCDataSourceConfiguration dataSourceConfig) {
         HikariDataSource result = new HikariDataSource();
-        result.setJdbcUrl(dataSourceConfiguration.getJdbcUrl());
-        result.setUsername(dataSourceConfiguration.getUsername());
-        result.setPassword(dataSourceConfiguration.getPassword());
+        result.setJdbcUrl(dataSourceConfig.getJdbcUrl());
+        result.setUsername(dataSourceConfig.getUsername());
+        result.setPassword(dataSourceConfig.getPassword());
         return new DataSourceWrapper(result);
     }
     
     @SneakyThrows
-    private DataSourceWrapper newInstanceDataSourceByShardingSphereJDBC(final ShardingSphereJDBCConfiguration dataSourceConfiguration) {
+    private DataSourceWrapper newInstanceDataSourceByShardingSphereJDBC(final ShardingSphereJDBCConfiguration dataSourceConfig) {
         Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(
-                ConfigurationYamlConverter.loadDataSourceConfigurations(dataSourceConfiguration.getDataSource()));
-        ShardingRuleConfiguration ruleConfiguration = ConfigurationYamlConverter.loadShardingRuleConfiguration(dataSourceConfiguration.getRule());
-        return new DataSourceWrapper(ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Lists.newArrayList(ruleConfiguration), null));
+                ConfigurationYamlConverter.loadDataSourceConfigurations(dataSourceConfig.getDataSource()));
+        ShardingRuleConfiguration ruleConfig = ConfigurationYamlConverter.loadShardingRuleConfiguration(dataSourceConfig.getRule());
+        return new DataSourceWrapper(ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Lists.newArrayList(ruleConfig), null));
     }
 }

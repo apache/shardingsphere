@@ -63,11 +63,11 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     @Setter
     private Channel channel;
     
-    protected AbstractJDBCDumper(final InventoryDumperConfiguration inventoryDumperConfiguration, final DataSourceManager dataSourceManager) {
-        if (!JDBCDataSourceConfiguration.class.equals(inventoryDumperConfiguration.getDataSourceConfiguration().getClass())) {
+    protected AbstractJDBCDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
+        if (!JDBCDataSourceConfiguration.class.equals(inventoryDumperConfig.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("AbstractJDBCDumper only support JDBCDataSourceConfiguration");
         }
-        this.inventoryDumperConfiguration = inventoryDumperConfiguration;
+        inventoryDumperConfiguration = inventoryDumperConfig;
         this.dataSourceManager = dataSourceManager;
         tableMetaData = createTableMetaData();
     }

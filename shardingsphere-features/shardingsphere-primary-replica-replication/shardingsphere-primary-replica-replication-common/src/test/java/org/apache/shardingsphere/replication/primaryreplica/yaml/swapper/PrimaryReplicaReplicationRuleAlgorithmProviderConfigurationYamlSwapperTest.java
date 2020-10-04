@@ -59,12 +59,12 @@ public final class PrimaryReplicaReplicationRuleAlgorithmProviderConfigurationYa
         assertNotNull(actual);
         assertNotNull(actual.getDataSources());
         assertTrue(actual.getDataSources().iterator().hasNext());
-        PrimaryReplicaReplicationDataSourceRuleConfiguration ruleConfiguration = actual.getDataSources().iterator().next();
-        assertNotNull(ruleConfiguration);
-        assertThat(ruleConfiguration.getName(), is("name"));
-        assertThat(ruleConfiguration.getPrimaryDataSourceName(), is("primaryDataSourceName"));
-        assertThat(ruleConfiguration.getLoadBalancerName(), is("loadBalancerName"));
-        assertThat(ruleConfiguration.getReplicaDataSourceNames(), is(Collections.singletonList("replicaDataSourceName")));
+        PrimaryReplicaReplicationDataSourceRuleConfiguration ruleConfig = actual.getDataSources().iterator().next();
+        assertNotNull(ruleConfig);
+        assertThat(ruleConfig.getName(), is("name"));
+        assertThat(ruleConfig.getPrimaryDataSourceName(), is("primaryDataSourceName"));
+        assertThat(ruleConfig.getLoadBalancerName(), is("loadBalancerName"));
+        assertThat(ruleConfig.getReplicaDataSourceNames(), is(Collections.singletonList("replicaDataSourceName")));
         assertThat(actual.getLoadBalanceAlgorithms(), is(Collections.emptyMap()));
     }
     
@@ -84,9 +84,9 @@ public final class PrimaryReplicaReplicationRuleAlgorithmProviderConfigurationYa
     }
     
     private YamlPrimaryReplicaReplicationRuleConfiguration createYamlPrimaryReplicaReplicationRuleConfiguration() {
-        PrimaryReplicaReplicationDataSourceRuleConfiguration ruleConfiguration = new PrimaryReplicaReplicationDataSourceRuleConfiguration("name", "primaryDataSourceName",
+        PrimaryReplicaReplicationDataSourceRuleConfiguration ruleConfig = new PrimaryReplicaReplicationDataSourceRuleConfiguration("name", "primaryDataSourceName",
                 Collections.singletonList("replicaDataSourceName"), "loadBalancerName");
         return swapper.swapToYamlConfiguration(
-                new AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration(Collections.singletonList(ruleConfiguration), ImmutableMap.of("name", new RandomReplicaLoadBalanceAlgorithm())));
+                new AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration(Collections.singletonList(ruleConfig), ImmutableMap.of("name", new RandomReplicaLoadBalanceAlgorithm())));
     }
 }

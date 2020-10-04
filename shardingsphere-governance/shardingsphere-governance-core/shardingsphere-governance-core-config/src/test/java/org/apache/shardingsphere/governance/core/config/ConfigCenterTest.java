@@ -320,15 +320,15 @@ public final class ConfigCenterTest {
         assertThat(ruleConfigurations.size(), is(2));
         for (RuleConfiguration each : ruleConfigurations) {
             if (each instanceof ShardingRuleConfiguration) {
-                ShardingRuleConfiguration shardingRuleConfiguration = (ShardingRuleConfiguration) each;
-                assertThat(shardingRuleConfiguration.getTables().size(), is(1));
-                assertThat(shardingRuleConfiguration.getTables().iterator().next().getLogicTable(), is("t_order"));
+                ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) each;
+                assertThat(shardingRuleConfig.getTables().size(), is(1));
+                assertThat(shardingRuleConfig.getTables().iterator().next().getLogicTable(), is("t_order"));
             } else if (each instanceof EncryptRuleConfiguration) {
-                EncryptRuleConfiguration encryptRuleConfiguration = (EncryptRuleConfiguration) each;
-                assertThat(encryptRuleConfiguration.getEncryptors().size(), is(2));
-                ShardingSphereAlgorithmConfiguration encryptAlgorithmConfiguration = encryptRuleConfiguration.getEncryptors().get("aes_encryptor");
-                assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
-                assertThat(encryptAlgorithmConfiguration.getProps().get("aes-key-value").toString(), is("123456abcd"));
+                EncryptRuleConfiguration encryptRuleConfig = (EncryptRuleConfiguration) each;
+                assertThat(encryptRuleConfig.getEncryptors().size(), is(2));
+                ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig = encryptRuleConfig.getEncryptors().get("aes_encryptor");
+                assertThat(encryptAlgorithmConfig.getType(), is("AES"));
+                assertThat(encryptAlgorithmConfig.getProps().get("aes-key-value").toString(), is("123456abcd"));
             }
         }
     }
@@ -361,9 +361,9 @@ public final class ConfigCenterTest {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         EncryptRuleConfiguration actual = (EncryptRuleConfiguration) configCenter.loadRuleConfigurations("sharding_db").iterator().next();
         assertThat(actual.getEncryptors().size(), is(1));
-        ShardingSphereAlgorithmConfiguration encryptAlgorithmConfiguration = actual.getEncryptors().get("order_encryptor");
-        assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
-        assertThat(encryptAlgorithmConfiguration.getProps().get("aes-key-value").toString(), is("123456"));
+        ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig = actual.getEncryptors().get("order_encryptor");
+        assertThat(encryptAlgorithmConfig.getType(), is("AES"));
+        assertThat(encryptAlgorithmConfig.getProps().get("aes-key-value").toString(), is("123456"));
     }
     
     @Test

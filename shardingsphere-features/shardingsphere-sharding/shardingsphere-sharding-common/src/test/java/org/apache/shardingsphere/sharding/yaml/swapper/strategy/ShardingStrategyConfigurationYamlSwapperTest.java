@@ -95,11 +95,11 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     }
     
     private YamlShardingStrategyConfiguration createStandardShardingStrategyConfiguration() {
-        YamlStandardShardingStrategyConfiguration yamlStandardShardingStrategyConfiguration = new YamlStandardShardingStrategyConfiguration();
-        yamlStandardShardingStrategyConfiguration.setShardingColumn("id");
-        yamlStandardShardingStrategyConfiguration.setShardingAlgorithmName("standard");
+        YamlStandardShardingStrategyConfiguration yamlStandardShardingStrategyConfig = new YamlStandardShardingStrategyConfiguration();
+        yamlStandardShardingStrategyConfig.setShardingColumn("id");
+        yamlStandardShardingStrategyConfig.setShardingAlgorithmName("standard");
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
-        result.setStandard(yamlStandardShardingStrategyConfiguration);
+        result.setStandard(yamlStandardShardingStrategyConfig);
         return result;
     }
     
@@ -111,11 +111,11 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     }
     
     private YamlShardingStrategyConfiguration createComplexShardingStrategyConfiguration() {
-        YamlComplexShardingStrategyConfiguration yamlComplexShardingStrategyConfiguration = new YamlComplexShardingStrategyConfiguration();
-        yamlComplexShardingStrategyConfiguration.setShardingColumns("id, creation_date");
-        yamlComplexShardingStrategyConfiguration.setShardingAlgorithmName("complex");
+        YamlComplexShardingStrategyConfiguration yamlComplexShardingStrategyConfig = new YamlComplexShardingStrategyConfiguration();
+        yamlComplexShardingStrategyConfig.setShardingColumns("id, creation_date");
+        yamlComplexShardingStrategyConfig.setShardingAlgorithmName("complex");
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
-        result.setComplex(yamlComplexShardingStrategyConfiguration);
+        result.setComplex(yamlComplexShardingStrategyConfig);
         return result;
     }
     
@@ -126,10 +126,10 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     }
     
     private YamlShardingStrategyConfiguration createHintShardingStrategyConfiguration() {
-        YamlHintShardingStrategyConfiguration yamlHintShardingStrategyConfiguration = new YamlHintShardingStrategyConfiguration();
-        yamlHintShardingStrategyConfiguration.setShardingAlgorithmName("hint");
+        YamlHintShardingStrategyConfiguration yamlHintShardingStrategyConfig = new YamlHintShardingStrategyConfiguration();
+        yamlHintShardingStrategyConfig.setShardingAlgorithmName("hint");
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
-        result.setHint(yamlHintShardingStrategyConfiguration);
+        result.setHint(yamlHintShardingStrategyConfig);
         return result;
     }
     

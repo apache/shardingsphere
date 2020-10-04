@@ -47,9 +47,9 @@ public final class PostgreSQLJdbcDumperTest {
     }
     
     private InventoryDumperConfiguration mockInventoryDumperConfiguration() {
-        DumperConfiguration dumperConfiguration = mockDumperConfiguration();
-        initTableData(dumperConfiguration);
-        InventoryDumperConfiguration result = new InventoryDumperConfiguration(dumperConfiguration);
+        DumperConfiguration dumperConfig = mockDumperConfiguration();
+        initTableData(dumperConfig);
+        InventoryDumperConfiguration result = new InventoryDumperConfiguration(dumperConfig);
         result.setTableName("t_order");
         return result;
     }

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 /**
  * Data source configuration.
  */
+// TODO rename class name, should not conflict with other class name
 public interface DataSourceConfiguration {
     
     /**

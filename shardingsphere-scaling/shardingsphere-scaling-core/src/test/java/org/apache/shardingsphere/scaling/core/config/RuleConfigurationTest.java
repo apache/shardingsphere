@@ -37,10 +37,10 @@ public class RuleConfigurationTest {
         dataSourceConf.setParameter(mockJDBCConfiguration(jdbcUrl, username, password));
         DataSourceConfiguration actual = dataSourceConf.toTypedDataSourceConfiguration();
         assertThat(actual, instanceOf(JDBCDataSourceConfiguration.class));
-        JDBCDataSourceConfiguration jdbcDataSourceConfiguration = (JDBCDataSourceConfiguration) actual;
-        assertThat(jdbcDataSourceConfiguration.getJdbcUrl(), is(jdbcUrl));
-        assertThat(jdbcDataSourceConfiguration.getUsername(), is(username));
-        assertThat(jdbcDataSourceConfiguration.getPassword(), is(password));
+        JDBCDataSourceConfiguration jdbcDataSourceConfig = (JDBCDataSourceConfiguration) actual;
+        assertThat(jdbcDataSourceConfig.getJdbcUrl(), is(jdbcUrl));
+        assertThat(jdbcDataSourceConfig.getUsername(), is(username));
+        assertThat(jdbcDataSourceConfig.getPassword(), is(password));
     }
     
     private JsonObject mockJDBCConfiguration(final String jdbcUrl, final String username, final String password) {
@@ -60,9 +60,9 @@ public class RuleConfigurationTest {
         dataSourceConf.setParameter(mockShardingSphereJDBCConfiguration(dataSource, rule));
         DataSourceConfiguration actual = dataSourceConf.toTypedDataSourceConfiguration();
         assertThat(actual, instanceOf(ShardingSphereJDBCConfiguration.class));
-        ShardingSphereJDBCConfiguration shardingSphereJDBCConfiguration = (ShardingSphereJDBCConfiguration) actual;
-        assertThat(shardingSphereJDBCConfiguration.getDataSource(), is(dataSource));
-        assertThat(shardingSphereJDBCConfiguration.getRule(), is(rule));
+        ShardingSphereJDBCConfiguration shardingSphereJDBCConfig = (ShardingSphereJDBCConfiguration) actual;
+        assertThat(shardingSphereJDBCConfig.getDataSource(), is(dataSource));
+        assertThat(shardingSphereJDBCConfig.getRule(), is(rule));
     }
     
     private JsonObject mockShardingSphereJDBCConfiguration(final String dataSource, final String rule) {

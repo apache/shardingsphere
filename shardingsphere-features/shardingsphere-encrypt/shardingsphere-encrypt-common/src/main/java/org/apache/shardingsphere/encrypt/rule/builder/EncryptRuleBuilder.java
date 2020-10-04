@@ -30,8 +30,8 @@ import java.util.Collection;
 public final class EncryptRuleBuilder implements ShardingSphereRuleBuilder<EncryptRule, EncryptRuleConfiguration> {
     
     @Override
-    public EncryptRule build(final EncryptRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
-        return new EncryptRule(ruleConfiguration);
+    public EncryptRule build(final EncryptRuleConfiguration ruleConfig, final Collection<String> dataSourceNames) {
+        return new EncryptRule(ruleConfig);
     }
     
     @Override

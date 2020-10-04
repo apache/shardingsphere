@@ -39,8 +39,7 @@ public final class ShadowRuleTest {
     }
     
     private ShadowRule createShadowRule() {
-        ShadowRuleConfiguration configuration = new ShadowRuleConfiguration("shadow", Arrays.asList("ds", "ds1"), Arrays.asList("shadow_ds", "shadow_ds1"));
-        return new ShadowRule(configuration);
+        return new ShadowRule(new ShadowRuleConfiguration("shadow", Arrays.asList("ds", "ds1"), Arrays.asList("shadow_ds", "shadow_ds1")));
     }
     
     private void assertShadowRule(final ShadowRule rule) {

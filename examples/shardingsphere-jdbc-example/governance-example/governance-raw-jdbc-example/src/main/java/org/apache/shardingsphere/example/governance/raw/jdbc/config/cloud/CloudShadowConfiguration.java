@@ -26,14 +26,14 @@ import java.sql.SQLException;
 
 public final class CloudShadowConfiguration implements ExampleConfiguration {
     
-    private final GovernanceConfiguration governanceConfiguration;
+    private final GovernanceConfiguration governanceConfig;
     
-    public CloudShadowConfiguration(final GovernanceConfiguration governanceConfiguration) {
-        this.governanceConfiguration = governanceConfiguration;
+    public CloudShadowConfiguration(final GovernanceConfiguration governanceConfig) {
+        this.governanceConfig = governanceConfig;
     }
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return GovernanceShardingSphereDataSourceFactory.createDataSource(governanceConfiguration);
+        return GovernanceShardingSphereDataSourceFactory.createDataSource(governanceConfig);
     }
 }

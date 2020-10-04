@@ -97,9 +97,9 @@ public final class SchemaChangedListenerTest {
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(((RuleConfigurationsChangedEvent) actual.get()).getSchemaName(), is("sharding_db"));
-        Collection<RuleConfiguration> ruleConfigurations = ((RuleConfigurationsChangedEvent) actual.get()).getRuleConfigurations();
-        assertThat(ruleConfigurations.size(), is(1));
-        assertThat(((ShardingRuleConfiguration) ruleConfigurations.iterator().next()).getTables().size(), is(1));
+        Collection<RuleConfiguration> ruleConfigs = ((RuleConfigurationsChangedEvent) actual.get()).getRuleConfigurations();
+        assertThat(ruleConfigs.size(), is(1));
+        assertThat(((ShardingRuleConfiguration) ruleConfigs.iterator().next()).getTables().size(), is(1));
     }
     
     @Test

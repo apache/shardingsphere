@@ -149,11 +149,11 @@ public final class ScalingJobControllerTest {
     }
     
     private DumperConfiguration mockDumperConfig() {
-        DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
+        DataSourceConfiguration dataSourceConfig = new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceName("ds0");
-        result.setDataSourceConfiguration(dataSourceConfiguration);
-        Map<String, String> tableMap = new HashMap<>();
+        result.setDataSourceConfiguration(dataSourceConfig);
+        Map<String, String> tableMap = new HashMap<>(1, 1);
         tableMap.put("t_order", "t_order");
         result.setTableNameMap(tableMap);
         return result;

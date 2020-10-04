@@ -45,9 +45,9 @@ public final class ConsensusReplicationLogicTableRuleConfigurationYamlSwapper
     }
     
     @Override
-    public ConsensusReplicationLogicTableRuleConfiguration swapToObject(final YamlConsensusReplicationLogicTableRuleConfiguration yamlConfiguration) {
-        Collection<ConsensusReplicationActualTableRuleConfiguration> replicaGroups = yamlConfiguration.getReplicaGroups().stream()
+    public ConsensusReplicationLogicTableRuleConfiguration swapToObject(final YamlConsensusReplicationLogicTableRuleConfiguration yamlConfig) {
+        Collection<ConsensusReplicationActualTableRuleConfiguration> replicaGroups = yamlConfig.getReplicaGroups().stream()
                 .map(actualTableRuleConfigurationYamlSwapper::swapToObject).collect(Collectors.toList());
-        return new ConsensusReplicationLogicTableRuleConfiguration(yamlConfiguration.getLogicTable(), replicaGroups);
+        return new ConsensusReplicationLogicTableRuleConfiguration(yamlConfig.getLogicTable(), replicaGroups);
     }
 }

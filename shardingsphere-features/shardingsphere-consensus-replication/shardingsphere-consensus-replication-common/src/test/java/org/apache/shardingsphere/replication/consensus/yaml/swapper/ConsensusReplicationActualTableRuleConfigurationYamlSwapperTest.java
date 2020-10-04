@@ -43,12 +43,12 @@ public class ConsensusReplicationActualTableRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlConfigurationWithMaxProperties() {
-        YamlConsensusReplicationActualTableRuleConfiguration yamlConfiguration = swapper.swapToYamlConfiguration(
+        YamlConsensusReplicationActualTableRuleConfiguration yamlConfig = swapper.swapToYamlConfiguration(
                 new ConsensusReplicationActualTableRuleConfiguration(physicsTable, replicaGroupId, replicaPeers, dataSourceName));
-        assertThat(yamlConfiguration.getDataSourceName(), is(dataSourceName));
-        assertThat(yamlConfiguration.getPhysicsTable(), is(physicsTable));
-        assertThat(yamlConfiguration.getReplicaGroupId(), is(replicaGroupId));
-        assertThat(yamlConfiguration.getReplicaPeers(), is(replicaPeers));
+        assertThat(yamlConfig.getDataSourceName(), is(dataSourceName));
+        assertThat(yamlConfig.getPhysicsTable(), is(physicsTable));
+        assertThat(yamlConfig.getReplicaGroupId(), is(replicaGroupId));
+        assertThat(yamlConfig.getReplicaPeers(), is(replicaPeers));
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -58,15 +58,15 @@ public class ConsensusReplicationActualTableRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToObjectWithMaxProperties() {
-        YamlConsensusReplicationActualTableRuleConfiguration yamlConfiguration = new YamlConsensusReplicationActualTableRuleConfiguration();
-        yamlConfiguration.setPhysicsTable(physicsTable);
-        yamlConfiguration.setReplicaGroupId(replicaGroupId);
-        yamlConfiguration.setReplicaPeers(replicaPeers);
-        yamlConfiguration.setDataSourceName(dataSourceName);
-        ConsensusReplicationActualTableRuleConfiguration configuration = swapper.swapToObject(yamlConfiguration);
-        assertThat(configuration.getDataSourceName(), is(dataSourceName));
-        assertThat(configuration.getPhysicsTable(), is(physicsTable));
-        assertThat(configuration.getReplicaGroupId(), is(replicaGroupId));
-        assertThat(configuration.getReplicaPeers(), is(replicaPeers));
+        YamlConsensusReplicationActualTableRuleConfiguration yamlConfig = new YamlConsensusReplicationActualTableRuleConfiguration();
+        yamlConfig.setPhysicsTable(physicsTable);
+        yamlConfig.setReplicaGroupId(replicaGroupId);
+        yamlConfig.setReplicaPeers(replicaPeers);
+        yamlConfig.setDataSourceName(dataSourceName);
+        ConsensusReplicationActualTableRuleConfiguration config = swapper.swapToObject(yamlConfig);
+        assertThat(config.getDataSourceName(), is(dataSourceName));
+        assertThat(config.getPhysicsTable(), is(physicsTable));
+        assertThat(config.getReplicaGroupId(), is(replicaGroupId));
+        assertThat(config.getReplicaPeers(), is(replicaPeers));
     }
 }

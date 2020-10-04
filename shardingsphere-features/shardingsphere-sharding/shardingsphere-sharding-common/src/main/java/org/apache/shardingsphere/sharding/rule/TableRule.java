@@ -99,9 +99,9 @@ public final class TableRule {
         actualTables = getActualTables();
         databaseShardingStrategy = createShardingStrategy(tableRuleConfig.getDatabaseShardingStrategy(), databaseShardingAlgorithm);
         tableShardingStrategy = createShardingStrategy(tableRuleConfig.getTableShardingStrategy(), tableShardingAlgorithm);
-        KeyGenerateStrategyConfiguration keyGeneratorConfiguration = tableRuleConfig.getKeyGenerateStrategy();
-        generateKeyColumn = null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getColumn()) ? keyGeneratorConfiguration.getColumn() : defaultGenerateKeyColumn;
-        keyGeneratorName = null == keyGeneratorConfiguration ? null : keyGeneratorConfiguration.getKeyGeneratorName();
+        KeyGenerateStrategyConfiguration keyGeneratorConfig = tableRuleConfig.getKeyGenerateStrategy();
+        generateKeyColumn = null != keyGeneratorConfig && !Strings.isNullOrEmpty(keyGeneratorConfig.getColumn()) ? keyGeneratorConfig.getColumn() : defaultGenerateKeyColumn;
+        keyGeneratorName = null == keyGeneratorConfig ? null : keyGeneratorConfig.getKeyGeneratorName();
         checkRule(dataNodes);
     }
     
@@ -116,14 +116,14 @@ public final class TableRule {
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
         actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
         actualTables = getActualTables();
-        KeyGenerateStrategyConfiguration keyGeneratorConfiguration = tableRuleConfig.getKeyGenerateStrategy();
-        generateKeyColumn = null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getColumn()) ? keyGeneratorConfiguration.getColumn() : defaultGenerateKeyColumn;
-        keyGeneratorName = null == keyGeneratorConfiguration ? null : keyGeneratorConfiguration.getKeyGeneratorName();
+        KeyGenerateStrategyConfiguration keyGeneratorConfig = tableRuleConfig.getKeyGenerateStrategy();
+        generateKeyColumn = null != keyGeneratorConfig && !Strings.isNullOrEmpty(keyGeneratorConfig.getColumn()) ? keyGeneratorConfig.getColumn() : defaultGenerateKeyColumn;
+        keyGeneratorName = null == keyGeneratorConfig ? null : keyGeneratorConfig.getKeyGeneratorName();
         checkRule(dataNodes);
     }
     
-    private ShardingStrategy createShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfiguration, final ShardingAlgorithm shardingAlgorithm) {
-        return null == shardingStrategyConfiguration ? null : ShardingStrategyFactory.newInstance(shardingStrategyConfiguration, shardingAlgorithm);
+    private ShardingStrategy createShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfig, final ShardingAlgorithm shardingAlgorithm) {
+        return null == shardingStrategyConfig ? null : ShardingStrategyFactory.newInstance(shardingStrategyConfig, shardingAlgorithm);
     }
     
     private List<String> getDataNodes(final ShardingAutoTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames) {

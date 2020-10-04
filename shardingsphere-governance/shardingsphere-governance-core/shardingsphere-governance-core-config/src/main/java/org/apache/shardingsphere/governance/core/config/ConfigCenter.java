@@ -166,54 +166,54 @@ public final class ConfigCenter {
     }
     
     private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
-        Collection<RuleConfiguration> configurations = new LinkedList<>();
+        Collection<RuleConfiguration> configs = new LinkedList<>();
         for (RuleConfiguration each : ruleConfigurations) {
             if (each instanceof ShardingRuleConfiguration) {
                 ShardingRuleConfiguration config = (ShardingRuleConfiguration) each;
                 Preconditions.checkState(hasAvailableTableConfigurations(config),
-                        "No available rule configurations in `%s` for governance.", schemaName);
-                configurations.add(each);
+                        "No available rule configs in `%s` for governance.", schemaName);
+                configs.add(each);
             } else if (each instanceof AlgorithmProvidedShardingRuleConfiguration) {
                 AlgorithmProvidedShardingRuleConfiguration config = (AlgorithmProvidedShardingRuleConfiguration) each;
                 Preconditions.checkState(hasAvailableTableConfigurations(config),
-                        "No available rule configurations in `%s` for governance.", schemaName);
-                configurations.add(each);
+                        "No available rule configs in `%s` for governance.", schemaName);
+                configs.add(each);
             } else if (each instanceof AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration) {
                 AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration config = (AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration) each;
                 config.getDataSources().forEach(group -> Preconditions.checkState(
                         !group.getPrimaryDataSourceName().isEmpty(), "No available primary-replica-replication rule configuration in `%s` for governance.", schemaName));
-                configurations.add(each);
+                configs.add(each);
             } else if (each instanceof AlgorithmProvidedEncryptRuleConfiguration) {
                 AlgorithmProvidedEncryptRuleConfiguration config = (AlgorithmProvidedEncryptRuleConfiguration) each;
                 Preconditions.checkState(!config.getEncryptors().isEmpty(), "No available encrypt rule configuration in `%s` for governance.", schemaName);
-                configurations.add(each);
+                configs.add(each);
             } else if (each instanceof PrimaryReplicaReplicationRuleConfiguration) {
                 PrimaryReplicaReplicationRuleConfiguration config = (PrimaryReplicaReplicationRuleConfiguration) each;
                 config.getDataSources().forEach(group -> Preconditions.checkState(
                         !group.getPrimaryDataSourceName().isEmpty(), "No available primary-replica-replication rule configuration in `%s` for governance.", schemaName));
-                configurations.add(each);
+                configs.add(each);
             } else if (each instanceof EncryptRuleConfiguration) {
                 EncryptRuleConfiguration config = (EncryptRuleConfiguration) each;
                 Preconditions.checkState(!config.getEncryptors().isEmpty(), "No available encrypt rule configuration in `%s` for governance.", schemaName);
-                configurations.add(each);
+                configs.add(each);
             } else if (each instanceof ShadowRuleConfiguration) {
                 ShadowRuleConfiguration config = (ShadowRuleConfiguration) each;
                 boolean isShadow = !config.getColumn().isEmpty() && null != config.getSourceDataSourceNames() && null != config.getShadowDataSourceNames();
                 Preconditions.checkState(isShadow, "No available shadow rule configuration in `%s` for governance.", schemaName);
-                configurations.add(each);
+                configs.add(each);
             }
         }
-        YamlRootRuleConfigurations yamlRuleConfigurations = new YamlRootRuleConfigurations();
-        yamlRuleConfigurations.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(configurations));
-        repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(yamlRuleConfigurations));
+        YamlRootRuleConfigurations yamlRuleConfigs = new YamlRootRuleConfigurations();
+        yamlRuleConfigs.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(configs));
+        repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(yamlRuleConfigs));
     }
     
-    private boolean hasAvailableTableConfigurations(final ShardingRuleConfiguration configuration) {
-        return !configuration.getTables().isEmpty() || null != configuration.getDefaultTableShardingStrategy() || !configuration.getAutoTables().isEmpty();
+    private boolean hasAvailableTableConfigurations(final ShardingRuleConfiguration config) {
+        return !config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategy() || !config.getAutoTables().isEmpty();
     }
     
-    private boolean hasAvailableTableConfigurations(final AlgorithmProvidedShardingRuleConfiguration configuration) {
-        return !configuration.getTables().isEmpty() || null != configuration.getDefaultTableShardingStrategy() || !configuration.getAutoTables().isEmpty();
+    private boolean hasAvailableTableConfigurations(final AlgorithmProvidedShardingRuleConfiguration config) {
+        return !config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategy() || !config.getAutoTables().isEmpty();
     }
     
     private void persistAuthentication(final Authentication authentication, final boolean isOverwrite) {
@@ -249,8 +249,7 @@ public final class ConfigCenter {
     
     private void persistSchema(final String schemaName, final boolean isDrop) {
         String schemaNames = repository.get(node.getSchemasPath());
-        Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() 
-                : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
+        Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
         if (isDrop) {
             schemas.remove(schemaName);
         } else if (!schemas.contains(schemaName)) {

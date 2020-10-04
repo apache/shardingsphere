@@ -63,8 +63,8 @@ public final class AbstractDataConsistencyCheckerTest {
     }
     
     @SneakyThrows(SQLException.class)
-    private void initTableData(final DataSourceConfiguration dataSourceConfiguration) {
-        DataSource dataSource = new DataSourceManager().getDataSource(dataSourceConfiguration);
+    private void initTableData(final DataSourceConfiguration dataSourceConfig) {
+        DataSource dataSource = new DataSourceManager().getDataSource(dataSourceConfig);
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t1");
@@ -76,8 +76,8 @@ public final class AbstractDataConsistencyCheckerTest {
     private void mockShardingScalingJob() {
         InputStream fileInputStream = AbstractDataConsistencyCheckerTest.class.getResourceAsStream("/config.json");
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-        ScalingConfiguration scalingConfiguration = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
-        shardingScalingJob = new ShardingScalingJob(scalingConfiguration);
-        shardingScalingJob.getSyncConfigurations().addAll(SyncConfigurationUtil.toSyncConfigurations(scalingConfiguration));
+        ScalingConfiguration scalingConfig = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
+        shardingScalingJob = new ShardingScalingJob(scalingConfig);
+        shardingScalingJob.getSyncConfigurations().addAll(SyncConfigurationUtil.toSyncConfigurations(scalingConfig));
     }
 }

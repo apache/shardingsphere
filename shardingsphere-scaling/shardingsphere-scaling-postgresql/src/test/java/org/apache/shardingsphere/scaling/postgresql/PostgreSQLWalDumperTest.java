@@ -59,7 +59,7 @@ public final class PostgreSQLWalDumperTest {
     
     private PostgreSQLWalDumper postgreSQLWalDumper;
     
-    private JDBCDataSourceConfiguration jdbcDataSourceConfiguration;
+    private JDBCDataSourceConfiguration jdbcDataSourceConfig;
     
     private MemoryChannel channel;
     
@@ -74,9 +74,9 @@ public final class PostgreSQLWalDumperTest {
     }
     
     private DumperConfiguration mockDumperConfiguration() {
-        jdbcDataSourceConfiguration = new JDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root");
+        jdbcDataSourceConfig = new JDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root");
         DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfiguration(jdbcDataSourceConfiguration);
+        result.setDataSourceConfiguration(jdbcDataSourceConfig);
         return result;
     }
     
@@ -85,7 +85,7 @@ public final class PostgreSQLWalDumperTest {
     public void assertStart() {
         try {
             ReflectionUtil.setFieldValueToClass(postgreSQLWalDumper, "logicalReplication", logicalReplication);
-            when(logicalReplication.createPgConnection(jdbcDataSourceConfiguration)).thenReturn(pgConnection);
+            when(logicalReplication.createPgConnection(jdbcDataSourceConfig)).thenReturn(pgConnection);
             when(pgConnection.unwrap(PgConnection.class)).thenReturn(pgConnection);
             when(pgConnection.getTimestampUtils()).thenReturn(null);
             when(logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionManager.SLOT_NAME, position.getLogSequenceNumber())).thenReturn(pgReplicationStream);

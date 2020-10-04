@@ -35,10 +35,10 @@ public final class KeyGenerateStrategyConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToObject() {
-        YamlKeyGenerateStrategyConfiguration yamlConfiguration = new YamlKeyGenerateStrategyConfiguration();
-        yamlConfiguration.setColumn("id");
-        yamlConfiguration.setKeyGeneratorName("test");
-        KeyGenerateStrategyConfiguration actual = new KeyGenerateStrategyConfigurationYamlSwapper().swapToObject(yamlConfiguration);
+        YamlKeyGenerateStrategyConfiguration yamlConfig = new YamlKeyGenerateStrategyConfiguration();
+        yamlConfig.setColumn("id");
+        yamlConfig.setKeyGeneratorName("test");
+        KeyGenerateStrategyConfiguration actual = new KeyGenerateStrategyConfigurationYamlSwapper().swapToObject(yamlConfig);
         assertThat(actual.getColumn(), is("id"));
         assertThat(actual.getKeyGeneratorName(), is("test"));
     }

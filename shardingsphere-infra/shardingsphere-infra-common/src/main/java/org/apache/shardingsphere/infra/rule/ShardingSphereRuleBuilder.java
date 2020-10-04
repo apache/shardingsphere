@@ -33,9 +33,9 @@ public interface ShardingSphereRuleBuilder<R extends ShardingSphereRule, T exten
     /**
      * Build ShardingSphere rule.
      *
-     * @param ruleConfiguration rule configuration
+     * @param ruleConfig rule configuration
      * @param dataSourceNames data source names
      * @return ShardingSphere rule
      */
-    R build(T ruleConfiguration, Collection<String> dataSourceNames);
+    R build(T ruleConfig, Collection<String> dataSourceNames);
 }

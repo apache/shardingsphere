@@ -47,7 +47,7 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor<W
     
     private final WalPosition walPosition;
     
-    private final DumperConfiguration dumperConfiguration;
+    private final DumperConfiguration dumperConfig;
     
     private final LogicalReplication logicalReplication = new LogicalReplication();
     
@@ -56,13 +56,13 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor<W
     @Setter
     private Channel channel;
     
-    public PostgreSQLWalDumper(final DumperConfiguration dumperConfiguration, final Position position) {
+    public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final Position position) {
         walPosition = (WalPosition) position;
-        if (!JDBCDataSourceConfiguration.class.equals(dumperConfiguration.getDataSourceConfiguration().getClass())) {
+        if (!JDBCDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("PostgreSQLWalDumper only support JDBCDataSourceConfiguration");
         }
-        this.dumperConfiguration = dumperConfiguration;
-        walEventConverter = new WalEventConverter(dumperConfiguration);
+        this.dumperConfig = dumperConfig;
+        walEventConverter = new WalEventConverter(dumperConfig);
     }
     
     @Override
@@ -73,17 +73,17 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor<W
     
     private void dump() {
         try {
-            Connection pgConnection = logicalReplication.createPgConnection((JDBCDataSourceConfiguration) dumperConfiguration.getDataSourceConfiguration());
+            Connection pgConnection = logicalReplication.createPgConnection((JDBCDataSourceConfiguration) dumperConfig.getDataSourceConfiguration());
             DecodingPlugin decodingPlugin = new TestDecodingPlugin(pgConnection.unwrap(PgConnection.class).getTimestampUtils());
             PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection,
                     PostgreSQLPositionManager.SLOT_NAME, walPosition.getLogSequenceNumber());
             while (isRunning()) {
-                ByteBuffer msg = stream.readPending();
-                if (msg == null) {
+                ByteBuffer message = stream.readPending();
+                if (null == message) {
                     ThreadUtil.sleep(10L);
                     continue;
                 }
-                AbstractWalEvent event = decodingPlugin.decode(msg, stream.getLastReceiveLSN());
+                AbstractWalEvent event = decodingPlugin.decode(message, stream.getLastReceiveLSN());
                 pushRecord(walEventConverter.convert(event));
             }
         } catch (final SQLException ex) {

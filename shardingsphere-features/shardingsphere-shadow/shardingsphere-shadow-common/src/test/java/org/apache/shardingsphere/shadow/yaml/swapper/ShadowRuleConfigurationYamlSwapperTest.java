@@ -30,8 +30,8 @@ public final class ShadowRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlConfiguration() {
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Arrays.asList("ds", "ds1"), Arrays.asList("shadow_ds", "shadow_ds1"));
-        YamlShadowRuleConfiguration actual = new ShadowRuleConfigurationYamlSwapper().swapToYamlConfiguration(shadowRuleConfiguration);
+        ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration("shadow", Arrays.asList("ds", "ds1"), Arrays.asList("shadow_ds", "shadow_ds1"));
+        YamlShadowRuleConfiguration actual = new ShadowRuleConfigurationYamlSwapper().swapToYamlConfiguration(shadowRuleConfig);
         assertThat(actual.getColumn(), is("shadow"));
         assertThat(actual.getSourceDataSourceNames().size(), is(actual.getShadowDataSourceNames().size()));
         assertThat(actual.getSourceDataSourceNames(), is(Arrays.asList("ds", "ds1")));

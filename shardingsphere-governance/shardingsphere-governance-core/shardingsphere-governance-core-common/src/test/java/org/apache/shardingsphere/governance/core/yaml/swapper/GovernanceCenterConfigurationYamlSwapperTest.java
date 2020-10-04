@@ -39,11 +39,11 @@ public final class GovernanceCenterConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToObject() {
-        YamlGovernanceCenterConfiguration yamlConfiguration = getYamlGovernanceCenterConfiguration();
-        GovernanceCenterConfiguration governanceCenterConfig = new GovernanceCenterConfigurationYamlSwapper().swapToObject(yamlConfiguration);
-        assertThat(governanceCenterConfig.getType(), is(yamlConfiguration.getType()));
-        assertThat(governanceCenterConfig.getServerLists(), is(yamlConfiguration.getServerLists()));
-        assertThat(governanceCenterConfig.getProps(), is(yamlConfiguration.getProps()));
+        YamlGovernanceCenterConfiguration yamlConfig = getYamlGovernanceCenterConfiguration();
+        GovernanceCenterConfiguration governanceCenterConfig = new GovernanceCenterConfigurationYamlSwapper().swapToObject(yamlConfig);
+        assertThat(governanceCenterConfig.getType(), is(yamlConfig.getType()));
+        assertThat(governanceCenterConfig.getServerLists(), is(yamlConfig.getServerLists()));
+        assertThat(governanceCenterConfig.getProps(), is(yamlConfig.getProps()));
     }
     
     private YamlGovernanceCenterConfiguration getYamlGovernanceCenterConfiguration() {

@@ -36,10 +36,10 @@ import java.util.Map.Entry;
  */
 public final class MySQLJdbcDumper extends AbstractJDBCDumper {
     
-    public MySQLJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfiguration, final DataSourceManager dataSourceManager) {
-        super(inventoryDumperConfiguration, dataSourceManager);
-        JDBCDataSourceConfiguration jdbcDataSourceConfiguration = (JDBCDataSourceConfiguration) getInventoryDumperConfiguration().getDataSourceConfiguration();
-        jdbcDataSourceConfiguration.setJdbcUrl(fixMySQLUrl(jdbcDataSourceConfiguration.getJdbcUrl()));
+    public MySQLJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
+        super(inventoryDumperConfig, dataSourceManager);
+        JDBCDataSourceConfiguration jdbcDataSourceConfig = (JDBCDataSourceConfiguration) getInventoryDumperConfiguration().getDataSourceConfiguration();
+        jdbcDataSourceConfig.setJdbcUrl(fixMySQLUrl(jdbcDataSourceConfig.getJdbcUrl()));
     }
     
     private String fixMySQLUrl(final String url) {

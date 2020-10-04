@@ -59,9 +59,9 @@ public final class ShardingScalingJob {
     
     private String status = SyncTaskControlStatus.RUNNING.name();
     
-    public ShardingScalingJob(final ScalingConfiguration scalingConfiguration) {
-        this.scalingConfiguration = scalingConfiguration;
-        jobName = Optional.ofNullable(scalingConfiguration.getJobConfiguration().getJobName()).orElse(jobName);
-        shardingItem = scalingConfiguration.getJobConfiguration().getShardingItem();
+    public ShardingScalingJob(final ScalingConfiguration scalingConfig) {
+        scalingConfiguration = scalingConfig;
+        jobName = Optional.ofNullable(scalingConfig.getJobConfiguration().getJobName()).orElse(jobName);
+        shardingItem = scalingConfig.getJobConfiguration().getShardingItem();
     }
 }
