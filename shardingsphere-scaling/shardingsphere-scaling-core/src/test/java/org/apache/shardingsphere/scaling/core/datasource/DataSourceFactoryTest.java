@@ -17,32 +17,28 @@
 
 package org.apache.shardingsphere.scaling.core.datasource;
 
-import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ShardingSphereJDBCConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ShardingSphereJDBCScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.fixture.FixtureShardingSphereJDBCConfiguration;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 public class DataSourceFactoryTest {
     
     @Test
     public void assertNewJDBCInstance() {
-        JDBCDataSourceConfiguration jdbcDataSourceConfig = new JDBCDataSourceConfiguration(
-                "jdbc:h2:mem:test_db_2;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL",
-                "root",
-                "password");
-        DataSourceWrapper actual = new DataSourceFactory().newInstance(jdbcDataSourceConfig);
-        assertThat(actual, is(notNullValue()));
+        JDBCScalingDataSourceConfiguration config = new JDBCScalingDataSourceConfiguration(
+                "jdbc:h2:mem:test_db_2;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "password");
+        DataSourceWrapper actual = new DataSourceFactory().newInstance(config);
+        assertNotNull(actual);
     }
     
     @Test
     public void assertNewShardingSphereJDBCInstance() {
-        ShardingSphereJDBCConfiguration shardingSphereJDBCConfig = new ShardingSphereJDBCConfiguration(
+        ShardingSphereJDBCScalingDataSourceConfiguration config = new ShardingSphereJDBCScalingDataSourceConfiguration(
                 FixtureShardingSphereJDBCConfiguration.DATA_SOURCE, FixtureShardingSphereJDBCConfiguration.RULE);
-        DataSourceWrapper actual = new DataSourceFactory().newInstance(shardingSphereJDBCConfig);
-        assertThat(actual, is(notNullValue()));
+        DataSourceWrapper actual = new DataSourceFactory().newInstance(config);
+        assertNotNull(actual);
     }
 }

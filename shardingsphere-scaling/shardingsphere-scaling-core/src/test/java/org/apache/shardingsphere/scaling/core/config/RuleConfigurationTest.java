@@ -35,9 +35,9 @@ public class RuleConfigurationTest {
         String username = "root";
         String password = "password";
         dataSourceConf.setParameter(mockJDBCConfiguration(jdbcUrl, username, password));
-        DataSourceConfiguration actual = dataSourceConf.toTypedDataSourceConfiguration();
-        assertThat(actual, instanceOf(JDBCDataSourceConfiguration.class));
-        JDBCDataSourceConfiguration jdbcDataSourceConfig = (JDBCDataSourceConfiguration) actual;
+        ScalingDataSourceConfiguration actual = dataSourceConf.toTypedDataSourceConfiguration();
+        assertThat(actual, instanceOf(JDBCScalingDataSourceConfiguration.class));
+        JDBCScalingDataSourceConfiguration jdbcDataSourceConfig = (JDBCScalingDataSourceConfiguration) actual;
         assertThat(jdbcDataSourceConfig.getJdbcUrl(), is(jdbcUrl));
         assertThat(jdbcDataSourceConfig.getUsername(), is(username));
         assertThat(jdbcDataSourceConfig.getPassword(), is(password));
@@ -58,9 +58,9 @@ public class RuleConfigurationTest {
         String dataSource = FixtureShardingSphereJDBCConfiguration.DATA_SOURCE;
         String rule = FixtureShardingSphereJDBCConfiguration.RULE;
         dataSourceConf.setParameter(mockShardingSphereJDBCConfiguration(dataSource, rule));
-        DataSourceConfiguration actual = dataSourceConf.toTypedDataSourceConfiguration();
-        assertThat(actual, instanceOf(ShardingSphereJDBCConfiguration.class));
-        ShardingSphereJDBCConfiguration shardingSphereJDBCConfig = (ShardingSphereJDBCConfiguration) actual;
+        ScalingDataSourceConfiguration actual = dataSourceConf.toTypedDataSourceConfiguration();
+        assertThat(actual, instanceOf(ShardingSphereJDBCScalingDataSourceConfiguration.class));
+        ShardingSphereJDBCScalingDataSourceConfiguration shardingSphereJDBCConfig = (ShardingSphereJDBCScalingDataSourceConfiguration) actual;
         assertThat(shardingSphereJDBCConfig.getDataSource(), is(dataSource));
         assertThat(shardingSphereJDBCConfig.getRule(), is(rule));
     }

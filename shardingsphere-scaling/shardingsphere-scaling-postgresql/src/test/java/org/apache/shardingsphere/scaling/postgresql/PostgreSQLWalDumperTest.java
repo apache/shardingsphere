@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.postgresql;
 
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
@@ -58,7 +58,7 @@ public final class PostgreSQLWalDumperTest {
     
     private PostgreSQLWalDumper postgreSQLWalDumper;
     
-    private JDBCDataSourceConfiguration jdbcDataSourceConfig;
+    private JDBCScalingDataSourceConfiguration jdbcDataSourceConfig;
     
     private MemoryChannel channel;
     
@@ -73,7 +73,7 @@ public final class PostgreSQLWalDumperTest {
     }
     
     private DumperConfiguration mockDumperConfiguration() {
-        jdbcDataSourceConfig = new JDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root");
+        jdbcDataSourceConfig = new JDBCScalingDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root");
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceConfiguration(jdbcDataSourceConfig);
         return result;

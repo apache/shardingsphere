@@ -22,34 +22,32 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.scaling.core.utils.ConfigurationYamlConverter;
 
 /**
- * JDBC data source configuration.
+ * ShardingSphere-JDBC scaling data source configuration.
  */
 @Getter
 @Setter
 @EqualsAndHashCode(exclude = "databaseType")
-public final class JDBCDataSourceConfiguration implements DataSourceConfiguration {
+public final class ShardingSphereJDBCScalingDataSourceConfiguration implements ScalingDataSourceConfiguration {
     
-    private String jdbcUrl;
+    private String dataSource;
     
-    private String username;
-    
-    private String password;
+    private String rule;
     
     private DatabaseType databaseType;
     
-    public JDBCDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
-        this.jdbcUrl = jdbcUrl;
-        this.username = username;
-        this.password = password;
+    public ShardingSphereJDBCScalingDataSourceConfiguration(final String dataSource, final String rule) {
+        this.dataSource = dataSource;
+        this.rule = rule;
         databaseType = getDatabaseType();
     }
     
     @Override
     public DatabaseType getDatabaseType() {
         if (null == databaseType) {
-            databaseType = DatabaseTypes.getDatabaseTypeByURL(jdbcUrl);
+            databaseType = DatabaseTypes.getDatabaseTypeByURL(ConfigurationYamlConverter.loadDataSourceConfigurations(dataSource).values().iterator().next().getProps().get("jdbcUrl").toString());
         }
         return databaseType;
     }

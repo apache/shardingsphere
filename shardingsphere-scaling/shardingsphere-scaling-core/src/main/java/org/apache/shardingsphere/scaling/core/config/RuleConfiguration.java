@@ -44,14 +44,14 @@ public final class RuleConfiguration {
         /**
          * Get typed data source configuration.
          *
-         * @return data source configuration
+         * @return scaling data source configuration
          */
-        public DataSourceConfiguration toTypedDataSourceConfiguration() {
+        public ScalingDataSourceConfiguration toTypedDataSourceConfiguration() {
             if ("jdbc".equalsIgnoreCase(type)) {
-                return new Gson().fromJson(parameter, JDBCDataSourceConfiguration.class);
+                return new Gson().fromJson(parameter, JDBCScalingDataSourceConfiguration.class);
             }
             if ("shardingSphereJdbc".equalsIgnoreCase(type)) {
-                return new Gson().fromJson(parameter, ShardingSphereJDBCConfiguration.class);
+                return new Gson().fromJson(parameter, ShardingSphereJDBCScalingDataSourceConfiguration.class);
             }
             throw new UnsupportedOperationException("Unsupported Data Source Type:" + type);
         }

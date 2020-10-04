@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.mysql;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
@@ -70,7 +70,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
     
     public MySQLBinlogDumper(final DumperConfiguration dumperConfig, final Position binlogPosition) {
         this.binlogPosition = (BinlogPosition) binlogPosition;
-        if (!JDBCDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfiguration().getClass())) {
+        if (!JDBCScalingDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("MySQLBinlogDumper only support JDBCDataSourceConfiguration");
         }
         this.dumperConfig = dumperConfig;
@@ -84,7 +84,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
     }
     
     private void dump() {
-        JDBCDataSourceConfiguration jdbcDataSourceConfig = (JDBCDataSourceConfiguration) dumperConfig.getDataSourceConfiguration();
+        JDBCScalingDataSourceConfiguration jdbcDataSourceConfig = (JDBCScalingDataSourceConfiguration) dumperConfig.getDataSourceConfiguration();
         JdbcUri uri = new JdbcUri(jdbcDataSourceConfig.getJdbcUrl());
         MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), uri.getHostname(), uri.getPort(), jdbcDataSourceConfig.getUsername(), jdbcDataSourceConfig.getPassword()));
         client.connect();

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.postgresql;
 
 import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
@@ -58,7 +58,7 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor<W
     
     public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final Position position) {
         walPosition = (WalPosition) position;
-        if (!JDBCDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfiguration().getClass())) {
+        if (!JDBCScalingDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("PostgreSQLWalDumper only support JDBCDataSourceConfiguration");
         }
         this.dumperConfig = dumperConfig;
@@ -73,7 +73,7 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor<W
     
     private void dump() {
         try {
-            Connection pgConnection = logicalReplication.createPgConnection((JDBCDataSourceConfiguration) dumperConfig.getDataSourceConfiguration());
+            Connection pgConnection = logicalReplication.createPgConnection((JDBCScalingDataSourceConfiguration) dumperConfig.getDataSourceConfiguration());
             DecodingPlugin decodingPlugin = new TestDecodingPlugin(pgConnection.unwrap(PgConnection.class).getTimestampUtils());
             PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection,
                     PostgreSQLPositionManager.SLOT_NAME, walPosition.getLogSequenceNumber());

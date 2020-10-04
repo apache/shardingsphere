@@ -30,7 +30,7 @@ import java.util.Set;
 @Getter
 public final class ImporterConfiguration {
     
-    private DataSourceConfiguration dataSourceConfiguration;
+    private ScalingDataSourceConfiguration dataSourceConfiguration;
     
     private Map<String, Set<String>> shardingColumnsMap;
     

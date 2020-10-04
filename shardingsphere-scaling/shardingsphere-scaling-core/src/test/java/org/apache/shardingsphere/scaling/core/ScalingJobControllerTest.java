@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.scaling.core;
 
-import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -142,12 +142,12 @@ public final class ScalingJobControllerTest {
     
     private ImporterConfiguration mockImporterConfiguration() {
         ImporterConfiguration result = new ImporterConfiguration();
-        result.setDataSourceConfiguration(new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD));
+        result.setDataSourceConfiguration(new JDBCScalingDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD));
         return result;
     }
     
     private DumperConfiguration mockDumperConfig() {
-        DataSourceConfiguration dataSourceConfig = new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
+        ScalingDataSourceConfiguration dataSourceConfig = new JDBCScalingDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceName("ds0");
         result.setDataSourceConfiguration(dataSourceConfig);

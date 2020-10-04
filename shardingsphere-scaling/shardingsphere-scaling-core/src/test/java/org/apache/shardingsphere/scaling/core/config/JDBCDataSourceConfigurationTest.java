@@ -28,8 +28,8 @@ public final class JDBCDataSourceConfigurationTest {
     
     @Test
     public void assertJDBCDataSourceConfigurationEquals() {
-        JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
-        JDBCDataSourceConfiguration targetConfig = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
+        JDBCScalingDataSourceConfiguration sourceConfig = new JDBCScalingDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
+        JDBCScalingDataSourceConfiguration targetConfig = new JDBCScalingDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
         assertThat(sourceConfig, is(targetConfig));
         sourceConfig.setDatabaseType(new MySQLDatabaseType());
         targetConfig.setDatabaseType(new MySQLDatabaseType());
@@ -38,8 +38,8 @@ public final class JDBCDataSourceConfigurationTest {
     
     @Test
     public void assertJDBCDataSourceConfigurationNotEquals() {
-        JDBCDataSourceConfiguration sourceConfig = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "sa", "root");
-        JDBCDataSourceConfiguration targetConfig = new JDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
+        JDBCScalingDataSourceConfiguration sourceConfig = new JDBCScalingDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "sa", "root");
+        JDBCScalingDataSourceConfiguration targetConfig = new JDBCScalingDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
         assertThat(sourceConfig, not(targetConfig));
     }
 }

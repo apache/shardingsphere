@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
@@ -66,7 +66,7 @@ public final class AbstractJDBCImporterTest {
     private AbstractSQLBuilder sqlBuilder;
     
     @Mock
-    private DataSourceConfiguration dataSourceConfig;
+    private ScalingDataSourceConfiguration dataSourceConfig;
     
     @Mock
     private Channel channel;

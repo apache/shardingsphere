@@ -17,18 +17,19 @@
 
 package org.apache.shardingsphere.scaling.core.config;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.scaling.core.fixture.FixtureShardingSphereJDBCConfiguration;
+import org.junit.Test;
 
-/**
- * Data source configuration.
- */
-// TODO rename class name, should not conflict with other class name
-public interface DataSourceConfiguration {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
+public final class ShardingSphereJDBCScalingDataSourceConfigurationTest {
     
-    /**
-     * Get database type.
-     *
-     * @return database type
-     */
-    DatabaseType getDatabaseType();
+    @Test
+    public void assertShardingSphereJDBCDataSourceConfigurationDatabaseType() {
+        ShardingSphereJDBCScalingDataSourceConfiguration config = new ShardingSphereJDBCScalingDataSourceConfiguration(
+                FixtureShardingSphereJDBCConfiguration.DATA_SOURCE, FixtureShardingSphereJDBCConfiguration.RULE);
+        assertThat(config.getDatabaseType(), instanceOf(H2DatabaseType.class));
+    }
 }
