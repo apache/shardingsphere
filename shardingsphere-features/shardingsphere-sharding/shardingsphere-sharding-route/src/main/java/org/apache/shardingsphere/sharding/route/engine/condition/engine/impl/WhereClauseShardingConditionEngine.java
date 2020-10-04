@@ -38,7 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractFromExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereSegmentExtractUtils;
@@ -96,7 +96,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
     private Map<Column, Collection<RouteValue>> createRouteValueMap(final SQLStatementContext<?> sqlStatementContext, final AndPredicate andPredicate, final List<Object> parameters) {
         Map<Column, Collection<RouteValue>> result = new HashMap<>(andPredicate.getPredicates().size(), 1);
         for (ExpressionSegment each : andPredicate.getPredicates()) {
-            Optional<ColumnSegment> columnSegment = ColumnExtractFromExpression.extract(each);
+            Optional<ColumnSegment> columnSegment = ColumnExtractor.extract(each);
             if (!columnSegment.isPresent()) {
                 continue;
             }

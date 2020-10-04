@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.S
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractFromExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -96,7 +96,7 @@ public final class EncryptConditionEngine {
     }
     
     private Optional<EncryptCondition> createEncryptCondition(final SQLStatementContext sqlStatementContext, final ExpressionSegment expression) {
-        Optional<ColumnSegment> column = ColumnExtractFromExpression.extract(expression);
+        Optional<ColumnSegment> column = ColumnExtractor.extract(expression);
         if (!column.isPresent()) {
             return Optional.empty();
         }
