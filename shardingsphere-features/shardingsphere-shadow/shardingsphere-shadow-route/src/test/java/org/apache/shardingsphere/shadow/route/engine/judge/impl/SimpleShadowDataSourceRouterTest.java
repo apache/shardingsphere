@@ -65,8 +65,7 @@ public final class SimpleShadowDataSourceRouterTest {
     public void setUp() {
         schemaMetaData = mock(SchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("shadow_ds"));
-        shadowRule = new ShadowRule(shadowRuleConfiguration);
+        shadowRule = new ShadowRule(new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("shadow_ds")));
     }
     
     @Test

@@ -64,10 +64,10 @@ public final class AbstractJDBCImporterTest {
     private DataSourceManager dataSourceManager;
     
     @Mock
-    private AbstractSqlBuilder sqlBuilder;
+    private AbstractSQLBuilder sqlBuilder;
     
     @Mock
-    private DataSourceConfiguration dataSourceConfiguration;
+    private DataSourceConfiguration dataSourceConfig;
     
     @Mock
     private Channel channel;
@@ -88,12 +88,12 @@ public final class AbstractJDBCImporterTest {
         jdbcImporter = new AbstractJDBCImporter(getImporterConfiguration(), dataSourceManager) {
             
             @Override
-            protected AbstractSqlBuilder createSqlBuilder() {
+            protected AbstractSQLBuilder createSQLBuilder() {
                 return sqlBuilder;
             }
         };
         jdbcImporter.setChannel(channel);
-        when(dataSourceManager.getDataSource(dataSourceConfiguration)).thenReturn(dataSource);
+        when(dataSourceManager.getDataSource(dataSourceConfig)).thenReturn(dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
     }
     
@@ -160,7 +160,7 @@ public final class AbstractJDBCImporterTest {
     
     private ImporterConfiguration getImporterConfiguration() {
         ImporterConfiguration result = new ImporterConfiguration();
-        result.setDataSourceConfiguration(dataSourceConfiguration);
+        result.setDataSourceConfiguration(dataSourceConfig);
         Map<String, Set<String>> shardingColumnsMap = Maps.newHashMap();
         shardingColumnsMap.put("test_table", Sets.newHashSet("user"));
         result.setShardingColumnsMap(shardingColumnsMap);

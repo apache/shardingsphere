@@ -42,15 +42,15 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds", DataSourceUtil.createDataSource("demo_ds"));
         dataSourceMap.put("ds_0", DataSourceUtil.createDataSource("shadow_demo_ds"));
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(getEncryptTableRuleConfigurations(), getEncryptAlgorithmConfigurations());
+        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration(getEncryptTableRuleConfigurations(), getEncryptAlgorithmConfigurations());
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
         props.setProperty(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN.getKey(), "true");
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("ds_0"));
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, encryptRuleConfiguration), props);
+        ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("ds_0"));
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfig, encryptRuleConfig), props);
     }
     
     private Collection<EncryptTableRuleConfiguration> getEncryptTableRuleConfigurations() {

@@ -163,11 +163,11 @@ public final class TableRuleTest {
     
     @Test(expected = ShardingSphereConfigurationException.class)
     public void assertActualDataNodesNotConfigured() {
-        ShardingTableRuleConfiguration shardingTableRuleConfiguration = new ShardingTableRuleConfiguration("LOGIC_TABLE", "");
-        shardingTableRuleConfiguration.setTableShardingStrategy(new StandardShardingStrategyConfiguration("shardingColumn", "INLINE"));
+        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "");
+        shardingTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("shardingColumn", "INLINE"));
         InlineShardingAlgorithm inlineShardingAlgorithm = new InlineShardingAlgorithm();
         inlineShardingAlgorithm.getProps().setProperty("algorithm-expression", "xxx");
         inlineShardingAlgorithm.init();
-        new TableRule(shardingTableRuleConfiguration, Arrays.asList("ds0", "ds1"), null, inlineShardingAlgorithm, null);
+        new TableRule(shardingTableRuleConfig, Arrays.asList("ds0", "ds1"), null, inlineShardingAlgorithm, null);
     }
 }

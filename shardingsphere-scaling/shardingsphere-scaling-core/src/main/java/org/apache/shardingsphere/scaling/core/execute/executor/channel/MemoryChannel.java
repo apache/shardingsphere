@@ -32,7 +32,7 @@ import java.util.concurrent.BlockingQueue;
  */
 public final class MemoryChannel implements Channel {
     
-    private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(ScalingContext.getInstance().getServerConfiguration().getBlockQueueSize());
+    private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(ScalingContext.getInstance().getServerConfig().getBlockQueueSize());
     
     private final AckCallback ackCallback;
     

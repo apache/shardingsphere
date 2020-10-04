@@ -81,9 +81,9 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlWithMinProperties() {
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getTables().add(mock(ShardingTableRuleConfiguration.class));
-        YamlShardingRuleConfiguration actual = shardingRuleConfigurationYamlSwapper.swapToYamlConfiguration(shardingRuleConfiguration);
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(mock(ShardingTableRuleConfiguration.class));
+        YamlShardingRuleConfiguration actual = shardingRuleConfigurationYamlSwapper.swapToYamlConfiguration(shardingRuleConfig);
         assertThat(actual.getTables().size(), is(1));
         assertTrue(actual.getBindingTables().isEmpty());
         assertTrue(actual.getBroadcastTables().isEmpty());
@@ -94,14 +94,14 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlWithMaxProperties() {
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getTables().add(mock(ShardingTableRuleConfiguration.class));
-        shardingRuleConfiguration.getBindingTableGroups().add("tbl, sub_tbl");
-        shardingRuleConfiguration.getBroadcastTables().add("dict");
-        shardingRuleConfiguration.setDefaultDatabaseShardingStrategy(mock(ShardingStrategyConfiguration.class));
-        shardingRuleConfiguration.setDefaultTableShardingStrategy(mock(ShardingStrategyConfiguration.class));
-        shardingRuleConfiguration.setDefaultKeyGenerateStrategy(mock(KeyGenerateStrategyConfiguration.class));
-        YamlShardingRuleConfiguration actual = shardingRuleConfigurationYamlSwapper.swapToYamlConfiguration(shardingRuleConfiguration);
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(mock(ShardingTableRuleConfiguration.class));
+        shardingRuleConfig.getBindingTableGroups().add("tbl, sub_tbl");
+        shardingRuleConfig.getBroadcastTables().add("dict");
+        shardingRuleConfig.setDefaultDatabaseShardingStrategy(mock(ShardingStrategyConfiguration.class));
+        shardingRuleConfig.setDefaultTableShardingStrategy(mock(ShardingStrategyConfiguration.class));
+        shardingRuleConfig.setDefaultKeyGenerateStrategy(mock(KeyGenerateStrategyConfiguration.class));
+        YamlShardingRuleConfiguration actual = shardingRuleConfigurationYamlSwapper.swapToYamlConfiguration(shardingRuleConfig);
         assertThat(actual.getTables().size(), is(1));
         assertThat(actual.getBindingTables().size(), is(1));
         assertThat(actual.getBindingTables().iterator().next(), is("tbl, sub_tbl"));
@@ -114,9 +114,9 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToObjectWithMinProperties() {
-        YamlShardingRuleConfiguration yamlConfiguration = new YamlShardingRuleConfiguration();
-        yamlConfiguration.getTables().put("tbl", mock(YamlTableRuleConfiguration.class));
-        ShardingRuleConfiguration actual = shardingRuleConfigurationYamlSwapper.swapToObject(yamlConfiguration);
+        YamlShardingRuleConfiguration yamlConfig = new YamlShardingRuleConfiguration();
+        yamlConfig.getTables().put("tbl", mock(YamlTableRuleConfiguration.class));
+        ShardingRuleConfiguration actual = shardingRuleConfigurationYamlSwapper.swapToObject(yamlConfig);
         assertThat(actual.getTables().size(), is(1));
         assertTrue(actual.getBindingTableGroups().isEmpty());
         assertTrue(actual.getBroadcastTables().isEmpty());
@@ -127,14 +127,14 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToObjectWithMaxProperties() {
-        YamlShardingRuleConfiguration yamlConfiguration = new YamlShardingRuleConfiguration();
-        yamlConfiguration.getTables().put("tbl", mock(YamlTableRuleConfiguration.class));
-        yamlConfiguration.getBindingTables().add("tbl, sub_tbl");
-        yamlConfiguration.getBroadcastTables().add("dict");
-        yamlConfiguration.setDefaultDatabaseStrategy(mock(YamlShardingStrategyConfiguration.class));
-        yamlConfiguration.setDefaultTableStrategy(mock(YamlShardingStrategyConfiguration.class));
-        yamlConfiguration.setDefaultKeyGenerateStrategy(mock(YamlKeyGenerateStrategyConfiguration.class));
-        ShardingRuleConfiguration actual = shardingRuleConfigurationYamlSwapper.swapToObject(yamlConfiguration);
+        YamlShardingRuleConfiguration yamlConfig = new YamlShardingRuleConfiguration();
+        yamlConfig.getTables().put("tbl", mock(YamlTableRuleConfiguration.class));
+        yamlConfig.getBindingTables().add("tbl, sub_tbl");
+        yamlConfig.getBroadcastTables().add("dict");
+        yamlConfig.setDefaultDatabaseStrategy(mock(YamlShardingStrategyConfiguration.class));
+        yamlConfig.setDefaultTableStrategy(mock(YamlShardingStrategyConfiguration.class));
+        yamlConfig.setDefaultKeyGenerateStrategy(mock(YamlKeyGenerateStrategyConfiguration.class));
+        ShardingRuleConfiguration actual = shardingRuleConfigurationYamlSwapper.swapToObject(yamlConfig);
         assertThat(actual.getTables().size(), is(1));
         assertThat(actual.getBindingTableGroups().size(), is(1));
         assertThat(actual.getBindingTableGroups().iterator().next(), is("tbl, sub_tbl"));

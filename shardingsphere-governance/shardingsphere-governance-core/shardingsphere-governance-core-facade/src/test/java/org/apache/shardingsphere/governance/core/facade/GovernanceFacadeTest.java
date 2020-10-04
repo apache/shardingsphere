@@ -62,8 +62,8 @@ public final class GovernanceFacadeTest {
     
     @Before
     public void setUp() {
-        GovernanceConfiguration governanceConfiguration = new GovernanceConfiguration("test_name", new GovernanceCenterConfiguration("ALL", "127.0.0.1", new Properties()), false);
-        governanceFacade.init(governanceConfiguration, Arrays.asList("sharding_db", "primary_replica_replication_db"));
+        GovernanceConfiguration governanceConfig = new GovernanceConfiguration("test_name", new GovernanceCenterConfiguration("ALL", "127.0.0.1", new Properties()), false);
+        governanceFacade.init(governanceConfig, Arrays.asList("sharding_db", "primary_replica_replication_db"));
         FieldUtil.setField(governanceFacade, "repositoryFacade", repositoryFacade);
         FieldUtil.setField(governanceFacade, "configCenter", configCenter);
         FieldUtil.setField(governanceFacade, "registryCenter", registryCenter);
@@ -72,14 +72,14 @@ public final class GovernanceFacadeTest {
     
     @Test
     public void assertOnlineInstanceWithParameters() {
-        Map<String, DataSourceConfiguration> dataSourceConfigurationMap = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));
+        Map<String, DataSourceConfiguration> dataSourceConfigMap = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));
         Map<String, Collection<RuleConfiguration>> ruleConfigurationMap = Collections.singletonMap("sharding_db", Collections.singletonList(mock(RuleConfiguration.class)));
         ProxyUser proxyUser = new ProxyUser("root", Collections.singleton("db1"));
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", proxyUser);
         Properties props = new Properties();
-        governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigurationMap), ruleConfigurationMap, authentication, props);
-        verify(configCenter).persistConfigurations("sharding_db", dataSourceConfigurationMap, ruleConfigurationMap.get("sharding_db"), false);
+        governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigMap), ruleConfigurationMap, authentication, props);
+        verify(configCenter).persistConfigurations("sharding_db", dataSourceConfigMap, ruleConfigurationMap.get("sharding_db"), false);
         verify(configCenter).persistGlobalConfiguration(authentication, props, false);
         verify(registryCenter).persistInstanceOnline();
         verify(registryCenter).persistDataNodes();

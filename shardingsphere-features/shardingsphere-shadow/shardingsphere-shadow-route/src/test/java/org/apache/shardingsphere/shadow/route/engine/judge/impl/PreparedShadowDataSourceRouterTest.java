@@ -53,8 +53,8 @@ public final class PreparedShadowDataSourceRouterTest {
     public void isShadowSQL() {
         SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("shadow_ds"));
-        ShadowRule shadowRule = new ShadowRule(shadowRuleConfiguration);
+        ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("shadow_ds"));
+        ShadowRule shadowRule = new ShadowRule(shadowRuleConfig);
         InsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0,
@@ -93,8 +93,8 @@ public final class PreparedShadowDataSourceRouterTest {
     private void isShadowSQLInLiteralExpression(final SelectStatement selectStatement) {
         SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("shadow_ds"));
-        ShadowRule shadowRule = new ShadowRule(shadowRuleConfiguration);
+        ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("shadow_ds"));
+        ShadowRule shadowRule = new ShadowRule(shadowRuleConfig);
         PreparedShadowDataSourceJudgeEngine preparedShadowDataSourceRouter = new PreparedShadowDataSourceJudgeEngine(shadowRule, 
                 selectStatementContext(selectStatement), Arrays.asList(1, "Tom", true));
         assertTrue("should be shadow", preparedShadowDataSourceRouter.isShadow());

@@ -45,8 +45,8 @@ public final class ParseTreeVisitorFactory {
     }
     
     @SneakyThrows
-    private static ParseTreeVisitor createParseTreeVisitor(final SQLParserConfiguration configuration, final SQLStatementType type) {
-        SQLVisitorFacade visitorFacade = configuration.getVisitorFacadeClass().getConstructor().newInstance();
+    private static ParseTreeVisitor createParseTreeVisitor(final SQLParserConfiguration config, final SQLStatementType type) {
+        SQLVisitorFacade visitorFacade = config.getVisitorFacadeClass().getConstructor().newInstance();
         switch (type) {
             case DML:
                 return (ParseTreeVisitor) visitorFacade.getDMLVisitorClass().getConstructor().newInstance();

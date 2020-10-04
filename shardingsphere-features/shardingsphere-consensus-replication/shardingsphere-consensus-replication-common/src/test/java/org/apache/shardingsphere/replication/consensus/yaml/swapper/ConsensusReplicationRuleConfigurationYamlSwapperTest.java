@@ -49,12 +49,12 @@ public final class ConsensusReplicationRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlConfigurationWithMinProperties() {
-        YamlConsensusReplicationRuleConfiguration yamlConfiguration = swapper.swapToYamlConfiguration(new ConsensusReplicationRuleConfiguration(
+        YamlConsensusReplicationRuleConfiguration yamlConfig = swapper.swapToYamlConfiguration(new ConsensusReplicationRuleConfiguration(
                 Collections.singleton(new ConsensusReplicationLogicTableRuleConfiguration(logicTableName, null))));
-        assertNotNull(yamlConfiguration);
-        assertNotNull(yamlConfiguration.getTables());
-        assertThat(yamlConfiguration.getTables().size(), is(1));
-        Collection<YamlConsensusReplicationActualTableRuleConfiguration> resultReplicaGroups = yamlConfiguration.getTables().iterator().next().getReplicaGroups();
+        assertNotNull(yamlConfig);
+        assertNotNull(yamlConfig.getTables());
+        assertThat(yamlConfig.getTables().size(), is(1));
+        Collection<YamlConsensusReplicationActualTableRuleConfiguration> resultReplicaGroups = yamlConfig.getTables().iterator().next().getReplicaGroups();
         assertNotNull(resultReplicaGroups);
         assertTrue(resultReplicaGroups.isEmpty());
     }
@@ -64,11 +64,11 @@ public final class ConsensusReplicationRuleConfigurationYamlSwapperTest {
         ConsensusReplicationActualTableRuleConfiguration replicaGroup = new ConsensusReplicationActualTableRuleConfiguration(physicsTable, replicaGroupId, replicaPeers, dataSourceName);
         Collection<ConsensusReplicationActualTableRuleConfiguration> replicaGroups = Collections.singleton(replicaGroup);
         ConsensusReplicationLogicTableRuleConfiguration table = new ConsensusReplicationLogicTableRuleConfiguration(logicTableName, replicaGroups);
-        YamlConsensusReplicationRuleConfiguration yamlConfiguration = swapper.swapToYamlConfiguration(new ConsensusReplicationRuleConfiguration(Collections.singleton(table)));
-        assertNotNull(yamlConfiguration);
-        assertNotNull(yamlConfiguration.getTables());
-        assertThat(yamlConfiguration.getTables().size(), is(1));
-        Collection<YamlConsensusReplicationActualTableRuleConfiguration> resultReplicaGroups = yamlConfiguration.getTables().iterator().next().getReplicaGroups();
+        YamlConsensusReplicationRuleConfiguration yamlConfig = swapper.swapToYamlConfiguration(new ConsensusReplicationRuleConfiguration(Collections.singleton(table)));
+        assertNotNull(yamlConfig);
+        assertNotNull(yamlConfig.getTables());
+        assertThat(yamlConfig.getTables().size(), is(1));
+        Collection<YamlConsensusReplicationActualTableRuleConfiguration> resultReplicaGroups = yamlConfig.getTables().iterator().next().getReplicaGroups();
         assertNotNull(resultReplicaGroups);
         assertThat(resultReplicaGroups.size(), is(1));
         YamlConsensusReplicationActualTableRuleConfiguration resultReplicaGroup = resultReplicaGroups.iterator().next();
@@ -82,13 +82,13 @@ public final class ConsensusReplicationRuleConfigurationYamlSwapperTest {
     public void assertSwapToObjectWithMinProperties() {
         YamlConsensusReplicationLogicTableRuleConfiguration yamlLogicTable = new YamlConsensusReplicationLogicTableRuleConfiguration();
         yamlLogicTable.setLogicTable(logicTableName);
-        YamlConsensusReplicationRuleConfiguration yamlConfiguration = new YamlConsensusReplicationRuleConfiguration();
-        yamlConfiguration.setTables(Collections.singleton(yamlLogicTable));
-        ConsensusReplicationRuleConfiguration configuration = swapper.swapToObject(yamlConfiguration);
-        assertNotNull(configuration);
-        assertNotNull(configuration.getTables());
-        assertThat(configuration.getTables().size(), is(1));
-        Collection<ConsensusReplicationActualTableRuleConfiguration> resultReplicaGroups = configuration.getTables().iterator().next().getReplicaGroups();
+        YamlConsensusReplicationRuleConfiguration yamlConfig = new YamlConsensusReplicationRuleConfiguration();
+        yamlConfig.setTables(Collections.singleton(yamlLogicTable));
+        ConsensusReplicationRuleConfiguration config = swapper.swapToObject(yamlConfig);
+        assertNotNull(config);
+        assertNotNull(config.getTables());
+        assertThat(config.getTables().size(), is(1));
+        Collection<ConsensusReplicationActualTableRuleConfiguration> resultReplicaGroups = config.getTables().iterator().next().getReplicaGroups();
         assertNotNull(resultReplicaGroups);
         assertTrue(resultReplicaGroups.isEmpty());
     }
@@ -104,13 +104,13 @@ public final class ConsensusReplicationRuleConfigurationYamlSwapperTest {
         YamlConsensusReplicationLogicTableRuleConfiguration table = new YamlConsensusReplicationLogicTableRuleConfiguration();
         table.setLogicTable(logicTableName);
         table.setReplicaGroups(replicaGroups);
-        YamlConsensusReplicationRuleConfiguration yamlConfiguration = new YamlConsensusReplicationRuleConfiguration();
-        yamlConfiguration.setTables(Collections.singleton(table));
-        ConsensusReplicationRuleConfiguration configuration = swapper.swapToObject(yamlConfiguration);
-        assertNotNull(configuration);
-        assertNotNull(configuration.getTables());
-        assertThat(configuration.getTables().size(), is(1));
-        Collection<ConsensusReplicationActualTableRuleConfiguration> resultReplicaGroups = configuration.getTables().iterator().next().getReplicaGroups();
+        YamlConsensusReplicationRuleConfiguration yamlConfig = new YamlConsensusReplicationRuleConfiguration();
+        yamlConfig.setTables(Collections.singleton(table));
+        ConsensusReplicationRuleConfiguration config = swapper.swapToObject(yamlConfig);
+        assertNotNull(config);
+        assertNotNull(config.getTables());
+        assertThat(config.getTables().size(), is(1));
+        Collection<ConsensusReplicationActualTableRuleConfiguration> resultReplicaGroups = config.getTables().iterator().next().getReplicaGroups();
         assertNotNull(resultReplicaGroups);
         assertThat(resultReplicaGroups.size(), is(1));
         ConsensusReplicationActualTableRuleConfiguration resultReplicaGroup = resultReplicaGroups.iterator().next();

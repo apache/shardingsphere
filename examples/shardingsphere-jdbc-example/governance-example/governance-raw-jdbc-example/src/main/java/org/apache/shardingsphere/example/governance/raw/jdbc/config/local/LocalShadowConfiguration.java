@@ -32,20 +32,20 @@ import java.util.Properties;
 
 public final class LocalShadowConfiguration implements ExampleConfiguration {
     
-    private final GovernanceConfiguration governanceConfiguration;
+    private final GovernanceConfiguration governanceConfig;
     
-    public LocalShadowConfiguration(final GovernanceConfiguration governanceConfiguration) {
-        this.governanceConfiguration = governanceConfiguration;
+    public LocalShadowConfiguration(final GovernanceConfiguration governanceConfig) {
+        this.governanceConfig = governanceConfig;
     }
     
     @Override
     public DataSource getDataSource() throws SQLException {
         return GovernanceShardingSphereDataSourceFactory.createDataSource(
-                createDataSourceMap(), Collections.singleton(getShadowRuleConfiguration()), new Properties(), governanceConfiguration);
+                createDataSourceMap(), Collections.singleton(getShadowRuleConfiguration()), new Properties(), governanceConfig);
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>();
+        Map<String, DataSource> result = new HashMap<>(2, 1);
         result.put("ds", DataSourceUtil.createDataSource("demo_ds"));
         result.put("shadow_ds", DataSourceUtil.createDataSource("shadow_demo_ds"));
         return result;

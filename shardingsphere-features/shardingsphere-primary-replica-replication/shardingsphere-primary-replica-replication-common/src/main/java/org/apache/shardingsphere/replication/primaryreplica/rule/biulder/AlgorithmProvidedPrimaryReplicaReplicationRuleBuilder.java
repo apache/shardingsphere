@@ -31,8 +31,8 @@ public final class AlgorithmProvidedPrimaryReplicaReplicationRuleBuilder
         implements ShardingSphereRuleBuilder<PrimaryReplicaReplicationRule, AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration> {
     
     @Override
-    public PrimaryReplicaReplicationRule build(final AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
-        return new PrimaryReplicaReplicationRule(ruleConfiguration);
+    public PrimaryReplicaReplicationRule build(final AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration ruleConfig, final Collection<String> dataSourceNames) {
+        return new PrimaryReplicaReplicationRule(ruleConfig);
     }
     
     @Override

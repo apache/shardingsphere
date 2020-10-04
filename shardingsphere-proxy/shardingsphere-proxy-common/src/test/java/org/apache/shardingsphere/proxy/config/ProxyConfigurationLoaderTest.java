@@ -55,10 +55,10 @@ public final class ProxyConfigurationLoaderTest {
         assertNull(actual.getDataSource());
         assertDataSourceParameter(actual.getDataSources().get("ds_0"), "jdbc:mysql://127.0.0.1:3306/ds_0");
         assertDataSourceParameter(actual.getDataSources().get("ds_1"), "jdbc:mysql://127.0.0.1:3306/ds_1");
-        Optional<YamlShardingRuleConfiguration> shardingRuleConfiguration = actual.getRules().stream().filter(
-            each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(configuration -> (YamlShardingRuleConfiguration) configuration);
-        assertTrue(shardingRuleConfiguration.isPresent());
-        assertShardingRuleConfiguration(shardingRuleConfiguration.get());
+        Optional<YamlShardingRuleConfiguration> shardingRuleConfig = actual.getRules().stream().filter(
+            each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(config -> (YamlShardingRuleConfiguration) config);
+        assertTrue(shardingRuleConfig.isPresent());
+        assertShardingRuleConfiguration(shardingRuleConfig.get());
         assertFalse(actual.getRules().stream().filter(
             each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(configuration -> (YamlEncryptRuleConfiguration) configuration).isPresent());
     }
@@ -108,10 +108,10 @@ public final class ProxyConfigurationLoaderTest {
         assertDataSourceParameter(actual.getDataSources().get("dataSource"), "jdbc:mysql://127.0.0.1:3306/encrypt_ds");
         assertFalse(actual.getRules().stream().filter(
             each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(configuration -> (YamlShardingRuleConfiguration) configuration).isPresent());
-        Optional<YamlEncryptRuleConfiguration> encryptRuleConfiguration = actual.getRules().stream().filter(
+        Optional<YamlEncryptRuleConfiguration> encryptRuleConfig = actual.getRules().stream().filter(
             each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(configuration -> (YamlEncryptRuleConfiguration) configuration);
-        assertTrue(encryptRuleConfiguration.isPresent());
-        assertEncryptRuleConfiguration(encryptRuleConfiguration.get());
+        assertTrue(encryptRuleConfig.isPresent());
+        assertEncryptRuleConfiguration(encryptRuleConfig.get());
     }
     
     private void assertEncryptRuleConfiguration(final YamlEncryptRuleConfiguration actual) {

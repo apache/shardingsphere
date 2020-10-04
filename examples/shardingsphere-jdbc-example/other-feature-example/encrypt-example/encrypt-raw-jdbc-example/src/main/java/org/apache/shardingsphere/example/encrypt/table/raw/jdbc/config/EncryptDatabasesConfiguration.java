@@ -42,13 +42,13 @@ public final class EncryptDatabasesConfiguration implements ExampleConfiguration
         props.setProperty("query-with-cipher-column", "true");
         EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_name", "user_name", "", "user_name_plain", "name_encryptor");
         EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encryptor");
-        EncryptTableRuleConfiguration encryptTableRuleConfiguration = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
-        Map<String, ShardingSphereAlgorithmConfiguration> encryptAlgorithmConfigurations = new LinkedHashMap<>(2, 1);
-        encryptAlgorithmConfigurations.put("name_encryptor", new ShardingSphereAlgorithmConfiguration("AES", props));
-        encryptAlgorithmConfigurations.put("pwd_encryptor", new ShardingSphereAlgorithmConfiguration("assistedTest", props));
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfiguration), encryptAlgorithmConfigurations);
+        EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
+        Map<String, ShardingSphereAlgorithmConfiguration> encryptAlgorithmConfigs = new LinkedHashMap<>(2, 1);
+        encryptAlgorithmConfigs.put("name_encryptor", new ShardingSphereAlgorithmConfiguration("AES", props));
+        encryptAlgorithmConfigs.put("pwd_encryptor", new ShardingSphereAlgorithmConfiguration("assistedTest", props));
+        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
         try {
-            return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfiguration), props);
+            return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfig), props);
         } catch (final SQLException ex) {
             ex.printStackTrace();
             return null;

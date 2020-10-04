@@ -51,26 +51,26 @@ public final class EncryptRule implements ShardingSphereRule {
     
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
     
-    public EncryptRule(final EncryptRuleConfiguration configuration) {
-        Preconditions.checkArgument(isValidRuleConfiguration(configuration), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
-        configuration.getEncryptors().forEach((key, value) -> encryptors.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, EncryptAlgorithm.class)));
-        configuration.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
+    public EncryptRule(final EncryptRuleConfiguration config) {
+        Preconditions.checkArgument(isValidRuleConfiguration(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
+        config.getEncryptors().forEach((key, value) -> encryptors.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, EncryptAlgorithm.class)));
+        config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
     }
     
-    public EncryptRule(final AlgorithmProvidedEncryptRuleConfiguration configuration) {
-        Preconditions.checkArgument(isValidRuleConfigurationWithAlgorithmProvided(configuration), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
-        encryptors.putAll(configuration.getEncryptors());
-        configuration.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
+    public EncryptRule(final AlgorithmProvidedEncryptRuleConfiguration config) {
+        Preconditions.checkArgument(isValidRuleConfigurationWithAlgorithmProvided(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
+        encryptors.putAll(config.getEncryptors());
+        config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
     }
     
-    private boolean isValidRuleConfiguration(final EncryptRuleConfiguration configuration) {
-        return (configuration.getEncryptors().isEmpty() && configuration.getTables().isEmpty()) || isValidTableConfiguration(configuration);
+    private boolean isValidRuleConfiguration(final EncryptRuleConfiguration config) {
+        return (config.getEncryptors().isEmpty() && config.getTables().isEmpty()) || isValidTableConfiguration(config);
     }
     
-    private boolean isValidTableConfiguration(final EncryptRuleConfiguration configuration) {
-        for (EncryptTableRuleConfiguration table : configuration.getTables()) {
+    private boolean isValidTableConfiguration(final EncryptRuleConfiguration config) {
+        for (EncryptTableRuleConfiguration table : config.getTables()) {
             for (EncryptColumnRuleConfiguration column : table.getColumns()) {
-                if (!isValidColumnConfiguration(configuration, column)) {
+                if (!isValidColumnConfiguration(config, column)) {
                     return false;
                 }
             }
@@ -78,22 +78,22 @@ public final class EncryptRule implements ShardingSphereRule {
         return true;
     }
     
-    private boolean isValidColumnConfiguration(final EncryptRuleConfiguration encryptRuleConfiguration, final EncryptColumnRuleConfiguration column) {
-        return !Strings.isNullOrEmpty(column.getEncryptorName()) && !Strings.isNullOrEmpty(column.getCipherColumn()) && containsEncryptors(encryptRuleConfiguration, column);
+    private boolean isValidColumnConfiguration(final EncryptRuleConfiguration encryptRuleConfig, final EncryptColumnRuleConfiguration column) {
+        return !Strings.isNullOrEmpty(column.getEncryptorName()) && !Strings.isNullOrEmpty(column.getCipherColumn()) && containsEncryptors(encryptRuleConfig, column);
     }
     
-    private boolean containsEncryptors(final EncryptRuleConfiguration encryptRuleConfiguration, final EncryptColumnRuleConfiguration column) {
-        return encryptRuleConfiguration.getEncryptors().keySet().stream().anyMatch(each -> each.equals(column.getEncryptorName()));
+    private boolean containsEncryptors(final EncryptRuleConfiguration encryptRuleConfig, final EncryptColumnRuleConfiguration column) {
+        return encryptRuleConfig.getEncryptors().keySet().stream().anyMatch(each -> each.equals(column.getEncryptorName()));
     }
     
-    private boolean isValidRuleConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration configuration) {
-        return (configuration.getEncryptors().isEmpty() && configuration.getTables().isEmpty()) || isValidTableConfigurationWithAlgorithmProvided(configuration);
+    private boolean isValidRuleConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration config) {
+        return (config.getEncryptors().isEmpty() && config.getTables().isEmpty()) || isValidTableConfigurationWithAlgorithmProvided(config);
     }
     
-    private boolean isValidTableConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration configuration) {
-        for (EncryptTableRuleConfiguration table : configuration.getTables()) {
+    private boolean isValidTableConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration config) {
+        for (EncryptTableRuleConfiguration table : config.getTables()) {
             for (EncryptColumnRuleConfiguration column : table.getColumns()) {
-                if (!isValidColumnConfigurationWithAlgorithmProvided(configuration, column)) {
+                if (!isValidColumnConfigurationWithAlgorithmProvided(config, column)) {
                     return false;
                 }
             }
@@ -101,9 +101,9 @@ public final class EncryptRule implements ShardingSphereRule {
         return true;
     }
     
-    private boolean isValidColumnConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration encryptRuleConfiguration, final EncryptColumnRuleConfiguration column) {
+    private boolean isValidColumnConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration encryptRuleConfig, final EncryptColumnRuleConfiguration column) {
         return !Strings.isNullOrEmpty(column.getEncryptorName()) && !Strings.isNullOrEmpty(column.getCipherColumn())
-                && encryptRuleConfiguration.getEncryptors().containsKey(column.getEncryptorName());
+                && encryptRuleConfig.getEncryptors().containsKey(column.getEncryptorName());
     }
     
     /**

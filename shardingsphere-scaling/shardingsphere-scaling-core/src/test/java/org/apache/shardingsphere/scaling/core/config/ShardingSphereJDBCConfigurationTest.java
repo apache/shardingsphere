@@ -28,9 +28,9 @@ public class ShardingSphereJDBCConfigurationTest {
     
     @Test
     public void assertShardingSphereJDBCDataSourceConfigurationDatabaseType() {
-        ShardingSphereJDBCConfiguration shardingSphereJDBCConfiguration = new ShardingSphereJDBCConfiguration(
+        ShardingSphereJDBCConfiguration shardingSphereJDBCConfig = new ShardingSphereJDBCConfiguration(
                 FixtureShardingSphereJDBCConfiguration.DATA_SOURCE,
                 FixtureShardingSphereJDBCConfiguration.RULE);
-        assertThat(shardingSphereJDBCConfiguration.getDatabaseType(), instanceOf(H2DatabaseType.class));
+        assertThat(shardingSphereJDBCConfig.getDatabaseType(), instanceOf(H2DatabaseType.class));
     }
 }

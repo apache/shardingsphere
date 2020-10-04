@@ -47,27 +47,27 @@ import java.util.List;
 @Slf4j
 public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecutor<IncrementalPosition> implements Importer {
     
-    private final ImporterConfiguration importerConfiguration;
+    private final ImporterConfiguration importerConfig;
     
     private final DataSourceManager dataSourceManager;
     
-    private final AbstractSqlBuilder sqlBuilder;
+    private final AbstractSQLBuilder sqlBuilder;
     
     @Setter
     private Channel channel;
     
-    protected AbstractJDBCImporter(final ImporterConfiguration importerConfiguration, final DataSourceManager dataSourceManager) {
-        this.importerConfiguration = importerConfiguration;
+    protected AbstractJDBCImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
+        this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
-        sqlBuilder = createSqlBuilder();
+        sqlBuilder = createSQLBuilder();
     }
     
     /**
-     * Create sql builder.
+     * Create SQL builder.
      *
-     * @return sql builder
+     * @return SQL builder
      */
-    protected abstract AbstractSqlBuilder createSqlBuilder();
+    protected abstract AbstractSQLBuilder createSQLBuilder();
     
     @Override
     public final void start() {
@@ -80,7 +80,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
         while (isRunning()) {
             List<Record> records = channel.fetchRecords(100, 3);
             if (null != records && !records.isEmpty()) {
-                flush(dataSourceManager.getDataSource(importerConfiguration.getDataSourceConfiguration()), records);
+                flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfiguration()), records);
                 if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
                     channel.ack();
                     break;
@@ -98,7 +98,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     }
     
     private boolean tryFlush(final DataSource dataSource, final List<Record> buffer) {
-        int retryTimes = importerConfiguration.getRetryTimes();
+        int retryTimes = importerConfig.getRetryTimes();
         List<Record> unflushed = buffer;
         do {
             unflushed = doFlush(dataSource, unflushed);
@@ -152,7 +152,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     }
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
-        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, importerConfiguration.getShardingColumnsMap().get(record.getTableName()));
+        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, importerConfig.getShardingColumnsMap().get(record.getTableName()));
         List<Column> values = new ArrayList<>();
         values.addAll(RecordUtil.extractUpdatedColumns(record));
         values.addAll(conditionColumns);
@@ -165,7 +165,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     }
     
     private void executeDelete(final Connection connection, final DataRecord record) throws SQLException {
-        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, importerConfiguration.getShardingColumnsMap().get(record.getTableName()));
+        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, importerConfig.getShardingColumnsMap().get(record.getTableName()));
         String deleteSql = sqlBuilder.buildDeleteSQL(record, conditionColumns);
         PreparedStatement ps = connection.prepareStatement(deleteSql);
         for (int i = 0; i < conditionColumns.size(); i++) {

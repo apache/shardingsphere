@@ -94,7 +94,7 @@ public final class MySQLDataConsistencyChecker extends AbstractDataConsistencyCh
     }
     
     @Override
-    protected MySQLSqlBuilder getSqlBuilder() {
-        return new MySQLSqlBuilder();
+    protected MySQLSQLBuilder getSqlBuilder() {
+        return new MySQLSQLBuilder();
     }
 }

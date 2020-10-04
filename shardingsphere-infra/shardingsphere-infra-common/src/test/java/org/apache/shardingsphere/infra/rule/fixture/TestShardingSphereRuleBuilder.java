@@ -30,7 +30,7 @@ public final class TestShardingSphereRuleBuilder implements ShardingSphereRuleBu
     private static ShardingSphereRule shardingSphereRule = new TestShardingSphereRule();
     
     @Override
-    public ShardingSphereRule build(final RuleConfiguration ruleConfiguration, final Collection dataSourceNames) {
+    public ShardingSphereRule build(final RuleConfiguration ruleConfig, final Collection dataSourceNames) {
         return shardingSphereRule;
     }
     

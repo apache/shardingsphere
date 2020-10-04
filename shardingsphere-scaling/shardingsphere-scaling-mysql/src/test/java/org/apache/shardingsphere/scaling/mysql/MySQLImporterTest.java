@@ -34,15 +34,15 @@ import static org.junit.Assert.assertThat;
 public final class MySQLImporterTest {
     
     @Mock
-    private ImporterConfiguration importerConfiguration;
+    private ImporterConfiguration importerConfig;
     
     @Mock
     private DataSourceManager dataSourceManager;
     
     @Test
     public void assertCreateSqlBuilder() {
-        MySQLImporter mySQLImporter = new MySQLImporter(importerConfiguration, dataSourceManager);
-        String insertSQL = mySQLImporter.createSqlBuilder().buildInsertSQL(mockDataRecord());
+        MySQLImporter mySQLImporter = new MySQLImporter(importerConfig, dataSourceManager);
+        String insertSQL = mySQLImporter.createSQLBuilder().buildInsertSQL(mockDataRecord());
         assertThat(insertSQL, is("INSERT INTO `t_order`(`id`,`name`) VALUES(?,?)"));
     }
     

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.fixture;
 import org.apache.shardingsphere.scaling.core.check.AbstractDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSqlBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 
 import java.util.Collections;
@@ -43,8 +43,8 @@ public final class FixtureDataConsistencyChecker extends AbstractDataConsistency
     }
     
     @Override
-    protected AbstractSqlBuilder getSqlBuilder() {
-        return new AbstractSqlBuilder() {
+    protected AbstractSQLBuilder getSqlBuilder() {
+        return new AbstractSQLBuilder() {
             @Override
             protected String getLeftIdentifierQuoteString() {
                 return "`";

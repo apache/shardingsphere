@@ -30,7 +30,7 @@ public final class PostgreSQLSqlBuilderTest {
     
     @Test
     public void assertBuildInsertSQL() {
-        String actual = new PostgreSQLSqlBuilder().buildInsertSQL(mockDataRecord());
+        String actual = new PostgreSQLSQLBuilder().buildInsertSQL(mockDataRecord());
         assertThat(actual, is("INSERT INTO \"t_order\"(\"id\",\"name\") VALUES(?,?) ON CONFLICT (id) DO NOTHING"));
     }
     

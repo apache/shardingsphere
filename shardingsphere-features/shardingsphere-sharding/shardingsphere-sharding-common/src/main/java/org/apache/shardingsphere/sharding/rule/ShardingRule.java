@@ -165,9 +165,9 @@ public final class ShardingRule implements DataNodeRoutedRule {
         return new BindingTableRule(Splitter.on(",").trimResults().splitToList(bindingTableGroup).stream().map(this::getTableRule).collect(Collectors.toList()));
     }
     
-    private ShardingStrategy createDefaultShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
-        return null == shardingStrategyConfiguration ? new NoneShardingStrategy()
-                : ShardingStrategyFactory.newInstance(shardingStrategyConfiguration, shardingAlgorithms.get(shardingStrategyConfiguration.getShardingAlgorithmName()));
+    private ShardingStrategy createDefaultShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfig) {
+        return null == shardingStrategyConfig ? new NoneShardingStrategy()
+                : ShardingStrategyFactory.newInstance(shardingStrategyConfig, shardingAlgorithms.get(shardingStrategyConfig.getShardingAlgorithmName()));
     }
     
     /**

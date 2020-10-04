@@ -31,13 +31,13 @@ import java.sql.SQLException;
  */
 public final class PostgreSQLJdbcDumper extends AbstractJDBCDumper {
     
-    public PostgreSQLJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfiguration, final DataSourceManager dataSourceManager) {
-        super(inventoryDumperConfiguration, dataSourceManager);
+    public PostgreSQLJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
+        super(inventoryDumperConfig, dataSourceManager);
     }
     
     @Override
-    protected PreparedStatement createPreparedStatement(final Connection conn, final String sql) throws SQLException {
-        PreparedStatement result = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+    protected PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
+        PreparedStatement result = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         result.setFetchSize(100);
         return result;
     }

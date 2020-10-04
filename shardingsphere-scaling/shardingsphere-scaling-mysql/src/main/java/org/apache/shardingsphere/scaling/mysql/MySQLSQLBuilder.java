@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSqlBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
 
 /**
- * MySQL sql builder.
+ * MySQL SQL builder.
  */
-public final class MySQLSqlBuilder extends AbstractSqlBuilder {
+public final class MySQLSQLBuilder extends AbstractSQLBuilder {
     
     @Override
     public String getLeftIdentifierQuoteString() {

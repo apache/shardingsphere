@@ -35,7 +35,7 @@ public final class TimeServiceFactory {
      * @return time service instance
      */
     public static TimeService createTimeService() {
-        TimeServiceConfiguration timeServiceConfiguration = TimeServiceConfiguration.getInstance();
-        return new DatabaseTimeService(timeServiceConfiguration.getDataSource(), new SPIDataBaseSQLEntry(timeServiceConfiguration.getDriverClassName()).getSQL());
+        TimeServiceConfiguration timeServiceConfig = TimeServiceConfiguration.getInstance();
+        return new DatabaseTimeService(timeServiceConfig.getDataSource(), new SPIDataBaseSQLEntry(timeServiceConfig.getDriverClassName()).getSQL());
     }
 }

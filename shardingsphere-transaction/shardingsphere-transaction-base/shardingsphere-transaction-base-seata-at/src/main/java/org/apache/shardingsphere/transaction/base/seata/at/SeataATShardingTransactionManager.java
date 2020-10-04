@@ -54,10 +54,10 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     private final boolean enableSeataAT;
     
     public SeataATShardingTransactionManager() {
-        FileConfiguration configuration = new FileConfiguration("seata.conf");
-        enableSeataAT = configuration.getBoolean("sharding.transaction.seata.at.enable", true);
-        applicationId = configuration.getConfig("client.application.id");
-        transactionServiceGroup = configuration.getConfig("client.transaction.service.group", "default");
+        FileConfiguration config = new FileConfiguration("seata.conf");
+        enableSeataAT = config.getBoolean("sharding.transaction.seata.at.enable", true);
+        applicationId = config.getConfig("client.application.id");
+        transactionServiceGroup = config.getConfig("client.transaction.service.group", "default");
     }
     
     @Override

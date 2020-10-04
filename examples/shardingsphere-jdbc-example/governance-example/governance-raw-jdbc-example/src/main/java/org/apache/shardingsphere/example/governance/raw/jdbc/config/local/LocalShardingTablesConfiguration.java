@@ -36,16 +36,16 @@ import java.util.Properties;
 
 public final class LocalShardingTablesConfiguration implements ExampleConfiguration {
     
-    private final GovernanceConfiguration governanceConfiguration;
+    private final GovernanceConfiguration governanceConfig;
     
-    public LocalShardingTablesConfiguration(final GovernanceConfiguration governanceConfiguration) {
-        this.governanceConfiguration = governanceConfiguration;
+    public LocalShardingTablesConfiguration(final GovernanceConfiguration governanceConfig) {
+        this.governanceConfig = governanceConfig;
     }
     
     @Override
     public DataSource getDataSource() throws SQLException {
         return GovernanceShardingSphereDataSourceFactory.createDataSource(
-                createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties(), governanceConfiguration);
+                createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties(), governanceConfig);
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {

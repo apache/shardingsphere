@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.exception.DataCheckFailException;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSqlBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 
 import javax.sql.DataSource;
@@ -83,5 +83,5 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
         return new DataSourceFactory().newInstance(shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getTarget().toTypedDataSourceConfiguration());
     }
     
-    protected abstract AbstractSqlBuilder getSqlBuilder();
+    protected abstract AbstractSQLBuilder getSqlBuilder();
 }

@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * Abstract SQL builder.
  */
-public abstract class AbstractSqlBuilder {
+public abstract class AbstractSQLBuilder {
     
     private static final String INSERT_SQL_CACHE_KEY_PREFIX = "INSERT_";
     

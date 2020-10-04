@@ -85,29 +85,29 @@ public class GovernanceSpringBootConfiguration implements EnvironmentAware {
      * Get governance ShardingSphere data source bean by local configuration.
      *
      * @param rules rules configuration
-     * @param governanceConfiguration governance configuration
+     * @param governanceConfig governance configuration
      * @return governance sharding data source bean
      * @throws SQLException SQL exception
      */
     @Bean
     @Conditional(LocalRulesCondition.class)
     @Autowired(required = false)
-    public DataSource localShardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules, final GovernanceConfiguration governanceConfiguration) throws SQLException {
+    public DataSource localShardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules, final GovernanceConfiguration governanceConfig) throws SQLException {
         List<RuleConfiguration> ruleConfigurations = Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList());
-        return createDataSourceWithRules(ruleConfigurations, governanceConfiguration);
+        return createDataSourceWithRules(ruleConfigurations, governanceConfig);
     }
     
     /**
      * Get data source bean from registry center.
      *
-     * @param governanceConfiguration governance configuration
+     * @param governanceConfig governance configuration
      * @return data source bean
      * @throws SQLException SQL Exception
      */
     @Bean
     @ConditionalOnMissingBean(DataSource.class)
-    public DataSource dataSource(final GovernanceConfiguration governanceConfiguration) throws SQLException {
-        return createDataSourceWithoutRules(governanceConfiguration);
+    public DataSource dataSource(final GovernanceConfiguration governanceConfig) throws SQLException {
+        return createDataSourceWithoutRules(governanceConfig);
     }
     
     @Override
@@ -115,12 +115,11 @@ public class GovernanceSpringBootConfiguration implements EnvironmentAware {
         dataSourceMap.putAll(DataSourceMapSetter.getDataSourceMap(environment));
     }
     
-    private DataSource createDataSourceWithRules(final List<RuleConfiguration> ruleConfigurations,
-                                                 final GovernanceConfiguration governanceConfiguration) throws SQLException {
-        return new GovernanceShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps(), governanceConfiguration);
+    private DataSource createDataSourceWithRules(final List<RuleConfiguration> ruleConfigs, final GovernanceConfiguration governanceConfig) throws SQLException {
+        return new GovernanceShardingSphereDataSource(dataSourceMap, ruleConfigs, root.getProps(), governanceConfig);
     }
     
-    private DataSource createDataSourceWithoutRules(final GovernanceConfiguration governanceConfiguration) throws SQLException {
-        return new GovernanceShardingSphereDataSource(governanceConfiguration);
+    private DataSource createDataSourceWithoutRules(final GovernanceConfiguration governanceConfig) throws SQLException {
+        return new GovernanceShardingSphereDataSource(governanceConfig);
     }
 }

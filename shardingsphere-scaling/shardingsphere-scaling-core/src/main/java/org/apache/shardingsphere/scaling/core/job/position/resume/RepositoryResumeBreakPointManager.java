@@ -112,7 +112,7 @@ public final class RepositoryResumeBreakPointManager extends AbstractResumeBreak
     
         private static RegistryRepository getInstance() {
             RegistryRepository result = null;
-            YamlGovernanceConfiguration resumeBreakPoint = ScalingContext.getInstance().getServerConfiguration().getResumeBreakPoint();
+            YamlGovernanceConfiguration resumeBreakPoint = ScalingContext.getInstance().getServerConfig().getResumeBreakPoint();
             if (resumeBreakPoint != null) {
                 result = createRegistryRepository(new GovernanceConfigurationYamlSwapper().swapToObject(resumeBreakPoint));
             }

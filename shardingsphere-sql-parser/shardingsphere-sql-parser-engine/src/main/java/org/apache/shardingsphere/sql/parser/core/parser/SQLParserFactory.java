@@ -50,10 +50,10 @@ public final class SQLParserFactory {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static SQLParser createSQLParser(final String sql, final SQLParserConfiguration configuration) {
+    private static SQLParser createSQLParser(final String sql, final SQLParserConfiguration config) {
         CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(sql.toCharArray()));
         CodePointCharStream codePointCharStream = CodePointCharStream.fromBuffer(buffer);
-        Lexer lexer = (Lexer) configuration.getLexerClass().getConstructor(CharStream.class).newInstance(codePointCharStream);
-        return configuration.getParserClass().getConstructor(TokenStream.class).newInstance(new CommonTokenStream(lexer));
+        Lexer lexer = (Lexer) config.getLexerClass().getConstructor(CharStream.class).newInstance(codePointCharStream);
+        return config.getParserClass().getConstructor(TokenStream.class).newInstance(new CommonTokenStream(lexer));
     }
 }

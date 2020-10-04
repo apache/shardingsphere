@@ -20,12 +20,12 @@ package org.apache.shardingsphere.scaling.postgresql;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSqlBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
 
 /**
  * PostgreSQL SQL builder.
  */
-public final class PostgreSQLSqlBuilder extends AbstractSqlBuilder {
+public final class PostgreSQLSQLBuilder extends AbstractSQLBuilder {
     
     @Override
     public String getLeftIdentifierQuoteString() {

@@ -54,23 +54,23 @@ public final class InventoryDataTaskSplitter {
     /**
      * Split inventory data to multi-tasks.
      *
-     * @param syncConfiguration synchronize configuration
+     * @param syncConfig synchronize configuration
      * @param dataSourceManager data source manager
      * @return split inventory data task
      */
-    public Collection<ScalingTask<InventoryPosition>> splitInventoryData(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
+    public Collection<ScalingTask<InventoryPosition>> splitInventoryData(final SyncConfiguration syncConfig, final DataSourceManager dataSourceManager) {
         Collection<ScalingTask<InventoryPosition>> result = new LinkedList<>();
-        for (InventoryDumperConfiguration each : splitDumperConfiguration(syncConfiguration.getConcurrency(), syncConfiguration.getDumperConfiguration(), dataSourceManager)) {
-            result.add(syncTaskFactory.createInventoryDataSyncTask(each, syncConfiguration.getImporterConfiguration()));
+        for (InventoryDumperConfiguration each : splitDumperConfiguration(syncConfig.getConcurrency(), syncConfig.getDumperConfiguration(), dataSourceManager)) {
+            result.add(syncTaskFactory.createInventoryDataSyncTask(each, syncConfig.getImporterConfiguration()));
         }
         return result;
     }
     
-    private Collection<InventoryDumperConfiguration> splitDumperConfiguration(final int concurrency, final DumperConfiguration dumperConfiguration, final DataSourceManager dataSourceManager) {
+    private Collection<InventoryDumperConfiguration> splitDumperConfiguration(final int concurrency, final DumperConfiguration dumperConfig, final DataSourceManager dataSourceManager) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfiguration.getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
         MetaDataManager metaDataManager = new MetaDataManager(dataSource);
-        for (InventoryDumperConfiguration each : splitByTable(dumperConfiguration)) {
+        for (InventoryDumperConfiguration each : splitByTable(dumperConfig)) {
             if (isSpiltByPrimaryKeyRange(each, metaDataManager)) {
                 result.addAll(splitByPrimaryKeyRange(concurrency, each, metaDataManager, dataSource));
             } else {
@@ -80,35 +80,35 @@ public final class InventoryDataTaskSplitter {
         return result;
     }
     
-    private Collection<InventoryDumperConfiguration> splitByTable(final DumperConfiguration dumperConfiguration) {
+    private Collection<InventoryDumperConfiguration> splitByTable(final DumperConfiguration dumperConfig) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
-        for (String each : dumperConfiguration.getTableNameMap().keySet()) {
-            InventoryDumperConfiguration dumperConfig = new InventoryDumperConfiguration(dumperConfiguration);
-            dumperConfig.setTableName(each);
-            dumperConfig.setPositionManager(new InventoryPositionManager<>(new PlaceholderInventoryPosition()));
-            result.add(dumperConfig);
+        for (String each : dumperConfig.getTableNameMap().keySet()) {
+            InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(dumperConfig);
+            inventoryDumperConfig.setTableName(each);
+            inventoryDumperConfig.setPositionManager(new InventoryPositionManager<>(new PlaceholderInventoryPosition()));
+            result.add(inventoryDumperConfig);
         }
         return result;
     }
     
-    private boolean isSpiltByPrimaryKeyRange(final InventoryDumperConfiguration inventoryDumperConfiguration, final MetaDataManager metaDataManager) {
-        TableMetaData tableMetaData = metaDataManager.getTableMetaData(inventoryDumperConfiguration.getTableName());
+    private boolean isSpiltByPrimaryKeyRange(final InventoryDumperConfiguration inventoryDumperConfig, final MetaDataManager metaDataManager) {
+        TableMetaData tableMetaData = metaDataManager.getTableMetaData(inventoryDumperConfig.getTableName());
         if (null == tableMetaData) {
-            log.warn("Can't split range for table {}, reason: can not get table metadata ", inventoryDumperConfiguration.getTableName());
+            log.warn("Can't split range for table {}, reason: can not get table metadata ", inventoryDumperConfig.getTableName());
             return false;
         }
         List<String> primaryKeys = tableMetaData.getPrimaryKeyColumns();
         if (null == primaryKeys || primaryKeys.isEmpty()) {
-            log.warn("Can't split range for table {}, reason: no primary key", inventoryDumperConfiguration.getTableName());
+            log.warn("Can't split range for table {}, reason: no primary key", inventoryDumperConfig.getTableName());
             return false;
         }
         if (primaryKeys.size() > 1) {
-            log.warn("Can't split range for table {}, reason: primary key is union primary", inventoryDumperConfiguration.getTableName());
+            log.warn("Can't split range for table {}, reason: primary key is union primary", inventoryDumperConfig.getTableName());
             return false;
         }
         int index = tableMetaData.findColumnIndex(primaryKeys.get(0));
         if (isNotIntegerPrimary(tableMetaData.getColumnMetaData(index).getDataType())) {
-            log.warn("Can't split range for table {}, reason: primary key is not integer number", inventoryDumperConfiguration.getTableName());
+            log.warn("Can't split range for table {}, reason: primary key is not integer number", inventoryDumperConfig.getTableName());
             return false;
         }
         return true;
@@ -118,21 +118,21 @@ public final class InventoryDataTaskSplitter {
         return Types.INTEGER != columnType && Types.BIGINT != columnType && Types.SMALLINT != columnType && Types.TINYINT != columnType;
     }
     
-    private Collection<InventoryDumperConfiguration> splitByPrimaryKeyRange(final int concurrency, final InventoryDumperConfiguration inventoryDumperConfiguration,
-                                                                   final MetaDataManager metaDataManager, final DataSource dataSource) {
+    private Collection<InventoryDumperConfiguration> splitByPrimaryKeyRange(final int concurrency, final InventoryDumperConfiguration inventoryDumperConfig, 
+                                                                            final MetaDataManager metaDataManager, final DataSource dataSource) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
-        String tableName = inventoryDumperConfiguration.getTableName();
+        String tableName = inventoryDumperConfig.getTableName();
         String primaryKey = metaDataManager.getTableMetaData(tableName).getPrimaryKeyColumns().get(0);
-        inventoryDumperConfiguration.setPrimaryKey(primaryKey);
+        inventoryDumperConfig.setPrimaryKey(primaryKey);
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement(String.format("SELECT MIN(%s),MAX(%s) FROM %s LIMIT 1", primaryKey, primaryKey, inventoryDumperConfiguration.getTableName()));
+            PreparedStatement ps = connection.prepareStatement(String.format("SELECT MIN(%s),MAX(%s) FROM %s LIMIT 1", primaryKey, primaryKey, inventoryDumperConfig.getTableName()));
             ResultSet rs = ps.executeQuery();
             rs.next();
             long min = rs.getLong(1);
             long max = rs.getLong(2);
             long step = (max - min) / concurrency;
             for (int i = 0; i < concurrency && min <= max; i++) {
-                InventoryDumperConfiguration splitDumperConfig = new InventoryDumperConfiguration(inventoryDumperConfiguration);
+                InventoryDumperConfiguration splitDumperConfig = new InventoryDumperConfiguration(inventoryDumperConfig);
                 if (i < concurrency - 1) {
                     splitDumperConfig.setPositionManager(new InventoryPositionManager<>(new PrimaryKeyPosition(min, min + step)));
                     min += step + 1;
@@ -145,7 +145,7 @@ public final class InventoryDataTaskSplitter {
                 result.add(splitDumperConfig);
             }
         } catch (final SQLException ex) {
-            throw new PrepareFailedException(String.format("Split task for table %s by primary key %s error", inventoryDumperConfiguration.getTableName(), primaryKey), ex);
+            throw new PrepareFailedException(String.format("Split task for table %s by primary key %s error", inventoryDumperConfig.getTableName(), primaryKey), ex);
         }
         return result;
     }

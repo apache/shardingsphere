@@ -49,7 +49,7 @@ public final class InventoryDataTaskSplitterTest {
     
     private static final String PASSWORD = "password";
     
-    private SyncConfiguration syncConfiguration;
+    private SyncConfiguration syncConfig;
     
     private DataSourceManager dataSourceManager;
     
@@ -59,7 +59,7 @@ public final class InventoryDataTaskSplitterTest {
     public void setUp() {
         DumperConfiguration dumperConfig = mockDumperConfig();
         ImporterConfiguration importerConfig = new ImporterConfiguration();
-        syncConfiguration = new SyncConfiguration(3, dumperConfig, importerConfig);
+        syncConfig = new SyncConfiguration(3, dumperConfig, importerConfig);
         dataSourceManager = new DataSourceManager();
         inventoryDataTaskSplitter = new InventoryDataTaskSplitter();
     }
@@ -71,32 +71,32 @@ public final class InventoryDataTaskSplitterTest {
     
     @Test
     public void assertSplitInventoryDataWithIntPrimary() throws SQLException {
-        initIntPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
-        Collection<ScalingTask<InventoryPosition>> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfiguration, dataSourceManager);
+        initIntPrimaryEnvironment(syncConfig.getDumperConfiguration());
+        Collection<ScalingTask<InventoryPosition>> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(3));
     }
     
     @Test
     public void assertSplitInventoryDataWithCharPrimary() throws SQLException {
-        initCharPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
-        Collection<ScalingTask<InventoryPosition>> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfiguration, dataSourceManager);
+        initCharPrimaryEnvironment(syncConfig.getDumperConfiguration());
+        Collection<ScalingTask<InventoryPosition>> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
     
     @Test
     public void assertSplitInventoryDataWithUnionPrimary() throws SQLException {
-        initUnionPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
-        Collection<ScalingTask<InventoryPosition>> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfiguration, dataSourceManager);
+        initUnionPrimaryEnvironment(syncConfig.getDumperConfiguration());
+        Collection<ScalingTask<InventoryPosition>> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
     
     @Test
     public void assertSplitInventoryDataWithoutPrimary() throws SQLException {
-        initNoPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
-        Collection<ScalingTask<InventoryPosition>> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfiguration, dataSourceManager);
+        initNoPrimaryEnvironment(syncConfig.getDumperConfiguration());
+        Collection<ScalingTask<InventoryPosition>> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
@@ -142,9 +142,9 @@ public final class InventoryDataTaskSplitterTest {
     }
     
     private DumperConfiguration mockDumperConfig() {
-        DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
+        DataSourceConfiguration dataSourceConfig = new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
         DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfiguration(dataSourceConfiguration);
+        result.setDataSourceConfiguration(dataSourceConfig);
         Map<String, String> tableMap = new HashMap<>();
         tableMap.put("t_order", "t_order");
         result.setTableNameMap(tableMap);

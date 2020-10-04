@@ -33,12 +33,12 @@ import static org.junit.Assert.assertThat;
 
 public class AbstractSqlBuilderTest {
     
-    private AbstractSqlBuilder sqlBuilder;
+    private AbstractSQLBuilder sqlBuilder;
     
     @Before
     @SneakyThrows
     public void setUp() {
-        sqlBuilder = new AbstractSqlBuilder() {
+        sqlBuilder = new AbstractSQLBuilder() {
             
             @Override
             protected String getLeftIdentifierQuoteString() {

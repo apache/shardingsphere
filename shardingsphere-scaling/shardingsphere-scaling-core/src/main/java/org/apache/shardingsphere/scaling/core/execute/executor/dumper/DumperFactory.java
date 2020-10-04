@@ -36,52 +36,52 @@ public final class DumperFactory {
     /**
      * New instance of JDBC dumper.
      *
-     * @param inventoryDumperConfiguration inventory dumper configuration
+     * @param inventoryDumperConfig inventory dumper configuration
      * @param dataSourceManager data source factory
      * @return JDBC dumper
      */
     @SneakyThrows
-    public static JDBCDumper newInstanceJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfiguration, final DataSourceManager dataSourceManager) {
-        return newInstanceJdbcDumper(inventoryDumperConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), inventoryDumperConfiguration, dataSourceManager);
+    public static JDBCDumper newInstanceJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
+        return newInstanceJdbcDumper(inventoryDumperConfig.getDataSourceConfiguration().getDatabaseType().getName(), inventoryDumperConfig, dataSourceManager);
     }
     
     /**
      * New instance of JDBC dumper.
      *
      * @param databaseType database type
-     * @param inventoryDumperConfiguration inventory dumper configuration
+     * @param inventoryDumperConfig inventory dumper configuration
      * @param dataSourceManager data source factory
      * @return JDBC dumper
      */
     @SneakyThrows
-    public static JDBCDumper newInstanceJdbcDumper(final String databaseType, final InventoryDumperConfiguration inventoryDumperConfiguration, final DataSourceManager dataSourceManager) {
+    public static JDBCDumper newInstanceJdbcDumper(final String databaseType, final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getJdbcDumperClass().getConstructor(InventoryDumperConfiguration.class, DataSourceManager.class).newInstance(inventoryDumperConfiguration, dataSourceManager);
+        return scalingEntry.getJdbcDumperClass().getConstructor(InventoryDumperConfiguration.class, DataSourceManager.class).newInstance(inventoryDumperConfig, dataSourceManager);
     }
     
     /**
      * New instance of log dumper.
      *
-     * @param dumperConfiguration rdbms configuration
+     * @param dumperConfig rdbms configuration
      * @param position position
      * @return log dumper
      */
     @SneakyThrows
-    public static LogDumper newInstanceLogDumper(final DumperConfiguration dumperConfiguration, final Position position) {
-        return newInstanceLogDumper(dumperConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), dumperConfiguration, position);
+    public static LogDumper newInstanceLogDumper(final DumperConfiguration dumperConfig, final Position position) {
+        return newInstanceLogDumper(dumperConfig.getDataSourceConfiguration().getDatabaseType().getName(), dumperConfig, position);
     }
     
     /**
      * New instance of log dumper.
      *
      * @param databaseType database type
-     * @param dumperConfiguration rdbms configuration
+     * @param dumperConfig rdbms configuration
      * @param position position
      * @return log dumper
      */
     @SneakyThrows
-    public static LogDumper newInstanceLogDumper(final String databaseType, final DumperConfiguration dumperConfiguration, final Position position) {
+    public static LogDumper newInstanceLogDumper(final String databaseType, final DumperConfiguration dumperConfig, final Position position) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getLogDumperClass().getConstructor(DumperConfiguration.class, Position.class).newInstance(dumperConfiguration, position);
+        return scalingEntry.getLogDumperClass().getConstructor(DumperConfiguration.class, Position.class).newInstance(dumperConfig, position);
     }
 }
