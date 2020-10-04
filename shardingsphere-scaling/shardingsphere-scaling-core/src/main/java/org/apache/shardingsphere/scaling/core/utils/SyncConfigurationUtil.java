@@ -25,10 +25,11 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ShardingSphereJDBCConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ShardingSphereJDBCScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -63,7 +64,7 @@ public final class SyncConfigurationUtil {
      */
     public static Collection<SyncConfiguration> toSyncConfigurations(final ScalingConfiguration scalingConfig) {
         Collection<SyncConfiguration> result = new LinkedList<>();
-        ShardingSphereJDBCConfiguration sourceConfig = getSourceConfiguration(scalingConfig);
+        ShardingSphereJDBCScalingDataSourceConfiguration sourceConfig = getSourceConfiguration(scalingConfig);
         Map<String, DataSourceConfiguration> sourceDataSource = ConfigurationYamlConverter.loadDataSourceConfigurations(sourceConfig.getDataSource());
         ShardingRuleConfiguration sourceRule = ConfigurationYamlConverter.loadShardingRuleConfiguration(sourceConfig.getRule());
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDataSource.keySet());
@@ -78,16 +79,16 @@ public final class SyncConfigurationUtil {
         return result;
     }
     
-    private static ShardingSphereJDBCConfiguration getSourceConfiguration(final ScalingConfiguration scalingConfig) {
-        org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration result = scalingConfig.getRuleConfiguration().getSource().toTypedDataSourceConfiguration();
-        Preconditions.checkArgument(result instanceof ShardingSphereJDBCConfiguration, "Only support ShardingSphere source data source.");
-        return (ShardingSphereJDBCConfiguration) result;
+    private static ShardingSphereJDBCScalingDataSourceConfiguration getSourceConfiguration(final ScalingConfiguration scalingConfig) {
+        ScalingDataSourceConfiguration result = scalingConfig.getRuleConfiguration().getSource().toTypedDataSourceConfiguration();
+        Preconditions.checkArgument(result instanceof ShardingSphereJDBCScalingDataSourceConfiguration, "Only support ShardingSphere source data source.");
+        return (ShardingSphereJDBCScalingDataSourceConfiguration) result;
     }
     
     private static Optional<ShardingRuleConfiguration> getTargetRuleConfiguration(final ScalingConfiguration scalingConfig) {
-        org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration dataSourceConfig = scalingConfig.getRuleConfiguration().getTarget().toTypedDataSourceConfiguration();
-        if (dataSourceConfig instanceof ShardingSphereJDBCConfiguration) {
-            return Optional.of(ConfigurationYamlConverter.loadShardingRuleConfiguration(((ShardingSphereJDBCConfiguration) dataSourceConfig).getRule()));
+        ScalingDataSourceConfiguration dataSourceConfig = scalingConfig.getRuleConfiguration().getTarget().toTypedDataSourceConfiguration();
+        if (dataSourceConfig instanceof ShardingSphereJDBCScalingDataSourceConfiguration) {
+            return Optional.of(ConfigurationYamlConverter.loadShardingRuleConfiguration(((ShardingSphereJDBCScalingDataSourceConfiguration) dataSourceConfig).getRule()));
         }
         return Optional.empty();
     }
@@ -171,7 +172,7 @@ public final class SyncConfigurationUtil {
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceName(dataSourceName);
         Map<String, Object> dataSourceProperties = dataSourceConfig.getProps();
-        JDBCDataSourceConfiguration dumperDataSourceConfig = new JDBCDataSourceConfiguration(
+        JDBCScalingDataSourceConfiguration dumperDataSourceConfig = new JDBCScalingDataSourceConfiguration(
                 dataSourceProperties.containsKey("jdbcUrl") ? dataSourceProperties.get("jdbcUrl").toString() : dataSourceProperties.get("url").toString(),
                 dataSourceProperties.get("username").toString(), dataSourceProperties.get("password").toString());
         result.setDataSourceConfiguration(dumperDataSourceConfig);

@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
@@ -64,7 +64,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     private Channel channel;
     
     protected AbstractJDBCDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
-        if (!JDBCDataSourceConfiguration.class.equals(inventoryDumperConfig.getDataSourceConfiguration().getClass())) {
+        if (!JDBCScalingDataSourceConfiguration.class.equals(inventoryDumperConfig.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("AbstractJDBCDumper only support JDBCDataSourceConfiguration");
         }
         inventoryDumperConfiguration = inventoryDumperConfig;

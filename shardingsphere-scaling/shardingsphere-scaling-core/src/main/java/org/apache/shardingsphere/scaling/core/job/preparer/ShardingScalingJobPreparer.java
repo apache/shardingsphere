@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job.preparer;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
@@ -105,7 +105,7 @@ public final class ShardingScalingJobPreparer {
     
     private void initIncrementalDataTasks(final String databaseType, final ShardingScalingJob shardingScalingJob, final DataSourceManager dataSourceManager) {
         for (SyncConfiguration each : shardingScalingJob.getSyncConfigurations()) {
-            DataSourceConfiguration dataSourceConfig = each.getDumperConfiguration().getDataSourceConfiguration();
+            ScalingDataSourceConfiguration dataSourceConfig = each.getDumperConfiguration().getDataSourceConfiguration();
             each.getDumperConfiguration().setPositionManager(initPositionManager(databaseType, dataSourceManager.getDataSource(dataSourceConfig)));
             shardingScalingJob.getIncrementalDataTasks().add(syncTaskFactory.createIncrementalDataSyncTask(each.getConcurrency(), each.getDumperConfiguration(), each.getImporterConfiguration()));
         }

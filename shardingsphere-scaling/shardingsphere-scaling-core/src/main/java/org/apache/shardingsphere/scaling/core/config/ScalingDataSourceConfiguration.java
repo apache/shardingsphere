@@ -17,20 +17,17 @@
 
 package org.apache.shardingsphere.scaling.core.config;
 
-import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.scaling.core.fixture.FixtureShardingSphereJDBCConfiguration;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public class ShardingSphereJDBCConfigurationTest {
+/**
+ * Scaling data source configuration.
+ */
+public interface ScalingDataSourceConfiguration {
     
-    @Test
-    public void assertShardingSphereJDBCDataSourceConfigurationDatabaseType() {
-        ShardingSphereJDBCConfiguration shardingSphereJDBCConfig = new ShardingSphereJDBCConfiguration(
-                FixtureShardingSphereJDBCConfiguration.DATA_SOURCE,
-                FixtureShardingSphereJDBCConfiguration.RULE);
-        assertThat(shardingSphereJDBCConfig.getDatabaseType(), instanceOf(H2DatabaseType.class));
-    }
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    DatabaseType getDatabaseType();
 }

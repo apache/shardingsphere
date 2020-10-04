@@ -22,9 +22,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
-import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ShardingSphereJDBCConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ShardingSphereJDBCScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.utils.ConfigurationYamlConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
@@ -38,21 +38,21 @@ import java.util.Map;
 public final class DataSourceFactory {
     
     /**
-     * New instance data source.
+     * New instance data source wrapper.
      *
-     * @param dataSourceConfig data source configuration
-     * @return new data source
+     * @param dataSourceConfig scaling data source configuration
+     * @return new data source wrapper
      */
-    public DataSourceWrapper newInstance(final DataSourceConfiguration dataSourceConfig) {
-        if (dataSourceConfig instanceof JDBCDataSourceConfiguration) {
-            return newInstanceDataSourceByJDBC((JDBCDataSourceConfiguration) dataSourceConfig);
-        } else if (dataSourceConfig instanceof ShardingSphereJDBCConfiguration) {
-            return newInstanceDataSourceByShardingSphereJDBC((ShardingSphereJDBCConfiguration) dataSourceConfig);
+    public DataSourceWrapper newInstance(final ScalingDataSourceConfiguration dataSourceConfig) {
+        if (dataSourceConfig instanceof JDBCScalingDataSourceConfiguration) {
+            return newInstanceDataSourceByJDBC((JDBCScalingDataSourceConfiguration) dataSourceConfig);
+        } else if (dataSourceConfig instanceof ShardingSphereJDBCScalingDataSourceConfiguration) {
+            return newInstanceDataSourceByShardingSphereJDBC((ShardingSphereJDBCScalingDataSourceConfiguration) dataSourceConfig);
         }
         throw new UnsupportedOperationException("Unsupported data source configuration");
     }
     
-    private DataSourceWrapper newInstanceDataSourceByJDBC(final JDBCDataSourceConfiguration dataSourceConfig) {
+    private DataSourceWrapper newInstanceDataSourceByJDBC(final JDBCScalingDataSourceConfiguration dataSourceConfig) {
         HikariDataSource result = new HikariDataSource();
         result.setJdbcUrl(dataSourceConfig.getJdbcUrl());
         result.setUsername(dataSourceConfig.getUsername());
@@ -61,7 +61,7 @@ public final class DataSourceFactory {
     }
     
     @SneakyThrows(SQLException.class)
-    private DataSourceWrapper newInstanceDataSourceByShardingSphereJDBC(final ShardingSphereJDBCConfiguration dataSourceConfig) {
+    private DataSourceWrapper newInstanceDataSourceByShardingSphereJDBC(final ShardingSphereJDBCScalingDataSourceConfiguration dataSourceConfig) {
         Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(
                 ConfigurationYamlConverter.loadDataSourceConfigurations(dataSourceConfig.getDataSource()));
         ShardingRuleConfiguration ruleConfig = ConfigurationYamlConverter.loadShardingRuleConfiguration(dataSourceConfig.getRule());

@@ -32,7 +32,7 @@ public class DumperConfiguration {
     
     private String dataSourceName;
     
-    private DataSourceConfiguration dataSourceConfiguration;
+    private ScalingDataSourceConfiguration dataSourceConfiguration;
     
     @SuppressWarnings("rawtypes")
     private PositionManager positionManager;
