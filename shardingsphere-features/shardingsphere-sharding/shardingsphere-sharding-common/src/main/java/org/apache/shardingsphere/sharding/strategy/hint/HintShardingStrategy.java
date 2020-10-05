@@ -37,9 +37,9 @@ public final class HintShardingStrategy implements ShardingStrategy {
     
     private final Collection<String> shardingColumns;
     
-    private final HintShardingAlgorithm shardingAlgorithm;
+    private final HintShardingAlgorithm<?> shardingAlgorithm;
     
-    public HintShardingStrategy(final HintShardingAlgorithm shardingAlgorithm) {
+    public HintShardingStrategy(final HintShardingAlgorithm<?> shardingAlgorithm) {
         Preconditions.checkNotNull(shardingAlgorithm, "Sharding algorithm cannot be null.");
         shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.shardingAlgorithm = shardingAlgorithm;
@@ -48,7 +48,7 @@ public final class HintShardingStrategy implements ShardingStrategy {
     @SuppressWarnings("unchecked")
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues, final ConfigurationProperties props) {
-        ListRouteValue shardingValue = (ListRouteValue) shardingValues.iterator().next();
+        ListRouteValue<?> shardingValue = (ListRouteValue) shardingValues.iterator().next();
         Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, 
                 new HintShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), shardingValue.getValues()));
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);

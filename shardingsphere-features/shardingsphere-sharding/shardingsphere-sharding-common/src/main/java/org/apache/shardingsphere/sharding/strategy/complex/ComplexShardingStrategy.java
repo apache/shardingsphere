@@ -42,9 +42,9 @@ public final class ComplexShardingStrategy implements ShardingStrategy {
     
     private final Collection<String> shardingColumns;
     
-    private final ComplexKeysShardingAlgorithm shardingAlgorithm;
+    private final ComplexKeysShardingAlgorithm<?> shardingAlgorithm;
     
-    public ComplexShardingStrategy(final String shardingColumns, final ComplexKeysShardingAlgorithm shardingAlgorithm) {
+    public ComplexShardingStrategy(final String shardingColumns, final ComplexKeysShardingAlgorithm<?> shardingAlgorithm) {
         Preconditions.checkNotNull(shardingColumns, "Sharding columns cannot be null.");
         Preconditions.checkNotNull(shardingAlgorithm, "Sharding algorithm cannot be null.");
         this.shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);

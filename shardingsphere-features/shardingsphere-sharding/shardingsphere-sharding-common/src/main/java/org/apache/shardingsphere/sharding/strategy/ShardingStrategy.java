@@ -34,7 +34,7 @@ public interface ShardingStrategy {
      * @return sharding columns
      */
     Collection<String> getShardingColumns();
-
+    
     /**
      * Get sharding algorithm.
      *
@@ -45,10 +45,10 @@ public interface ShardingStrategy {
     /**
      * Sharding.
      *
-     * @param availableTargetNames available data sources or tables's names
+     * @param availableTargetNames available data source or table names
      * @param shardingValues sharding values
-     * @param props ShardingSphere properties
-     * @return sharding results for data sources or tables's names
+     * @param props configuration properties
+     * @return sharding results for data source or table names
      */
     Collection<String> doSharding(Collection<String> availableTargetNames, Collection<RouteValue> shardingValues, ConfigurationProperties props);
 }

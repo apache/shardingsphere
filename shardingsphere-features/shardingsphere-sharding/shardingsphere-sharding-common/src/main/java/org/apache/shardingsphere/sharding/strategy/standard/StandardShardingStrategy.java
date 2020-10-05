@@ -38,11 +38,11 @@ import java.util.TreeSet;
 public final class StandardShardingStrategy implements ShardingStrategy {
     
     private final String shardingColumn;
-
-    @Getter
-    private final StandardShardingAlgorithm shardingAlgorithm;
     
-    public StandardShardingStrategy(final String shardingColumn, final StandardShardingAlgorithm shardingAlgorithm) {
+    @Getter
+    private final StandardShardingAlgorithm<?> shardingAlgorithm;
+    
+    public StandardShardingStrategy(final String shardingColumn, final StandardShardingAlgorithm<?> shardingAlgorithm) {
         Preconditions.checkNotNull(shardingColumn, "Sharding column cannot be null.");
         Preconditions.checkNotNull(shardingAlgorithm, "sharding algorithm cannot be null.");
         this.shardingColumn = shardingColumn;
@@ -60,12 +60,6 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     }
     
     @SuppressWarnings("unchecked")
-    private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeRouteValue<?> shardingValue) {
-        return shardingAlgorithm.doSharding(availableTargetNames,
-                new RangeShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), shardingValue.getValueRange()));
-    }
-    
-    @SuppressWarnings("unchecked")
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListRouteValue<?> shardingValue) {
         Collection<String> result = new LinkedList<>();
         for (Comparable<?> each : shardingValue.getValues()) {
@@ -76,6 +70,12 @@ public final class StandardShardingStrategy implements ShardingStrategy {
             }
         }
         return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeRouteValue<?> shardingValue) {
+        return shardingAlgorithm.doSharding(availableTargetNames,
+                new RangeShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), shardingValue.getValueRange()));
     }
     
     @Override
