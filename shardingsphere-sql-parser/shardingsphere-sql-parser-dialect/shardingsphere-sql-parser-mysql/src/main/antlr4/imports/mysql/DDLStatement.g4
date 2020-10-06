@@ -625,9 +625,12 @@ compoundStatement
     ;
 
 validStatement
-    : (createTable | alterTable | dropTable | truncateTable 
-    | insert | replace | update | delete | select | call
+    : (createTable | alterTable | dropTable | truncateTable | validDMLStatement
     | setVariable | beginStatement | declareStatement | flowControlStatement | cursorStatement | conditionHandlingStatement) SEMI_?
+    ;
+    
+validDMLStatement
+    : insert | replace | update | delete | select | call
     ;
 
 beginStatement

@@ -31,7 +31,9 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dcl.GrantStatementC
 import org.apache.shardingsphere.sql.parser.binder.statement.dcl.RevokeStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterIndexStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterTableStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateFunctionStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateIndexStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateProcedureStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropTableStatementContext;
@@ -48,7 +50,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatem
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
@@ -138,6 +142,12 @@ public final class SQLStatementContextFactory {
         }
         if (sqlStatement instanceof TruncateStatement) {
             return new TruncateStatementContext((TruncateStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof CreateFunctionStatement) {
+            return new CreateFunctionStatementContext((CreateFunctionStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof CreateProcedureStatement) {
+            return new CreateProcedureStatementContext((CreateProcedureStatement) sqlStatement);
         }
         return new CommonSQLStatementContext<>(sqlStatement);
     }

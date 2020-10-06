@@ -28,7 +28,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class DropIndexStatementHandlerTest {
+public final class DropIndexStatementHandlerTest {
     
     @Test
     public void assertGetSimpleTableSegmentWithSimpleTableSegmentForMySQL() {

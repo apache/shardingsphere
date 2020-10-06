@@ -19,11 +19,15 @@ package org.apache.shardingsphere.sharding.route.engine.validator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingCreateFunctionStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingCreateProcedureStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingCreateTableStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingDeleteStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingInsertStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingUpdateStatementValidator;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -55,6 +59,12 @@ public final class ShardingStatementValidatorFactory {
         }
         if (sqlStatement instanceof CreateTableStatement) {
             return Optional.of(new ShardingCreateTableStatementValidator());
+        }
+        if (sqlStatement instanceof CreateFunctionStatement) {
+            return Optional.of(new ShardingCreateFunctionStatementValidator());
+        }
+        if (sqlStatement instanceof CreateProcedureStatement) {
+            return Optional.of(new ShardingCreateProcedureStatementValidator());
         }
         return Optional.empty();
     }

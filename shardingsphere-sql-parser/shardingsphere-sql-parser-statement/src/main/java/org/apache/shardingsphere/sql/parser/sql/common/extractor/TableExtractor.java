@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sql.parser.sql.common.extractor;
 
 import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -38,10 +40,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Joi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -204,6 +208,7 @@ public final class TableExtractor {
     
     /**
      * Check if the table needs to be overwritten.
+     *
      * @param owner OwnerSegment.
      * @return boolean.
      */
@@ -214,5 +219,60 @@ public final class TableExtractor {
             }
         }
         return true;
+    }
+    
+    /**
+     * Extract the tables that should exist from RoutineBodySegment.
+     *
+     * @param routineBody RoutineBodySegment
+     * @return the tables that should exist
+     */
+    public Collection<SimpleTableSegment> extractExistTableFromRoutineBody(final RoutineBodySegment routineBody) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        for (ValidStatementSegment each : routineBody.getValidStatements()) {
+            if (each.getAlterTable().isPresent()) {
+                result.add(each.getAlterTable().get().getTable());
+            }
+            if (each.getDropTable().isPresent()) {
+                result.addAll(each.getDropTable().get().getTables());
+            }
+            if (each.getTruncate().isPresent()) {
+                result.addAll(each.getTruncate().get().getTables());
+            }
+            result.addAll(extractExistTableFromDMLStatement(each));
+        }
+        return result;
+    }
+    
+    private Collection<SimpleTableSegment> extractExistTableFromDMLStatement(final ValidStatementSegment validStatementSegment) {
+        if (validStatementSegment.getInsert().isPresent()) {
+            extractTablesFromInsert(validStatementSegment.getInsert().get());
+        } else if (validStatementSegment.getReplace().isPresent()) {
+            extractTablesFromInsert(validStatementSegment.getReplace().get());
+        } else if (validStatementSegment.getUpdate().isPresent()) {
+            extractTablesFromUpdate(validStatementSegment.getUpdate().get());
+        } else if (validStatementSegment.getDelete().isPresent()) {
+            extractTablesFromDelete(validStatementSegment.getDelete().get());
+        } else if (validStatementSegment.getSelect().isPresent()) {
+            extractTablesFromSelect(validStatementSegment.getSelect().get());
+        }
+        return rewriteTables;
+    }
+    
+    /**
+     * Extract the tables that should not exist from RoutineBodySegment.
+     *
+     * @param routineBody RoutineBodySegment
+     * @return the tables that should not exist
+     */
+    public Collection<SimpleTableSegment> extractNotExistTableFromRoutineBody(final RoutineBodySegment routineBody) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        for (ValidStatementSegment each : routineBody.getValidStatements()) {
+            Optional<CreateTableStatement> createTable = each.getCreateTable();
+            if (createTable.isPresent() && !CreateTableStatementHandler.containsIfNotExistClause(createTable.get())) {
+                result.add(createTable.get().getTable());
+            }
+        }
+        return result;
     }
 }

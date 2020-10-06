@@ -15,31 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateProcedureStatement;
 
 import java.util.Optional;
 
 /**
- * MySQL create procedure statement.
+ * CreateProcedureStatement handler for different dialect SQLStatements.
  */
-@Getter
-@Setter
-public final class MySQLCreateProcedureStatement extends CreateProcedureStatement implements MySQLStatement {
-    
-    private RoutineBodySegment routineBody;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CreateProcedureStatementHandler implements SQLStatementHandler {
     
     /**
-     * Get routine body segment.
+     * Get RoutineBodySegment.
      *
-     * @return routine body segment
+     * @param createProcedureStatement CreateProcedureStatement
+     * @return RoutineBodySegment
      */
-    public Optional<RoutineBodySegment> getRoutineBody() {
-        return Optional.ofNullable(routineBody);
+    public static Optional<RoutineBodySegment> getRoutineBodySegment(final CreateProcedureStatement createProcedureStatement) {
+        if (createProcedureStatement instanceof MySQLStatement) {
+            return ((MySQLCreateProcedureStatement) createProcedureStatement).getRoutineBody();
+        }
+        return Optional.empty();
     }
 }
