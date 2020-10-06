@@ -143,10 +143,8 @@ public final class ShardingRule implements DataNodeRoutedRule {
             final Collection<ShardingTableRuleConfiguration> tableRuleConfigurations, final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig) {
         return tableRuleConfigurations.stream().map(
             each -> {
-                ShardingAlgorithm databaseShardingAlgorithm = null == each.getDatabaseShardingStrategy()
-                        ? null : shardingAlgorithms.get(each.getDatabaseShardingStrategy().getShardingAlgorithmName());
                 ShardingAlgorithm tableShardingAlgorithm = null == each.getTableShardingStrategy() ? null : shardingAlgorithms.get(each.getTableShardingStrategy().getShardingAlgorithmName());
-                return new TableRule(each, dataSourceNames, databaseShardingAlgorithm, tableShardingAlgorithm, getDefaultGenerateKeyColumn(defaultKeyGenerateStrategyConfig));
+                return new TableRule(each, dataSourceNames, tableShardingAlgorithm, getDefaultGenerateKeyColumn(defaultKeyGenerateStrategyConfig));
             }).collect(Collectors.toList());
     }
     

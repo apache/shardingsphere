@@ -67,8 +67,6 @@ public final class TableRule {
     @Getter(AccessLevel.NONE)
     private final Map<DataNode, Integer> dataNodeIndexMap;
     
-    private final ShardingStrategy databaseShardingStrategy;
-    
     private final ShardingStrategy tableShardingStrategy;
     
     private final ShardingStrategyConfiguration databaseShardingStrategyConfig;
@@ -89,7 +87,6 @@ public final class TableRule {
         dataNodeIndexMap = new HashMap<>(dataSourceNames.size(), 1);
         actualDataNodes = generateDataNodes(logicTableName, dataSourceNames);
         actualTables = getActualTables();
-        databaseShardingStrategy = null;
         tableShardingStrategy = null;
         databaseShardingStrategyConfig = null;
         tableShardingStrategyConfig = null;
@@ -98,13 +95,12 @@ public final class TableRule {
     }
     
     public TableRule(final ShardingTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, 
-                     final ShardingAlgorithm databaseShardingAlgorithm, final ShardingAlgorithm tableShardingAlgorithm, final String defaultGenerateKeyColumn) {
+                     final ShardingAlgorithm tableShardingAlgorithm, final String defaultGenerateKeyColumn) {
         logicTable = tableRuleConfig.getLogicTable().toLowerCase();
         List<String> dataNodes = new InlineExpressionParser(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
         actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
         actualTables = getActualTables();
-        databaseShardingStrategy = createShardingStrategy(tableRuleConfig.getDatabaseShardingStrategy(), databaseShardingAlgorithm);
         tableShardingStrategy = createShardingStrategy(tableRuleConfig.getTableShardingStrategy(), tableShardingAlgorithm);
         databaseShardingStrategyConfig = tableRuleConfig.getDatabaseShardingStrategy();
         tableShardingStrategyConfig = tableRuleConfig.getTableShardingStrategy();
@@ -117,7 +113,6 @@ public final class TableRule {
     public TableRule(final ShardingAutoTableRuleConfiguration tableRuleConfig, 
                      final Collection<String> dataSourceNames, final ShardingAlgorithm shardingAlgorithm, final String defaultGenerateKeyColumn) {
         logicTable = tableRuleConfig.getLogicTable().toLowerCase();
-        databaseShardingStrategy = new NoneShardingStrategy();
         tableShardingStrategy = createShardingStrategy(tableRuleConfig.getShardingStrategy(), shardingAlgorithm);
         databaseShardingStrategyConfig = new NoneShardingStrategyConfiguration();
         tableShardingStrategyConfig = tableRuleConfig.getShardingStrategy();
