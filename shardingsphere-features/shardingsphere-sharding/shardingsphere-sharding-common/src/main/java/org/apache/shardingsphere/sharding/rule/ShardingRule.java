@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
@@ -75,12 +76,10 @@ public final class ShardingRule implements DataNodeRoutedRule {
     
     private final Collection<String> broadcastTables;
     
-    private final ShardingStrategy defaultDatabaseShardingStrategy;
-    
-    private final ShardingStrategy defaultTableShardingStrategy;
-    
+    @Getter(AccessLevel.NONE)
     private final ShardingStrategyConfiguration defaultDatabaseShardingStrategyConfig;
     
+    @Getter(AccessLevel.NONE)
     private final ShardingStrategyConfiguration defaultTableShardingStrategyConfig;
     
     private final KeyGenerateAlgorithm defaultKeyGenerateAlgorithm;
@@ -95,8 +94,6 @@ public final class ShardingRule implements DataNodeRoutedRule {
         tableRules.addAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
         broadcastTables = config.getBroadcastTables();
         bindingTableRules = createBindingTableRules(config.getBindingTableGroups());
-        defaultDatabaseShardingStrategy = createDefaultShardingStrategy(config.getDefaultDatabaseShardingStrategy());
-        defaultTableShardingStrategy = createDefaultShardingStrategy(config.getDefaultTableShardingStrategy());
         defaultDatabaseShardingStrategyConfig = config.getDefaultDatabaseShardingStrategy();
         defaultTableShardingStrategyConfig = config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
@@ -113,8 +110,6 @@ public final class ShardingRule implements DataNodeRoutedRule {
         tableRules.addAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
         broadcastTables = config.getBroadcastTables();
         bindingTableRules = createBindingTableRules(config.getBindingTableGroups());
-        defaultDatabaseShardingStrategy = createDefaultShardingStrategy(config.getDefaultDatabaseShardingStrategy());
-        defaultTableShardingStrategy = createDefaultShardingStrategy(config.getDefaultTableShardingStrategy());
         defaultDatabaseShardingStrategyConfig = config.getDefaultDatabaseShardingStrategy();
         defaultTableShardingStrategyConfig = config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
@@ -248,34 +243,6 @@ public final class ShardingRule implements DataNodeRoutedRule {
             return new TableRule(dataSourceNames, logicTableName);
         }
         throw new ShardingSphereConfigurationException("Cannot find table rule with logic table: '%s'", logicTableName);
-    }
-    
-    /**
-     * Get database sharding strategy.
-     *
-     * <p>
-     * Use default database sharding strategy if not found.
-     * </p>
-     *
-     * @param tableRule table rule
-     * @return database sharding strategy
-     */
-    public ShardingStrategy getDatabaseShardingStrategy(final TableRule tableRule) {
-        return null == tableRule.getDatabaseShardingStrategy() ? defaultDatabaseShardingStrategy : tableRule.getDatabaseShardingStrategy();
-    }
-    
-    /**
-     * Get table sharding strategy.
-     *
-     * <p>
-     * Use default table sharding strategy if not found.
-     * </p>
-     *
-     * @param tableRule table rule
-     * @return table sharding strategy
-     */
-    public ShardingStrategy getTableShardingStrategy(final TableRule tableRule) {
-        return null == tableRule.getTableShardingStrategy() ? defaultTableShardingStrategy : tableRule.getTableShardingStrategy();
     }
     
     /**

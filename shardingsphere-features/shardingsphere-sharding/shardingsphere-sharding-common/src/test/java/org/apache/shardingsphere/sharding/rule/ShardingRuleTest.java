@@ -20,17 +20,14 @@ package org.apache.shardingsphere.sharding.rule;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.IncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.IncrementKeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm;
-import org.apache.shardingsphere.sharding.strategy.ShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.none.NoneShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.standard.StandardShardingStrategy;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -43,8 +40,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class ShardingRuleTest {
     
@@ -60,8 +55,6 @@ public final class ShardingRuleTest {
         assertThat(actual.getBindingTableRules().size(), is(1));
         assertThat(actual.getBindingTableRules().iterator().next().getTableRules().size(), is(2));
         assertThat(actual.getBroadcastTables(), is(Collections.singletonList("BROADCAST_TABLE")));
-        assertThat(actual.getDefaultDatabaseShardingStrategy(), instanceOf(StandardShardingStrategy.class));
-        assertThat(actual.getDefaultTableShardingStrategy(), instanceOf(StandardShardingStrategy.class));
         assertThat(actual.getDefaultKeyGenerateAlgorithm(), instanceOf(IncrementKeyGenerateAlgorithm.class));
     }
     
@@ -71,8 +64,6 @@ public final class ShardingRuleTest {
         assertThat(actual.getTableRules().size(), is(1));
         assertTrue(actual.getBindingTableRules().isEmpty());
         assertTrue(actual.getBroadcastTables().isEmpty());
-        assertThat(actual.getDefaultDatabaseShardingStrategy(), instanceOf(NoneShardingStrategy.class));
-        assertThat(actual.getDefaultTableShardingStrategy(), instanceOf(NoneShardingStrategy.class));
         assertThat(actual.getDefaultKeyGenerateAlgorithm(), instanceOf(SnowflakeKeyGenerateAlgorithm.class));
     }
     
@@ -121,34 +112,6 @@ public final class ShardingRuleTest {
     @Test(expected = ShardingSphereConfigurationException.class)
     public void assertGetTableRuleFailure() {
         createMinimumShardingRule().getTableRule("New_Table");
-    }
-    
-    @Test
-    public void assertGetDatabaseShardingStrategyFromTableRule() {
-        TableRule tableRule = mock(TableRule.class);
-        when(tableRule.getDatabaseShardingStrategy()).thenReturn(new NoneShardingStrategy());
-        assertThat(createMaximumShardingRule().getDatabaseShardingStrategy(tableRule), instanceOf(NoneShardingStrategy.class));
-    }
-    
-    @Test
-    public void assertGetDatabaseShardingStrategyFromDefault() {
-        ShardingStrategy actual = createMaximumShardingRule().getDatabaseShardingStrategy(mock(TableRule.class));
-        assertThat(actual, instanceOf(StandardShardingStrategy.class));
-        assertThat(actual.getShardingColumns().iterator().next(), is("ds_id"));
-    }
-    
-    @Test
-    public void assertGetTableShardingStrategyFromTableRule() {
-        TableRule tableRule = mock(TableRule.class);
-        when(tableRule.getTableShardingStrategy()).thenReturn(new NoneShardingStrategy());
-        assertThat(createMaximumShardingRule().getTableShardingStrategy(tableRule), instanceOf(NoneShardingStrategy.class));
-    }
-    
-    @Test
-    public void assertGetTableShardingStrategyFromDefault() {
-        ShardingStrategy actual = createMaximumShardingRule().getTableShardingStrategy(mock(TableRule.class));
-        assertThat(actual, instanceOf(StandardShardingStrategy.class));
-        assertThat(actual.getShardingColumns().iterator().next(), is("table_id"));
     }
     
     @Test

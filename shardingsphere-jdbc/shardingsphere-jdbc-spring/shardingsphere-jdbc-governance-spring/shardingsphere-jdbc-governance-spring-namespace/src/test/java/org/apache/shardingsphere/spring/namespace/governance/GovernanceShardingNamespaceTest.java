@@ -66,10 +66,6 @@ public class GovernanceShardingNamespaceTest extends AbstractJUnit4SpringContext
         ShardingRule shardingRule = getShardingRule("shardingRuleWithAttributesDataSourceGovernance");
         assertNotNull(dataSourceMap.get("dbtbl_0"));
         assertNotNull(dataSourceMap.get("dbtbl_1"));
-        assertThat(shardingRule.getDefaultDatabaseShardingStrategy().getShardingColumns().toArray(new String[]{}), 
-                is(new String[]{applicationContext.getBean("standardStrategy", StandardShardingStrategyConfiguration.class).getShardingColumn()}));
-        assertThat(shardingRule.getDefaultTableShardingStrategy().getShardingColumns().toArray(new String[]{}),
-                is(new String[]{applicationContext.getBean("inlineStrategy", StandardShardingStrategyConfiguration.class).getShardingColumn()}));
         assertThat(shardingRule.getDefaultKeyGenerateAlgorithm().getClass().getName(), is(IncrementKeyGenerateAlgorithm.class.getCanonicalName()));
     }
     
