@@ -21,7 +21,6 @@ import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.sharding.mod.ModShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -50,7 +49,7 @@ public final class TableRuleTest {
     @Test
     public void assertCreateMinTableRule() {
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE");
-        TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1"), null, null);
+        TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1"), null);
         assertThat(actual.getLogicTable(), is("logic_table"));
         assertThat(actual.getActualDataNodes().size(), is(2));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "LOGIC_TABLE")));
@@ -63,7 +62,7 @@ public final class TableRuleTest {
         tableRuleConfig.setDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
         tableRuleConfig.setTableShardingStrategy(new NoneShardingStrategyConfiguration());
         tableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("col_1", "increment"));
-        TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1"), null, null);
+        TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1"), null);
         assertThat(actual.getLogicTable(), is("logic_table"));
         assertThat(actual.getActualDataNodes().size(), is(6));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "table_0")));
@@ -113,13 +112,13 @@ public final class TableRuleTest {
     
     @Test
     public void assertGetActualDatasourceNames() {
-        TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null, null);
+        TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null);
         assertThat(actual.getActualDatasourceNames(), is(Sets.newLinkedHashSet(Arrays.asList("ds0", "ds1"))));
     }
     
     @Test
     public void assertGetActualTableNames() {
-        TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null, null);
+        TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null);
         assertThat(actual.getActualTableNames("ds0"), is(Sets.newLinkedHashSet(Arrays.asList("table_0", "table_1", "table_2"))));
         assertThat(actual.getActualTableNames("ds1"), is(Sets.newLinkedHashSet(Arrays.asList("table_0", "table_1", "table_2"))));
         assertThat(actual.getActualTableNames("ds2"), is(Collections.emptySet()));
@@ -127,25 +126,25 @@ public final class TableRuleTest {
     
     @Test
     public void assertFindActualTableIndex() {
-        TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null, null);
+        TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null);
         assertThat(actual.findActualTableIndex("ds1", "table_1"), is(4));
     }
     
     @Test
     public void assertNotFindActualTableIndex() {
-        TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null, null);
+        TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null);
         assertThat(actual.findActualTableIndex("ds2", "table_2"), is(-1));
     }
     
     @Test
     public void assertActualTableNameExisted() {
-        TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null, null);
+        TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null);
         assertTrue(actual.isExisted("table_2"));
     }
     
     @Test
     public void assertActualTableNameNotExisted() {
-        TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null, null);
+        TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null);
         assertFalse(actual.isExisted("table_3"));
     }
     
@@ -153,9 +152,6 @@ public final class TableRuleTest {
     public void assertActualDataNodesNotConfigured() {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "");
         shardingTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("shardingColumn", "INLINE"));
-        InlineShardingAlgorithm inlineShardingAlgorithm = new InlineShardingAlgorithm();
-        inlineShardingAlgorithm.getProps().setProperty("algorithm-expression", "xxx");
-        inlineShardingAlgorithm.init();
-        new TableRule(shardingTableRuleConfig, Arrays.asList("ds0", "ds1"), inlineShardingAlgorithm, null);
+        new TableRule(shardingTableRuleConfig, Arrays.asList("ds0", "ds1"), null);
     }
 }

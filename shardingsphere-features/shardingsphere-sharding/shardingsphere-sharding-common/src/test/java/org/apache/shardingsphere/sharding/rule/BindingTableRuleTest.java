@@ -74,10 +74,10 @@ public final class BindingTableRuleTest {
     }
     
     private TableRule createTableRule() {
-        return new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..1}"), Arrays.asList("ds0", "ds1"), null, null);
+        return new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..1}"), Arrays.asList("ds0", "ds1"), null);
     }
     
     private TableRule createSubTableRule() {
-        return new TableRule(new ShardingTableRuleConfiguration("SUB_LOGIC_TABLE", "ds${0..1}.sub_table_${0..1}"), Arrays.asList("ds0", "ds1"), null, null);
+        return new TableRule(new ShardingTableRuleConfiguration("SUB_LOGIC_TABLE", "ds${0..1}.sub_table_${0..1}"), Arrays.asList("ds0", "ds1"), null);
     }
 }
