@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.sql.LogicSQL;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStateme
 import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.sharding.strategy.hint.HintShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -105,7 +105,8 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
     }
     
     private boolean isRoutingByHint(final ShardingRule shardingRule, final TableRule tableRule) {
-        return shardingRule.getDatabaseShardingStrategy(tableRule) instanceof HintShardingStrategy && shardingRule.getTableShardingStrategy(tableRule) instanceof HintShardingStrategy;
+        return shardingRule.getDatabaseShardingStrategyConfiguration(tableRule) instanceof HintShardingStrategyConfiguration
+                && shardingRule.getTableShardingStrategyConfiguration(tableRule) instanceof HintShardingStrategyConfiguration;
     }
     
     private boolean isSameShardingCondition(final ShardingRule shardingRule, final ShardingConditions shardingConditions) {

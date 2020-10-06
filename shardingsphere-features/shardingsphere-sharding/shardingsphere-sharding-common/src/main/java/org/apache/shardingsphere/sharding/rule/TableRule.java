@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
@@ -70,6 +71,10 @@ public final class TableRule {
     
     private final ShardingStrategy tableShardingStrategy;
     
+    private final ShardingStrategyConfiguration databaseShardingStrategyConfig;
+    
+    private final ShardingStrategyConfiguration tableShardingStrategyConfig;
+    
     @Getter(AccessLevel.NONE)
     private final String generateKeyColumn;
     
@@ -86,6 +91,8 @@ public final class TableRule {
         actualTables = getActualTables();
         databaseShardingStrategy = null;
         tableShardingStrategy = null;
+        databaseShardingStrategyConfig = null;
+        tableShardingStrategyConfig = null;
         generateKeyColumn = null;
         keyGeneratorName = null;
     }
@@ -99,6 +106,8 @@ public final class TableRule {
         actualTables = getActualTables();
         databaseShardingStrategy = createShardingStrategy(tableRuleConfig.getDatabaseShardingStrategy(), databaseShardingAlgorithm);
         tableShardingStrategy = createShardingStrategy(tableRuleConfig.getTableShardingStrategy(), tableShardingAlgorithm);
+        databaseShardingStrategyConfig = tableRuleConfig.getDatabaseShardingStrategy();
+        tableShardingStrategyConfig = tableRuleConfig.getTableShardingStrategy();
         KeyGenerateStrategyConfiguration keyGeneratorConfig = tableRuleConfig.getKeyGenerateStrategy();
         generateKeyColumn = null != keyGeneratorConfig && !Strings.isNullOrEmpty(keyGeneratorConfig.getColumn()) ? keyGeneratorConfig.getColumn() : defaultGenerateKeyColumn;
         keyGeneratorName = null == keyGeneratorConfig ? null : keyGeneratorConfig.getKeyGeneratorName();
@@ -110,6 +119,8 @@ public final class TableRule {
         logicTable = tableRuleConfig.getLogicTable().toLowerCase();
         databaseShardingStrategy = new NoneShardingStrategy();
         tableShardingStrategy = createShardingStrategy(tableRuleConfig.getShardingStrategy(), shardingAlgorithm);
+        databaseShardingStrategyConfig = new NoneShardingStrategyConfiguration();
+        tableShardingStrategyConfig = tableRuleConfig.getShardingStrategy();
         Preconditions.checkArgument(null == tableRuleConfig.getShardingStrategy() || tableShardingStrategy.getShardingAlgorithm() instanceof ShardingAutoTableAlgorithm,
                 "ShardingAutoTableAlgorithm is required.");
         List<String> dataNodes = getDataNodes(tableRuleConfig, dataSourceNames);
@@ -134,7 +145,7 @@ public final class TableRule {
         List<String> dataSources = Strings.isNullOrEmpty(tableRuleConfig.getActualDataSources()) ? new LinkedList<>(dataSourceNames)
                 : new InlineExpressionParser(tableRuleConfig.getActualDataSources()).splitAndEvaluate();
         ShardingAutoTableAlgorithm tableAlgorithm = (ShardingAutoTableAlgorithm) tableShardingStrategy.getShardingAlgorithm();
-        Iterator iterator = dataSources.iterator();
+        Iterator<String> iterator = dataSources.iterator();
         for (int i = 0; i < tableAlgorithm.getAutoTablesAmount(); i++) {
             if (!iterator.hasNext()) {
                 iterator = dataSources.iterator();

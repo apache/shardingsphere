@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
@@ -76,6 +77,10 @@ public final class ShardingRule implements DataNodeRoutedRule {
     
     private final ShardingStrategy defaultTableShardingStrategy;
     
+    private final ShardingStrategyConfiguration defaultDatabaseShardingStrategyConfig;
+    
+    private final ShardingStrategyConfiguration defaultTableShardingStrategyConfig;
+    
     private final KeyGenerateAlgorithm defaultKeyGenerateAlgorithm;
     
     public ShardingRule(final ShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
@@ -90,6 +95,8 @@ public final class ShardingRule implements DataNodeRoutedRule {
         bindingTableRules = createBindingTableRules(config.getBindingTableGroups());
         defaultDatabaseShardingStrategy = createDefaultShardingStrategy(config.getDefaultDatabaseShardingStrategy());
         defaultTableShardingStrategy = createDefaultShardingStrategy(config.getDefaultTableShardingStrategy());
+        defaultDatabaseShardingStrategyConfig = config.getDefaultDatabaseShardingStrategy();
+        defaultTableShardingStrategyConfig = config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
     }
@@ -106,6 +113,8 @@ public final class ShardingRule implements DataNodeRoutedRule {
         bindingTableRules = createBindingTableRules(config.getBindingTableGroups());
         defaultDatabaseShardingStrategy = createDefaultShardingStrategy(config.getDefaultDatabaseShardingStrategy());
         defaultTableShardingStrategy = createDefaultShardingStrategy(config.getDefaultTableShardingStrategy());
+        defaultDatabaseShardingStrategyConfig = config.getDefaultDatabaseShardingStrategy();
+        defaultTableShardingStrategyConfig = config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
     }
@@ -168,6 +177,38 @@ public final class ShardingRule implements DataNodeRoutedRule {
     private ShardingStrategy createDefaultShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfig) {
         return null == shardingStrategyConfig ? new NoneShardingStrategy()
                 : ShardingStrategyFactory.newInstance(shardingStrategyConfig, shardingAlgorithms.get(shardingStrategyConfig.getShardingAlgorithmName()));
+    }
+    
+    /**
+     * Get database sharding strategy configuration.
+     * 
+     * @param tableRule table rule
+     * @return database sharding strategy configuration
+     */
+    public ShardingStrategyConfiguration getDatabaseShardingStrategyConfiguration(final TableRule tableRule) {
+        if (null != tableRule.getDatabaseShardingStrategyConfig()) {
+            return tableRule.getDatabaseShardingStrategyConfig();
+        }
+        if (null != defaultDatabaseShardingStrategyConfig) {
+            return defaultDatabaseShardingStrategyConfig;
+        }
+        return new NoneShardingStrategyConfiguration();
+    }
+    
+    /**
+     * Get table sharding strategy configuration.
+     *
+     * @param tableRule table rule
+     * @return table sharding strategy configuration
+     */
+    public ShardingStrategyConfiguration getTableShardingStrategyConfiguration(final TableRule tableRule) {
+        if (null != tableRule.getTableShardingStrategyConfig()) {
+            return tableRule.getTableShardingStrategyConfig();
+        }
+        if (null != defaultDatabaseShardingStrategyConfig) {
+            return defaultDatabaseShardingStrategyConfig;
+        }
+        return new NoneShardingStrategyConfiguration();
     }
     
     /**
