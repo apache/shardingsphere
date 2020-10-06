@@ -91,8 +91,8 @@ public final class ShardingRule implements DataNodeRoutedRule {
         tableRules.addAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
         broadcastTables = config.getBroadcastTables();
         bindingTableRules = createBindingTableRules(config.getBindingTableGroups());
-        defaultDatabaseShardingStrategyConfig = config.getDefaultDatabaseShardingStrategy();
-        defaultTableShardingStrategyConfig = config.getDefaultTableShardingStrategy();
+        defaultDatabaseShardingStrategyConfig = null == config.getDefaultDatabaseShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultDatabaseShardingStrategy();
+        defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
     }
@@ -107,8 +107,8 @@ public final class ShardingRule implements DataNodeRoutedRule {
         tableRules.addAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
         broadcastTables = config.getBroadcastTables();
         bindingTableRules = createBindingTableRules(config.getBindingTableGroups());
-        defaultDatabaseShardingStrategyConfig = config.getDefaultDatabaseShardingStrategy();
-        defaultTableShardingStrategyConfig = config.getDefaultTableShardingStrategy();
+        defaultDatabaseShardingStrategyConfig = null == config.getDefaultDatabaseShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultDatabaseShardingStrategy();
+        defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
     }
@@ -168,13 +168,7 @@ public final class ShardingRule implements DataNodeRoutedRule {
      * @return database sharding strategy configuration
      */
     public ShardingStrategyConfiguration getDatabaseShardingStrategyConfiguration(final TableRule tableRule) {
-        if (null != tableRule.getDatabaseShardingStrategyConfig()) {
-            return tableRule.getDatabaseShardingStrategyConfig();
-        }
-        if (null != defaultDatabaseShardingStrategyConfig) {
-            return defaultDatabaseShardingStrategyConfig;
-        }
-        return new NoneShardingStrategyConfiguration();
+        return null == tableRule.getDatabaseShardingStrategyConfig() ? defaultDatabaseShardingStrategyConfig : tableRule.getDatabaseShardingStrategyConfig();
     }
     
     /**
@@ -184,13 +178,7 @@ public final class ShardingRule implements DataNodeRoutedRule {
      * @return table sharding strategy configuration
      */
     public ShardingStrategyConfiguration getTableShardingStrategyConfiguration(final TableRule tableRule) {
-        if (null != tableRule.getTableShardingStrategyConfig()) {
-            return tableRule.getTableShardingStrategyConfig();
-        }
-        if (null != defaultTableShardingStrategyConfig) {
-            return defaultTableShardingStrategyConfig;
-        }
-        return new NoneShardingStrategyConfiguration();
+        return null == tableRule.getTableShardingStrategyConfig() ? defaultTableShardingStrategyConfig : tableRule.getTableShardingStrategyConfig();
     }
     
     /**
