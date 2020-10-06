@@ -187,8 +187,8 @@ public final class ShardingRule implements DataNodeRoutedRule {
         if (null != tableRule.getTableShardingStrategyConfig()) {
             return tableRule.getTableShardingStrategyConfig();
         }
-        if (null != defaultDatabaseShardingStrategyConfig) {
-            return defaultDatabaseShardingStrategyConfig;
+        if (null != defaultTableShardingStrategyConfig) {
+            return defaultTableShardingStrategyConfig;
         }
         return new NoneShardingStrategyConfiguration();
     }
