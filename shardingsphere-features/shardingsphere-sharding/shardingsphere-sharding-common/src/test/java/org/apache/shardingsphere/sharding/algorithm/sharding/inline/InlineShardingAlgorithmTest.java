@@ -19,17 +19,13 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.sharding.strategy.standard.StandardShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
+import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -37,65 +33,47 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class InlineShardingAlgorithmTest {
-
-    private StandardShardingStrategy shardingStrategy;
-
-    private StandardShardingStrategy shardingStrategyWithSimplified;
+    
+    private InlineShardingAlgorithm inlineShardingAlgorithm;
+    
+    private InlineShardingAlgorithm inlineShardingAlgorithmWithSimplified;
     
     @Before
     public void setUp() {
-        shardingStrategy = createShardingStrategy();
-        shardingStrategyWithSimplified = createShardingStrategyWithSimplified();
+        initInlineShardingAlgorithm();
+        initInlineShardingAlgorithmWithSimplified();
     }
     
-    private StandardShardingStrategy createShardingStrategy() {
-        InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("algorithm-expression", "t_order_$->{order_id % 4}");
-        shardingAlgorithm.getProps().setProperty("allow-range-query-with-inline-sharding", "true");
-        shardingAlgorithm.init();
-        return new StandardShardingStrategy("order_id", shardingAlgorithm);
+    private void initInlineShardingAlgorithm() {
+        inlineShardingAlgorithm = new InlineShardingAlgorithm();
+        inlineShardingAlgorithm.getProps().setProperty("algorithm-expression", "t_order_$->{order_id % 4}");
+        inlineShardingAlgorithm.getProps().setProperty("allow-range-query-with-inline-sharding", "true");
+        inlineShardingAlgorithm.init();
     }
     
-    private StandardShardingStrategy createShardingStrategyWithSimplified() {
-        InlineShardingAlgorithm shardingAlgorithmWithSimplified = new InlineShardingAlgorithm();
-        shardingAlgorithmWithSimplified.getProps().setProperty("algorithm-expression", "t_order_${order_id % 4}");
-        shardingAlgorithmWithSimplified.init();
-        return new StandardShardingStrategy("order_id", shardingAlgorithmWithSimplified);
+    private void initInlineShardingAlgorithmWithSimplified() {
+        inlineShardingAlgorithmWithSimplified = new InlineShardingAlgorithm();
+        inlineShardingAlgorithmWithSimplified.getProps().setProperty("algorithm-expression", "t_order_${order_id % 4}");
+        inlineShardingAlgorithmWithSimplified.init();
     }
     
     @Test
     public void assertDoSharding() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        List<RouteValue> shardingValues = Lists.newArrayList(new ListRouteValue<>("order_id", "t_order", Lists.newArrayList(0, 1, 2, 3)));
-        Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
-        assertThat(actual.size(), is(4));
-        Collection<String> actualWithSimplified = shardingStrategyWithSimplified.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
-        assertThat(actualWithSimplified.size(), is(4));
+        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", 0)), is("t_order_0"));
     }
     
     @Test
     public void assertDoShardingWithRangeRouteValue() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("order_id", "t_order", mock(Range.class)));
-        Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
+        Collection<String> actual = inlineShardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", mock(Range.class)));
         assertTrue(actual.containsAll(availableTargetNames));
     }
     
     @Test
     public void assertDoShardingWithNonExistNodes() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1");
-        List<RouteValue> shardingValues = Lists.newArrayList(new ListRouteValue<>("order_id", "t_order", Lists.newArrayList(0, 1, 2, 3)));
-        Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
-        assertThat(actual.size(), is(2));
-        Collection<String> actualWithSimplified = shardingStrategyWithSimplified.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
-        assertThat(actualWithSimplified.size(), is(2));
-    }
-    
-    @Test
-    public void assertGetShardingColumns() {
-        assertThat(shardingStrategy.getShardingColumns().size(), is(1));
-        assertThat(shardingStrategy.getShardingColumns().iterator().next(), is("order_id"));
-        assertThat(shardingStrategyWithSimplified.getShardingColumns().size(), is(1));
-        assertThat(shardingStrategyWithSimplified.getShardingColumns().iterator().next(), is("order_id"));
+        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", 0)), is("t_order_0"));
+        assertThat(inlineShardingAlgorithmWithSimplified.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", 0)), is("t_order_0"));
     }
 }
