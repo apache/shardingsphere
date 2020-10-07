@@ -51,14 +51,14 @@ public final class ModShardingAlgorithmTest {
     @Test
     public void assertRangeDoShardingWithAllTargets() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "create_time", Range.closed(11L, 14L)));
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", Range.closed(11L, 14L)));
         assertThat(actual.size(), is(4));
     }
     
     @Test
     public void assertRangeDoShardingWithPartTargets() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "create_time", Range.closed(11L, 12L)));
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", Range.closed(11L, 12L)));
         assertThat(actual.size(), is(2));
         assertTrue(actual.contains("t_order_3"));
         assertTrue(actual.contains("t_order_0"));
