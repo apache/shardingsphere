@@ -19,17 +19,13 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.sharding.strategy.standard.StandardShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
+import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -37,42 +33,32 @@ import static org.junit.Assert.assertTrue;
 
 public final class ModShardingAlgorithmTest {
     
-    private StandardShardingStrategy shardingStrategy;
+    private ModShardingAlgorithm shardingAlgorithm;
     
     @Before
     public void setup() {
-        ModShardingAlgorithm shardingAlgorithm = new ModShardingAlgorithm();
+        shardingAlgorithm = new ModShardingAlgorithm();
         shardingAlgorithm.getProps().setProperty("sharding-count", "4");
         shardingAlgorithm.init();
-        shardingStrategy = new StandardShardingStrategy("order_id", shardingAlgorithm);
     }
     
     @Test
     public void assertPreciseDoSharding() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        List<RouteValue> shardingValues = Lists.newArrayList(new ListRouteValue<>("order_id", "t_order", Lists.newArrayList(10L, 11L, 13L)));
-        Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
-        assertThat(actual.size(), is(3));
-        assertTrue(actual.contains("t_order_1"));
-        assertTrue(actual.contains("t_order_2"));
-        assertTrue(actual.contains("t_order_3"));
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", 13L)), is("t_order_1"));
     }
     
     @Test
     public void assertRangeDoShardingWithAllTargets() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Range<Long> rangeValue = Range.closed(11L, 14L);
-        List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("order_id", "t_order", rangeValue));
-        Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "create_time", Range.closed(11L, 14L)));
         assertThat(actual.size(), is(4));
     }
     
     @Test
     public void assertRangeDoShardingWithPartTargets() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Range<Long> rangeValue = Range.closed(11L, 12L);
-        List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("order_id", "t_order", rangeValue));
-        Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "create_time", Range.closed(11L, 12L)));
         assertThat(actual.size(), is(2));
         assertTrue(actual.contains("t_order_3"));
         assertTrue(actual.contains("t_order_0"));
