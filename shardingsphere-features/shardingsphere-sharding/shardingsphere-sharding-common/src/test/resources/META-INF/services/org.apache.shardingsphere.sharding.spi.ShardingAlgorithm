@@ -16,8 +16,5 @@
 #
  
 org.apache.shardingsphere.sharding.fixture.ComplexKeysShardingAlgorithmFixture
-org.apache.shardingsphere.sharding.strategy.fixture.ComplexKeysShardingAlgorithmFixture
 org.apache.shardingsphere.sharding.fixture.HintShardingAlgorithmFixture
-org.apache.shardingsphere.sharding.strategy.fixture.HintShardingAlgorithmFixture
 org.apache.shardingsphere.sharding.fixture.StandardShardingAlgorithmFixture
-org.apache.shardingsphere.sharding.strategy.fixture.StandardShardingAlgorithmFixture

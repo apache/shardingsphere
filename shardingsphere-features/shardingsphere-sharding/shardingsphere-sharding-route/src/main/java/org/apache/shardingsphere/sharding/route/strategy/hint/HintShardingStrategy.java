@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.strategy.hint;
+package org.apache.shardingsphere.sharding.route.strategy.hint;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
-import org.apache.shardingsphere.sharding.strategy.ShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
+import org.apache.shardingsphere.sharding.route.strategy.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.route.strategy.value.RouteValue;
 
 import java.util.Collection;
 import java.util.TreeSet;

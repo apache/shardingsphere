@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.strategy;
+package org.apache.shardingsphere.sharding.route.strategy;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,10 +26,10 @@ import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardi
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.sharding.strategy.complex.ComplexShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.hint.HintShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.none.NoneShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.standard.StandardShardingStrategy;
+import org.apache.shardingsphere.sharding.route.strategy.complex.ComplexShardingStrategy;
+import org.apache.shardingsphere.sharding.route.strategy.hint.HintShardingStrategy;
+import org.apache.shardingsphere.sharding.route.strategy.none.NoneShardingStrategy;
+import org.apache.shardingsphere.sharding.route.strategy.standard.StandardShardingStrategy;
 
 /**
  * Sharding strategy factory.

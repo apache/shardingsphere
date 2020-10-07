@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.condition;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.strategy.value.RouteValue;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.strategy.standard;
+package org.apache.shardingsphere.sharding.route.strategy.standard;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
-import org.apache.shardingsphere.sharding.strategy.ShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
+import org.apache.shardingsphere.sharding.route.strategy.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.route.strategy.value.RangeRouteValue;
+import org.apache.shardingsphere.sharding.route.strategy.value.RouteValue;
 
 import java.util.Collection;
 import java.util.LinkedList;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.strategy.complex;
+package org.apache.shardingsphere.sharding.route.strategy.complex;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
@@ -24,10 +24,10 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
-import org.apache.shardingsphere.sharding.strategy.ShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
+import org.apache.shardingsphere.sharding.route.strategy.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.route.strategy.value.RangeRouteValue;
+import org.apache.shardingsphere.sharding.route.strategy.value.RouteValue;
 
 import java.util.Collection;
 import java.util.HashMap;

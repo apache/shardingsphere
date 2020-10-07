@@ -34,12 +34,12 @@ import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.sharding.strategy.ShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.ShardingStrategyFactory;
-import org.apache.shardingsphere.sharding.strategy.hint.HintShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.none.NoneShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
+import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategyFactory;
+import org.apache.shardingsphere.sharding.route.strategy.hint.HintShardingStrategy;
+import org.apache.shardingsphere.sharding.route.strategy.none.NoneShardingStrategy;
+import org.apache.shardingsphere.sharding.route.strategy.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.route.strategy.value.RouteValue;
 
 import java.util.ArrayList;
 import java.util.Collection;

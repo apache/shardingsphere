@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.strategy.fixture;
+package org.apache.shardingsphere.sharding.route.strategy.fixture;
 
 import lombok.Getter;
 import lombok.Setter;

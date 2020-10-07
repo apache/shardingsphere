@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.strategy.none;
+package org.apache.shardingsphere.sharding.route.strategy.none;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.sharding.strategy.ShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
+import org.apache.shardingsphere.sharding.route.strategy.value.RouteValue;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 
 import java.util.Collection;

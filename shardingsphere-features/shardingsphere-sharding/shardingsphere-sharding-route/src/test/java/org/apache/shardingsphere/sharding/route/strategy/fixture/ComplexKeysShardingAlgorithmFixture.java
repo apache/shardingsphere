@@ -15,24 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.strategy.value;
+package org.apache.shardingsphere.sharding.route.strategy.fixture;
 
-import com.google.common.collect.Range;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
-/**
- * Route value for range.
- */
-@RequiredArgsConstructor
+import java.util.Collection;
+import java.util.Properties;
+
 @Getter
-@ToString
-public final class RangeRouteValue<T extends Comparable<?>> implements RouteValue {
+@Setter
+public final class ComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<Integer> {
     
-    private final String columnName;
+    private Properties props = new Properties();
     
-    private final String tableName;
+    @Override
+    public void init() {
+    }
     
-    private final Range<T> valueRange;
+    @Override
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
+        return availableTargetNames;
+    }
+    
+    @Override
+    public String getType() {
+        return "COMPLEX_TEST";
+    }
 }

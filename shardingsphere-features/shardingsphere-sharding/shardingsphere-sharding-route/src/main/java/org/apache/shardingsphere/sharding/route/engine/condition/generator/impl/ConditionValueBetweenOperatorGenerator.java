@@ -23,8 +23,8 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionCondi
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGenerator;
 import org.apache.shardingsphere.sharding.route.spi.SPITimeService;
-import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.strategy.value.RangeRouteValue;
+import org.apache.shardingsphere.sharding.route.strategy.value.RouteValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 

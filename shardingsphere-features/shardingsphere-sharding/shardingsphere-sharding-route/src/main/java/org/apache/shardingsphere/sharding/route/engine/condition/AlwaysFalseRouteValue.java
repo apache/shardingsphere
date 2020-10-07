@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition;
 
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.strategy.value.RouteValue;
 
 /**
  * Always false route value.
