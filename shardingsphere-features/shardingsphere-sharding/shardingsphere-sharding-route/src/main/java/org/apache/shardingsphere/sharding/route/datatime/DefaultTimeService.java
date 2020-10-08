@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.spi;
+package org.apache.shardingsphere.sharding.route.datatime;
 
 import java.util.Date;
 
 /**
- * Time service.
+ * Default time service.
  */
-public interface TimeService {
+public final class DefaultTimeService implements TimeService {
     
-    /**
-     * Get time.
-     * 
-     * @return time
-     */
-    Date getTime();
+    @Override
+    public Date getTime() {
+        return new Date();
+    }
 }
