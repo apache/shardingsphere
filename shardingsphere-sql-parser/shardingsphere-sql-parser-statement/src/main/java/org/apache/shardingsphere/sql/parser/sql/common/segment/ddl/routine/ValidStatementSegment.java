@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
@@ -44,23 +45,7 @@ public class ValidStatementSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private CreateTableStatement createTable;
-    
-    private AlterTableStatement alterTable;
-    
-    private DropTableStatement dropTable;
-    
-    private TruncateStatement truncate;
-    
-    private InsertStatement insert;
-    
-    private InsertStatement replace;
-    
-    private UpdateStatement update;
-    
-    private DeleteStatement delete;
-    
-    private SelectStatement select;
+    private SQLStatement sqlStatement;
     
     /**
      * Get create table statement.
@@ -68,7 +53,7 @@ public class ValidStatementSegment implements SQLSegment {
      * @return create table statement
      */
     public Optional<CreateTableStatement> getCreateTable() {
-        return Optional.ofNullable(createTable);
+        return sqlStatement instanceof CreateTableStatement ? Optional.of((CreateTableStatement) sqlStatement) : Optional.empty();
     }
     
     /**
@@ -77,7 +62,7 @@ public class ValidStatementSegment implements SQLSegment {
      * @return alter table statement
      */
     public Optional<AlterTableStatement> getAlterTable() {
-        return Optional.ofNullable(alterTable);
+        return sqlStatement instanceof AlterTableStatement ? Optional.of((AlterTableStatement) sqlStatement) : Optional.empty();
     }
     
     /**
@@ -86,7 +71,7 @@ public class ValidStatementSegment implements SQLSegment {
      * @return drop table statement
      */
     public Optional<DropTableStatement> getDropTable() {
-        return Optional.ofNullable(dropTable);
+        return sqlStatement instanceof DropTableStatement ? Optional.of((DropTableStatement) sqlStatement) : Optional.empty();
     }
     
     /**
@@ -95,7 +80,7 @@ public class ValidStatementSegment implements SQLSegment {
      * @return truncate statement
      */
     public Optional<TruncateStatement> getTruncate() {
-        return Optional.ofNullable(truncate);
+        return sqlStatement instanceof TruncateStatement ? Optional.of((TruncateStatement) sqlStatement) : Optional.empty();
     }
     
     /**
@@ -104,7 +89,7 @@ public class ValidStatementSegment implements SQLSegment {
      * @return insert statement
      */
     public Optional<InsertStatement> getInsert() {
-        return Optional.ofNullable(insert);
+        return sqlStatement instanceof InsertStatement ? Optional.of((InsertStatement) sqlStatement) : Optional.empty();
     }
     
     /**
@@ -113,7 +98,7 @@ public class ValidStatementSegment implements SQLSegment {
      * @return replace statement
      */
     public Optional<InsertStatement> getReplace() {
-        return Optional.ofNullable(replace);
+        return sqlStatement instanceof InsertStatement ? Optional.of((InsertStatement) sqlStatement) : Optional.empty();
     }
     
     /**
@@ -122,7 +107,7 @@ public class ValidStatementSegment implements SQLSegment {
      * @return update statement
      */
     public Optional<UpdateStatement> getUpdate() {
-        return Optional.ofNullable(update);
+        return sqlStatement instanceof UpdateStatement ? Optional.of((UpdateStatement) sqlStatement) : Optional.empty();
     }
     
     /**
@@ -131,7 +116,7 @@ public class ValidStatementSegment implements SQLSegment {
      * @return delete statement
      */
     public Optional<DeleteStatement> getDelete() {
-        return Optional.ofNullable(delete);
+        return sqlStatement instanceof DeleteStatement ? Optional.of((DeleteStatement) sqlStatement) : Optional.empty();
     }
     
     /**
@@ -140,6 +125,6 @@ public class ValidStatementSegment implements SQLSegment {
      * @return select statement
      */
     public Optional<SelectStatement> getSelect() {
-        return Optional.ofNullable(select);
+        return sqlStatement instanceof SelectStatement ? Optional.of((SelectStatement) sqlStatement) : Optional.empty();
     }
 }

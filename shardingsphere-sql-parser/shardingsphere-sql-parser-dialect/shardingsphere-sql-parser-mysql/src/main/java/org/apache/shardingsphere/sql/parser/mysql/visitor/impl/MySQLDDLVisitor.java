@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.mysql.visitor.impl;
 
 import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnSpecificationContext;
@@ -84,11 +82,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Routine
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StorageOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TruncateTableContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ValidDMLStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ValidStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhileStatementContext;
-import org.apache.shardingsphere.sql.parser.core.visitor.ParseTreeVisitorFactory;
-import org.apache.shardingsphere.sql.parser.core.visitor.VisitorRule;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.MySQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
@@ -108,6 +103,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.Valid
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLAlterDatabaseStatement;
@@ -546,22 +542,9 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @Override
     public ASTNode visitValidStatement(final ValidStatementContext ctx) {
         CollectionValue<ValidStatementSegment> result = new CollectionValue<>();
-        ValidStatementSegment validStatement = new ValidStatementSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        if (null != ctx.createTable()) {
-            validStatement.setCreateTable((MySQLCreateTableStatement) visit(ctx.createTable()));
+        ValidStatementSegment validStatement = createValidStatementSegment(ctx);
+        if (null != validStatement.getSqlStatement()) {
             result.getValue().add(validStatement);
-        } else if (null != ctx.alterTable()) {
-            validStatement.setAlterTable((MySQLAlterTableStatement) visit(ctx.alterTable()));
-            result.getValue().add(validStatement);
-        } else if (null != ctx.dropTable()) {
-            validStatement.setDropTable((MySQLDropTableStatement) visit(ctx.dropTable()));
-            result.getValue().add(validStatement);
-        } else if (null != ctx.truncateTable()) {
-            validStatement.setTruncate((MySQLTruncateStatement) visit(ctx.truncateTable()));
-            result.getValue().add(validStatement);
-        }
-        if (null != ctx.validDMLStatement()) {
-            result.combine((CollectionValue<ValidStatementSegment>) visit(ctx.validDMLStatement()));
         }
         if (null != ctx.beginStatement()) {
             result.combine((CollectionValue<ValidStatementSegment>) visit(ctx.beginStatement()));
@@ -572,28 +555,30 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
         return result;
     }
     
-    @Override
-    public ASTNode visitValidDMLStatement(final ValidDMLStatementContext ctx) {
-        CollectionValue<ValidStatementSegment> result = new CollectionValue<>();
-        ValidStatementSegment validStatement = new ValidStatementSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        if (null != ctx.insert()) {
-            validStatement.setInsert((MySQLInsertStatement) createParseTreeVisitor(ctx.insert().getClass()).visit(ctx.insert()));
+    private ValidStatementSegment createValidStatementSegment(final ValidStatementContext ctx) {
+        ValidStatementSegment result = new ValidStatementSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        SQLStatement sqlStatement = null;
+        if (null != ctx.createTable()) {
+            sqlStatement = (MySQLCreateTableStatement) visit(ctx.createTable());
+        } else if (null != ctx.alterTable()) {
+            sqlStatement = (MySQLAlterTableStatement) visit(ctx.alterTable());
+        } else if (null != ctx.dropTable()) {
+            sqlStatement = (MySQLDropTableStatement) visit(ctx.dropTable());
+        } else if (null != ctx.truncateTable()) {
+            sqlStatement = (MySQLTruncateStatement) visit(ctx.truncateTable());
+        } else if (null != ctx.insert()) {
+            sqlStatement = (MySQLInsertStatement) visit(ctx.insert());
         } else if (null != ctx.replace()) {
-            validStatement.setReplace((MySQLInsertStatement) createParseTreeVisitor(ctx.replace().getClass()).visit(ctx.replace()));
+            sqlStatement = (MySQLInsertStatement) visit(ctx.replace());
         } else if (null != ctx.update()) {
-            validStatement.setUpdate((MySQLUpdateStatement) createParseTreeVisitor(ctx.update().getClass()).visit(ctx.update()));
+            sqlStatement = (MySQLUpdateStatement) visit(ctx.update());
         } else if (null != ctx.delete()) {
-            validStatement.setDelete((MySQLDeleteStatement) createParseTreeVisitor(ctx.delete().getClass()).visit(ctx.delete()));
+            sqlStatement = (MySQLDeleteStatement) visit(ctx.delete());
         } else if (null != ctx.select()) {
-            validStatement.setSelect((MySQLSelectStatement) createParseTreeVisitor(ctx.select().getClass()).visit(ctx.select()));
+            sqlStatement = (MySQLSelectStatement) visit(ctx.select());
         }
-        result.getValue().add(validStatement);
+        result.setSqlStatement(sqlStatement);
         return result;
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private ParseTreeVisitor createParseTreeVisitor(final Class<? extends ParseTree> parseTreeClass) {
-        return ParseTreeVisitorFactory.newInstance("MySQL", VisitorRule.valueOf(parseTreeClass));
     }
     
     @SuppressWarnings("unchecked")

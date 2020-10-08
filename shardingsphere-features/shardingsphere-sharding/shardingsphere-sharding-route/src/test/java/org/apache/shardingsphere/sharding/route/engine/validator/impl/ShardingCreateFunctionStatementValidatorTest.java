@@ -24,8 +24,8 @@ import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableExce
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateFunctionStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -56,11 +56,13 @@ public final class ShardingCreateFunctionStatementValidatorTest {
         selectStatement.setFrom(new SimpleTableSegment(0, 0, new IdentifierValue("t_order_item")));
         MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
         createTableStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
-        ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
-        validStatementSegment.setCreateTable(createTableStatement);
-        validStatementSegment.setSelect(selectStatement);
+        ValidStatementSegment createTableValidStatementSegment = new ValidStatementSegment(0, 0);
+        createTableValidStatementSegment.setSqlStatement(createTableStatement);
+        ValidStatementSegment selectValidStatementSegment = new ValidStatementSegment(0, 0);
+        selectValidStatementSegment.setSqlStatement(selectStatement);
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);
-        routineBody.getValidStatements().add(validStatementSegment);
+        routineBody.getValidStatements().add(createTableValidStatementSegment);
+        routineBody.getValidStatements().add(selectValidStatementSegment);
         MySQLCreateFunctionStatement sqlStatement = new MySQLCreateFunctionStatement();
         sqlStatement.setRoutineBody(routineBody);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
@@ -73,7 +75,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
         unconfiguredSchemaMetaDataMap.put("ds_0", Collections.singleton("t_order_item"));
         when(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap()).thenReturn(unconfiguredSchemaMetaDataMap);
         when(ruleSchemaMetaData.getAllTableNames()).thenReturn(Collections.emptyList());
-        SQLStatementContext<CreateFunctionStatement> sqlStatementContext = new CreateFunctionStatementContext(sqlStatement);
+        SQLStatementContext<CreateFunctionStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
         new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
     
@@ -82,7 +84,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
-        validStatementSegment.setSelect(selectStatement);
+        validStatementSegment.setSqlStatement(selectStatement);
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);
         routineBody.getValidStatements().add(validStatementSegment);
         MySQLCreateFunctionStatement sqlStatement = new MySQLCreateFunctionStatement();
@@ -93,7 +95,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
         when(metaData.getRuleSchemaMetaData()).thenReturn(ruleSchemaMetaData);
         when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
         when(schemaMetaData.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
-        SQLStatementContext<CreateFunctionStatement> sqlStatementContext = new CreateFunctionStatementContext(sqlStatement);
+        SQLStatementContext<CreateFunctionStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
         new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
     
@@ -102,7 +104,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
-        validStatementSegment.setSelect(selectStatement);
+        validStatementSegment.setSqlStatement(selectStatement);
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);
         routineBody.getValidStatements().add(validStatementSegment);
         MySQLCreateFunctionStatement sqlStatement = new MySQLCreateFunctionStatement();
@@ -116,7 +118,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
         Map<String, Collection<String>> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
         unconfiguredSchemaMetaDataMap.put("ds_0", Collections.emptyList());
         when(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap()).thenReturn(unconfiguredSchemaMetaDataMap);
-        SQLStatementContext<CreateFunctionStatement> sqlStatementContext = new CreateFunctionStatementContext(sqlStatement);
+        SQLStatementContext<CreateFunctionStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
         new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
     
@@ -125,7 +127,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
         MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
         createTableStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
-        validStatementSegment.setCreateTable(createTableStatement);
+        validStatementSegment.setSqlStatement(createTableStatement);
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);
         routineBody.getValidStatements().add(validStatementSegment);
         MySQLCreateFunctionStatement sqlStatement = new MySQLCreateFunctionStatement();
@@ -134,7 +136,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
         RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
         when(metaData.getRuleSchemaMetaData()).thenReturn(ruleSchemaMetaData);
         when(ruleSchemaMetaData.getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        SQLStatementContext<CreateFunctionStatement> sqlStatementContext = new CreateFunctionStatementContext(sqlStatement);
+        SQLStatementContext<CreateFunctionStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
         new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
 }
