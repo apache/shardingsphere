@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl
 
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
-import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -44,45 +44,45 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     public void assertGenerateConditionValue() {
         int value = 1;
         BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, null, new LiteralExpressionSegment(0, 0, value), "=", null);
-        Optional<RouteValue> routeValue = generator.generate(rightValue, column, new LinkedList<>());
-        assertTrue(routeValue.isPresent());
-        assertTrue(((ListRouteValue<Integer>) routeValue.get()).getValues().contains(value));
+        Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>());
+        assertTrue(shardingConditionValue.isPresent());
+        assertTrue(((ListShardingConditionValue<Integer>) shardingConditionValue.get()).getValues().contains(value));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithLessThanOperator() {
         BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, null, new LiteralExpressionSegment(0, 0, 1), "<", null);
-        Optional<RouteValue> routeValue = generator.generate(rightValue, column, new LinkedList<>());
-        assertTrue(routeValue.isPresent());
-        assertTrue(Range.lessThan(1).encloses(((RangeRouteValue<Integer>) routeValue.get()).getValueRange()));
+        Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>());
+        assertTrue(shardingConditionValue.isPresent());
+        assertTrue(Range.lessThan(1).encloses(((RangeShardingConditionValue<Integer>) shardingConditionValue.get()).getValueRange()));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithGreaterThanOperator() {
         BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, null, new LiteralExpressionSegment(0, 0, 1), ">", null);
-        Optional<RouteValue> routeValue = generator.generate(rightValue, column, new LinkedList<>());
-        assertTrue(routeValue.isPresent());
-        assertTrue(Range.greaterThan(1).encloses(((RangeRouteValue<Integer>) routeValue.get()).getValueRange()));
+        Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>());
+        assertTrue(shardingConditionValue.isPresent());
+        assertTrue(Range.greaterThan(1).encloses(((RangeShardingConditionValue<Integer>) shardingConditionValue.get()).getValueRange()));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithAtMostOperator() {
         BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, null, new LiteralExpressionSegment(0, 0, 1), "<=", null);
-        Optional<RouteValue> routeValue = generator.generate(rightValue, column, new LinkedList<>());
-        assertTrue(routeValue.isPresent());
-        assertTrue(Range.atMost(1).encloses(((RangeRouteValue<Integer>) routeValue.get()).getValueRange()));
+        Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>());
+        assertTrue(shardingConditionValue.isPresent());
+        assertTrue(Range.atMost(1).encloses(((RangeShardingConditionValue<Integer>) shardingConditionValue.get()).getValueRange()));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithAtLeastOperator() {
         BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, null, new LiteralExpressionSegment(0, 0, 1), ">=", null);
-        Optional<RouteValue> routeValue = generator.generate(rightValue, column, new LinkedList<>());
-        assertTrue(routeValue.isPresent());
-        assertTrue(Range.atLeast(1).encloses(((RangeRouteValue<Integer>) routeValue.get()).getValueRange()));
+        Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>());
+        assertTrue(shardingConditionValue.isPresent());
+        assertTrue(Range.atLeast(1).encloses(((RangeShardingConditionValue<Integer>) shardingConditionValue.get()).getValueRange()));
     }
     
     @Test
@@ -101,8 +101,8 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     @Test
     public void assertGenerateConditionValueWithNowExpression() {
         BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, null, new LiteralExpressionSegment(0, 0, "now()"), "=", null);
-        Optional<RouteValue> routeValue = generator.generate(rightValue, column, new LinkedList<>());
-        assertTrue(routeValue.isPresent());
-        assertFalse(((ListRouteValue<Integer>) routeValue.get()).getValues().isEmpty());
+        Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>());
+        assertTrue(shardingConditionValue.isPresent());
+        assertFalse(((ListShardingConditionValue<Integer>) shardingConditionValue.get()).getValues().isEmpty());
     }
 }

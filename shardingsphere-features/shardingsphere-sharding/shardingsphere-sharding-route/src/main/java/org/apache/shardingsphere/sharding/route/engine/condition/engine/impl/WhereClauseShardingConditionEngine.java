@@ -20,16 +20,16 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine.impl;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseRouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.AlwaysFalseShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGeneratorFactory;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
@@ -38,7 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractFromExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereSegmentExtractUtils;
@@ -69,10 +69,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
             return Collections.emptyList();
         }
         List<ShardingCondition> result = new ArrayList<>();
-        Optional<WhereSegment> whereSegment = ((WhereAvailable) sqlStatementContext).getWhere();
-        if (whereSegment.isPresent()) {
-            result.addAll(createShardingConditions(sqlStatementContext, whereSegment.get().getExpr(), parameters));
-        }
+        ((WhereAvailable) sqlStatementContext).getWhere().ifPresent(segment -> result.addAll(createShardingConditions(sqlStatementContext, segment.getExpr(), parameters)));
         Collection<WhereSegment> subqueryWhereSegments = sqlStatementContext.getSqlStatement() instanceof SelectStatement
                 ? WhereSegmentExtractUtils.getSubqueryWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()) : Collections.emptyList();
         for (WhereSegment each : subqueryWhereSegments) {
@@ -86,23 +83,21 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
     
     private Collection<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final ExpressionSegment expressionSegment, final List<Object> parameters) {
         Collection<ShardingCondition> result = new LinkedList<>();
-    
-        ExpressionBuilder expressionBuilder = new ExpressionBuilder(expressionSegment);
-        Collection<AndPredicate> andPredicates = new LinkedList<>(expressionBuilder.extractAndPredicates().getAndPredicates());
-        for (AndPredicate each : andPredicates) {
-            Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(sqlStatementContext, each, parameters);
-            if (routeValueMap.isEmpty()) {
+        for (AndPredicate each : new ExpressionBuilder(expressionSegment).extractAndPredicates().getAndPredicates()) {
+            Map<Column, Collection<ShardingConditionValue>> shardingConditionValues = createShardingConditionValueMap(sqlStatementContext, each, parameters);
+            if (shardingConditionValues.isEmpty()) {
                 return Collections.emptyList();
             }
-            result.add(createShardingCondition(routeValueMap));
+            result.add(createShardingCondition(shardingConditionValues));
         }
         return result;
     }
     
-    private Map<Column, Collection<RouteValue>> createRouteValueMap(final SQLStatementContext<?> sqlStatementContext, final AndPredicate expressions, final List<Object> parameters) {
-        Map<Column, Collection<RouteValue>> result = new HashMap<>();
-        for (ExpressionSegment each : expressions.getPredicates()) {
-            Optional<ColumnSegment> columnSegment = ColumnExtractFromExpression.extract(each);
+    private Map<Column, Collection<ShardingConditionValue>> createShardingConditionValueMap(final SQLStatementContext<?> sqlStatementContext, 
+                                                                                            final AndPredicate andPredicate, final List<Object> parameters) {
+        Map<Column, Collection<ShardingConditionValue>> result = new HashMap<>(andPredicate.getPredicates().size(), 1);
+        for (ExpressionSegment each : andPredicate.getPredicates()) {
+            Optional<ColumnSegment> columnSegment = ColumnExtractor.extract(each);
             if (!columnSegment.isPresent()) {
                 continue;
             }
@@ -111,29 +106,29 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
                 continue;
             }
             Column column = new Column(columnSegment.get().getIdentifier().getValue(), tableName.get());
-            Optional<RouteValue> routeValue = ConditionValueGeneratorFactory.generate(each, column, parameters);
-            if (routeValue.isPresent()) {
+            Optional<ShardingConditionValue> shardingConditionValue = ConditionValueGeneratorFactory.generate(each, column, parameters);
+            if (shardingConditionValue.isPresent()) {
                 if (!result.containsKey(column)) {
-                    Collection<RouteValue> routeValues = new LinkedList<>();
-                    routeValues.add(routeValue.get());
-                    result.put(column, routeValues);
+                    Collection<ShardingConditionValue> shardingConditionValues = new LinkedList<>();
+                    shardingConditionValues.add(shardingConditionValue.get());
+                    result.put(column, shardingConditionValues);
                 } else {
-                    result.get(column).add(routeValue.get());
+                    result.get(column).add(shardingConditionValue.get());
                 }
             }
         }
         return result;
     }
     
-    private ShardingCondition createShardingCondition(final Map<Column, Collection<RouteValue>> routeValueMap) {
+    private ShardingCondition createShardingCondition(final Map<Column, Collection<ShardingConditionValue>> shardingConditionValues) {
         ShardingCondition result = new ShardingCondition();
-        for (Entry<Column, Collection<RouteValue>> entry : routeValueMap.entrySet()) {
+        for (Entry<Column, Collection<ShardingConditionValue>> entry : shardingConditionValues.entrySet()) {
             try {
-                RouteValue routeValue = mergeRouteValues(entry.getKey(), entry.getValue());
-                if (routeValue instanceof AlwaysFalseRouteValue) {
+                ShardingConditionValue shardingConditionValue = mergeShardingConditionValues(entry.getKey(), entry.getValue());
+                if (shardingConditionValue instanceof AlwaysFalseShardingConditionValue) {
                     return new AlwaysFalseShardingCondition();
                 }
-                result.getRouteValues().add(routeValue);
+                result.getValues().add(shardingConditionValue);
             } catch (final ClassCastException ex) {
                 throw new ShardingSphereException("Found different types for sharding value `%s`.", entry.getKey());
             }
@@ -142,34 +137,34 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
     }
     
     @SuppressWarnings("unchecked")
-    private RouteValue mergeRouteValues(final Column column, final Collection<RouteValue> routeValues) {
+    private ShardingConditionValue mergeShardingConditionValues(final Column column, final Collection<ShardingConditionValue> shardingConditionValues) {
         Collection<Comparable<?>> listValue = null;
         Range<Comparable<?>> rangeValue = null;
-        for (RouteValue each : routeValues) {
-            if (each instanceof ListRouteValue) {
-                listValue = mergeListRouteValues(((ListRouteValue) each).getValues(), listValue);
+        for (ShardingConditionValue each : shardingConditionValues) {
+            if (each instanceof ListShardingConditionValue) {
+                listValue = mergeListShardingValues(((ListShardingConditionValue) each).getValues(), listValue);
                 if (listValue.isEmpty()) {
-                    return new AlwaysFalseRouteValue();
+                    return new AlwaysFalseShardingConditionValue();
                 }
-            } else if (each instanceof RangeRouteValue) {
+            } else if (each instanceof RangeShardingConditionValue) {
                 try {
-                    rangeValue = mergeRangeRouteValues(((RangeRouteValue) each).getValueRange(), rangeValue);
+                    rangeValue = mergeRangeShardingValues(((RangeShardingConditionValue) each).getValueRange(), rangeValue);
                 } catch (final IllegalArgumentException ex) {
-                    return new AlwaysFalseRouteValue();
+                    return new AlwaysFalseShardingConditionValue();
                 }
             }
         }
         if (null == listValue) {
-            return new RangeRouteValue<>(column.getName(), column.getTableName(), rangeValue);
+            return new RangeShardingConditionValue<>(column.getName(), column.getTableName(), rangeValue);
         }
         if (null == rangeValue) {
-            return new ListRouteValue<>(column.getName(), column.getTableName(), listValue);
+            return new ListShardingConditionValue<>(column.getName(), column.getTableName(), listValue);
         }
-        listValue = mergeListAndRangeRouteValues(listValue, rangeValue);
-        return listValue.isEmpty() ? new AlwaysFalseRouteValue() : new ListRouteValue<>(column.getName(), column.getTableName(), listValue);
+        listValue = mergeListAndRangeShardingValues(listValue, rangeValue);
+        return listValue.isEmpty() ? new AlwaysFalseShardingConditionValue() : new ListShardingConditionValue<>(column.getName(), column.getTableName(), listValue);
     }
     
-    private Collection<Comparable<?>> mergeListRouteValues(final Collection<Comparable<?>> value1, final Collection<Comparable<?>> value2) {
+    private Collection<Comparable<?>> mergeListShardingValues(final Collection<Comparable<?>> value1, final Collection<Comparable<?>> value2) {
         if (null == value2) {
             return value1;
         }
@@ -177,11 +172,11 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
         return value1;
     }
     
-    private Range<Comparable<?>> mergeRangeRouteValues(final Range<Comparable<?>> value1, final Range<Comparable<?>> value2) {
+    private Range<Comparable<?>> mergeRangeShardingValues(final Range<Comparable<?>> value1, final Range<Comparable<?>> value2) {
         return null == value2 ? value1 : SafeNumberOperationUtils.safeIntersection(value1, value2);
     }
     
-    private Collection<Comparable<?>> mergeListAndRangeRouteValues(final Collection<Comparable<?>> listValue, final Range<Comparable<?>> rangeValue) {
+    private Collection<Comparable<?>> mergeListAndRangeShardingValues(final Collection<Comparable<?>> listValue, final Range<Comparable<?>> rangeValue) {
         Collection<Comparable<?>> result = new LinkedList<>();
         for (Comparable<?> each : listValue) {
             if (SafeNumberOperationUtils.safeContains(rangeValue, each)) {

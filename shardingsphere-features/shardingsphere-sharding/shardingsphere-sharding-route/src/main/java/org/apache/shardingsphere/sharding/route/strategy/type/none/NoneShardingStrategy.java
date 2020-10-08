@@ -15,39 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.fixture;
+package org.apache.shardingsphere.sharding.route.strategy.type.none;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
-import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Properties;
 
+/**
+ * None sharding strategy.
+ */
 @Getter
-@Setter
-public final class HintShardingAlgorithmFixture implements HintShardingAlgorithm<Integer> {
+public final class NoneShardingStrategy implements ShardingStrategy {
     
-    private Properties props = new Properties();
-    
-    @Override
-    public void init() {
-    }
+    private final Collection<String> shardingColumns = Collections.emptyList();
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Integer> shardingValue) {
-        for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(shardingValue.getValues().iterator().next() % 2))) {
-                return Collections.singletonList(each);
-            }
-        }
+    public ShardingAlgorithm getShardingAlgorithm() {
         return null;
     }
     
     @Override
-    public String getType() {
-        return "HINT_TEST";
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingConditionValue> shardingConditionValues, final ConfigurationProperties props) {
+        return availableTargetNames;
     }
 }

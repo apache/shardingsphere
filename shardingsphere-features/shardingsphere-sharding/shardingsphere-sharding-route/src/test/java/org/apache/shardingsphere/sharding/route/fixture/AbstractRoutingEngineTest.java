@@ -26,8 +26,8 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -160,11 +160,11 @@ public abstract class AbstractRoutingEngineTest {
     
     protected final ShardingConditions createShardingConditions(final String tableName) {
         List<ShardingCondition> result = new ArrayList<>(1);
-        RouteValue shardingValue1 = new ListRouteValue<>("user_id", tableName, Collections.singleton(1L));
-        RouteValue shardingValue2 = new ListRouteValue<>("order_id", tableName, Collections.singleton(1L));
+        ShardingConditionValue shardingConditionValue1 = new ListShardingConditionValue<>("user_id", tableName, Collections.singleton(1L));
+        ShardingConditionValue shardingConditionValue2 = new ListShardingConditionValue<>("order_id", tableName, Collections.singleton(1L));
         ShardingCondition shardingCondition = new ShardingCondition();
-        shardingCondition.getRouteValues().add(shardingValue1);
-        shardingCondition.getRouteValues().add(shardingValue2);
+        shardingCondition.getValues().add(shardingConditionValue1);
+        shardingCondition.getValues().add(shardingConditionValue2);
         result.add(shardingCondition);
         return new ShardingConditions(result);
     }

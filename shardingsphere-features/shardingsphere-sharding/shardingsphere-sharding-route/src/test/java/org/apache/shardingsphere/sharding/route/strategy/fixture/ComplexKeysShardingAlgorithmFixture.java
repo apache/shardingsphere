@@ -15,32 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.strategy.none;
+package org.apache.shardingsphere.sharding.route.strategy.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.sharding.strategy.ShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import lombok.Setter;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Properties;
 
-/**
- * None sharding strategy.
- */
 @Getter
-public final class NoneShardingStrategy implements ShardingStrategy {
+@Setter
+public final class ComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<Integer> {
     
-    private final Collection<String> shardingColumns = Collections.emptyList();
-
+    private Properties props = new Properties();
+    
     @Override
-    public ShardingAlgorithm getShardingAlgorithm() {
-        return null;
+    public void init() {
     }
-
+    
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues, final ConfigurationProperties props) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
         return availableTargetNames;
+    }
+    
+    @Override
+    public String getType() {
+        return "COMPLEX_TEST";
     }
 }

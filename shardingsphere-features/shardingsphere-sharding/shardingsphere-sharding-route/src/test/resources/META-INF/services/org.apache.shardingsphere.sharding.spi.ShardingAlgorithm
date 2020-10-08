@@ -15,5 +15,6 @@
 # limitations under the License.
 #
  
-org.apache.shardingsphere.sharding.route.fixture.HintShardingAlgorithmFixture
-
+org.apache.shardingsphere.sharding.route.strategy.fixture.ComplexKeysShardingAlgorithmFixture
+org.apache.shardingsphere.sharding.route.strategy.fixture.HintShardingAlgorithmFixture
+org.apache.shardingsphere.sharding.route.strategy.fixture.StandardShardingAlgorithmFixture

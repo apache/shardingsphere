@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.strategy.value;
+package org.apache.shardingsphere.sharding.route.engine.condition.value;
 
-import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class ListRouteValueTest {
+/**
+ * Always false sharding condition value.
+ */
+public final class AlwaysFalseShardingConditionValue implements ShardingConditionValue {
     
-    @Test
-    public void assertToStringWithEqual() {
-        assertThat(new ListRouteValue<>("order_id", "t_order", Collections.singleton(10)).toString(), is("t_order.order_id = 10"));
+    @Override
+    public String getColumnName() {
+        return "";
     }
     
-    @Test
-    public void assertToStringWithIn() {
-        assertThat(new ListRouteValue<>("order_id", "t_order", Arrays.asList(10, 20)).toString(), is("t_order.order_id in (10,20)"));
+    @Override
+    public String getTableName() {
+        return "";
     }
 }

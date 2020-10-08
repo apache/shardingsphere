@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.condition.generator;
 
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 import java.util.List;
@@ -39,5 +39,5 @@ public interface ConditionValueGenerator<T extends ExpressionSegment> {
      * @param parameters SQL parameters
      * @return route value
      */
-    Optional<RouteValue> generate(T predicateRightValue, Column column, List<Object> parameters);
+    Optional<ShardingConditionValue> generate(T predicateRightValue, Column column, List<Object> parameters);
 }

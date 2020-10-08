@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.S
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractFromExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -83,7 +83,7 @@ public final class ShadowConditionEngine {
     
     private Optional<ShadowCondition> createShadowCondition(final AndPredicate andPredicate) {
         for (ExpressionSegment predicate : andPredicate.getPredicates()) {
-            Optional<ColumnSegment> column = ColumnExtractFromExpression.extract(predicate);
+            Optional<ColumnSegment> column = ColumnExtractor.extract(predicate);
             if (!column.isPresent()) {
                 continue;
             }

@@ -24,9 +24,9 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionCondi
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGenerator;
 import org.apache.shardingsphere.sharding.route.spi.SPITimeService;
-import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 
 import java.util.Arrays;
@@ -51,14 +51,14 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
     private static final List<String> OPERATORS = Arrays.asList(EQUAL, GREATER_THAN, LESS_THAN, AT_LEAST, AT_MOST);
     
     @Override
-    public Optional<RouteValue> generate(final BinaryOperationExpression predicate, final Column column, final List<Object> parameters) {
+    public Optional<ShardingConditionValue> generate(final BinaryOperationExpression predicate, final Column column, final List<Object> parameters) {
         String operator = predicate.getOperator();
         if (!isSupportedOperator(operator)) {
             return Optional.empty();
         }
-        Optional<Comparable<?>> routeValue = new ConditionValue(predicate.getRight(), parameters).getValue();
-        if (routeValue.isPresent()) {
-            return generate(routeValue.get(), column, operator);
+        Optional<Comparable<?>> conditionValue = new ConditionValue(predicate.getRight(), parameters).getValue();
+        if (conditionValue.isPresent()) {
+            return generate(conditionValue.get(), column, operator);
         }
         if (ExpressionConditionUtils.isNowExpression(predicate.getRight())) {
             return generate(new SPITimeService().getTime(), column, operator);
@@ -66,20 +66,20 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
         return Optional.empty();
     }
     
-    private Optional<RouteValue> generate(final Comparable<?> comparable, final Column column, final String operator) {
+    private Optional<ShardingConditionValue> generate(final Comparable<?> comparable, final Column column, final String operator) {
         String columnName = column.getName();
         String tableName = column.getTableName();
         switch (operator) {
             case EQUAL:
-                return Optional.of(new ListRouteValue<>(columnName, tableName, Lists.newArrayList(comparable)));
+                return Optional.of(new ListShardingConditionValue<>(columnName, tableName, Lists.newArrayList(comparable)));
             case GREATER_THAN:
-                return Optional.of(new RangeRouteValue<>(columnName, tableName, Range.greaterThan(comparable)));
+                return Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.greaterThan(comparable)));
             case LESS_THAN:
-                return Optional.of(new RangeRouteValue<>(columnName, tableName, Range.lessThan(comparable)));
+                return Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.lessThan(comparable)));
             case AT_MOST:
-                return Optional.of(new RangeRouteValue<>(columnName, tableName, Range.atMost(comparable)));
+                return Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.atMost(comparable)));
             case AT_LEAST:
-                return Optional.of(new RangeRouteValue<>(columnName, tableName, Range.atLeast(comparable)));
+                return Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.atLeast(comparable)));
             default:
                 return Optional.empty();
         }

@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.strategy;
+package org.apache.shardingsphere.sharding.route.strategy;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.sharding.strategy.fixture.StandardShardingAlgorithmFixture;
-import org.apache.shardingsphere.sharding.strategy.complex.ComplexShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.fixture.ComplexKeysShardingAlgorithmFixture;
-import org.apache.shardingsphere.sharding.strategy.none.NoneShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.standard.StandardShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.strategy.type.complex.ComplexShardingStrategy;
+import org.apache.shardingsphere.sharding.route.strategy.fixture.ComplexKeysShardingAlgorithmFixture;
+import org.apache.shardingsphere.sharding.route.strategy.fixture.StandardShardingAlgorithmFixture;
+import org.apache.shardingsphere.sharding.route.strategy.type.none.NoneShardingStrategy;
+import org.apache.shardingsphere.sharding.route.strategy.type.standard.StandardShardingStrategy;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -52,15 +52,15 @@ public final class ShardingStrategyTest {
     @Test
     public void assertDoShardingForBetweenSingleKey() {
         StandardShardingStrategy strategy = new StandardShardingStrategy("column", new StandardShardingAlgorithmFixture());
-        assertThat(strategy.doSharding(targets, Collections.singletonList(new RangeRouteValue<>("column", "logicTable", Range.open(1, 3))), new ConfigurationProperties(new Properties())),
+        assertThat(strategy.doSharding(targets, Collections.singletonList(new RangeShardingConditionValue<>("column", "logicTable", Range.open(1, 3))), new ConfigurationProperties(new Properties())),
                 is(Sets.newHashSet("1")));
     }
     
     @Test
     public void assertDoShardingForMultipleKeys() {
         ComplexShardingStrategy strategy = new ComplexShardingStrategy("column1, column2", new ComplexKeysShardingAlgorithmFixture());
-        List<RouteValue> routeValues = Lists.newArrayList(
-                new ListRouteValue<>("column1", "logicTable", Collections.singletonList(1)), new RangeRouteValue<>("column2", "logicTable", Range.open(1, 3)));
-        assertThat(strategy.doSharding(targets, routeValues, new ConfigurationProperties(new Properties())), is(Sets.newHashSet("1", "2", "3")));
+        List<ShardingConditionValue> shardingConditionValues = Lists.newArrayList(
+                new ListShardingConditionValue<>("column1", "logicTable", Collections.singletonList(1)), new RangeShardingConditionValue<>("column2", "logicTable", Range.open(1, 3)));
+        assertThat(strategy.doSharding(targets, shardingConditionValues, new ConfigurationProperties(new Properties())), is(Sets.newHashSet("1", "2", "3")));
     }
 }

@@ -15,30 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.strategy.value;
+package org.apache.shardingsphere.sharding.route.engine.condition.value;
 
-import com.google.common.base.Joiner;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
+import java.util.Collections;
 
-/**
- * Route value for list values.
- */
-@RequiredArgsConstructor
-@Getter
-public final class ListRouteValue<T extends Comparable<?>> implements RouteValue {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class ListShardingConditionValueTest {
     
-    private final String columnName;
+    @Test
+    public void assertToStringWithEqual() {
+        assertThat(new ListShardingConditionValue<>("order_id", "t_order", Collections.singleton(10)).toString(), is("t_order.order_id = 10"));
+    }
     
-    private final String tableName;
-    
-    private final Collection<T> values;
-    
-    @Override
-    public String toString() {
-        return tableName + "." + columnName + (1 == values.size() ? " = " + new ArrayList<>(values).get(0) : " in (" + Joiner.on(",").join(values) + ")");
+    @Test
+    public void assertToStringWithIn() {
+        assertThat(new ListShardingConditionValue<>("order_id", "t_order", Arrays.asList(10, 20)).toString(), is("t_order.order_id in (10,20)"));
     }
 }

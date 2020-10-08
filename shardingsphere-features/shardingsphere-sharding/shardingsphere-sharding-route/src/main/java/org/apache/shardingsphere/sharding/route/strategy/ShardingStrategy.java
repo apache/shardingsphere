@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.strategy;
+package org.apache.shardingsphere.sharding.route.strategy;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
 
 import java.util.Collection;
 
@@ -34,7 +34,7 @@ public interface ShardingStrategy {
      * @return sharding columns
      */
     Collection<String> getShardingColumns();
-
+    
     /**
      * Get sharding algorithm.
      *
@@ -45,10 +45,10 @@ public interface ShardingStrategy {
     /**
      * Sharding.
      *
-     * @param availableTargetNames available data sources or tables's names
-     * @param shardingValues sharding values
-     * @param props ShardingSphere properties
-     * @return sharding results for data sources or tables's names
+     * @param availableTargetNames available data source or table names
+     * @param shardingConditionValues sharding condition values
+     * @param props configuration properties
+     * @return sharding results for data source or table names
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<RouteValue> shardingValues, ConfigurationProperties props);
+    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingConditionValue> shardingConditionValues, ConfigurationProperties props);
 }

@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.strategy.hint;
+package org.apache.shardingsphere.sharding.route.strategy.type.hint;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
-import org.apache.shardingsphere.sharding.strategy.ShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 
 import java.util.Collection;
 import java.util.TreeSet;
@@ -37,9 +37,9 @@ public final class HintShardingStrategy implements ShardingStrategy {
     
     private final Collection<String> shardingColumns;
     
-    private final HintShardingAlgorithm shardingAlgorithm;
+    private final HintShardingAlgorithm<?> shardingAlgorithm;
     
-    public HintShardingStrategy(final HintShardingAlgorithm shardingAlgorithm) {
+    public HintShardingStrategy(final HintShardingAlgorithm<?> shardingAlgorithm) {
         Preconditions.checkNotNull(shardingAlgorithm, "Sharding algorithm cannot be null.");
         shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.shardingAlgorithm = shardingAlgorithm;
@@ -47,8 +47,8 @@ public final class HintShardingStrategy implements ShardingStrategy {
     
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues, final ConfigurationProperties props) {
-        ListRouteValue shardingValue = (ListRouteValue) shardingValues.iterator().next();
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingConditionValue> shardingConditionValues, final ConfigurationProperties props) {
+        ListShardingConditionValue<?> shardingValue = (ListShardingConditionValue) shardingConditionValues.iterator().next();
         Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, 
                 new HintShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), shardingValue.getValues()));
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);

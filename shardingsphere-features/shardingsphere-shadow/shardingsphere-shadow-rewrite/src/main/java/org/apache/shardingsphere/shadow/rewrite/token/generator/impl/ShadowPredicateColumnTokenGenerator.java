@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractFromExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -66,7 +66,7 @@ public final class ShadowPredicateColumnTokenGenerator extends BaseShadowSQLToke
         List<ExpressionSegment> predicates = (LinkedList<ExpressionSegment>) andPredicate.getPredicates();
         for (int i = 0; i < predicates.size(); i++) {
             ExpressionSegment expression = predicates.get(i);
-            Optional<ColumnSegment> column = ColumnExtractFromExpression.extract(expression);
+            Optional<ColumnSegment> column = ColumnExtractor.extract(expression);
             if (!column.isPresent()) {
                 continue;
             }

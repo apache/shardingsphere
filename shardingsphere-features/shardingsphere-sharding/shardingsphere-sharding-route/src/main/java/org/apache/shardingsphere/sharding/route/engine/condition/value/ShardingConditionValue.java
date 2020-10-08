@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.strategy.value;
+package org.apache.shardingsphere.sharding.route.engine.condition.value;
 
 /**
- * Route value.
+ * Sharding condition value.
  */
-public interface RouteValue {
+public interface ShardingConditionValue {
     
     /**
      * Get column name.

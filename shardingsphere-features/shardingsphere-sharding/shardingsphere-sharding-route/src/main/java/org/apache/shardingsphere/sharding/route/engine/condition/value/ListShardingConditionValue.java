@@ -15,24 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.strategy.value;
+package org.apache.shardingsphere.sharding.route.engine.condition.value;
 
-import com.google.common.collect.Range;
+import com.google.common.base.Joiner;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
- * Route value for range.
+ * Sharding condition value for list values.
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
-public final class RangeRouteValue<T extends Comparable<?>> implements RouteValue {
+public final class ListShardingConditionValue<T extends Comparable<?>> implements ShardingConditionValue {
     
     private final String columnName;
     
     private final String tableName;
     
-    private final Range<T> valueRange;
+    private final Collection<T> values;
+    
+    @Override
+    public String toString() {
+        return tableName + "." + columnName + (1 == values.size() ? " = " + new ArrayList<>(values).get(0) : " in (" + Joiner.on(",").join(values) + ")");
+    }
 }

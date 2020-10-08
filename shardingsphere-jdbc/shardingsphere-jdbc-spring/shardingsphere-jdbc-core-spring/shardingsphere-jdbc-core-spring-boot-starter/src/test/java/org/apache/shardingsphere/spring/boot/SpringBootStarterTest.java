@@ -33,7 +33,6 @@ import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardi
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.sharding.strategy.ShardingStrategy;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -105,14 +104,6 @@ public class SpringBootStarterTest {
         assertThat(tableRule.getActualDatasourceNames(), is(Sets.newHashSet("ds_0", "ds_1")));
         assertThat(tableRule.getDataNodeGroups(), is(DataNodeUtil.getDataNodeGroups(dataNodes)));
         assertThat(tableRule.getDatasourceToTablesMap(), is(ImmutableMap.of("ds_1", Sets.newHashSet("t_order_0", "t_order_1"), "ds_0", Sets.newHashSet("t_order_0", "t_order_1"))));
-        ShardingStrategy databaseShardingStrategy = tableRule.getDatabaseShardingStrategy();
-        assertNotNull(databaseShardingStrategy);
-        assertThat(databaseShardingStrategy.getShardingColumns(), is(Sets.newTreeSet(Collections.singleton("user_id"))));
-        assertThat(databaseShardingStrategy.getShardingAlgorithm().getProps().getProperty("algorithm-expression"), is("ds_$->{user_id % 2}"));
-        ShardingStrategy tableShardingStrategy = tableRule.getTableShardingStrategy();
-        assertNotNull(tableShardingStrategy);
-        assertThat(tableShardingStrategy.getShardingColumns(), is(Sets.newTreeSet(Collections.singleton("order_id"))));
-        assertThat(tableShardingStrategy.getShardingAlgorithm().getProps().getProperty("algorithm-expression"), is("t_order_$->{order_id % 2}"));
     }
     
     private void assertPrimaryReplicaReplicationRule(final PrimaryReplicaReplicationRule rule) {

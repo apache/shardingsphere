@@ -23,8 +23,8 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionCondi
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGenerator;
 import org.apache.shardingsphere.sharding.route.spi.SPITimeService;
-import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 
@@ -38,21 +38,21 @@ import java.util.Optional;
 public final class ConditionValueBetweenOperatorGenerator implements ConditionValueGenerator<BetweenExpression> {
     
     @Override
-    public Optional<RouteValue> generate(final BetweenExpression predicate, final Column column, final List<Object> parameters) {
-        Optional<Comparable<?>> betweenRouteValue = new ConditionValue(predicate.getBetweenExpr(), parameters).getValue();
-        Optional<Comparable<?>> andRouteValue = new ConditionValue(predicate.getAndExpr(), parameters).getValue();
-        if (betweenRouteValue.isPresent() && andRouteValue.isPresent()) {
-            return Optional.of(new RangeRouteValue<>(column.getName(), column.getTableName(), SafeNumberOperationUtils.safeClosed(betweenRouteValue.get(), andRouteValue.get())));
+    public Optional<ShardingConditionValue> generate(final BetweenExpression predicate, final Column column, final List<Object> parameters) {
+        Optional<Comparable<?>> betweenConditionValue = new ConditionValue(predicate.getBetweenExpr(), parameters).getValue();
+        Optional<Comparable<?>> andConditionValue = new ConditionValue(predicate.getAndExpr(), parameters).getValue();
+        if (betweenConditionValue.isPresent() && andConditionValue.isPresent()) {
+            return Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), SafeNumberOperationUtils.safeClosed(betweenConditionValue.get(), andConditionValue.get())));
         }
         Date date = new SPITimeService().getTime();
-        if (!betweenRouteValue.isPresent() && ExpressionConditionUtils.isNowExpression(predicate.getBetweenExpr())) {
-            betweenRouteValue = Optional.of(date);
+        if (!betweenConditionValue.isPresent() && ExpressionConditionUtils.isNowExpression(predicate.getBetweenExpr())) {
+            betweenConditionValue = Optional.of(date);
         }
-        if (!andRouteValue.isPresent() && ExpressionConditionUtils.isNowExpression(predicate.getAndExpr())) {
-            andRouteValue = Optional.of(date);
+        if (!andConditionValue.isPresent() && ExpressionConditionUtils.isNowExpression(predicate.getAndExpr())) {
+            andConditionValue = Optional.of(date);
         }
-        return betweenRouteValue.isPresent() && andRouteValue.isPresent()
-                ? Optional.of(new RangeRouteValue<>(column.getName(), column.getTableName(), Range.closed(betweenRouteValue.get(), andRouteValue.get())))
+        return betweenConditionValue.isPresent() && andConditionValue.isPresent()
+                ? Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), Range.closed(betweenConditionValue.get(), andConditionValue.get())))
                 : Optional.empty();
     }
 }
