@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.sql.LogicSQL;
-import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTest;
+import org.apache.shardingsphere.sharding.route.engine.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;

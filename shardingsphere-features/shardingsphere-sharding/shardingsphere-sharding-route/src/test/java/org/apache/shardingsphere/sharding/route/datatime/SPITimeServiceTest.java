@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.spi;
+package org.apache.shardingsphere.sharding.route.datatime;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.sharding.route.fixture.TimeServiceFixture;
+import org.apache.shardingsphere.sharding.route.datatime.fixture.TimeServiceFixture;
 import org.junit.Test;
 
 import java.lang.reflect.Field;

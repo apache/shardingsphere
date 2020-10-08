@@ -15,33 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.spi;
+package org.apache.shardingsphere.sharding.route.datatime.fixture;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sharding.route.datatime.TimeService;
 
-import java.util.Collection;
 import java.util.Date;
 
-/**
- * Time service for SPI.
- */
-public final class SPITimeService implements TimeService {
+@Getter
+@Setter
+public final class TimeServiceFixture implements TimeService {
     
-    private final Collection<TimeService> timeServices = ShardingSphereServiceLoader.newServiceInstances(TimeService.class);
-    
-    static {
-        ShardingSphereServiceLoader.register(TimeService.class);
-    }
+    private Date date;
     
     @Override
     public Date getTime() {
-        Date result = null;
-        for (TimeService server : timeServices) {
-            result = server.getTime();
-            if (!(server instanceof DefaultTimeService) && null != result) {
-                return result;
-            }
-        }
-        return result;
+        return date;
     }
 }

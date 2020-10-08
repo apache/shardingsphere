@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.route.spi.DefaultTimeService
+org.apache.shardingsphere.sharding.route.datatime.fixture.TimeServiceFixture
