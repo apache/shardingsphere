@@ -25,11 +25,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Route value for list values.
+ * Sharding condition value for list values.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ListRouteValue<T extends Comparable<?>> implements RouteValue {
+public final class ListShardingConditionValue<T extends Comparable<?>> implements ShardingConditionValue {
     
     private final String columnName;
     

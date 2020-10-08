@@ -18,21 +18,17 @@
 package org.apache.shardingsphere.sharding.route.engine.condition.value;
 
 /**
- * Route value.
+ * Always false sharding condition value.
  */
-public interface RouteValue {
+public final class AlwaysFalseShardingConditionValue implements ShardingConditionValue {
     
-    /**
-     * Get column name.
-     * 
-     * @return column name
-     */
-    String getColumnName();
+    @Override
+    public String getColumnName() {
+        return "";
+    }
     
-    /**
-     * Get table name.
-     * 
-     * @return table name
-     */
-    String getTableName();
+    @Override
+    public String getTableName() {
+        return "";
+    }
 }

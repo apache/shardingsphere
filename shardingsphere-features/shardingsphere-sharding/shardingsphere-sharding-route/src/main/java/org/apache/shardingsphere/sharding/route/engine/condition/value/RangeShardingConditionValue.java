@@ -23,12 +23,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Route value for range.
+ * Sharding condition value for range.
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class RangeRouteValue<T extends Comparable<?>> implements RouteValue {
+public final class RangeShardingConditionValue<T extends Comparable<?>> implements ShardingConditionValue {
     
     private final String columnName;
     

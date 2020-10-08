@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.condition;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -31,5 +31,5 @@ import java.util.List;
 @ToString
 public class ShardingCondition {
     
-    private final List<RouteValue> routeValues = new LinkedList<>();
+    private final List<ShardingConditionValue> values = new LinkedList<>();
 }

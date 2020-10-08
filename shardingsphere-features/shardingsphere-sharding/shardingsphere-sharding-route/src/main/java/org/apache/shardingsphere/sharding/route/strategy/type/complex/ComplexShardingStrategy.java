@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeRouteValue;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -54,15 +54,15 @@ public final class ComplexShardingStrategy implements ShardingStrategy {
     
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues, final ConfigurationProperties props) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingConditionValue> shardingValues, final ConfigurationProperties props) {
         Map<String, Collection<Comparable<?>>> columnShardingValues = new HashMap<>(shardingValues.size(), 1);
         Map<String, Range<Comparable<?>>> columnRangeValues = new HashMap<>(shardingValues.size(), 1);
         String logicTableName = "";
-        for (RouteValue each : shardingValues) {
-            if (each instanceof ListRouteValue) {
-                columnShardingValues.put(each.getColumnName(), ((ListRouteValue) each).getValues());
-            } else if (each instanceof RangeRouteValue) {
-                columnRangeValues.put(each.getColumnName(), ((RangeRouteValue) each).getValueRange());
+        for (ShardingConditionValue each : shardingValues) {
+            if (each instanceof ListShardingConditionValue) {
+                columnShardingValues.put(each.getColumnName(), ((ListShardingConditionValue) each).getValues());
+            } else if (each instanceof RangeShardingConditionValue) {
+                columnRangeValues.put(each.getColumnName(), ((RangeShardingConditionValue) each).getValueRange());
             }
             logicTableName = each.getTableName();
         }

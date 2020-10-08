@@ -24,9 +24,9 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingV
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeRouteValue;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -50,17 +50,17 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     }
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues, final ConfigurationProperties props) {
-        RouteValue shardingValue = shardingValues.iterator().next();
-        Collection<String> shardingResult = shardingValue instanceof ListRouteValue
-                ? doSharding(availableTargetNames, (ListRouteValue) shardingValue) : doSharding(availableTargetNames, (RangeRouteValue) shardingValue);
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingConditionValue> shardingValues, final ConfigurationProperties props) {
+        ShardingConditionValue shardingValue = shardingValues.iterator().next();
+        Collection<String> shardingResult = shardingValue instanceof ListShardingConditionValue
+                ? doSharding(availableTargetNames, (ListShardingConditionValue) shardingValue) : doSharding(availableTargetNames, (RangeShardingConditionValue) shardingValue);
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.addAll(shardingResult);
         return result;
     }
     
     @SuppressWarnings("unchecked")
-    private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListRouteValue<?> shardingValue) {
+    private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListShardingConditionValue<?> shardingValue) {
         Collection<String> result = new LinkedList<>();
         for (Comparable<?> each : shardingValue.getValues()) {
             String target;
@@ -73,7 +73,7 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     }
     
     @SuppressWarnings("unchecked")
-    private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeRouteValue<?> shardingValue) {
+    private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingConditionValue<?> shardingValue) {
         return shardingAlgorithm.doSharding(availableTargetNames,
                 new RangeShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), shardingValue.getValueRange()));
     }

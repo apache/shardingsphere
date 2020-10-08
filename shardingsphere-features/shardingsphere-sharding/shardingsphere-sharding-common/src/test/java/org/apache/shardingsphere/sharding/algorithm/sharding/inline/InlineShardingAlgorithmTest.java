@@ -64,7 +64,7 @@ public final class InlineShardingAlgorithmTest {
     }
     
     @Test
-    public void assertDoShardingWithRangeRouteValue() {
+    public void assertDoShardingWithRangeShardingConditionValue() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         Collection<String> actual = inlineShardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", mock(Range.class)));
         assertTrue(actual.containsAll(availableTargetNames));

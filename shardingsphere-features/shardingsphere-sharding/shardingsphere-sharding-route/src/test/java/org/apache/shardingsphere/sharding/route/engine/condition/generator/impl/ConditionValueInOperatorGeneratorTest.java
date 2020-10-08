@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
@@ -44,8 +44,8 @@ public final class ConditionValueInOperatorGeneratorTest {
         ListExpression listExpression = new ListExpression(0, 0);
         listExpression.getItems().add(new CommonExpressionSegment(0, 0, "now()"));
         InExpression inExpression = new InExpression(0, 0, null, listExpression, false);
-        Optional<RouteValue> routeValue = generator.generate(inExpression, column, new LinkedList<>());
-        assertTrue(routeValue.isPresent());
-        assertThat(((ListRouteValue) routeValue.get()).getValues().iterator().next(), instanceOf(Date.class));
+        Optional<ShardingConditionValue> shardingConditionValue = generator.generate(inExpression, column, new LinkedList<>());
+        assertTrue(shardingConditionValue.isPresent());
+        assertThat(((ListShardingConditionValue) shardingConditionValue.get()).getValues().iterator().next(), instanceOf(Date.class));
     }
 }

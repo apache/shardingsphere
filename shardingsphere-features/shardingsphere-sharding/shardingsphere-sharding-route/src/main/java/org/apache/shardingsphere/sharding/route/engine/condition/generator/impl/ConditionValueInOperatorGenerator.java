@@ -22,8 +22,8 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionCondi
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGenerator;
 import org.apache.shardingsphere.sharding.route.spi.SPITimeService;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 
@@ -37,19 +37,19 @@ import java.util.Optional;
 public final class ConditionValueInOperatorGenerator implements ConditionValueGenerator<InExpression> {
     
     @Override
-    public Optional<RouteValue> generate(final InExpression predicate, final Column column, final List<Object> parameters) {
-        List<Comparable<?>> routeValues = new LinkedList<>();
+    public Optional<ShardingConditionValue> generate(final InExpression predicate, final Column column, final List<Object> parameters) {
+        List<Comparable<?>> shardingConditionValues = new LinkedList<>();
         SPITimeService timeService = new SPITimeService();
         for (ExpressionSegment each : predicate.getExpressionList()) {
-            Optional<Comparable<?>> routeValue = new ConditionValue(each, parameters).getValue();
-            if (routeValue.isPresent()) {
-                routeValues.add(routeValue.get());
+            Optional<Comparable<?>> shardingConditionValue = new ConditionValue(each, parameters).getValue();
+            if (shardingConditionValue.isPresent()) {
+                shardingConditionValues.add(shardingConditionValue.get());
                 continue;
             }
             if (ExpressionConditionUtils.isNowExpression(each)) {
-                routeValues.add(timeService.getTime());
+                shardingConditionValues.add(timeService.getTime());
             }
         }
-        return routeValues.isEmpty() ? Optional.empty() : Optional.of(new ListRouteValue<>(column.getName(), column.getTableName(), routeValues));
+        return shardingConditionValues.isEmpty() ? Optional.empty() : Optional.of(new ListShardingConditionValue<>(column.getName(), column.getTableName(), shardingConditionValues));
     }
 }
