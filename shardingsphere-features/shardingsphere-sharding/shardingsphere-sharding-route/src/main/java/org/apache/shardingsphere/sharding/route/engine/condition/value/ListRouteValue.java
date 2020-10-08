@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.condition;
+package org.apache.shardingsphere.sharding.route.engine.condition.value;
 
-import org.apache.shardingsphere.sharding.route.strategy.value.RouteValue;
+import com.google.common.base.Joiner;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
- * Always false route value.
+ * Route value for list values.
  */
-public final class AlwaysFalseRouteValue implements RouteValue {
+@RequiredArgsConstructor
+@Getter
+public final class ListRouteValue<T extends Comparable<?>> implements RouteValue {
+    
+    private final String columnName;
+    
+    private final String tableName;
+    
+    private final Collection<T> values;
     
     @Override
-    public String getColumnName() {
-        return "";
-    }
-    
-    @Override
-    public String getTableName() {
-        return "";
+    public String toString() {
+        return tableName + "." + columnName + (1 == values.size() ? " = " + new ArrayList<>(values).get(0) : " in (" + Joiner.on(",").join(values) + ")");
     }
 }

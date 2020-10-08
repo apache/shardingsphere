@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.strategy.value;
+package org.apache.shardingsphere.sharding.route.engine.condition.value;
 
 import org.junit.Test;
 

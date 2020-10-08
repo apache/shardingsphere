@@ -26,8 +26,8 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.route.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.route.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RouteValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;

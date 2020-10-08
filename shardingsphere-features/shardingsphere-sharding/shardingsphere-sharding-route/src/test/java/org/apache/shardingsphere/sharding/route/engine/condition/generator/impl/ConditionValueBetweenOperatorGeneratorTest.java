@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
-import org.apache.shardingsphere.sharding.route.strategy.value.RangeRouteValue;
-import org.apache.shardingsphere.sharding.route.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeRouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RouteValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;

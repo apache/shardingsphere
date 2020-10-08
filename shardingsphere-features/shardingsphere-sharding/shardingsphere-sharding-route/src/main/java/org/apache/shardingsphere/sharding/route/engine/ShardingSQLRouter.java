@@ -35,8 +35,8 @@ import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStateme
 import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.sharding.route.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.route.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RouteValue;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;

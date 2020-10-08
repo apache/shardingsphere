@@ -26,9 +26,9 @@ import org.apache.shardingsphere.sharding.route.strategy.fixture.ComplexKeysShar
 import org.apache.shardingsphere.sharding.route.strategy.fixture.StandardShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.route.strategy.type.none.NoneShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.type.standard.StandardShardingStrategy;
-import org.apache.shardingsphere.sharding.route.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.route.strategy.value.RangeRouteValue;
-import org.apache.shardingsphere.sharding.route.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeRouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RouteValue;
 import org.junit.Test;
 
 import java.util.Collection;

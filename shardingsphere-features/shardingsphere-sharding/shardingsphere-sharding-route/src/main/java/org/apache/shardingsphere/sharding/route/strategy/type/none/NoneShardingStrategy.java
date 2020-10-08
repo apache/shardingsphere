@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.strategy.type.none;
 import lombok.Getter;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
-import org.apache.shardingsphere.sharding.route.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RouteValue;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 
 import java.util.Collection;

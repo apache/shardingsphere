@@ -38,8 +38,8 @@ import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategyFactory;
 import org.apache.shardingsphere.sharding.route.strategy.type.hint.HintShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.type.none.NoneShardingStrategy;
-import org.apache.shardingsphere.sharding.route.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.route.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RouteValue;
 
 import java.util.ArrayList;
 import java.util.Collection;

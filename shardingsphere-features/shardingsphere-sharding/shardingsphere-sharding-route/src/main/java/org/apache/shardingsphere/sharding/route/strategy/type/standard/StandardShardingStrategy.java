@@ -24,9 +24,9 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingV
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
-import org.apache.shardingsphere.sharding.route.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.route.strategy.value.RangeRouteValue;
-import org.apache.shardingsphere.sharding.route.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeRouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RouteValue;
 
 import java.util.Collection;
 import java.util.LinkedList;

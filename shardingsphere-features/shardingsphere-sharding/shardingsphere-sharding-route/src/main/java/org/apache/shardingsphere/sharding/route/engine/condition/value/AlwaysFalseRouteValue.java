@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.strategy.value;
-
-import com.google.common.collect.Range;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+package org.apache.shardingsphere.sharding.route.engine.condition.value;
 
 /**
- * Route value for range.
+ * Always false route value.
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class RangeRouteValue<T extends Comparable<?>> implements RouteValue {
+public final class AlwaysFalseRouteValue implements RouteValue {
     
-    private final String columnName;
+    @Override
+    public String getColumnName() {
+        return "";
+    }
     
-    private final String tableName;
-    
-    private final Range<T> valueRange;
+    @Override
+    public String getTableName() {
+        return "";
+    }
 }
