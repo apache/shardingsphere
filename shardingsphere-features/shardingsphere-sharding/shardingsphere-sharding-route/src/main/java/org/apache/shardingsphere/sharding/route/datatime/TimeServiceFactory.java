@@ -17,31 +17,26 @@
 
 package org.apache.shardingsphere.sharding.route.datatime;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
-import java.util.Collection;
-import java.util.Date;
-
 /**
- * Time service for SPI.
+ * Time service factory.
  */
-public final class SPITimeService implements TimeService {
-    
-    private final Collection<TimeService> timeServices = ShardingSphereServiceLoader.newServiceInstances(TimeService.class);
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TimeServiceFactory {
     
     static {
         ShardingSphereServiceLoader.register(TimeService.class);
     }
     
-    @Override
-    public Date getTime() {
-        Date result = null;
-        for (TimeService server : timeServices) {
-            result = server.getTime();
-            if (!(server instanceof DefaultTimeService) && null != result) {
-                return result;
-            }
-        }
-        return result;
+    /**
+     * Create new instance of time service.
+     * 
+     * @return time service
+     */
+    public static TimeService newInstance() {
+        return ShardingSphereServiceLoader.newServiceInstances(TimeService.class).stream().findFirst().orElseGet(DefaultTimeService::new);
     }
 }

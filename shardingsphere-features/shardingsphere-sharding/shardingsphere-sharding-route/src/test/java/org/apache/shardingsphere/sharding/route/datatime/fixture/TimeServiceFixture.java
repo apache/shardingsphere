@@ -31,6 +31,6 @@ public final class TimeServiceFixture implements TimeService {
     
     @Override
     public Date getTime() {
-        return date;
+        return null == date ? new Date() : date;
     }
 }
