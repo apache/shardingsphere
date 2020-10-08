@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<code_scheme name="ShardingSphere_Code_Style" version="173">
+    <option name="LINE_SEPARATOR" value="&#xA;" />
+    <option name="GENERATE_FINAL_LOCALS" value="true" />
+    <option name="GENERATE_FINAL_PARAMETERS" value="true" />
+    <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="999" />
+    <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="999" />
+    <JavaCodeStyleSettings>
+        <option name="GENERATE_FINAL_LOCALS" value="true" />
+        <option name="GENERATE_FINAL_PARAMETERS" value="true" />
+        <option name="INSERT_INNER_CLASS_IMPORTS" value="true" />
+        <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="999" />
+        <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="999" />
+        <option name="JD_ALIGN_PARAM_COMMENTS" value="false" />
+        <option name="JD_ALIGN_EXCEPTION_COMMENTS" value="false" />
+    </JavaCodeStyleSettings>
+    <XML>
+        <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
+    </XML>
+    <codeStyleSettings language="JAVA">
+        <option name="KEEP_LINE_BREAKS" value="false" />
+        <option name="KEEP_FIRST_COLUMN_COMMENT" value="false" />
+        <option name="KEEP_CONTROL_STATEMENT_IN_ONE_LINE" value="false" />
+        <option name="KEEP_MULTIPLE_EXPRESSIONS_IN_ONE_LINE" value="true" />
+        <indentOptions>
+            <option name="KEEP_INDENTS_ON_EMPTY_LINES" value="true" />
+        </indentOptions>
+        <arrangement>
+            <groups>
+                <group>
+                    <type>GETTERS_AND_SETTERS</type>
+                    <order>KEEP</order>
+                </group>
+                <group>
+                    <type>OVERRIDDEN_METHODS</type>
+                    <order>KEEP</order>
+                </group>
+                <group>
+                    <type>DEPENDENT_METHODS</type>
+                    <order>BREADTH_FIRST</order>
+                </group>
+            </groups>
+        </arrangement>
+    </codeStyleSettings>
+</code_scheme>
