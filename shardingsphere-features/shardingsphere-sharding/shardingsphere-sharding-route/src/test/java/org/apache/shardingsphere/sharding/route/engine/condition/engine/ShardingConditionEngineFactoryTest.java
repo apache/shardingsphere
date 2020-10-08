@@ -60,7 +60,7 @@ public final class ShardingConditionEngineFactoryTest {
     }
     
     @Test
-    public void assertInsertClauseClauseShardingConditionEngine() {
+    public void assertCreateInsertClauseShardingConditionEngine() {
         SQLStatementContext insertStatementContext = mock(InsertStatementContext.class);
         when(logicSQL.getSqlStatementContext()).thenReturn(insertStatementContext);
         ShardingConditionEngine<?> actualInsertClauseShardingConditionEngine = ShardingConditionEngineFactory.createShardingConditionEngine(logicSQL, shardingRule);
