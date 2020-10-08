@@ -36,8 +36,8 @@ import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategyFactory;
-import org.apache.shardingsphere.sharding.route.strategy.hint.HintShardingStrategy;
-import org.apache.shardingsphere.sharding.route.strategy.none.NoneShardingStrategy;
+import org.apache.shardingsphere.sharding.route.strategy.type.hint.HintShardingStrategy;
+import org.apache.shardingsphere.sharding.route.strategy.type.none.NoneShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.route.strategy.value.RouteValue;
 

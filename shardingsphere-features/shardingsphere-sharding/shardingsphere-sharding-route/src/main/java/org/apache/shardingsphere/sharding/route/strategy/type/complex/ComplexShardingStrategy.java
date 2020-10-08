@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.strategy.complex;
+package org.apache.shardingsphere.sharding.route.strategy.type.complex;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;

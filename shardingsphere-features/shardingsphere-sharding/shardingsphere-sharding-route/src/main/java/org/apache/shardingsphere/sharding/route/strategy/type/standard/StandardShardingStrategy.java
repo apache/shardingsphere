@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.strategy.standard;
+package org.apache.shardingsphere.sharding.route.strategy.type.standard;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;

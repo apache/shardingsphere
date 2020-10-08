@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.strategy.none;
+package org.apache.shardingsphere.sharding.route.strategy.type.none;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
