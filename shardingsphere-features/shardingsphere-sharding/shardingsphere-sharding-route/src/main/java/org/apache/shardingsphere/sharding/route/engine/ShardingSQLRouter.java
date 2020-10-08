@@ -124,9 +124,9 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
             return false;
         }
         for (int i = 0; i < shardingCondition1.getValues().size(); i++) {
-            ShardingConditionValue shardingValue1 = shardingCondition1.getValues().get(i);
-            ShardingConditionValue shardingValue2 = shardingCondition2.getValues().get(i);
-            if (!isSameShardingConditionValue(shardingRule, (ListShardingConditionValue) shardingValue1, (ListShardingConditionValue) shardingValue2)) {
+            ShardingConditionValue shardingConditionValue1 = shardingCondition1.getValues().get(i);
+            ShardingConditionValue shardingConditionValue2 = shardingCondition2.getValues().get(i);
+            if (!isSameShardingConditionValue(shardingRule, (ListShardingConditionValue) shardingConditionValue1, (ListShardingConditionValue) shardingConditionValue2)) {
                 return false;
             }
         }

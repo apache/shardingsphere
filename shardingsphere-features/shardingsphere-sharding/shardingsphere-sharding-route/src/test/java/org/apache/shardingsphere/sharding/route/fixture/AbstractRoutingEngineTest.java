@@ -160,11 +160,11 @@ public abstract class AbstractRoutingEngineTest {
     
     protected final ShardingConditions createShardingConditions(final String tableName) {
         List<ShardingCondition> result = new ArrayList<>(1);
-        ShardingConditionValue shardingValue1 = new ListShardingConditionValue<>("user_id", tableName, Collections.singleton(1L));
-        ShardingConditionValue shardingValue2 = new ListShardingConditionValue<>("order_id", tableName, Collections.singleton(1L));
+        ShardingConditionValue shardingConditionValue1 = new ListShardingConditionValue<>("user_id", tableName, Collections.singleton(1L));
+        ShardingConditionValue shardingConditionValue2 = new ListShardingConditionValue<>("order_id", tableName, Collections.singleton(1L));
         ShardingCondition shardingCondition = new ShardingCondition();
-        shardingCondition.getValues().add(shardingValue1);
-        shardingCondition.getValues().add(shardingValue2);
+        shardingCondition.getValues().add(shardingConditionValue1);
+        shardingCondition.getValues().add(shardingConditionValue2);
         result.add(shardingCondition);
         return new ShardingConditions(result);
     }

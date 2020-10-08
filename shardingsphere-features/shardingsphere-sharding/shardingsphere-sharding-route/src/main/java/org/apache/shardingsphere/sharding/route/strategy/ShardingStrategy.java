@@ -46,9 +46,9 @@ public interface ShardingStrategy {
      * Sharding.
      *
      * @param availableTargetNames available data source or table names
-     * @param shardingValues sharding values
+     * @param shardingConditionValues sharding condition values
      * @param props configuration properties
      * @return sharding results for data source or table names
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingConditionValue> shardingValues, ConfigurationProperties props);
+    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingConditionValue> shardingConditionValues, ConfigurationProperties props);
 }

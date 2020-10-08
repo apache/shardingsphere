@@ -50,10 +50,10 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     }
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingConditionValue> shardingValues, final ConfigurationProperties props) {
-        ShardingConditionValue shardingValue = shardingValues.iterator().next();
-        Collection<String> shardingResult = shardingValue instanceof ListShardingConditionValue
-                ? doSharding(availableTargetNames, (ListShardingConditionValue) shardingValue) : doSharding(availableTargetNames, (RangeShardingConditionValue) shardingValue);
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingConditionValue> shardingConditionValues, final ConfigurationProperties props) {
+        ShardingConditionValue shardingConditionValue = shardingConditionValues.iterator().next();
+        Collection<String> shardingResult = shardingConditionValue instanceof ListShardingConditionValue
+                ? doSharding(availableTargetNames, (ListShardingConditionValue) shardingConditionValue) : doSharding(availableTargetNames, (RangeShardingConditionValue) shardingConditionValue);
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.addAll(shardingResult);
         return result;

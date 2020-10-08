@@ -54,11 +54,11 @@ public final class ComplexShardingStrategy implements ShardingStrategy {
     
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingConditionValue> shardingValues, final ConfigurationProperties props) {
-        Map<String, Collection<Comparable<?>>> columnShardingValues = new HashMap<>(shardingValues.size(), 1);
-        Map<String, Range<Comparable<?>>> columnRangeValues = new HashMap<>(shardingValues.size(), 1);
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingConditionValue> shardingConditionValues, final ConfigurationProperties props) {
+        Map<String, Collection<Comparable<?>>> columnShardingValues = new HashMap<>(shardingConditionValues.size(), 1);
+        Map<String, Range<Comparable<?>>> columnRangeValues = new HashMap<>(shardingConditionValues.size(), 1);
         String logicTableName = "";
-        for (ShardingConditionValue each : shardingValues) {
+        for (ShardingConditionValue each : shardingConditionValues) {
             if (each instanceof ListShardingConditionValue) {
                 columnShardingValues.put(each.getColumnName(), ((ListShardingConditionValue) each).getValues());
             } else if (each instanceof RangeShardingConditionValue) {
