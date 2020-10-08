@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
+import org.apache.shardingsphere.sharding.route.datatime.TimeService;
+import org.apache.shardingsphere.sharding.route.datatime.TimeServiceFactory;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGenerator;
-import org.apache.shardingsphere.sharding.route.datatime.SPITimeService;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -39,7 +40,7 @@ public final class ConditionValueInOperatorGenerator implements ConditionValueGe
     @Override
     public Optional<ShardingConditionValue> generate(final InExpression predicate, final Column column, final List<Object> parameters) {
         List<Comparable<?>> shardingConditionValues = new LinkedList<>();
-        SPITimeService timeService = new SPITimeService();
+        TimeService timeService = TimeServiceFactory.newInstance();
         for (ExpressionSegment each : predicate.getExpressionList()) {
             Optional<Comparable<?>> shardingConditionValue = new ConditionValue(each, parameters).getValue();
             if (shardingConditionValue.isPresent()) {
