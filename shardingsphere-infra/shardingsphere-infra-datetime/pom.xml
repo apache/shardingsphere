@@ -22,20 +22,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
+        <artifactId>shardingsphere-infra</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra</artifactId>
+    <artifactId>shardingsphere-infra-datetime</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-infra-common</module>
-        <module>shardingsphere-infra-route</module>
-        <module>shardingsphere-infra-rewrite</module>
-        <module>shardingsphere-infra-executor</module>
-        <module>shardingsphere-infra-merge</module>
-        <module>shardingsphere-infra-context</module>
-        <module>shardingsphere-infra-datetime</module>
+        <module>shardingsphere-infra-datetime-spi</module>
+        <module>shardingsphere-infra-datetime-type</module>
     </modules>
 </project>
