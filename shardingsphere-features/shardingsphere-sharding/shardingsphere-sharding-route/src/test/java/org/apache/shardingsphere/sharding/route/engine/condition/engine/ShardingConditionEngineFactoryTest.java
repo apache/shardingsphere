@@ -56,7 +56,6 @@ public final class ShardingConditionEngineFactoryTest {
         when(shardingSphereMetaData.getRuleSchemaMetaData()).thenReturn(ruleSchemaMetaData);
         SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
         when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
-        
     }
     
     @Test
