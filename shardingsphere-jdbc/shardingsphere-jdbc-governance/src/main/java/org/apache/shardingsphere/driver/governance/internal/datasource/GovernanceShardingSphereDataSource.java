@@ -121,8 +121,8 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     private void uploadLocalConfiguration(final GovernanceFacade governanceFacade) {
         Map<String, DataSourceConfiguration> dataSourceConfigs = DataSourceConverter.getDataSourceConfigurationMap(schemaContexts.getDefaultSchema().getDataSources());
         Collection<RuleConfiguration> ruleConfigurations = schemaContexts.getDefaultSchema().getConfigurations();
-        Properties props = schemaContexts.getProps().getProps();
-        governanceFacade.onlineInstance(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigs), Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), null, props);
+        governanceFacade.onlineInstance(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigs),
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), null, schemaContexts.getProps().getProps());
     }
     
     @Override

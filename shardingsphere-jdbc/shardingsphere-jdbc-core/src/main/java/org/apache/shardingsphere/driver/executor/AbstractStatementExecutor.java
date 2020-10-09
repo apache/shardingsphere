@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.executor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutorCallback;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
@@ -67,11 +68,7 @@ public abstract class AbstractStatementExecutor {
     }
     
     protected final int accumulate(final List<Integer> results) {
-        int result = 0;
-        for (Integer each : results) {
-            result += null == each ? 0 : each;
-        }
-        return result;
+        return results.stream().mapToInt(each -> null == each ? 0 : each).sum();
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -82,11 +79,20 @@ public abstract class AbstractStatementExecutor {
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
             RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(schema.getRules());
-            refreshStrategy.get().refreshMetaData(schema.getMetaData(), schemaContexts.getDatabaseType(),
-                    dataSourceMap, sqlStatementContext, tableName -> metaDataLoader.load(schemaContexts.getDatabaseType(),
-                            dataSourceMap, tableName, schemaContexts.getProps()));
+            refreshStrategy.get().refreshMetaData(schema.getMetaData(), schemaContexts.getDatabaseType(), dataSourceMap, sqlStatementContext,
+                    tableName -> metaDataLoader.load(schemaContexts.getDatabaseType(), dataSourceMap, tableName, schemaContexts.getProps()));
             notifyPersistRuleMetaData(DefaultSchema.LOGIC_NAME, schema.getMetaData().getRuleSchemaMetaData());
         }
+    }
+    
+    protected boolean executeAndRefreshMetaData(Collection<InputGroup<StatementExecuteUnit>> inputGroups, SQLStatementContext<?> sqlStatementContext,
+                                                SQLExecutorCallback<Boolean> sqlExecutorCallback) throws SQLException {
+        List<Boolean> result = getSqlExecutor().execute(inputGroups, sqlExecutorCallback);
+        refreshTableMetaData(getSchemaContexts().getDefaultSchema(), sqlStatementContext);
+        if (null == result || result.isEmpty() || null == result.get(0)) {
+            return false;
+        }
+        return result.get(0);
     }
     
     private void notifyPersistRuleMetaData(final String schemaName, final RuleSchemaMetaData metaData) {

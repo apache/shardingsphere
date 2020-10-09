@@ -184,12 +184,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
                 return executor.execute(statement, sql);
             }
         };
-        List<Boolean> result = getSqlExecutor().execute(inputGroups, sqlExecutorCallback);
-        refreshTableMetaData(getSchemaContexts().getDefaultSchema(), sqlStatementContext);
-        if (null == result || result.isEmpty() || null == result.get(0)) {
-            return false;
-        }
-        return result.get(0);
+        return executeAndRefreshMetaData(inputGroups, sqlStatementContext, sqlExecutorCallback);
     }
     
     private interface Updater {
