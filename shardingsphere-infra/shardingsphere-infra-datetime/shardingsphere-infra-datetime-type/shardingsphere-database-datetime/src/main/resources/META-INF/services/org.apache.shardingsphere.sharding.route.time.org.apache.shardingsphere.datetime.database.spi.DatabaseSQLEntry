@@ -15,4 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.datetime.database.DatabaseDatetimeServiceDelegate
+org.apache.shardingsphere.datetime.database.spi.MySQLDatabaseSQLEntry
+org.apache.shardingsphere.datetime.database.spi.PostgreSQLDatabaseSQLEntry
+org.apache.shardingsphere.datetime.database.spi.OracleDatabaseSQLEntry
+org.apache.shardingsphere.datetime.database.spi.SQLServerDatabaseSQLEntry
