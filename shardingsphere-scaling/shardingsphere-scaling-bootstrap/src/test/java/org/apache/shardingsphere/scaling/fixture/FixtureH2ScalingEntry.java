@@ -30,7 +30,7 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     
     @Override
     public Class<? extends JDBCDumper> getJdbcDumperClass() {
-        return null;
+        return FixtureH2JDBCDumper.class;
     }
     
     @Override
@@ -45,7 +45,7 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     
     @Override
     public Class<? extends Importer> getImporterClass() {
-        return null;
+        return FixtureNopImporter.class;
     }
     
     @Override
