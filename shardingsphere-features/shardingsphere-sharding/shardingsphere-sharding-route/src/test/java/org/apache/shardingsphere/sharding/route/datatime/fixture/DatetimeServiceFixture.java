@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.datatime.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.route.datatime.DatetimeService;
+import org.apache.shardingsphere.sharding.infra.datatime.DatetimeService;
 
 import java.util.Date;
 

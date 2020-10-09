@@ -30,7 +30,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-infra-system-datetime</module>
-        <module>shardingsphere-infra-database-datetime</module>
+        <module>shardingsphere-system-datetime</module>
+        <module>shardingsphere-database-datetime</module>
     </modules>
 </project>

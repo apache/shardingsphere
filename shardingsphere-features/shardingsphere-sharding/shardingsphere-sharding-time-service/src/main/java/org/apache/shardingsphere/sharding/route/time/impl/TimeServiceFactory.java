@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.time.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.route.datatime.DatetimeService;
+import org.apache.shardingsphere.sharding.infra.datatime.DatetimeService;
 import org.apache.shardingsphere.sharding.route.time.TimeServiceConfiguration;
 import org.apache.shardingsphere.sharding.route.time.spi.SPIDataBaseSQLEntry;
 

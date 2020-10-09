@@ -22,8 +22,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra-datetime-type</artifactId>
+        <artifactId>shardingsphere-infra</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-system-datetime</artifactId>
+    <artifactId>shardingsphere-database-datetime</artifactId>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-datetime-spi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
