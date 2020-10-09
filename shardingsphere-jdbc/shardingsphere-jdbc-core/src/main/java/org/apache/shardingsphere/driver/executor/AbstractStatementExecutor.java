@@ -89,10 +89,7 @@ public abstract class AbstractStatementExecutor {
                                                 SQLExecutorCallback<Boolean> sqlExecutorCallback) throws SQLException {
         List<Boolean> result = getSqlExecutor().execute(inputGroups, sqlExecutorCallback);
         refreshTableMetaData(getSchemaContexts().getDefaultSchema(), sqlStatementContext);
-        if (null == result || result.isEmpty() || null == result.get(0)) {
-            return false;
-        }
-        return result.get(0);
+        return (null == result || result.isEmpty() || null == result.get(0)) ? false : result.get(0);
     }
     
     private void notifyPersistRuleMetaData(final String schemaName, final RuleSchemaMetaData metaData) {
