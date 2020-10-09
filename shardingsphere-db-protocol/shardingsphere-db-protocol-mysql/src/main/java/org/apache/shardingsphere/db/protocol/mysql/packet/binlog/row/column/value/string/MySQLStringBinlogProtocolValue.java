@@ -31,16 +31,30 @@ public final class MySQLStringBinlogProtocolValue implements MySQLBinlogProtocol
     
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        switch (MySQLColumnType.valueOf(columnDef.getColumnMeta() >> 8)) {
+        int type = columnDef.getColumnMeta() >> 8;
+        int length = columnDef.getColumnMeta() & 0xff;
+        // unpack type & length, see https://bugs.mysql.com/bug.php?id=37426.
+        if ((type & 0x30) != 0x30) {
+            length += ((type & 0x30) ^ 0x30) << 4;
+            type |= 0x30;
+        }
+        switch (MySQLColumnType.valueOf(type)) {
             case MYSQL_TYPE_ENUM:
-                return readEnumValue(columnDef.getColumnMeta() & 0xff, payload);
+                return readEnumValue(length, payload);
             case MYSQL_TYPE_SET:
                 return payload.getByteBuf().readByte();
             case MYSQL_TYPE_STRING:
-                return payload.readStringFix(payload.getByteBuf().readUnsignedByte());
+                return payload.readStringFix(readActualLength(payload, length));
             default:
                 throw new UnsupportedOperationException("");
         }
+    }
+    
+    private int readActualLength(final MySQLPacketPayload payload, final int length) {
+        if (length < 256) {
+            return payload.getByteBuf().readUnsignedByte();
+        }
+        return payload.getByteBuf().readUnsignedShortLE();
     }
     
     private Serializable readEnumValue(final int meta, final MySQLPacketPayload payload) {
