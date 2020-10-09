@@ -207,7 +207,7 @@ public final class ConfigCenter {
         repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(yamlRuleConfigs));
     }
     
-    private void checkDataSources(String schemaName, Collection<PrimaryReplicaReplicationDataSourceRuleConfiguration> dataSources) {
+    private void checkDataSources(final String schemaName, final Collection<PrimaryReplicaReplicationDataSourceRuleConfiguration> dataSources) {
         dataSources.forEach(each -> Preconditions.checkState(
                 !each.getPrimaryDataSourceName().isEmpty(), "No available primary-replica-replication rule configuration in `%s` for governance.", schemaName));
     }
