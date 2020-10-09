@@ -35,6 +35,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.exception.ShardingCTLEx
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
+import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 import java.sql.SQLException;
@@ -78,6 +79,9 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof TableExistsException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_TABLE_EXISTS_ERROR, ((TableExistsException) cause).getTableName());
+        }
+        if (cause instanceof NoSuchTableException) {
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_SUCH_TABLE, ((NoSuchTableException) cause).getDatabaseName(), ((NoSuchTableException) cause).getTableName());
         }
         if (cause instanceof CircuitBreakException) {
             return new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE);

@@ -15,31 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFunctionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
-import java.util.Optional;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * MySQL create function statement.
+ * Routine body segment.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class MySQLCreateFunctionStatement extends CreateFunctionStatement implements MySQLStatement {
+public class RoutineBodySegment implements SQLSegment {
     
-    private RoutineBodySegment routineBody;
+    private final int startIndex;
     
-    /**
-     * Get routine body segment.
-     *
-     * @return routine body segment
-     */
-    public Optional<RoutineBodySegment> getRoutineBody() {
-        return Optional.ofNullable(routineBody);
-    }
+    private final int stopIndex;
+    
+    private final Collection<ValidStatementSegment> validStatements = new LinkedList<>();
 }

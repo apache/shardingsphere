@@ -28,7 +28,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class DeleteStatementHandlerTest {
+public final class DeleteStatementHandlerTest {
     
     @Test
     public void assertGetOrderBySegmentWithOrderBySegmentForMySQL() {

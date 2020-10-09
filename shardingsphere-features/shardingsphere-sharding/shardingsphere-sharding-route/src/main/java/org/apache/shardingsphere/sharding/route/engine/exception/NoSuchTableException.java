@@ -15,31 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
+package org.apache.shardingsphere.sharding.route.engine.exception;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFunctionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
-
-import java.util.Optional;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 /**
- * MySQL create function statement.
+ * No such table exception.
  */
 @Getter
-@Setter
-public final class MySQLCreateFunctionStatement extends CreateFunctionStatement implements MySQLStatement {
+public final class NoSuchTableException extends ShardingSphereException {
     
-    private RoutineBodySegment routineBody;
+    private static final long serialVersionUID = 8311953084941769743L;
     
-    /**
-     * Get routine body segment.
-     *
-     * @return routine body segment
-     */
-    public Optional<RoutineBodySegment> getRoutineBody() {
-        return Optional.ofNullable(routineBody);
+    private final String databaseName;
+    
+    private final String tableName;
+    
+    public NoSuchTableException(final String databaseName, final String tableName) {
+        super(String.format("Table '%s.%s' doesn't exist", databaseName, tableName));
+        this.databaseName = databaseName;
+        this.tableName = tableName;
     }
 }

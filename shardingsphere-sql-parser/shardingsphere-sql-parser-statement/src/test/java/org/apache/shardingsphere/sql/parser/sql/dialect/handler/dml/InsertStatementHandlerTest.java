@@ -31,7 +31,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class InsertStatementHandlerTest {
+public final class InsertStatementHandlerTest {
     
     @Test
     public void assertGetOnDuplicateKeyColumnsSegmentWithOnDuplicateKeyColumnsSegmentForMySQL() {
