@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.sharding.route.datatime.TimeServiceFactory;
+import org.apache.shardingsphere.sharding.route.datatime.DatetimeServiceFactory;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
@@ -44,12 +44,12 @@ public final class ConditionValueBetweenOperatorGenerator implements ConditionVa
         if (betweenConditionValue.isPresent() && andConditionValue.isPresent()) {
             return Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), SafeNumberOperationUtils.safeClosed(betweenConditionValue.get(), andConditionValue.get())));
         }
-        Date date = TimeServiceFactory.newInstance().getTime();
+        Date datetime = DatetimeServiceFactory.newInstance().getDatetime();
         if (!betweenConditionValue.isPresent() && ExpressionConditionUtils.isNowExpression(predicate.getBetweenExpr())) {
-            betweenConditionValue = Optional.of(date);
+            betweenConditionValue = Optional.of(datetime);
         }
         if (!andConditionValue.isPresent() && ExpressionConditionUtils.isNowExpression(predicate.getAndExpr())) {
-            andConditionValue = Optional.of(date);
+            andConditionValue = Optional.of(datetime);
         }
         return betweenConditionValue.isPresent() && andConditionValue.isPresent()
                 ? Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), Range.closed(betweenConditionValue.get(), andConditionValue.get())))

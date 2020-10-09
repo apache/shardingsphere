@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.time.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.route.datatime.TimeService;
+import org.apache.shardingsphere.sharding.route.datatime.DatetimeService;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -28,17 +28,17 @@ import java.sql.SQLException;
 import java.util.Date;
 
 /**
- * Database time service.
+ * Database datetime service.
  */
 @RequiredArgsConstructor
-public final class DatabaseTimeService implements TimeService {
+public final class DatabaseDatetimeService implements DatetimeService {
     
     private final DataSource dataSource;
     
     private final String sql;
     
     @Override
-    public Date getTime() {
+    public Date getDatetime() {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {

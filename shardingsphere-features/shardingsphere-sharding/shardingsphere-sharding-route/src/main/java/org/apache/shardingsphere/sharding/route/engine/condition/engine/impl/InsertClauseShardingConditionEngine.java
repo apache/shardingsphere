@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine.impl;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.sharding.route.datatime.TimeService;
-import org.apache.shardingsphere.sharding.route.datatime.TimeServiceFactory;
+import org.apache.shardingsphere.sharding.route.datatime.DatetimeService;
+import org.apache.shardingsphere.sharding.route.datatime.DatetimeServiceFactory;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
@@ -86,14 +86,14 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     
     private ShardingCondition createShardingCondition(final String tableName, final Iterator<String> columnNames, final InsertValueContext insertValueContext, final List<Object> parameters) {
         ShardingCondition result = new ShardingCondition();
-        TimeService timeService = TimeServiceFactory.newInstance();
+        DatetimeService datetimeService = DatetimeServiceFactory.newInstance();
         for (ExpressionSegment each : insertValueContext.getValueExpressions()) {
             String columnName = columnNames.next();
             if (shardingRule.isShardingColumn(columnName, tableName)) {
                 if (each instanceof SimpleExpressionSegment) {
                     result.getValues().add(new ListShardingConditionValue<>(columnName, tableName, Collections.singletonList(getShardingValue((SimpleExpressionSegment) each, parameters))));
                 } else if (ExpressionConditionUtils.isNowExpression(each)) {
-                    result.getValues().add(new ListShardingConditionValue<>(columnName, tableName, Collections.singletonList(timeService.getTime())));
+                    result.getValues().add(new ListShardingConditionValue<>(columnName, tableName, Collections.singletonList(datetimeService.getDatetime())));
                 } else if (ExpressionConditionUtils.isNullExpression(each)) {
                     throw new ShardingSphereException("Insert clause sharding column can't be null.");
                 }

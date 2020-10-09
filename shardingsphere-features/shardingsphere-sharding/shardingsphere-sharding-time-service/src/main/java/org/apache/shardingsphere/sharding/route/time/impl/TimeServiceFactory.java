@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.time.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.route.datatime.TimeService;
+import org.apache.shardingsphere.sharding.route.datatime.DatetimeService;
 import org.apache.shardingsphere.sharding.route.time.TimeServiceConfiguration;
 import org.apache.shardingsphere.sharding.route.time.spi.SPIDataBaseSQLEntry;
 
@@ -34,8 +34,8 @@ public final class TimeServiceFactory {
      *
      * @return time service instance
      */
-    public static TimeService createTimeService() {
+    public static DatetimeService createTimeService() {
         TimeServiceConfiguration timeServiceConfig = TimeServiceConfiguration.getInstance();
-        return new DatabaseTimeService(timeServiceConfig.getDataSource(), new SPIDataBaseSQLEntry(timeServiceConfig.getDriverClassName()).getSQL());
+        return new DatabaseDatetimeService(timeServiceConfig.getDataSource(), new SPIDataBaseSQLEntry(timeServiceConfig.getDriverClassName()).getSQL());
     }
 }

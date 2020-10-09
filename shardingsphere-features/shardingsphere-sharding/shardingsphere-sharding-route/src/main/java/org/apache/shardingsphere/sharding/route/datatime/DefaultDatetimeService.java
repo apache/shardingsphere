@@ -20,14 +20,12 @@ package org.apache.shardingsphere.sharding.route.datatime;
 import java.util.Date;
 
 /**
- * Time service.
+ * Default datetime service.
  */
-public interface TimeService {
+public final class DefaultDatetimeService implements DatetimeService {
     
-    /**
-     * Get time.
-     * 
-     * @return time
-     */
-    Date getTime();
+    @Override
+    public Date getDatetime() {
+        return new Date();
+    }
 }

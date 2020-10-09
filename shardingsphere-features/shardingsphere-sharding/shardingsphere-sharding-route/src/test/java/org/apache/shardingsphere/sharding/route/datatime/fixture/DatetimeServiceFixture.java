@@ -19,18 +19,18 @@ package org.apache.shardingsphere.sharding.route.datatime.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.route.datatime.TimeService;
+import org.apache.shardingsphere.sharding.route.datatime.DatetimeService;
 
 import java.util.Date;
 
 @Getter
 @Setter
-public final class TimeServiceFixture implements TimeService {
+public final class DatetimeServiceFixture implements DatetimeService {
     
     private Date date;
     
     @Override
-    public Date getTime() {
+    public Date getDatetime() {
         return null == date ? new Date() : date;
     }
 }
