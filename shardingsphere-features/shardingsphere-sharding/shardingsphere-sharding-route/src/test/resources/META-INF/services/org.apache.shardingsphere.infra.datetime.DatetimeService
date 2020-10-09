@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.route.datatime.fixture.DatetimeServiceFixture
+org.apache.shardingsphere.sharding.route.datetime.fixture.DatetimeServiceFixture

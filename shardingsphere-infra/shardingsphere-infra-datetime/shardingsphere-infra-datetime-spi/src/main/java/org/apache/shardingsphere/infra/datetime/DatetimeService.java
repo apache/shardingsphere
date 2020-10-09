@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.infra.datatime;
+package org.apache.shardingsphere.infra.datetime;
 
 import org.apache.shardingsphere.infra.spi.required.RequiredSPI;
 

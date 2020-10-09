@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.time;
 
-import org.apache.shardingsphere.sharding.infra.datatime.DatetimeService;
+import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.apache.shardingsphere.sharding.route.time.impl.TimeServiceFactory;
 
 import java.util.Date;

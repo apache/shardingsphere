@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.datatime.fixture;
+package org.apache.shardingsphere.sharding.route.datetime.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.infra.datatime.DatetimeService;
+import org.apache.shardingsphere.infra.datetime.DatetimeService;
 
 import java.util.Date;
 
