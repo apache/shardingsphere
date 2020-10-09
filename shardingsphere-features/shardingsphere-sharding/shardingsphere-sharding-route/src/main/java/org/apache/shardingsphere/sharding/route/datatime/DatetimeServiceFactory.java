@@ -22,21 +22,21 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 /**
- * Time service factory.
+ * Datetime service factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TimeServiceFactory {
+public final class DatetimeServiceFactory {
     
     static {
-        ShardingSphereServiceLoader.register(TimeService.class);
+        ShardingSphereServiceLoader.register(DatetimeService.class);
     }
     
     /**
-     * Create new instance of time service.
+     * Create new instance of datetime service.
      * 
-     * @return time service
+     * @return datetime service
      */
-    public static TimeService newInstance() {
-        return ShardingSphereServiceLoader.newServiceInstances(TimeService.class).stream().findFirst().orElseGet(DefaultTimeService::new);
+    public static DatetimeService newInstance() {
+        return ShardingSphereServiceLoader.newServiceInstances(DatetimeService.class).stream().findFirst().orElseGet(DefaultDatetimeService::new);
     }
 }

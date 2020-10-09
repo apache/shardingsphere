@@ -15,17 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.datatime;
+package org.apache.shardingsphere.sharding.route.time;
+
+import org.apache.shardingsphere.sharding.route.datatime.DatetimeService;
+import org.apache.shardingsphere.sharding.route.time.impl.TimeServiceFactory;
 
 import java.util.Date;
 
 /**
- * Default time service.
+ * Delegate database datetime service.
  */
-public final class DefaultTimeService implements TimeService {
+public final class DatabaseDatetimeServiceDelegate implements DatetimeService {
+    
+    private static final DatetimeService INSTANCE = TimeServiceFactory.createTimeService();
     
     @Override
-    public Date getTime() {
-        return new Date();
+    public Date getDatetime() {
+        return INSTANCE.getDatetime();
     }
 }
