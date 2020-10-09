@@ -28,4 +28,9 @@ public final class DefaultDatetimeService implements DatetimeService {
     public Date getDatetime() {
         return new Date();
     }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }

@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.sharding.route.datatime;
 
+import org.apache.shardingsphere.infra.spi.required.RequiredSPI;
+
 import java.util.Date;
 
 /**
  * Datetime service.
  */
-public interface DatetimeService {
+public interface DatetimeService extends RequiredSPI {
     
     /**
      * Get datetime.

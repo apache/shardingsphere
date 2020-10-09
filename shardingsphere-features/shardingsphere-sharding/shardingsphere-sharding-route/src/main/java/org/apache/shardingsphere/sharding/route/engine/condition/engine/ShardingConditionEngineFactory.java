@@ -19,7 +19,9 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.sql.LogicSQL;
+import org.apache.shardingsphere.sharding.route.datatime.DatetimeService;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.InsertClauseShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -31,6 +33,10 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatement
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingConditionEngineFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(DatetimeService.class);
+    }
     
     /**
      * Create new instance of sharding condition engine.

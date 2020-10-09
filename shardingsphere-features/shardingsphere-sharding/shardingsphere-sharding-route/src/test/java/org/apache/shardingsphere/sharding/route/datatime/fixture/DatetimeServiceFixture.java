@@ -33,4 +33,9 @@ public final class DatetimeServiceFixture implements DatetimeService {
     public Date getDatetime() {
         return null == date ? new Date() : date;
     }
+    
+    @Override
+    public boolean isDefault() {
+        return false;
+    }
 }

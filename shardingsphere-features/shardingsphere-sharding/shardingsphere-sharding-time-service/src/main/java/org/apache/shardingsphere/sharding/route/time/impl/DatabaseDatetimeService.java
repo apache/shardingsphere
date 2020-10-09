@@ -49,4 +49,9 @@ public final class DatabaseDatetimeService implements DatetimeService {
         }
         return new Date();
     }
+    
+    @Override
+    public boolean isDefault() {
+        return false;
+    }
 }
