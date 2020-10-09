@@ -85,16 +85,15 @@ public abstract class AbstractStatementExecutor {
         }
     }
     
-    protected boolean executeAndRefreshMetaData(Collection<InputGroup<StatementExecuteUnit>> inputGroups, SQLStatementContext<?> sqlStatementContext,
-                                                SQLExecutorCallback<Boolean> sqlExecutorCallback) throws SQLException {
+    protected boolean executeAndRefreshMetaData(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext<?> sqlStatementContext,
+                                                final SQLExecutorCallback<Boolean> sqlExecutorCallback) throws SQLException {
         List<Boolean> result = getSqlExecutor().execute(inputGroups, sqlExecutorCallback);
         refreshTableMetaData(getSchemaContexts().getDefaultSchema(), sqlStatementContext);
         return (null == result || result.isEmpty() || null == result.get(0)) ? false : result.get(0);
     }
     
     private void notifyPersistRuleMetaData(final String schemaName, final RuleSchemaMetaData metaData) {
-        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(metaData),
-                RuleMetaDataNotifier.class).values().forEach(each -> each.notify(schemaName, metaData));
+        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(metaData), RuleMetaDataNotifier.class).values().forEach(each -> each.notify(schemaName, metaData));
     }
     
     /**
