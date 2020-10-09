@@ -25,7 +25,6 @@
         <artifactId>shardingsphere-integration-test</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    
     <artifactId>shardingsphere-proxy-docker-build</artifactId>
     <name>${project.artifactId}</name>
     
