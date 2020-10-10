@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.order;
+package org.apache.shardingsphere.infra.spi.ordered;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.stream.Collectors;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterface;
 import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterfaceImpl;
 import org.apache.shardingsphere.infra.spi.fixture.OrderedSPIFixture;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

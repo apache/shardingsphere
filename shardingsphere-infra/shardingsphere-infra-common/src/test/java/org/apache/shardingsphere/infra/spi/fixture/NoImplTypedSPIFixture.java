@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.spi.fixture;
 
-import org.apache.shardingsphere.infra.spi.type.TypedSPI;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
 public interface NoImplTypedSPIFixture extends TypedSPI {
 }

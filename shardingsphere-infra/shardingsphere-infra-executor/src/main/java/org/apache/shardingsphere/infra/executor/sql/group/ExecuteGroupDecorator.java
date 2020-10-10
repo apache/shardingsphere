@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.group;
 
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 
 import java.util.Collection;
