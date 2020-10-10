@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.spi.fixture;
 
-import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
 public interface OrderedSPIFixture<T extends FixtureCustomInterface> extends OrderedSPI<T> {
 }

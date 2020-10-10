@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.yaml.swapper;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 
 import java.lang.reflect.ParameterizedType;

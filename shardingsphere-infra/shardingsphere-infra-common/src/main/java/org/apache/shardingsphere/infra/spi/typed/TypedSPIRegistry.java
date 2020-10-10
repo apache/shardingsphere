@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.type;
+package org.apache.shardingsphere.infra.spi.typed;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

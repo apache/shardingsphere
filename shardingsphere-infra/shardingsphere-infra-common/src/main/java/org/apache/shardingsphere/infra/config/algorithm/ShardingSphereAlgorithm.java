@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.algorithm;
 
-import org.apache.shardingsphere.infra.spi.type.TypedSPI;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
 /**
  * ShardingSphere algorithm.

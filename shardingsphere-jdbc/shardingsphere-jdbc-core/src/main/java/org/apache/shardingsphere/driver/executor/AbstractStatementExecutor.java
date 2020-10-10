@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataNotifier;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import javax.sql.DataSource;
@@ -87,9 +87,9 @@ public abstract class AbstractStatementExecutor {
     
     protected boolean executeAndRefreshMetaData(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext<?> sqlStatementContext,
                                                 final SQLExecutorCallback<Boolean> sqlExecutorCallback) throws SQLException {
-        List<Boolean> result = getSqlExecutor().execute(inputGroups, sqlExecutorCallback);
-        refreshTableMetaData(getSchemaContexts().getDefaultSchema(), sqlStatementContext);
-        return (null == result || result.isEmpty() || null == result.get(0)) ? false : result.get(0);
+        List<Boolean> result = sqlExecutor.execute(inputGroups, sqlExecutorCallback);
+        refreshTableMetaData(schemaContexts.getDefaultSchema(), sqlStatementContext);
+        return null != result && !result.isEmpty() && null != result.get(0) && result.get(0);
     }
     
     private void notifyPersistRuleMetaData(final String schemaName, final RuleSchemaMetaData metaData) {

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.order;
+package org.apache.shardingsphere.infra.spi.ordered;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.type;
+package org.apache.shardingsphere.infra.spi.typed;
 
 import java.util.Properties;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
