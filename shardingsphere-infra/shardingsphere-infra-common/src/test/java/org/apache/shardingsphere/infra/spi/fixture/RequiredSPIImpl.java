@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.spi.fixture;
 
 import org.apache.shardingsphere.infra.spi.required.RequiredSPI;
 
-public final class RequiredSCIImpl implements RequiredSPI {
+public final class RequiredSPIImpl implements RequiredSPI {
     
     @Override
     public boolean isDefault() {

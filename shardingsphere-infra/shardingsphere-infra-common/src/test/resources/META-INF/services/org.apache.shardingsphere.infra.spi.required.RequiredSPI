@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.spi.fixture.RequiredSCIImpl
+org.apache.shardingsphere.infra.spi.fixture.RequiredSPIImpl
