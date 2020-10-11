@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
-import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.validator.util.StatementValidatorUtil;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
@@ -33,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateProced
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -45,35 +42,16 @@ public final class ShardingCreateProcedureStatementValidator implements Sharding
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateProcedureStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereMetaData metaData) {
         Optional<RoutineBodySegment> routineBodySegment = CreateProcedureStatementHandler.getRoutineBodySegment(sqlStatementContext.getSqlStatement());
-        TableExtractor extractor = new TableExtractor();
-        routineBodySegment.ifPresent(routineBody -> validateShardingTableAndTableExist(metaData, extractor.extractExistTableFromRoutineBody(routineBody)));
-        routineBodySegment.ifPresent(routineBody -> validateTableNotExist(metaData, extractor.extractNotExistTableFromRoutineBody(routineBody)));
+        routineBodySegment.ifPresent(routineBody -> {
+            TableExtractor extractor = new TableExtractor();
+            StatementValidatorUtil.validateTableNotExist(metaData, extractor.extractNotExistTableFromRoutineBody(routineBody));
+            Collection<SimpleTableSegment> tables = extractor.extractExistTableFromRoutineBody(routineBody);
+            StatementValidatorUtil.validateShardingTable(metaData, tables);
+            StatementValidatorUtil.validateTableExist(metaData, tables);
+        });
     }
     
     @Override
     public void postValidate(final CreateProcedureStatement sqlStatement, final RouteContext routeContext) {
-    }
-    
-    private void validateShardingTableAndTableExist(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> simpleTableSegments) {
-        for (SimpleTableSegment each : simpleTableSegments) {
-            String tableName = each.getTableName().getIdentifier().getValue();
-            if (metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames().contains(tableName)) {
-                throw new ShardingSphereException("Create procedure statement can not support sharding table '%s'.", tableName);
-            }
-            for (Map.Entry<String, Collection<String>> entry : metaData.getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().entrySet()) {
-                if (!entry.getValue().contains(tableName)) {
-                    throw new NoSuchTableException(entry.getKey(), tableName);
-                }
-            }
-        }
-    }
-    
-    private void validateTableNotExist(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> simpleTableSegments) {
-        for (SimpleTableSegment each : simpleTableSegments) {
-            String tableName = each.getTableName().getIdentifier().getValue();
-            if (metaData.getRuleSchemaMetaData().getAllTableNames().contains(tableName)) {
-                throw new TableExistsException(tableName);
-            }
-        }
     }
 }

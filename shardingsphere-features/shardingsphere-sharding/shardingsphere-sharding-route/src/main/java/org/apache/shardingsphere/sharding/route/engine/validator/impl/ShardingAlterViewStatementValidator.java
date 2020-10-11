@@ -24,34 +24,34 @@ import org.apache.shardingsphere.sharding.route.engine.validator.util.StatementV
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFunctionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateFunctionStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterViewStatementHandler;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Sharding create function statement validator.
+ * Sharding alter view statement validator.
  */
-public final class ShardingCreateFunctionStatementValidator implements ShardingStatementValidator<CreateFunctionStatement> {
+public final class ShardingAlterViewStatementValidator implements ShardingStatementValidator<AlterViewStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateFunctionStatement> sqlStatementContext, 
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterViewStatement> sqlStatementContext, 
                             final List<Object> parameters, final ShardingSphereMetaData metaData) {
-        Optional<RoutineBodySegment> routineBodySegment = CreateFunctionStatementHandler.getRoutineBodySegment(sqlStatementContext.getSqlStatement());
-        routineBodySegment.ifPresent(routineBody -> {
+        Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(sqlStatementContext.getSqlStatement());
+        selectStatement.ifPresent(select -> {
             TableExtractor extractor = new TableExtractor();
-            Collection<SimpleTableSegment> tables = extractor.extractExistTableFromRoutineBody(routineBody);
+            extractor.extractTablesFromSelect(select);
+            Collection<SimpleTableSegment> tables = extractor.getRewriteTables();
             StatementValidatorUtil.validateShardingTable(metaData, tables);
             StatementValidatorUtil.validateTableExist(metaData, tables);
-            StatementValidatorUtil.validateTableNotExist(metaData, extractor.extractNotExistTableFromRoutineBody(routineBody));
         });
     }
     
     @Override
-    public void postValidate(final CreateFunctionStatement sqlStatement, final RouteContext routeContext) {
+    public void postValidate(final AlterViewStatement sqlStatement, final RouteContext routeContext) {
     }
 }

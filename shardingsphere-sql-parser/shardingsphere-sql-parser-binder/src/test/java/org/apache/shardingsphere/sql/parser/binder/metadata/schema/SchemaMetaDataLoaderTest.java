@@ -42,6 +42,8 @@ public final class SchemaMetaDataLoaderTest {
     
     private static final String TABLE_TYPE = "TABLE";
     
+    private static final String VIEW_TYPE = "VIEW";
+    
     private static final String DATABASE_TYPE_ORACLE = "Oracle";
     
     @Mock
@@ -61,7 +63,7 @@ public final class SchemaMetaDataLoaderTest {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getCatalog()).thenReturn(TEST_CATALOG);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(databaseMetaData.getTables(TEST_CATALOG, null, null, new String[]{TABLE_TYPE})).thenReturn(tableExistResultSet);
+        when(databaseMetaData.getTables(TEST_CATALOG, null, null, new String[]{TABLE_TYPE, VIEW_TYPE})).thenReturn(tableExistResultSet);
     }
     
     @Test
