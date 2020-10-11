@@ -36,13 +36,9 @@ public final class DataSourcesMetaData {
     
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
-    public DataSourcesMetaData(final DatabaseType databaseType, final Map<String, DatabaseAccessConfiguration> databaseAccessConfigMap) {
-        dataSourceMetaDataMap = getDataSourceMetaDataMap(databaseType, databaseAccessConfigMap);
-    }
-    
-    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final DatabaseType databaseType, final Map<String, DatabaseAccessConfiguration> databaseAccessConfigMap) {
-        return databaseAccessConfigMap.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> databaseType.getDataSourceMetaData(entry.getValue().getUrl(), entry.getValue().getUsername())));
+    public DataSourcesMetaData(final DatabaseType databaseType, final Map<String, DatabaseAccessConfiguration> databaseAccessConfigs) {
+        dataSourceMetaDataMap = databaseAccessConfigs.entrySet().stream().collect(
+                Collectors.toMap(Entry::getKey, entry -> databaseType.getDataSourceMetaData(entry.getValue().getUrl(), entry.getValue().getUsername())));
     }
     
     /**
