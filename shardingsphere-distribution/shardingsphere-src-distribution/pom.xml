@@ -73,9 +73,10 @@
             <artifactId>shardingsphere-sql-parser-sqlserver</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-parser-binder</artifactId>
+            <artifactId>shardingsphere-infra-binder</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
