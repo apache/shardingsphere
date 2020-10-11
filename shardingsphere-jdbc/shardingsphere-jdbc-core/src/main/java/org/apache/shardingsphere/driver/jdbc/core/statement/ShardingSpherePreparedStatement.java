@@ -103,6 +103,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final Collection<Comparable<?>> generatedValues = new LinkedList<>();
     
+    private final KernelProcessor kernelProcessor;
+    
     private ExecutionContext executionContext;
     
     private ResultSet currentResultSet;
@@ -141,6 +143,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         preparedStatementExecutor = new PreparedStatementExecutor(connection.getDataSourceMap(), schemaContexts, sqlExecutor);
         rawExecutor = new RawJDBCExecutor(schemaContexts.getExecutorKernel(), connection.isHoldTransaction());
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(schemaContexts, sqlExecutor);
+        kernelProcessor = new KernelProcessor();
     }
     
     @Override
@@ -257,7 +260,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private ExecutionContext createExecutionContext() {
         LogicSQL logicSQL = createLogicSQL();
-        ExecutionContext result = new KernelProcessor().generateExecutionContext(logicSQL, schemaContexts.getProps());
+        ExecutionContext result = kernelProcessor.generateExecutionContext(logicSQL, schemaContexts.getProps());
         findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.addAll(generatedKey.getGeneratedValues()));
         logSQL(logicSQL, result);
         return result;

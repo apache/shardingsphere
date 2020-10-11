@@ -60,10 +60,9 @@ public final class SQLExecutor {
      * @return execute result
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings("unchecked")
     public <T> List<T> execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLExecutorCallback<T> firstCallback, final SQLExecutorCallback<T> callback) throws SQLException {
         try {
-            return executorKernel.execute((Collection) inputGroups, firstCallback, callback, serial);
+            return executorKernel.execute(inputGroups, firstCallback, callback, serial);
         } catch (final SQLException ex) {
             ExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();

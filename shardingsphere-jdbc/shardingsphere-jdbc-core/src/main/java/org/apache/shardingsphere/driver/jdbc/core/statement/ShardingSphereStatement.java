@@ -87,6 +87,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private final RawJDBCExecutor rawExecutor;
     
+    private final KernelProcessor kernelProcessor;
+    
     private boolean returnGeneratedKeys;
     
     private ExecutionContext executionContext;
@@ -109,6 +111,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         statementExecutor = new StatementExecutor(connection.getDataSourceMap(), schemaContexts, new SQLExecutor(schemaContexts.getExecutorKernel(), connection.isHoldTransaction()));
         rawExecutor = new RawJDBCExecutor(schemaContexts.getExecutorKernel(), connection.isHoldTransaction());
+        kernelProcessor = new KernelProcessor();
     }
     
     @Override
@@ -281,7 +284,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private ExecutionContext createExecutionContext(final String sql) throws SQLException {
         clearStatements();
         LogicSQL logicSQL = createLogicSQL(sql);
-        ExecutionContext result = new KernelProcessor().generateExecutionContext(logicSQL, schemaContexts.getProps());
+        ExecutionContext result = kernelProcessor.generateExecutionContext(logicSQL, schemaContexts.getProps());
         logSQL(logicSQL, schemaContexts.getProps(), result);
         return result;
     }
