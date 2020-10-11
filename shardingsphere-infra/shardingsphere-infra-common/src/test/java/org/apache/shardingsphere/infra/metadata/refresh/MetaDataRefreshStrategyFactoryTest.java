@@ -17,53 +17,50 @@
 
 package org.apache.shardingsphere.infra.metadata.refresh;
 
-import org.apache.shardingsphere.infra.binder.statement.ddl.AlterIndexStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CreateIndexStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.DropIndexStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.DropTableStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.TruncateStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MetaDataRefreshStrategyFactoryTest {
     
-    @Mock
-    private CreateTableStatementContext createTableStatementContext;
-    
-    @Mock
-    private CreateIndexStatementContext createIndexStatementContext;
-    
-    @Mock
-    private AlterIndexStatementContext alterIndexStatementContext;
-    
-    @Mock
-    private AlterTableStatementContext alterTableStatementContext;
-    
-    @Mock
-    private DropIndexStatementContext dropIndexStatementContext;
-    
-    @Mock
-    private DropTableStatementContext dropTableStatementContext;
-    
-    @Mock
-    private TruncateStatementContext truncateStatementContext;
+    @Test
+    public void assertNewInstanceWithCreateTableStatement() {
+        assertTrue(MetaDataRefreshStrategyFactory.newInstance(mock(CreateTableStatement.class)).isPresent());
+    }
     
     @Test
-    public void assertNewInstance() {
-        assertTrue(MetaDataRefreshStrategyFactory.newInstance(createTableStatementContext).isPresent());
-        assertTrue(MetaDataRefreshStrategyFactory.newInstance(createIndexStatementContext).isPresent());
-        assertFalse(MetaDataRefreshStrategyFactory.newInstance(alterIndexStatementContext).isPresent());
-        assertTrue(MetaDataRefreshStrategyFactory.newInstance(alterTableStatementContext).isPresent());
-        assertTrue(MetaDataRefreshStrategyFactory.newInstance(dropIndexStatementContext).isPresent());
-        assertTrue(MetaDataRefreshStrategyFactory.newInstance(dropTableStatementContext).isPresent());
-        assertFalse(MetaDataRefreshStrategyFactory.newInstance(truncateStatementContext).isPresent());
+    public void assertNewInstanceWithAlterTableStatement() {
+        assertTrue(MetaDataRefreshStrategyFactory.newInstance(mock(AlterTableStatement.class)).isPresent());
+    }
+    
+    @Test
+    public void assertNewInstanceWithDropTableStatement() {
+        assertTrue(MetaDataRefreshStrategyFactory.newInstance(mock(DropTableStatement.class)).isPresent());
+    }
+    
+    @Test
+    public void assertNewInstanceWithCreateIndexStatement() {
+        assertTrue(MetaDataRefreshStrategyFactory.newInstance(mock(CreateIndexStatement.class)).isPresent());
+    }
+    
+    @Test
+    public void assertNewInstanceWithDropIndexStatement() {
+        assertTrue(MetaDataRefreshStrategyFactory.newInstance(mock(DropIndexStatement.class)).isPresent());
+    }
+    
+    @Test
+    public void assertNewInstanceWithSQLStatementNotNeedRefresh() {
+        assertFalse(MetaDataRefreshStrategyFactory.newInstance(mock(AlterIndexStatement.class)).isPresent());
     }
 }
