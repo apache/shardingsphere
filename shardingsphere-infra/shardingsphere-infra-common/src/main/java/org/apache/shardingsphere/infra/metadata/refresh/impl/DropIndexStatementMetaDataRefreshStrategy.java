@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.infra.metadata.refresh.impl;
 
+import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.TableMetaDataLoaderCallback;
-import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.infra.binder.statement.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropIndexStatementHandler;
@@ -38,14 +37,13 @@ import java.util.stream.Collectors;
 /**
  * Drop index statement meta data refresh strategy.
  */
-public final class DropIndexStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<DropIndexStatementContext> {
+public final class DropIndexStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<DropIndexStatement> {
     
     @Override
     public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
-                                final Map<String, DataSource> dataSourceMap, final DropIndexStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) {
-        DropIndexStatement dropIndexStatement = sqlStatementContext.getSqlStatement();
-        Collection<String> indexNames = getIndexNames(dropIndexStatement);
-        Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(dropIndexStatement);
+                                final Map<String, DataSource> dataSourceMap, final DropIndexStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
+        Collection<String> indexNames = getIndexNames(sqlStatement);
+        Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(sqlStatement);
         String tableName = simpleTableSegment.map(tableSegment -> tableSegment.getTableName().getIdentifier().getValue()).orElse("");
         TableMetaData tableMetaData = metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().get(tableName);
         if (simpleTableSegment.isPresent()) {

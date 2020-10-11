@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.infra.metadata.refresh.impl;
 
+import org.apache.shardingsphere.infra.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.TableMetaDataLoaderCallback;
-import org.apache.shardingsphere.infra.binder.metadata.index.IndexMetaData;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 
 import javax.sql.DataSource;
@@ -31,17 +30,16 @@ import java.util.Map;
 /**
  * Create index statement meta data refresh strategy.
  */
-public final class CreateIndexStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<CreateIndexStatementContext> {
+public final class CreateIndexStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<CreateIndexStatement> {
     
     @Override
     public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
-                                final Map<String, DataSource> dataSourceMap, final CreateIndexStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) {
-        CreateIndexStatement createIndexStatement = sqlStatementContext.getSqlStatement();
-        if (null == createIndexStatement.getIndex()) {
+                                final Map<String, DataSource> dataSourceMap, final CreateIndexStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
+        if (null == sqlStatement.getIndex()) {
             return;
         }
-        String indexName = createIndexStatement.getIndex().getIdentifier().getValue();
-        String tableName = createIndexStatement.getTable().getTableName().getIdentifier().getValue();
+        String indexName = sqlStatement.getIndex().getIdentifier().getValue();
+        String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
     }
 }

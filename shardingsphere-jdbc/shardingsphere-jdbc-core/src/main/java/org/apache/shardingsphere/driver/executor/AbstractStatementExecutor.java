@@ -79,7 +79,7 @@ public abstract class AbstractStatementExecutor {
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
             RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(schema.getRules());
-            refreshStrategy.get().refreshMetaData(schema.getMetaData(), schemaContexts.getDatabaseType(), dataSourceMap, sqlStatementContext, 
+            refreshStrategy.get().refreshMetaData(schema.getMetaData(), schemaContexts.getDatabaseType(), dataSourceMap, sqlStatementContext.getSqlStatement(), 
                 tableName -> metaDataLoader.load(schemaContexts.getDatabaseType(), dataSourceMap, tableName, schemaContexts.getProps()));
             notifyPersistRuleMetaData(DefaultSchema.LOGIC_NAME, schema.getMetaData().getRuleSchemaMetaData());
         }

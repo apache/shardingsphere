@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.metadata.refresh;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.refresh.impl.DropTableStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.binder.statement.ddl.DropTableStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
@@ -44,32 +43,31 @@ public final class DropTableStatementMetaDataRefreshStrategyTest extends Abstrac
     public void refreshMySQLDropTableMetaData() throws SQLException {
         refreshMetaData(new MySQLDropTableStatement());   
     }
-
+    
     @Test
     public void refreshOracleDropTableMetaData() throws SQLException {
         refreshMetaData(new OracleDropTableStatement());
     }
-
+    
     @Test
     public void refreshPostgreSQLDropTableMetaData() throws SQLException {
         refreshMetaData(new PostgreSQLDropTableStatement());
     }
-
+    
     @Test
     public void refreshSQL92DropTableMetaData() throws SQLException {
         refreshMetaData(new SQL92DropTableStatement());
     }
-
+    
     @Test
     public void refreshSQLServerDropTableMetaData() throws SQLException {
         refreshMetaData(new SQLServerDropTableStatement());
     }
-
+    
     private void refreshMetaData(final DropTableStatement dropTableStatement) throws SQLException {
-        MetaDataRefreshStrategy<DropTableStatementContext> metaDataRefreshStrategy = new DropTableStatementMetaDataRefreshStrategy();
+        MetaDataRefreshStrategy<DropTableStatement> metaDataRefreshStrategy = new DropTableStatementMetaDataRefreshStrategy();
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        DropTableStatementContext dropTableStatementContext = new DropTableStatementContext(dropTableStatement);
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), dropTableStatementContext, tableName -> Optional.empty());
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), dropTableStatement, tableName -> Optional.empty());
         assertFalse(getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().containsTable("t_order"));
     }
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.metadata.refresh;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.refresh.impl.CreateIndexStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -62,11 +61,10 @@ public final class CreateIndexStatementMetaDataRefreshStrategyTest extends Abstr
     }
     
     private void refreshMetaData(final CreateIndexStatement createIndexStatement) throws SQLException {
-        MetaDataRefreshStrategy<CreateIndexStatementContext> metaDataRefreshStrategy = new CreateIndexStatementMetaDataRefreshStrategy();
+        MetaDataRefreshStrategy<CreateIndexStatement> metaDataRefreshStrategy = new CreateIndexStatementMetaDataRefreshStrategy();
         createIndexStatement.setIndex(new IndexSegment(1, 2, new IdentifierValue("t_order_index")));
         createIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        CreateIndexStatementContext createIndexStatementContext = new CreateIndexStatementContext(createIndexStatement);
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), createIndexStatementContext, tableName -> Optional.empty());
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), createIndexStatement, tableName -> Optional.empty());
         assertTrue(getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("t_order_index"));
     }
     
@@ -91,10 +89,9 @@ public final class CreateIndexStatementMetaDataRefreshStrategyTest extends Abstr
     }
     
     private void refreshMetaDataIfIndexIsNull(final CreateIndexStatement createIndexStatement) throws SQLException {
-        MetaDataRefreshStrategy<CreateIndexStatementContext> metaDataRefreshStrategy = new CreateIndexStatementMetaDataRefreshStrategy();
+        MetaDataRefreshStrategy<CreateIndexStatement> metaDataRefreshStrategy = new CreateIndexStatementMetaDataRefreshStrategy();
         createIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        CreateIndexStatementContext createIndexStatementContext = new CreateIndexStatementContext(createIndexStatement);
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), createIndexStatementContext, tableName -> Optional.empty());
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), createIndexStatement, tableName -> Optional.empty());
         assertFalse(getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("t_order_index"));
     }
 }

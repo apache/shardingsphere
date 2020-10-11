@@ -95,7 +95,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
             refreshStrategy.get().refreshMetaData(logicSQL.getSchema().getMetaData(), ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
-                    logicSQL.getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
+                    logicSQL.getSchema().getDataSources(), sqlStatementContext.getSqlStatement(), this::loadTableMetaData);
             GovernanceEventBus.getInstance().post(
                     new MetaDataPersistEvent(logicSQL.getSchema().getName(), logicSQL.getSchema().getMetaData().getRuleSchemaMetaData()));
         }

@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.infra.metadata.refresh;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.refresh.impl.AlterTableStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.infra.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.refresh.impl.AlterTableStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
@@ -69,10 +68,9 @@ public final class AlterTableStatementMetaDataRefreshStrategyTest extends Abstra
     }
 
     private void refreshMetaData(final AlterTableStatement alterTableStatement) throws SQLException {
-        MetaDataRefreshStrategy<AlterTableStatementContext> metaDataRefreshStrategy = new AlterTableStatementMetaDataRefreshStrategy();
+        MetaDataRefreshStrategy<AlterTableStatement> metaDataRefreshStrategy = new AlterTableStatementMetaDataRefreshStrategy();
         alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        AlterTableStatementContext alterTableStatementContext = new AlterTableStatementContext(alterTableStatement);
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), alterTableStatementContext, tableName -> Optional.of(new TableMetaData(
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), alterTableStatement, tableName -> Optional.of(new TableMetaData(
                 Collections.singletonList(new ColumnMetaData("order_id", 1, "String", true, false, false)),
                 Collections.singletonList(new IndexMetaData("index_alter")))));
         assertTrue(getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("index_alter"));
