@@ -19,7 +19,7 @@ package org.apache.shardingsphere.replication.consensus.rule.builder;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationRuleConfiguration;
 import org.apache.shardingsphere.replication.consensus.rule.ConsensusReplicationRule;
 import org.junit.Test;

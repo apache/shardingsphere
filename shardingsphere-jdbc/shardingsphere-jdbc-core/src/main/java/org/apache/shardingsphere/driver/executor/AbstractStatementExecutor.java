@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.executor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutorCallback;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
@@ -34,8 +35,8 @@ import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataNotifier;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -67,11 +68,7 @@ public abstract class AbstractStatementExecutor {
     }
     
     protected final int accumulate(final List<Integer> results) {
-        int result = 0;
-        for (Integer each : results) {
-            result += null == each ? 0 : each;
-        }
-        return result;
+        return results.stream().mapToInt(each -> null == each ? 0 : each).sum();
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -82,16 +79,21 @@ public abstract class AbstractStatementExecutor {
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
             RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(schema.getRules());
-            refreshStrategy.get().refreshMetaData(schema.getMetaData(), schemaContexts.getDatabaseType(),
-                    dataSourceMap, sqlStatementContext, tableName -> metaDataLoader.load(schemaContexts.getDatabaseType(),
-                            dataSourceMap, tableName, schemaContexts.getProps()));
+            refreshStrategy.get().refreshMetaData(schema.getMetaData(), schemaContexts.getDatabaseType(), dataSourceMap, sqlStatementContext, 
+                tableName -> metaDataLoader.load(schemaContexts.getDatabaseType(), dataSourceMap, tableName, schemaContexts.getProps()));
             notifyPersistRuleMetaData(DefaultSchema.LOGIC_NAME, schema.getMetaData().getRuleSchemaMetaData());
         }
     }
     
+    protected boolean executeAndRefreshMetaData(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext<?> sqlStatementContext,
+                                                final SQLExecutorCallback<Boolean> sqlExecutorCallback) throws SQLException {
+        List<Boolean> result = sqlExecutor.execute(inputGroups, sqlExecutorCallback);
+        refreshTableMetaData(schemaContexts.getDefaultSchema(), sqlStatementContext);
+        return null != result && !result.isEmpty() && null != result.get(0) && result.get(0);
+    }
+    
     private void notifyPersistRuleMetaData(final String schemaName, final RuleSchemaMetaData metaData) {
-        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(metaData),
-                RuleMetaDataNotifier.class).values().forEach(each -> each.notify(schemaName, metaData));
+        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(metaData), RuleMetaDataNotifier.class).values().forEach(each -> each.notify(schemaName, metaData));
     }
     
     /**

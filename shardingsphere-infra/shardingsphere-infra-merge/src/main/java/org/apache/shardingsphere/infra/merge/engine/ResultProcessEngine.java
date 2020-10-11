@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.merge.engine;
 
-import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**

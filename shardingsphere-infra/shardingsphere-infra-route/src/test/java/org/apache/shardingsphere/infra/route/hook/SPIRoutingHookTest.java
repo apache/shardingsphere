@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.route.hook;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.hook.fixture.RoutingHookFixture;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

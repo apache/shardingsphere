@@ -27,7 +27,7 @@ import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigur
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 
 import java.util.concurrent.Executors;

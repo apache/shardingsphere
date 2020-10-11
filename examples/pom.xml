@@ -23,8 +23,8 @@
     <groupId>org.apache.shardingsphere.example</groupId>
     <artifactId>shardingsphere-example</artifactId>
     <version>5.0.0-RC1-SNAPSHOT</version>
-    <name>${project.artifactId}</name>
     <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
     
     <modules>
         <module>example-core</module>

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.refresh;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
