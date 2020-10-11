@@ -31,7 +31,7 @@ import org.apache.shardingsphere.replication.primaryreplica.api.config.PrimaryRe
 import org.apache.shardingsphere.replication.primaryreplica.api.config.rule.PrimaryReplicaReplicationDataSourceRuleConfiguration;
 import org.apache.shardingsphere.replication.primaryreplica.route.engine.impl.PrimaryVisitedManager;
 import org.apache.shardingsphere.replication.primaryreplica.rule.PrimaryReplicaReplicationRule;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.infra.metadata.refresh;
 
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterIndexStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterTableStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateIndexStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropIndexStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropTableStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.TruncateStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.AlterIndexStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CreateIndexStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.DropIndexStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.DropTableStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.TruncateStatementContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

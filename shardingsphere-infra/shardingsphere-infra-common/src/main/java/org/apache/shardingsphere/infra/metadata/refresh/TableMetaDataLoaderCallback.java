@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.refresh;
 
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaData;
 
 import java.sql.SQLException;
 import java.util.Optional;
