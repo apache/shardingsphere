@@ -24,12 +24,12 @@ import org.apache.shardingsphere.infra.metadata.refresh.impl.CreateIndexStatemen
 import org.apache.shardingsphere.infra.metadata.refresh.impl.CreateTableStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.impl.DropIndexStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.impl.DropTableStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterTableStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateIndexStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropIndexStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropTableStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CreateIndexStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.DropIndexStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.DropTableStatementContext;
 
 import java.util.HashMap;
 import java.util.Map;

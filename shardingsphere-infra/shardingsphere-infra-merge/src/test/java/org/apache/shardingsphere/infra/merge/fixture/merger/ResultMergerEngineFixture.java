@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMergerEngine;
 import org.apache.shardingsphere.infra.merge.fixture.rule.MergerRuleFixture;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 public final class ResultMergerEngineFixture implements ResultMergerEngine<MergerRuleFixture> {
     

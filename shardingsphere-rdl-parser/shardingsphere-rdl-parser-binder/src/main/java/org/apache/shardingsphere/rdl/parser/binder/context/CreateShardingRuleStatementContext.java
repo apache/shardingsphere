@@ -20,7 +20,7 @@ package org.apache.shardingsphere.rdl.parser.binder.context;
 import org.apache.shardingsphere.rdl.parser.binder.util.ShardingAlgorithmPropertiesUtil;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.TableRuleSegment;
-import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 
 import java.util.Properties;
 
