@@ -75,16 +75,13 @@ public final class SQLRouteEngine {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private RouteContext doRoute(final LogicSQL logicSQL) {
-        RouteContext result = null;
+        RouteContext result = new RouteContext();
         for (Entry<ShardingSphereRule, SQLRouter> entry : routers.entrySet()) {
-            if (null == result) {
+            if (result.getRouteUnits().isEmpty()) {
                 result = entry.getValue().createRouteContext(logicSQL, entry.getKey(), props);
             } else {
                 entry.getValue().decorateRouteContext(result, logicSQL, entry.getKey(), props);
             }
-        }
-        if (null == result) {
-            result = new RouteContext();
         }
         new UnconfiguredSchemaSQLRouter().decorate(result, logicSQL);
         return result;
