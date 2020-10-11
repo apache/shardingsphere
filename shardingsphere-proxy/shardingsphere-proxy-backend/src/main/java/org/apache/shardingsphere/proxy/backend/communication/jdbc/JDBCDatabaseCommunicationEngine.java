@@ -58,13 +58,15 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private final SQLExecuteEngine sqlExecuteEngine;
     
+    private final KernelProcessor kernelProcessor = new KernelProcessor();
+    
     private BackendResponse response;
     
     private MergedResult mergedResult;
     
     @Override
     public BackendResponse execute() throws SQLException {
-        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(logicSQL, ProxyContext.getInstance().getSchemaContexts().getProps());
+        ExecutionContext executionContext = kernelProcessor.generateExecutionContext(logicSQL, ProxyContext.getInstance().getSchemaContexts().getProps());
         logSQL(executionContext);
         return doExecute(executionContext);
     }

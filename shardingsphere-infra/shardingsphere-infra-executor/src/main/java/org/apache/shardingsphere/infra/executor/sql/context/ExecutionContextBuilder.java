@@ -54,8 +54,8 @@ public final class ExecutionContextBuilder {
      * @return execution contexts
      */
     public static Collection<ExecutionUnit> build(final ShardingSphereMetaData metaData, final SQLRewriteResult sqlRewriteResult, final SQLStatementContext<?> sqlStatementContext) {
-        return sqlRewriteResult instanceof GenericSQLRewriteResult ? build(metaData, (GenericSQLRewriteResult) sqlRewriteResult, sqlStatementContext)
-                : build(metaData, (RouteSQLRewriteResult) sqlRewriteResult);
+        return sqlRewriteResult instanceof GenericSQLRewriteResult
+                ? build(metaData, (GenericSQLRewriteResult) sqlRewriteResult, sqlStatementContext) : build(metaData, (RouteSQLRewriteResult) sqlRewriteResult);
     }
     
     private static Collection<ExecutionUnit> build(final ShardingSphereMetaData metaData, final GenericSQLRewriteResult sqlRewriteResult, final SQLStatementContext<?> sqlStatementContext) {
