@@ -15,31 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.metadata.column;
+package org.apache.shardingsphere.infra.binder;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+
+import java.util.List;
 
 /**
- * Column meta data.
+ * Logic SQL.
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-@ToString
-public class ColumnMetaData {
+public final class LogicSQL {
     
-    private final String name;
+    private final SQLStatementContext<?> sqlStatementContext;
     
-    private final int dataType;
+    private final String sql;
     
-    private final String dataTypeName;
-    
-    private final boolean primaryKey;
-    
-    private final boolean generated;
-    
-    private final boolean caseSensitive;
+    private final List<Object> parameters;
 }

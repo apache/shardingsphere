@@ -20,7 +20,8 @@ package org.apache.shardingsphere.infra.route;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.sql.LogicSQL;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
@@ -36,10 +37,11 @@ public final class UnconfiguredSchemaSQLRouter {
      *
      * @param routeContext route context
      * @param logicSQL logic SQL
+     * @param schema ShardingSphere schema
      */
-    public void decorate(final RouteContext routeContext, final LogicSQL logicSQL) {
+    public void decorate(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereSchema schema) {
         if (isNeedUnconfiguredSchema(logicSQL.getSqlStatementContext().getSqlStatement())) {
-            for (String each : logicSQL.getSchema().getMetaData().getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().keySet()) {
+            for (String each : schema.getMetaData().getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().keySet()) {
                 routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
             }
         }

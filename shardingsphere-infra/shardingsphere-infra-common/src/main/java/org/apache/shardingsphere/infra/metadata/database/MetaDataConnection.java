@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.metadata;
+package org.apache.shardingsphere.infra.metadata.database;
 
 import lombok.RequiredArgsConstructor;
 
