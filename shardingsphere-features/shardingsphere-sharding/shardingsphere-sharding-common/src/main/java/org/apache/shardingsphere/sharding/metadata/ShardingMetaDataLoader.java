@@ -29,9 +29,9 @@ import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataLoader;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.database.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.table.TableMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

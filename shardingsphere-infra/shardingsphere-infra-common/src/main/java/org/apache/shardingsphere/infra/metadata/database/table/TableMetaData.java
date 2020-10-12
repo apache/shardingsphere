@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.metadata.table;
+package org.apache.shardingsphere.infra.metadata.database.table;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.binder.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.binder.metadata.index.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.database.column.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.index.IndexMetaData;
 
 import java.util.ArrayList;
 import java.util.Collection;

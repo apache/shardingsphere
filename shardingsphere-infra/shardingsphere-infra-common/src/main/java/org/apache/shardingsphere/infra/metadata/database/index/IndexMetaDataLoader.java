@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.metadata.index;
+package org.apache.shardingsphere.infra.metadata.database.index;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.metadata.util.JdbcUtil;
+import org.apache.shardingsphere.infra.metadata.database.util.JdbcUtil;
 
 /**
  * Index meta data loader.
