@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -48,7 +49,7 @@ import java.util.concurrent.Executor;
 @RequiredArgsConstructor
 public final class MetaDataConnectionAdapter implements Connection {
     
-    private final String databaseType;
+    private final DatabaseType databaseType;
     
     private final Connection connection;
     
@@ -81,7 +82,7 @@ public final class MetaDataConnectionAdapter implements Connection {
     
     private Optional<SchemaLoader> findSchemaLoader() {
         try {
-            return Optional.of(TypedSPIRegistry.getRegisteredService(SchemaLoader.class, databaseType, new Properties()));
+            return Optional.of(TypedSPIRegistry.getRegisteredService(SchemaLoader.class, databaseType.getName(), new Properties()));
         } catch (final ServiceProviderNotFoundException ignored) {
             return Optional.empty();
         }

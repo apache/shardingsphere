@@ -140,7 +140,7 @@ public final class RuleSchemaMetaDataLoader {
                                                                        final Collection<String> excludedTableNames) throws SQLException {
         Map<String, Collection<String>> result = new HashMap<>(dataSourceMap.size(), 1);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            Collection<String> tableNames = SchemaMetaDataLoader.loadUnconfiguredTableNames(entry.getValue(), databaseType.getName(), excludedTableNames);
+            Collection<String> tableNames = SchemaMetaDataLoader.loadUnconfiguredTableNames(entry.getValue(), databaseType, excludedTableNames);
             if (!tableNames.isEmpty()) {
                 result.put(entry.getKey(), tableNames);
             }

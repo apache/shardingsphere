@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +44,7 @@ public final class SchemaMetaDataLoaderTest {
     
     private static final String TABLE_TYPE = "TABLE";
     
-    private static final String DATABASE_TYPE_ORACLE = "Oracle";
+    private final DatabaseType databaseType = DatabaseTypes.getTrunkDatabaseType("Oracle");
     
     @Mock
     private DataSource dataSource;
@@ -66,7 +68,7 @@ public final class SchemaMetaDataLoaderTest {
     
     @Test
     public void assertLoadUnconfiguredTableNamesForOracle() throws SQLException {
-        Collection<String> tableNames = SchemaMetaDataLoader.loadUnconfiguredTableNames(dataSource, DATABASE_TYPE_ORACLE, Collections.emptyList());
+        Collection<String> tableNames = SchemaMetaDataLoader.loadUnconfiguredTableNames(dataSource, databaseType, Collections.emptyList());
         assertThat(tableNames.size(), is(0));
     }
 }

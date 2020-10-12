@@ -19,9 +19,10 @@ package org.apache.shardingsphere.infra.metadata.database.table;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.MetaDataConnectionAdapter;
 import org.apache.shardingsphere.infra.metadata.database.column.ColumnMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.index.IndexMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.database.MetaDataConnectionAdapter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -44,7 +45,7 @@ public final class TableMetaDataLoader {
      * @return table meta data
      * @throws SQLException SQL exception
      */
-    public static Optional<TableMetaData> load(final DataSource dataSource, final String tableNamePattern, final String databaseType) throws SQLException {
+    public static Optional<TableMetaData> load(final DataSource dataSource, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
         try (MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, dataSource.getConnection())) {
             return isTableExist(connectionAdapter, tableNamePattern)
                     ? Optional.of(new TableMetaData(ColumnMetaDataLoader.load(connectionAdapter, tableNamePattern, databaseType), IndexMetaDataLoader.load(connectionAdapter, tableNamePattern)))

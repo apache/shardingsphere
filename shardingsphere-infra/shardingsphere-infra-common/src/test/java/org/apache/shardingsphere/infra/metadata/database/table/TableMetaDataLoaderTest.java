@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.database.table;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.metadata.database.column.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.index.IndexMetaData;
 import org.junit.Before;
@@ -49,6 +51,8 @@ public final class TableMetaDataLoaderTest {
     private static final String TEST_CATALOG = "catalog";
     
     private static final String TEST_TABLE = "table";
+    
+    private final DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("MySQL");
     
     @Mock
     private DataSource dataSource;
@@ -112,7 +116,7 @@ public final class TableMetaDataLoaderTest {
     
     @Test
     public void assertLoad() throws SQLException {
-        Optional<TableMetaData> actual = TableMetaDataLoader.load(dataSource, TEST_TABLE, "");
+        Optional<TableMetaData> actual = TableMetaDataLoader.load(dataSource, TEST_TABLE, databaseType);
         assertTrue(actual.isPresent());
         Map<String, ColumnMetaData> columnMetaDataMap = actual.get().getColumns();
         assertThat(columnMetaDataMap.size(), is(2));
@@ -127,7 +131,7 @@ public final class TableMetaDataLoaderTest {
     public void assertTableNotExist() throws SQLException {
         when(databaseMetaData.getTables(TEST_CATALOG, null, TEST_TABLE, null)).thenReturn(tableNotExistResultSet);
         when(tableNotExistResultSet.next()).thenReturn(false);
-        Optional<TableMetaData> actual = TableMetaDataLoader.load(dataSource, TEST_TABLE, "");
+        Optional<TableMetaData> actual = TableMetaDataLoader.load(dataSource, TEST_TABLE, databaseType);
         assertFalse(actual.isPresent());
     }
     

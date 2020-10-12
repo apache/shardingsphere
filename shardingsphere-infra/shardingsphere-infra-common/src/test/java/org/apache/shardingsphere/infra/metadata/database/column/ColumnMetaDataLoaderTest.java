@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.database.column;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,6 +46,8 @@ public final class ColumnMetaDataLoaderTest {
     private static final String TEST_CATALOG = "catalog";
     
     private static final String TEST_TABLE = "table";
+    
+    private final DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("MySQL");
     
     @Mock
     private Connection connection;
@@ -89,7 +93,7 @@ public final class ColumnMetaDataLoaderTest {
     
     @Test
     public void assertLoad() throws SQLException {
-        Collection<ColumnMetaData> actual = ColumnMetaDataLoader.load(connection, TEST_TABLE, "");
+        Collection<ColumnMetaData> actual = ColumnMetaDataLoader.load(connection, TEST_TABLE, databaseType);
         assertThat(actual.size(), is(2));
         Iterator<ColumnMetaData> columnMetaDataIterator = actual.iterator();
         assertColumnMetaData(columnMetaDataIterator.next(), "pk_col", Types.INTEGER, "INT", true, true);

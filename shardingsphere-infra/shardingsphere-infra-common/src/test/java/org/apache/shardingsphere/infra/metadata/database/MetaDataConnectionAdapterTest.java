@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.database;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -37,34 +39,36 @@ public final class MetaDataConnectionAdapterTest {
     
     private static final String TEST_SCHEMA = "schema";
     
+    private final DatabaseType databaseType = DatabaseTypes.getTrunkDatabaseType("MySQL");
+    
     @Mock
     private Connection connection;
     
     @Test
     public void assertGetCatalog() throws SQLException {
         when(connection.getCatalog()).thenReturn(TEST_CATALOG);
-        MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter("MySQL", connection);
+        MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, connection);
         assertThat(connectionAdapter.getCatalog(), is(TEST_CATALOG));
     }
     
     @Test
     public void assertGetCatalogReturnNullWhenThrowsSQLException() throws SQLException {
         when(connection.getCatalog()).thenThrow(SQLException.class);
-        MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter("MySQL", connection);
+        MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, connection);
         assertNull(connectionAdapter.getCatalog());
     }
     
     @Test
     public void assertGetSchema() throws SQLException {
         when(connection.getSchema()).thenReturn(TEST_SCHEMA);
-        MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter("MySQL", connection);
+        MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, connection);
         assertThat(connectionAdapter.getSchema(), is(TEST_SCHEMA));
     }
     
     @Test
     public void assertGetSchemaReturnNullWhenThrowsSQLException() throws SQLException {
         when(connection.getSchema()).thenThrow(SQLException.class);
-        MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter("MySQL", connection);
+        MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, connection);
         assertNull(connectionAdapter.getSchema());
     }
 }
