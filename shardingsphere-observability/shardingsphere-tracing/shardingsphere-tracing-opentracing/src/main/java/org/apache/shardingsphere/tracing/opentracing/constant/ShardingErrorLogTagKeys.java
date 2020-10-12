@@ -21,10 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Sharding error log tags.
+ * Sharding error log tag keys.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingErrorLogTags {
+public final class ShardingErrorLogTagKeys {
     
     public static final String EVENT = "event";
     
