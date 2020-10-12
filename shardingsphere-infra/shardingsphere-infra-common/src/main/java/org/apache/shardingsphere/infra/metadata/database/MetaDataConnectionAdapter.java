@@ -43,10 +43,10 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 /**
- * Meta data connection.
+ * Meta data connection adapter.
  */
 @RequiredArgsConstructor
-public final class MetaDataConnection implements Connection {
+public final class MetaDataConnectionAdapter implements Connection {
     
     private final String databaseType;
     
