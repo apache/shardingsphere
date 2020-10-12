@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.metadata.schema;
+package org.apache.shardingsphere.infra.metadata.database.schema;
 
 import org.junit.Before;
 import org.junit.Test;

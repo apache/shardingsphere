@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
-import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.table.TableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

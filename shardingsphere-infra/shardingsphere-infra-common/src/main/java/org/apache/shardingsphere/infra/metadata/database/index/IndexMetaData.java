@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.sql;
+package org.apache.shardingsphere.infra.metadata.database.index;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-
-import java.util.List;
+import lombok.ToString;
 
 /**
- * Logic SQL.
+ * Index meta data.
  */
 @RequiredArgsConstructor
 @Getter
-public final class LogicSQL {
+@EqualsAndHashCode
+@ToString
+public final class IndexMetaData {
     
-    private final SQLStatementContext<?> sqlStatementContext;
-    
-    private final String sql;
-    
-    private final List<Object> parameters;
+    private final String name;
 }

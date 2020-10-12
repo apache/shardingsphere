@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.metadata.util;
+package org.apache.shardingsphere.infra.metadata.database.util;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;

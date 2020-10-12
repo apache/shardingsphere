@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.metadata.index;
+package org.apache.shardingsphere.infra.metadata.database.column;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,13 +23,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Index meta data.
+ * Column meta data.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class IndexMetaData {
+public class ColumnMetaData {
     
     private final String name;
+    
+    private final int dataType;
+    
+    private final String dataTypeName;
+    
+    private final boolean primaryKey;
+    
+    private final boolean generated;
+    
+    private final boolean caseSensitive;
 }

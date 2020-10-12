@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.event.model.persist.MetaDataPersistEvent;
-import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.table.TableMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyF
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.sql.LogicSQL;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;

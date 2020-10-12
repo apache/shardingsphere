@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.metadata.table;
+package org.apache.shardingsphere.infra.metadata.database.table;
 
-import org.apache.shardingsphere.infra.binder.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.column.ColumnMetaData;
 import org.junit.Before;
 import org.junit.Test;
 
