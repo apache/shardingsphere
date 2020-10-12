@@ -96,9 +96,9 @@ public final class MySQLDataSourceCheckerTest {
     @Test
     public void assertCheckVariableSuccess() throws SQLException {
         when(resultSet.next()).thenReturn(true, true);
-        when(resultSet.getString(2)).thenReturn("ON", "ROW");
+        when(resultSet.getString(2)).thenReturn("ON", "ROW", "FULL");
         dataSourceChecker.checkVariable(dataSources);
-        verify(preparedStatement, Mockito.times(2)).executeQuery();
+        verify(preparedStatement, Mockito.times(3)).executeQuery();
     }
     
     @Test(expected = PrepareFailedException.class)
