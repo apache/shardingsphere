@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.init;
+package org.apache.shardingsphere.proxy.initializer;
 
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 

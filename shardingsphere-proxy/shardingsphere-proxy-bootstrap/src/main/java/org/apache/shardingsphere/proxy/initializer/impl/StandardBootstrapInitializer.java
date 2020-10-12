@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.init.impl;
+package org.apache.shardingsphere.proxy.initializer.impl;
 
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
