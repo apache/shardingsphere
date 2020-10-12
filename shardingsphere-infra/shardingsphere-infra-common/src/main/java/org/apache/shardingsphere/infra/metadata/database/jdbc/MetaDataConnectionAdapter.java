@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database;
+package org.apache.shardingsphere.infra.metadata.database.jdbc;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.loader.JDBCSchemaLoader;
+import org.apache.shardingsphere.infra.metadata.database.jdbc.loader.JDBCSchemaLoader;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 

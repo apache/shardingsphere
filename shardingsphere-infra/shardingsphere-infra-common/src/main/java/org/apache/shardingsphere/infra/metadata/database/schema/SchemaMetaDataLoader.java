@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.MetaDataConnectionAdapter;
+import org.apache.shardingsphere.infra.metadata.database.jdbc.MetaDataConnectionAdapter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
