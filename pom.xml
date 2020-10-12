@@ -68,7 +68,7 @@
         <commons-codec.version>1.10</commons-codec.version>
         <commons-cli.version>1.4</commons-cli.version>
         <commons-collections4.version>4.2</commons-collections4.version>
-        
+        <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <javax.transaction.version>1.1</javax.transaction.version>
         <atomikos.version>4.0.6</atomikos.version>
         <seata.version>1.0.0</seata.version>
@@ -204,7 +204,11 @@
                 <artifactId>commons-collections4</artifactId>
                 <version>${commons-collections4.version}</version>
             </dependency>
-
+	        <dependency>
+				<groupId>commons-beanutils</groupId>
+				<artifactId>commons-beanutils</artifactId>
+				<version>${commons-beanutils.version}</version>
+			</dependency>
             <dependency>
                 <groupId>io.prometheus</groupId>
                 <artifactId>simpleclient</artifactId>
