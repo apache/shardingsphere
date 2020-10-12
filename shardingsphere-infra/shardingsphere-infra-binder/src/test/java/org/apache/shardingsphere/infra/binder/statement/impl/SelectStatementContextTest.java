@@ -371,7 +371,6 @@ public final class SelectStatementContextTest {
         selectStatement.setWhere(whereSegment);
         SelectStatementContext actual = new SelectStatementContext(
                 selectStatement, null, null, null, null);
-        assertTrue(actual.toString().startsWith(String.format("%s(super", SelectStatementContext.class.getSimpleName())));
         assertThat(actual.getTablesContext().getTables(), is(Lists.newLinkedList()));
         assertThat(actual.getAllTables(), is(Lists.newLinkedList()));
         assertNull(actual.getPaginationContext());

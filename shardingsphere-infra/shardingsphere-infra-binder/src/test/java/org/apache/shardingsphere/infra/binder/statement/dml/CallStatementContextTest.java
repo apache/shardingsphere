@@ -28,7 +28,6 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class CallStatementContextTest {
@@ -48,6 +47,5 @@ public final class CallStatementContextTest {
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(callStatement));
         assertThat(actual.getTablesContext().getTables(), is(Collections.emptyList()));
-        assertTrue(actual.toString().startsWith(String.format("%s(super=", CallStatementContext.class.getSimpleName())));
     }
 }

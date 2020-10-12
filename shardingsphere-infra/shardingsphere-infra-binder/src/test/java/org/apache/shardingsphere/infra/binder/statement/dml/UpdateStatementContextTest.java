@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -68,7 +67,6 @@ public final class UpdateStatementContextTest {
         updateStatement.setWhere(whereSegment);
         updateStatement.setTableSegment(joinTableSegment);
         UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
-        assertTrue(actual.toString().startsWith(String.format("%s(super", UpdateStatementContext.class.getSimpleName())));
         assertThat(actual.getTablesContext().getTables().stream().map(a -> a.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
         assertThat(actual.getWhere(), is(Optional.of(whereSegment)));
         assertThat(actual.getAllTables().stream().map(a -> a.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2", "tbl_2")));
