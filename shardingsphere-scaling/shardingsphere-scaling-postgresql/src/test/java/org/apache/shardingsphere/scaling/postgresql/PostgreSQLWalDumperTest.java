@@ -91,7 +91,7 @@ public final class PostgreSQLWalDumperTest {
             when(pgReplicationStream.readPending()).thenReturn(null).thenReturn(data).thenThrow(new SQLException(""));
             when(pgReplicationStream.getLastReceiveLSN()).thenReturn(LogSequenceNumber.valueOf(101L));
             postgreSQLWalDumper.start();
-        } catch (final SyncTaskExecuteException ignore) {
+        } catch (final SyncTaskExecuteException ignored) {
         }
         assertThat(channel.fetchRecords(100, 0).size(), is(1));
     }

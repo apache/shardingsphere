@@ -59,7 +59,7 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
             long sourceCount = count(sourceDataSource, table);
             long targetCount = count(targetDataSource, table);
             return new DataConsistencyCheckResult(sourceCount, targetCount);
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new DataCheckFailException(String.format("table %s count check failed.", table), ex);
         }
     }
@@ -70,7 +70,7 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
              ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
             return resultSet.getLong(1);
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new DataCheckFailException(String.format("table %s count failed.", table), ex);
         }
     }
