@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.loader;
+package org.apache.shardingsphere.infra.metadata.database.jdbc.loader;
 
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
 import java.sql.Connection;
 
 /**
- * Schema loader.
+ * JDBC schema loader.
  */
-public interface SchemaLoader extends TypedSPI {
+public interface JDBCSchemaLoader extends TypedSPI {
     
     /**
      * Get schema.

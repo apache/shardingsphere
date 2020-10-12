@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.loader.impl;
+package org.apache.shardingsphere.infra.metadata.database.jdbc.loader.impl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.database.loader.SchemaLoader;
+import org.apache.shardingsphere.infra.metadata.database.jdbc.loader.JDBCSchemaLoader;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -27,11 +27,11 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Schema loader of Oracle.
+ * JDBC schema loader of Oracle.
  */
 @Getter
 @Setter
-public final class OracleSchemaLoader implements SchemaLoader {
+public final class OracleJDBCSchemaLoader implements JDBCSchemaLoader {
     
     private Properties props;
     
