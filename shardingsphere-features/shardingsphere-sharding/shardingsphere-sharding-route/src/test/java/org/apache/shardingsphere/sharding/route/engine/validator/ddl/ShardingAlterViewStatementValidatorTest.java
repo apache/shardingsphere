@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.dml;
+package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
 import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
-import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterViewStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -78,25 +77,6 @@ public final class ShardingAlterViewStatementValidatorTest {
         when(metaData.getRuleSchemaMetaData()).thenReturn(ruleSchemaMetaData);
         when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
         when(schemaMetaData.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
-        SQLStatementContext<AlterViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
-        new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
-    }
-    
-    @Test(expected = NoSuchTableException.class)
-    public void assertValidateAlterViewWithNoSuchTableForMySQL() {
-        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
-        selectStatement.setFrom(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
-        MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();
-        sqlStatement.setSelect(selectStatement);
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
-        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
-        when(metaData.getRuleSchemaMetaData()).thenReturn(ruleSchemaMetaData);
-        when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
-        when(schemaMetaData.getAllTableNames()).thenReturn(Collections.emptyList());
-        Map<String, Collection<String>> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
-        unconfiguredSchemaMetaDataMap.put("ds_0", Collections.emptyList());
-        when(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap()).thenReturn(unconfiguredSchemaMetaDataMap);
         SQLStatementContext<AlterViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
         new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }

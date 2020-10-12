@@ -23,12 +23,10 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterViewStatementHandler;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,9 +42,7 @@ public final class ShardingAlterViewStatementValidator extends ShardingDDLStatem
         selectStatement.ifPresent(select -> {
             TableExtractor extractor = new TableExtractor();
             extractor.extractTablesFromSelect(select);
-            Collection<SimpleTableSegment> tables = extractor.getRewriteTables();
-            validateShardingTable(metaData, tables);
-            validateTableExist(metaData, tables);
+            validateShardingTable(metaData, extractor.getRewriteTables(), sqlStatementContext.getSqlStatement());
         });
     }
     

@@ -34,7 +34,7 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
      * @param sqlStatementContext sqlStatementContext
      */
     protected void validateMultipleTable(final SQLStatementContext<T> sqlStatementContext) {
-        if (1 != ((TableAvailable) sqlStatementContext).getTablesContext().getTables().size()) {
+        if (1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
             throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
         }
     }

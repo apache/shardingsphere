@@ -24,11 +24,9 @@ import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDL
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateFunctionStatementHandler;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,9 +41,7 @@ public final class ShardingCreateFunctionStatementValidator extends ShardingDDLS
         Optional<RoutineBodySegment> routineBodySegment = CreateFunctionStatementHandler.getRoutineBodySegment(sqlStatementContext.getSqlStatement());
         routineBodySegment.ifPresent(routineBody -> {
             TableExtractor extractor = new TableExtractor();
-            Collection<SimpleTableSegment> tables = extractor.extractExistTableFromRoutineBody(routineBody);
-            validateShardingTable(metaData, tables);
-            validateTableExist(metaData, tables);
+            validateShardingTable(metaData, extractor.extractExistTableFromRoutineBody(routineBody), sqlStatementContext.getSqlStatement());
             validateTableNotExist(metaData, extractor.extractNotExistTableFromRoutineBody(routineBody));
         });
     }
