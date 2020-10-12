@@ -15,41 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.util;
+package org.apache.shardingsphere.infra.metadata.database.loader.impl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.metadata.database.loader.SchemaLoader;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
- * JDBC utility.
+ * Schema loader of Oracle.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JdbcUtil {
+@Getter
+@Setter
+public final class OracleSchemaLoader implements SchemaLoader {
     
-    /**
-     * Get schema.
-     *
-     * @param connection connection
-     * @param databaseType database type
-     * @return schema
-     */
-    public static String getSchema(final Connection connection, final String databaseType) {
+    private Properties props;
+    
+    @Override
+    public String getSchema(final Connection connection) {
         try {
-            if ("Oracle".equals(databaseType)) {
-                DatabaseMetaData databaseMetaData = connection.getMetaData();
-                if (null == databaseMetaData) {
-                    return null;
-                }
-                return Optional.ofNullable(databaseMetaData.getUserName()).map(String::toUpperCase).orElse(null);
-            }
-            return connection.getSchema();
+            return Optional.ofNullable(connection.getMetaData().getUserName()).map(String::toUpperCase).orElse(null);
         } catch (final SQLException ignored) {
+            return null;
         }
-        return null;
+    }
+    
+    @Override
+    public String getType() {
+        return "Oracle";
     }
 }

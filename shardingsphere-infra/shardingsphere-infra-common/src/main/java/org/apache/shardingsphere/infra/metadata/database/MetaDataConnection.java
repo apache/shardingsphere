@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.infra.metadata.database;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.loader.SchemaLoader;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 import java.sql.Array;
 import java.sql.Blob;
@@ -35,6 +38,7 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
@@ -44,13 +48,15 @@ import java.util.concurrent.Executor;
 @RequiredArgsConstructor
 public final class MetaDataConnection implements Connection {
     
+    private final String databaseType;
+    
     private final Connection connection;
     
     @Override
     public String getCatalog() {
         try {
             return connection.getCatalog();
-        } catch (final SQLException ex) {
+        } catch (final SQLException ignored) {
             return null;
         }
     }
@@ -62,10 +68,22 @@ public final class MetaDataConnection implements Connection {
     
     @Override
     public String getSchema() {
+        Optional<SchemaLoader> schemaLoader = findSchemaLoader();
+        if (schemaLoader.isPresent()) {
+            return schemaLoader.get().getSchema(connection);
+        }
         try {
             return connection.getSchema();
         } catch (final SQLException ex) {
             return null;
+        }
+    }
+    
+    private Optional<SchemaLoader> findSchemaLoader() {
+        try {
+            return Optional.of(TypedSPIRegistry.getRegisteredService(SchemaLoader.class, databaseType, new Properties()));
+        } catch (final ServiceProviderNotFoundException ignored) {
+            return Optional.empty();
         }
     }
     
