@@ -18,6 +18,10 @@
 package org.apache.shardingsphere.driver.api;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.junit.Test;
@@ -25,11 +29,15 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import javax.sql.DataSource;
+
+import java.io.File;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +45,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -71,6 +80,7 @@ public final class ShardingSphereDataSourceFactoryTest {
         when(statement.getConnection().getMetaData().getIndexInfo(null, null, "table_0", false, false)).thenReturn(mock(ResultSet.class));
         Map<String, DataSource> result = new HashMap<>(1);
         result.put("ds", dataSource);
+        
         return result;
     }
     
@@ -78,5 +88,29 @@ public final class ShardingSphereDataSourceFactoryTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(new ShardingTableRuleConfiguration("logicTable", "ds.table_${0..2}"));
         return result;
+    }
+    
+    @Test
+    public void assertUnmarshalWithYamlDataSources() throws Exception {
+        URL url = getClass().getClassLoader().getResource("yaml/data-sources.yaml");
+        YamlRootRuleConfigurations actual = YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class);
+        Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(actual.getRules());
+        DataSource datasources = ShardingSphereDataSourceFactory.createDataSourceByProps(actual.getDataSources(), rules, null);
+        System.out.println(datasources);
+    }
+
+    @Test
+    public void testKey() {
+        String key = "max-pool-Size";
+        int idx = key.indexOf("-");
+        if (idx > 0) {
+            StringBuilder sb = new StringBuilder(key.length() - 1);
+            do {
+                key = key.substring(0, idx) + key.substring(idx + 1, idx + 2).toUpperCase() + key.substring(idx + 2);
+                idx = key.indexOf("-");
+            } while (idx >= 0);
+
+        }
+        assertTrue("Key was converted wrong", "maxPoolSize".equals(key));
     }
 }

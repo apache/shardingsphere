@@ -61,7 +61,7 @@ public final class YamlGovernancePrimaryReplicaReplicationIntegrateTest extends 
             dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
             dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(
-                    Maps.asMap(Sets.newHashSet("primary_ds", "replica_ds_0", "replica_ds_1"), AbstractYamlDataSourceTest::createDataSource), yamlFile);
+                    Maps.asMap(Sets.newHashSet("primary_ds", "replica_ds_0", "replica_ds_1"), AbstractYamlDataSourceTest::createDataSourceConfig), yamlFile);
         }
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
@@ -80,7 +80,7 @@ public final class YamlGovernancePrimaryReplicaReplicationIntegrateTest extends 
             dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
             dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(
-                    Maps.asMap(Sets.newHashSet("primary_ds", "replica_ds_0", "replica_ds_1"), AbstractYamlDataSourceTest::createDataSource), getYamlBytes(yamlFile));
+                    Maps.asMap(Sets.newHashSet("primary_ds", "replica_ds_0", "replica_ds_1"), AbstractYamlDataSourceTest::createDataSourceConfig), getYamlBytes(yamlFile));
         }
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {

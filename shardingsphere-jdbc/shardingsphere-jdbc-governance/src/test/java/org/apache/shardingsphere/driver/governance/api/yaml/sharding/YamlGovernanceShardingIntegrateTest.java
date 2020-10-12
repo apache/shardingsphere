@@ -60,7 +60,7 @@ public class YamlGovernanceShardingIntegrateTest extends AbstractYamlDataSourceT
         if (hasDataSource) {
             dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
-            dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db0", "db1"), AbstractYamlDataSourceTest::createDataSource), yamlFile);
+            dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db0", "db1"), AbstractYamlDataSourceTest::createDataSourceConfig), yamlFile);
         }
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {

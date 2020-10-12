@@ -19,6 +19,8 @@ package org.apache.shardingsphere.driver.governance.api.yaml;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.driver.governance.internal.util.YamlGovernanceRepositoryConfigurationSwapperUtil;
 import org.apache.shardingsphere.driver.governance.internal.yaml.YamlGovernanceRootRuleConfigurations;
@@ -63,7 +65,7 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
      * @throws SQLException SQL exception
      * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
+    public static DataSource createDataSource(final Map<String, Map<String, Object>> dataSourceMap, final File yamlFile) throws SQLException, IOException {
         YamlGovernanceRootRuleConfigurations configurations = unmarshal(yamlFile);
         return createDataSource(dataSourceMap, configurations, configurations.getProps(), configurations.getGovernance());
     }
@@ -84,23 +86,23 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
     /**
      * Create ShardingSphere data source.
      *
-     * @param dataSourceMap data source map
+     * @param dataSourceConfigMap data source configuration properties map
      * @param yamlBytes YAML bytes for rule configurations
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlBytes) throws SQLException, IOException {
+    public static DataSource createDataSource(final Map<String, Map<String, Object>> dataSourceConfigMap, final byte[] yamlBytes) throws SQLException, IOException {
         YamlGovernanceRootRuleConfigurations configurations = unmarshal(yamlBytes);
-        return createDataSource(dataSourceMap, configurations, configurations.getProps(), configurations.getGovernance());
+        return createDataSource(dataSourceConfigMap, configurations, configurations.getProps(), configurations.getGovernance());
     }
     
-    private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlGovernanceRootRuleConfigurations configurations,
+    private static DataSource createDataSource(final Map<String, Map<String, Object>> dataSourceConfigMap, final YamlGovernanceRootRuleConfigurations configurations,
                                                final Properties props, final YamlGovernanceConfiguration governance) throws SQLException {
-        if (configurations.getRules().isEmpty() || dataSourceMap.isEmpty()) {
+        if (configurations.getRules().isEmpty() || dataSourceConfigMap.isEmpty()) {
             return createDataSourceWithoutRules(governance);
         } else {
-            return createDataSourceWithRules(dataSourceMap, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()),
+            return createDataSourceWithRules(dataSourceConfigMap, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()),
                     props, governance);
         }
     }
@@ -109,8 +111,9 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
         return new GovernanceShardingSphereDataSource(YamlGovernanceRepositoryConfigurationSwapperUtil.marshal(governance));
     }
     
-    private static DataSource createDataSourceWithRules(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations,
+    private static DataSource createDataSourceWithRules(final Map<String, Map<String, Object>> dataSourceConfigMap, final Collection<RuleConfiguration> ruleConfigurations,
                                                         final Properties props, final YamlGovernanceConfiguration governance) throws SQLException {
+        Map<String, DataSource> dataSourceMap = ShardingSphereDataSourceFactory.fromDataSourceConfig(dataSourceConfigMap);
         return new GovernanceShardingSphereDataSource(dataSourceMap, ruleConfigurations, props, 
                 YamlGovernanceRepositoryConfigurationSwapperUtil.marshal(governance));
     }

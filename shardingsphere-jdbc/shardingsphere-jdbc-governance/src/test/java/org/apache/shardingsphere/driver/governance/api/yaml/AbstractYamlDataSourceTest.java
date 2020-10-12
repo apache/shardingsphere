@@ -17,11 +17,6 @@
 
 package org.apache.shardingsphere.driver.governance.api.yaml;
 
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.h2.tools.RunScript;
-import org.junit.BeforeClass;
-
-import javax.sql.DataSource;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,8 +24,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.h2.tools.RunScript;
+import org.junit.BeforeClass;
 
 public abstract class AbstractYamlDataSourceTest {
     
@@ -41,13 +44,23 @@ public abstract class AbstractYamlDataSourceTest {
                     createDataSource(getFileName(each)).getConnection(), new InputStreamReader(Objects.requireNonNull(AbstractYamlDataSourceTest.class.getClassLoader().getResourceAsStream(each))));
         }
     }
-    
+
     protected static DataSource createDataSource(final String dsName) {
         BasicDataSource result = new BasicDataSource();
         result.setDriverClassName("org.h2.Driver");
         result.setUrl(String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", dsName));
         result.setUsername("sa");
         result.setMaxTotal(100);
+        return result;
+    }
+    
+    protected static Map<String, Object> createDataSourceConfig(final String dsName) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("type", "org.apache.commons.dbcp2.BasicDataSource");
+        result.put("driverClassName", "org.h2.Driver");
+        result.put("url", String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", dsName));
+        result.put("username", "sa");
+        result.put("maxTotal", 100);
         return result;
     }
     

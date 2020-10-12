@@ -50,7 +50,7 @@ public final class YamlShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
         YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlFile, YamlRootRuleConfigurations.class);
-        return ShardingSphereDataSourceFactory.createDataSource(configurations.getDataSources(), SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()), configurations.getProps());
+        return ShardingSphereDataSourceFactory.createDataSourceByProps(configurations.getDataSources(), SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()), configurations.getProps());
     }
     
     /**
@@ -63,7 +63,7 @@ public final class YamlShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
         YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlBytes, YamlRootRuleConfigurations.class);
-        return ShardingSphereDataSourceFactory.createDataSource(configurations.getDataSources(), SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()), configurations.getProps());
+        return ShardingSphereDataSourceFactory.createDataSourceByProps(configurations.getDataSources(), SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()), configurations.getProps());
     }
     
     /**
@@ -79,6 +79,11 @@ public final class YamlShardingSphereDataSourceFactory {
         YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlFile, YamlRootRuleConfigurations.class);
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()), configurations.getProps());
     }
+
+//    public static DataSource createDataSource1(final Map<String, Map<String, Object>> dataSourceMap, final File yamlFile) throws SQLException, IOException {
+//        YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlFile, YamlRootRuleConfigurations.class);
+//        return ShardingSphereDataSourceFactory.createDataSourceByProps(dataSourceMap, SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()), configurations.getProps());
+//    }
     
     /**
      * Create ShardingSphere data source.

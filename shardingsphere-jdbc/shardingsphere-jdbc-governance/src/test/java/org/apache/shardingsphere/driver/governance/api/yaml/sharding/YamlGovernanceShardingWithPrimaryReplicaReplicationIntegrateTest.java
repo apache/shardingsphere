@@ -17,9 +17,15 @@
 
 package org.apache.shardingsphere.driver.governance.api.yaml.sharding;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import lombok.RequiredArgsConstructor;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
 import org.apache.shardingsphere.driver.governance.api.yaml.AbstractYamlDataSourceTest;
 import org.apache.shardingsphere.driver.governance.api.yaml.YamlGovernanceShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
@@ -28,15 +34,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import javax.sql.DataSource;
-import java.io.File;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
+import lombok.RequiredArgsConstructor;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -63,12 +64,13 @@ public final class YamlGovernanceShardingWithPrimaryReplicaReplicationIntegrateT
         if (hasDataSource) {
             dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
-            Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("primary_ds_0", "replica_ds_0", "primary_ds_1", "replica_ds_1"), AbstractYamlDataSourceTest::createDataSource);
-            Map<String, DataSource> result = new HashMap<>();
-            for (Entry<String, DataSource> each : dataSourceMap.entrySet()) {
-                result.put(each.getKey(), each.getValue());
-            }
-            dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(result, yamlFile);
+            Map<String, Map<String, Object>> dataSourceMap = Maps.asMap(Sets.newHashSet("primary_ds_0", "replica_ds_0", "primary_ds_1", "replica_ds_1"), 
+                    AbstractYamlDataSourceTest::createDataSourceConfig);
+//            Map<String, DataSource> result = new HashMap<>();
+//            for (Entry<String, DataSource> each : dataSourceMap.entrySet()) {
+//                result.put(each.getKey(), each.getValue());
+//            }
+            dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(dataSourceMap, yamlFile);
         }
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {

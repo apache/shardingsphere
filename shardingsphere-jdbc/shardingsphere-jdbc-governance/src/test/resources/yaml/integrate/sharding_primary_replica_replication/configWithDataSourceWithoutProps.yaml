@@ -16,30 +16,26 @@
 #
 
 dataSources:
-  primary_ds_0: !!org.apache.commons.dbcp2.BasicDataSource
+  ds_template:
+    type: org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
+    username: sa
+    password: 
+    maxTotal: 100
+    isTemplate: true
+  primary_ds_0:
+    template: ds_template
     url: jdbc:h2:mem:primary_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
-    password: 
-    maxTotal: 100
-  primary_ds_1: !!org.apache.commons.dbcp2.BasicDataSource
-    driverClassName: org.h2.Driver
+  primary_ds_1: 
+    template: ds_template
     url: jdbc:h2:mem:primary_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
-    password: 
-    maxTotal: 100
-  replica_ds_0: !!org.apache.commons.dbcp2.BasicDataSource
-    driverClassName: org.h2.Driver
+  replica_ds_0: 
+    template: ds_template
     url: jdbc:h2:mem:replica_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
-    password: 
-    maxTotal: 100
-  replica_ds_1: !!org.apache.commons.dbcp2.BasicDataSource
-    driverClassName: org.h2.Driver
+    template: ds_template
+  replica_ds_1: 
+    template: ds_template
     url: jdbc:h2:mem:replica_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
-    password: 
-    maxTotal: 100
 
 rules:
 - !SHARDING

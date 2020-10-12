@@ -16,19 +16,22 @@
 #
 
 dataSources:
-  db_primary: !!org.apache.commons.dbcp2.BasicDataSource
+  db_primary: 
+    type: org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
     url: jdbc:h2:mem:db_primary;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxTotal: 100
-  replica_ds_0: !!org.apache.commons.dbcp2.BasicDataSource
+  replica_ds_0:  
+    type: org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
     url: jdbc:h2:mem:replica_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxTotal: 100
-  replica_ds_1: !!org.apache.commons.dbcp2.BasicDataSource
+  replica_ds_1:  
+    type: org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
     url: jdbc:h2:mem:replica_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
