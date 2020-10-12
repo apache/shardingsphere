@@ -50,9 +50,9 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.sql.LogicSQL;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
@@ -197,7 +197,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 Collection<InputGroup<StatementExecuteUnit>> inputGroups = getInputGroups();
                 cacheStatements(inputGroups);
                 reply();
-                return preparedStatementExecutor.execute(inputGroups, executionContext.getSqlStatementContext());
+                return preparedStatementExecutor.execute(inputGroups, executionContext.getSqlStatementContext().getSqlStatement());
             } else {
                 // TODO process getStatement
                 return rawExecutor.execute(getRawInputGroups(), new RawSQLExecutorCallback());
@@ -260,7 +260,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private ExecutionContext createExecutionContext() {
         LogicSQL logicSQL = createLogicSQL();
-        ExecutionContext result = kernelProcessor.generateExecutionContext(logicSQL, schemaContexts.getProps());
+        ExecutionContext result = kernelProcessor.generateExecutionContext(logicSQL, schemaContexts.getDefaultSchema(), schemaContexts.getProps());
         findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.addAll(generatedKey.getGeneratedValues()));
         logSQL(logicSQL, result);
         return result;
@@ -270,7 +270,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         List<Object> parameters = new ArrayList<>(getParameters());
         SchemaMetaData schemaMetaData = schemaContexts.getDefaultSchema().getMetaData().getRuleSchemaMetaData().getSchemaMetaData();
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, parameters, sqlStatement);
-        return new LogicSQL(schemaContexts.getDefaultSchema(), sqlStatementContext, sql, parameters);
+        return new LogicSQL(sqlStatementContext, sql, parameters);
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {

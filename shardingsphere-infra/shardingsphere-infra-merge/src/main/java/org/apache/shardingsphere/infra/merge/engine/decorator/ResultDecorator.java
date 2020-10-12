@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.merge.engine.decorator;
 
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 import java.sql.SQLException;

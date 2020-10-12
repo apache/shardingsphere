@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.executor;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
@@ -29,7 +30,7 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.impl
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.MemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.StreamQueryResult;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
@@ -78,7 +79,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<Integer> sqlExecutorCallback = createDefaultSQLExecutorCallbackWithInteger(isExceptionThrown);
         List<Integer> results = getSqlExecutor().execute(inputGroups, sqlExecutorCallback);
-        refreshTableMetaData(getSchemaContexts().getDefaultSchema(), sqlStatementContext);
+        refreshTableMetaData(getSchemaContexts().getDefaultSchema(), sqlStatementContext.getSqlStatement());
         return isNeedAccumulate(
                 getSchemaContexts().getDefaultSchema().getRules().stream().filter(rule -> rule instanceof DataNodeRoutedRule).collect(Collectors.toList()), sqlStatementContext)
                 ? accumulate(results) : results.get(0);
@@ -95,10 +96,10 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     }
     
     @Override
-    public boolean execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
+    public boolean execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatement sqlStatement) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<Boolean> sqlExecutorCallback = createDefaultSQLExecutorCallbackWithBoolean(isExceptionThrown);
-        return executeAndRefreshMetaData(inputGroups, sqlStatementContext, sqlExecutorCallback);
+        return executeAndRefreshMetaData(inputGroups, sqlStatement, sqlExecutorCallback);
     }
     
     private DefaultSQLExecutorCallback<Boolean> createDefaultSQLExecutorCallbackWithBoolean(final boolean isExceptionThrown) {

@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.encrypt.metadata;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataDecorator;
+import org.apache.shardingsphere.infra.metadata.model.rule.spi.RuleMetaDataDecorator;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
-import org.apache.shardingsphere.infra.binder.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.column.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
 import org.junit.Test;
 
 import java.util.Arrays;

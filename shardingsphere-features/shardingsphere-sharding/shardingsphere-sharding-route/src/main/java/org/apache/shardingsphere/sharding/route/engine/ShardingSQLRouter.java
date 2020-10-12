@@ -18,28 +18,29 @@
 package org.apache.shardingsphere.sharding.route.engine;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.sql.LogicSQL;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngineFactory;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngineFactory;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidatorFactory;
 import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
@@ -55,27 +56,27 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingRule rule, final ConfigurationProperties props) {
+    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereSchema schema, final ShardingRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
         SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
         Optional<ShardingStatementValidator> validator = ShardingStatementValidatorFactory.newInstance(sqlStatement);
-        validator.ifPresent(v -> v.preValidate(rule, logicSQL.getSqlStatementContext(), logicSQL.getParameters(), logicSQL.getSchema().getMetaData()));
-        ShardingConditions shardingConditions = createShardingConditions(logicSQL, rule);
+        validator.ifPresent(v -> v.preValidate(rule, logicSQL.getSqlStatementContext(), logicSQL.getParameters(), schema.getMetaData()));
+        ShardingConditions shardingConditions = createShardingConditions(logicSQL, schema, rule);
         boolean needMergeShardingValues = isNeedMergeShardingValues(logicSQL.getSqlStatementContext(), rule);
         if (sqlStatement instanceof DMLStatement && needMergeShardingValues) {
             checkSubqueryShardingValues(logicSQL.getSqlStatementContext(), rule, shardingConditions);
             mergeShardingConditions(shardingConditions);
         }
-        ShardingRouteEngineFactory.newInstance(rule, logicSQL.getSchema().getMetaData(), logicSQL.getSqlStatementContext(), shardingConditions, props).route(result, rule);
+        ShardingRouteEngineFactory.newInstance(rule, schema.getMetaData(), logicSQL.getSqlStatementContext(), shardingConditions, props).route(result, rule);
         validator.ifPresent(v -> v.postValidate(sqlStatement, result));
         return result;
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private ShardingConditions createShardingConditions(final LogicSQL logicSQL, final ShardingRule rule) {
+    private ShardingConditions createShardingConditions(final LogicSQL logicSQL, final ShardingSphereSchema schema, final ShardingRule rule) {
         List<ShardingCondition> shardingConditions;
         if (logicSQL.getSqlStatementContext().getSqlStatement() instanceof DMLStatement) {
-            ShardingConditionEngine shardingConditionEngine = ShardingConditionEngineFactory.createShardingConditionEngine(logicSQL, rule);
+            ShardingConditionEngine shardingConditionEngine = ShardingConditionEngineFactory.createShardingConditionEngine(logicSQL, schema, rule);
             shardingConditions = shardingConditionEngine.createShardingConditions(logicSQL.getSqlStatementContext(), logicSQL.getParameters());
         } else {
             shardingConditions = Collections.emptyList();
@@ -156,7 +157,8 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
     }
     
     @Override
-    public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingRule rule, final ConfigurationProperties props) {
+    public void decorateRouteContext(final RouteContext routeContext, 
+                                     final LogicSQL logicSQL, final ShardingSphereSchema schema, final ShardingRule rule, final ConfigurationProperties props) {
         // TODO
     }
     

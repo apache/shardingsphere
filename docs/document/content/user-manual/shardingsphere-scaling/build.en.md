@@ -16,13 +16,21 @@ mvn clean install -Prelease;
 
 The binary package's directory is:`/shardingsphere-distribution/shardingsphere-scaling-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-scaling-bin.tar.gz`。
 
-2. Unzip the distribution package, modify the configuration file `conf/server.yaml`, we should ensure the port does not conflict with others, and other values can be left as default:
+2. Unzip the distribution package, modify the configuration file `conf/server.yaml`, we should ensure the port does not conflict with others, and modify the resume from break-point(optional) server lists:
 
 ```
 port: 8888
 blockQueueSize: 10000
 pushTimeout: 1000
 workerThread: 30
+
+resumeBreakPoint:
+  name: scalingJob
+  registryCenter:
+    type: ZooKeeper
+    serverLists: localhost:2181
+    props:
+      retryIntervalMilliseconds: 10000
 ```
 
 3. Start up ShardingSphere-Scaling:
@@ -61,3 +69,4 @@ response:
 | blockQueueSize | Queue size of data transmission channel                                                   | 10000         |
 | pushTimeout    | Data push timeout(ms)                                                                     | 1000          |
 | workerThread   | Worker thread pool size, the number of migration task threads allowed to run concurrently | 30            |
+| resumeBreakPoint   | Resume from break-point service                                                       |               |

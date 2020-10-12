@@ -31,7 +31,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-binder</artifactId>
+            <artifactId>shardingsphere-sql-parser-engine</artifactId>
             <version>${project.version}</version>
         </dependency>
         

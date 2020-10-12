@@ -22,12 +22,12 @@ import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlIndexM
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlRuleSchemaMetaData;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchemaMetaData;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlTableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
-import org.apache.shardingsphere.infra.binder.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.binder.metadata.index.IndexMetaData;
-import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.column.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.index.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
 
 import java.util.Collection;
 import java.util.Collections;

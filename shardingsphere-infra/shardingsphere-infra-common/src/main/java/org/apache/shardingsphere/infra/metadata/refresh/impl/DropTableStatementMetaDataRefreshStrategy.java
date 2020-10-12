@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.infra.metadata.refresh.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.TableMetaDataLoaderCallback;
-import org.apache.shardingsphere.infra.binder.statement.ddl.DropTableStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -29,12 +29,12 @@ import java.util.Map;
 /**
  * Drop table statement meta data refresh strategy.
  */
-public final class DropTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<DropTableStatementContext> {
+public final class DropTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<DropTableStatement> {
     
     @Override
     public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
-                                final Map<String, DataSource> dataSourceMap, final DropTableStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) {
-        sqlStatementContext.getSqlStatement().getTables().forEach(each -> removeMetaData(metaData, each.getTableName().getIdentifier().getValue()));
+                                final Map<String, DataSource> dataSourceMap, final DropTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
+        sqlStatement.getTables().forEach(each -> removeMetaData(metaData, each.getTableName().getIdentifier().getValue()));
     }
     
     private void removeMetaData(final ShardingSphereMetaData metaData, final String tableName) {

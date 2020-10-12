@@ -25,13 +25,13 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.rule.spi.RuleMetaDataLoader;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -81,7 +81,7 @@ public final class ShardingMetaDataLoader implements RuleMetaDataLoader<Sharding
         TableRule tableRule = rule.getTableRule(tableName);
         if (!isCheckingMetaData) {
             DataNode dataNode = dataNodes.getDataNodes(tableName).iterator().next();
-            return TableMetaDataLoader.load(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType.getName());
+            return TableMetaDataLoader.load(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType);
         }
         Map<String, TableMetaData> actualTableMetaDataMap = parallelLoadTables(databaseType, dataSourceMap, dataNodes, tableName, maxConnectionsSizePerQuery);
         if (actualTableMetaDataMap.isEmpty()) {
@@ -120,8 +120,7 @@ public final class ShardingMetaDataLoader implements RuleMetaDataLoader<Sharding
     
     private Optional<TableMetaData> loadTableByDataNode(final DataNode dataNode, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         try {
-            return TableMetaDataLoader.load(
-                    dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType.getName());
+            return TableMetaDataLoader.load(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType);
         } catch (final SQLException ex) {
             throw new IllegalStateException(String.format("SQLException for DataNode=%s and databaseType=%s", dataNode, databaseType.getName()), ex);
         }

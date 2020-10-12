@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.stream.StreamMergedResult;

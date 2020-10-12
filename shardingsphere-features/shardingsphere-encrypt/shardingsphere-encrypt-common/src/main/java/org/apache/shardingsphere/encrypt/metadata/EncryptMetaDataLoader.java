@@ -22,10 +22,10 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataLoader;
-import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.rule.spi.RuleMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -47,7 +47,7 @@ public final class EncryptMetaDataLoader implements RuleMetaDataLoader<EncryptRu
         Map<String, TableMetaData> result = new HashMap<>(encryptTableNames.size(), 1);
         for (String each : encryptTableNames) {
             if (!excludedTableNames.contains(each)) {
-                TableMetaDataLoader.load(dataSource, each, databaseType.getName()).ifPresent(tableMetaData -> result.put(each, tableMetaData));
+                TableMetaDataLoader.load(dataSource, each, databaseType).ifPresent(tableMetaData -> result.put(each, tableMetaData));
             }
         }
         return new SchemaMetaData(result);
@@ -56,7 +56,7 @@ public final class EncryptMetaDataLoader implements RuleMetaDataLoader<EncryptRu
     @Override
     public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, 
                                         final String tableName, final EncryptRule encryptRule, final ConfigurationProperties props) throws SQLException {
-        return encryptRule.findEncryptTable(tableName).isPresent() ? TableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType.getName()) : Optional.empty();
+        return encryptRule.findEncryptTable(tableName).isPresent() ? TableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType) : Optional.empty();
     }
     
     @Override

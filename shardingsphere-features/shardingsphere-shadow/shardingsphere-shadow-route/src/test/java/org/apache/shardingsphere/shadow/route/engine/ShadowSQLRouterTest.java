@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.route.engine;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
-import org.apache.shardingsphere.infra.sql.LogicSQL;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
@@ -76,27 +76,27 @@ public final class ShadowSQLRouterTest {
     
     @Test
     public void assertCreateRouteContextToShadowDataSource() {
+        LogicSQL logicSQL = new LogicSQL(mockSQLStatementContextForShadow(), "", Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
-        LogicSQL logicSQL = new LogicSQL(schema, mockSQLStatementContextForShadow(), "", Collections.emptyList());
-        RouteContext actual = sqlRouter.createRouteContext(logicSQL, rule, new ConfigurationProperties(new Properties()));
+        RouteContext actual = sqlRouter.createRouteContext(logicSQL, schema, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(SHADOW_DATASOURCE));
     }
     
     @Test
     public void assertCreateRouteContextToActualDataSource() {
+        LogicSQL logicSQL = new LogicSQL(mockSQLStatementContext(), "", Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
-        LogicSQL logicSQL = new LogicSQL(schema, mockSQLStatementContext(), "", Collections.emptyList());
-        RouteContext actual = sqlRouter.createRouteContext(logicSQL, rule, new ConfigurationProperties(new Properties()));
+        RouteContext actual = sqlRouter.createRouteContext(logicSQL, schema, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(ACTUAL_DATASOURCE));
     }
     
     @Test
     public void assertCreateRouteContextForNonDMLStatement() {
+        LogicSQL logicSQL = new LogicSQL(mockNonDMLSQLStatementContext(), "", Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
-        LogicSQL logicSQL = new LogicSQL(schema, mockNonDMLSQLStatementContext(), "", Collections.emptyList());
-        RouteContext actual = sqlRouter.createRouteContext(logicSQL, rule, new ConfigurationProperties(new Properties()));
+        RouteContext actual = sqlRouter.createRouteContext(logicSQL, schema, rule, new ConfigurationProperties(new Properties()));
         assertThat(actual.getRouteUnits().size(), is(2));
         assertTrue(actual.getActualDataSourceNames().contains(SHADOW_DATASOURCE));
         assertTrue(actual.getActualDataSourceNames().contains(ACTUAL_DATASOURCE));
@@ -106,9 +106,9 @@ public final class ShadowSQLRouterTest {
     public void assertDecorateRouteContextToShadowDataSource() {
         RouteContext actual = new RouteContext();
         actual.getRouteUnits().add(mockRouteUnit());
+        LogicSQL logicSQL = new LogicSQL(mockSQLStatementContextForShadow(), "", Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
-        LogicSQL logicSQL = new LogicSQL(schema, mockSQLStatementContextForShadow(), "", Collections.emptyList());
-        sqlRouter.decorateRouteContext(actual, logicSQL, rule, new ConfigurationProperties(new Properties()));
+        sqlRouter.decorateRouteContext(actual, logicSQL, schema, rule, new ConfigurationProperties(new Properties()));
         assertThat(actual.getRouteUnits().size(), is(1));
         assertTrue(actual.getActualDataSourceNames().contains(SHADOW_DATASOURCE));
     }
@@ -117,9 +117,9 @@ public final class ShadowSQLRouterTest {
     public void assertDecorateRouteContextToActualDataSource() {
         RouteContext actual = new RouteContext();
         actual.getRouteUnits().add(mockRouteUnit());
+        LogicSQL logicSQL = new LogicSQL(mockSQLStatementContext(), "", Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
-        LogicSQL logicSQL = new LogicSQL(schema, mockSQLStatementContext(), "", Collections.emptyList());
-        sqlRouter.decorateRouteContext(actual, logicSQL, rule, new ConfigurationProperties(new Properties()));
+        sqlRouter.decorateRouteContext(actual, logicSQL, schema, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(ACTUAL_DATASOURCE));
     }
@@ -128,9 +128,9 @@ public final class ShadowSQLRouterTest {
     public void assertDecorateRouteContextNonDMLStatement() {
         RouteContext actual = new RouteContext();
         actual.getRouteUnits().add(mockRouteUnit());
+        LogicSQL logicSQL = new LogicSQL(mockNonDMLSQLStatementContext(), "", Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
-        LogicSQL logicSQL = new LogicSQL(schema, mockNonDMLSQLStatementContext(), "", Collections.emptyList());
-        sqlRouter.decorateRouteContext(actual, logicSQL, rule, new ConfigurationProperties(new Properties()));
+        sqlRouter.decorateRouteContext(actual, logicSQL, schema, rule, new ConfigurationProperties(new Properties()));
         assertThat(actual.getRouteUnits().size(), is(2));
         assertTrue(actual.getActualDataSourceNames().contains(SHADOW_DATASOURCE));
         assertTrue(actual.getActualDataSourceNames().contains(ACTUAL_DATASOURCE));
@@ -140,9 +140,9 @@ public final class ShadowSQLRouterTest {
     public void assertDecorateRouteContextWithTableMapper() {
         RouteContext actual = new RouteContext();
         actual.getRouteUnits().add(mockRouteUnit());
+        LogicSQL logicSQL = new LogicSQL(mockSQLStatementContextForShadow(), "", Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
-        LogicSQL logicSQL = new LogicSQL(schema, mockSQLStatementContextForShadow(), "", Collections.emptyList());
-        sqlRouter.decorateRouteContext(actual, logicSQL, rule, new ConfigurationProperties(new Properties()));
+        sqlRouter.decorateRouteContext(actual, logicSQL, schema, rule, new ConfigurationProperties(new Properties()));
         assertThat(actual.getRouteUnits().size(), is(1));
         assertTrue(actual.getActualDataSourceNames().contains(SHADOW_DATASOURCE));
         Collection<RouteMapper> tableMappers = actual.getRouteUnits().iterator().next().getTableMappers();

@@ -18,9 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.event.model.persist.MetaDataPersistEvent;
 import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
+import org.apache.shardingsphere.governance.core.event.model.persist.MetaDataPersistEvent;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
@@ -29,19 +32,18 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyFactory;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.infra.sql.LogicSQL;
-import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -56,6 +58,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private final LogicSQL logicSQL;
     
+    private final ShardingSphereSchema schema;
+    
     private final SQLExecuteEngine sqlExecuteEngine;
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
@@ -66,7 +70,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     @Override
     public BackendResponse execute() throws SQLException {
-        ExecutionContext executionContext = kernelProcessor.generateExecutionContext(logicSQL, ProxyContext.getInstance().getSchemaContexts().getProps());
+        ExecutionContext executionContext = kernelProcessor.generateExecutionContext(logicSQL, schema, ProxyContext.getInstance().getSchemaContexts().getProps());
         logSQL(executionContext);
         return doExecute(executionContext);
     }
@@ -83,28 +87,26 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         sqlExecuteEngine.checkExecutePrerequisites(executionContext);
         response = sqlExecuteEngine.execute(executionContext);
-        refreshTableMetaData(executionContext.getSqlStatementContext());
+        refreshTableMetaData(executionContext.getSqlStatementContext().getSqlStatement());
         return merge(executionContext.getSqlStatementContext());
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void refreshTableMetaData(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
-        if (null == sqlStatementContext) {
+    private void refreshTableMetaData(final SQLStatement sqlStatement) throws SQLException {
+        if (null == sqlStatement) {
             return;
         }
-        Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
+        Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatement);
         if (refreshStrategy.isPresent()) {
-            refreshStrategy.get().refreshMetaData(logicSQL.getSchema().getMetaData(), ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
-                    logicSQL.getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
-            GovernanceEventBus.getInstance().post(
-                    new MetaDataPersistEvent(logicSQL.getSchema().getName(), logicSQL.getSchema().getMetaData().getRuleSchemaMetaData()));
+            refreshStrategy.get().refreshMetaData(
+                    schema.getMetaData(), ProxyContext.getInstance().getSchemaContexts().getDatabaseType(), schema.getDataSources(), sqlStatement, this::loadTableMetaData);
+            GovernanceEventBus.getInstance().post(new MetaDataPersistEvent(schema.getName(), schema.getMetaData().getRuleSchemaMetaData()));
         }
     }
     
     private Optional<TableMetaData> loadTableMetaData(final String tableName) throws SQLException {
-        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(logicSQL.getSchema().getRules());
-        return loader.load(ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
-                logicSQL.getSchema().getDataSources(), tableName, ProxyContext.getInstance().getSchemaContexts().getProps());
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(schema.getRules());
+        return loader.load(ProxyContext.getInstance().getSchemaContexts().getDatabaseType(), schema.getDataSources(), tableName, ProxyContext.getInstance().getSchemaContexts().getProps());
     }
     
     private BackendResponse merge(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
@@ -124,14 +126,14 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private boolean isNeedAccumulate(final SQLStatementContext<?> sqlStatementContext) {
         Optional<DataNodeRoutedRule> dataNodeRoutedRule =
-                logicSQL.getSchema().getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
+                schema.getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
         return dataNodeRoutedRule.isPresent() && dataNodeRoutedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
-                logicSQL.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(), 
-                ProxyContext.getInstance().getSchemaContexts().getProps(), logicSQL.getSchema().getRules());
+                schema.getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(), 
+                ProxyContext.getInstance().getSchemaContexts().getProps(), schema.getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     

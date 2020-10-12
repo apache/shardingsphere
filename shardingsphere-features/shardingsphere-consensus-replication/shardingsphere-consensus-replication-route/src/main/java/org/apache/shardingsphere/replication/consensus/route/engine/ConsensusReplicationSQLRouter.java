@@ -22,10 +22,12 @@ import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.sql.LogicSQL;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.replication.consensus.constant.ConsensusReplicationOrder;
 import org.apache.shardingsphere.replication.consensus.rule.ConsensusReplicationRule;
 import org.apache.shardingsphere.replication.consensus.rule.ConsensusReplicationTableRule;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,19 +41,20 @@ import java.util.Optional;
 public final class ConsensusReplicationSQLRouter implements SQLRouter<ConsensusReplicationRule> {
     
     @Override
-    public RouteContext createRouteContext(final LogicSQL logicSQL, final ConsensusReplicationRule rule, final ConfigurationProperties props) {
+    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereSchema schema, final ConsensusReplicationRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
-        ConsensusReplicationTableRule replicaRoutingRule = rule.getReplicaTableRules().iterator().next();
-        ConsensusReplicationGroup replicaGroup = new ConsensusReplicationGroup(replicaRoutingRule.getPhysicsTable(), replicaRoutingRule.getReplicaGroupId(), replicaRoutingRule.getReplicaPeers(),
-                replicaRoutingRule.getDataSourceName());
+        ConsensusReplicationTableRule tableRule = rule.getReplicaTableRules().iterator().next();
+        ConsensusReplicationGroup replicaGroup = new ConsensusReplicationGroup(
+                tableRule.getPhysicsTable(), tableRule.getReplicaGroupId(), tableRule.getReplicaPeers(), tableRule.getDataSourceName());
         Map<String, ConsensusReplicationGroup> replicaGroups = Collections.singletonMap(ConsensusReplicationGroup.BLANK_CONSENSUS_REPLICATION_GROUP_KEY, replicaGroup);
-        result.getRouteStageContexts().put(getTypeClass(), 
-                new ConsensusReplicationRouteStageContext(logicSQL.getSchema().getName(), replicaGroups, logicSQL.getSqlStatementContext().isReadOnly()));
+        boolean isReadOnly = SQLUtil.isReadOnly(logicSQL.getSqlStatementContext().getSqlStatement());
+        result.getRouteStageContexts().put(getTypeClass(), new ConsensusReplicationRouteStageContext(schema.getName(), replicaGroups, isReadOnly));
         return result;
     }
     
     @Override
-    public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ConsensusReplicationRule rule, final ConfigurationProperties props) {
+    public void decorateRouteContext(final RouteContext routeContext, 
+                                     final LogicSQL logicSQL, final ShardingSphereSchema schema, final ConsensusReplicationRule rule, final ConfigurationProperties props) {
         Map<String, ConsensusReplicationGroup> replicaGroups = new HashMap<>();
         for (RouteUnit each : routeContext.getRouteUnits()) {
             Collection<RouteMapper> routeMappers = each.getTableMappers();
@@ -64,24 +67,24 @@ public final class ConsensusReplicationSQLRouter implements SQLRouter<ConsensusR
                 routeReplicaGroups(routeMappers, rule, replicaGroups);
             }
         }
-        routeContext.getRouteStageContexts().put(getTypeClass(), 
-                new ConsensusReplicationRouteStageContext(logicSQL.getSchema().getName(), replicaGroups, logicSQL.getSqlStatementContext().isReadOnly()));
+        boolean isReadOnly = SQLUtil.isReadOnly(logicSQL.getSqlStatementContext().getSqlStatement());
+        routeContext.getRouteStageContexts().put(getTypeClass(), new ConsensusReplicationRouteStageContext(schema.getName(), replicaGroups, isReadOnly));
     }
     
     private void routeReplicaGroups(final Collection<RouteMapper> routeMappers, final ConsensusReplicationRule rule, final Map<String, ConsensusReplicationGroup> replicaGroups) {
         for (RouteMapper each : routeMappers) {
             String actualTableName = each.getActualName();
-            Optional<ConsensusReplicationTableRule> replicaRoutingRuleOptional = rule.findRoutingByTable(actualTableName);
+            Optional<ConsensusReplicationTableRule> tableRuleOptional = rule.findRoutingByTable(actualTableName);
             ConsensusReplicationGroup replicaGroup;
-            if (replicaRoutingRuleOptional.isPresent()) {
-                ConsensusReplicationTableRule replicaRoutingRule = replicaRoutingRuleOptional.get();
-                replicaGroup = new ConsensusReplicationGroup(replicaRoutingRule.getPhysicsTable(), replicaRoutingRule.getReplicaGroupId(), replicaRoutingRule.getReplicaPeers(),
-                        replicaRoutingRule.getDataSourceName());
+            if (tableRuleOptional.isPresent()) {
+                ConsensusReplicationTableRule tableRule = tableRuleOptional.get();
+                replicaGroup = new ConsensusReplicationGroup(
+                        tableRule.getPhysicsTable(), tableRule.getReplicaGroupId(), tableRule.getReplicaPeers(), tableRule.getDataSourceName());
                 replicaGroups.put(actualTableName, replicaGroup);
             } else {
-                ConsensusReplicationTableRule replicaRoutingRule = rule.getReplicaTableRules().iterator().next();
-                replicaGroup = new ConsensusReplicationGroup(replicaRoutingRule.getPhysicsTable(), replicaRoutingRule.getReplicaGroupId(), replicaRoutingRule.getReplicaPeers(),
-                        replicaRoutingRule.getDataSourceName());
+                ConsensusReplicationTableRule tableRule = rule.getReplicaTableRules().iterator().next();
+                replicaGroup = new ConsensusReplicationGroup(
+                        tableRule.getPhysicsTable(), tableRule.getReplicaGroupId(), tableRule.getReplicaPeers(), tableRule.getDataSourceName());
             }
             replicaGroups.put(actualTableName, replicaGroup);
         }

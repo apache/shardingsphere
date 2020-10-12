@@ -18,16 +18,15 @@
 package org.apache.shardingsphere.infra.binder.statement.dml;
 
 import lombok.Getter;
-import lombok.ToString;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.engine.GeneratedKeyContextEngine;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertSelectContext;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
-import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
@@ -53,7 +52,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Insert SQL statement context.
  */
 @Getter
-@ToString(callSuper = true)
 public final class InsertStatementContext extends CommonSQLStatementContext<InsertStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
@@ -205,7 +203,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     public List<String> getInsertColumnNames() {
         InsertStatement insertStatement = getSqlStatement();
         Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
-        return setAssignment.isPresent() ? getColumnNamesForSetAssignment(setAssignment.get()) : getColumnNamesForInsertColumns(insertStatement.getColumns());
+        return setAssignment.map(this::getColumnNamesForSetAssignment).orElseGet(() -> getColumnNamesForInsertColumns(insertStatement.getColumns()));
     }
     
     private List<String> getColumnNamesForSetAssignment(final SetAssignmentSegment setAssignment) {

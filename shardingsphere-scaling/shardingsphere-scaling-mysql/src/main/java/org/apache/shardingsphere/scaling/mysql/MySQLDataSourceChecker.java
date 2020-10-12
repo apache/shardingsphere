@@ -47,6 +47,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     static {
         REQUIRED_VARIABLES.put("LOG_BIN", "ON");
         REQUIRED_VARIABLES.put("BINLOG_FORMAT", "ROW");
+        REQUIRED_VARIABLES.put("BINLOG_ROW_IMAGE", "FULL");
     }
     
     @Override

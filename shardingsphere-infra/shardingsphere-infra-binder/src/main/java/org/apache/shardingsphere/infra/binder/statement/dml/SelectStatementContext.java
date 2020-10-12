@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.statement.dml;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.ToString;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.engine.GroupByContextEngine;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
@@ -29,13 +29,12 @@ import org.apache.shardingsphere.infra.binder.segment.select.pagination.Paginati
 import org.apache.shardingsphere.infra.binder.segment.select.pagination.engine.PaginationContextEngine;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
-import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
-import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.engine.ProjectionsContextEngine;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
@@ -56,7 +55,6 @@ import java.util.Optional;
  * Select SQL statement context.
  */
 @Getter
-@ToString(callSuper = true)
 public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable {
     
     private final TablesContext tablesContext;

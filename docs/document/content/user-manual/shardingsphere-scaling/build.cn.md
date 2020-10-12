@@ -17,13 +17,21 @@ mvn clean install -Prelease;
 
 发布包所在目录为：`/shardingsphere-distribution/shardingsphere-scaling-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-scaling-bin.tar.gz`。
 
-2. 解压缩发布包，修改配置文件 `conf/server.yaml`，这里主要修改启动端口，保证不与本机其他端口冲突，其他值保持默认即可：
+2. 解压缩发布包，修改配置文件 `conf/server.yaml`，这里主要修改启动端口，保证不与本机其他端口冲突，同时修改断点续传服务（可选）地址即可：
 
 ```
 port: 8888
 blockQueueSize: 10000
 pushTimeout: 1000
 workerThread: 30
+
+resumeBreakPoint:
+  name: scalingJob
+  registryCenter:
+    type: ZooKeeper
+    serverLists: localhost:2181
+    props:
+      retryIntervalMilliseconds: 10000
 ```
 
 3. 启动 ShardingSphere-Scaling：
@@ -62,4 +70,5 @@ curl -X GET http://localhost:8888/scaling/job/list
 | blockQueueSize | 数据传输通道队列大小                      | 10000  |
 | pushTimeout    | 数据推送超时时间，单位：毫秒               | 1000   |
 | workerThread   | 工作线程池大小，允许同时运行的迁移任务线程数 | 30     |
+| resumeBreakPoint   | 断点续传服务                         |        |
  

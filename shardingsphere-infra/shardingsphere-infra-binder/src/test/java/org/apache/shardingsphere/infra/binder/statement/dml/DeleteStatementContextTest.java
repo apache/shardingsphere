@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -84,7 +83,6 @@ public final class DeleteStatementContextTest {
         deleteStatement.setWhere(whereSegment);
         deleteStatement.setTableSegment(tableSegment);
         DeleteStatementContext actual = new DeleteStatementContext(deleteStatement);
-        assertTrue(actual.toString().startsWith(String.format("%s(super", DeleteStatementContext.class.getSimpleName())));
         assertThat(actual.getTablesContext().getTables().stream().map(a -> a.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
         assertThat(actual.getWhere(), is(Optional.of(whereSegment)));
         assertThat(actual.getAllTables().stream().map(a -> a.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));

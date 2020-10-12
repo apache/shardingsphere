@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.column.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;

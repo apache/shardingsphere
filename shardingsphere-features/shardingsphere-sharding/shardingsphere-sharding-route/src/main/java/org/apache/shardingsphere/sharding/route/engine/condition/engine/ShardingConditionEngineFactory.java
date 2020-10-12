@@ -19,14 +19,15 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.sql.LogicSQL;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.InsertClauseShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 
 /**
  * Sharding condition engine factory.
@@ -42,11 +43,12 @@ public final class ShardingConditionEngineFactory {
      * Create new instance of sharding condition engine.
      *
      * @param logicSQL logic SQL
+     * @param schema ShardingSphere schema
      * @param rule sharding rule 
      * @return sharding condition engine
      */
-    public static ShardingConditionEngine<?> createShardingConditionEngine(final LogicSQL logicSQL, final ShardingRule rule) {
-        SchemaMetaData schemaMetaData = logicSQL.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData();
+    public static ShardingConditionEngine<?> createShardingConditionEngine(final LogicSQL logicSQL, final ShardingSphereSchema schema, final ShardingRule rule) {
+        SchemaMetaData schemaMetaData = schema.getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData();
         return logicSQL.getSqlStatementContext() instanceof InsertStatementContext
                 ? new InsertClauseShardingConditionEngine(rule, schemaMetaData) : new WhereClauseShardingConditionEngine(rule, schemaMetaData);
     }

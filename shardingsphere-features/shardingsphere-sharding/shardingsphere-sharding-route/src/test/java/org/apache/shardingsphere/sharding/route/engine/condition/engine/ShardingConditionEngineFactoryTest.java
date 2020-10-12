@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.sql.LogicSQL;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.InsertClauseShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.junit.Before;
@@ -44,12 +44,13 @@ public final class ShardingConditionEngineFactoryTest {
     private LogicSQL logicSQL;
     
     @Mock
+    private ShardingSphereSchema shardingSphereSchema;
+    
+    @Mock
     private ShardingRule shardingRule;
     
     @Before
     public void setUp() {
-        ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
-        when(logicSQL.getSchema()).thenReturn(shardingSphereSchema);
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
         when(shardingSphereSchema.getMetaData()).thenReturn(shardingSphereMetaData);
         RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
@@ -62,13 +63,13 @@ public final class ShardingConditionEngineFactoryTest {
     public void assertCreateInsertClauseShardingConditionEngine() {
         SQLStatementContext insertStatementContext = mock(InsertStatementContext.class);
         when(logicSQL.getSqlStatementContext()).thenReturn(insertStatementContext);
-        ShardingConditionEngine<?> actualInsertClauseShardingConditionEngine = ShardingConditionEngineFactory.createShardingConditionEngine(logicSQL, shardingRule);
-        assertTrue(actualInsertClauseShardingConditionEngine instanceof InsertClauseShardingConditionEngine);
+        ShardingConditionEngine<?> actual = ShardingConditionEngineFactory.createShardingConditionEngine(logicSQL, shardingSphereSchema, shardingRule);
+        assertTrue(actual instanceof InsertClauseShardingConditionEngine);
     }
     
     @Test
     public void assertCreateWhereClauseShardingConditionEngine() {
-        ShardingConditionEngine<?> actualWhereClauseShardingConditionEngine = ShardingConditionEngineFactory.createShardingConditionEngine(logicSQL, shardingRule);
-        assertTrue(actualWhereClauseShardingConditionEngine instanceof WhereClauseShardingConditionEngine);
+        ShardingConditionEngine<?> actual = ShardingConditionEngineFactory.createShardingConditionEngine(logicSQL, shardingSphereSchema, shardingRule);
+        assertTrue(actual instanceof WhereClauseShardingConditionEngine);
     }
 }

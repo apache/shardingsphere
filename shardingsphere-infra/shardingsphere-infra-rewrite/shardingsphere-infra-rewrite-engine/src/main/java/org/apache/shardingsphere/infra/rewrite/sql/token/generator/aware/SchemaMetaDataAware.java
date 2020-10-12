@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware;
 
-import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
 
 /**
  * Schema meta data aware.

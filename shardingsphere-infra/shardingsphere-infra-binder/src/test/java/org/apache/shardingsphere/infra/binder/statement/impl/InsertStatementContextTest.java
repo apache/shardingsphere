@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.statement.impl;
 
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
@@ -165,7 +165,6 @@ public final class InsertStatementContextTest {
     }
     
     private void assertInsertStatementContext(final InsertStatementContext actual) {
-        assertTrue(actual.toString().startsWith(String.format("%s(super", InsertStatementContext.class.getSimpleName())));
         assertNotNull(actual.getTablesContext());
         assertThat(actual.getTablesContext().getTableNames(), is(Sets.newLinkedHashSet(Collections.singletonList("tbl"))));
         assertNotNull(actual.getAllTables());

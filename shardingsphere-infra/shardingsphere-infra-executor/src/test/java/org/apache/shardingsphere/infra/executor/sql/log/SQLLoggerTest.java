@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.executor.sql.log;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.sql.LogicSQL;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +49,7 @@ public final class SQLLoggerTest {
     
     private static final String SQL = "SELECT * FROM t_user";
     
-    private final LogicSQL logicSQL = new LogicSQL(mock(ShardingSphereSchema.class), null, SQL, Collections.emptyList());
+    private final LogicSQL logicSQL = new LogicSQL(mock(SQLStatementContext.class), SQL, Collections.emptyList());
     
     private Collection<ExecutionUnit> executionUnits;
     
@@ -85,7 +85,7 @@ public final class SQLLoggerTest {
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
-        inOrder.verify(logger).info("Actual SQL: {} ::: {} ::: {}", "db1", SQL, parameters);
+        inOrder.verify(logger).info("Actual SQL: {} ::: {} ::: {}", new Object[]{"db1", SQL, parameters});
         inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db2", SQL});
         inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db3", SQL});
     }

@@ -19,10 +19,10 @@ package org.apache.shardingsphere.sharding.rewrite.parameterized;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.datasource.CachedDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourcesMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.model.datasource.DataSourcesMetaData;
+import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
@@ -36,15 +36,15 @@ import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.sql.LogicSQL;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.binder.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.binder.metadata.index.IndexMetaData;
-import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.column.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.index.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.engine.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.engine.StandardSQLParserEngine;
@@ -87,9 +87,9 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         ConfigurationProperties props = new ConfigurationProperties(yamlRootRuleConfigs.getProps());
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
                 metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData(), getTestParameters().getInputParameters(), standardSqlParserEngine.parse(getTestParameters().getInputSQL(), false));
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
         ShardingSphereSchema schema = new ShardingSphereSchema("sharding_db", Collections.emptyList(), rules, Collections.emptyMap(), metaData);
-        LogicSQL logicSQL = new LogicSQL(schema, sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
-        RouteContext routeContext = new SQLRouteEngine(props, rules).route(logicSQL);
+        RouteContext routeContext = new SQLRouteEngine(props, rules).route(logicSQL, schema);
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData(),
                 props, rules).rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatementContext, routeContext);
         return sqlRewriteResult instanceof GenericSQLRewriteResult
