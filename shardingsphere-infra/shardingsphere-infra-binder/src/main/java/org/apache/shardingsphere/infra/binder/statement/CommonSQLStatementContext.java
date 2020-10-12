@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.statement;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -30,7 +29,6 @@ import java.util.Collections;
  * @param <T> type of SQL statement
  */
 @Getter
-@ToString
 public class CommonSQLStatementContext<T extends SQLStatement> implements SQLStatementContext<T> {
     
     private final T sqlStatement;

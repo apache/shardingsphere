@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.util.Collection;
 
 @RequiredArgsConstructor
-public final class TestStatementContext implements SQLStatementContext, TableAvailable {
+public final class TestStatementContext implements SQLStatementContext<SQLStatement>, TableAvailable {
     
     private final SQLStatement sqlStatement;
     
