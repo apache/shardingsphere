@@ -62,6 +62,8 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     protected void channelRead0(final ChannelHandlerContext context, final FullHttpRequest request) {
         String requestPath = request.uri();
         String requestBody = request.content().toString(CharsetUtil.UTF_8);
+        log.info("Http request path: {}", requestPath);
+        log.info("Http request body: {}", requestBody);
         HttpMethod method = request.method();
         if (!URL_PATTERN.matcher(requestPath).matches()) {
             response(GSON.toJson(ResponseContentUtil.handleBadRequest("Not support request!")), context, HttpResponseStatus.BAD_REQUEST);
@@ -94,7 +96,6 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
         ScalingConfiguration scalingConfig = GSON.fromJson(requestBody, ScalingConfiguration.class);
         ShardingScalingJob shardingScalingJob = new ShardingScalingJob(scalingConfig);
         shardingScalingJob.getSyncConfigurations().addAll(SyncConfigurationUtil.toSyncConfigurations(scalingConfig));
-        log.info("start job : {}", requestBody);
         SCALING_JOB_CONTROLLER.start(shardingScalingJob);
         response(GSON.toJson(ResponseContentUtil.success()), context, HttpResponseStatus.OK);
     }
