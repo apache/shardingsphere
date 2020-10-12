@@ -28,17 +28,17 @@ import lombok.NoArgsConstructor;
 public final class ShardingTags {
     
     /**
-     * Component of ShardingSphere's open tracing tag.
+     * Component name of ShardingSphere's open tracing tag.
      */
     public static final String COMPONENT_NAME = "ShardingSphere";
     
     /**
-     * Records the bind variables of SQL.
+     * The tag to record the bind variables of SQL.
      */
     public static final StringTag DB_BIND_VARIABLES = new StringTag("db.bind_vars");
     
     /**
-     * Records the connection count.
+     * The tag to record the connection count.
      */
     public static final StringTag CONNECTION_COUNT = new StringTag("connection.count");
 }
