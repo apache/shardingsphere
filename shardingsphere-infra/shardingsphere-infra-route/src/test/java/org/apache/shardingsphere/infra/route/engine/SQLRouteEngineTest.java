@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.fixture.rule.RouteFailureRuleFixture;
 import org.apache.shardingsphere.infra.route.fixture.rule.RouteRuleFixture;
 import org.apache.shardingsphere.infra.route.hook.SPIRoutingHook;
-import org.apache.shardingsphere.infra.sql.LogicSQL;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.junit.Before;

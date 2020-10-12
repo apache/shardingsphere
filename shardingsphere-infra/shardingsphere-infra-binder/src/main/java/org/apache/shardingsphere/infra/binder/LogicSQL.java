@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.sql;
+package org.apache.shardingsphere.infra.binder;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

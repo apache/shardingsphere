@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
-import org.apache.shardingsphere.infra.sql.LogicSQL;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 
 import java.util.Collection;
 import java.util.Map;

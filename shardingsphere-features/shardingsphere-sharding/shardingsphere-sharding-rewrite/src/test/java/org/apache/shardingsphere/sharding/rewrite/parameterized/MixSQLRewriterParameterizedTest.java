@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.sql.LogicSQL;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;

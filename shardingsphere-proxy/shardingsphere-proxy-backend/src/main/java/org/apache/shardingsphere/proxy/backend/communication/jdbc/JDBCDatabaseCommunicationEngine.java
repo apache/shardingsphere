@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyF
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.sql.LogicSQL;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
