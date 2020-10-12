@@ -20,9 +20,8 @@ package org.apache.shardingsphere.infra.metadata.database.table;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.column.ColumnMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.database.MetaDataConnection;
 import org.apache.shardingsphere.infra.metadata.database.index.IndexMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.database.util.JdbcUtil;
+import org.apache.shardingsphere.infra.metadata.database.MetaDataConnection;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -46,16 +45,14 @@ public final class TableMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public static Optional<TableMetaData> load(final DataSource dataSource, final String tableNamePattern, final String databaseType) throws SQLException {
-        try (MetaDataConnection connection = new MetaDataConnection(dataSource.getConnection())) {
-            if (!isTableExist(connection, tableNamePattern, databaseType)) {
-                return Optional.empty();
-            }
-            return Optional.of(new TableMetaData(ColumnMetaDataLoader.load(connection, tableNamePattern, databaseType), IndexMetaDataLoader.load(connection, tableNamePattern, databaseType)));
+        try (MetaDataConnection connection = new MetaDataConnection(databaseType, dataSource.getConnection())) {
+            return isTableExist(connection, tableNamePattern)
+                    ? Optional.of(new TableMetaData(ColumnMetaDataLoader.load(connection, tableNamePattern, databaseType), IndexMetaDataLoader.load(connection, tableNamePattern))) : Optional.empty();
         }
     }
     
-    private static boolean isTableExist(final Connection connection, final String tableNamePattern, final String databaseType) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), tableNamePattern, null)) {
+    private static boolean isTableExist(final Connection connection, final String tableNamePattern) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), tableNamePattern, null)) {
             return resultSet.next();
         }
     }

@@ -15,38 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.util;
+package org.apache.shardingsphere.infra.metadata.database.loader.impl;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.metadata.database.loader.SchemaLoader;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Optional;
+import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
-
-@RunWith(MockitoJUnitRunner.class)
-public final class JdbcUtilTest {
+/**
+ * Schema loader of Oracle.
+ */
+@Getter
+@Setter
+public final class OracleSchemaLoader implements SchemaLoader {
     
-    @Mock
-    private Connection connection;
+    private Properties props;
     
-    @Test
-    public void assertMysqlGetSchema() throws SQLException {
-        when(connection.getSchema()).thenReturn("demo_ds");
-        String schema = JdbcUtil.getSchema(connection, "");
-        assertThat(schema, is("demo_ds"));
+    @Override
+    public String getSchema(final Connection connection) {
+        try {
+            return Optional.ofNullable(connection.getMetaData().getUserName()).map(String::toUpperCase).orElse(null);
+        } catch (final SQLException ignored) {
+            return null;
+        }
     }
     
-    @Test
-    public void assertOracleGetSchema() {
-        String schema = JdbcUtil.getSchema(connection, "Oracle");
-        assertThat(schema, is(nullValue()));
+    @Override
+    public String getType() {
+        return "Oracle";
     }
 }
-

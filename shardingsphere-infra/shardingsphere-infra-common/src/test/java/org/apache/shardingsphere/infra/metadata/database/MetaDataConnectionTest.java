@@ -43,28 +43,28 @@ public final class MetaDataConnectionTest {
     @Test
     public void assertGetCatalog() throws SQLException {
         when(connection.getCatalog()).thenReturn(TEST_CATALOG);
-        MetaDataConnection metaDataConnection = new MetaDataConnection(connection);
+        MetaDataConnection metaDataConnection = new MetaDataConnection("MySQL", connection);
         assertThat(metaDataConnection.getCatalog(), is(TEST_CATALOG));
     }
     
     @Test
     public void assertGetCatalogReturnNullWhenThrowsSQLException() throws SQLException {
         when(connection.getCatalog()).thenThrow(SQLException.class);
-        MetaDataConnection metaDataConnection = new MetaDataConnection(connection);
+        MetaDataConnection metaDataConnection = new MetaDataConnection("MySQL", connection);
         assertNull(metaDataConnection.getCatalog());
     }
     
     @Test
     public void assertGetSchema() throws SQLException {
         when(connection.getSchema()).thenReturn(TEST_SCHEMA);
-        MetaDataConnection metaDataConnection = new MetaDataConnection(connection);
+        MetaDataConnection metaDataConnection = new MetaDataConnection("MySQL", connection);
         assertThat(metaDataConnection.getSchema(), is(TEST_SCHEMA));
     }
     
     @Test
     public void assertGetSchemaReturnNullWhenThrowsSQLException() throws SQLException {
         when(connection.getSchema()).thenThrow(SQLException.class);
-        MetaDataConnection metaDataConnection = new MetaDataConnection(connection);
+        MetaDataConnection metaDataConnection = new MetaDataConnection("MySQL", connection);
         assertNull(metaDataConnection.getSchema());
     }
 }

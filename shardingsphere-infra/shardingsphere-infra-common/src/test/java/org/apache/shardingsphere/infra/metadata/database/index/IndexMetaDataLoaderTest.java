@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.database.index;
 
-import org.apache.shardingsphere.infra.metadata.database.util.JdbcUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,24 +57,12 @@ public final class IndexMetaDataLoaderTest {
     
     @Test
     public void assertLoad() throws SQLException {
-        when(databaseMetaData.getIndexInfo(TEST_CATALOG, JdbcUtil.getSchema(connection, "Mysql"), TEST_TABLE, false, false)).thenReturn(indexResultSet);
+        when(databaseMetaData.getIndexInfo(TEST_CATALOG, null, TEST_TABLE, false, false)).thenReturn(indexResultSet);
         when(indexResultSet.next()).thenReturn(true, true, false);
         when(indexResultSet.getString("INDEX_NAME")).thenReturn("my_index");
-        Collection<IndexMetaData> actual = IndexMetaDataLoader.load(connection, TEST_TABLE, "Mysql");
-        assertThat(actual.size(), is(1));
-        IndexMetaData indexMetaData = actual.iterator().next();
-        assertThat(indexMetaData.getName(), is("my_index"));
-    }
-    
-    @Test
-    public void assertOracleLoad() throws SQLException {
-        when(databaseMetaData.getIndexInfo(TEST_CATALOG, JdbcUtil.getSchema(connection, "Oracle"), TEST_TABLE, false, false)).thenReturn(indexResultSet);
-        when(indexResultSet.next()).thenReturn(true, true, false);
-        when(indexResultSet.getString("INDEX_NAME")).thenReturn("my_index");
-        Collection<IndexMetaData> actual = IndexMetaDataLoader.load(connection, TEST_TABLE, "Oracle");
+        Collection<IndexMetaData> actual = IndexMetaDataLoader.load(connection, TEST_TABLE);
         assertThat(actual.size(), is(1));
         IndexMetaData indexMetaData = actual.iterator().next();
         assertThat(indexMetaData.getName(), is("my_index"));
     }
 }
-

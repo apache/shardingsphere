@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.infra.metadata.database.index;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.util.JdbcUtil;
 
 /**
  * Index meta data loader.
@@ -40,13 +40,12 @@ public final class IndexMetaDataLoader {
      * 
      * @param connection connection
      * @param table table name
-     * @param databaseType databaseType
      * @return index meta data list
      * @throws SQLException SQL exception
      */
-    public static Collection<IndexMetaData> load(final Connection connection, final String table, final String databaseType) throws SQLException {
+    public static Collection<IndexMetaData> load(final Connection connection, final String table) throws SQLException {
         Collection<IndexMetaData> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), table, false, false)) {
+        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), connection.getSchema(), table, false, false)) {
             while (resultSet.next()) {
                 String indexName = resultSet.getString(INDEX_NAME);
                 if (null != indexName) {

@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.database.MetaDataConnection;
-import org.apache.shardingsphere.infra.metadata.database.util.JdbcUtil;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -54,21 +53,21 @@ public final class SchemaMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public static Collection<String> loadUnconfiguredTableNames(final DataSource dataSource, final String databaseType, final Collection<String> excludedTableNames) throws SQLException {
-        List<String> tableNames;
-        try (MetaDataConnection connection = new MetaDataConnection(dataSource.getConnection())) {
-            tableNames = loadAllTableNames(connection, databaseType);
-            tableNames.removeAll(excludedTableNames);
+        List<String> result;
+        try (MetaDataConnection connection = new MetaDataConnection(databaseType, dataSource.getConnection())) {
+            result = loadAllTableNames(connection);
+            result.removeAll(excludedTableNames);
         }
-        log.info("Loading {} tables' meta data.", tableNames.size());
-        if (tableNames.isEmpty()) {
+        log.info("Loading {} tables' meta data.", result.size());
+        if (result.isEmpty()) {
             return Collections.emptyList();
         }
-        return tableNames;
+        return result;
     }
     
-    private static List<String> loadAllTableNames(final Connection connection, final String databaseType) throws SQLException {
+    private static List<String> loadAllTableNames(final Connection connection) throws SQLException {
         List<String> result = new LinkedList<>();
-        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), null, new String[]{TABLE_TYPE})) {
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), null, new String[]{TABLE_TYPE})) {
             while (resultSet.next()) {
                 String table = resultSet.getString(TABLE_NAME);
                 if (!isSystemTable(table)) {
