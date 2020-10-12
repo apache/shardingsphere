@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.route.UnconfiguredSchemaSQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.infra.sql.LogicSQL;
@@ -57,13 +58,14 @@ public final class SQLRouteEngine {
      * Route SQL.
      *
      * @param logicSQL logic SQL
+     * @param schema ShardingSphere schema
      * @return route context
      */
-    public RouteContext route(final LogicSQL logicSQL) {
+    public RouteContext route(final LogicSQL logicSQL, final ShardingSphereSchema schema) {
         routingHook.start(logicSQL.getSql());
         try {
-            RouteContext result = doRoute(logicSQL);
-            routingHook.finishSuccess(result, logicSQL.getSchema().getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData());
+            RouteContext result = doRoute(logicSQL, schema);
+            routingHook.finishSuccess(result, schema.getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData());
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
@@ -74,16 +76,16 @@ public final class SQLRouteEngine {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private RouteContext doRoute(final LogicSQL logicSQL) {
+    private RouteContext doRoute(final LogicSQL logicSQL, final ShardingSphereSchema schema) {
         RouteContext result = new RouteContext();
         for (Entry<ShardingSphereRule, SQLRouter> entry : routers.entrySet()) {
             if (result.getRouteUnits().isEmpty()) {
-                result = entry.getValue().createRouteContext(logicSQL, entry.getKey(), props);
+                result = entry.getValue().createRouteContext(logicSQL, schema, entry.getKey(), props);
             } else {
-                entry.getValue().decorateRouteContext(result, logicSQL, entry.getKey(), props);
+                entry.getValue().decorateRouteContext(result, logicSQL, schema, entry.getKey(), props);
             }
         }
-        new UnconfiguredSchemaSQLRouter().decorate(result, logicSQL);
+        new UnconfiguredSchemaSQLRouter().decorate(result, logicSQL, schema);
         return result;
     }
 }

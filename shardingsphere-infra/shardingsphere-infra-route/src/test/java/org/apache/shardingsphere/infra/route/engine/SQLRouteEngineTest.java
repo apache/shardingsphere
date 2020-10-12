@@ -65,11 +65,11 @@ public final class SQLRouteEngineTest {
     
     @Test
     public void assertRouteSuccess() {
+        LogicSQL logicSQL = new LogicSQL(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(new RouteRuleFixture()), Collections.emptyMap(), metaData);
-        LogicSQL logicSQL = new LogicSQL(schema, mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
         SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(props, Collections.singleton(new RouteRuleFixture()));
         setSPIRoutingHook(sqlRouteEngine);
-        RouteContext actual = sqlRouteEngine.route(logicSQL);
+        RouteContext actual = sqlRouteEngine.route(logicSQL, schema);
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("ds"));
@@ -81,12 +81,12 @@ public final class SQLRouteEngineTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertRouteFailure() {
+        LogicSQL logicSQL = new LogicSQL(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(new RouteRuleFixture()), Collections.emptyMap(), metaData);
-        LogicSQL logicSQL = new LogicSQL(schema, mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
         SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(props, Collections.singleton(new RouteFailureRuleFixture()));
         setSPIRoutingHook(sqlRouteEngine);
         try {
-            sqlRouteEngine.route(logicSQL);
+            sqlRouteEngine.route(logicSQL, schema);
         } catch (final UnsupportedOperationException ex) {
             verify(routingHook).start("SELECT 1");
             verify(routingHook).finishFailure(ex);
