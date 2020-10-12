@@ -39,19 +39,17 @@ public final class JdbcUtil {
      * @return schema
      */
     public static String getSchema(final Connection connection, final String databaseType) {
-        String result = null;
         try {
             if ("Oracle".equals(databaseType)) {
-                DatabaseMetaData metaData = connection.getMetaData();
-                if (null != metaData) {
-                    return Optional.ofNullable(metaData.getUserName()).map(String::toUpperCase).orElse(null);
-                } else {
+                DatabaseMetaData databaseMetaData = connection.getMetaData();
+                if (null == databaseMetaData) {
                     return null;
                 }
+                return Optional.ofNullable(databaseMetaData.getUserName()).map(String::toUpperCase).orElse(null);
             }
-            result = connection.getSchema();
-        } catch (final SQLException ignore) {
+            return connection.getSchema();
+        } catch (final SQLException ignored) {
         }
-        return result;
+        return null;
     }
 }
