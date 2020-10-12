@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.impl;
+package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.util.StatementValidatorUtil;
+import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -36,7 +35,7 @@ import java.util.Optional;
 /**
  * Sharding create function statement validator.
  */
-public final class ShardingCreateFunctionStatementValidator implements ShardingStatementValidator<CreateFunctionStatement> {
+public final class ShardingCreateFunctionStatementValidator extends ShardingDDLStatementValidator<CreateFunctionStatement> {
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateFunctionStatement> sqlStatementContext, 
@@ -45,9 +44,9 @@ public final class ShardingCreateFunctionStatementValidator implements ShardingS
         routineBodySegment.ifPresent(routineBody -> {
             TableExtractor extractor = new TableExtractor();
             Collection<SimpleTableSegment> tables = extractor.extractExistTableFromRoutineBody(routineBody);
-            StatementValidatorUtil.validateShardingTable(metaData, tables);
-            StatementValidatorUtil.validateTableExist(metaData, tables);
-            StatementValidatorUtil.validateTableNotExist(metaData, extractor.extractNotExistTableFromRoutineBody(routineBody));
+            validateShardingTable(metaData, tables);
+            validateTableExist(metaData, tables);
+            validateTableNotExist(metaData, extractor.extractNotExistTableFromRoutineBody(routineBody));
         });
     }
     

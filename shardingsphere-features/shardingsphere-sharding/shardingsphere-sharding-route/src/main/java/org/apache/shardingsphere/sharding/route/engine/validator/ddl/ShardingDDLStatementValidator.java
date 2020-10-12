@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.util;
+package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
+import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 
 import java.util.Collection;
 import java.util.Map;
 
 /**
- * Statement validator utility class.
+ * Sharding ddl statement validator.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StatementValidatorUtil {
+public abstract class ShardingDDLStatementValidator<T extends DDLStatement> implements ShardingStatementValidator<T> {
     
     /**
      * Validate sharding table.
@@ -40,7 +39,7 @@ public final class StatementValidatorUtil {
      * @param metaData meta data
      * @param tables tables
      */
-    public static void validateShardingTable(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables) {
+    protected void validateShardingTable(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
             if (metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames().contains(tableName)) {
@@ -55,7 +54,7 @@ public final class StatementValidatorUtil {
      * @param metaData meta data
      * @param tables tables
      */
-    public static void validateTableExist(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables) {
+    protected void validateTableExist(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
             for (Map.Entry<String, Collection<String>> entry : metaData.getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().entrySet()) {
@@ -72,7 +71,7 @@ public final class StatementValidatorUtil {
      * @param metaData meta data
      * @param tables tables
      */
-    public static void validateTableNotExist(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables) {
+    protected void validateTableNotExist(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
             if (metaData.getRuleSchemaMetaData().getAllTableNames().contains(tableName)) {
@@ -80,4 +79,5 @@ public final class StatementValidatorUtil {
             }
         }
     }
+    
 }

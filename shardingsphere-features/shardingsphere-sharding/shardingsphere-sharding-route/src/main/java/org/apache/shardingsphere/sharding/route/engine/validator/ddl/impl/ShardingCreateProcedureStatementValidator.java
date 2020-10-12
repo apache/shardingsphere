@@ -15,43 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.impl;
+package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.util.StatementValidatorUtil;
+import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateViewStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateProcedureStatementHandler;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Sharding create view statement validator.
+ * Sharding create procedure statement validator.
  */
-public final class ShardingCreateViewStatementValidator implements ShardingStatementValidator<CreateViewStatement> {
+public final class ShardingCreateProcedureStatementValidator extends ShardingDDLStatementValidator<CreateProcedureStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateViewStatement> sqlStatementContext, 
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateProcedureStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereMetaData metaData) {
-        Optional<SelectStatement> selectStatement = CreateViewStatementHandler.getSelectStatement(sqlStatementContext.getSqlStatement());
-        selectStatement.ifPresent(select -> {
+        Optional<RoutineBodySegment> routineBodySegment = CreateProcedureStatementHandler.getRoutineBodySegment(sqlStatementContext.getSqlStatement());
+        routineBodySegment.ifPresent(routineBody -> {
             TableExtractor extractor = new TableExtractor();
-            extractor.extractTablesFromSelect(select);
-            Collection<SimpleTableSegment> tables = extractor.getRewriteTables();
-            StatementValidatorUtil.validateShardingTable(metaData, tables);
-            StatementValidatorUtil.validateTableExist(metaData, tables);
+            validateTableNotExist(metaData, extractor.extractNotExistTableFromRoutineBody(routineBody));
+            Collection<SimpleTableSegment> tables = extractor.extractExistTableFromRoutineBody(routineBody);
+            validateShardingTable(metaData, tables);
+            validateTableExist(metaData, tables);
         });
     }
     
     @Override
-    public void postValidate(final CreateViewStatement sqlStatement, final RouteContext routeContext) {
+    public void postValidate(final CreateProcedureStatement sqlStatement, final RouteContext routeContext) {
     }
 }
