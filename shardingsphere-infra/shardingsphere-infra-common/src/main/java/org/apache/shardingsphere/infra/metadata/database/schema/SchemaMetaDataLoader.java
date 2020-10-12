@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.metadata.database.MetaDataConnection;
+import org.apache.shardingsphere.infra.metadata.database.MetaDataConnectionAdapter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -49,13 +49,13 @@ public final class SchemaMetaDataLoader {
      * @param dataSource data source
      * @param databaseType database type
      * @param excludedTableNames excluded table names
-     * @return Unconfigured table names
+     * @return unconfigured table names
      * @throws SQLException SQL exception
      */
     public static Collection<String> loadUnconfiguredTableNames(final DataSource dataSource, final String databaseType, final Collection<String> excludedTableNames) throws SQLException {
         List<String> result;
-        try (MetaDataConnection connection = new MetaDataConnection(databaseType, dataSource.getConnection())) {
-            result = loadAllTableNames(connection);
+        try (MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, dataSource.getConnection())) {
+            result = loadAllTableNames(connectionAdapter);
             result.removeAll(excludedTableNames);
         }
         log.info("Loading {} tables' meta data.", result.size());
@@ -81,5 +81,4 @@ public final class SchemaMetaDataLoader {
     private static boolean isSystemTable(final String table) {
         return table.contains("$") || table.contains("/");
     }
-    
 }
