@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.datasource.CachedDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
 
 import java.sql.DatabaseMetaData;
 import java.sql.RowIdLifetime;

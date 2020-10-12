@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.metadata;
 
-import org.apache.shardingsphere.infra.metadata.schema.model.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.column.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.event.model.persist;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.infra.metadata.rule.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
 
 /**
  * Meta data event.

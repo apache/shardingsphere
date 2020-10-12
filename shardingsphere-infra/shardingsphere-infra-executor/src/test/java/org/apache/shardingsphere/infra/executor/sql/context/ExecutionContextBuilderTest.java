@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.infra.executor.sql.context;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.datasource.CachedDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourcesMetaData;
-import org.apache.shardingsphere.infra.metadata.rule.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.model.datasource.DataSourcesMetaData;
+import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.metadata.schema.model.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.column.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.junit.Test;
 

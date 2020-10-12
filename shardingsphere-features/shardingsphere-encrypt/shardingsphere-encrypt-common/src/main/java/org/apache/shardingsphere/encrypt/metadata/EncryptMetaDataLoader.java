@@ -22,10 +22,10 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.metadata.rule.spi.RuleMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.table.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.table.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.rule.spi.RuleMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
