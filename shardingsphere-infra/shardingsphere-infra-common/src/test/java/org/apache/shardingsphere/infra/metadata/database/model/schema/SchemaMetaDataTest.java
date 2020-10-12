@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema;
+package org.apache.shardingsphere.infra.metadata.database.model.schema;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.infra.metadata.database.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.model.column.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.model.table.TableMetaData;
 import org.junit.Test;
 
 import java.util.Collections;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.refresh.impl;
 
-import org.apache.shardingsphere.infra.metadata.database.index.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.database.model.index.IndexMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;

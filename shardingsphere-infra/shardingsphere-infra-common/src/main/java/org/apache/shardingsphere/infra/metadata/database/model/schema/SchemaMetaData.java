@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema;
+package org.apache.shardingsphere.infra.metadata.database.model.schema;
 
-import org.apache.shardingsphere.infra.metadata.database.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.model.table.TableMetaData;
 
 import java.util.ArrayList;
 import java.util.Collection;

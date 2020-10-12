@@ -39,7 +39,7 @@ import org.apache.shardingsphere.scaling.core.job.position.PlaceholderInventoryP
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
 import org.apache.shardingsphere.scaling.core.utils.RdbmsConfigurationUtil;
-import org.apache.shardingsphere.infra.metadata.database.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.model.table.TableMetaData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

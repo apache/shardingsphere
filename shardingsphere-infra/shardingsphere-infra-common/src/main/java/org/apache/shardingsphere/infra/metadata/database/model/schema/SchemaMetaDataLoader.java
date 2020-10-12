@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema;
+package org.apache.shardingsphere.infra.metadata.database.model.schema;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

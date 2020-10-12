@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.merge.dal.impl;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.model.schema.SchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 

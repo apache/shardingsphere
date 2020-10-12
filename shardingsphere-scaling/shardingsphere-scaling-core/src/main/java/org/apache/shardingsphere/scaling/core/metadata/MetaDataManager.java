@@ -19,8 +19,8 @@ package org.apache.shardingsphere.scaling.core.metadata;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
-import org.apache.shardingsphere.infra.metadata.database.table.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.database.table.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.database.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.model.table.TableMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

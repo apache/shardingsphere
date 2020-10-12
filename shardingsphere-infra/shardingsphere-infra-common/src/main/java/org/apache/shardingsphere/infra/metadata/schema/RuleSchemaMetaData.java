@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.metadata.schema;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.database.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.model.table.TableMetaData;
 
 import java.util.Collection;
 import java.util.LinkedList;

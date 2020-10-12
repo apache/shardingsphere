@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.table;
+package org.apache.shardingsphere.infra.metadata.database.model.table;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.jdbc.MetaDataConnectionAdapter;
-import org.apache.shardingsphere.infra.metadata.database.column.ColumnMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.database.index.IndexMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.database.model.column.ColumnMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.database.model.index.IndexMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

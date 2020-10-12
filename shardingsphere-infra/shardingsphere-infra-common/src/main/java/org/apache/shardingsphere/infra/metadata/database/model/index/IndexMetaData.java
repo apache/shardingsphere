@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.index;
+package org.apache.shardingsphere.infra.metadata.database.model.index;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
