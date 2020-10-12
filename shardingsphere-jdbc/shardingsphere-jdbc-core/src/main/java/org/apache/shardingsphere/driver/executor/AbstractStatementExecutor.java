@@ -29,9 +29,9 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLE
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutorCallback;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyFactory;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataNotifier;
+import org.apache.shardingsphere.infra.metadata.rule.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.rule.RuleSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.rule.spi.RuleMetaDataNotifier;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;

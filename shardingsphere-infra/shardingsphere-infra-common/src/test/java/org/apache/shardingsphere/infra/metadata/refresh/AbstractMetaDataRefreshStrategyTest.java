@@ -22,7 +22,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.datasource.CachedDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.rule.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.model.column.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.model.index.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.model.schema.SchemaMetaData;

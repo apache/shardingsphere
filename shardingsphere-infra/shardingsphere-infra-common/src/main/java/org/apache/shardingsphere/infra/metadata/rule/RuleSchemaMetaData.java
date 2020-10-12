@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema;
+package org.apache.shardingsphere.infra.metadata.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.database.model.schema.SchemaMetaData;
