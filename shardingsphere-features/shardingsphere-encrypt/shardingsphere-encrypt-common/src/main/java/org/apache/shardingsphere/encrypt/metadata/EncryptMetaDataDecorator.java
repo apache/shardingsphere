@@ -19,9 +19,9 @@ package org.apache.shardingsphere.encrypt.metadata;
 
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.metadata.database.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.table.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataDecorator;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.column.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.rule.spi.RuleMetaDataDecorator;
 
 import java.util.Collection;
 import java.util.LinkedList;
