@@ -47,7 +47,7 @@ public final class EncryptMetaDataLoader implements RuleMetaDataLoader<EncryptRu
         Map<String, TableMetaData> result = new HashMap<>(encryptTableNames.size(), 1);
         for (String each : encryptTableNames) {
             if (!excludedTableNames.contains(each)) {
-                TableMetaDataLoader.load(dataSource, each, databaseType.getName()).ifPresent(tableMetaData -> result.put(each, tableMetaData));
+                TableMetaDataLoader.load(dataSource, each, databaseType).ifPresent(tableMetaData -> result.put(each, tableMetaData));
             }
         }
         return new SchemaMetaData(result);
@@ -56,7 +56,7 @@ public final class EncryptMetaDataLoader implements RuleMetaDataLoader<EncryptRu
     @Override
     public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, 
                                         final String tableName, final EncryptRule encryptRule, final ConfigurationProperties props) throws SQLException {
-        return encryptRule.findEncryptTable(tableName).isPresent() ? TableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType.getName()) : Optional.empty();
+        return encryptRule.findEncryptTable(tableName).isPresent() ? TableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType) : Optional.empty();
     }
     
     @Override

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.column;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -53,7 +54,7 @@ public final class ColumnMetaDataLoader {
      * @return column meta data list
      * @throws SQLException SQL exception
      */
-    public static Collection<ColumnMetaData> load(final Connection connection, final String tableNamePattern, final String databaseType) throws SQLException {
+    public static Collection<ColumnMetaData> load(final Connection connection, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
         Collection<ColumnMetaData> result = new LinkedList<>();
         Collection<String> primaryKeys = loadPrimaryKeys(connection, tableNamePattern);
         List<String> columnNames = new ArrayList<>();
@@ -85,7 +86,7 @@ public final class ColumnMetaDataLoader {
         return result;
     }
     
-    private static String generateEmptyResultSQL(final String table, final String databaseType) {
+    private static String generateEmptyResultSQL(final String table, final DatabaseType databaseType) {
         // TODO consider add a getDialectDelimeter() interface in parse module
         String delimiterLeft;
         String delimiterRight;

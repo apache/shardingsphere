@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.MetaDataConnectionAdapter;
 
 import javax.sql.DataSource;
@@ -52,7 +53,7 @@ public final class SchemaMetaDataLoader {
      * @return unconfigured table names
      * @throws SQLException SQL exception
      */
-    public static Collection<String> loadUnconfiguredTableNames(final DataSource dataSource, final String databaseType, final Collection<String> excludedTableNames) throws SQLException {
+    public static Collection<String> loadUnconfiguredTableNames(final DataSource dataSource, final DatabaseType databaseType, final Collection<String> excludedTableNames) throws SQLException {
         List<String> result;
         try (MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, dataSource.getConnection())) {
             result = loadAllTableNames(connectionAdapter);
