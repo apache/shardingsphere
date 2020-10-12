@@ -21,7 +21,7 @@ pushTimeout: 1000
 workerThread: 30
 
 #resumeBreakPoint:
-#  name: scalingjob
+#  name: scalingJob
 #  registryCenter:
 #    type: ZooKeeper
 #    serverLists: localhost:2181
