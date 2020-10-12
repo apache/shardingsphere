@@ -1,9 +1,11 @@
 language: java
+
 jdk:
   - openjdk8
 
 services:
   - mysql
+  - postgresql
 
 install: true
 
