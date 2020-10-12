@@ -67,25 +67,25 @@ public final class JavaConfigurationExampleMain {
     
     private static DataSource getDataSource(final ShardingType shardingType, final boolean loadConfigFromRegCenter) throws SQLException {
         GovernanceConfiguration governanceConfig = getGovernanceConfiguration(registryCenterType, shardingType);
-        ExampleConfiguration configuration;
+        ExampleConfiguration config;
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
-                configuration = loadConfigFromRegCenter 
+                config = loadConfigFromRegCenter 
                         ? new CloudShardingDatabasesAndTablesConfiguration(governanceConfig) : new LocalShardingDatabasesAndTablesConfiguration(governanceConfig);
                 break;
             case PRIMARY_REPLICA_REPLICATION:
-                configuration = loadConfigFromRegCenter ? new CloudPrimaryReplicaReplicationConfiguration(governanceConfig) : new LocalPrimaryReplicaReplicationConfiguration(governanceConfig);
+                config = loadConfigFromRegCenter ? new CloudPrimaryReplicaReplicationConfiguration(governanceConfig) : new LocalPrimaryReplicaReplicationConfiguration(governanceConfig);
                 break;
             case ENCRYPT:
-                configuration = loadConfigFromRegCenter ? new CloudEncryptConfiguration(governanceConfig) : new LocalEncryptConfiguration(governanceConfig);
+                config = loadConfigFromRegCenter ? new CloudEncryptConfiguration(governanceConfig) : new LocalEncryptConfiguration(governanceConfig);
                 break;
             case SHADOW:
-                configuration = loadConfigFromRegCenter ? new CloudShadowConfiguration(governanceConfig) : new LocalShadowConfiguration(governanceConfig);
+                config = loadConfigFromRegCenter ? new CloudShadowConfiguration(governanceConfig) : new LocalShadowConfiguration(governanceConfig);
                 break;
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }
-        return configuration.getDataSource();
+        return config.getDataSource();
     }
     
     private static GovernanceConfiguration getGovernanceConfiguration(final RegistryCenterType registryCenterType, final ShardingType shardingType) {

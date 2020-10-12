@@ -20,6 +20,7 @@ package org.apache.shardingsphere.transaction.base.seata.at;
 import com.google.common.base.Preconditions;
 import io.seata.config.FileConfiguration;
 import io.seata.core.context.RootContext;
+import io.seata.core.exception.TransactionException;
 import io.seata.core.rpc.netty.RmRpcClient;
 import io.seata.core.rpc.netty.TmRpcClient;
 import io.seata.rm.RMClient;
@@ -54,10 +55,10 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     private final boolean enableSeataAT;
     
     public SeataATShardingTransactionManager() {
-        FileConfiguration configuration = new FileConfiguration("seata.conf");
-        enableSeataAT = configuration.getBoolean("sharding.transaction.seata.at.enable", true);
-        applicationId = configuration.getConfig("client.application.id");
-        transactionServiceGroup = configuration.getConfig("client.transaction.service.group", "default");
+        FileConfiguration config = new FileConfiguration("seata.conf");
+        enableSeataAT = config.getBoolean("sharding.transaction.seata.at.enable", true);
+        applicationId = config.getConfig("client.application.id");
+        transactionServiceGroup = config.getConfig("client.transaction.service.group", "default");
     }
     
     @Override
@@ -94,7 +95,7 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     }
     
     @Override
-    @SneakyThrows
+    @SneakyThrows(TransactionException.class)
     public void begin() {
         Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
         GlobalTransaction globalTransaction = GlobalTransactionContext.getCurrentOrCreate();
@@ -103,7 +104,7 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     }
     
     @Override
-    @SneakyThrows
+    @SneakyThrows(TransactionException.class)
     public void commit() {
         Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
         try {
@@ -115,7 +116,7 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     }
     
     @Override
-    @SneakyThrows
+    @SneakyThrows(TransactionException.class)
     public void rollback() {
         Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
         try {

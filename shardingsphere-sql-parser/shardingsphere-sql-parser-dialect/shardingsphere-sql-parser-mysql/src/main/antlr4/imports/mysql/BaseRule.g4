@@ -314,11 +314,10 @@ triggerOrder
     ;
 
 expr
-    : expr logicalOperator expr
+    : booleanPrimary
+    | expr logicalOperator expr
     | expr XOR expr
     | notOperator_ expr
-    | LP_ expr RP_
-    | booleanPrimary
     ;
 
 logicalOperator
@@ -377,7 +376,7 @@ simpleExpr
     | simpleExpr COLLATE (STRING_ | identifier)
     | variable
     | simpleExpr OR_ simpleExpr
-    | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
+    | (PLUS_ | MINUS_ | TILDE_ | notOperator_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
@@ -511,7 +510,7 @@ regularFunctionName_
     : IF | LOCALTIME | LOCALTIMESTAMP | REPLACE | INTERVAL | MOD
     | DATABASE | LEFT | RIGHT | DATE | DAY | GEOMCOLLECTION | GEOMETRYCOLLECTION
     | LINESTRING | MULTILINESTRING | MULTIPOINT | MULTIPOLYGON | POINT | POLYGON
-    | TIME | TIMESTAMP | TIMESTAMPADD | TIMESTAMPDIFF | DATE | identifier
+    | TIME | TIMESTAMP | TIMESTAMPADD | TIMESTAMPDIFF | DATE | CURRENT_TIMESTAMP | identifier
     ;
 
 matchExpression_
@@ -576,7 +575,8 @@ dataTypeName
     : INTEGER | INT | SMALLINT | TINYINT | MEDIUMINT | BIGINT | DECIMAL| NUMERIC | FLOAT | DOUBLE | BIT | BOOL | BOOLEAN
     | DEC | DATE | DATETIME | TIMESTAMP | TIME | YEAR | CHAR | VARCHAR | BINARY | VARBINARY | TINYBLOB | TINYTEXT | BLOB
     | TEXT | MEDIUMBLOB | MEDIUMTEXT | LONGBLOB | LONGTEXT | ENUM | SET | GEOMETRY | POINT | LINESTRING | POLYGON
-    | MULTIPOINT | MULTILINESTRING | MULTIPOLYGON | GEOMETRYCOLLECTION | JSON | UNSIGNED | SIGNED
+    | MULTIPOINT | MULTILINESTRING | MULTIPOLYGON | GEOMETRYCOLLECTION | JSON | UNSIGNED | SIGNED | CHARACTER VARYING
+    | FIXED | FLOAT4 | FLOAT8 | INT1 | INT2 | INT3 | INT4 | INT8 | LONG VARBINARY | LONG VARCHAR | LONG | MIDDLEINT
     ;
 
 dataTypeLength
@@ -588,7 +588,7 @@ collectionOptions
     ;
 
 characterSet_
-    : (CHARSET | CHAR SET) EQ_? ignoredIdentifier_
+    : (CHARSET | CHAR SET | CHARACTER SET) EQ_? ignoredIdentifier_
     ;
 
 collateClause_

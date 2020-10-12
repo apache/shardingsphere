@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.postgresql;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,9 +47,9 @@ public final class PostgreSQLJdbcDumperTest {
     }
     
     private InventoryDumperConfiguration mockInventoryDumperConfiguration() {
-        DumperConfiguration dumperConfiguration = mockDumperConfiguration();
-        initTableData(dumperConfiguration);
-        InventoryDumperConfiguration result = new InventoryDumperConfiguration(dumperConfiguration);
+        DumperConfiguration dumperConfig = mockDumperConfiguration();
+        initTableData(dumperConfig);
+        InventoryDumperConfiguration result = new InventoryDumperConfiguration(dumperConfig);
         result.setTableName("t_order");
         return result;
     }
@@ -66,8 +66,7 @@ public final class PostgreSQLJdbcDumperTest {
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertCreatePreparedStatement() {
+    public void assertCreatePreparedStatement() throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(mockDumperConfiguration().getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = postgreSQLJdbcDumper.createPreparedStatement(connection, "SELECT * FROM t_order")) {
@@ -77,7 +76,7 @@ public final class PostgreSQLJdbcDumperTest {
     
     private DumperConfiguration mockDumperConfiguration() {
         DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfiguration(new JDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
+        result.setDataSourceConfiguration(new JDBCScalingDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
         return result;
     }
 }

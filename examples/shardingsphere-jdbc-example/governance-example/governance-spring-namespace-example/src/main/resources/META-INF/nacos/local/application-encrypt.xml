@@ -20,7 +20,6 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xmlns:governance="http://shardingsphere.apache.org/schema/shardingsphere/governance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
@@ -29,8 +28,6 @@
                            http://www.springframework.org/schema/context/spring-context.xsd
                            http://www.springframework.org/schema/tx
                            http://www.springframework.org/schema/tx/spring-tx.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/governance
@@ -60,13 +57,11 @@
         </encrypt:table>
     </encrypt:rule>
     
-    <shardingsphere:data-source id="realEncryptDataSource" data-source-names="dbtbl_0" rule-refs="encryptRule">
+    <governance:data-source id="encryptDataSource" data-source-names="demo_ds_encrypt" reg-center-ref="regCenter" config-center-ref="confCenter" rule-refs="encryptRule">
         <props>
             <prop key="query-with-cipher-column">true</prop>
         </props>
-    </shardingsphere:data-source>
-    
-    <governance:data-source id="encryptDataSource" data-source-ref="realEncryptDataSource" reg-center-ref="regCenter" config-center-ref="confCenter" />
+    </governance:data-source>
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="encryptDataSource" />

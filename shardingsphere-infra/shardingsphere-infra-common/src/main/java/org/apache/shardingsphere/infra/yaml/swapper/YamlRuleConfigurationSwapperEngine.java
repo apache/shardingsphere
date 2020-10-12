@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.yaml.swapper;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 
 import java.lang.reflect.ParameterizedType;
@@ -87,7 +87,7 @@ public final class YamlRuleConfigurationSwapperEngine {
      * 
      * @return YAML shortcuts
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public static Map<String, Class<?>> getYamlShortcuts() {
         Map<String, Class<?>> result = new HashMap<>();
         for (YamlRuleConfigurationSwapper each : ShardingSphereServiceLoader.newServiceInstances(YamlRuleConfigurationSwapper.class)) {

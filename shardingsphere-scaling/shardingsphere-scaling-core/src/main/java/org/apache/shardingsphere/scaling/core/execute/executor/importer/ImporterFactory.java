@@ -34,25 +34,25 @@ public final class ImporterFactory {
     /**
      * New instance of importer.
      *
-     * @param importerConfiguration rdbms configuration
+     * @param importerConfig rdbms configuration
      * @param dataSourceManager data source factory
      * @return importer
      */
-    public static Importer newInstance(final ImporterConfiguration importerConfiguration, final DataSourceManager dataSourceManager) {
-        return newInstance(importerConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), importerConfiguration, dataSourceManager);
+    public static Importer newInstance(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
+        return newInstance(importerConfig.getDataSourceConfiguration().getDatabaseType().getName(), importerConfig, dataSourceManager);
     }
     
     /**
      * New instance of importer.
      *
      * @param databaseType database type
-     * @param importerConfiguration rdbms configuration
+     * @param importerConfig rdbms configuration
      * @param dataSourceManager data source factory
      * @return importer
      */
-    @SneakyThrows
-    public static Importer newInstance(final String databaseType, final ImporterConfiguration importerConfiguration, final DataSourceManager dataSourceManager) {
+    @SneakyThrows(ReflectiveOperationException.class)
+    public static Importer newInstance(final String databaseType, final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getImporterClass().getConstructor(ImporterConfiguration.class, DataSourceManager.class).newInstance(importerConfiguration, dataSourceManager);
+        return scalingEntry.getImporterClass().getConstructor(ImporterConfiguration.class, DataSourceManager.class).newInstance(importerConfig, dataSourceManager);
     }
 }

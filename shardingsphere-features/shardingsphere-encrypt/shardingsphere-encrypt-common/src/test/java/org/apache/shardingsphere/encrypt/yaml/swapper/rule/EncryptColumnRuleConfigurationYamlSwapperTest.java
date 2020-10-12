@@ -28,9 +28,9 @@ public final class EncryptColumnRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlConfiguration() {
-        EncryptColumnRuleConfigurationYamlSwapper encryptColumnRuleConfigurationYamlSwapper = new EncryptColumnRuleConfigurationYamlSwapper();
-        EncryptColumnRuleConfiguration encryptColumnRuleConfiguration = new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "encryptorName");
-        YamlEncryptColumnRuleConfiguration actual = encryptColumnRuleConfigurationYamlSwapper.swapToYamlConfiguration(encryptColumnRuleConfiguration);
+        EncryptColumnRuleConfigurationYamlSwapper swapper = new EncryptColumnRuleConfigurationYamlSwapper();
+        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "encryptorName");
+        YamlEncryptColumnRuleConfiguration actual = swapper.swapToYamlConfiguration(encryptColumnRuleConfig);
         assertThat(actual.getCipherColumn(), is("cipherColumn"));
         assertThat(actual.getAssistedQueryColumn(), is("assistedQueryColumn"));
         assertThat(actual.getPlainColumn(), is("plainColumn"));
@@ -39,14 +39,14 @@ public final class EncryptColumnRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToObject() {
-        EncryptColumnRuleConfigurationYamlSwapper encryptColumnRuleConfigurationYamlSwapper = new EncryptColumnRuleConfigurationYamlSwapper();
-        YamlEncryptColumnRuleConfiguration yamlEncryptColumnRuleConfiguration = new YamlEncryptColumnRuleConfiguration();
-        yamlEncryptColumnRuleConfiguration.setLogicColumn("logicColumn");
-        yamlEncryptColumnRuleConfiguration.setCipherColumn("cipherColumn");
-        yamlEncryptColumnRuleConfiguration.setAssistedQueryColumn("assistedQueryColumn");
-        yamlEncryptColumnRuleConfiguration.setPlainColumn("plainColumn");
-        yamlEncryptColumnRuleConfiguration.setEncryptorName("encryptorName");
-        EncryptColumnRuleConfiguration actual = encryptColumnRuleConfigurationYamlSwapper.swapToObject(yamlEncryptColumnRuleConfiguration);
+        EncryptColumnRuleConfigurationYamlSwapper swapper = new EncryptColumnRuleConfigurationYamlSwapper();
+        YamlEncryptColumnRuleConfiguration yamlEncryptColumnRuleConfig = new YamlEncryptColumnRuleConfiguration();
+        yamlEncryptColumnRuleConfig.setLogicColumn("logicColumn");
+        yamlEncryptColumnRuleConfig.setCipherColumn("cipherColumn");
+        yamlEncryptColumnRuleConfig.setAssistedQueryColumn("assistedQueryColumn");
+        yamlEncryptColumnRuleConfig.setPlainColumn("plainColumn");
+        yamlEncryptColumnRuleConfig.setEncryptorName("encryptorName");
+        EncryptColumnRuleConfiguration actual = swapper.swapToObject(yamlEncryptColumnRuleConfig);
         assertThat(actual.getLogicColumn(), is("logicColumn"));
         assertThat(actual.getCipherColumn(), is("cipherColumn"));
         assertThat(actual.getAssistedQueryColumn(), is("assistedQueryColumn"));

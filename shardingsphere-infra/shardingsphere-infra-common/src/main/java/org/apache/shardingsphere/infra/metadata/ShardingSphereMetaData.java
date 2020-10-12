@@ -19,7 +19,8 @@ package org.apache.shardingsphere.infra.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
+import org.apache.shardingsphere.infra.metadata.datasource.CachedDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.datasource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 
 /**
@@ -29,9 +30,9 @@ import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 @Getter
 public final class ShardingSphereMetaData {
     
-    private final DataSourceMetaDatas dataSourceMetaDatas;
+    private final DataSourcesMetaData dataSourcesMetaData;
     
     private final RuleSchemaMetaData ruleSchemaMetaData;
     
-    private final String schemaName;
+    private final CachedDatabaseMetaData cachedDatabaseMetaData;
 }

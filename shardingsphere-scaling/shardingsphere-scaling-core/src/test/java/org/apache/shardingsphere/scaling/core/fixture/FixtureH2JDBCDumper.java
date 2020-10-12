@@ -27,8 +27,8 @@ import java.sql.SQLException;
 
 public final class FixtureH2JDBCDumper extends AbstractJDBCDumper {
     
-    public FixtureH2JDBCDumper(final InventoryDumperConfiguration dumperConfiguration, final DataSourceManager dataSourceManager) {
-        super(dumperConfiguration, dataSourceManager);
+    public FixtureH2JDBCDumper(final InventoryDumperConfiguration dumperConfig, final DataSourceManager dataSourceManager) {
+        super(dumperConfig, dataSourceManager);
     }
     
     @Override

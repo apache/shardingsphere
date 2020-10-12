@@ -22,17 +22,13 @@ import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
-import org.apache.shardingsphere.infra.context.schema.runtime.RuntimeContext;
-import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -41,7 +37,6 @@ import org.junit.Before;
 import org.mockito.MockitoAnnotations;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -50,6 +45,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -68,45 +64,36 @@ public abstract class AbstractBaseExecutorTest {
         setConnection();
     }
     
-    private void setConnection() throws SQLException {
-        SchemaContexts schemaContexts = mock(StandardSchemaContexts.class);
-        SchemaContext schemaContext = mock(SchemaContext.class);
-        RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schemaContexts.getDefaultSchemaContext()).thenReturn(schemaContext);
-        when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
-        when(runtimeContext.getExecutorKernel()).thenReturn(executorKernel);
-        when(schemaContexts.getProps()).thenReturn(getProperties());
-        when(schemaContext.getSchema()).thenReturn(schema);
+    private void setConnection() {
+        SchemaContexts schemaContexts = mock(StandardSchemaContexts.class, RETURNS_DEEP_STUBS);
+        when(schemaContexts.getExecutorKernel()).thenReturn(executorKernel);
+        when(schemaContexts.getProps()).thenReturn(createConfigurationProperties());
         when(schemaContexts.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
-        ShardingRule shardingRule = getShardingRule();
-        when(schema.getRules()).thenReturn(Collections.singletonList(shardingRule));
+        ShardingRule shardingRule = mockShardingRule();
+        when(schemaContexts.getDefaultSchema().getRules()).thenReturn(Collections.singletonList(shardingRule));
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
         when(transactionContexts.getDefaultTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
-        DataSource dataSource = mock(DataSource.class);
-        when(dataSource.getConnection()).thenReturn(mock(Connection.class));
+        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>(2, 1);
         dataSourceSourceMap.put("ds_0", dataSource);
         dataSourceSourceMap.put("ds_1", dataSource);
         connection = new ShardingSphereConnection(dataSourceSourceMap, schemaContexts, transactionContexts, TransactionType.LOCAL);
     }
     
-    private ShardingRule getShardingRule() {
+    private ShardingRule mockShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
         when(result.findTableRuleByActualTable("table_x")).thenReturn(Optional.empty());
         when(result.isNeedAccumulate(any())).thenReturn(true);
         return result;
     }
     
-    protected final SQLStatementContext<?> getSQLStatementContext() {
-        SQLStatementContext<?> result = mock(SQLStatementContext.class);
-        TablesContext tablesContext = mock(TablesContext.class);
-        when(tablesContext.getTableNames()).thenReturn(Collections.singleton("table_x"));
-        when(result.getTablesContext()).thenReturn(tablesContext);
+    protected final SQLStatementContext<?> createSQLStatementContext() {
+        SQLStatementContext<?> result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getTablesContext().getTableNames()).thenReturn(Collections.singleton("table_x"));
         return result;
     }
     
-    private ConfigurationProperties getProperties() {
+    private ConfigurationProperties createConfigurationProperties() {
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getDefaultValue());
         return new ConfigurationProperties(props);

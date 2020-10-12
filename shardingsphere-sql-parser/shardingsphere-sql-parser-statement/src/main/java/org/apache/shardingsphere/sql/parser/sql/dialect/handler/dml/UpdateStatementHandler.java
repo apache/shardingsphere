@@ -22,22 +22,23 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 
 import java.util.Optional;
 
 /**
- * UpdateStatement helper class for different dialect SQLStatements.
+ * Update statement helper class for different dialect SQL statements.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class UpdateStatementHandler {
-
+public final class UpdateStatementHandler implements SQLStatementHandler {
+    
     /**
-     * Get OrderBySegment.
+     * Get order by segment.
      *
-     * @param updateStatement UpdateStatement
-     * @return OrderBySegment
+     * @param updateStatement update statement
+     * @return order by segment
      */
     public static Optional<OrderBySegment> getOrderBySegment(final UpdateStatement updateStatement) {
         if (updateStatement instanceof MySQLStatement) {
@@ -45,12 +46,12 @@ public final class UpdateStatementHandler {
         }
         return Optional.empty();
     }
-
+    
     /**
-     * Get LimitSegment.
+     * Get limit segment.
      *
-     * @param updateStatement UpdateStatement
-     * @return LimitSegment
+     * @param updateStatement update statement
+     * @return limit segment
      */
     public static Optional<LimitSegment> getLimitSegment(final UpdateStatement updateStatement) {
         if (updateStatement instanceof MySQLStatement) {

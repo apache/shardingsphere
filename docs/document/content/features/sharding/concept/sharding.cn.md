@@ -17,13 +17,9 @@ SQL 中如果无分片字段，将执行全路由，性能较差。
 目前提供4种分片算法。
 由于分片算法和业务实现紧密相关，因此并未提供内置分片算法，而是通过分片策略将各种场景提炼出来，提供更高层级的抽象，并提供接口让应用开发者自行实现分片算法。
 
-- 精确分片算法
+- 标准分片算法
 
-对应 PreciseShardingAlgorithm，用于处理使用单一键作为分片键的 `=` 与 `IN` 进行分片的场景。需要配合 StandardShardingStrategy 使用。
-
-- 范围分片算法
-
-对应 RangeShardingAlgorithm，用于处理使用单一键作为分片键的 `BETWEEN AND`、`>`、`<`、`>=`、`<=`进行分片的场景。需要配合 StandardShardingStrategy 使用。
+对应 StandardShardingAlgorithm，用于处理使用单一键作为分片键的 `=`、`IN`、`BETWEEN AND`、`>`、`<`、`>=`、`<=`进行分片的场景。需要配合 StandardShardingStrategy 使用。
 
 - 复合分片算法
 
@@ -48,12 +44,6 @@ RangeShardingAlgorithm 是可选的，用于处理 `BETWEEN AND`, `>`, `<`, `>=`
 
 对应 ComplexShardingStrategy。复合分片策略。提供对 SQL 语句中的 `=`, `>`, `<`, `>=`, `<=`, `IN` 和 `BETWEEN AND` 的分片操作支持。
 ComplexShardingStrategy 支持多分片键，由于多分片键之间的关系复杂，因此并未进行过多的封装，而是直接将分片键值组合以及分片操作符透传至分片算法，完全由应用开发者实现，提供最大的灵活度。
-
-- 行表达式分片策略
-
-对应 InlineShardingStrategy。使用 Groovy 的表达式，提供对 SQL 语句中的 `=` 和 `IN` 的分片操作支持，只支持单分片键。
-对于简单的分片算法，可以通过简单的配置使用，从而避免繁琐的 Java 代码开发，如: `t_user_$->{u_id % 8}` 表示 `t_user` 表根据 `u_id` 模 8，而分成 8 张表，表名称为 `t_user_0` 到 `t_user_7`。
-详情请参见[行表达式](/cn/features/sharding/concept/inline-expression/)。
 
 - Hint分片策略
 

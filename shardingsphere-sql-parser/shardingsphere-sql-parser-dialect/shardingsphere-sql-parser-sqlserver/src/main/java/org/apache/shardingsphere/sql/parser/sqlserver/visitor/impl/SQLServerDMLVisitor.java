@@ -41,6 +41,10 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Mul
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MultipleTablesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputClause_Context;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputTableName_Context;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputWithColumn_Context;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputWithColumns_Context;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QualifiedShorthandContext;
@@ -91,12 +95,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.ro
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -141,6 +147,40 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
     public ASTNode visitInsertDefaultValue(final InsertDefaultValueContext ctx) {
         SQLServerInsertStatement result = new SQLServerInsertStatement();
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
+        if (null != ctx.outputClause_()) {
+            result.setOutputSegment((OutputSegment) visit(ctx.outputClause_()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitOutputClause_(final OutputClause_Context ctx) {
+        OutputSegment result = new OutputSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        if (null != ctx.outputWithColumns_()) {
+            OutputWithColumns_Context outputWithColumnsContext = ctx.outputWithColumns_();
+            List<OutputWithColumn_Context> outputWithColumnContexts = outputWithColumnsContext.outputWithColumn_();
+            Collection<ColumnProjectionSegment> outputColumns = new LinkedList<>();
+            for (OutputWithColumn_Context each : outputWithColumnContexts) {
+                ColumnSegment column = new ColumnSegment(each.start.getStartIndex(), each.stop.getStopIndex(), new IdentifierValue(each.name().getText()));
+                ColumnProjectionSegment outputColumn = new ColumnProjectionSegment(column);
+                if (null != each.alias()) {
+                    outputColumn.setAlias(new AliasSegment(each.alias().start.getStartIndex(), each.alias().stop.getStopIndex(), new IdentifierValue(each.name().getText())));
+                }
+                outputColumns.add(outputColumn);
+            }
+            result.getOutputColumns().addAll(outputColumns);
+        }
+        if (null != ctx.outputTableName_()) {
+            OutputTableName_Context outputTableNameContext = ctx.outputTableName_();
+            TableNameSegment tableName = new TableNameSegment(outputTableNameContext.start.getStartIndex(), 
+                    outputTableNameContext.stop.getStopIndex(), new IdentifierValue(outputTableNameContext.getText()));
+            result.setTableName(tableName);
+            if (null != ctx.columnNames()) {
+                ColumnNamesContext columnNames = ctx.columnNames();
+                CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(columnNames);
+                result.getTableColumns().addAll(columns.getValue());
+            }
+        }
         return result;
     }
     
@@ -149,6 +189,9 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         SQLServerInsertStatement result = new SQLServerInsertStatement();
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
+        if (null != ctx.outputClause_()) {
+            result.setOutputSegment((OutputSegment) visit(ctx.outputClause_()));
+        }
         return result;
     }
     
@@ -165,6 +208,9 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         SQLServerInsertStatement result = new SQLServerInsertStatement();
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         result.setInsertSelect(createInsertSelectSegment(ctx));
+        if (null != ctx.outputClause_()) {
+            result.setOutputSegment((OutputSegment) visit(ctx.outputClause_()));
+        }
         return result;
     }
     

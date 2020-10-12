@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.infra.metadata.refresh.impl;
 
+import org.apache.shardingsphere.infra.metadata.database.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.table.TableMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.TableMetaDataLoaderCallback;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterTableStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -31,15 +32,20 @@ import java.util.Map;
 /**
  * Alter table statement meta data refresh strategy.
  */
-public final class AlterTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<AlterTableStatementContext> {
+public final class AlterTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<AlterTableStatement> {
     
     @Override
     public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
-                                final Map<String, DataSource> dataSourceMap, final AlterTableStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) throws SQLException {
-        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+                                final Map<String, DataSource> dataSourceMap, final AlterTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
+        String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         SchemaMetaData schemaMetaData = metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData();
         if (null != schemaMetaData && schemaMetaData.containsTable(tableName)) {
-            callback.load(tableName).ifPresent(tableMetaData -> metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().put(tableName, tableMetaData));
+            callback.load(tableName).ifPresent(tableMetaData -> alterMetaData(metaData, tableName, tableMetaData));
         }
+    }
+    
+    private void alterMetaData(final ShardingSphereMetaData metaData, final String tableName, final TableMetaData tableMetaData) {
+        metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().put(tableName, tableMetaData);
+        metaData.getRuleSchemaMetaData().getSchemaMetaData().put(tableName, tableMetaData);
     }
 }

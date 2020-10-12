@@ -65,6 +65,11 @@ Apache ShardingSphere built-in standard sharding algorithm are:
 
 ### Inline Sharding Algorithm
 
+With Groovy expressions, `InlineShardingStrategy` provides single-key support for the sharding operation of `=` and `IN` in SQL. 
+Simple sharding algorithms can be used through a simple configuration to avoid laborious Java code developments. 
+For example, `t_user_$->{u_id % 8}` means table t_user is divided into 8 tables according to u_id, with table names from `t_user_0` to `t_user_7`.
+Please refer to [Inline Expression](/en/features/sharding/concept/inline-expression/) for more details.
+
 Type: INLINE
 
 Attributes:

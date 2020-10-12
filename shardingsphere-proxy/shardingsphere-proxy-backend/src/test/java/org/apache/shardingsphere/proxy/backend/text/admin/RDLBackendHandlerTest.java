@@ -20,15 +20,17 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.schema.SchemaContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
@@ -57,12 +59,11 @@ import static org.mockito.Mockito.when;
 public final class RDLBackendHandlerTest {
     
     @Before
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void setUp() {
+    public void setUp() throws IllegalAccessException, NoSuchFieldException {
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxyContext.getInstance(),
-                new StandardSchemaContexts(getSchemaContextMap(), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(getSchemas(), 
+                mock(ShardingSphereSQLParserEngine.class), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     @Test
@@ -143,9 +144,8 @@ public final class RDLBackendHandlerTest {
         }
     }
     
-    private Map<String, SchemaContext> getSchemaContextMap() {
-        SchemaContext result = new SchemaContext("schema", null, null);
-        return Collections.singletonMap("schema", result);
+    private Map<String, ShardingSphereSchema> getSchemas() {
+        return Collections.singletonMap("schema", null);
     }
     
     @Test
@@ -184,7 +184,7 @@ public final class RDLBackendHandlerTest {
         schemaContexts.setAccessible(true);
         if (isGovernance) {
             SchemaContexts mockedSchemaContexts = mock(SchemaContexts.class);
-            when(mockedSchemaContexts.getSchemaContextMap()).thenReturn(Collections.singletonMap("schema", mock(SchemaContext.class)));
+            when(mockedSchemaContexts.getSchemas()).thenReturn(Collections.singletonMap("schema", mock(ShardingSphereSchema.class)));
             schemaContexts.set(ProxyContext.getInstance(), mockedSchemaContexts);
         } else {
             schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts());

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer
 
 public final class FixtureNopImporter implements Importer {
     
-    public FixtureNopImporter(final ImporterConfiguration importerConfiguration, final DataSourceManager dataSourceManager) {
+    public FixtureNopImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
     }
     
     @Override

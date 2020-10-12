@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.postgresql;
 
 import org.apache.shardingsphere.scaling.core.check.AbstractDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSqlBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 
 import java.util.Collections;
@@ -40,7 +40,7 @@ public final class PostgreSQLDataConsistencyChecker extends AbstractDataConsiste
     }
     
     @Override
-    protected AbstractSqlBuilder getSqlBuilder() {
-        return new PostgreSQLSqlBuilder();
+    protected AbstractSQLBuilder getSqlBuilder() {
+        return new PostgreSQLSQLBuilder();
     }
 }

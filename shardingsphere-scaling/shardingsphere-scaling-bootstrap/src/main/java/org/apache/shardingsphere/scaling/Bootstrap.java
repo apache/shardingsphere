@@ -68,7 +68,7 @@ public final class Bootstrap {
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new HttpServerInitializer());
-            int port = ScalingContext.getInstance().getServerConfiguration().getPort();
+            int port = ScalingContext.getInstance().getServerConfig().getPort();
             Channel channel = bootstrap.bind(port).sync().channel();
             log.info("ShardingSphere-Scaling is server on http://127.0.0.1:{}/", port);
             channel.closeFuture().sync();
@@ -81,8 +81,8 @@ public final class Bootstrap {
     private static void initServerConfig() throws IOException {
         log.info("Init server config");
         File yamlFile = new File(Resources.getResource(DEFAULT_CONFIG_PATH + DEFAULT_CONFIG_FILE_NAME).getPath());
-        ServerConfiguration serverConfiguration = YamlEngine.unmarshal(yamlFile, ServerConfiguration.class);
-        Preconditions.checkNotNull(serverConfiguration, "Server configuration file `%s` is invalid.", yamlFile.getName());
-        ScalingContext.getInstance().init(serverConfiguration);
+        ServerConfiguration serverConfig = YamlEngine.unmarshal(yamlFile, ServerConfiguration.class);
+        Preconditions.checkNotNull(serverConfig, "Server configuration file `%s` is invalid.", yamlFile.getName());
+        ScalingContext.getInstance().init(serverConfig);
     }
 }

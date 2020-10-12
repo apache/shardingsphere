@@ -6,7 +6,7 @@ chapter = true
 
 如果您想帮助贡献ShardingSphere文档或网站，我们很乐意为您提供帮助！任何人都可以贡献，无论您是刚接触项目还是已经使用ShardingSphere很长时间，无论是自我认同的开发人员、最终用户，还是那些无法忍受错别字的人，都可以对文档或者网站进行贡献。
 
-在贡献者指南里，已经提到如何提交Issues与pull request，这里我们将要介绍如何给官方文档提交pull request。
+在贡献者指南里，已经提到如何提交Issues与Pull Request，这里我们将要介绍如何给官方文档提交Pull Request。
 
 ## 前置条件
 
@@ -80,34 +80,34 @@ ShardingSphere文档使用Markdown编写，并使用Hugo进行处理生成html�
 - [官方教程最新版本](https://shardingsphere.apache.org/document/current/cn/overview/)源存储在`/document/`
 - [社区介绍及贡献](https://shardingsphere.apache.org/community/cn/contribute/)相关文档源都储存在`/community/content/`
 
-您可以从[Github](https://github.com/apache/shardingsphere/issues)网站上提交问题，编辑内容和查看其他人的更改
+您可以从[Github](https://github.com/apache/shardingsphere/issues)网站上提交问题，编辑内容和查看其他人的更改。
 
 ## 页面模板
 
-页面模板位于themes中的 `layouts/partials/` 目录中
+页面模板位于themes中的 `layouts/partials/` 目录中。
 
 ## 提出具体可查找的问题
 
 任何拥有Github帐户的人都可以针对ShardingSphere文档提出问题（错误报告）。如果您发现错误，即使您不知道如何修复它，也应提出问题。
 
-### 如何提出问题
+**如何提出问题？**
 
-1. 附加出现问题的文档链接
+1. 附加出现问题的文档链接。
 
-1. 详细描述问题
+1. 详细描述问题。
 
-1. 描述问题对用户造成的困扰
+1. 描述问题对用户造成的困扰。
 
-1. 提出建议修复的方式
+1. 提出建议修复的方式。
 
-1. 在[Issues](https://github.com/apache/shardingsphere/issues)中`New issue` 提出您的问题
+1. 在[Issues](https://github.com/apache/shardingsphere/issues)中`New issue` 提出您的问题。
 
 ## 提交更改
 
-### 操作步骤
+**操作步骤如下:**
 
-1. 首先，你需要在master分支目录结构中定位出你要操作的文件
-1. 文件操作完成后，提pull request到master分支
+1. 首先，你需要在master分支目录结构中定位出你要操作的文件。
+1. 文件操作完成后，提pull request到master分支。
 
 ## 约定
 

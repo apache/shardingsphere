@@ -112,7 +112,7 @@ alterDatabase
 createDatabaseSpecification_
     : DEFAULT? (CHARACTER SET | CHARSET) EQ_? characterSetName_
     | DEFAULT? COLLATE EQ_? collationName_
-    | DEFAULT? ENCRYPTION EQ_? Y_N_
+    | DEFAULT? ENCRYPTION EQ_? y_or_n=STRING_
     ;
     
 alterDatabaseSpecification_
@@ -234,7 +234,7 @@ createTablespaceInnodb
     : CREATE (UNDO)? TABLESPACE identifier
       ADD DATAFILE STRING_
       (FILE_BLOCK_SIZE EQ_ fileSizeLiteral_)?
-      (ENCRYPTION EQ_ Y_N_ )?
+      (ENCRYPTION EQ_ y_or_n=STRING_)?
       (ENGINE EQ_? STRING_)?
     ;
 
@@ -262,7 +262,7 @@ alterTablespaceNdb
 
 alterTablespaceInnodb
     : ALTER UNDO? TABLESPACE identifier
-      (SET (ACTIVE | INACTIVE))? (ENCRYPTION EQ_? Y_N_)
+      (SET (ACTIVE | INACTIVE))? (ENCRYPTION EQ_? y_or_n=STRING_)
       (RENAME TO identifier)?
       (ENGINE EQ_? identifier)?
     ;
@@ -334,7 +334,8 @@ generatedOption
     ;
 
 dataTypeGenericOption
-    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition | referenceDefinition | COMMENT STRING_
+    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition | referenceDefinition 
+    | COMMENT STRING_ | ON UPDATE CURRENT_TIMESTAMP (LP_ NUMBER_ RP_)*
     ;
 
 checkConstraintDefinition

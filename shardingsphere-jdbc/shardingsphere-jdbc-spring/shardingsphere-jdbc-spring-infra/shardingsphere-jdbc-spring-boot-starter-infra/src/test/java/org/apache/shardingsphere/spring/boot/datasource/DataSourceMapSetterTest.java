@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.spring.boot.datasource;
 
-import lombok.SneakyThrows;
 import org.junit.Test;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.mock.env.MockEnvironment;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -30,9 +30,8 @@ import static org.junit.Assert.assertThat;
 
 public final class DataSourceMapSetterTest {
     
-    @SneakyThrows
     @Test
-    public void assetMergedAll() {
+    public void assetMergedAll() throws SQLException {
         MockEnvironment mockEnvironment = new MockEnvironment();
         mockEnvironment.setProperty("spring.shardingsphere.datasource.names", "ds0,ds1");
         mockEnvironment.setProperty("spring.shardingsphere.datasource.common.type", "org.apache.commons.dbcp2.BasicDataSource");
@@ -50,9 +49,8 @@ public final class DataSourceMapSetterTest {
         assertThat(dataSourceMap.get("ds1").getConnection().getMetaData().getURL(), is("jdbc:h2:mem:ds"));
     }
     
-    @SneakyThrows
     @Test
-    public void assetMergedReplaceAndAdd() {
+    public void assetMergedReplaceAndAdd() throws SQLException {
         MockEnvironment mockEnvironment = new MockEnvironment();
         mockEnvironment.setProperty("spring.shardingsphere.datasource.names", "ds0,ds1");
         mockEnvironment.setProperty("spring.shardingsphere.datasource.common.type", "org.apache.commons.dbcp2.BasicDataSource");

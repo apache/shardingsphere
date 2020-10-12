@@ -88,12 +88,12 @@ public final class DataSourceParameterConverter {
         return result;
     }
     
-    private static void bindSynonym(final DataSourceConfiguration dataSourceConfiguration) {
-        dataSourceConfiguration.addPropertySynonym("url", "jdbcUrl");
-        dataSourceConfiguration.addPropertySynonym("user", "username");
-        dataSourceConfiguration.addPropertySynonym("connectionTimeout", "connectionTimeoutMilliseconds");
-        dataSourceConfiguration.addPropertySynonym("maxLifetime", "maxLifetimeMilliseconds");
-        dataSourceConfiguration.addPropertySynonym("idleTimeout", "idleTimeoutMilliseconds");
+    private static void bindSynonym(final DataSourceConfiguration dataSourceConfig) {
+        dataSourceConfig.addPropertySynonym("url", "jdbcUrl");
+        dataSourceConfig.addPropertySynonym("user", "username");
+        dataSourceConfig.addPropertySynonym("connectionTimeout", "connectionTimeoutMilliseconds");
+        dataSourceConfig.addPropertySynonym("maxLifetime", "maxLifetimeMilliseconds");
+        dataSourceConfig.addPropertySynonym("idleTimeout", "idleTimeoutMilliseconds");
     }
     
     /**

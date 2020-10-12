@@ -18,12 +18,20 @@
 package org.apache.shardingsphere.infra.route.context;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Route context.
@@ -31,54 +39,96 @@ import java.util.Map;
 @Getter
 public final class RouteContext {
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final Collection<Collection<DataNode>> originalDataNodes = new LinkedList<>();
     
-    private final List<Object> parameters;
-    
-    private final RouteResult routeResult;
+    private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
     
     private final Map<Class<? extends ShardingSphereRule>, RouteStageContext> routeStageContexts = new LinkedHashMap<>();
     
-    public RouteContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
-        this.sqlStatementContext = sqlStatementContext;
-        this.parameters = parameters;
-        routeResult = new RouteResult();
-    }
-    
-    public RouteContext(final RouteContext parent, final RouteResult routeResult, final RouteStageContext nextRouteStageContext, final Class<? extends ShardingSphereRule> ruleType) {
-        sqlStatementContext = parent.sqlStatementContext;
-        parameters = parent.parameters;
-        this.routeResult = routeResult;
-        addBeforeRouteStageContexts(parent.routeStageContexts);
-        addNextRouteStageContext(ruleType, nextRouteStageContext);
+    /**
+     * Judge is route for single database and table only or not.
+     *
+     * @return is route for single database and table only or not
+     */
+    public boolean isSingleRouting() {
+        return 1 == routeUnits.size();
     }
     
     /**
-     * Add before route stage context.
+     * Get actual data source names.
      *
-     * @param beforeRouteStageContexts before route stage contexts
+     * @return actual data source names
      */
-    public void addBeforeRouteStageContexts(final Map<Class<? extends ShardingSphereRule>, RouteStageContext> beforeRouteStageContexts) {
-        routeStageContexts.putAll(beforeRouteStageContexts);
+    public Collection<String> getActualDataSourceNames() {
+        return routeUnits.stream().map(each -> each.getDataSourceMapper().getActualName()).collect(Collectors.toCollection(() -> new HashSet<>(routeUnits.size(), 1)));
     }
     
     /**
-     * Add next route stage context.
+     * Get actual tables groups.
      *
-     * @param ruleType rule type
-     * @param nextRouteStageContext next route stage contexts
+     * <p>
+     * Actual tables in same group are belong one logic name.
+     * </p>
+     *
+     * @param actualDataSourceName actual data source name
+     * @param logicTableNames logic table names
+     * @return actual table groups
      */
-    public void addNextRouteStageContext(final Class<? extends ShardingSphereRule> ruleType, final RouteStageContext nextRouteStageContext) {
-        routeStageContexts.put(ruleType, nextRouteStageContext);
+    public List<Set<String>> getActualTableNameGroups(final String actualDataSourceName, final Set<String> logicTableNames) {
+        return logicTableNames.stream().map(each -> getActualTableNames(actualDataSourceName, each)).filter(actualTableNames -> !actualTableNames.isEmpty()).collect(Collectors.toList());
+    }
+    
+    private Set<String> getActualTableNames(final String actualDataSourceName, final String logicTableName) {
+        Set<String> result = new HashSet<>();
+        for (RouteUnit each : routeUnits) {
+            if (actualDataSourceName.equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
+                result.addAll(each.getActualTableNames(logicTableName));
+            }
+        }
+        return result;
     }
     
     /**
-     * Get route stage context by rule type.
+     * Get map relationship between actual data source and logic tables.
      *
-     * @param ruleType rule type
-     * @return route stage context
+     * @param actualDataSourceNames actual data source names
+     * @return  map relationship between data source and logic tables
      */
-    public RouteStageContext getRouteStageContext(final Class<? extends ShardingSphereRule> ruleType) {
-        return routeStageContexts.get(ruleType);
+    public Map<String, Set<String>> getDataSourceLogicTablesMap(final Collection<String> actualDataSourceNames) {
+        Map<String, Set<String>> result = new HashMap<>(actualDataSourceNames.size(), 1);
+        for (String each : actualDataSourceNames) {
+            Set<String> logicTableNames = getLogicTableNames(each);
+            if (!logicTableNames.isEmpty()) {
+                result.put(each, logicTableNames);
+            }
+        }
+        return result;
+    }
+    
+    private Set<String> getLogicTableNames(final String actualDataSourceName) {
+        Set<String> result = new HashSet<>();
+        for (RouteUnit each : routeUnits) {
+            if (actualDataSourceName.equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
+                result.addAll(each.getLogicTableNames());
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Find table mapper.
+     *
+     * @param logicDataSourceName logic data source name
+     * @param actualTableName actual table name
+     * @return table mapper
+     */
+    public Optional<RouteMapper> findTableMapper(final String logicDataSourceName, final String actualTableName) {
+        for (RouteUnit each : routeUnits) {
+            Optional<RouteMapper> result = each.findTableMapper(logicDataSourceName, actualTableName);
+            if (result.isPresent()) {
+                return result;
+            }
+        }
+        return Optional.empty();
     }
 }

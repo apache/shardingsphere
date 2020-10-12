@@ -20,7 +20,6 @@ package org.apache.shardingsphere.scaling.core.execute.executor.channel;
 import com.google.gson.JsonElement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
@@ -32,6 +31,8 @@ import org.apache.shardingsphere.scaling.core.utils.ThreadUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.lang.reflect.InvocationTargetException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -47,8 +48,7 @@ public final class DistributionChannelTest {
     }
     
     @Test
-    @SneakyThrows({InterruptedException.class, ReflectiveOperationException.class})
-    public void assertAckCallbackResultSortable() {
+    public void assertAckCallbackResultSortable() throws InterruptedException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         distributionChannel = new DistributionChannel(2, records -> {
             assertThat(records.size(), is(2));
             assertTrue(((IntPosition) records.get(0).getPosition()).getId() < ((IntPosition) records.get(1).getPosition()).getId());
@@ -71,8 +71,7 @@ public final class DistributionChannelTest {
     }
     
     @Test
-    @SneakyThrows(InterruptedException.class)
-    public void assertBroadcastFinishedRecord() {
+    public void assertBroadcastFinishedRecord() throws InterruptedException {
         distributionChannel = new DistributionChannel(2, records -> assertThat(records.size(), is(2)));
         distributionChannel.pushRecord(new FinishedRecord(new NopPosition()));
     }

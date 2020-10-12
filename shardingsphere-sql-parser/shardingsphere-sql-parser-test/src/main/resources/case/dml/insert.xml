@@ -1453,7 +1453,7 @@
             </value>
         </values>
     </insert>
-
+    
     <insert sql-case-id="insert_with_default_values">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="20" stop-index="46">
@@ -1462,12 +1462,12 @@
             <column name="status" start-index="40" stop-index="45" />
         </columns>
     </insert>
-
+    
     <insert sql-case-id="insert_without_columns_with_default_values">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="19" stop-index="19" />
     </insert>
-
+    
     <insert sql-case-id="insert_with_top">
         <table name="t_order" start-index="15" stop-index="21" />
         <columns start-index="23" stop-index="41">
@@ -1486,7 +1486,7 @@
             </projections>
         </select>
     </insert>
-
+    
     <insert sql-case-id="insert_with_top_percent">
         <table name="t_order" start-index="23" stop-index="29" />
         <columns start-index="31" stop-index="49">
@@ -1504,5 +1504,122 @@
                 <column-projection name="user_id" start-index="68" stop-index="74" />
             </projections>
         </select>
+    </insert>
+    
+    <insert sql-case-id="insert_with_output_clause" parameters="1, 1">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="38">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+        </columns>
+        <output start-index="40" stop-index="128">
+            <output-columns start-index="47" stop-index="81">
+                <column-projection name="order_id" start-index="47" stop-index="63">
+                    <owner name="INSERTED" start-index="47" stop-index="54"/>
+                </column-projection>
+                <column-projection name="user_id" start-index="66" stop-index="81">
+                    <owner name="INSERTED" start-index="66" stop-index="73"/>
+                </column-projection>
+            </output-columns>
+            <output-table name="@MyTableVar" start-index="88" stop-index="98"/>
+            <output-table-columns start-index="100" stop-index="128">
+                <column name="temp_order_id" start-index="101" stop-index="113"/>
+                <column name="temp_user_id" start-index="116" stop-index="127"/>
+            </output-table-columns>
+        </output>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" start-index="138" stop-index="138" />
+                    <literal-expression value="1" start-index="138" stop-index="138" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" start-index="141" stop-index="141" />
+                    <literal-expression value="1" start-index="141" stop-index="141" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_with_output_clause_without_output_table_columns" parameters="1, 1">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="38">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+        </columns>
+        <output start-index="40" stop-index="98">
+            <output-columns start-index="47" stop-index="81">
+                <column-projection name="order_id" start-index="47" stop-index="63">
+                    <owner name="INSERTED" start-index="47" stop-index="54"/>
+                </column-projection>
+                <column-projection name="user_id" start-index="66" stop-index="81">
+                    <owner name="INSERTED" start-index="66" stop-index="73"/>
+                </column-projection>
+            </output-columns>
+            <output-table name="@MyTableVar" start-index="88" stop-index="98"/>
+        </output>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" start-index="108" stop-index="108" />
+                    <literal-expression value="1" start-index="108" stop-index="108" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" start-index="111" stop-index="111" />
+                    <literal-expression value="1" start-index="111" stop-index="111" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_with_output_clause_without_output_table" parameters="1, 1">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="38">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+        </columns>
+        <output start-index="40" stop-index="81">
+            <output-columns start-index="47" stop-index="81">
+                <column-projection name="order_id" start-index="47" stop-index="63">
+                    <owner name="INSERTED" start-index="47" stop-index="54"/>
+                </column-projection>
+                <column-projection name="user_id" start-index="66" stop-index="81">
+                    <owner name="INSERTED" start-index="66" stop-index="73"/>
+                </column-projection>
+            </output-columns>
+        </output>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" start-index="91" stop-index="91" />
+                    <literal-expression value="1" start-index="91" stop-index="91" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" start-index="94" stop-index="94" />
+                    <literal-expression value="1" start-index="94" stop-index="94" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_with_output_clause_column_shorthand" parameters="1, 1">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="38">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+        </columns>
+        <output start-index="40" stop-index="56"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" start-index="66" stop-index="66" />
+                    <literal-expression value="1" start-index="66" stop-index="66" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" start-index="69" stop-index="69" />
+                    <literal-expression value="1" start-index="69" stop-index="69" />
+                </assignment-value>
+            </value>
+        </values>
     </insert>
 </sql-parser-test-cases>

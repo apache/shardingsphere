@@ -21,7 +21,7 @@ import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.tracing.opentracing.constant.ShardingErrorLogTags;
+import org.apache.shardingsphere.tracing.opentracing.constant.ShardingErrorLogTagKeys;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,9 +44,9 @@ public final class ShardingErrorSpan {
     
     private static Map<String, ?> getReason(final Throwable cause) {
         Map<String, String> result = new HashMap<>(3, 1);
-        result.put(ShardingErrorLogTags.EVENT, ShardingErrorLogTags.EVENT_ERROR_TYPE);
-        result.put(ShardingErrorLogTags.ERROR_KIND, cause.getClass().getName());
-        result.put(ShardingErrorLogTags.MESSAGE, cause.getMessage());
+        result.put(ShardingErrorLogTagKeys.EVENT, ShardingErrorLogTagKeys.EVENT_ERROR_TYPE);
+        result.put(ShardingErrorLogTagKeys.ERROR_KIND, cause.getClass().getName());
+        result.put(ShardingErrorLogTagKeys.MESSAGE, cause.getMessage());
         return result;
     }
 }

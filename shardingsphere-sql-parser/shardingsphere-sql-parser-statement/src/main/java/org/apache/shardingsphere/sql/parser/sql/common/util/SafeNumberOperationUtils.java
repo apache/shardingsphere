@@ -164,7 +164,7 @@ public final class SafeNumberOperationUtils {
         return null;
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private static Comparable<?> parseNumberByClazz(final String number, final Class<?> clazz) {
         return (Comparable<?>) clazz.getConstructor(String.class).newInstance(number);
     }

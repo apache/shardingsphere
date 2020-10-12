@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.check;
 
 import com.google.gson.Gson;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
@@ -63,8 +63,8 @@ public final class AbstractDataConsistencyCheckerTest {
     }
     
     @SneakyThrows(SQLException.class)
-    private void initTableData(final DataSourceConfiguration dataSourceConfiguration) {
-        DataSource dataSource = new DataSourceManager().getDataSource(dataSourceConfiguration);
+    private void initTableData(final ScalingDataSourceConfiguration dataSourceConfig) {
+        DataSource dataSource = new DataSourceManager().getDataSource(dataSourceConfig);
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t1");
@@ -76,8 +76,8 @@ public final class AbstractDataConsistencyCheckerTest {
     private void mockShardingScalingJob() {
         InputStream fileInputStream = AbstractDataConsistencyCheckerTest.class.getResourceAsStream("/config.json");
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-        ScalingConfiguration scalingConfiguration = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
-        shardingScalingJob = new ShardingScalingJob(scalingConfiguration);
-        shardingScalingJob.getSyncConfigurations().addAll(SyncConfigurationUtil.toSyncConfigurations(scalingConfiguration));
+        ScalingConfiguration scalingConfig = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
+        shardingScalingJob = new ShardingScalingJob(scalingConfig);
+        shardingScalingJob.getSyncConfigurations().addAll(SyncConfigurationUtil.toSyncConfigurations(scalingConfig));
     }
 }

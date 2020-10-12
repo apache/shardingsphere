@@ -55,8 +55,7 @@ public final class PostgreSQLPositionManagerTest {
     private DatabaseMetaData databaseMetaData;
     
     @Before
-    @SneakyThrows(SQLException.class)
-    public void setUp() {
+    public void setUp() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatement postgreSQL96LsnPs = mockPostgreSQL96Lsn();
@@ -75,8 +74,7 @@ public final class PostgreSQLPositionManagerTest {
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertGetCurrentPositionOnPostgreSQL96() {
+    public void assertGetCurrentPositionOnPostgreSQL96() throws SQLException {
         PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager(dataSource);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(6);
@@ -85,8 +83,7 @@ public final class PostgreSQLPositionManagerTest {
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertGetCurrentPositionOnPostgreSQL10() {
+    public void assertGetCurrentPositionOnPostgreSQL10() throws SQLException {
         PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager(dataSource);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(10);
         WalPosition actual = postgreSQLPositionManager.getPosition();
@@ -94,8 +91,7 @@ public final class PostgreSQLPositionManagerTest {
     }
     
     @Test(expected = RuntimeException.class)
-    @SneakyThrows(SQLException.class)
-    public void assertGetCurrentPositionThrowException() {
+    public void assertGetCurrentPositionThrowException() throws SQLException {
         PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager(dataSource);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(4);

@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
@@ -36,16 +37,16 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.
 import java.util.Optional;
 
 /**
- * SelectStatement helper class for different dialect SQLStatements.
+ * Select statement helper class for different dialect SQL statements.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SelectStatementHandler {
-
+public final class SelectStatementHandler implements SQLStatementHandler {
+    
     /**
-     * Get LimitSegment.
+     * Get limit segment.
      *
-     * @param selectStatement SelectStatement
-     * @return LimitSegment
+     * @param selectStatement select statement
+     * @return limit segment
      */
     public static Optional<LimitSegment> getLimitSegment(final SelectStatement selectStatement) {
         if (selectStatement instanceof MySQLStatement) {
@@ -62,12 +63,12 @@ public final class SelectStatementHandler {
         }
         return Optional.empty();
     }
-
+    
     /**
-     * Get LockSegment.
+     * Get lock segment.
      *
-     * @param selectStatement SelectStatement
-     * @return LockSegment
+     * @param selectStatement select statement
+     * @return lock segment
      */
     public static Optional<LockSegment> getLockSegment(final SelectStatement selectStatement) {
         if (selectStatement instanceof MySQLStatement) {

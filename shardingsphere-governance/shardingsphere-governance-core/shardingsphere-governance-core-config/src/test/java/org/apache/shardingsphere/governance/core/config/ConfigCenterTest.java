@@ -48,6 +48,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -320,15 +322,15 @@ public final class ConfigCenterTest {
         assertThat(ruleConfigurations.size(), is(2));
         for (RuleConfiguration each : ruleConfigurations) {
             if (each instanceof ShardingRuleConfiguration) {
-                ShardingRuleConfiguration shardingRuleConfiguration = (ShardingRuleConfiguration) each;
-                assertThat(shardingRuleConfiguration.getTables().size(), is(1));
-                assertThat(shardingRuleConfiguration.getTables().iterator().next().getLogicTable(), is("t_order"));
+                ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) each;
+                assertThat(shardingRuleConfig.getTables().size(), is(1));
+                assertThat(shardingRuleConfig.getTables().iterator().next().getLogicTable(), is("t_order"));
             } else if (each instanceof EncryptRuleConfiguration) {
-                EncryptRuleConfiguration encryptRuleConfiguration = (EncryptRuleConfiguration) each;
-                assertThat(encryptRuleConfiguration.getEncryptors().size(), is(2));
-                ShardingSphereAlgorithmConfiguration encryptAlgorithmConfiguration = encryptRuleConfiguration.getEncryptors().get("aes_encryptor");
-                assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
-                assertThat(encryptAlgorithmConfiguration.getProps().get("aes-key-value").toString(), is("123456abcd"));
+                EncryptRuleConfiguration encryptRuleConfig = (EncryptRuleConfiguration) each;
+                assertThat(encryptRuleConfig.getEncryptors().size(), is(2));
+                ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig = encryptRuleConfig.getEncryptors().get("aes_encryptor");
+                assertThat(encryptAlgorithmConfig.getType(), is("AES"));
+                assertThat(encryptAlgorithmConfig.getProps().get("aes-key-value").toString(), is("123456abcd"));
             }
         }
     }
@@ -361,9 +363,9 @@ public final class ConfigCenterTest {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         EncryptRuleConfiguration actual = (EncryptRuleConfiguration) configCenter.loadRuleConfigurations("sharding_db").iterator().next();
         assertThat(actual.getEncryptors().size(), is(1));
-        ShardingSphereAlgorithmConfiguration encryptAlgorithmConfiguration = actual.getEncryptors().get("order_encryptor");
-        assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
-        assertThat(encryptAlgorithmConfiguration.getProps().get("aes-key-value").toString(), is("123456"));
+        ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig = actual.getEncryptors().get("order_encryptor");
+        assertThat(encryptAlgorithmConfig.getType(), is("AES"));
+        assertThat(encryptAlgorithmConfig.getProps().get("aes-key-value").toString(), is("123456"));
     }
     
     @Test
@@ -431,7 +433,7 @@ public final class ConfigCenterTest {
         assertThat(actual.getProps().get("connectionInitSqls"), is(expected.getProps().get("connectionInitSqls")));
     }
     
-    @SneakyThrows
+    @SneakyThrows({IOException.class, URISyntaxException.class})
     private String readYAML(final String yamlFile) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI()))
                 .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
@@ -532,5 +534,12 @@ public final class ConfigCenterTest {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
         verify(configurationRepository).persist(eq("/schemas/sharding_db/table"), anyString());
+    }
+    
+    @Test
+    public void assertDeleteSchema() {
+        ConfigCenter configCenter = new ConfigCenter(configurationRepository);
+        configCenter.deleteSchema("sharding_db");
+        verify(configurationRepository).delete(eq("/schemas/sharding_db"));
     }
 }

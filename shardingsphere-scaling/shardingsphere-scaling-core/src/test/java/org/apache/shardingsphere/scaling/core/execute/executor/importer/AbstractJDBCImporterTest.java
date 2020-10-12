@@ -19,8 +19,7 @@ package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
@@ -64,10 +63,10 @@ public final class AbstractJDBCImporterTest {
     private DataSourceManager dataSourceManager;
     
     @Mock
-    private AbstractSqlBuilder sqlBuilder;
+    private AbstractSQLBuilder sqlBuilder;
     
     @Mock
-    private DataSourceConfiguration dataSourceConfiguration;
+    private ScalingDataSourceConfiguration dataSourceConfig;
     
     @Mock
     private Channel channel;
@@ -88,18 +87,17 @@ public final class AbstractJDBCImporterTest {
         jdbcImporter = new AbstractJDBCImporter(getImporterConfiguration(), dataSourceManager) {
             
             @Override
-            protected AbstractSqlBuilder createSqlBuilder() {
+            protected AbstractSQLBuilder createSQLBuilder() {
                 return sqlBuilder;
             }
         };
         jdbcImporter.setChannel(channel);
-        when(dataSourceManager.getDataSource(dataSourceConfiguration)).thenReturn(dataSource);
+        when(dataSourceManager.getDataSource(dataSourceConfig)).thenReturn(dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
     }
     
     @Test
-    @SneakyThrows
-    public void assertWriteInsertDataRecord() {
+    public void assertWriteInsertDataRecord() throws SQLException {
         DataRecord insertRecord = getDataRecord("INSERT");
         when(sqlBuilder.buildInsertSQL(insertRecord)).thenReturn(INSERT_SQL);
         when(connection.prepareStatement(INSERT_SQL)).thenReturn(preparedStatement);
@@ -160,7 +158,7 @@ public final class AbstractJDBCImporterTest {
     
     private ImporterConfiguration getImporterConfiguration() {
         ImporterConfiguration result = new ImporterConfiguration();
-        result.setDataSourceConfiguration(dataSourceConfiguration);
+        result.setDataSourceConfiguration(dataSourceConfig);
         Map<String, Set<String>> shardingColumnsMap = Maps.newHashMap();
         shardingColumnsMap.put("test_table", Sets.newHashSet("user"));
         result.setShardingColumnsMap(shardingColumnsMap);

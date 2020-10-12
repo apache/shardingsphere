@@ -69,16 +69,16 @@ public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTes
     
     private void assertYamlShardingConfiguration(final YamlRootRuleConfigurations actual) {
         assertDataSourceMap(actual);
-        Optional<YamlShardingRuleConfiguration> shardingRuleConfiguration = actual.getRules().stream().filter(
-            each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(configuration -> (YamlShardingRuleConfiguration) configuration);
-        assertTrue(shardingRuleConfiguration.isPresent());
-        assertThat(shardingRuleConfiguration.get().getTables().size(), is(4));
-        assertTUser(shardingRuleConfiguration.get());
-        assertTStock(shardingRuleConfiguration.get());
-        assertTOrder(shardingRuleConfiguration.get());
-        assertTOrderItem(shardingRuleConfiguration.get());
-        assertBindingTable(shardingRuleConfiguration.get());
-        assertBroadcastTable(shardingRuleConfiguration.get());
+        Optional<YamlShardingRuleConfiguration> shardingRuleConfig = actual.getRules().stream().filter(
+            each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(config -> (YamlShardingRuleConfiguration) config);
+        assertTrue(shardingRuleConfig.isPresent());
+        assertThat(shardingRuleConfig.get().getTables().size(), is(4));
+        assertTUser(shardingRuleConfig.get());
+        assertTStock(shardingRuleConfig.get());
+        assertTOrder(shardingRuleConfig.get());
+        assertTOrderItem(shardingRuleConfig.get());
+        assertBindingTable(shardingRuleConfig.get());
+        assertBroadcastTable(shardingRuleConfig.get());
         assertProps(actual);
     }
     

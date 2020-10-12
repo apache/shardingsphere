@@ -39,6 +39,7 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -74,7 +75,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         closeConfigCenter();
     }
     
-    @SneakyThrows
+    @SneakyThrows(IOException.class)
     protected YamlProxyConfiguration makeProxyConfiguration() {
         return ProxyConfigurationLoader.load("/conf/reg_center/");
     }
@@ -88,7 +89,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         configurationRepository.persist(node.getRulePath("db"), readYAML(SHARDING_RULE_YAML));
     }
     
-    @SneakyThrows
+    @SneakyThrows({URISyntaxException.class, IOException.class})
     private String readYAML(final String yamlFile) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI()))
                 .stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
@@ -211,8 +212,8 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         assertNotNull(actualSchemaContexts);
         assertThat(actualSchemaContexts, instanceOf(GovernanceSchemaContexts.class));
         assertThat(actualSchemaContexts.getDatabaseType(), is(schemaContexts.getDatabaseType()));
-        assertThat(actualSchemaContexts.getSchemaContextMap(), is(schemaContexts.getSchemaContextMap()));
-        assertThat(actualSchemaContexts.getDefaultSchemaContext(), is(schemaContexts.getDefaultSchemaContext()));
+        assertThat(actualSchemaContexts.getSchemas(), is(schemaContexts.getSchemas()));
+        assertThat(actualSchemaContexts.getDefaultSchema(), is(schemaContexts.getDefaultSchema()));
         assertThat(actualSchemaContexts.getAuthentication(), is(schemaContexts.getAuthentication()));
         assertThat(actualSchemaContexts.getProps(), is(schemaContexts.getProps()));
         assertThat(actualSchemaContexts.isCircuitBreak(), is(schemaContexts.isCircuitBreak()));

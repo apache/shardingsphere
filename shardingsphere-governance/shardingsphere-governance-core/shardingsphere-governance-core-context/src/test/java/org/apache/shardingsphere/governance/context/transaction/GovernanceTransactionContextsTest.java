@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.context.transaction;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -61,16 +60,14 @@ public final class GovernanceTransactionContextsTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertClose() {
+    public void assertClose() throws Exception {
         GovernanceTransactionContexts actual = new GovernanceTransactionContexts(transactionContexts);
         actual.close();
         verify(transactionContexts).close();
     }
     
     @Test
-    @SneakyThrows
-    public void assertRenew() {
+    public void assertRenew() throws Exception {
         when(event.getSchemaName()).thenReturn("name");
         when(transactionContexts.getEngines()).thenReturn(engineMap);
         when(engineMap.remove(eq("name"))).thenReturn(engine);

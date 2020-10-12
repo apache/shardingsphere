@@ -35,10 +35,10 @@ public final class ConsensusReplicationTableRule implements ShardingSphereRule {
     
     private final String dataSourceName;
     
-    public ConsensusReplicationTableRule(final ConsensusReplicationActualTableRuleConfiguration configuration) {
-        physicsTable = configuration.getPhysicsTable();
-        replicaGroupId = configuration.getReplicaGroupId();
-        replicaPeers = configuration.getReplicaPeers();
-        dataSourceName = configuration.getDataSourceName();
+    public ConsensusReplicationTableRule(final ConsensusReplicationActualTableRuleConfiguration config) {
+        physicsTable = config.getPhysicsTable();
+        replicaGroupId = config.getReplicaGroupId();
+        replicaPeers = config.getReplicaPeers();
+        dataSourceName = config.getDataSourceName();
     }
 }

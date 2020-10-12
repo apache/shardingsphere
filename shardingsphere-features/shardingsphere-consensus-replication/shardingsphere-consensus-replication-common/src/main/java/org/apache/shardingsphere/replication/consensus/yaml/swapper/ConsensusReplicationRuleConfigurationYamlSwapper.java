@@ -45,8 +45,8 @@ public final class ConsensusReplicationRuleConfigurationYamlSwapper implements Y
     }
     
     @Override
-    public ConsensusReplicationRuleConfiguration swapToObject(final YamlConsensusReplicationRuleConfiguration yamlConfiguration) {
-        Collection<ConsensusReplicationLogicTableRuleConfiguration> tables = yamlConfiguration.getTables().stream()
+    public ConsensusReplicationRuleConfiguration swapToObject(final YamlConsensusReplicationRuleConfiguration yamlConfig) {
+        Collection<ConsensusReplicationLogicTableRuleConfiguration> tables = yamlConfig.getTables().stream()
                 .map(logicTableRuleConfigurationYamlSwapper::swapToObject)
                 .collect(Collectors.toList());
         return new ConsensusReplicationRuleConfiguration(tables);

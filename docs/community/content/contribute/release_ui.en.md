@@ -10,7 +10,7 @@ Please refer to [Release Guide](/en/contribute/release/).
 
 ## Apache Maven Central Repository Release
 
-### Set settings.xml
+**1. Set settings.xml**
 
 Add the following template to `~/.m2/settings.xml`, all the passwords need to be filled in after encryption. 
 For encryption settings, please see [here](http://maven.apache.org/guides/mini/guide-encryption.html).
@@ -32,13 +32,13 @@ For encryption settings, please see [here](http://maven.apache.org/guides/mini/g
 </settings>
 ```
 
-### Update Release Notes
+**2. Update Release Notes**
 
 ```
 https://github.com/apache/shardingsphere-ui/blob/master/RELEASE-NOTES.md
 ```
 
-### Create Release Branch
+**3. Create Release Branch**
 
 Suppose ShardingSphere source codes downloaded from github is under `~/shardingsphere-ui/` directory and the version to be released is `${RELEASE.VERSION}`. 
 Create `${RELEASE.VERSION}-release` branch, where all the following operations are performed.
@@ -52,7 +52,7 @@ git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
 ```
 
-### Pre-Release Check
+**4. Pre-Release Check**
 
 ```shell
 cd ~/shardingsphere-ui
@@ -65,7 +65,7 @@ mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 
 -DdryRun=true: rehearsal, which means not to generate or submit new version number and new tag.
 
-### Prepare for the Release
+**5. Prepare for the Release**
 
 First, clean local pre-release check information.
 
@@ -92,7 +92,7 @@ git push origin ${RELEASE.VERSION}-release
 git push origin --tags
 ```
 
-### Deploy the Release
+**6.Deploy the Release**
 
 ```shell
 cd ~/shardingsphere-ui
@@ -101,7 +101,7 @@ mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 
 ## Apache SVN Repository Release
 
-### Checkout ShardingSphere Release Directory
+**1. Checkout ShardingSphere Release Directory**
 
 If there is no local work directory, create one at first.
 
@@ -117,7 +117,7 @@ svn --username=${APACHE LDAP username} co https://dist.apache.org/repos/dist/dev
 cd ~/ss_svn/dev/shardingsphere
 ```
 
-### Add gpg Public Key
+**2. Add gpg Public Key**
 
 Only the account in its first deployment needs to add that. 
 It is alright for `KEYS` to only include the public key of the deployed account.
@@ -126,7 +126,7 @@ It is alright for `KEYS` to only include the public key of the deployed account.
 gpg -a --export ${GPG username} >> KEYS
 ```
 
-### Add the Release Content to SVN Directory
+**3. Add the Release Content to SVN Directory**
 
 Create folder by version number.
 
@@ -144,14 +144,13 @@ cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-d
 cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
 ```
 
-### Generate sign files
+**4. Generate sign files**
 
 ```shell
 shasum -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip >> apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip.sha512
 shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz.sha512
 ```
-
-### Commit to Apache SVN
+**5. Commit to Apache SVN**
 
 ```shell
 cd ~/ss_svn/dev/shardingsphere/
@@ -161,14 +160,14 @@ svn --username=${APACHE LDAP 用户名} commit -m "release shardingsphere-ui-${R
 
 ## Check Release
 
-### Check sha512 hash
+**Check sha512 hash**
 
 ```shell
 shasum -c apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip.sha512
 shasum -c apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz.sha512
 ```
 
-### Check gpg Signature
+**Check gpg Signature**
 
 First, import releaser's public key. 
 Import KEYS from SVN repository to local. (The releaser does not need to import again; the checking assistant needs to import it, with the user name filled as the releaser's. )
@@ -201,9 +200,9 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip.
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz
 ```
 
-### Check Released Files
+**Check Released Files**
 
-#### compare release source with github tag
+**Compare release source with github tag**
 
 ```
 curl -Lo tag-shardingsphere-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere-ui/archive/shardingsphere-ui-${RELEASE.VERSION}.zip
@@ -212,7 +211,7 @@ unzip apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip
 diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src/ shardingsphere-shardingsphere-ui-${RELEASE.VERSION}/
 ```
 
-#### Check source package
+**Check source package**
 
 *   Check whether source tarball is oversized for including nonessential files
 *   `LICENSE` and `NOTICE` files exist
@@ -222,7 +221,7 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src/ sharding
 *   Codes can be compiled and pass the unit tests (./mvnw install)
 *   Check if there is any extra files or folders, empty folders for example
 
-#### Check binary packages
+**Check binary packages**
 
 Decompress `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz`
 to check the following items:
@@ -238,7 +237,7 @@ to check the following items:
 
 ## Call for a Vote
 
-### Vote procedure
+**Vote procedure**
 
 1. ShardingSphere community vote: send the vote e-mail to `dev@shardingsphere.apache.org`. 
 PMC needs to check the rightness of the version according to the document before they vote. 
@@ -246,7 +245,7 @@ After at least 72 hours and with at least 3 `+1 PMC member` votes, it can come t
 
 2. Announce the vote result: send the result vote e-mail to `dev@shardingsphere.apache.org`.
 
-### Vote Templates
+**Vote Templates**
 
 1. ShardingSphere Community Vote Template
 
@@ -338,7 +337,7 @@ I will process to publish the release and send ANNOUNCE.
 
 ## Finish the Release
 
-### Move source packages, binary packages and KEYS from the `dev` directory to `release` directory
+**1. Move source packages, binary packages and KEYS from the `dev` directory to `release` directory**
 
 ```shell
 svn mv https://dist.apache.org/repos/dist/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer packages for shardingsphere-ui-${RELEASE.VERSION}"
@@ -346,7 +345,7 @@ svn delete https://dist.apache.org/repos/dist/release/shardingsphere/KEYS -m "de
 svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer KEYS for shardingsphere-ui-${RELEASE.VERSION}"
 ```
 
-### Merge release branch to `master` and delete release branch on Github
+**2. Merge release branch to `master` and delete release branch on Github**
 
 ```shell
 git checkout master
@@ -357,7 +356,7 @@ git push --delete origin ${RELEASE.VERSION}-release
 git branch -d ${RELEASE.VERSION}-release
 ```
 
-### Update the download page
+**3. Update the download page**
 
 https://shardingsphere.apache.org/document/current/en/downloads/
 
@@ -367,13 +366,13 @@ GPG signatures and hashes (SHA* etc) should use URL start with `https://download
 
 Keep one latest versions in `Latest releases`. Incubating stage versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
 
-### Publish release in GitHub
+## Publish release in GitHub
 
 Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere-ui/releases)'s `shardingsphere-ui-${RELEASE_VERSION}` version
 
 Edit version number and release notes, click `Publish release`
 
-### Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
+## Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
 
 Announcement e-mail template:
 

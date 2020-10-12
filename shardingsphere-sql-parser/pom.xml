@@ -26,14 +26,13 @@
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-sql-parser</artifactId>
-    <name>${project.artifactId}</name>
     <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
     
     <modules>
         <module>shardingsphere-sql-parser-spi</module>
         <module>shardingsphere-sql-parser-statement</module>
         <module>shardingsphere-sql-parser-engine</module>
-        <module>shardingsphere-sql-parser-binder</module>
         <module>shardingsphere-sql-parser-dialect</module>
         
         <module>shardingsphere-sql-parser-test</module>

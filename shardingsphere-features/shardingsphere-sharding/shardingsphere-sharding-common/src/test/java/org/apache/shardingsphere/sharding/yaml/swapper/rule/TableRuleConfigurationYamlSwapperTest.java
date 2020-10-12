@@ -82,11 +82,11 @@ public final class TableRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlWithMaxProperties() {
-        ShardingTableRuleConfiguration shardingTableRuleConfiguration = new ShardingTableRuleConfiguration("tbl", "ds_$->{0..1}.tbl_$->{0..1}");
-        shardingTableRuleConfiguration.setDatabaseShardingStrategy(mock(StandardShardingStrategyConfiguration.class));
-        shardingTableRuleConfiguration.setTableShardingStrategy(mock(StandardShardingStrategyConfiguration.class));
-        shardingTableRuleConfiguration.setKeyGenerateStrategy(mock(KeyGenerateStrategyConfiguration.class));
-        YamlTableRuleConfiguration actual = tableYamlSwapper.swapToYamlConfiguration(shardingTableRuleConfiguration);
+        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("tbl", "ds_$->{0..1}.tbl_$->{0..1}");
+        shardingTableRuleConfig.setDatabaseShardingStrategy(mock(StandardShardingStrategyConfiguration.class));
+        shardingTableRuleConfig.setTableShardingStrategy(mock(StandardShardingStrategyConfiguration.class));
+        shardingTableRuleConfig.setKeyGenerateStrategy(mock(KeyGenerateStrategyConfiguration.class));
+        YamlTableRuleConfiguration actual = tableYamlSwapper.swapToYamlConfiguration(shardingTableRuleConfig);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..1}.tbl_$->{0..1}"));
         assertNotNull(actual.getDatabaseStrategy());
@@ -101,10 +101,10 @@ public final class TableRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToObjectWithMinProperties() {
-        YamlTableRuleConfiguration yamlConfiguration = new YamlTableRuleConfiguration();
-        yamlConfiguration.setLogicTable("tbl");
-        yamlConfiguration.setActualDataNodes("ds_$->{0..1}.tbl_$->{0..1}");
-        ShardingTableRuleConfiguration actual = tableYamlSwapper.swapToObject(yamlConfiguration);
+        YamlTableRuleConfiguration yamlConfig = new YamlTableRuleConfiguration();
+        yamlConfig.setLogicTable("tbl");
+        yamlConfig.setActualDataNodes("ds_$->{0..1}.tbl_$->{0..1}");
+        ShardingTableRuleConfiguration actual = tableYamlSwapper.swapToObject(yamlConfig);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..1}.tbl_$->{0..1}"));
         assertNull(actual.getDatabaseShardingStrategy());
@@ -114,13 +114,13 @@ public final class TableRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToObjectWithMaxProperties() {
-        YamlTableRuleConfiguration yamlConfiguration = new YamlTableRuleConfiguration();
-        yamlConfiguration.setLogicTable("tbl");
-        yamlConfiguration.setActualDataNodes("ds_$->{0..1}.tbl_$->{0..1}");
-        yamlConfiguration.setDatabaseStrategy(mock(YamlShardingStrategyConfiguration.class));
-        yamlConfiguration.setTableStrategy(mock(YamlShardingStrategyConfiguration.class));
-        yamlConfiguration.setKeyGenerateStrategy(mock(YamlKeyGenerateStrategyConfiguration.class));
-        ShardingTableRuleConfiguration actual = tableYamlSwapper.swapToObject(yamlConfiguration);
+        YamlTableRuleConfiguration yamlConfig = new YamlTableRuleConfiguration();
+        yamlConfig.setLogicTable("tbl");
+        yamlConfig.setActualDataNodes("ds_$->{0..1}.tbl_$->{0..1}");
+        yamlConfig.setDatabaseStrategy(mock(YamlShardingStrategyConfiguration.class));
+        yamlConfig.setTableStrategy(mock(YamlShardingStrategyConfiguration.class));
+        yamlConfig.setKeyGenerateStrategy(mock(YamlKeyGenerateStrategyConfiguration.class));
+        ShardingTableRuleConfiguration actual = tableYamlSwapper.swapToObject(yamlConfig);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..1}.tbl_$->{0..1}"));
         assertNotNull(actual.getDatabaseShardingStrategy());

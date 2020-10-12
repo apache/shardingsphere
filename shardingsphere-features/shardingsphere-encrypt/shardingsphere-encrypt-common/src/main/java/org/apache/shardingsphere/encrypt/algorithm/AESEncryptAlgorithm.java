@@ -30,6 +30,7 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -58,7 +59,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
         return Arrays.copyOf(DigestUtils.sha1(props.getProperty(AES_KEY)), 16);
     }
     
-    @SneakyThrows
+    @SneakyThrows(GeneralSecurityException.class)
     @Override
     public String encrypt(final Object plaintext) {
         if (null == plaintext) {
@@ -68,7 +69,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
         return Base64.encodeBase64String(result);
     }
     
-    @SneakyThrows
+    @SneakyThrows(GeneralSecurityException.class)
     @Override
     public Object decrypt(final String ciphertext) {
         if (null == ciphertext) {

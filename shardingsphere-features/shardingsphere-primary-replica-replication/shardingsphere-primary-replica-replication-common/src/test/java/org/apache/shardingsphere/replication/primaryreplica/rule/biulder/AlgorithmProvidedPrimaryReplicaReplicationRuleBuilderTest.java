@@ -19,7 +19,7 @@ package org.apache.shardingsphere.replication.primaryreplica.rule.biulder;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.replication.primaryreplica.algorithm.config.AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration;
 import org.apache.shardingsphere.replication.primaryreplica.api.config.rule.PrimaryReplicaReplicationDataSourceRuleConfiguration;
 import org.apache.shardingsphere.replication.primaryreplica.rule.PrimaryReplicaReplicationRule;
@@ -41,11 +41,12 @@ public final class AlgorithmProvidedPrimaryReplicaReplicationRuleBuilderTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuild() {
-        AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration ruleConfig = mock(AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration.class);
-        PrimaryReplicaReplicationDataSourceRuleConfiguration ruleConfiguration = new PrimaryReplicaReplicationDataSourceRuleConfiguration("name", "primaryDataSourceName",
-                Collections.singletonList("name"), "loadBalancerName");
-        when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfiguration));
-        ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
-        assertThat(builder.build(ruleConfig, Collections.emptyList()), instanceOf(PrimaryReplicaReplicationRule.class));
+        AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration algorithmProvidedRuleConfig = mock(AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration.class);
+        PrimaryReplicaReplicationDataSourceRuleConfiguration ruleConfig = new PrimaryReplicaReplicationDataSourceRuleConfiguration(
+                "name", "primaryDataSourceName", Collections.singletonList("name"), "loadBalancerName");
+        when(algorithmProvidedRuleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfig));
+        ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(
+                Collections.singletonList(algorithmProvidedRuleConfig), ShardingSphereRuleBuilder.class).get(algorithmProvidedRuleConfig);
+        assertThat(builder.build(algorithmProvidedRuleConfig, Collections.emptyList()), instanceOf(PrimaryReplicaReplicationRule.class));
     }
 }

@@ -29,6 +29,7 @@ import javax.sql.XADataSource;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * XA connection wrapper for H2.
@@ -43,21 +44,21 @@ public final class H2XAConnectionWrapper implements XAConnectionWrapper {
     
     private static final JdbcDataSourceFactory FACTORY = new JdbcDataSourceFactory();
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private static Constructor<JdbcXAConnection> getH2JdbcXAConstructor() {
         Constructor<JdbcXAConnection> result = JdbcXAConnection.class.getDeclaredConstructor(JdbcDataSourceFactory.class, Integer.TYPE, JdbcConnection.class);
         result.setAccessible(true);
         return result;
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private static Method getNextIdMethod() {
         Method result = TraceObject.class.getDeclaredMethod("getNextId", Integer.TYPE);
         result.setAccessible(true);
         return result;
     }
     
-    @SneakyThrows
+    @SneakyThrows({SQLException.class, ReflectiveOperationException.class})
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
         Connection physicalConnection = connection.unwrap(JdbcConnection.class);

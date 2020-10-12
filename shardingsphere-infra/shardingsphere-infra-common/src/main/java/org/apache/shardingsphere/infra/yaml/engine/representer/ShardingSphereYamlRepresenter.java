@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.yaml.engine.representer;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.engine.representer.processor.DefaultYamlTupleProcessor;
 import org.apache.shardingsphere.infra.yaml.engine.representer.processor.ShardingSphereYamlTupleProcessor;
@@ -36,7 +35,6 @@ public final class ShardingSphereYamlRepresenter extends Representer {
         ShardingSphereServiceLoader.register(ShardingSphereYamlTupleProcessor.class);
     }
     
-    @SneakyThrows
     public ShardingSphereYamlRepresenter() {
         YamlRuleConfigurationSwapperEngine.getYamlShortcuts().forEach((key, value) -> addClassTag(value, new Tag(key)));
     }

@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
-import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
-import org.apache.shardingsphere.sharding.strategy.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
@@ -42,6 +44,10 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
     
     private final Column column = new Column("id", "tbl");
     
+    static {
+        ShardingSphereServiceLoader.register(DatetimeService.class);
+    }
+    
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValue() {
@@ -50,13 +56,13 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, between);
         ExpressionSegment andSegment = new LiteralExpressionSegment(0, 0, and);
         BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false);
-        Optional<RouteValue> routeValue = generator.generate(value, column, new LinkedList<>());
-        assertTrue(routeValue.isPresent());
-        RangeRouteValue<Integer> rangeRouteValue = (RangeRouteValue<Integer>) routeValue.get();
-        assertThat(rangeRouteValue.getColumnName(), is(column.getName()));
-        assertThat(rangeRouteValue.getTableName(), is(column.getTableName()));
-        assertTrue(rangeRouteValue.getValueRange().contains(between));
-        assertTrue(rangeRouteValue.getValueRange().contains(and));
+        Optional<ShardingConditionValue> shardingConditionValue = generator.generate(value, column, new LinkedList<>());
+        assertTrue(shardingConditionValue.isPresent());
+        RangeShardingConditionValue<Integer> rangeShardingConditionValue = (RangeShardingConditionValue<Integer>) shardingConditionValue.get();
+        assertThat(rangeShardingConditionValue.getColumnName(), is(column.getName()));
+        assertThat(rangeShardingConditionValue.getTableName(), is(column.getTableName()));
+        assertTrue(rangeShardingConditionValue.getValueRange().contains(between));
+        assertTrue(rangeShardingConditionValue.getValueRange().contains(and));
     }
     
     @SuppressWarnings("unchecked")
@@ -67,13 +73,13 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, between);
         ExpressionSegment andSegment = new LiteralExpressionSegment(0, 0, and);
         BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false);
-        Optional<RouteValue> routeValue = generator.generate(value, column, new LinkedList<>());
-        assertTrue(routeValue.isPresent());
-        RangeRouteValue<Comparable<?>> rangeRouteValue = (RangeRouteValue<Comparable<?>>) routeValue.get();
-        assertThat(rangeRouteValue.getColumnName(), is(column.getName()));
-        assertThat(rangeRouteValue.getTableName(), is(column.getTableName()));
-        assertTrue(SafeNumberOperationUtils.safeContains(rangeRouteValue.getValueRange(), between));
-        assertTrue(SafeNumberOperationUtils.safeContains(rangeRouteValue.getValueRange(), and));
+        Optional<ShardingConditionValue> shardingConditionValue = generator.generate(value, column, new LinkedList<>());
+        assertTrue(shardingConditionValue.isPresent());
+        RangeShardingConditionValue<Comparable<?>> rangeShardingConditionValue = (RangeShardingConditionValue<Comparable<?>>) shardingConditionValue.get();
+        assertThat(rangeShardingConditionValue.getColumnName(), is(column.getName()));
+        assertThat(rangeShardingConditionValue.getTableName(), is(column.getTableName()));
+        assertTrue(SafeNumberOperationUtils.safeContains(rangeShardingConditionValue.getValueRange(), between));
+        assertTrue(SafeNumberOperationUtils.safeContains(rangeShardingConditionValue.getValueRange(), and));
     }
     
     @Test(expected = ClassCastException.class)
@@ -92,12 +98,12 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, date);
         ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
         BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false);
-        Optional<RouteValue> routeValue = generator.generate(value, column, new LinkedList<>());
-        assertTrue(routeValue.isPresent());
-        RangeRouteValue<Date> rangeRouteValue = (RangeRouteValue<Date>) routeValue.get();
-        assertThat(rangeRouteValue.getColumnName(), is(column.getName()));
-        assertThat(rangeRouteValue.getTableName(), is(column.getTableName()));
-        assertThat(rangeRouteValue.getValueRange().lowerEndpoint(), is(date));
+        Optional<ShardingConditionValue> shardingConditionValue = generator.generate(value, column, new LinkedList<>());
+        assertTrue(shardingConditionValue.isPresent());
+        RangeShardingConditionValue<Date> rangeShardingConditionValue = (RangeShardingConditionValue<Date>) shardingConditionValue.get();
+        assertThat(rangeShardingConditionValue.getColumnName(), is(column.getName()));
+        assertThat(rangeShardingConditionValue.getTableName(), is(column.getTableName()));
+        assertThat(rangeShardingConditionValue.getValueRange().lowerEndpoint(), is(date));
     }
     
     @SuppressWarnings("unchecked")
@@ -109,11 +115,11 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         ExpressionSegment betweenSegment = new CommonExpressionSegment(0, 0, "now()");
         ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
         BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false);
-        Optional<RouteValue> routeValue = generator.generate(value, column, new LinkedList<>());
-        assertTrue(routeValue.isPresent());
-        RangeRouteValue<Date> rangeRouteValue = (RangeRouteValue<Date>) routeValue.get();
-        assertThat(rangeRouteValue.getColumnName(), is(column.getName()));
-        assertThat(rangeRouteValue.getTableName(), is(column.getTableName()));
-        assertTrue(rangeRouteValue.getValueRange().upperEndpoint().before(after));
+        Optional<ShardingConditionValue> shardingConditionValue = generator.generate(value, column, new LinkedList<>());
+        assertTrue(shardingConditionValue.isPresent());
+        RangeShardingConditionValue<Date> rangeShardingConditionValue = (RangeShardingConditionValue<Date>) shardingConditionValue.get();
+        assertThat(rangeShardingConditionValue.getColumnName(), is(column.getName()));
+        assertThat(rangeShardingConditionValue.getTableName(), is(column.getTableName()));
+        assertTrue(rangeShardingConditionValue.getValueRange().upperEndpoint().before(after));
     }
 }

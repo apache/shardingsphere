@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.mysql;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
@@ -64,17 +64,17 @@ public final class MySQLBinlogDumperTest {
     @Before
     public void setUp() {
         ScalingContext.getInstance().init(new ServerConfiguration());
-        DumperConfiguration dumperConfiguration = mockDumperConfiguration();
-        initTableData(dumperConfiguration);
+        DumperConfiguration dumperConfig = mockDumperConfiguration();
+        initTableData(dumperConfig);
         channel = new MemoryChannel(records -> {
         });
-        mySQLBinlogDumper = new MySQLBinlogDumper(dumperConfiguration, new BinlogPosition("binlog-000001", 4L));
+        mySQLBinlogDumper = new MySQLBinlogDumper(dumperConfig, new BinlogPosition("binlog-000001", 4L));
         mySQLBinlogDumper.setChannel(channel);
     }
     
     private DumperConfiguration mockDumperConfiguration() {
         DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfiguration(new JDBCDataSourceConfiguration(URL, "root", "root"));
+        result.setDataSourceConfiguration(new JDBCScalingDataSourceConfiguration(URL, "root", "root"));
         Map<String, String> tableNameMap = new HashedMap<>(1);
         tableNameMap.put("t_order", "t_order");
         result.setTableNameMap(tableNameMap);

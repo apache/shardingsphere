@@ -23,9 +23,8 @@ import io.opentracing.mock.MockTracer;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import io.opentracing.util.ThreadLocalActiveSpanSource;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
-import org.apache.shardingsphere.tracing.opentracing.constant.ShardingErrorLogTags;
+import org.apache.shardingsphere.tracing.opentracing.constant.ShardingErrorLogTagKeys;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -47,8 +46,7 @@ public abstract class BaseOpenTracingHookTest {
     }
     
     @AfterClass
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static void releaseTracer() {
+    public static void releaseTracer() throws NoSuchFieldException, IllegalAccessException {
         Field field = GlobalTracer.class.getDeclaredField("tracer");
         field.setAccessible(true);
         field.set(GlobalTracer.class, NoopTracerFactory.create());
@@ -71,8 +69,8 @@ public abstract class BaseOpenTracingHookTest {
         List<MockSpan.LogEntry> actualLogEntries = actual.logEntries();
         assertThat(actualLogEntries.size(), is(1));
         assertThat(actualLogEntries.get(0).fields().size(), is(3));
-        assertThat(actualLogEntries.get(0).fields().get(ShardingErrorLogTags.EVENT), is(ShardingErrorLogTags.EVENT_ERROR_TYPE));
-        assertThat(actualLogEntries.get(0).fields().get(ShardingErrorLogTags.ERROR_KIND), is(expectedException.getName()));
-        assertThat(actualLogEntries.get(0).fields().get(ShardingErrorLogTags.MESSAGE), is(expectedErrorMessage));
+        assertThat(actualLogEntries.get(0).fields().get(ShardingErrorLogTagKeys.EVENT), is(ShardingErrorLogTagKeys.EVENT_ERROR_TYPE));
+        assertThat(actualLogEntries.get(0).fields().get(ShardingErrorLogTagKeys.ERROR_KIND), is(expectedException.getName()));
+        assertThat(actualLogEntries.get(0).fields().get(ShardingErrorLogTagKeys.MESSAGE), is(expectedErrorMessage));
     }
 }

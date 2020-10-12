@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.scaling.postgresql;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
@@ -59,7 +58,7 @@ public final class PostgreSQLWalDumperTest {
     
     private PostgreSQLWalDumper postgreSQLWalDumper;
     
-    private JDBCDataSourceConfiguration jdbcDataSourceConfiguration;
+    private JDBCScalingDataSourceConfiguration jdbcDataSourceConfig;
     
     private MemoryChannel channel;
     
@@ -74,18 +73,17 @@ public final class PostgreSQLWalDumperTest {
     }
     
     private DumperConfiguration mockDumperConfiguration() {
-        jdbcDataSourceConfiguration = new JDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root");
+        jdbcDataSourceConfig = new JDBCScalingDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root");
         DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfiguration(jdbcDataSourceConfiguration);
+        result.setDataSourceConfiguration(jdbcDataSourceConfig);
         return result;
     }
     
     @Test
-    @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
-    public void assertStart() {
+    public void assertStart() throws SQLException, NoSuchFieldException, IllegalAccessException {
         try {
             ReflectionUtil.setFieldValueToClass(postgreSQLWalDumper, "logicalReplication", logicalReplication);
-            when(logicalReplication.createPgConnection(jdbcDataSourceConfiguration)).thenReturn(pgConnection);
+            when(logicalReplication.createPgConnection(jdbcDataSourceConfig)).thenReturn(pgConnection);
             when(pgConnection.unwrap(PgConnection.class)).thenReturn(pgConnection);
             when(pgConnection.getTimestampUtils()).thenReturn(null);
             when(logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionManager.SLOT_NAME, position.getLogSequenceNumber())).thenReturn(pgReplicationStream);
@@ -93,7 +91,7 @@ public final class PostgreSQLWalDumperTest {
             when(pgReplicationStream.readPending()).thenReturn(null).thenReturn(data).thenThrow(new SQLException(""));
             when(pgReplicationStream.getLastReceiveLSN()).thenReturn(LogSequenceNumber.valueOf(101L));
             postgreSQLWalDumper.start();
-        } catch (final SyncTaskExecuteException ignore) {
+        } catch (final SyncTaskExecuteException ignored) {
         }
         assertThat(channel.fetchRecords(100, 0).size(), is(1));
     }

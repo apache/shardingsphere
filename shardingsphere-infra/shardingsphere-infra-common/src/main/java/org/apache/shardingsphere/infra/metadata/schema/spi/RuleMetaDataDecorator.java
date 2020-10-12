@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.metadata.schema.spi;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.metadata.database.table.TableMetaData;
 
 /**
  * Rule meta data decorator.

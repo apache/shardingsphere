@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.jdbc.executor;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
 import org.junit.After;
 import org.junit.Test;
@@ -31,8 +30,7 @@ import static org.junit.Assert.assertTrue;
 public final class ExecutorExceptionHandlerTest {
     
     @After
-    @SneakyThrows
-    public void tearDown() {
+    public void tearDown() throws NoSuchFieldException, IllegalAccessException {
         Field field = ExecutorExceptionHandler.class.getDeclaredField("IS_EXCEPTION_THROWN");
         field.setAccessible(true);
         ((ThreadLocal) field.get(ExecutorExceptionHandler.class)).remove();

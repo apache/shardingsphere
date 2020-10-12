@@ -18,18 +18,20 @@
 package org.apache.shardingsphere.infra.metadata.refresh;
 
 import com.google.common.collect.ImmutableMap;
-
-import java.util.Collections;
-
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.datasource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.column.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.index.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.table.TableMetaData;
 import org.junit.Before;
+
+import java.util.Collections;
+
+import static org.mockito.Mockito.mock;
 
 @Getter
 public abstract class AbstractMetaDataRefreshStrategyTest {
@@ -42,10 +44,9 @@ public abstract class AbstractMetaDataRefreshStrategyTest {
     }
     
     private ShardingSphereMetaData buildMetaData() {
-        return new ShardingSphereMetaData(null, new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap
-            .of("t_order", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", 1, "String", false, false, false)), Collections.singletonList(new IndexMetaData("index"))))),
-            ImmutableMap.of("t_order_item", Lists.newArrayList("t_order_item"))),
-                "sharding_db");
+        SchemaMetaData schemaMetaData = new SchemaMetaData(ImmutableMap.of(
+                "t_order", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", 1, "String", false, false, false)), Collections.singletonList(new IndexMetaData("index")))));
+        return new ShardingSphereMetaData(null, new RuleSchemaMetaData(schemaMetaData, ImmutableMap.of("t_order_item", Lists.newArrayList("t_order_item"))), mock(CachedDatabaseMetaData.class));
     }
 }
 

@@ -68,7 +68,7 @@ public final class ConsensusReplicationRuleTest {
         ConsensusReplicationActualTableRuleConfiguration replicaGroup = new ConsensusReplicationActualTableRuleConfiguration(physicsTable, replicaGroupId, replicaPeers, dataSourceName);
         Collection<ConsensusReplicationActualTableRuleConfiguration> replicaGroups = Collections.singleton(replicaGroup);
         ConsensusReplicationLogicTableRuleConfiguration table = new ConsensusReplicationLogicTableRuleConfiguration(logicTableName, replicaGroups);
-        ConsensusReplicationRuleConfiguration configuration = new ConsensusReplicationRuleConfiguration(Collections.singleton(table));
-        return new ConsensusReplicationRule(configuration);
+        ConsensusReplicationRuleConfiguration config = new ConsensusReplicationRuleConfiguration(Collections.singleton(table));
+        return new ConsensusReplicationRule(config);
     }
 }

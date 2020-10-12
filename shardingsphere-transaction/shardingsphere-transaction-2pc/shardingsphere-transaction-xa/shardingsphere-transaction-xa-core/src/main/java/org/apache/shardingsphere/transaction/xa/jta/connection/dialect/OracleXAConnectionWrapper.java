@@ -25,6 +25,7 @@ import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * XA connection wrapper for Oracle.
@@ -33,7 +34,7 @@ import java.sql.Connection;
 public final class OracleXAConnectionWrapper implements XAConnectionWrapper {
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows({SQLException.class, ReflectiveOperationException.class})
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
         Connection physicalConnection = (Connection) connection.unwrap(Class.forName("oracle.jdbc.internal.OracleConnection"));

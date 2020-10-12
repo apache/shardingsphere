@@ -8,6 +8,7 @@ weight = 1
 ```properties
 spring.shardingsphere.datasource.names= # Omit data source configuration
 
+# Standard sharding table configuration
 spring.shardingsphere.rules.sharding.tables.<table-name>.actual-data-nodes= # Describe data source names and actual tables, delimiter as point, multiple data nodes separated with comma, support inline expression. Absent means sharding databases only.
 
 # Databases sharding strategy, use default databases sharding strategy if absent. sharding strategy below can choose only one.
@@ -25,6 +26,12 @@ spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.hint.
 
 # Tables sharding strategy, same as database sharding strategy
 spring.shardingsphere.rules.sharding.tables.<table-name>.table-strategy.xxx= # Omitted
+
+# Auto sharding table configuraiton
+spring.shardingsphere.rules.sharding.auto-tables.<auto-table-name>.actual-data-sources= # data source names
+
+spring.shardingsphere.rules.sharding.auto-tables.<auto-table-name>.sharding-strategy.standard.sharding-column= # Sharding column name
+spring.shardingsphere.rules.sharding.auto-tables.<auto-table-name>.sharding-strategy.standard.sharding-algorithm= # Auto sharding algorithm name
 
 # Key generator strategy configuration
 spring.shardingsphere.rules.sharding.tables.<table-name>.key-generate-strategy.column= # Column name of key generator

@@ -161,7 +161,7 @@ public final class IntegrateTestParameters {
         log.info(summary);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private static long calculateRunnableTestAnnotation() {
         long result = 0;
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();

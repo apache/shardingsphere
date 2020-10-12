@@ -62,7 +62,7 @@ public final class MySQLDataConsistencyChecker extends AbstractDataConsistencyCh
         try (DataSourceWrapper sourceDataSource = getSourceDataSource();
              DataSourceWrapper targetDataSource = getTargetDataSource()) {
             return getColumns(actualTableName).stream().allMatch(each -> sumCrc32(sourceDataSource, logicTableName, each) == sumCrc32(targetDataSource, logicTableName, each));
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new DataCheckFailException(String.format("table %s data check failed.", logicTableName), ex);
         }
     }
@@ -75,7 +75,7 @@ public final class MySQLDataConsistencyChecker extends AbstractDataConsistencyCh
             while (resultSet.next()) {
                 result.add(resultSet.getString(4));
             }
-        } catch (SQLException | IOException ex) {
+        } catch (final SQLException | IOException ex) {
             throw new DataCheckFailException("get columns failed.", ex);
         }
         return result;
@@ -88,13 +88,13 @@ public final class MySQLDataConsistencyChecker extends AbstractDataConsistencyCh
              ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
             return resultSet.getLong(1);
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new DataCheckFailException(String.format("execute %s failed.", sql), ex);
         }
     }
     
     @Override
-    protected MySQLSqlBuilder getSqlBuilder() {
-        return new MySQLSqlBuilder();
+    protected MySQLSQLBuilder getSqlBuilder() {
+        return new MySQLSQLBuilder();
     }
 }

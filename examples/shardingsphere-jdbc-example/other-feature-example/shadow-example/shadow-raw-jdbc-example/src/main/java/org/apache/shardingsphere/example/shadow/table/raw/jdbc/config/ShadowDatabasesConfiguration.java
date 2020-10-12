@@ -32,10 +32,10 @@ public final class ShadowDatabasesConfiguration implements ExampleConfiguration 
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("ds_0"));
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("ds_0"));
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds", DataSourceUtil.createDataSource("demo_ds"));
         dataSourceMap.put("ds_0", DataSourceUtil.createDataSource("shadow_demo_ds"));
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton(shadowRuleConfiguration), null);
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton(shadowRuleConfig), null);
     }
 }

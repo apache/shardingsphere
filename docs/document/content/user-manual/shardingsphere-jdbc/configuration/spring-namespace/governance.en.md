@@ -19,7 +19,7 @@ weight = 6
 ">
     <governance:reg-center id="regCenter" type="ZooKeeper" server-lists="localhost:2181" />
     <governance:config-center id="configCenter" type="ZooKeeper" server-lists="localhost:2182" />
-    <governance:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" reg-center-ref="regCenter" config-center-ref="configCenter" overwrite="true" />
+    <governance:data-source id="shardingDatabasesTablesDataSource" data-source-names="demo_ds_0, demo_ds_1" reg-center-ref="regCenter" config-center-ref="configCenter" rule-refs="shardingRule" overwrite="true" />
 </beans>
 ```
 

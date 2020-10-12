@@ -19,8 +19,6 @@ package org.apache.shardingsphere.driver.jdbc.unsupported;
 
 import java.io.InputStream;
 import java.io.Reader;
-import java.math.BigDecimal;
-import java.net.URL;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
@@ -38,26 +36,6 @@ import java.util.Calendar;
  * Unsupported Database meta data result set.
  */
 public abstract class AbstractUnsupportedDatabaseMetaDataResultSet extends AbstractUnsupportedOperationResultSet {
-    
-    @Override
-    public final BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
-        throw new SQLFeatureNotSupportedException("getBigDecimal");
-    }
-    
-    @Override
-    public final BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
-        throw new SQLFeatureNotSupportedException("getBigDecimal");
-    }
-    
-    @Override
-    public final BigDecimal getBigDecimal(final int columnIndex) throws SQLException {
-        throw new SQLFeatureNotSupportedException("getBigDecimal");
-    }
-    
-    @Override
-    public final BigDecimal getBigDecimal(final String columnLabel) throws SQLException {
-        throw new SQLFeatureNotSupportedException("getBigDecimal");
-    }
     
     @Override
     public final InputStream getAsciiStream(final int columnIndex) throws SQLException {
@@ -172,16 +150,6 @@ public abstract class AbstractUnsupportedDatabaseMetaDataResultSet extends Abstr
     @Override
     public final Timestamp getTimestamp(final String columnLabel, final Calendar cal) throws SQLException {
         throw new SQLFeatureNotSupportedException("getTime(String columnLabel, Calendar cal)");
-    }
-    
-    @Override
-    public final URL getURL(final int columnIndex) throws SQLException {
-        throw new SQLFeatureNotSupportedException("getURL");
-    }
-    
-    @Override
-    public final URL getURL(final String columnLabel) throws SQLException {
-        throw new SQLFeatureNotSupportedException("getURL");
     }
     
     @Override

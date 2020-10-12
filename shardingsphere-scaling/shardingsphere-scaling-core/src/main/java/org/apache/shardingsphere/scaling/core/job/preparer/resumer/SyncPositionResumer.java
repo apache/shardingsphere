@@ -67,8 +67,8 @@ public final class SyncPositionResumer {
         }
     }
     
-    private List<ScalingTask<InventoryPosition>> getAllInventoryDataTasks(
-            final ShardingScalingJob shardingScalingJob, final DataSourceManager dataSourceManager, final ResumeBreakPointManager resumeBreakPointManager) {
+    private List<ScalingTask<InventoryPosition>> getAllInventoryDataTasks(final ShardingScalingJob shardingScalingJob, 
+                                                                          final DataSourceManager dataSourceManager, final ResumeBreakPointManager resumeBreakPointManager) {
         List<ScalingTask<InventoryPosition>> result = new LinkedList<>();
         for (SyncConfiguration each : shardingScalingJob.getSyncConfigurations()) {
             MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(each.getDumperConfiguration().getDataSourceConfiguration()));
@@ -79,10 +79,10 @@ public final class SyncPositionResumer {
         return result;
     }
     
-    private InventoryDumperConfiguration newInventoryDumperConfiguration(
-            final DumperConfiguration dumperConfiguration, final MetaDataManager metaDataManager, final Entry<String, PositionManager<InventoryPosition>> entry) {
+    private InventoryDumperConfiguration newInventoryDumperConfiguration(final DumperConfiguration dumperConfig, 
+                                                                         final MetaDataManager metaDataManager, final Entry<String, PositionManager<InventoryPosition>> entry) {
         String[] splitTable = entry.getKey().split("#");
-        InventoryDumperConfiguration result = new InventoryDumperConfiguration(dumperConfiguration);
+        InventoryDumperConfiguration result = new InventoryDumperConfiguration(dumperConfig);
         result.setTableName(splitTable[0].split("\\.")[1]);
         result.setPositionManager(entry.getValue());
         if (2 == splitTable.length) {
@@ -92,9 +92,8 @@ public final class SyncPositionResumer {
         return result;
     }
     
-    private Map<String, PositionManager<InventoryPosition>> getInventoryPositionMap(
-            final DumperConfiguration dumperConfiguration, final ResumeBreakPointManager resumeBreakPointManager) {
-        Pattern pattern = Pattern.compile(String.format("%s\\.\\w+(#\\d+)?", dumperConfiguration.getDataSourceName()));
+    private Map<String, PositionManager<InventoryPosition>> getInventoryPositionMap(final DumperConfiguration dumperConfig, final ResumeBreakPointManager resumeBreakPointManager) {
+        Pattern pattern = Pattern.compile(String.format("%s\\.\\w+(#\\d+)?", dumperConfig.getDataSourceName()));
         return resumeBreakPointManager.getInventoryPositionManagerMap().entrySet().stream()
                 .filter(entry -> pattern.matcher(entry.getKey()).find())
                 .collect(Collectors.toMap(Entry::getKey, Map.Entry::getValue));

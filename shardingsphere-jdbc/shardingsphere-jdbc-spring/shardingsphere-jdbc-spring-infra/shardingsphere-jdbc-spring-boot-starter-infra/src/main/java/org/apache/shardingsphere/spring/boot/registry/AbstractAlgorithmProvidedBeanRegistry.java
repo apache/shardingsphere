@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -55,10 +55,10 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
         keys.forEach(each -> {
             String type = environment.getProperty(preFix + each + ".type");
             Map<String, Object> propsMap = PropertyUtil.handle(environment, preFix + each + ".props", Map.class);
-            YamlShardingSphereAlgorithmConfiguration configuration = new YamlShardingSphereAlgorithmConfiguration();
-            configuration.setType(type);
-            configuration.getProps().putAll(propsMap);
-            shardingAlgorithmMap.put(each, configuration);
+            YamlShardingSphereAlgorithmConfiguration config = new YamlShardingSphereAlgorithmConfiguration();
+            config.setType(type);
+            config.getProps().putAll(propsMap);
+            shardingAlgorithmMap.put(each, config);
         });
         ShardingSphereServiceLoader.register(algorithmClass);
         shardingAlgorithmMap.forEach((k, v) -> {

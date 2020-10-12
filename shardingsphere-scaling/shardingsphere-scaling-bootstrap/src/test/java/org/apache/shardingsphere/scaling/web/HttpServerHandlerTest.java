@@ -27,9 +27,14 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
+import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,8 +42,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,17 +68,31 @@ public final class HttpServerHandlerTest {
     
     private HttpServerHandler httpServerHandler;
     
-    private ScalingConfiguration scalingConfiguration;
+    private ScalingConfiguration scalingConfig;
+    
+    private SyncConfiguration syncConfiguration;
     
     @Before
     public void setUp() {
         initConfig("/config.json");
         ScalingContext.getInstance().init(new ServerConfiguration());
         httpServerHandler = new HttpServerHandler();
+        initTableData(syncConfiguration.getDumperConfiguration().getDataSourceConfiguration());
+        initTableData(syncConfiguration.getImporterConfiguration().getDataSourceConfiguration());
     }
     
     @Test
     public void assertChannelReadStartSuccess() {
+        startScalingJob();
+        ArgumentCaptor<FullHttpResponse> argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
+        verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
+        FullHttpResponse fullHttpResponse = argumentCaptor.getValue();
+        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("{\"success\":true"));
+    }
+    
+    @Test
+    public void assertShardingSphereJDBCTargetChannelReadStartSuccess() {
+        initConfig("/config_sharding_sphere_jdbc_target.json");
         startScalingJob();
         ArgumentCaptor<FullHttpResponse> argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
@@ -149,7 +172,7 @@ public final class HttpServerHandlerTest {
     }
 
     private void startScalingJob() {
-        ByteBuf byteBuf = Unpooled.copiedBuffer(GSON.toJson(scalingConfiguration), CharsetUtil.UTF_8);
+        ByteBuf byteBuf = Unpooled.copiedBuffer(GSON.toJson(scalingConfig), CharsetUtil.UTF_8);
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/scaling/job/start", byteBuf);
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
     }
@@ -157,6 +180,19 @@ public final class HttpServerHandlerTest {
     private void initConfig(final String configFile) {
         InputStream fileInputStream = HttpServerHandlerTest.class.getResourceAsStream(configFile);
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-        scalingConfiguration = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
+        scalingConfig = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
+        syncConfiguration = SyncConfigurationUtil.toSyncConfigurations(scalingConfig).iterator().next();
+    }
+    
+    @SneakyThrows(SQLException.class)
+    private void initTableData(final ScalingDataSourceConfiguration dataSourceConfig) {
+        DataSource dataSource = new DataSourceManager().getDataSource(dataSourceConfig);
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("DROP TABLE IF EXISTS t1");
+            statement.execute("CREATE TABLE t1 (id INT PRIMARY KEY, user_id VARCHAR(12))");
+            statement.execute("DROP TABLE IF EXISTS t2");
+            statement.execute("CREATE TABLE t2 (id INT PRIMARY KEY, user_id VARCHAR(12))");
+        }
     }
 }

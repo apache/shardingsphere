@@ -35,15 +35,15 @@ import static org.junit.Assert.assertThat;
 public final class PostgreSQLImporterTest {
     
     @Mock
-    private ImporterConfiguration importerConfiguration;
+    private ImporterConfiguration importerConfig;
     
     @Mock
     private DataSourceManager dataSourceManager;
     
     @Test
-    public void assertCreateSqlBuilder() {
-        PostgreSQLImporter postgreSQLImporter = new PostgreSQLImporter(importerConfiguration, dataSourceManager);
-        String insertSQL = postgreSQLImporter.createSqlBuilder().buildInsertSQL(mockDataRecord());
+    public void assertCreateSQLBuilder() {
+        PostgreSQLImporter postgreSQLImporter = new PostgreSQLImporter(importerConfig, dataSourceManager);
+        String insertSQL = postgreSQLImporter.createSQLBuilder().buildInsertSQL(mockDataRecord());
         assertThat(insertSQL, is("INSERT INTO \"t_order\"(\"id\",\"name\") VALUES(?,?) ON CONFLICT (id) DO NOTHING"));
     }
     

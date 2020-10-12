@@ -10,7 +10,7 @@ chapter = true
 
 ## 发布Apache Maven中央仓库
 
-### 设置settings.xml文件
+**1. 设置settings.xml文件**
 
 将以下模板添加到 `~/.m2/settings.xml`中，所有密码需要加密后再填入。
 加密设置可参考[这里](http://maven.apache.org/guides/mini/guide-encryption.html)。
@@ -31,8 +31,7 @@ chapter = true
   </servers>
 </settings>
 ```
-
-### 更新版本说明
+**2. 更新版本说明**
 
 在Github主干上更新如下文件，并提交PR到主干：
  
@@ -40,7 +39,7 @@ chapter = true
 https://github.com/apache/shardingsphere-elasticjob/blob/master/RELEASE-NOTES.md
 ```
 
-### 创建发布分支
+**3. 创建发布分支**
 
 假设从github下载的ElasticJob源代码在`~/elasticjob/`目录；假设即将发布的版本为`${RELEASE.VERSION}`。
 创建`${RELEASE.VERSION}-release`分支，接下来的操作都在该分支进行。
@@ -54,7 +53,7 @@ git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
 ```
 
-### 发布预校验
+**4. 发布预校验**
 
 ```shell
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
@@ -66,7 +65,7 @@ mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 
 -DdryRun=true：演练，即不产生版本号提交，不生成新的tag。
 
-### 准备发布
+**5. 准备发布**
 
 首先清理发布预校验本地信息。
 
@@ -91,7 +90,7 @@ git push origin ${RELEASE.VERSION}-release
 git push origin --tags
 ```
 
-### 部署发布
+**6. 部署发布**
 
 ```shell
 mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -Dusername=${Github用户名}
@@ -104,7 +103,7 @@ mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 
 ## 发布Apache SVN仓库
 
-### 检出shardingsphere发布目录
+**1. 检出shardingsphere发布目录**
 
 如无本地工作目录，则先创建本地工作目录。
 
@@ -120,7 +119,7 @@ svn --username=${APACHE LDAP 用户名} co https://dist.apache.org/repos/dist/de
 cd ~/ss_svn/dev/shardingsphere
 ```
 
-### 添加gpg公钥
+**2. 添加gpg公钥**
 
 仅第一次部署的账号需要添加，只要`KEYS`中包含已经部署过的账户的公钥即可。
 
@@ -128,7 +127,7 @@ cd ~/ss_svn/dev/shardingsphere
 gpg -a --export ${GPG用户名} >> KEYS
 ```
 
-### 将待发布的内容添加至SVN目录
+**3. 将待发布的内容添加至SVN目录**
 
 创建版本号目录。
 
@@ -150,7 +149,7 @@ cp -f ~/elasticjob/elasticjob-distribution/elasticjob-cloud-scheduler-distributi
 cp -f ~/elasticjob/elasticjob-distribution/elasticjob-cloud-scheduler-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/elasticjob-${RELEASE.VERSION}
 ```
 
-### 生成文件签名
+**4. 生成文件签名**
 
 ```shell
 shasum -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip.sha512
@@ -159,7 +158,7 @@ shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-execu
 shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz.sha512
 ```
 
-### 提交Apache SVN
+**5. 提交Apache SVN**
 
 ```shell
 svn add *
@@ -168,7 +167,7 @@ svn --username=${APACHE LDAP 用户名} commit -m "release elasticjob-${RELEASE.
 
 ## 检查发布结果
 
-### 检查sha512哈希
+**检查sha512哈希**
 
 ```shell
 shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip.sha512
@@ -177,7 +176,7 @@ shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-executor-bin
 shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz.sha512
 ```
 
-### 检查gpg签名
+**检查gpg签名**
 
 首先导入发布人公钥。从svn仓库导入KEYS到本地环境。（发布版本的人不需要再导入，帮助做验证的人需要导入，用户名填发版人的即可）
 
@@ -211,9 +210,9 @@ gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-executor-
 gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz.asc apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz
 ```
 
-### 检查发布文件内容
+**检查发布文件内容**
 
-#### 对比源码包与Github上tag的内容差异
+**对比源码包与Github上tag的内容差异**
 
 ```
 curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere-elasticjob/archive/${RELEASE.VERSION}.zip
@@ -222,7 +221,7 @@ unzip apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip
 diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src-release shardingsphere-elasticjob-${RELEASE.VERSION}
 ```
 
-#### 检查源码包的文件内容
+**检查源码包的文件内容**
 
 - 检查源码包是否包含由于包含不必要文件，致使tarball过于庞大
 - 存在`LICENSE`和`NOTICE`文件
@@ -232,10 +231,12 @@ diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src-release sharding
 - 能够正确编译，单元测试可以通过 (./mvnw install)
 - 检查是否有多余文件或文件夹，例如空文件夹等
 
-#### 检查二进制包的文件内容
+**检查二进制包的文件内容**
 
-解压缩`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz`，`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-executor-bin.tar.gz`
-和`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz`
+解压缩
+`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz`，
+`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-executor-bin.tar.gz`和
+`apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz`
 进行如下检查:
 
 - 存在`LICENSE`和`NOTICE`文件
@@ -249,14 +250,14 @@ diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src-release sharding
 
 ## 发起投票
 
-### 投票阶段
+**投票阶段**
 
 1. ShardingSphere社区投票，发起投票邮件到`dev@shardingsphere.apache.org`。PMC需要先按照文档检查版本的正确性，然后再进行投票。
 经过至少72小时并统计到3个`+1 PMC member`票后，即可进入下一阶段的投票。
 
 2. 宣布投票结果,发起投票结果邮件到`dev@shardingsphere.apache.org`。
 
-### 投票模板
+**投票模板**
 
 1. ShardingSphere社区投票模板
 
@@ -349,7 +350,7 @@ I will process to publish the release and send ANNOUNCE.
 
 ## 完成发布
 
-### 将源码、二进制包以及KEYS从svn的dev目录移动到release目录
+**1. 将源码、二进制包以及KEYS从svn的dev目录移动到release目录**
 
 ```shell
 svn mv https://dist.apache.org/repos/dist/dev/shardingsphere/elasticjob-${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer packages for elasticjob-${RELEASE.VERSION}"
@@ -357,9 +358,9 @@ svn delete https://dist.apache.org/repos/dist/release/shardingsphere/KEYS -m "de
 svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer KEYS for elasticjob-${RELEASE.VERSION}"
 ```
 
-### 在Apache Staging仓库找到ShardingSphere并点击`Release`
+**2. 在Apache Staging仓库找到ShardingSphere并点击`Release`**
 
-### 合并Github的release分支到`master`, 合并完成后删除release分支
+**3. 合并Github的release分支到`master`, 合并完成后删除release分支**
 
 ```shell
 git checkout master
@@ -370,7 +371,7 @@ git push --delete origin ${RELEASE.VERSION}-release
 git branch -d ${RELEASE.VERSION}-release
 ```
 
-### 更新下载页面
+**4. 更新下载页面**
 
 https://shardingsphere.apache.org/elasticjob/current/en/downloads/
 
@@ -380,13 +381,13 @@ GPG签名文件和哈希校验文件的下载连接应该使用这个前缀： `
 
 `最新版本`中保留一个最新的版本。
 
-### 发布Docker
+## 发布Docker
 
-#### 准备工作
+**1. 准备工作**
 
 本地安装Docker，并将Docker服务启动起来
 
-#### 编译Docker镜像
+**2. 编译Docker镜像**
 
 ```shell
 git checkout ${RELEASE.VERSION}
@@ -394,7 +395,7 @@ cd ~/elasticjob/elasticjob-distribution/elasticjob-cloud-scheduler-distribution/
 mvn clean package -Prelease,docker
 ```
 
-#### 给本地Docker镜像打标记
+**3. 给本地Docker镜像打标记**
 
 通过`docker images`查看到IMAGE ID，例如为：e9ea51023687
 
@@ -403,24 +404,24 @@ docker tag e9ea51023687 apache/shardingsphere-elasticjob-cloud-scheduler:latest
 docker tag e9ea51023687 apache/shardingsphere-elasticjob-cloud-scheduler:${RELEASE.VERSION}
 ```
 
-#### 发布Docker镜像
+**4. 发布Docker镜像**
 
 ```shell
 docker push apache/shardingsphere-elasticjob-cloud-scheduler:latest
 docker push apache/shardingsphere-elasticjob-cloud-scheduler:${RELEASE_VERSION}
 ```
 
-#### 确认发布成功
+**5. 确认发布成功**
 
 登录[Docker Hub](https://hub.docker.com/r/apache/shardingsphere-elasticjob-cloud-scheduler/)查看是否有发布的镜像
 
-### GitHub版本发布
+## GitHub版本发布
 
 在[GitHub Releases](https://github.com/apache/shardingsphere-elasticjob/releases)页面的`${RELEASE_VERSION}`版本上点击`Edit`
 
 编辑版本号及版本说明，并点击`Publish release`
 
-### 发送邮件到`dev@shardingsphere.apache.org`和`announce@apache.org`通知完成版本发布
+## 发送邮件到`dev@shardingsphere.apache.org`和`announce@apache.org`通知完成版本发布
 
 通知邮件模板：
 

@@ -17,21 +17,20 @@
 
 package org.apache.shardingsphere.proxy.backend.response.query;
 
-import org.apache.shardingsphere.infra.context.schema.SchemaContext;
-import org.apache.shardingsphere.infra.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetaDatas;
+import org.apache.shardingsphere.infra.metadata.datasource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ExpressionProjection;
+import org.apache.shardingsphere.infra.metadata.database.column.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.index.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.table.TableMetaData;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ExpressionProjection;
 import org.junit.Test;
 
 import java.sql.ResultSetMetaData;
@@ -51,84 +50,84 @@ public final class QueryHeaderBuilderTest {
     
     @Test
     public void assertQueryHeaderSchema() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchema(), 1);
         assertThat(header.getSchema(), is("sharding_schema"));
     }
     
     @Test
     public void assertQueryHeaderTable() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchema(), 1);
         assertThat(header.getTable(), is("t_logic_order"));
     }
     
     @Test
     public void assertQueryHeaderColumnLabel() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchema(), 1);
         assertThat(header.getColumnLabel(), is("order_id"));
     }
     
     @Test
     public void assertQueryHeaderColumnNameWithoutProjectionsContext() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchema(), 1);
         assertThat(header.getColumnName(), is("order_id"));
     }
     
     @Test
     public void assertQueryHeaderColumnNameFromProjectionsContext() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createProjectionsContext(), createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createProjectionsContext(), createResultSetMetaData(), createSchema(), 1);
         assertThat(header.getColumnName(), is("order_id"));
     }
     
     @Test
     public void assertQueryHeaderColumnNameFromMetaData() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createProjectionsContext(), createResultSetMetaData(), getSchemaContext(), 2);
+        QueryHeader header = QueryHeaderBuilder.build(createProjectionsContext(), createResultSetMetaData(), createSchema(), 2);
         assertThat(header.getColumnName(), is("expr"));
     }
     
     @Test
     public void assertQueryHeaderColumnLength() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchema(), 1);
         assertThat(header.getColumnLength(), is(1));
     }
     
     @Test
     public void assertQueryHeaderColumnType() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchema(), 1);
         assertThat(header.getColumnType(), is(Types.INTEGER));
     }
     
     @Test
     public void assertQueryHeaderDecimals() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchema(), 1);
         assertThat(header.getDecimals(), is(1));
     }
     
     @Test
     public void assertQueryHeaderSigned() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchema(), 1);
         assertTrue(header.isSigned());
     }
     
     @Test
     public void assertQueryHeaderPrimaryKey() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchema(), 1);
         assertTrue(header.isPrimaryKey());
     }
     
     @Test
     public void assertQueryHeaderNotNull() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchema(), 1);
         assertTrue(header.isNotNull());
     }
     
     @Test
     public void assertQueryHeaderAutoIncrement() throws SQLException {
-        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), createSchema(), 1);
         assertTrue(header.isAutoIncrement());
     }
     
-    private SchemaContext getSchemaContext() {
-        SchemaContext result = mock(SchemaContext.class);
+    private ShardingSphereSchema createSchema() {
+        ShardingSphereSchema result = mock(ShardingSphereSchema.class);
         ColumnMetaData columnMetaData = new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false);
         SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
         when(schemaMetaData.get("t_logic_order")).thenReturn(new TableMetaData(Collections.singletonList(columnMetaData), Collections.singletonList(new IndexMetaData("order_id"))));
@@ -136,15 +135,13 @@ public final class QueryHeaderBuilderTest {
         RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
         when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
         when(metaData.getRuleSchemaMetaData()).thenReturn(ruleSchemaMetaData);
-        DataSourceMetaDatas dataSourceMetaDatas = mock(DataSourceMetaDatas.class);
-        when(dataSourceMetaDatas.getDataSourceMetaData("ds_0")).thenReturn(mock(DataSourceMetaData.class));
-        when(metaData.getDataSourceMetaDatas()).thenReturn(dataSourceMetaDatas);
-        ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
-        when(result.getSchema()).thenReturn(shardingSphereSchema);
-        when(shardingSphereSchema.getMetaData()).thenReturn(metaData);
+        DataSourcesMetaData dataSourcesMetaData = mock(DataSourcesMetaData.class);
+        when(dataSourcesMetaData.getDataSourceMetaData("ds_0")).thenReturn(mock(DataSourceMetaData.class));
+        when(metaData.getDataSourcesMetaData()).thenReturn(dataSourcesMetaData);
+        when(result.getMetaData()).thenReturn(metaData);
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));
-        when(shardingSphereSchema.getRules()).thenReturn(Collections.singletonList(shardingRule));
+        when(result.getRules()).thenReturn(Collections.singletonList(shardingRule));
         when(result.getName()).thenReturn("sharding_schema");
         return result;
     }

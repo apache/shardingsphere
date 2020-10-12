@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.governance.core.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
 /**
  * IP utilities.
@@ -37,7 +38,7 @@ public final class IpUtils {
      * 
      * <p>
      * It maybe get IP address of router.
-     * Return unknown IP if exception occur. 
+     * Return unknown IP if exception occur.
      * </p>
      * 
      * @return IP address of localhost 

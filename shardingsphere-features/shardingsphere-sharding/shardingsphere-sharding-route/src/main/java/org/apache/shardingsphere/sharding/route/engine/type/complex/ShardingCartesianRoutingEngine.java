@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sharding.route.engine.type.complex;
 
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,23 +43,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine {
     
-    private final Collection<RouteResult> routeResults;
+    private final Collection<RouteContext> routeContexts;
     
     @Override
-    public RouteResult route(final ShardingRule shardingRule) {
-        RouteResult result = new RouteResult();
+    public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
         for (Entry<String, Set<String>> entry : getDataSourceLogicTablesMap().entrySet()) {
             List<Set<String>> actualTableGroups = getActualTableGroups(entry.getKey(), entry.getValue());
             List<Set<RouteMapper>> routingTableGroups = toRoutingTableGroups(entry.getKey(), actualTableGroups);
-            result.getRouteUnits().addAll(getRouteUnits(entry.getKey(), Sets.cartesianProduct(routingTableGroups)));
+            routeContext.getRouteUnits().addAll(getRouteUnits(entry.getKey(), Sets.cartesianProduct(routingTableGroups)));
         }
-        return result;
     }
     
     private Map<String, Set<String>> getDataSourceLogicTablesMap() {
         Collection<String> intersectionDataSources = getIntersectionDataSources();
-        Map<String, Set<String>> result = new HashMap<>(routeResults.size());
-        for (RouteResult each : routeResults) {
+        Map<String, Set<String>> result = new HashMap<>(routeContexts.size());
+        for (RouteContext each : routeContexts) {
             for (Entry<String, Set<String>> entry : each.getDataSourceLogicTablesMap(intersectionDataSources).entrySet()) {
                 if (result.containsKey(entry.getKey())) {
                     result.get(entry.getKey()).addAll(entry.getValue());
@@ -73,7 +71,7 @@ public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine
     
     private Collection<String> getIntersectionDataSources() {
         Collection<String> result = new HashSet<>();
-        for (RouteResult each : routeResults) {
+        for (RouteContext each : routeContexts) {
             if (result.isEmpty()) {
                 result.addAll(each.getActualDataSourceNames());
             }
@@ -84,7 +82,7 @@ public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine
     
     private List<Set<String>> getActualTableGroups(final String dataSourceName, final Set<String> logicTables) {
         List<Set<String>> result = new ArrayList<>(logicTables.size());
-        for (RouteResult each : routeResults) {
+        for (RouteContext each : routeContexts) {
             result.addAll(each.getActualTableNameGroups(dataSourceName, logicTables));
         }
         return result;
@@ -99,7 +97,7 @@ public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine
     }
     
     private RouteMapper findRoutingTable(final String dataSource, final String actualTable) {
-        for (RouteResult each : routeResults) {
+        for (RouteContext each : routeContexts) {
             Optional<RouteMapper> result = each.findTableMapper(dataSource, actualTable);
             if (result.isPresent()) {
                 return result.get();

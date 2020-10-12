@@ -24,6 +24,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -66,6 +69,16 @@ public final class DatabaseMetaDataResultSetTest {
     
     private static final Date DATE = new Date(System.currentTimeMillis());
     
+    private static final String URL_COLUMN_LABEL = "URL";
+    
+    private static URL url;
+    
+    private static final String BIG_DECIMAL_COLUMN_LABEL = "BIGDECIMAL";
+    
+    private static final BigDecimal BIGDECIMAL = BigDecimal.valueOf(12.22);
+    
+    private static final BigDecimal BIGDECIMAL_SCALA_ONE = BigDecimal.valueOf(12.2);
+    
     private static final String INDEX_NAME_COLUMN_LABEL = "INDEX_NAME";
     
     private static final String ACTUAL_INDEX_NAME = "idx_index_test_table_0";
@@ -78,19 +91,22 @@ public final class DatabaseMetaDataResultSetTest {
     private DatabaseMetaDataResultSet databaseMetaDataResultSet;
     
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() throws SQLException, MalformedURLException {
+        url = new URL("http://apache.org/");
         mockResultSetMetaData();
         databaseMetaDataResultSet = new DatabaseMetaDataResultSet(mockResultSet(), Collections.singletonList(mockShardingRule()));
     }
     
     private void mockResultSetMetaData() throws SQLException {
-        when(resultSetMetaData.getColumnCount()).thenReturn(6);
+        when(resultSetMetaData.getColumnCount()).thenReturn(8);
         when(resultSetMetaData.getColumnLabel(1)).thenReturn(TABLE_NAME_COLUMN_LABEL);
         when(resultSetMetaData.getColumnLabel(2)).thenReturn(NON_TABLE_NAME_COLUMN_LABEL);
         when(resultSetMetaData.getColumnLabel(3)).thenReturn(NUMBER_COLUMN_LABEL);
         when(resultSetMetaData.getColumnLabel(4)).thenReturn(BYTES_COLUMN_LABEL);
         when(resultSetMetaData.getColumnLabel(5)).thenReturn(DATE_COLUMN_LABEL);
         when(resultSetMetaData.getColumnLabel(6)).thenReturn(INDEX_NAME_COLUMN_LABEL);
+        when(resultSetMetaData.getColumnLabel(7)).thenReturn(URL_COLUMN_LABEL);
+        when(resultSetMetaData.getColumnLabel(8)).thenReturn(BIG_DECIMAL_COLUMN_LABEL);
     }
     
     private ResultSet mockResultSet() throws SQLException {
@@ -102,6 +118,8 @@ public final class DatabaseMetaDataResultSetTest {
         when(result.getObject(4)).thenReturn(BYTES);
         when(result.getObject(5)).thenReturn(DATE);
         when(result.getString(6)).thenReturn(ACTUAL_INDEX_NAME);
+        when(result.getObject(7)).thenReturn(url);
+        when(result.getObject(8)).thenReturn(BIGDECIMAL);
         when(result.getType()).thenReturn(ResultSet.TYPE_FORWARD_ONLY);
         when(result.getConcurrency()).thenReturn(ResultSet.CONCUR_READ_ONLY);
         when(result.next()).thenReturn(true, true, false);
@@ -303,6 +321,42 @@ public final class DatabaseMetaDataResultSetTest {
     }
     
     @Test
+    public void assertGetURLWithIndex() throws SQLException {
+        databaseMetaDataResultSet.next();
+        assertThat(databaseMetaDataResultSet.getURL(7), is(url));
+    }
+    
+    @Test
+    public void assertGetURLWithLabel() throws SQLException {
+        databaseMetaDataResultSet.next();
+        assertThat(databaseMetaDataResultSet.getURL(URL_COLUMN_LABEL), is(url));
+    }
+    
+    @Test
+    public void assertGetBigDecimalWithIndex() throws SQLException {
+        databaseMetaDataResultSet.next();
+        assertThat(databaseMetaDataResultSet.getBigDecimal(8), is(BIGDECIMAL));
+    }
+    
+    @Test
+    public void assertGetBigDecimalWithLabel() throws SQLException {
+        databaseMetaDataResultSet.next();
+        assertThat(databaseMetaDataResultSet.getBigDecimal(BIG_DECIMAL_COLUMN_LABEL), is(BIGDECIMAL));
+    }
+    
+    @Test
+    public void assertGetBigDecimalWithIndexAndScale() throws SQLException {
+        databaseMetaDataResultSet.next();
+        assertThat(databaseMetaDataResultSet.getBigDecimal(8, 1), is(BIGDECIMAL_SCALA_ONE));
+    }
+    
+    @Test
+    public void assertGetBigDecimalWithLabelAndScale() throws SQLException {
+        databaseMetaDataResultSet.next();
+        assertThat(databaseMetaDataResultSet.getBigDecimal(BIG_DECIMAL_COLUMN_LABEL, 1), is(BIGDECIMAL_SCALA_ONE));
+    }
+    
+    @Test
     public void assertGetMetaData() throws SQLException {
         assertThat(databaseMetaDataResultSet.getMetaData(), is(resultSetMetaData));
     }
@@ -355,7 +409,7 @@ public final class DatabaseMetaDataResultSetTest {
     @Test(expected = SQLException.class)
     public void assertGetObjectOutOfIndexRange() throws SQLException {
         databaseMetaDataResultSet.next();
-        databaseMetaDataResultSet.getObject(7);
+        databaseMetaDataResultSet.getObject(9);
     }
     
     @Test(expected = SQLException.class)

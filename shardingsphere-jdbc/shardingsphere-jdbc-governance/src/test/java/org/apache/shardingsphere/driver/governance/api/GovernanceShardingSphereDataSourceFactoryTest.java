@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.governance.api;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
@@ -25,10 +24,10 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,30 +41,27 @@ public final class GovernanceShardingSphereDataSourceFactoryTest {
     
     private static final String TABLE_TYPE = "TABLE";
     
-    @SneakyThrows
     @Test
-    public void assertCreateDataSourceWhenRuleConfigurationsNotEmpty() {
+    public void assertCreateDataSourceWhenRuleConfigurationsNotEmpty() throws SQLException {
         DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singletonList(mock(RuleConfiguration.class)),
                 new Properties(), createGovernanceConfiguration());
         assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
     }
     
-    @SneakyThrows
     @Test
-    public void assertCreateDataSourceWithGivenDataSource() {
+    public void assertCreateDataSourceWithGivenDataSource() throws SQLException {
         DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(createDataSource(), Collections.singletonList(mock(RuleConfiguration.class)),
                 new Properties(), createGovernanceConfiguration());
         assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
     }
     
-    private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>();
+    private Map<String, DataSource> createDataSourceMap() throws SQLException {
+        Map<String, DataSource> result = new HashMap<>(1, 1);
         result.put("dataSourceMapKey", createDataSource());
         return result;
     }
     
-    @SneakyThrows
-    private DataSource createDataSource() {
+    private DataSource createDataSource() throws SQLException {
         DataSource result = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
@@ -79,9 +75,9 @@ public final class GovernanceShardingSphereDataSourceFactoryTest {
     
     private GovernanceConfiguration createGovernanceConfiguration() {
         GovernanceConfiguration result = mock(GovernanceConfiguration.class);
-        GovernanceCenterConfiguration governanceCenterConfiguration = mock(GovernanceCenterConfiguration.class);
-        when(result.getRegistryCenterConfiguration()).thenReturn(governanceCenterConfiguration);
-        when(governanceCenterConfiguration.getType()).thenReturn("REG_TEST");
+        GovernanceCenterConfiguration governanceCenterConfig = mock(GovernanceCenterConfiguration.class);
+        when(result.getRegistryCenterConfiguration()).thenReturn(governanceCenterConfig);
+        when(governanceCenterConfig.getType()).thenReturn("REG_TEST");
         return result;
     }
 }

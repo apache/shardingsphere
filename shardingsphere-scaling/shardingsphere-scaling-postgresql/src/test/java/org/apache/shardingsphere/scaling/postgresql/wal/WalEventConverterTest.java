@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
@@ -51,18 +51,18 @@ public final class WalEventConverterTest {
     
     @Before
     public void setUp() {
-        DumperConfiguration dumperConfiguration = mockDumperConfiguration();
-        walEventConverter = new WalEventConverter(dumperConfiguration);
-        initTableData(dumperConfiguration);
+        DumperConfiguration dumperConfig = mockDumperConfiguration();
+        walEventConverter = new WalEventConverter(dumperConfig);
+        initTableData(dumperConfig);
     }
     
     private DumperConfiguration mockDumperConfiguration() {
-        DumperConfiguration reslut = new DumperConfiguration();
-        reslut.setDataSourceConfiguration(new JDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
+        DumperConfiguration result = new DumperConfiguration();
+        result.setDataSourceConfiguration(new JDBCScalingDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
         Map<String, String> tableNameMap = Maps.newHashMap();
         tableNameMap.put("t_order", "t_order");
-        reslut.setTableNameMap(tableNameMap);
-        return reslut;
+        result.setTableNameMap(tableNameMap);
+        return result;
     }
     
     @SneakyThrows(SQLException.class)

@@ -20,13 +20,14 @@ package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.DeleteStatementHandler;
+
+import java.util.List;
 
 /**
  * Sharding delete statement validator.
@@ -34,16 +35,15 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.DeleteStatem
 public final class ShardingDeleteStatementValidator implements ShardingStatementValidator<DeleteStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final RouteContext routeContext, final ShardingSphereMetaData metaData) {
-        SQLStatementContext<?> sqlStatementContext = routeContext.getSqlStatementContext();
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DeleteStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereMetaData metaData) {
         if (1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
             throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
         }
     }
     
     @Override
-    public void postValidate(final DeleteStatement sqlStatement, final RouteResult routeResult) {
-        if (DeleteStatementHandler.getLimitSegment(sqlStatement).isPresent() && routeResult.getRouteUnits().size() > 1) {
+    public void postValidate(final DeleteStatement sqlStatement, final RouteContext routeContext) {
+        if (DeleteStatementHandler.getLimitSegment(sqlStatement).isPresent() && routeContext.getRouteUnits().size() > 1) {
             throw new ShardingSphereException("DELETE ... LIMIT can not support sharding route to multiple data nodes.");
         }
     }

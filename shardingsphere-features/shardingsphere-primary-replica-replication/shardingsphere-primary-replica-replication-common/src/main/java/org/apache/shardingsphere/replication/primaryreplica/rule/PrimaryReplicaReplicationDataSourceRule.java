@@ -57,10 +57,10 @@ public final class PrimaryReplicaReplicationDataSourceRule {
         this.loadBalancer = loadBalancer;
     }
     
-    private void checkConfiguration(final PrimaryReplicaReplicationDataSourceRuleConfiguration configuration) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(configuration.getName()), "Name is required.");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(configuration.getPrimaryDataSourceName()), "Primary data source name is required.");
-        Preconditions.checkArgument(null != configuration.getReplicaDataSourceNames() && !configuration.getReplicaDataSourceNames().isEmpty(), "Replica data source names are required.");
+    private void checkConfiguration(final PrimaryReplicaReplicationDataSourceRuleConfiguration config) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getPrimaryDataSourceName()), "Primary data source name is required.");
+        Preconditions.checkArgument(null != config.getReplicaDataSourceNames() && !config.getReplicaDataSourceNames().isEmpty(), "Replica data source names are required.");
     }
     
     /**

@@ -95,23 +95,23 @@ public final class DataSourceConfigurationTest {
     @Test
     public void assertEquals() {
         DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
-        DataSourceConfiguration targetDataSourceConfiguration = new DataSourceConfiguration(HikariDataSource.class.getName());
+        DataSourceConfiguration targetDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
         assertThat(originalDataSourceConfig, is(originalDataSourceConfig));
-        assertThat(originalDataSourceConfig, is(targetDataSourceConfiguration));
+        assertThat(originalDataSourceConfig, is(targetDataSourceConfig));
         originalDataSourceConfig.getProps().put("username", "root");
-        targetDataSourceConfiguration.getProps().put("username", "root");
-        assertThat(originalDataSourceConfig, is(targetDataSourceConfiguration));
-        targetDataSourceConfiguration.getProps().put("password", "root");
-        assertThat(originalDataSourceConfig, is(targetDataSourceConfiguration));
+        targetDataSourceConfig.getProps().put("username", "root");
+        assertThat(originalDataSourceConfig, is(targetDataSourceConfig));
+        targetDataSourceConfig.getProps().put("password", "root");
+        assertThat(originalDataSourceConfig, is(targetDataSourceConfig));
     }
     
     @Test
     public void assertNotEquals() {
         DataSourceConfiguration originalDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
-        DataSourceConfiguration targetDataSourceConfiguration = new DataSourceConfiguration(HikariDataSource.class.getName());
+        DataSourceConfiguration targetDataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
         originalDataSourceConfig.getProps().put("username", "root");
-        targetDataSourceConfiguration.getProps().put("username", "root0");
-        assertThat(originalDataSourceConfig, not(targetDataSourceConfiguration));
+        targetDataSourceConfig.getProps().put("username", "root0");
+        assertThat(originalDataSourceConfig, not(targetDataSourceConfig));
     }
     
     @Test

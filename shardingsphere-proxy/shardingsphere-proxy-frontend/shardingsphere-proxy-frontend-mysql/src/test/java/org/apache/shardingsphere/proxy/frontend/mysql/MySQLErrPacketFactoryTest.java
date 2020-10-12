@@ -29,6 +29,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardi
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
+import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.junit.Test;
@@ -149,6 +150,15 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getErrorCode(), is(1050));
         assertThat(actual.getSqlState(), is("42S01"));
         assertThat(actual.getErrorMessage(), is("Table 'table_name' already exists"));
+    }
+    
+    @Test
+    public void assertNewInstanceWithNoSuchTableException() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new NoSuchTableException("ds_0", "table_name"));
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(1146));
+        assertThat(actual.getSqlState(), is("42S02"));
+        assertThat(actual.getErrorMessage(), is("Table 'ds_0.table_name' doesn't exist"));
     }
     
     @Test

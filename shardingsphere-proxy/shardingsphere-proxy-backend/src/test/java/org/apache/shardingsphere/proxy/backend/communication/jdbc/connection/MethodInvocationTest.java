@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.fixture.MethodInvocationFixture;
 import org.junit.Test;
 
@@ -26,9 +25,8 @@ import static org.junit.Assert.assertThat;
 
 public final class MethodInvocationTest {
     
-    @SneakyThrows
     @Test
-    public void assertInvoke() {
+    public void assertInvoke() throws NoSuchMethodException {
         MethodInvocationFixture methodInvocationFixture = new MethodInvocationFixture();
         MethodInvocation methodInvocation = new MethodInvocation(MethodInvocationFixture.class.getMethod("setId", Integer.class), new Object[]{1});
         methodInvocation.invoke(methodInvocationFixture);

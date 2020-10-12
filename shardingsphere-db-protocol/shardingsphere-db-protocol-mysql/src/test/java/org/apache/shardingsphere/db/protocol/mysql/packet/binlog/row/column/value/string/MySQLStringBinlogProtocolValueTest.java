@@ -85,6 +85,16 @@ public final class MySQLStringBinlogProtocolValueTest {
         assertThat(new MySQLStringBinlogProtocolValue().read(columnDef, payload), is(expected));
     }
     
+    @Test
+    public void assertReadLongStringValue() {
+        String expected = "test_value";
+        columnDef.setColumnMeta((MySQLColumnType.MYSQL_TYPE_STRING.getValue() ^ ((256 & 0x300) >> 4)) << 8);
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readUnsignedShortLE()).thenReturn(expected.length());
+        when(payload.readStringFix(expected.length())).thenReturn(expected);
+        assertThat(new MySQLStringBinlogProtocolValue().read(columnDef, payload), is(expected));
+    }
+    
     @Test(expected = UnsupportedOperationException.class)
     public void assertReadValueWithUnknownType() {
         columnDef.setColumnMeta(MySQLColumnType.MYSQL_TYPE_VAR_STRING.getValue() << 8);

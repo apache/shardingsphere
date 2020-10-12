@@ -200,4 +200,8 @@
         VALUES (1)
         UNION ALL
         SELECT n+1 FROM nums_1_100 WHERE n = 100" db-types="PostgreSQL" />
+    <sql-case id="create_table_with_on_update_current_timestamp" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, create_time DATETIME DEFAULT CURRENT_TIMESTAMP, modify_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)" db-types="MySQL" />
+    <sql-case id="create_table_with_on_update_current_timestamp_and_fsp" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, create_time DATETIME DEFAULT CURRENT_TIMESTAMP, modify_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6))" db-types="MySQL" />
+    <sql-case id="create_table_with_on_other_vendor_data_type" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, num MIDDLEINT(10))" db-types="MySQL" />
+    <sql-case id="create_table_with_enum_and_character_set" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, status ENUM('0', '1') CHARACTER SET UTF8)" db-types="MySQL" />
 </sql-cases>

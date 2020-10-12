@@ -25,8 +25,8 @@
         <artifactId>shardingsphere-integration-test</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    
     <artifactId>shardingsphere-test-fixture</artifactId>
+    <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>

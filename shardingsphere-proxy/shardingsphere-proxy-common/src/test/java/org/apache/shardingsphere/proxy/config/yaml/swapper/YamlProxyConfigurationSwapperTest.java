@@ -134,8 +134,8 @@ public final class YamlProxyConfigurationSwapperTest {
     
     private void prepareRules(final YamlProxyRuleConfiguration yamlProxyRuleConfig) {
         Collection<YamlRuleConfiguration> rules = new LinkedList<>();
-        YamlRuleConfiguration testRuleConfiguration = new YamlPrimaryReplicaReplicationRuleConfiguration();
-        rules.add(testRuleConfiguration);
+        YamlRuleConfiguration testRuleConfig = new YamlPrimaryReplicaReplicationRuleConfiguration();
+        rules.add(testRuleConfig);
         when(yamlProxyRuleConfig.getRules()).thenReturn(rules);
     }
     
@@ -221,10 +221,10 @@ public final class YamlProxyConfigurationSwapperTest {
     
     private void prepareAuthentication(final YamlProxyServerConfiguration yamlProxyServerConfig) {
         Map<String, YamlProxyUserConfiguration> yamlProxyUserConfigurationMap = new HashMap<>(1, 1);
-        YamlProxyUserConfiguration yamlProxyUserConfiguration = mock(YamlProxyUserConfiguration.class);
-        when(yamlProxyUserConfiguration.getPassword()).thenReturn("pass");
-        when(yamlProxyUserConfiguration.getAuthorizedSchemas()).thenReturn("db1");
-        yamlProxyUserConfigurationMap.put("user1", yamlProxyUserConfiguration);
+        YamlProxyUserConfiguration yamlProxyUserConfig = mock(YamlProxyUserConfiguration.class);
+        when(yamlProxyUserConfig.getPassword()).thenReturn("pass");
+        when(yamlProxyUserConfig.getAuthorizedSchemas()).thenReturn("db1");
+        yamlProxyUserConfigurationMap.put("user1", yamlProxyUserConfig);
         YamlAuthenticationConfiguration yamlAuthenticationConfig = mock(YamlAuthenticationConfiguration.class);
         when(yamlAuthenticationConfig.getUsers()).thenReturn(yamlProxyUserConfigurationMap);
         when(yamlProxyServerConfig.getAuthentication()).thenReturn(yamlAuthenticationConfig);

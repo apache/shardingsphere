@@ -1401,4 +1401,50 @@
             <column name="order_id" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_on_update_current_timestamp">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" primary-key="true" start-index="22" stop-index="45">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="DATETIME" start-index="48" stop-index="93">
+            <column name="create_time" />
+        </column-definition>
+        <column-definition type="DATETIME" start-index="96" stop-index="178">
+            <column name="modify_time" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_on_update_current_timestamp_and_fsp">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" primary-key="true" start-index="22" stop-index="45">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="DATETIME" start-index="48" stop-index="93">
+            <column name="create_time" />
+        </column-definition>
+        <column-definition type="DATETIME" start-index="96" stop-index="187">
+            <column name="modify_time" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_on_other_vendor_data_type">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" primary-key="true" start-index="22" stop-index="45">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="MIDDLEINT" start-index="48" stop-index="64">
+            <column name="num" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_enum_and_character_set">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" primary-key="true" start-index="22" stop-index="45">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="ENUM" start-index="48" stop-index="87">
+            <column name="status" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>

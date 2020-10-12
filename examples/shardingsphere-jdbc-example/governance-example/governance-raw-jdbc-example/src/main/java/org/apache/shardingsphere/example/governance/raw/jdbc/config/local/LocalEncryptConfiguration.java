@@ -34,16 +34,16 @@ import java.util.Properties;
 
 public final class LocalEncryptConfiguration implements ExampleConfiguration {
     
-    private final GovernanceConfiguration governanceConfiguration;
+    private final GovernanceConfiguration governanceConfig;
     
-    public LocalEncryptConfiguration(final GovernanceConfiguration governanceConfiguration) {
-        this.governanceConfiguration = governanceConfiguration;
+    public LocalEncryptConfiguration(final GovernanceConfiguration governanceConfig) {
+        this.governanceConfig = governanceConfig;
     }
     
     @Override
     public DataSource getDataSource() throws SQLException {
         return GovernanceShardingSphereDataSourceFactory.createDataSource(
-                DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(getEncryptRuleConfiguration()), new Properties(), governanceConfiguration);
+                DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(getEncryptRuleConfiguration()), new Properties(), governanceConfig);
     }
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {
@@ -51,8 +51,8 @@ public final class LocalEncryptConfiguration implements ExampleConfiguration {
     }
     
     private EncryptTableRuleConfiguration createEncryptTableRuleConfiguration() {
-        EncryptColumnRuleConfiguration encryptColumnRuleConfiguration = new EncryptColumnRuleConfiguration("status", "status", "", "", "status_encryptor");
-        return new EncryptTableRuleConfiguration("t_order", Collections.singleton(encryptColumnRuleConfiguration));
+        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("status", "status", "", "", "status_encryptor");
+        return new EncryptTableRuleConfiguration("t_order", Collections.singleton(encryptColumnRuleConfig));
     }
     
     private ShardingSphereAlgorithmConfiguration createEncryptAlgorithmConfiguration() {

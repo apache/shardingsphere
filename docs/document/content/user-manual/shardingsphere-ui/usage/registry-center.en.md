@@ -1,17 +1,15 @@
 +++
 title = "Registry Center"
-weight = 3
+weight = 2
 +++
 
 ## Registry Center Configuration
 
 The registry center needs to be added and activated first. Multiple registries can be added, but only one is active, and the following runtime status operate on the currently active registry.
-Zookeeper support is provided now, and the support for other registries will be added later.
+Zookeeper and etcd support is provided now, and the support for other registries will be added later.
 
-## Runtime Status
++ Click the + button to add a new registry center.
 
-+ After added and activated a registry center, all running instances of the current registry center will be obtained.
++ Use additional config center to manage configuration with other config centers.
 
-+ Users can disable or enable the instance by operate button.
-
-+ Users can disable or enable the access to replica database.
++ Registry center can be edited, activated, and deleted.

@@ -30,8 +30,8 @@ import java.util.Collection;
 public final class PrimaryReplicaReplicationRuleBuilder implements ShardingSphereRuleBuilder<PrimaryReplicaReplicationRule, PrimaryReplicaReplicationRuleConfiguration> {
     
     @Override
-    public PrimaryReplicaReplicationRule build(final PrimaryReplicaReplicationRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
-        return new PrimaryReplicaReplicationRule(ruleConfiguration);
+    public PrimaryReplicaReplicationRule build(final PrimaryReplicaReplicationRuleConfiguration ruleConfig, final Collection<String> dataSourceNames) {
+        return new PrimaryReplicaReplicationRule(ruleConfig);
     }
     
     @Override

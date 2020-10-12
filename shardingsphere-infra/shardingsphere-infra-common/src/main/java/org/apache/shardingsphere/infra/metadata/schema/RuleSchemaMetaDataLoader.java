@@ -27,10 +27,10 @@ import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataLoader;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.metadata.database.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.SchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.database.table.TableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -140,7 +140,7 @@ public final class RuleSchemaMetaDataLoader {
                                                                        final Collection<String> excludedTableNames) throws SQLException {
         Map<String, Collection<String>> result = new HashMap<>(dataSourceMap.size(), 1);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            Collection<String> tableNames = SchemaMetaDataLoader.loadUnconfiguredTableNames(entry.getValue(), databaseType.getName(), excludedTableNames);
+            Collection<String> tableNames = SchemaMetaDataLoader.loadUnconfiguredTableNames(entry.getValue(), databaseType, excludedTableNames);
             if (!tableNames.isEmpty()) {
                 result.put(entry.getKey(), tableNames);
             }
@@ -160,9 +160,13 @@ public final class RuleSchemaMetaDataLoader {
         schemaMetaData.merge(new SchemaMetaData(tableMetaDataMap));
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData) {
-        return OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class).entrySet().stream()
-                .map(entry -> entry.getValue().decorate(tableName, tableMetaData, entry.getKey())).reduce((first, second) -> second).orElse(tableMetaData);
+        Map<ShardingSphereRule, RuleMetaDataDecorator> decorators = OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class);
+        TableMetaData result = null;
+        for (Entry<ShardingSphereRule, RuleMetaDataDecorator> entry : decorators.entrySet()) {
+            result = entry.getValue().decorate(tableName, null == result ? tableMetaData : result, entry.getKey());
+        }
+        return Optional.ofNullable(result).orElse(tableMetaData);
     }
 }

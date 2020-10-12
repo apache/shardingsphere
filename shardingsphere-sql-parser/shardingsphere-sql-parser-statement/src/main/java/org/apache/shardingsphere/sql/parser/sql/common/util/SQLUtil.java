@@ -29,16 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -55,7 +46,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLResetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -182,14 +172,14 @@ public final class SQLUtil {
         if (sqlStatement instanceof DMLStatement) {
             return isReadOnly((DMLStatement) sqlStatement);
         }
-        if (sqlStatement instanceof DDLStatement) {
-            return isReadOnly((DDLStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof DCLStatement) {
-            return isReadOnly((DCLStatement) sqlStatement);
-        }
         if (sqlStatement instanceof DALStatement) {
             return isReadOnly((DALStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof DDLStatement) {
+            return false;
+        }
+        if (sqlStatement instanceof DCLStatement) {
+            return false;
         }
         throw new UnsupportedOperationException(String.format("Unsupported SQL Type `%s`", sqlStatement.getClass().getSimpleName()));
     }
@@ -197,35 +187,11 @@ public final class SQLUtil {
     private static boolean isReadOnly(final DMLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             return true;
-        } else if (sqlStatement instanceof UpdateStatement
-                | sqlStatement instanceof DeleteStatement
-                | sqlStatement instanceof InsertStatement) {
+        }
+        if (sqlStatement instanceof UpdateStatement || sqlStatement instanceof DeleteStatement || sqlStatement instanceof InsertStatement) {
             return false;
         }
         throw new UnsupportedOperationException(String.format("Unsupported SQL Type `%s`", sqlStatement.getClass().getSimpleName()));
-    }
-    
-    private static boolean isReadOnly(final DDLStatement sqlStatement) {
-        if (sqlStatement instanceof CreateTableStatement
-                | sqlStatement instanceof AlterTableStatement
-                | sqlStatement instanceof DropTableStatement
-                | sqlStatement instanceof CreateIndexStatement
-                | sqlStatement instanceof AlterIndexStatement
-                | sqlStatement instanceof DropIndexStatement
-                | sqlStatement instanceof TruncateStatement
-                | sqlStatement instanceof AlterTableStatement) {
-            return false;
-        }
-        return false;
-    }
-    
-    private static boolean isReadOnly(final DCLStatement sqlStatement) {
-        if (sqlStatement instanceof GrantStatement
-                | sqlStatement instanceof RevokeStatement
-                | sqlStatement instanceof SQLServerDenyUserStatement) {
-            return false;
-        }
-        return false;
     }
     
     private static boolean isReadOnly(final DALStatement sqlStatement) {

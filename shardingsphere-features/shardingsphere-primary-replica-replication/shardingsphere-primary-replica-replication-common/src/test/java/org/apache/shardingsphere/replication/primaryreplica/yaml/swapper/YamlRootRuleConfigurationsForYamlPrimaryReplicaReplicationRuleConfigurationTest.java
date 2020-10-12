@@ -39,9 +39,9 @@ public final class YamlRootRuleConfigurationsForYamlPrimaryReplicaReplicationRul
     public void assertUnmarshalWithYamlFile() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/primary-replica-replication-rule.yaml");
         assertNotNull(url);
-        YamlRootRuleConfigurations rootRuleConfigurations = YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class);
-        assertThat(rootRuleConfigurations.getRules().size(), is(1));
-        assertPrimaryReplicaReplicationRule((YamlPrimaryReplicaReplicationRuleConfiguration) rootRuleConfigurations.getRules().iterator().next());
+        YamlRootRuleConfigurations rootRuleConfigs = YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class);
+        assertThat(rootRuleConfigs.getRules().size(), is(1));
+        assertPrimaryReplicaReplicationRule((YamlPrimaryReplicaReplicationRuleConfiguration) rootRuleConfigs.getRules().iterator().next());
     }
     
     @Test

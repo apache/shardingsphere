@@ -26,14 +26,15 @@ import org.mariadb.jdbc.MariaXaConnection;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * XA connection wrapper for MariaDB.
  */
 @RequiredArgsConstructor
 public final class MariaDBXAConnectionWrapper implements XAConnectionWrapper {
-
-    @SneakyThrows
+    
+    @SneakyThrows({SQLException.class, ReflectiveOperationException.class})
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
         MariaDbConnection physicalConnection = (MariaDbConnection) connection.unwrap(Class.forName("org.mariadb.jdbc.MariaDbConnection"));

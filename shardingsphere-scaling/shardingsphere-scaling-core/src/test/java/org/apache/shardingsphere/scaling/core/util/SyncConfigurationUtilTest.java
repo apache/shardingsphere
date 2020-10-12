@@ -35,7 +35,7 @@ public final class SyncConfigurationUtilTest {
     
     private static final Gson GSON = new Gson();
     
-    private ScalingConfiguration scalingConfiguration;
+    private ScalingConfiguration scalingConfig;
     
     @Before
     public void setUp() {
@@ -44,13 +44,13 @@ public final class SyncConfigurationUtilTest {
     
     @Test
     public void assertFilterByShardingDataSourceTables() {
-        List<SyncConfiguration> syncConfigurations = (List<SyncConfiguration>) SyncConfigurationUtil.toSyncConfigurations(scalingConfiguration);
-        assertThat(syncConfigurations.get(0).getDumperConfiguration().getTableNameMap().size(), is(1));
+        List<SyncConfiguration> syncConfigs = (List<SyncConfiguration>) SyncConfigurationUtil.toSyncConfigurations(scalingConfig);
+        assertThat(syncConfigs.get(0).getDumperConfiguration().getTableNameMap().size(), is(1));
     }
     
     private void initConfig(final String configFile) {
         InputStream fileInputStream = SyncConfigurationUtilTest.class.getResourceAsStream(configFile);
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-        scalingConfiguration = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
+        scalingConfig = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
     }
 }

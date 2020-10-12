@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.config.algorithm;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
-import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 /**
  * ShardingSphere algorithm factory.
@@ -31,14 +31,14 @@ public final class ShardingSphereAlgorithmFactory {
     /**
      * Create algorithm.
      * 
-     * @param typedSPIConfiguration typed SPI configuration
+     * @param typedSPIConfig typed SPI configuration
      * @param algorithmClass algorithm class
      * @param <T> type of algorithm
      * @return algorithm
      */
     @SuppressWarnings("unchecked")
-    public static <T extends ShardingSphereAlgorithm> T createAlgorithm(final TypedSPIConfiguration typedSPIConfiguration, final Class<? extends ShardingSphereAlgorithm> algorithmClass) {
-        T result = (T) TypedSPIRegistry.getRegisteredService(algorithmClass, typedSPIConfiguration.getType(), typedSPIConfiguration.getProps());
+    public static <T extends ShardingSphereAlgorithm> T createAlgorithm(final TypedSPIConfiguration typedSPIConfig, final Class<? extends ShardingSphereAlgorithm> algorithmClass) {
+        T result = (T) TypedSPIRegistry.getRegisteredService(algorithmClass, typedSPIConfig.getType(), typedSPIConfig.getProps());
         if (result instanceof ShardingSphereAlgorithmPostProcessor) {
             ((ShardingSphereAlgorithmPostProcessor) result).init();
         }

@@ -26,8 +26,10 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/sharding/shar
 | ------------------------- | --------- | -------------------------- |
 | logic-table               | Attribute | Logic table name           |
 | actual-data-nodes         | Attribute | Describe data source names and actual tables, delimiter as point, multiple data nodes separated with comma, support inline expression. Absent means sharding databases only. |
-| database-strategy-ref     | Attribute | Database strategy name     |
-| table-strategy-ref        | Attribute | Table strategy name        |
+| actual-data-sources       | Attribute | Data source names for auto sharding table |
+| database-strategy-ref     | Attribute | Database strategy name for standard sharding table     |
+| table-strategy-ref        | Attribute | Table strategy name for standard sharding table        |
+| sharding-strategy-ref     | Attribute | sharding strategy name for auto sharding table         |
 | key-generate-strategy-ref | Attribute | Key generate strategy name |
 
 \<sharding:binding-table-rules />

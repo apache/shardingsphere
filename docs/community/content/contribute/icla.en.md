@@ -7,7 +7,7 @@ chapter = true
 Apache CLA short for Apache Contributor License Agreement, the purpose of this agreement is to clearly define the terms under which intellectual property has been contributed to the ASF and thereby allow us to defend the project should there be a legal dispute regarding the software at some future time. 
 A signed ICLA is required to be on file before an individual is given commit rights to any ASF project. 
 
-When you required to submit ICLA,
+The process of submitting ICLA are:
 
 **1. First, click the link [Apache Licenses](https://www.apache.org/licenses/#clas) and find CLAs under the Contributor License Agreements section.**
   
@@ -26,8 +26,8 @@ When you required to submit ICLA,
 ![](https://shardingsphere.apache.org/blog/img/icla%20en3.png)
 
 **4. The signature at the bottom of the document:**
-     Apache only accept hand-written signature or gpg signature, here we suggest to choose hand-written way.
-     Print the document and sign your name on the paper, or use electric pen.
+Apache only accept hand-written signature or gpg signature, here we suggest to choose hand-written way.
+Print the document and sign your name on the paper, or use electric pen.
 
 ![](https://shardingsphere.apache.org/blog/img/icla%20en4.png)
 

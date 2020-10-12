@@ -36,10 +36,10 @@ import java.util.Properties;
 
 public final class LocalShardingDatabasesAndTablesConfiguration implements ExampleConfiguration {
     
-    private final GovernanceConfiguration governanceConfiguration;
+    private final GovernanceConfiguration governanceConfig;
     
-    public LocalShardingDatabasesAndTablesConfiguration(final GovernanceConfiguration governanceConfiguration) {
-        this.governanceConfiguration = governanceConfiguration;
+    public LocalShardingDatabasesAndTablesConfiguration(final GovernanceConfiguration governanceConfig) {
+        this.governanceConfig = governanceConfig;
     }
     
     private static KeyGenerateStrategyConfiguration getKeyGeneratorConfiguration() {
@@ -49,7 +49,7 @@ public final class LocalShardingDatabasesAndTablesConfiguration implements Examp
     @Override
     public DataSource getDataSource() throws SQLException {
         return GovernanceShardingSphereDataSourceFactory.createDataSource(
-                createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties(), governanceConfiguration);
+                createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties(), governanceConfig);
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {

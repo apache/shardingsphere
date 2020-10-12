@@ -38,8 +38,8 @@ public final class ConsensusReplicationActualTableRuleConfigurationYamlSwapper
     }
     
     @Override
-    public ConsensusReplicationActualTableRuleConfiguration swapToObject(final YamlConsensusReplicationActualTableRuleConfiguration yamlConfiguration) {
-        return new ConsensusReplicationActualTableRuleConfiguration(yamlConfiguration.getPhysicsTable(), yamlConfiguration.getReplicaGroupId(),
-                yamlConfiguration.getReplicaPeers(), yamlConfiguration.getDataSourceName());
+    public ConsensusReplicationActualTableRuleConfiguration swapToObject(final YamlConsensusReplicationActualTableRuleConfiguration yamlConfig) {
+        return new ConsensusReplicationActualTableRuleConfiguration(yamlConfig.getPhysicsTable(), yamlConfig.getReplicaGroupId(),
+                yamlConfig.getReplicaPeers(), yamlConfig.getDataSourceName());
     }
 }

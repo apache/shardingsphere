@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.sharding.strategy.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.spring.boot.governance.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -39,7 +38,6 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -62,7 +60,7 @@ public class GovernanceSpringBootShardingTest {
     public void assertWithShardingSphereDataSource() {
         assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
         SchemaContexts schemaContexts = getFieldValue("schemaContexts", GovernanceShardingSphereDataSource.class, dataSource);
-        for (DataSource each : schemaContexts.getDefaultSchemaContext().getSchema().getDataSources().values()) {
+        for (DataSource each : schemaContexts.getDefaultSchema().getDataSources().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
         }
         assertTrue(schemaContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
@@ -73,7 +71,7 @@ public class GovernanceSpringBootShardingTest {
     @Test
     public void assertWithShardingSphereDataSourceNames() {
         SchemaContexts schemaContexts = getFieldValue("schemaContexts", GovernanceShardingSphereDataSource.class, dataSource);
-        ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
+        ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultSchema().getRules().iterator().next();
         assertThat(shardingRule.getDataSourceNames().size(), is(2));
         assertTrue(shardingRule.getDataSourceNames().contains("ds_0"));
         assertTrue(shardingRule.getDataSourceNames().contains("ds_1"));
@@ -82,7 +80,7 @@ public class GovernanceSpringBootShardingTest {
     @Test
     public void assertWithTableRules() {
         SchemaContexts schemaContexts = getFieldValue("schemaContexts", GovernanceShardingSphereDataSource.class, dataSource);
-        ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
+        ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultSchema().getRules().iterator().next();
         assertThat(shardingRule.getTableRules().size(), is(2));
         TableRule orderRule = shardingRule.getTableRule("t_order");
         assertThat(orderRule.getLogicTable(), is("t_order"));
@@ -100,19 +98,15 @@ public class GovernanceSpringBootShardingTest {
         assertTrue(itemRule.getActualDataNodes().contains(new DataNode("ds_0", "t_order_item_1")));
         assertTrue(itemRule.getActualDataNodes().contains(new DataNode("ds_1", "t_order_item_0")));
         assertTrue(itemRule.getActualDataNodes().contains(new DataNode("ds_1", "t_order_item_1")));
-        assertThat(itemRule.getTableShardingStrategy(), instanceOf(StandardShardingStrategy.class));
-        assertThat(itemRule.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
         assertTrue(itemRule.getGenerateKeyColumn().isPresent());
         assertThat(itemRule.getGenerateKeyColumn().get(), is("order_item_id"));
-        assertThat(itemRule.getTableShardingStrategy(), instanceOf(StandardShardingStrategy.class));
-        assertThat(itemRule.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
         
     }
     
     @Test
     public void assertWithBindingTableRules() {
         SchemaContexts schemaContexts = getFieldValue("schemaContexts", GovernanceShardingSphereDataSource.class, dataSource);
-        ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
+        ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultSchema().getRules().iterator().next();
         assertThat(shardingRule.getBindingTableRules().size(), is(2));
         TableRule orderRule = shardingRule.getTableRule("t_order");
         assertThat(orderRule.getLogicTable(), is("t_order"));
@@ -128,12 +122,8 @@ public class GovernanceSpringBootShardingTest {
         assertTrue(itemRule.getActualDataNodes().contains(new DataNode("ds_0", "t_order_item_1")));
         assertTrue(itemRule.getActualDataNodes().contains(new DataNode("ds_1", "t_order_item_0")));
         assertTrue(itemRule.getActualDataNodes().contains(new DataNode("ds_1", "t_order_item_1")));
-        assertThat(itemRule.getTableShardingStrategy(), instanceOf(StandardShardingStrategy.class));
-        assertThat(itemRule.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
         assertTrue(itemRule.getGenerateKeyColumn().isPresent());
         assertThat(itemRule.getGenerateKeyColumn().get(), is("order_item_id"));
-        assertThat(itemRule.getTableShardingStrategy(), instanceOf(StandardShardingStrategy.class));
-        assertThat(itemRule.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
         assertTrue(orderRule.getGenerateKeyColumn().isPresent());
         assertThat(orderRule.getGenerateKeyColumn().get(), is("order_id"));
     }
@@ -141,7 +131,7 @@ public class GovernanceSpringBootShardingTest {
     @Test
     public void assertWithBroadcastTables() {
         SchemaContexts schemaContexts = getFieldValue("schemaContexts", GovernanceShardingSphereDataSource.class, dataSource);
-        ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
+        ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultSchema().getRules().iterator().next();
         assertThat(shardingRule.getBroadcastTables().size(), is(1));
         assertThat(shardingRule.getBroadcastTables().iterator().next(), is("t_config"));
     }

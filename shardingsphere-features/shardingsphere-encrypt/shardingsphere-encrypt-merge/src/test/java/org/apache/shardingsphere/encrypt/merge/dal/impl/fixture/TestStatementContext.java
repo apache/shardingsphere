@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.encrypt.merge.dal.impl.fixture;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 
 @RequiredArgsConstructor
-public final class TestStatementContext implements SQLStatementContext, TableAvailable {
+public final class TestStatementContext implements SQLStatementContext<SQLStatement>, TableAvailable {
     
     private final SQLStatement sqlStatement;
     

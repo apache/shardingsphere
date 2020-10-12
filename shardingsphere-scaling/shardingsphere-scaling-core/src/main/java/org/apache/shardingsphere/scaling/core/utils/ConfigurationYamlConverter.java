@@ -60,8 +60,8 @@ public final class ConfigurationYamlConverter {
      */
     public static ShardingRuleConfiguration loadShardingRuleConfiguration(final String data) {
         YamlRootRuleConfigurations rootRuleConfigurations = YamlEngine.unmarshal(data, YamlRootRuleConfigurations.class);
-        Optional<YamlRuleConfiguration> ruleConfiguration = rootRuleConfigurations.getRules().stream().filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst();
-        Preconditions.checkState(ruleConfiguration.isPresent(), "No available sharding rule to load for governance.");
-        return new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) ruleConfiguration.get());
+        Optional<YamlRuleConfiguration> ruleConfig = rootRuleConfigurations.getRules().stream().filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst();
+        Preconditions.checkState(ruleConfig.isPresent(), "No available sharding rule to load for governance.");
+        return new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) ruleConfig.get());
     }
 }
