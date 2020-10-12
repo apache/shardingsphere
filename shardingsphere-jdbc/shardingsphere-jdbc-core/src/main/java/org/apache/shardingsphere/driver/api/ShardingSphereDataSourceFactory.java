@@ -43,14 +43,17 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class ShardingSphereDataSourceFactory {
+    
     /**
-     * property name for datasource type
+     * property name for datasource type.
      */
     static final String DS_TYPE = "type";
+    
     /**
-     * property name for datasource template
+     * property name for datasource template.
      */
     static final String DS_TEMPLATE = "template";
+    
     /**
      * property name to indicate whether a datasource is a template, defaults to NOT.
      */
