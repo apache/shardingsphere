@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.db;
+package org.apache.shardingsphere.proxy.database;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;

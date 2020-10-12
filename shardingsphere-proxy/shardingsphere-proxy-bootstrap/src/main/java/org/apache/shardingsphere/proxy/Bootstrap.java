@@ -19,12 +19,12 @@ package org.apache.shardingsphere.proxy;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.proxy.arg.BootstrapArguments;
+import org.apache.shardingsphere.proxy.arguments.BootstrapArguments;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.init.BootstrapInitializer;
-import org.apache.shardingsphere.proxy.init.impl.GovernanceBootstrapInitializer;
-import org.apache.shardingsphere.proxy.init.impl.StandardBootstrapInitializer;
+import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
+import org.apache.shardingsphere.proxy.initializer.impl.GovernanceBootstrapInitializer;
+import org.apache.shardingsphere.proxy.initializer.impl.StandardBootstrapInitializer;
 
 import java.io.IOException;
 import java.sql.SQLException;

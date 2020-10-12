@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.init.impl;
+package org.apache.shardingsphere.proxy.initializer.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.schema.GovernanceSchemaContexts;

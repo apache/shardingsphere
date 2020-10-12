@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.arg;
+package org.apache.shardingsphere.proxy.arguments;
 
 import lombok.Getter;
 
