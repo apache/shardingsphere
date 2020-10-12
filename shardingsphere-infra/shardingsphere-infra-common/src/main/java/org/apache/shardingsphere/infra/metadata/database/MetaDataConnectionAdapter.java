@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.loader.SchemaLoader;
+import org.apache.shardingsphere.infra.metadata.database.loader.JDBCSchemaLoader;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
@@ -69,9 +69,9 @@ public final class MetaDataConnectionAdapter implements Connection {
     
     @Override
     public String getSchema() {
-        Optional<SchemaLoader> schemaLoader = findSchemaLoader();
-        if (schemaLoader.isPresent()) {
-            return schemaLoader.get().getSchema(connection);
+        Optional<JDBCSchemaLoader> jdbcSchemaLoader = findJDBCSchemaLoader();
+        if (jdbcSchemaLoader.isPresent()) {
+            return jdbcSchemaLoader.get().getSchema(connection);
         }
         try {
             return connection.getSchema();
@@ -80,9 +80,9 @@ public final class MetaDataConnectionAdapter implements Connection {
         }
     }
     
-    private Optional<SchemaLoader> findSchemaLoader() {
+    private Optional<JDBCSchemaLoader> findJDBCSchemaLoader() {
         try {
-            return Optional.of(TypedSPIRegistry.getRegisteredService(SchemaLoader.class, databaseType.getName(), new Properties()));
+            return Optional.of(TypedSPIRegistry.getRegisteredService(JDBCSchemaLoader.class, databaseType.getName(), new Properties()));
         } catch (final ServiceProviderNotFoundException ignored) {
             return Optional.empty();
         }
