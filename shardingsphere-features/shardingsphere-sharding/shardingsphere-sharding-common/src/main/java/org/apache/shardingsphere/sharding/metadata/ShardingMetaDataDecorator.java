@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.metadata.rule.spi.RuleMetaDataDecorator;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.infra.metadata.database.model.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.model.index.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.column.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.index.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.table.TableMetaData;
 
 import java.util.Collection;
 import java.util.HashSet;

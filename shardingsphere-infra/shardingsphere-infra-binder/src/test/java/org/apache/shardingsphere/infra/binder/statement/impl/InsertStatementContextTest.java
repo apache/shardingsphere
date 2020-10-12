@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.statement.impl;
 
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;

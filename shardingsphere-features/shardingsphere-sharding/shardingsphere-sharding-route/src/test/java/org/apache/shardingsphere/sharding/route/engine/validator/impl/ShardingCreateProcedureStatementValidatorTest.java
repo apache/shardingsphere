@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.rule.RuleSchemaMetaData;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.metadata.database.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.schema.SchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;

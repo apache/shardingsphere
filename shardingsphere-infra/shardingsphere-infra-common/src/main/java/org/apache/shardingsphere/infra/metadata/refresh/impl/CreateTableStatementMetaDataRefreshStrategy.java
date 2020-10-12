@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.refresh.impl;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.infra.metadata.database.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.table.TableMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;

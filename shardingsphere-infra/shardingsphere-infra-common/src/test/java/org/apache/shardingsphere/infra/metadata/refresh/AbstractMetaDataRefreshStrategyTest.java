@@ -23,10 +23,10 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.datasource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.RuleSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.model.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.model.index.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.column.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.index.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.table.TableMetaData;
 import org.junit.Before;
 
 import java.util.Collections;

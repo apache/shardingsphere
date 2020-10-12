@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.fixture.rule.DataNodeRoutedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.rule.spi.RuleMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.database.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.table.TableMetaData;
 
 import javax.sql.DataSource;
 import java.util.Collection;

@@ -41,8 +41,8 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardi
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
 import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.infra.metadata.database.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.table.TableMetaData;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;

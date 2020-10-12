@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.metadata.refresh;
 
-import org.apache.shardingsphere.infra.metadata.database.model.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.model.index.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.column.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.index.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.table.TableMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.refresh.impl.CreateTableStatementMetaDataRefreshStrategy;

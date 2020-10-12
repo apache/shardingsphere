@@ -31,7 +31,7 @@ import org.apache.shardingsphere.scaling.core.job.task.DefaultSyncTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.SyncTaskFactory;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
-import org.apache.shardingsphere.infra.metadata.database.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.table.TableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

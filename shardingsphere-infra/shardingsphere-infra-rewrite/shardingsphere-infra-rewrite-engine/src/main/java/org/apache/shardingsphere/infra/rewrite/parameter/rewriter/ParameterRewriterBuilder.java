@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.parameter.rewriter;
 
-import org.apache.shardingsphere.infra.metadata.database.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.schema.SchemaMetaData;
 
 import java.util.Collection;
 

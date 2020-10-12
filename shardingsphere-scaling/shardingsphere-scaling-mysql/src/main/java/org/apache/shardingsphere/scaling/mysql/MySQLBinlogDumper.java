@@ -44,7 +44,7 @@ import org.apache.shardingsphere.scaling.mysql.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.WriteRowsEvent;
 import org.apache.shardingsphere.scaling.mysql.client.ConnectInfo;
 import org.apache.shardingsphere.scaling.mysql.client.MySQLClient;
-import org.apache.shardingsphere.infra.metadata.database.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.table.TableMetaData;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
