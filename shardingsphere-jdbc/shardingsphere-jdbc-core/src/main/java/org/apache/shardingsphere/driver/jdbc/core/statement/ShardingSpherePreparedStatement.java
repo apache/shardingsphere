@@ -51,12 +51,12 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.sql.LogicSQL;
-import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 
@@ -103,6 +103,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final Collection<Comparable<?>> generatedValues = new LinkedList<>();
     
+    private final KernelProcessor kernelProcessor;
+    
     private ExecutionContext executionContext;
     
     private ResultSet currentResultSet;
@@ -141,6 +143,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         preparedStatementExecutor = new PreparedStatementExecutor(connection.getDataSourceMap(), schemaContexts, sqlExecutor);
         rawExecutor = new RawJDBCExecutor(schemaContexts.getExecutorKernel(), connection.isHoldTransaction());
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(schemaContexts, sqlExecutor);
+        kernelProcessor = new KernelProcessor();
     }
     
     @Override
@@ -194,7 +197,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 Collection<InputGroup<StatementExecuteUnit>> inputGroups = getInputGroups();
                 cacheStatements(inputGroups);
                 reply();
-                return preparedStatementExecutor.execute(inputGroups, executionContext.getSqlStatementContext());
+                return preparedStatementExecutor.execute(inputGroups, executionContext.getSqlStatementContext().getSqlStatement());
             } else {
                 // TODO process getStatement
                 return rawExecutor.execute(getRawInputGroups(), new RawSQLExecutorCallback());
@@ -257,7 +260,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private ExecutionContext createExecutionContext() {
         LogicSQL logicSQL = createLogicSQL();
-        ExecutionContext result = new KernelProcessor().generateExecutionContext(logicSQL, schemaContexts.getProps());
+        ExecutionContext result = kernelProcessor.generateExecutionContext(logicSQL, schemaContexts.getProps());
         findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.addAll(generatedKey.getGeneratedValues()));
         logSQL(logicSQL, result);
         return result;

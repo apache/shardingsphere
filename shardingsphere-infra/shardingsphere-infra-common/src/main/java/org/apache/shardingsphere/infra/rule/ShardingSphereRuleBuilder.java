@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.rule;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
 import java.util.Collection;
 

@@ -18,9 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.event.model.persist.MetaDataPersistEvent;
 import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
+import org.apache.shardingsphere.governance.core.event.model.persist.MetaDataPersistEvent;
+import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
@@ -31,17 +34,15 @@ import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.infra.sql.LogicSQL;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.infra.sql.LogicSQL;
-import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -58,13 +59,15 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private final SQLExecuteEngine sqlExecuteEngine;
     
+    private final KernelProcessor kernelProcessor = new KernelProcessor();
+    
     private BackendResponse response;
     
     private MergedResult mergedResult;
     
     @Override
     public BackendResponse execute() throws SQLException {
-        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(logicSQL, ProxyContext.getInstance().getSchemaContexts().getProps());
+        ExecutionContext executionContext = kernelProcessor.generateExecutionContext(logicSQL, ProxyContext.getInstance().getSchemaContexts().getProps());
         logSQL(executionContext);
         return doExecute(executionContext);
     }
@@ -81,19 +84,19 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         sqlExecuteEngine.checkExecutePrerequisites(executionContext);
         response = sqlExecuteEngine.execute(executionContext);
-        refreshTableMetaData(executionContext.getSqlStatementContext());
+        refreshTableMetaData(executionContext.getSqlStatementContext().getSqlStatement());
         return merge(executionContext.getSqlStatementContext());
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void refreshTableMetaData(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
-        if (null == sqlStatementContext) {
+    private void refreshTableMetaData(final SQLStatement sqlStatement) throws SQLException {
+        if (null == sqlStatement) {
             return;
         }
-        Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
+        Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatement);
         if (refreshStrategy.isPresent()) {
             refreshStrategy.get().refreshMetaData(logicSQL.getSchema().getMetaData(), ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
-                    logicSQL.getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
+                    logicSQL.getSchema().getDataSources(), sqlStatement, this::loadTableMetaData);
             GovernanceEventBus.getInstance().post(
                     new MetaDataPersistEvent(logicSQL.getSchema().getName(), logicSQL.getSchema().getMetaData().getRuleSchemaMetaData()));
         }

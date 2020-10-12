@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.rdl.parser.binder.generator;
 
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 /**
  * SQL statement context converter.

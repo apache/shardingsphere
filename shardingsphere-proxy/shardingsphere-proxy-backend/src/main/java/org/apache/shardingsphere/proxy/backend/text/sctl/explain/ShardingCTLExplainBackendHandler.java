@@ -32,9 +32,9 @@ import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
-import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.Types;
@@ -54,6 +54,8 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
     
     private final BackendConnection backendConnection;
     
+    private final KernelProcessor kernelProcessor = new KernelProcessor();
+    
     private List<QueryHeader> queryHeaders;
     
     private Iterator<ExecutionUnit> executionUnits;
@@ -72,7 +74,7 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
             throw new RuleNotExistsException();
         }
         LogicSQL logicSQL = createLogicSQL(schema, explainStatement.get());
-        executionUnits = new KernelProcessor().generateExecutionContext(logicSQL, ProxyContext.getInstance().getSchemaContexts().getProps()).getExecutionUnits().iterator();
+        executionUnits = kernelProcessor.generateExecutionContext(logicSQL, ProxyContext.getInstance().getSchemaContexts().getProps()).getExecutionUnits().iterator();
         queryHeaders = new ArrayList<>(2);
         queryHeaders.add(new QueryHeader("", "", "datasource_name", "", 255, Types.CHAR, 0, false, false, false, false));
         queryHeaders.add(new QueryHeader("", "", "sql", "", 255, Types.CHAR, 0, false, false, false, false));

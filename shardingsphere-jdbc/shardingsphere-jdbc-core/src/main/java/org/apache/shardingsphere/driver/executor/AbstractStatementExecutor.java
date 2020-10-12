@@ -19,13 +19,14 @@ package org.apache.shardingsphere.driver.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutorCallback;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
@@ -33,9 +34,10 @@ import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataNotifier;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -67,42 +69,43 @@ public abstract class AbstractStatementExecutor {
     }
     
     protected final int accumulate(final List<Integer> results) {
-        int result = 0;
-        for (Integer each : results) {
-            result += null == each ? 0 : each;
-        }
-        return result;
+        return results.stream().mapToInt(each -> null == each ? 0 : each).sum();
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    protected final void refreshTableMetaData(final ShardingSphereSchema schema, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
-        if (null == sqlStatementContext) {
+    protected final void refreshTableMetaData(final ShardingSphereSchema schema, final SQLStatement sqlStatement) throws SQLException {
+        if (null == sqlStatement) {
             return;
         }
-        Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
+        Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatement);
         if (refreshStrategy.isPresent()) {
             RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(schema.getRules());
-            refreshStrategy.get().refreshMetaData(schema.getMetaData(), schemaContexts.getDatabaseType(),
-                    dataSourceMap, sqlStatementContext, tableName -> metaDataLoader.load(schemaContexts.getDatabaseType(),
-                            dataSourceMap, tableName, schemaContexts.getProps()));
+            refreshStrategy.get().refreshMetaData(schema.getMetaData(), schemaContexts.getDatabaseType(), dataSourceMap, sqlStatement, 
+                tableName -> metaDataLoader.load(schemaContexts.getDatabaseType(), dataSourceMap, tableName, schemaContexts.getProps()));
             notifyPersistRuleMetaData(DefaultSchema.LOGIC_NAME, schema.getMetaData().getRuleSchemaMetaData());
         }
     }
     
+    protected boolean executeAndRefreshMetaData(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatement sqlStatement,
+                                                final SQLExecutorCallback<Boolean> sqlExecutorCallback) throws SQLException {
+        List<Boolean> result = sqlExecutor.execute(inputGroups, sqlExecutorCallback);
+        refreshTableMetaData(schemaContexts.getDefaultSchema(), sqlStatement);
+        return null != result && !result.isEmpty() && null != result.get(0) && result.get(0);
+    }
+    
     private void notifyPersistRuleMetaData(final String schemaName, final RuleSchemaMetaData metaData) {
-        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(metaData),
-                RuleMetaDataNotifier.class).values().forEach(each -> each.notify(schemaName, metaData));
+        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(metaData), RuleMetaDataNotifier.class).values().forEach(each -> each.notify(schemaName, metaData));
     }
     
     /**
      * Execute SQL.
      *
      * @param inputGroups input groups
-     * @param sqlStatementContext SQL statement context
+     * @param sqlStatement SQL statement
      * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    public abstract boolean execute(Collection<InputGroup<StatementExecuteUnit>> inputGroups, SQLStatementContext<?> sqlStatementContext) throws SQLException;
+    public abstract boolean execute(Collection<InputGroup<StatementExecuteUnit>> inputGroups, SQLStatement sqlStatement) throws SQLException;
     
     /**
      * Execute query.

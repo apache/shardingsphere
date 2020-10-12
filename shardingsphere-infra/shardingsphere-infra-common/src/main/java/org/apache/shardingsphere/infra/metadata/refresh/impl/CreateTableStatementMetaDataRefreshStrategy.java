@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.infra.metadata.refresh.impl;
 
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.infra.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.TableMetaDataLoaderCallback;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -35,12 +35,12 @@ import java.util.Optional;
 /**
  * Create table statement meta data refresh strategy.
  */
-public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<CreateTableStatementContext> {
+public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<CreateTableStatement> {
     
     @Override
     public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
-                                final Map<String, DataSource> dataSourceMap, final CreateTableStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) throws SQLException {
-        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+                                final Map<String, DataSource> dataSourceMap, final CreateTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
+        String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         Optional<TableMetaData> tableMetaData = callback.load(tableName);
         if (tableMetaData.isPresent()) {
             metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().put(tableName, tableMetaData.get());
@@ -51,7 +51,7 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
         }
     }
     
-    private void refreshUnconfiguredMetaData(final ShardingSphereMetaData metaData, final Map<String, DataSource> dataSourceMap, final String tableName) throws SQLException {
+    private void refreshUnconfiguredMetaData(final ShardingSphereMetaData metaData, final Map<String, DataSource> dataSourceMap, final String tableName) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             refreshUnconfiguredMetaData(metaData, tableName, entry.getKey());
         }

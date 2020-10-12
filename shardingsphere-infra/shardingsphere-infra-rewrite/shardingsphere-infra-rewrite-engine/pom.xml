@@ -42,7 +42,7 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-parser-binder</artifactId>
+            <artifactId>shardingsphere-infra-binder</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

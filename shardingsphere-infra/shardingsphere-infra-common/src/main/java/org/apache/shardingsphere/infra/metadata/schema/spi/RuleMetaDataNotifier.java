@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.schema.spi;
 
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
 /**
  * Rule meta data notifier.

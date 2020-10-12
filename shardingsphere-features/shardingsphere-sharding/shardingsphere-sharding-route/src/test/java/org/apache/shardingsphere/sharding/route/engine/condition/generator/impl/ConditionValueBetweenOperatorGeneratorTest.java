@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
@@ -41,6 +43,10 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
     private final ConditionValueBetweenOperatorGenerator generator = new ConditionValueBetweenOperatorGenerator();
     
     private final Column column = new Column("id", "tbl");
+    
+    static {
+        ShardingSphereServiceLoader.register(DatetimeService.class);
+    }
     
     @SuppressWarnings("unchecked")
     @Test

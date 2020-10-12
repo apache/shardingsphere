@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
-import org.apache.shardingsphere.sharding.route.datatime.DatetimeService;
-import org.apache.shardingsphere.sharding.route.datatime.DatetimeServiceFactory;
+import org.apache.shardingsphere.infra.spi.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
@@ -40,7 +40,7 @@ public final class ConditionValueInOperatorGenerator implements ConditionValueGe
     @Override
     public Optional<ShardingConditionValue> generate(final InExpression predicate, final Column column, final List<Object> parameters) {
         List<Comparable<?>> shardingConditionValues = new LinkedList<>();
-        DatetimeService datetimeService = DatetimeServiceFactory.newInstance();
+        DatetimeService datetimeService = RequiredSPIRegistry.getRegisteredService(DatetimeService.class);
         for (ExpressionSegment each : predicate.getExpressionList()) {
             Optional<Comparable<?>> shardingConditionValue = new ConditionValue(each, parameters).getValue();
             if (shardingConditionValue.isPresent()) {

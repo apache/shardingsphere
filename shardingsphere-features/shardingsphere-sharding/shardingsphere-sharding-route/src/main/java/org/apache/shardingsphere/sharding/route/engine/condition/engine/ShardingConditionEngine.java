@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 import java.util.List;
 

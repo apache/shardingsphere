@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 
 import java.util.Collection;
 import java.util.stream.Collectors;

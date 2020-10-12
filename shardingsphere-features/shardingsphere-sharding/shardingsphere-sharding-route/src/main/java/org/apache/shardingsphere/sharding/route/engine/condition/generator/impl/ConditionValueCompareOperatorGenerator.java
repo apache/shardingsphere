@@ -19,7 +19,8 @@ package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.sharding.route.datatime.DatetimeServiceFactory;
+import org.apache.shardingsphere.infra.spi.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
@@ -61,7 +62,7 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
             return generate(conditionValue.get(), column, operator);
         }
         if (ExpressionConditionUtils.isNowExpression(predicate.getRight())) {
-            return generate(DatetimeServiceFactory.newInstance().getDatetime(), column, operator);
+            return generate(RequiredSPIRegistry.getRegisteredService(DatetimeService.class).getDatetime(), column, operator);
         }
         return Optional.empty();
     }

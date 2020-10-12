@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.infra.metadata.refresh;
 
+import org.apache.shardingsphere.infra.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.refresh.impl.DropIndexStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
-import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -56,9 +55,8 @@ public final class DropIndexStatementMetaDataRefreshStrategyTest extends Abstrac
     
     private void refreshMetaData(final DropIndexStatement dropIndexStatement) throws SQLException {
         dropIndexStatement.getIndexes().add(new IndexSegment(1, 2, new IdentifierValue("index")));
-        MetaDataRefreshStrategy<DropIndexStatementContext> metaDataRefreshStrategy = new DropIndexStatementMetaDataRefreshStrategy();
-        DropIndexStatementContext dropIndexStatementContext = new DropIndexStatementContext(dropIndexStatement);
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), dropIndexStatementContext, tableName -> Optional.empty());
+        MetaDataRefreshStrategy<DropIndexStatement> metaDataRefreshStrategy = new DropIndexStatementMetaDataRefreshStrategy();
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), dropIndexStatement, tableName -> Optional.empty());
         assertFalse(getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("index"));
     }
     
@@ -83,9 +81,8 @@ public final class DropIndexStatementMetaDataRefreshStrategyTest extends Abstrac
         Map<String, IndexMetaData> actualIndex = getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes();
         actualIndex.put("t_order_index", new IndexMetaData("t_order_index"));
         actualIndex.put("order_id_index", new IndexMetaData("order_id_index"));
-        DropIndexStatementContext dropIndexStatementContext = new DropIndexStatementContext(dropIndexStatement);
-        MetaDataRefreshStrategy<DropIndexStatementContext> metaDataRefreshStrategy = new DropIndexStatementMetaDataRefreshStrategy();
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), dropIndexStatementContext, tableName -> Optional.empty());
+        MetaDataRefreshStrategy<DropIndexStatement> metaDataRefreshStrategy = new DropIndexStatementMetaDataRefreshStrategy();
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), dropIndexStatement, tableName -> Optional.empty());
         assertFalse(getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("index"));
         assertFalse(getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("t_order_index"));
         assertFalse(getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("order_id_index"));
