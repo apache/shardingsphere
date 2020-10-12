@@ -89,9 +89,9 @@ public final class PrimaryReplicaReplicationSQLRouterTest {
     
     @Test
     public void assertCreateRouteContextToPrimaryWithoutRouteUnits() {
+        LogicSQL logicSQL = new LogicSQL(mock(SQLStatementContext.class), "", Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
-        LogicSQL logicSQL = new LogicSQL(schema, mock(SQLStatementContext.class), "", Collections.emptyList());
-        RouteContext actual = sqlRouter.createRouteContext(logicSQL, rule, new ConfigurationProperties(new Properties()));
+        RouteContext actual = sqlRouter.createRouteContext(logicSQL, schema, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
     }
@@ -99,9 +99,9 @@ public final class PrimaryReplicaReplicationSQLRouterTest {
     @Test
     public void assertDecorateRouteContextToPrimaryDataSource() {
         RouteContext actual = mockRouteContext();
+        LogicSQL logicSQL = new LogicSQL(mock(SQLStatementContext.class), "", Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
-        LogicSQL logicSQL = new LogicSQL(schema, mock(SQLStatementContext.class), "", Collections.emptyList());
-        sqlRouter.decorateRouteContext(actual, logicSQL, rule, new ConfigurationProperties(new Properties()));
+        sqlRouter.decorateRouteContext(actual, logicSQL, schema, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_PRIMARY_REPLICA_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
@@ -112,9 +112,9 @@ public final class PrimaryReplicaReplicationSQLRouterTest {
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.empty());
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "", Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
-        LogicSQL logicSQL = new LogicSQL(schema, sqlStatementContext, "", Collections.emptyList());
-        RouteContext actual = sqlRouter.createRouteContext(logicSQL, rule, new ConfigurationProperties(new Properties()));
+        RouteContext actual = sqlRouter.createRouteContext(logicSQL, schema, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(REPLICA_DATASOURCE));
     }
@@ -125,9 +125,9 @@ public final class PrimaryReplicaReplicationSQLRouterTest {
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.empty());
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "", Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
-        LogicSQL logicSQL = new LogicSQL(schema, sqlStatementContext, "", Collections.emptyList());
-        sqlRouter.decorateRouteContext(actual, logicSQL, rule, new ConfigurationProperties(new Properties()));
+        sqlRouter.decorateRouteContext(actual, logicSQL, schema, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_PRIMARY_REPLICA_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(REPLICA_DATASOURCE));
@@ -138,9 +138,9 @@ public final class PrimaryReplicaReplicationSQLRouterTest {
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "", Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
-        LogicSQL logicSQL = new LogicSQL(schema, sqlStatementContext, "", Collections.emptyList());
-        RouteContext actual = sqlRouter.createRouteContext(logicSQL, rule, new ConfigurationProperties(new Properties()));
+        RouteContext actual = sqlRouter.createRouteContext(logicSQL, schema, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
     }
@@ -151,9 +151,9 @@ public final class PrimaryReplicaReplicationSQLRouterTest {
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "", Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
-        LogicSQL logicSQL = new LogicSQL(schema, sqlStatementContext, "", Collections.emptyList());
-        sqlRouter.decorateRouteContext(actual, logicSQL, rule, new ConfigurationProperties(new Properties()));
+        sqlRouter.decorateRouteContext(actual, logicSQL, schema, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_PRIMARY_REPLICA_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
@@ -162,9 +162,9 @@ public final class PrimaryReplicaReplicationSQLRouterTest {
     @Test
     public void assertCreateRouteContextToPrimaryDataSource() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(InsertStatement.class));
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "", Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
-        LogicSQL logicSQL = new LogicSQL(schema, sqlStatementContext, "", Collections.emptyList());
-        RouteContext actual = sqlRouter.createRouteContext(logicSQL, rule, new ConfigurationProperties(new Properties()));
+        RouteContext actual = sqlRouter.createRouteContext(logicSQL, schema, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
     }

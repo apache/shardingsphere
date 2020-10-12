@@ -17,18 +17,19 @@
 
 package org.apache.shardingsphere.shadow.route.engine;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.sql.LogicSQL;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.route.engine.judge.ShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.route.engine.judge.impl.PreparedShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.route.engine.judge.impl.SimpleShadowDataSourceJudgeEngine;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 
 import java.util.Collection;
@@ -42,7 +43,7 @@ import java.util.List;
 public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
     
     @Override
-    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShadowRule rule, final ConfigurationProperties props) {
+    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereSchema schema, final ShadowRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
         if (!(logicSQL.getSqlStatementContext().getSqlStatement() instanceof DMLStatement)) {
             rule.getShadowMappings().forEach((key, value) -> {
@@ -60,7 +61,8 @@ public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
     }
     
     @Override
-    public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ShadowRule rule, final ConfigurationProperties props) {
+    public void decorateRouteContext(final RouteContext routeContext, 
+                                     final LogicSQL logicSQL, final ShardingSphereSchema schema, final ShadowRule rule, final ConfigurationProperties props) {
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         if (!(logicSQL.getSqlStatementContext().getSqlStatement() instanceof DMLStatement)) {
             for (RouteUnit each : routeContext.getRouteUnits()) {

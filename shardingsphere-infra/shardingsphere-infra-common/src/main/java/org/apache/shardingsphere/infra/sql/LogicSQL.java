@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.sql;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 import java.util.List;
@@ -30,8 +29,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 public final class LogicSQL {
-    
-    private final ShardingSphereSchema schema;
     
     private final SQLStatementContext<?> sqlStatementContext;
     

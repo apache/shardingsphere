@@ -74,7 +74,7 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
             throw new RuleNotExistsException();
         }
         LogicSQL logicSQL = createLogicSQL(schema, explainStatement.get());
-        executionUnits = kernelProcessor.generateExecutionContext(logicSQL, ProxyContext.getInstance().getSchemaContexts().getProps()).getExecutionUnits().iterator();
+        executionUnits = kernelProcessor.generateExecutionContext(logicSQL, schema, ProxyContext.getInstance().getSchemaContexts().getProps()).getExecutionUnits().iterator();
         queryHeaders = new ArrayList<>(2);
         queryHeaders.add(new QueryHeader("", "", "datasource_name", "", 255, Types.CHAR, 0, false, false, false, false));
         queryHeaders.add(new QueryHeader("", "", "sql", "", 255, Types.CHAR, 0, false, false, false, false));
@@ -85,7 +85,7 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
         SchemaMetaData schemaMetaData = schema.getMetaData().getRuleSchemaMetaData().getSchemaMetaData();
         SQLStatement sqlStatement = ProxyContext.getInstance().getSchemaContexts().getSqlParserEngine().parse(explainStatement.getSql(), false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, Collections.emptyList(), sqlStatement);
-        return new LogicSQL(schema, sqlStatementContext, explainStatement.getSql(), Collections.emptyList());
+        return new LogicSQL(sqlStatementContext, explainStatement.getSql(), Collections.emptyList());
     }
     
     @Override

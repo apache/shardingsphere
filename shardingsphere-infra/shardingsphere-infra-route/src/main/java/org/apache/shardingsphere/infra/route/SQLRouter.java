@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.route;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 import org.apache.shardingsphere.infra.sql.LogicSQL;
 
@@ -34,19 +35,21 @@ public interface SQLRouter<T extends ShardingSphereRule> extends OrderedSPI<T> {
      * Create route context.
      *
      * @param logicSQL logic SQL
+     * @param schema ShardingSphere schema
      * @param rule rule
      * @param props configuration properties
      * @return route context
      */
-    RouteContext createRouteContext(LogicSQL logicSQL, T rule, ConfigurationProperties props);
+    RouteContext createRouteContext(LogicSQL logicSQL, ShardingSphereSchema schema, T rule, ConfigurationProperties props);
     
     /**
      * Decorate route context.
      * 
      * @param routeContext route context
      * @param logicSQL logic SQL
+     * @param schema ShardingSphere schema
      * @param rule rule
      * @param props configuration properties
      */
-    void decorateRouteContext(RouteContext routeContext, LogicSQL logicSQL, T rule, ConfigurationProperties props);
+    void decorateRouteContext(RouteContext routeContext, LogicSQL logicSQL, ShardingSphereSchema schema, T rule, ConfigurationProperties props);
 }

@@ -63,7 +63,8 @@ public final class DatabaseCommunicationEngineFactory {
      */
     public DatabaseCommunicationEngine newTextProtocolInstance(final SQLStatement sqlStatement, final String sql, final BackendConnection backendConnection) {
         LogicSQL logicSQL = createLogicSQL(sqlStatement, sql, Collections.emptyList(), backendConnection);
-        return new JDBCDatabaseCommunicationEngine(logicSQL, new JDBCExecuteEngine(backendConnection, new StatementAccessor()));
+        return new JDBCDatabaseCommunicationEngine(
+                logicSQL, ProxyContext.getInstance().getSchema(backendConnection.getSchemaName()), new JDBCExecuteEngine(backendConnection, new StatementAccessor()));
     }
     
     /**
@@ -77,13 +78,14 @@ public final class DatabaseCommunicationEngineFactory {
      */
     public DatabaseCommunicationEngine newBinaryProtocolInstance(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
         LogicSQL logicSQL = createLogicSQL(sqlStatement, sql, new ArrayList<>(parameters), backendConnection);
-        return new JDBCDatabaseCommunicationEngine(logicSQL, new JDBCExecuteEngine(backendConnection, new PreparedStatementAccessor()));
+        return new JDBCDatabaseCommunicationEngine(
+                logicSQL, ProxyContext.getInstance().getSchema(backendConnection.getSchemaName()), new JDBCExecuteEngine(backendConnection, new PreparedStatementAccessor()));
     }
     
     private LogicSQL createLogicSQL(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
         ShardingSphereSchema schema = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
         SchemaMetaData schemaMetaData = schema.getMetaData().getRuleSchemaMetaData().getSchemaMetaData();
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, parameters, sqlStatement);
-        return new LogicSQL(schema, sqlStatementContext, sql, parameters);
+        return new LogicSQL(sqlStatementContext, sql, parameters);
     }
 }
