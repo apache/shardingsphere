@@ -36,8 +36,8 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public final class OracleJDBCSchemaHandlerTest {
-    
-    private final String USER_NAME = "root";
+
+    private static final String USER_NAME = "root";
 
     @Mock
     private Connection connection;
