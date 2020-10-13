@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class OracleJDBCSchemaHandlerTest {
     
-    private String userName = "root";
+    private final String USER_NAME = "root";
 
     @Mock
     private Connection connection;
@@ -53,7 +53,7 @@ public final class OracleJDBCSchemaHandlerTest {
     @Test
     public void assertGetSchema() throws SQLException {
         when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(databaseMetaData.getUserName()).thenReturn(userName);
-        assertThat(new OracleJDBCSchemaHandler().getSchema(connection), is(userName.toUpperCase()));
+        when(databaseMetaData.getUserName()).thenReturn(USER_NAME);
+        assertThat(new OracleJDBCSchemaHandler().getSchema(connection), is(USER_NAME.toUpperCase()));
     }
 }
