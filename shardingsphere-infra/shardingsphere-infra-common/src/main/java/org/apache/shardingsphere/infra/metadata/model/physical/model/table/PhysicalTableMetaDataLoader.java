@@ -47,9 +47,10 @@ public final class PhysicalTableMetaDataLoader {
      */
     public static Optional<PhysicalTableMetaData> load(final DataSource dataSource, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
         try (MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, dataSource.getConnection())) {
-            return isTableExist(connectionAdapter, tableNamePattern)
+            String tableName = decorateTableNamePattern(tableNamePattern, databaseType);
+            return isTableExist(connectionAdapter, tableName)
                     ? Optional.of(new PhysicalTableMetaData(
-                            PhysicalColumnMetaDataLoader.load(connectionAdapter, tableNamePattern, databaseType), PhysicalIndexMetaDataLoader.load(connectionAdapter, tableNamePattern)))
+                    PhysicalColumnMetaDataLoader.load(connectionAdapter, tableName, databaseType), PhysicalIndexMetaDataLoader.load(connectionAdapter, tableName)))
                     : Optional.empty();
         }
     }
@@ -58,5 +59,12 @@ public final class PhysicalTableMetaDataLoader {
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), tableNamePattern, null)) {
             return resultSet.next();
         }
+    }
+    
+    private static String decorateTableNamePattern(final String tableNamePattern, final DatabaseType databaseType) {
+        if ("Oracle".equalsIgnoreCase(databaseType.getName())) {
+            return tableNamePattern.toUpperCase();
+        }
+        return tableNamePattern;
     }
 }
