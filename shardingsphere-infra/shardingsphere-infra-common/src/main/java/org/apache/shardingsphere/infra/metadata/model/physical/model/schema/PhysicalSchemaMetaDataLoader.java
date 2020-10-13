@@ -61,7 +61,7 @@ public final class PhysicalSchemaMetaDataLoader {
             result = loadAllTableNames(connectionAdapter);
             result.removeAll(excludedTableNames);
         }
-        log.info("Loading {} tables' meta data.", result.size());
+        log.info("Loading {} tables' meta data for unconfigured tables.", result.size());
         if (result.isEmpty()) {
             return Collections.emptyList();
         }
