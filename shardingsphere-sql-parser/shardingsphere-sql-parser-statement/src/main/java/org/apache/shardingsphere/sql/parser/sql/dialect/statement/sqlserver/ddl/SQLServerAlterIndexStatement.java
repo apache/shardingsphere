@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
-import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
@@ -28,8 +28,8 @@ import java.util.Optional;
 /**
  * SQLServer alter index statement.
  */
-@Getter
 @Setter
+@ToString
 public final class SQLServerAlterIndexStatement extends AlterIndexStatement implements SQLServerStatement {
     
     private SimpleTableSegment table;

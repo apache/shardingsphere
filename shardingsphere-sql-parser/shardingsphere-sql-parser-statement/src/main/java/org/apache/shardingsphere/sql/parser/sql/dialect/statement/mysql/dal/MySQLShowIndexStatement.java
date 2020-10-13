@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
@@ -30,10 +31,11 @@ import java.util.Optional;
 /**
  * MySQL show index statement.
  */
-@Getter
 @Setter
+@ToString
 public final class MySQLShowIndexStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
+    @Getter
     private SimpleTableSegment table;
     
     private SchemaSegment schema;

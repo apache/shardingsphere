@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
-import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -28,8 +28,8 @@ import java.util.Optional;
 /**
  * MySQL create procedure statement.
  */
-@Getter
 @Setter
+@ToString
 public final class MySQLCreateProcedureStatement extends CreateProcedureStatement implements MySQLStatement {
     
     private RoutineBodySegment routineBody;

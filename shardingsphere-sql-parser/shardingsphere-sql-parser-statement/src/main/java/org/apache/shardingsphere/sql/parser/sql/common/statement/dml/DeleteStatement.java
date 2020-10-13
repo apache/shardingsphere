@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
@@ -28,10 +29,11 @@ import java.util.Optional;
 /**
  * Delete statement.
  */
-@Getter
 @Setter
+@ToString
 public abstract class DeleteStatement extends AbstractSQLStatement implements DMLStatement {
     
+    @Getter
     private TableSegment tableSegment;
     
     private WhereSegment where;
