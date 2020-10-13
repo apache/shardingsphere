@@ -12,7 +12,7 @@ The `Parameterized` in JUnit will collect all test data, and pass to test method
 ### Configuration
  
   - environment type
-    - /shardingsphere-test-suite/src/test/resources/integrate/env.properties
+    - /shardingsphere-test-suite/src/test/resources/integrate/env-jdbc-local.properties
     - /shardingsphere-test-suite/src/test/resources/integrate/env/`SQL-TYPE`/dataset.xml
     - /shardingsphere-test-suite/src/test/resources/integrate/env/`SQL-TYPE`/schema.xml
   - test case type
@@ -25,7 +25,7 @@ The `Parameterized` in JUnit will collect all test data, and pass to test method
 
 Integration test depends on existed database environment, developer need to setup the configuration file for corresponding database to test: 
 
-Firstly, setup configuration file `/shardingsphere-test-suite/src/test/resources/integrate/env.properties`, for example: 
+Firstly, setup configuration file `/shardingsphere-test-suite/src/test/resources/integrate/env-jdbc-local.properties`, for example: 
 
 ```properties
 # the switch for PK, concurrent, column index testing and so on
