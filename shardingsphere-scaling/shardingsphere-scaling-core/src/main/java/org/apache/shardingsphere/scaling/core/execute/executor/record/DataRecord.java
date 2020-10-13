@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.record;
 
+import lombok.ToString;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
 
 import lombok.EqualsAndHashCode;
@@ -33,6 +34,7 @@ import java.util.List;
 @Setter
 @Getter
 @EqualsAndHashCode(of = {"tableName", "primaryKeyValue"}, callSuper = false)
+@ToString
 public final class DataRecord extends Record {
     
     private final List<Column> columns;
