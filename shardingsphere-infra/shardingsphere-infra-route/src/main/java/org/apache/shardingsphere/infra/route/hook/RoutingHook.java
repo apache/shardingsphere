@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.route.hook;
 
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.SchemaMetaData;
 
 /**
  * Routing hook.

@@ -24,10 +24,10 @@ import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchema
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlTableMetaData;
 import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.index.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.column.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.index.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.TableMetaData;
 
 import java.util.Collection;
 import java.util.Collections;

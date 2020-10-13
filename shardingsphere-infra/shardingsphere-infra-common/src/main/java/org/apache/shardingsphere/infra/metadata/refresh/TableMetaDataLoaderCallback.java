@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.refresh;
 
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.TableMetaData;
 
 import java.sql.SQLException;
 import java.util.Optional;

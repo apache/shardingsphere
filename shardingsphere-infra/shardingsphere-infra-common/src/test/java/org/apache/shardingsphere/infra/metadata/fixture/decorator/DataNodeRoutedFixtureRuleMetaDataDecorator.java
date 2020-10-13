@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.metadata.fixture.decorator;
 
 import org.apache.shardingsphere.infra.metadata.fixture.rule.DataNodeRoutedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.model.rule.spi.RuleMetaDataDecorator;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.column.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.TableMetaData;
 
 import java.util.Collections;
 
