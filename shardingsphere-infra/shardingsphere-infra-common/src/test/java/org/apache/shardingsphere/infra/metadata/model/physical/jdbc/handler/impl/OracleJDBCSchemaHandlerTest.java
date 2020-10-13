@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 
 
 /**
- * Test for JDBC schema handler of Oracle
+ * Test for JDBC schema handler of Oracle.
  */
 @RunWith(MockitoJUnitRunner.class)
 public final class OracleJDBCSchemaHandlerTest {
