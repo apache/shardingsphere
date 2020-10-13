@@ -111,7 +111,8 @@ public final class ShardingSphereDataSourceFactory {
         for (Map.Entry<String, Map<String, Object>> dsEntry : dataSourceConfigMap.entrySet()) {
             Map<String, Object> dsConfig = dsEntry.getValue();
             convertYamlProps(dsConfig);
-            Boolean isTemplate = (Boolean) dsConfig.get(DS_IS_TEMPLATE);
+            Object isTempObj = dsConfig.get(DS_IS_TEMPLATE);
+            Boolean isTemplate =  isTempObj == null ? null : Boolean.valueOf(isTempObj.toString());
             if (!Boolean.TRUE.equals(isTemplate)) {
                 String templateKey = (String) dsConfig.get(DS_TEMPLATE);
                 Map<String, Object> pDsConfig = dataSourceConfigMap.get(templateKey);
@@ -122,6 +123,10 @@ public final class ShardingSphereDataSourceFactory {
                 String type = (String) dsConfig.get(DS_TYPE);
                 if (type == null && pDsConfig != null) {
                     type = (String) pDsConfig.get(DS_TYPE);
+                }
+                if (type == null) {
+                    log.info("Datasource [{}] has no type define, configuration: {}", dsName, dsConfig);
+                    continue;
                 }
                 try {
                     Class<?> dataSourceClass = Class.forName(type);

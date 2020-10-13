@@ -74,7 +74,32 @@ public final class PropertyUtil {
     public static <T> T handle(final Environment environment, final String prefix, final Class<T> targetClass) {
         return 1 == springBootVersion ? (T) v1(environment, prefix, true) : (T) v2(environment, prefix, targetClass);
     }
-    
+    /**
+     * convert flat properties to datasource properties. e.g.
+     * { ds1.username=u1, ds1.passwd=p1, ds2.username=u2 } to
+     * { ds1={username=u1, passwd=p1}, ds2={username=u2} }
+     * @param flatPropsMap datasource properties in flat format.
+     * @return converted properties
+     */
+    public static Map<String, Map<String, Object>> translateDataSourceProps(Map<String, Object> flatPropsMap) {
+        if (flatPropsMap == null || flatPropsMap.isEmpty()) {
+            return null;
+        }
+        Map<String, Map<String, Object>> dsProps = new HashMap<>();
+        for (Map.Entry<String, Object> prop : flatPropsMap.entrySet()) {
+            String key = prop.getKey();
+            if (key.contains(".")) {
+                String[] names = key.split("\\.");
+                Map<String, Object> dsMap =  dsProps.get(names[0]);
+                if (dsMap == null) {
+                    dsMap = new HashMap<>(20);
+                    dsProps.put(names[0], dsMap);
+                }
+                dsMap.put(names[1], prop.getValue());
+            }
+        }
+        return dsProps;
+    }
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private static Object v1(final Environment environment, final String prefix, final boolean handlePlaceholder) {
