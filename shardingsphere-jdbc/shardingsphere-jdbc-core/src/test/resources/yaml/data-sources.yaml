@@ -22,7 +22,7 @@ dataSources:
     username: root
     password:
     maximumPoolSize: 2
-    isTemplate: true
+    is-template: true
   ds_0: 
     template: template1
     jdbc-url: jdbc:h2:mem:core

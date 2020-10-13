@@ -25,14 +25,17 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 
 import javax.sql.DataSource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -58,6 +61,8 @@ public final class ShardingSphereDataSourceFactory {
      * property name to indicate whether a datasource is a template, defaults to NOT.
      */
     static final String DS_IS_TEMPLATE = "isTemplate";
+
+    static final String DATA_SOURCE_NAMES = "names";
 
     /**
      * Create ShardingSphere data source.
@@ -102,16 +107,25 @@ public final class ShardingSphereDataSourceFactory {
         return new ShardingSphereDataSource(fromDataSourceConfig(dataSourceConfigMap), configurations, props);
     }
 
-    /**Create datasources from datasource yaml configurations.
+    /**Create datasources from datasource yaml configurations. Note: after this method, all yaml style keys in dataSourceConfigMap will be change to java style, e.g. max-pool-size to maxPoolSize.
      * @param dataSourceConfigMap datasource config properties map
      * @return datasources map
      */
     public static Map<String, DataSource> fromDataSourceConfig(final Map<String, Map<String, Object>> dataSourceConfigMap) {
-        Map<String, DataSource> map = new HashMap<>();
+        Map<String, DataSource> dsmap = new HashMap<>();
+        if (dataSourceConfigMap == null || dataSourceConfigMap.isEmpty()) {
+            return dsmap;
+        }
+        Map<String, Map<String, Object>> convertedDataSourceConfigMap = new HashMap<>(dataSourceConfigMap.size() * 2);
         for (Map.Entry<String, Map<String, Object>> dsEntry : dataSourceConfigMap.entrySet()) {
             Map<String, Object> dsConfig = dsEntry.getValue();
-            convertYamlProps(dsConfig);
-            Boolean isTemplate = (Boolean) dsConfig.get(DS_IS_TEMPLATE);
+            dsConfig = convertPropNames(dsConfig);
+            convertedDataSourceConfigMap.put(dsEntry.getKey(), dsConfig);
+        }
+        for (Map.Entry<String, Map<String, Object>> dsEntry : convertedDataSourceConfigMap.entrySet()) {
+            Map<String, Object> dsConfig = dsEntry.getValue();
+            Object isTempObj = dsConfig.get(DS_IS_TEMPLATE);
+            Boolean isTemplate = isTempObj == null ? null : Boolean.valueOf(isTempObj.toString());
             if (!Boolean.TRUE.equals(isTemplate)) {
                 String templateKey = (String) dsConfig.get(DS_TEMPLATE);
                 Map<String, Object> pDsConfig = dataSourceConfigMap.get(templateKey);
@@ -123,6 +137,10 @@ public final class ShardingSphereDataSourceFactory {
                 if (type == null && pDsConfig != null) {
                     type = (String) pDsConfig.get(DS_TYPE);
                 }
+                if (type == null) {
+                    log.info("Datasource [{}] has no type define, configuration: {}", dsName, dsConfig);
+                    continue;
+                }
                 try {
                     Class<?> dataSourceClass = Class.forName(type);
                     DataSource ds = (DataSource) dataSourceClass.newInstance();
@@ -130,7 +148,7 @@ public final class ShardingSphereDataSourceFactory {
                         BeanUtils.copyProperties(ds, pDsConfig);
                     }
                     BeanUtils.copyProperties(ds, dsConfig);
-                    map.put(dsName, ds);
+                    dsmap.put(dsName, ds);
                 } catch (ClassNotFoundException | IllegalAccessException e) {
                     throw new RuntimeException("Datasource [" + dsName + "] has a wrong type as [" + type + "]");
                 } catch (InstantiationException e) {
@@ -142,16 +160,43 @@ public final class ShardingSphereDataSourceFactory {
                 }
             }
         }
-        log.info("Resolved datasources:{}", map);
-        return map;
+        log.info("Resolved datasources:{}", dsmap);
+        return dsmap;
+    }
+    
+    /** extract names property to datasource name list. names maybe: "ds1"; "ds1, ds2"; "ds$-&gt;{0..1}"; ["ds1", "ds2"].
+     * @param flatDsProps datasource config properties
+     * @return datasource names
+     */
+    public static List<String> extractDataSourceNames(final Map<String, Object> flatDsProps) {
+        Object nameso = flatDsProps.get(DATA_SOURCE_NAMES);
+        // names maybe: "ds1"; "ds1, ds2"; "ds$->{0..1}"; ["ds1", "ds2"]
+        if (nameso == null) {
+            return null;
+        }
+        if (nameso instanceof String[]) {
+            return Arrays.asList((String[]) nameso);
+        } else {
+            String names = nameso.toString();
+            if (names.contains("$")) {
+                return new InlineExpressionParser(names).splitAndEvaluate();
+            } else {
+                String[] splited = names.split(",");
+                for (int i = 0; i < splited.length; i++) {
+                    splited[i] = splited[i].trim();
+                }
+                return Arrays.asList(splited);
+            }
+        }
     }
 
-    /** convert ymal property names to java property names. e.g. max-pool-size -> maxPoolSize
-     * @param yamlConf yaml configuration properties
+    /** convert property style names to java tyle names. e.g. max-pool-size -&gt; maxPoolSize
+     * @param propConf configuration properties from property or yaml style
+     * @return converted config properties
      */
-    private static void convertYamlProps(final Map<String, Object> yamlConf) {
-        Map<String, Object> tempMap = null;
-        Iterator<Entry<String, Object>> it = yamlConf.entrySet().iterator();
+    public static Map<String, Object> convertPropNames(final Map<String, Object> propConf) {
+        Map<String, Object> tempMap = new HashMap<>(propConf.size() * 2);
+        Iterator<Entry<String, Object>> it = propConf.entrySet().iterator();
         while (it.hasNext()) {
             Entry<String, Object> ent = it.next();
             String key = ent.getKey();
@@ -161,16 +206,10 @@ public final class ShardingSphereDataSourceFactory {
                     key = key.substring(0, idx) + key.substring(idx + 1, idx + 2).toUpperCase() + key.substring(idx + 2);
                     idx = key.indexOf("-");
                 } while (idx >= 0);
-                it.remove();
-                if (tempMap == null) {
-                    tempMap = new HashMap<>(yamlConf.size() * 2);
-                }
-                tempMap.put(key, ent.getValue());
             }
+            tempMap.put(key, ent.getValue());
         }
-        if (tempMap != null) {
-            yamlConf.putAll(tempMap);
-        }
+        return tempMap;
     }
     
 }
