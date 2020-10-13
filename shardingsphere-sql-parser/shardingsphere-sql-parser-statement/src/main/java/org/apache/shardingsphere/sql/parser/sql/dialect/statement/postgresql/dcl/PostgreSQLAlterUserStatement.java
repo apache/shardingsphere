@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL alter user statement.
  */
+@ToString
 public final class PostgreSQLAlterUserStatement extends AlterUserStatement implements PostgreSQLStatement {
 }

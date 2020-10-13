@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle drop user statement.
  */
+@ToString
 public final class OracleDropUserStatement extends DropUserStatement implements OracleStatement {
 }

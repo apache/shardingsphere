@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle truncate table statement.
  */
+@ToString
 public final class OracleTruncateStatement extends TruncateStatement implements OracleStatement {
 }

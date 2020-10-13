@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.RemoveAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
@@ -29,6 +30,7 @@ import java.util.Optional;
  * MySQL show tables statement.
  */
 @Setter
+@ToString
 public final class MySQLShowTablesStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private RemoveAvailable fromSchema;

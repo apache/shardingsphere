@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL analyze table statement.
  */
+@ToString
 public final class MySQLAnalyzeTableStatement extends AnalyzeTableStatement implements MySQLStatement {
 }

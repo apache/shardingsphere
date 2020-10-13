@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL rollback statement.
  */
+@ToString
 public final class MySQLRollbackStatement extends RollbackStatement implements MySQLStatement {
 }

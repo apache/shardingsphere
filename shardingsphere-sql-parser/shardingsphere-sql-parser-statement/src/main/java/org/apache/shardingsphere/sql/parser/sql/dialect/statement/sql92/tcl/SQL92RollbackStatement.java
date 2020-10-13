@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.tcl;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Statement;
 
 /**
  * SQL92 rollback statement.
  */
+@ToString
 public final class SQL92RollbackStatement extends RollbackStatement implements SQL92Statement {
 }

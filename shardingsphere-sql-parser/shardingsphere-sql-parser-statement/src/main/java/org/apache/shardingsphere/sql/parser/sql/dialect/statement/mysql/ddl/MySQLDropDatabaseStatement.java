@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL drop database statement.
  */
+@ToString
 public final class MySQLDropDatabaseStatement extends DropDatabaseStatement implements MySQLStatement {
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -30,7 +31,8 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class MySQLAlterViewStatement extends AlterViewStatement implements MySQLStatement {
+@ToString
+public final class MySQLAlterViewStatement extends AlterViewStatement implements MySQLStatement {
     
     private SelectStatement select;
     

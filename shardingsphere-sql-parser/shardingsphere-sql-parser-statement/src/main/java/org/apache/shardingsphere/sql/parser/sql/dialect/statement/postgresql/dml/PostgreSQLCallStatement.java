@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL call statement.
  */
+@ToString
 public final class PostgreSQLCallStatement extends CallStatement implements PostgreSQLStatement {
 }

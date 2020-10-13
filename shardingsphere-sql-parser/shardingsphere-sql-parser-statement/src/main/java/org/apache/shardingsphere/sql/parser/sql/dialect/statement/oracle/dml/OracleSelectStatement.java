@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml;
 
-import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
@@ -28,8 +28,8 @@ import java.util.Optional;
 /**
  * Oracle select statement.
  */
-@Getter
 @Setter
+@ToString
 public final class OracleSelectStatement extends SelectStatement implements OracleStatement {
     
     private LockSegment lock;

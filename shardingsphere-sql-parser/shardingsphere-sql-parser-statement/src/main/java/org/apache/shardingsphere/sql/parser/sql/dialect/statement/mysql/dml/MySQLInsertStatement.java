@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml;
 
-import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -29,8 +29,8 @@ import java.util.Optional;
 /**
  * MySQL insert statement.
  */
-@Getter
 @Setter
+@ToString
 public final class MySQLInsertStatement extends InsertStatement implements MySQLStatement {
 
     private SetAssignmentSegment setAssignment;

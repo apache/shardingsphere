@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -41,9 +40,7 @@ public final class PhysicalSchemaMetaData {
     
     public PhysicalSchemaMetaData(final Map<String, PhysicalTableMetaData> tables) {
         this.tables = new ConcurrentHashMap<>(tables.size(), 1);
-        for (Entry<String, PhysicalTableMetaData> entry : tables.entrySet()) {
-            this.tables.put(entry.getKey().toLowerCase(), entry.getValue());
-        }
+        tables.forEach((key, value) -> this.tables.put(key.toLowerCase(), value));
     }
     
     /**

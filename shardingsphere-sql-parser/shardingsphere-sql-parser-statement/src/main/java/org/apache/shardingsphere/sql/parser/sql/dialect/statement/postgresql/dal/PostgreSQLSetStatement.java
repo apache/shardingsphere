@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL set statement.
  */
+@ToString
 public final class PostgreSQLSetStatement extends SetStatement implements PostgreSQLStatement {
 }

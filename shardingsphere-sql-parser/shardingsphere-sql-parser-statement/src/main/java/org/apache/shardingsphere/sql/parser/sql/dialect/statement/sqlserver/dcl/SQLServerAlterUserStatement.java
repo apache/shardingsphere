@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer alter user statement.
  */
+@ToString
 public final class SQLServerAlterUserStatement extends AlterUserStatement implements SQLServerStatement {
 }

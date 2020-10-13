@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Statement;
 
 /**
  * SQL92 drop table statement.
  */
+@ToString
 public final class SQL92DropTableStatement extends DropTableStatement implements SQL92Statement {
 }

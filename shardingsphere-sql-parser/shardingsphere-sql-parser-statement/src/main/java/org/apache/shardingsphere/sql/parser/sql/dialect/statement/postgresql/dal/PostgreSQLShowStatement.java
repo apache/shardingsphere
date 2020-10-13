@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
@@ -24,5 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL show statement.
  */
+@ToString
 public final class PostgreSQLShowStatement extends AbstractSQLStatement implements DALStatement, PostgreSQLStatement {
 }

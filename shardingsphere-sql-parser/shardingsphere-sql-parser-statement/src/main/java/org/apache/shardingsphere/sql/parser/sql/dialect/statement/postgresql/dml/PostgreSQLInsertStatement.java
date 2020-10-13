@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml;
 
-import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
@@ -28,8 +28,8 @@ import java.util.Optional;
 /**
  * PostgreSQL insert statement.
  */
-@Getter
 @Setter
+@ToString
 public final class PostgreSQLInsertStatement extends InsertStatement implements PostgreSQLStatement {
     
     private WithSegment withSegment;
