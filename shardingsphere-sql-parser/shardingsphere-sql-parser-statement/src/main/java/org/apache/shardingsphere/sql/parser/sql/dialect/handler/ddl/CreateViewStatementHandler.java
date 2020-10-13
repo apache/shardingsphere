@@ -15,31 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateViewStatement;
 
 import java.util.Optional;
 
 /**
- * MySQL create view statement.
+ * CreateViewStatement handler for different dialect SQLStatements.
  */
-@Getter
-@Setter
-public final class MySQLCreateViewStatement extends CreateViewStatement implements MySQLStatement {
-    
-    private SelectStatement select;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CreateViewStatementHandler implements SQLStatementHandler {
     
     /**
      * Get select statement.
      *
+     * @param createViewStatement CreateViewStatement
      * @return select statement
      */
-    public Optional<SelectStatement> getSelect() {
-        return Optional.ofNullable(select);
+    public static Optional<SelectStatement> getSelectStatement(final CreateViewStatement createViewStatement) {
+        if (createViewStatement instanceof MySQLStatement) {
+            return ((MySQLCreateViewStatement) createViewStatement).getSelect();
+        }
+        return Optional.empty();
     }
 }

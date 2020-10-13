@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.validator.impl;
+package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
-import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Sharding create table statement validator.
  */
-public final class ShardingCreateTableStatementValidator implements ShardingStatementValidator<CreateTableStatement> {
+public final class ShardingCreateTableStatementValidator extends ShardingDDLStatementValidator<CreateTableStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, 
-                            final SQLStatementContext<CreateTableStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereMetaData metaData) {
-        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        if (!CreateTableStatementHandler.containsIfNotExistClause(sqlStatementContext.getSqlStatement()) && metaData.getRuleSchemaMetaData().getAllTableNames().contains(tableName)) {
-            throw new TableExistsException(tableName);
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateTableStatement> sqlStatementContext, 
+                            final List<Object> parameters, final ShardingSphereMetaData metaData) {
+        if (!CreateTableStatementHandler.containsIfNotExistClause(sqlStatementContext.getSqlStatement())) {
+            validateTableNotExist(metaData, Collections.singletonList(sqlStatementContext.getSqlStatement().getTable()));
         }
     }
     

@@ -41,6 +41,8 @@ public final class GovernanceShardingSphereDataSourceFactoryTest {
     
     private static final String TABLE_TYPE = "TABLE";
     
+    private static final String VIEW_TYPE = "VIEW";
+    
     @Test
     public void assertCreateDataSourceWhenRuleConfigurationsNotEmpty() throws SQLException {
         DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singletonList(mock(RuleConfiguration.class)),
@@ -68,7 +70,7 @@ public final class GovernanceShardingSphereDataSourceFactoryTest {
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/mysql?serverTimezone=GMT%2B8");
         ResultSet resultSet = mock(ResultSet.class);
-        when(databaseMetaData.getTables(null, null, null, new String[]{TABLE_TYPE})).thenReturn(resultSet);
+        when(databaseMetaData.getTables(null, null, null, new String[]{TABLE_TYPE, VIEW_TYPE})).thenReturn(resultSet);
         when(result.getConnection()).thenReturn(connection);
         return result;
     }

@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
+package org.apache.shardingsphere.infra.binder.statement.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateViewStatementHandler;
 
 import java.util.Optional;
 
 /**
- * MySQL create view statement.
+ * Create view statement context.
  */
 @Getter
-@Setter
-public final class MySQLCreateViewStatement extends CreateViewStatement implements MySQLStatement {
+public final class CreateViewStatementContext extends CommonSQLStatementContext<CreateViewStatement> {
     
-    private SelectStatement select;
+    private final TablesContext tablesContext;
     
-    /**
-     * Get select statement.
-     *
-     * @return select statement
-     */
-    public Optional<SelectStatement> getSelect() {
-        return Optional.ofNullable(select);
+    public CreateViewStatementContext(final CreateViewStatement sqlStatement) {
+        super(sqlStatement);
+        Optional<SelectStatement> selectStatement = CreateViewStatementHandler.getSelectStatement(sqlStatement);
+        TableExtractor extractor = new TableExtractor();
+        selectStatement.ifPresent(extractor::extractTablesFromSelect);
+        tablesContext = new TablesContext(extractor.getRewriteTables());
     }
 }

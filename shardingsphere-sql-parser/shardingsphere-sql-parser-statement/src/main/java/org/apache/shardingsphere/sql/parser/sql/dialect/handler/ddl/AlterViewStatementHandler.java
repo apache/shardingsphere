@@ -15,31 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLAlterViewStatement;
 
 import java.util.Optional;
 
 /**
- * MySQL create view statement.
+ * AlterViewStatement handler for different dialect SQLStatements.
  */
-@Getter
-@Setter
-public final class MySQLCreateViewStatement extends CreateViewStatement implements MySQLStatement {
-    
-    private SelectStatement select;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AlterViewStatementHandler implements SQLStatementHandler {
     
     /**
      * Get select statement.
      *
+     * @param alterViewStatement AlterViewStatement
      * @return select statement
      */
-    public Optional<SelectStatement> getSelect() {
-        return Optional.ofNullable(select);
+    public static Optional<SelectStatement> getSelectStatement(final AlterViewStatement alterViewStatement) {
+        if (alterViewStatement instanceof MySQLStatement) {
+            return ((MySQLAlterViewStatement) alterViewStatement).getSelect();
+        }
+        return Optional.empty();
     }
 }

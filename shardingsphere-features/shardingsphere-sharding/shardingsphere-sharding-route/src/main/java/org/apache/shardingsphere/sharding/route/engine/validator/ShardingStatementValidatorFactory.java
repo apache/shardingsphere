@@ -19,16 +19,22 @@ package org.apache.shardingsphere.sharding.route.engine.validator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingCreateFunctionStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingCreateProcedureStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingCreateTableStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingDeleteStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingInsertStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingUpdateStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterViewStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateFunctionStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateProcedureStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateTableStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateViewStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingDeleteStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingInsertStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingUpdateStatementValidator;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
@@ -48,15 +54,16 @@ public final class ShardingStatementValidatorFactory {
      * @return instance of sharding statement validator
      */
     public static Optional<ShardingStatementValidator> newInstance(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof InsertStatement) {
-            return Optional.of(new ShardingInsertStatementValidator());
+        if (sqlStatement instanceof DDLStatement) {
+            return getDDLStatementValidator(sqlStatement);
         }
-        if (sqlStatement instanceof UpdateStatement) {
-            return Optional.of(new ShardingUpdateStatementValidator());
+        if (sqlStatement instanceof DMLStatement) {
+            return getDMLStatementValidator(sqlStatement);
         }
-        if (sqlStatement instanceof DeleteStatement) {
-            return Optional.of(new ShardingDeleteStatementValidator());
-        }
+        return Optional.empty();
+    }
+    
+    private static Optional<ShardingStatementValidator> getDDLStatementValidator(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof CreateTableStatement) {
             return Optional.of(new ShardingCreateTableStatementValidator());
         }
@@ -65,6 +72,25 @@ public final class ShardingStatementValidatorFactory {
         }
         if (sqlStatement instanceof CreateProcedureStatement) {
             return Optional.of(new ShardingCreateProcedureStatementValidator());
+        }
+        if (sqlStatement instanceof CreateViewStatement) {
+            return Optional.of(new ShardingCreateViewStatementValidator());
+        }
+        if (sqlStatement instanceof AlterViewStatement) {
+            return Optional.of(new ShardingAlterViewStatementValidator());
+        }
+        return Optional.empty();
+    }
+    
+    private static Optional<ShardingStatementValidator> getDMLStatementValidator(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof InsertStatement) {
+            return Optional.of(new ShardingInsertStatementValidator());
+        }
+        if (sqlStatement instanceof UpdateStatement) {
+            return Optional.of(new ShardingUpdateStatementValidator());
+        }
+        if (sqlStatement instanceof DeleteStatement) {
+            return Optional.of(new ShardingDeleteStatementValidator());
         }
         return Optional.empty();
     }
