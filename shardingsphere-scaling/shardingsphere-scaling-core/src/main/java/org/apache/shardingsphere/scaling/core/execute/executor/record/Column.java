@@ -34,4 +34,9 @@ public final class Column {
     private final boolean updated;
     
     private final boolean primaryKey;
+    
+    @Override
+    public String toString() {
+        return String.format("%s=%s", name, value);
+    }
 }
