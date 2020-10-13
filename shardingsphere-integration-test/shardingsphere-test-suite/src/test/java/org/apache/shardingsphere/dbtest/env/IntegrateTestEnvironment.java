@@ -52,7 +52,7 @@ public final class IntegrateTestEnvironment {
         activeProfile = loadActiveProfile();
         Properties prop = new Properties();
         try {
-            prop.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream(isProxyEnvironment() ? "integrate/env-proxy.properties" : "integrate/env.properties"));
+            prop.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream(getEnvironmentProperties()));
         } catch (final IOException ex) {
             throw new RuntimeException(ex);
         }
@@ -98,6 +98,16 @@ public final class IntegrateTestEnvironment {
             throw new RuntimeException(ex);
         }
         return prop.getProperty("mode");
+    }
+    
+    private String getEnvironmentProperties() {
+        if ("jdbc-ci".equals(activeProfile)) {
+            return "integrate/env-jdbc-ci.properties";
+        }
+        if ("proxy".equals(activeProfile)) {
+            return "integrate/env-proxy.properties";
+        }
+        return "integrate/env-jdbc-local.properties";
     }
     
     /**

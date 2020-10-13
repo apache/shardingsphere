@@ -72,12 +72,18 @@
     
     <profiles>
         <profile>
-            <id>it-jdbc</id>
+            <id>it-jdbc-local</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <it.mode>jdbc</it.mode>
+                <it.mode>jdbc-local</it.mode>
+            </properties>
+        </profile>
+        <profile>
+            <id>it-jdbc-ci</id>
+            <properties>
+                <it.mode>jdbc-ci</it.mode>
             </properties>
         </profile>
         <profile>
