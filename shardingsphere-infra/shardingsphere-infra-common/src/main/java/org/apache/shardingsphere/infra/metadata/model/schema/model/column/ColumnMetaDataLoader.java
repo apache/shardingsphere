@@ -90,13 +90,14 @@ public final class ColumnMetaDataLoader {
         // TODO consider add a getDialectDelimeter() interface in parse module
         String delimiterLeft;
         String delimiterRight;
-        if ("MySQL".equals(databaseType) || "MariaDB".equals(databaseType)) {
+        String databaseTypeName = databaseType.getName();
+        if ("MySQL".equals(databaseTypeName) || "MariaDB".equals(databaseTypeName)) {
             delimiterLeft = "`";
             delimiterRight = "`";
-        } else if ("Oracle".equals(databaseType) || "PostgreSQL".equals(databaseType) || "H2".equals(databaseType) || "SQL92".equals(databaseType)) {
+        } else if ("Oracle".equals(databaseTypeName) || "PostgreSQL".equals(databaseTypeName) || "H2".equals(databaseTypeName) || "SQL92".equals(databaseTypeName)) {
             delimiterLeft = "\"";
             delimiterRight = "\"";
-        } else if ("SQLServer".equals(databaseType)) {
+        } else if ("SQLServer".equals(databaseTypeName)) {
             delimiterLeft = "[";
             delimiterRight = "]";
         } else {
