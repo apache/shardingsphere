@@ -73,11 +73,15 @@ multipleTableNames
     ;
 
 select 
-    : unionClause
+    : aggregationClause
+    ;
+
+aggregationClause
+    : selectClause ((UNION (ALL)? | EXCEPT | INTERSECT) selectClause)*
     ;
 
 unionClause
-    : selectClause (UNION (ALL | DISTINCT)? selectClause)*
+    : selectClause (UNION (ALL)? selectClause)*
     ;
 
 selectClause
