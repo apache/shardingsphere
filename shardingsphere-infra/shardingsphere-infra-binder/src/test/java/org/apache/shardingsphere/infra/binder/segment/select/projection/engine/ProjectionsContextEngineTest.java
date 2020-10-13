@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.select.projection.engine;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
@@ -52,11 +52,11 @@ import static org.junit.Assert.assertNotNull;
 
 public final class ProjectionsContextEngineTest {
 
-    private SchemaMetaData schemaMetaData;
+    private PhysicalSchemaMetaData schemaMetaData;
     
     @Before
     public void setUp() {
-        schemaMetaData = new SchemaMetaData(Collections.emptyMap());
+        schemaMetaData = new PhysicalSchemaMetaData(Collections.emptyMap());
     }
 
     @Test

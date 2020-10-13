@@ -24,10 +24,10 @@ import org.apache.shardingsphere.infra.metadata.model.datasource.DataSourcesMeta
 import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.index.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.index.PhysicalIndexMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ExpressionProjection;
@@ -128,9 +128,9 @@ public final class QueryHeaderBuilderTest {
     
     private ShardingSphereSchema createSchema() {
         ShardingSphereSchema result = mock(ShardingSphereSchema.class);
-        ColumnMetaData columnMetaData = new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false);
-        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
-        when(schemaMetaData.get("t_logic_order")).thenReturn(new TableMetaData(Collections.singletonList(columnMetaData), Collections.singletonList(new IndexMetaData("order_id"))));
+        PhysicalColumnMetaData columnMetaData = new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", true, false, false);
+        PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
+        when(schemaMetaData.get("t_logic_order")).thenReturn(new PhysicalTableMetaData(Collections.singletonList(columnMetaData), Collections.singletonList(new PhysicalIndexMetaData("order_id"))));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
         when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);

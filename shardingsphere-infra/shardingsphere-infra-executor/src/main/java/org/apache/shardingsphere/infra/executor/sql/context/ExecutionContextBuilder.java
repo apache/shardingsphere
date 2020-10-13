@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
@@ -120,7 +120,7 @@ public final class ExecutionContextBuilder {
     private static List<PrimaryKeyMetaData> getPrimaryKeyColumns(final ShardingSphereMetaData metaData, final List<String> actualTableNames) {
         List<PrimaryKeyMetaData> result = new LinkedList<>();
         for (String each: actualTableNames) {
-            TableMetaData tableMetaData = metaData.getRuleSchemaMetaData().getSchemaMetaData().get(each);
+            PhysicalTableMetaData tableMetaData = metaData.getRuleSchemaMetaData().getSchemaMetaData().get(each);
             if (null != tableMetaData) {
                 result.add(new PrimaryKeyMetaData(each, tableMetaData.getPrimaryKeyColumns()));
             }

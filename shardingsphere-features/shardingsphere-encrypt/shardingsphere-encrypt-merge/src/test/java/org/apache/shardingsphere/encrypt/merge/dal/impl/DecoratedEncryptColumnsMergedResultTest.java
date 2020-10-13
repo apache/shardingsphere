@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.merge.dal.impl;
 
 import org.apache.shardingsphere.encrypt.merge.dal.impl.fixture.TestStatementContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -52,7 +52,7 @@ public final class DecoratedEncryptColumnsMergedResultTest {
         when(mergedResult.next()).thenReturn(true);
         when(mergedResult.wasNull()).thenReturn(false);
         when(mergedResult.getValue(eq(new Integer(1)), eq(getClass()))).thenReturn("test");
-        DecoratedEncryptColumnsMergedResult actual = new DecoratedEncryptColumnsMergedResult(mergedResult, testStatementContext, mock(SchemaMetaData.class));
+        DecoratedEncryptColumnsMergedResult actual = new DecoratedEncryptColumnsMergedResult(mergedResult, testStatementContext, mock(PhysicalSchemaMetaData.class));
         assertNotNull(actual);
         assertTrue(actual.nextValue());
         assertFalse(actual.wasNull());

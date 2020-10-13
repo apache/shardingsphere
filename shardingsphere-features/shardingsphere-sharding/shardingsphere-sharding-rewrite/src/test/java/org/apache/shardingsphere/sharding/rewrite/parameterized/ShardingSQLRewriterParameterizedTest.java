@@ -41,10 +41,10 @@ import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.index.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.index.PhysicalIndexMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.engine.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.engine.StandardSQLParserEngine;
@@ -103,16 +103,16 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData() {
-        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
+        PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
         when(schemaMetaData.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_detail"));
-        TableMetaData accountTableMetaData = mock(TableMetaData.class);
+        PhysicalTableMetaData accountTableMetaData = mock(PhysicalTableMetaData.class);
         when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
-        Map<String, IndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
-        indexMetaDataMap.put("index_name", new IndexMetaData("index_name"));
+        Map<String, PhysicalIndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
+        indexMetaDataMap.put("index_name", new PhysicalIndexMetaData("index_name"));
         when(accountTableMetaData.getIndexes()).thenReturn(indexMetaDataMap);
         when(schemaMetaData.containsTable("t_account")).thenReturn(true);
         when(schemaMetaData.get("t_account")).thenReturn(accountTableMetaData);
-        when(schemaMetaData.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
+        when(schemaMetaData.get("t_account_detail")).thenReturn(mock(PhysicalTableMetaData.class));
         when(schemaMetaData.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "amount", "status"));
         RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
         when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
@@ -120,11 +120,11 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         return new ShardingSphereMetaData(mock(DataSourcesMetaData.class), ruleSchemaMetaData, mock(CachedDatabaseMetaData.class));
     }
     
-    private Map<String, ColumnMetaData> createColumnMetaDataMap() {
-        Map<String, ColumnMetaData> result = new LinkedHashMap<>(3, 1);
-        result.put("account_id", new ColumnMetaData("account_id", Types.INTEGER, "INT", true, true, false));
-        result.put("amount", mock(ColumnMetaData.class));
-        result.put("status", mock(ColumnMetaData.class));
+    private Map<String, PhysicalColumnMetaData> createColumnMetaDataMap() {
+        Map<String, PhysicalColumnMetaData> result = new LinkedHashMap<>(3, 1);
+        result.put("account_id", new PhysicalColumnMetaData("account_id", Types.INTEGER, "INT", true, true, false));
+        result.put("amount", mock(PhysicalColumnMetaData.class));
+        result.put("status", mock(PhysicalColumnMetaData.class));
         return result;
     }
 }

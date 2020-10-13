@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.route.engine.judge.impl;
 
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -51,7 +51,7 @@ public final class PreparedShadowDataSourceRouterTest {
     
     @Test
     public void isShadowSQL() {
-        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
+        PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
         ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("shadow_ds"));
         ShadowRule shadowRule = new ShadowRule(shadowRuleConfig);
@@ -91,7 +91,7 @@ public final class PreparedShadowDataSourceRouterTest {
     }
 
     private void isShadowSQLInLiteralExpression(final SelectStatement selectStatement) {
-        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
+        PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
         ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("shadow_ds"));
         ShadowRule shadowRule = new ShadowRule(shadowRuleConfig);

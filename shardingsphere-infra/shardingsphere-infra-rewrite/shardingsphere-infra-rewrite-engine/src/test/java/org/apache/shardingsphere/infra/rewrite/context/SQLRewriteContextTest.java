@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardPa
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -48,7 +48,7 @@ public final class SQLRewriteContextTest {
     private SQLStatementContext sqlStatementContext;
     
     @Mock
-    private SchemaMetaData schemaMetaData;
+    private PhysicalSchemaMetaData schemaMetaData;
     
     @Mock
     private SQLToken sqlToken;
@@ -70,14 +70,14 @@ public final class SQLRewriteContextTest {
     @Test
     public void assertInsertStatementContext() {
         InsertStatementContext statementContext = mock(InsertStatementContext.class);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(SchemaMetaData.class), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(PhysicalSchemaMetaData.class), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
         assertThat(sqlRewriteContext.getParameterBuilder(), instanceOf(GroupedParameterBuilder.class));
     }
     
     @Test
     public void assertNotInsertStatementContext() {
         SelectStatementContext statementContext = mock(SelectStatementContext.class);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(SchemaMetaData.class), statementContext, "SELECT * FROM tbl WHERE id = ?", Collections.singletonList(1));
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(PhysicalSchemaMetaData.class), statementContext, "SELECT * FROM tbl WHERE id = ?", Collections.singletonList(1));
         assertThat(sqlRewriteContext.getParameterBuilder(), instanceOf(StandardParameterBuilder.class));
     }
     

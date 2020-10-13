@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.refresh.impl;
 
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
@@ -38,13 +38,13 @@ public final class AlterTableStatementMetaDataRefreshStrategy implements MetaDat
     public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
                                 final Map<String, DataSource> dataSourceMap, final AlterTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        SchemaMetaData schemaMetaData = metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData();
+        PhysicalSchemaMetaData schemaMetaData = metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData();
         if (null != schemaMetaData && schemaMetaData.containsTable(tableName)) {
             callback.load(tableName).ifPresent(tableMetaData -> alterMetaData(metaData, tableName, tableMetaData));
         }
     }
     
-    private void alterMetaData(final ShardingSphereMetaData metaData, final String tableName, final TableMetaData tableMetaData) {
+    private void alterMetaData(final ShardingSphereMetaData metaData, final String tableName, final PhysicalTableMetaData tableMetaData) {
         metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().put(tableName, tableMetaData);
         metaData.getRuleSchemaMetaData().getSchemaMetaData().put(tableName, tableMetaData);
     }

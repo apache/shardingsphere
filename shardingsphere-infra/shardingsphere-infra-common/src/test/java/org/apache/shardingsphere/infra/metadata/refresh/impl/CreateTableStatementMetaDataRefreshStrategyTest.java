@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.metadata.refresh.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.index.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.index.PhysicalIndexMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.AbstractMetaDataRefreshStrategyTest;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -87,9 +87,9 @@ public final class CreateTableStatementMetaDataRefreshStrategyTest extends Abstr
     private void refreshMetaData(final CreateTableStatement createTableStatement) throws SQLException {
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
         MetaDataRefreshStrategy<CreateTableStatement> metaDataRefreshStrategy = new CreateTableStatementMetaDataRefreshStrategy();
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), createTableStatement, tableName -> Optional.of(new TableMetaData(
-                Collections.singletonList(new ColumnMetaData("order_id", 1, "String", true, false, false)),
-                Collections.singletonList(new IndexMetaData("index")))));
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), createTableStatement, tableName -> Optional.of(new PhysicalTableMetaData(
+                Collections.singletonList(new PhysicalColumnMetaData("order_id", 1, "String", true, false, false)),
+                Collections.singletonList(new PhysicalIndexMetaData("index")))));
         assertTrue(getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().containsTable("t_order_0"));
     }
     

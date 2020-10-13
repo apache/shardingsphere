@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.binder.statement.dml;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.engine.GeneratedKeyContextEngine;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertSelectContext;
@@ -66,7 +66,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private final GeneratedKeyContext generatedKeyContext;
     
-    public InsertStatementContext(final SchemaMetaData schemaMetaData, final List<Object> parameters, final InsertStatement sqlStatement) {
+    public InsertStatementContext(final PhysicalSchemaMetaData schemaMetaData, final List<Object> parameters, final InsertStatement sqlStatement) {
         super(sqlStatement);
         List<String> insertColumnNames = getInsertColumnNames();
         columnNames = useDefaultColumns() ? schemaMetaData.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames;
@@ -98,7 +98,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         return result;
     }
     
-    private Optional<InsertSelectContext> getInsertSelectContext(final SchemaMetaData schemaMetaData, final List<Object> parameters, final AtomicInteger parametersOffset) {
+    private Optional<InsertSelectContext> getInsertSelectContext(final PhysicalSchemaMetaData schemaMetaData, final List<Object> parameters, final AtomicInteger parametersOffset) {
         if (!getSqlStatement().getInsertSelect().isPresent()) {
             return Optional.empty();
         }

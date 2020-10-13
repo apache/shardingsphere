@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.refresh.impl;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
@@ -41,13 +41,13 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
     public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
                                 final Map<String, DataSource> dataSourceMap, final CreateTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        Optional<TableMetaData> tableMetaData = callback.load(tableName);
+        Optional<PhysicalTableMetaData> tableMetaData = callback.load(tableName);
         if (tableMetaData.isPresent()) {
             metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().put(tableName, tableMetaData.get());
             metaData.getRuleSchemaMetaData().getSchemaMetaData().put(tableName, tableMetaData.get());
         } else {
             refreshUnconfiguredMetaData(metaData, dataSourceMap, tableName);
-            metaData.getRuleSchemaMetaData().getSchemaMetaData().put(tableName, new TableMetaData());
+            metaData.getRuleSchemaMetaData().getSchemaMetaData().put(tableName, new PhysicalTableMetaData());
         }
     }
     

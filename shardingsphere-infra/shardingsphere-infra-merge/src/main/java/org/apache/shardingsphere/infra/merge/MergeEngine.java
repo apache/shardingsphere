@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.transparent.Transparent
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 import java.sql.SQLException;
@@ -51,14 +51,14 @@ public final class MergeEngine {
     
     private final DatabaseType databaseType;
     
-    private final SchemaMetaData schemaMetaData;
+    private final PhysicalSchemaMetaData schemaMetaData;
     
     private final ConfigurationProperties props;
     
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, ResultProcessEngine> engines;
     
-    public MergeEngine(final DatabaseType databaseType, final SchemaMetaData schemaMetaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
+    public MergeEngine(final DatabaseType databaseType, final PhysicalSchemaMetaData schemaMetaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
         this.databaseType = databaseType;
         this.schemaMetaData = schemaMetaData;
         this.props = props;

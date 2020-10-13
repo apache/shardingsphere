@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rewrite.aware.ShadowRuleAware;
 import org.apache.shardingsphere.shadow.rewrite.parameter.impl.ShadowInsertValueParameterRewriter;
 import org.apache.shardingsphere.shadow.rewrite.parameter.impl.ShadowPredicateParameterRewriter;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriterBuilder;
 
@@ -38,7 +38,7 @@ public final class ShadowParameterRewriterBuilder implements ParameterRewriterBu
     private final ShadowRule shadowRule;
     
     @Override
-    public Collection<ParameterRewriter> getParameterRewriters(final SchemaMetaData schemaMetaData) {
+    public Collection<ParameterRewriter> getParameterRewriters(final PhysicalSchemaMetaData schemaMetaData) {
         Collection<ParameterRewriter> result = getParameterRewriters();
         for (ParameterRewriter each : result) {
             ((ShadowRuleAware) each).setShadowRule(shadowRule);

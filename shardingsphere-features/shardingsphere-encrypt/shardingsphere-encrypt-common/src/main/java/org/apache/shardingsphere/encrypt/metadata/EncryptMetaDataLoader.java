@@ -23,9 +23,9 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.model.rule.spi.RuleMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -40,23 +40,23 @@ import java.util.Optional;
 public final class EncryptMetaDataLoader implements RuleMetaDataLoader<EncryptRule> {
     
     @Override
-    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
-                               final EncryptRule encryptRule, final ConfigurationProperties props, final Collection<String> excludedTableNames) throws SQLException {
+    public PhysicalSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
+                                       final EncryptRule encryptRule, final ConfigurationProperties props, final Collection<String> excludedTableNames) throws SQLException {
         DataSource dataSource = dataSourceMap.values().iterator().next();
         Collection<String> encryptTableNames = encryptRule.getEncryptTableNames();
-        Map<String, TableMetaData> result = new HashMap<>(encryptTableNames.size(), 1);
+        Map<String, PhysicalTableMetaData> result = new HashMap<>(encryptTableNames.size(), 1);
         for (String each : encryptTableNames) {
             if (!excludedTableNames.contains(each)) {
-                TableMetaDataLoader.load(dataSource, each, databaseType).ifPresent(tableMetaData -> result.put(each, tableMetaData));
+                PhysicalTableMetaDataLoader.load(dataSource, each, databaseType).ifPresent(tableMetaData -> result.put(each, tableMetaData));
             }
         }
-        return new SchemaMetaData(result);
+        return new PhysicalSchemaMetaData(result);
     }
     
     @Override
-    public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, 
-                                        final String tableName, final EncryptRule encryptRule, final ConfigurationProperties props) throws SQLException {
-        return encryptRule.findEncryptTable(tableName).isPresent() ? TableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType) : Optional.empty();
+    public Optional<PhysicalTableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
+                                                final String tableName, final EncryptRule encryptRule, final ConfigurationProperties props) throws SQLException {
+        return encryptRule.findEncryptTable(tableName).isPresent() ? PhysicalTableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType) : Optional.empty();
     }
     
     @Override

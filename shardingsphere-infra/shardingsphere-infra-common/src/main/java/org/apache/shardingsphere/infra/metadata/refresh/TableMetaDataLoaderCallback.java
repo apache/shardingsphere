@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.refresh;
 
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -34,5 +34,5 @@ public interface TableMetaDataLoaderCallback {
      * @return table meta data
      * @throws SQLException SQL exception
      */
-    Optional<TableMetaData> load(String tableName) throws SQLException;
+    Optional<PhysicalTableMetaData> load(String tableName) throws SQLException;
 }

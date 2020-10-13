@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.route.hook;
 
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 
 /**
  * Routing hook.
@@ -38,7 +38,7 @@ public interface RoutingHook {
      * @param routeContext route context
      * @param schemaMetaData schema meta data
      */
-    void finishSuccess(RouteContext routeContext, SchemaMetaData schemaMetaData);
+    void finishSuccess(RouteContext routeContext, PhysicalSchemaMetaData schemaMetaData);
     
     /**
      * Handle when routing finished failure.

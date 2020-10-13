@@ -19,8 +19,8 @@ package org.apache.shardingsphere.encrypt.merge.dal.impl;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.metadata.EncryptColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -40,11 +40,11 @@ import java.util.stream.Collectors;
  */
 public abstract class EncryptColumnsMergedResult implements MergedResult {
     
-    private final SchemaMetaData schemaMetaData;
+    private final PhysicalSchemaMetaData schemaMetaData;
     
     private final String tableName;
     
-    protected EncryptColumnsMergedResult(final SQLStatementContext sqlStatementContext, final SchemaMetaData schemaMetaData) {
+    protected EncryptColumnsMergedResult(final SQLStatementContext sqlStatementContext, final PhysicalSchemaMetaData schemaMetaData) {
         this.schemaMetaData = schemaMetaData;
         Preconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getAllTables().size());
         tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
@@ -82,7 +82,7 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
     
     private Collection<EncryptColumnMetaData> getTableEncryptColumnMetaDataList() {
         Collection<EncryptColumnMetaData> result = new LinkedList<>();
-        for (Entry<String, ColumnMetaData> entry : schemaMetaData.get(tableName).getColumns().entrySet()) {
+        for (Entry<String, PhysicalColumnMetaData> entry : schemaMetaData.get(tableName).getColumns().entrySet()) {
             if (entry.getValue() instanceof EncryptColumnMetaData) {
                 result.add((EncryptColumnMetaData) entry.getValue());
             }
@@ -101,7 +101,7 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
     }
     
     private Optional<String> getLogicColumnOfCipher(final String cipherColumn) {
-        for (Entry<String, ColumnMetaData> entry : schemaMetaData.get(tableName).getColumns().entrySet()) {
+        for (Entry<String, PhysicalColumnMetaData> entry : schemaMetaData.get(tableName).getColumns().entrySet()) {
             if (entry.getValue() instanceof EncryptColumnMetaData) {
                 EncryptColumnMetaData encryptColumnMetaData = (EncryptColumnMetaData) entry.getValue();
                 if (encryptColumnMetaData.getCipherColumnName().equalsIgnoreCase(cipherColumn)) {

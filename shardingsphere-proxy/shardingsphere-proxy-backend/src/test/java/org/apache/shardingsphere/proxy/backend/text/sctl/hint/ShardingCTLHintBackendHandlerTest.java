@@ -41,8 +41,8 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardi
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
 import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
@@ -208,7 +208,7 @@ public final class ShardingCTLHintBackendHandlerTest {
     private Map<String, ShardingSphereSchema> getSchemas() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getMetaData()).thenReturn(new ShardingSphereMetaData(mock(DataSourcesMetaData.class), 
-                new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap.of("user", mock(TableMetaData.class))), Collections.emptyMap()), mock(CachedDatabaseMetaData.class)));
+                new RuleSchemaMetaData(new PhysicalSchemaMetaData(ImmutableMap.of("user", mock(PhysicalTableMetaData.class))), Collections.emptyMap()), mock(CachedDatabaseMetaData.class)));
         when(schema.isComplete()).thenReturn(true);
         return Collections.singletonMap("schema", schema);
     }

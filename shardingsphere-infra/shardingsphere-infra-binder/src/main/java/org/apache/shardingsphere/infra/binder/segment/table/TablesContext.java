@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.table;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -77,7 +77,7 @@ public final class TablesContext {
      * @param schemaMetaData schema meta data
      * @return table name
      */
-    public Optional<String> findTableName(final ColumnSegment column, final SchemaMetaData schemaMetaData) {
+    public Optional<String> findTableName(final ColumnSegment column, final PhysicalSchemaMetaData schemaMetaData) {
         if (1 == tables.size()) {
             return Optional.of(tables.iterator().next().getTableName().getIdentifier().getValue());
         }
@@ -94,7 +94,7 @@ public final class TablesContext {
      * @param schemaMetaData schema meta data
      * @return table name
      */
-    public Optional<String> findTableName(final ColumnProjection column, final SchemaMetaData schemaMetaData) {
+    public Optional<String> findTableName(final ColumnProjection column, final PhysicalSchemaMetaData schemaMetaData) {
         if (1 == tables.size()) {
             return Optional.of(tables.iterator().next().getTableName().getIdentifier().getValue());
         }
@@ -118,7 +118,7 @@ public final class TablesContext {
         throw new IllegalStateException("Can not find owner from table.");
     }
     
-    private Optional<String> findTableNameFromMetaData(final String columnName, final SchemaMetaData schemaMetaData) {
+    private Optional<String> findTableNameFromMetaData(final String columnName, final PhysicalSchemaMetaData schemaMetaData) {
         for (SimpleTableSegment each : tables) {
             if (schemaMetaData.containsColumn(each.getTableName().getIdentifier().getValue(), columnName)) {
                 return Optional.of(each.getTableName().getIdentifier().getValue());

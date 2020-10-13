@@ -21,9 +21,9 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.encrypt.merge.dql.fixture.EncryptColumnsMergedResultFixture;
 import org.apache.shardingsphere.encrypt.merge.dql.fixture.TableAvailableAndSqlStatementContextFixture;
 import org.apache.shardingsphere.encrypt.metadata.EncryptColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -54,16 +54,16 @@ public final class EncryptColumnsMergedResultTest {
     private TableAvailableAndSqlStatementContextFixture tableAvailableAndSqlStatementContextFixture;
     
     @Mock
-    private SchemaMetaData schemaMetaData;
+    private PhysicalSchemaMetaData schemaMetaData;
     
     @Mock
-    private TableMetaData tableMetaData;
+    private PhysicalTableMetaData tableMetaData;
     
     private EncryptColumnsMergedResultFixture encryptColumnsMergedResultFixture;
     
     @Before
     public void setUp() { 
-        Map<String, ColumnMetaData> columns = new HashMap<>(1, 1);
+        Map<String, PhysicalColumnMetaData> columns = new HashMap<>(1, 1);
         EncryptColumnMetaData encryptColumnMetaData = new EncryptColumnMetaData("order", 1, "Integer", false, "status", "status", "status");
         columns.put("", encryptColumnMetaData);
         SimpleTableSegment simpleTableSegment = mock(SimpleTableSegment.class);
@@ -97,7 +97,7 @@ public final class EncryptColumnsMergedResultTest {
     
     @Test
     public void assertContainerColumnName() throws SQLException {
-        Map<String, ColumnMetaData> columns = new HashMap<>(1, 1);
+        Map<String, PhysicalColumnMetaData> columns = new HashMap<>(1, 1);
         EncryptColumnMetaData encryptColumnMetaData = new EncryptColumnMetaData("order", 1, "Integer", false, "status", "status", "status");
         columns.put("", encryptColumnMetaData);
         when(schemaMetaData.get(anyString())).thenReturn(tableMetaData);
@@ -110,7 +110,7 @@ public final class EncryptColumnsMergedResultTest {
     
     @Test
     public void assertGetValueWithColumnIndex() throws SQLException {
-        Map<String, ColumnMetaData> columns = new HashMap<>(1, 1);
+        Map<String, PhysicalColumnMetaData> columns = new HashMap<>(1, 1);
         EncryptColumnMetaData encryptColumnMetaData = new EncryptColumnMetaData("order", 1, "Integer", false, "status", "status", "status");
         columns.put("key", encryptColumnMetaData);
         when(schemaMetaData.get(anyString())).thenReturn(tableMetaData);

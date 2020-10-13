@@ -31,9 +31,9 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.sharding.route.engine.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.engine.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.engine.StandardSQLParserEngine;
@@ -79,18 +79,18 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     }
     
     private RuleSchemaMetaData buildRuleSchemaMetaData() {
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("t_order", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false),
-                new ColumnMetaData("user_id", Types.INTEGER, "int", false, false, false),
-                new ColumnMetaData("status", Types.INTEGER, "int", false, false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", Types.INTEGER, "int", true, false, false),
-                new ColumnMetaData("order_id", Types.INTEGER, "int", false, false, false),
-                new ColumnMetaData("user_id", Types.INTEGER, "int", false, false, false),
-                new ColumnMetaData("status", Types.VARCHAR, "varchar", false, false, false),
-                new ColumnMetaData("c_date", Types.TIMESTAMP, "timestamp", false, false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
+        Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
+        tableMetaDataMap.put("t_order", new PhysicalTableMetaData(Arrays.asList(new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", true, false, false),
+                new PhysicalColumnMetaData("user_id", Types.INTEGER, "int", false, false, false),
+                new PhysicalColumnMetaData("status", Types.INTEGER, "int", false, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_order_item", new PhysicalTableMetaData(Arrays.asList(new PhysicalColumnMetaData("item_id", Types.INTEGER, "int", true, false, false),
+                new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", false, false, false),
+                new PhysicalColumnMetaData("user_id", Types.INTEGER, "int", false, false, false),
+                new PhysicalColumnMetaData("status", Types.VARCHAR, "varchar", false, false, false),
+                new PhysicalColumnMetaData("c_date", Types.TIMESTAMP, "timestamp", false, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_other", new PhysicalTableMetaData(Collections.singletonList(new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
         Map<String, Collection<String>> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
         unconfiguredSchemaMetaDataMap.put("ds_0", Collections.singletonList("t_category"));
-        return new RuleSchemaMetaData(new SchemaMetaData(tableMetaDataMap), unconfiguredSchemaMetaDataMap);
+        return new RuleSchemaMetaData(new PhysicalSchemaMetaData(tableMetaDataMap), unconfiguredSchemaMetaDataMap);
     }
 }

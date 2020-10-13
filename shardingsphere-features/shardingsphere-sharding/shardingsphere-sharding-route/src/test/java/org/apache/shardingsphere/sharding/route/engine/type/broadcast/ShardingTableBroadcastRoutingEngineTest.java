@@ -24,9 +24,9 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.index.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.index.PhysicalIndexMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -63,10 +63,10 @@ public final class ShardingTableBroadcastRoutingEngineTest {
     private TablesContext tablesContext;
     
     @Mock
-    private SchemaMetaData schemaMetaData;
+    private PhysicalSchemaMetaData schemaMetaData;
     
     @Mock
-    private TableMetaData tableMetaData;
+    private PhysicalTableMetaData tableMetaData;
     
     private ShardingTableBroadcastRoutingEngine tableBroadcastRoutingEngine;
     
@@ -81,8 +81,8 @@ public final class ShardingTableBroadcastRoutingEngineTest {
         when(tablesContext.getTableNames()).thenReturn(Lists.newArrayList("t_order"));
         when(schemaMetaData.getAllTableNames()).thenReturn(Lists.newArrayList("t_order"));
         when(schemaMetaData.get("t_order")).thenReturn(tableMetaData);
-        Map<String, IndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
-        indexMetaDataMap.put("index_name", new IndexMetaData("index_name"));
+        Map<String, PhysicalIndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
+        indexMetaDataMap.put("index_name", new PhysicalIndexMetaData("index_name"));
         when(tableMetaData.getIndexes()).thenReturn(indexMetaDataMap);
         tableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(schemaMetaData, sqlStatementContext);
         shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.statement.impl;
 
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
@@ -90,13 +90,13 @@ public final class InsertStatementContextTest {
                 new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("status"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
         setUpInsertValues(insertStatement);
-        InsertStatementContext actual = new InsertStatementContext(mock(SchemaMetaData.class), Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
+        InsertStatementContext actual = new InsertStatementContext(mock(PhysicalSchemaMetaData.class), Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertInsertStatementContext(actual);
     }
     
     @Test
     public void assertInsertStatementContextWithoutColumnNames() {
-        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
+        PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
         InsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
@@ -107,7 +107,7 @@ public final class InsertStatementContextTest {
     
     @Test
     public void assertGetGroupedParametersWithoutOnDuplicateParameter() {
-        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
+        PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
         InsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
@@ -120,7 +120,7 @@ public final class InsertStatementContextTest {
     
     @Test
     public void assertGetGroupedParametersWithOnDuplicateParameters() {
-        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
+        PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
@@ -134,7 +134,7 @@ public final class InsertStatementContextTest {
     
     @Test
     public void assertInsertSelect() {
-        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
+        PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
         InsertStatement insertStatement = new MySQLInsertStatement();
         SelectStatement selectStatement = new MySQLSelectStatement();
@@ -214,7 +214,7 @@ public final class InsertStatementContextTest {
     
     private void assertUseDefaultColumns(final InsertStatement insertStatement) {
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("")));
-        InsertStatementContext insertStatementContext = new InsertStatementContext(new SchemaMetaData(), Collections.emptyList(), insertStatement);
+        InsertStatementContext insertStatementContext = new InsertStatementContext(new PhysicalSchemaMetaData(), Collections.emptyList(), insertStatement);
         assertTrue(insertStatementContext.useDefaultColumns());
     }
     
@@ -247,7 +247,7 @@ public final class InsertStatementContextTest {
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("")));
-        InsertStatementContext insertStatementContext = new InsertStatementContext(new SchemaMetaData(), Collections.emptyList(), insertStatement);
+        InsertStatementContext insertStatementContext = new InsertStatementContext(new PhysicalSchemaMetaData(), Collections.emptyList(), insertStatement);
         assertFalse(insertStatementContext.useDefaultColumns());
     }
     
@@ -256,7 +256,7 @@ public final class InsertStatementContextTest {
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("")));
-        InsertStatementContext insertStatementContext = new InsertStatementContext(new SchemaMetaData(), Collections.emptyList(), insertStatement);
+        InsertStatementContext insertStatementContext = new InsertStatementContext(new PhysicalSchemaMetaData(), Collections.emptyList(), insertStatement);
         assertFalse(insertStatementContext.useDefaultColumns());
     }
     
@@ -289,7 +289,7 @@ public final class InsertStatementContextTest {
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 2))));
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("")));
-        InsertStatementContext insertStatementContext = new InsertStatementContext(new SchemaMetaData(), Collections.emptyList(), insertStatement);
+        InsertStatementContext insertStatementContext = new InsertStatementContext(new PhysicalSchemaMetaData(), Collections.emptyList(), insertStatement);
         assertThat(insertStatementContext.getValueListCount(), is(2));
     }
     
@@ -299,7 +299,7 @@ public final class InsertStatementContextTest {
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0,
                 new ColumnSegment(0, 0, new IdentifierValue("col")), new LiteralExpressionSegment(0, 0, 1)))));
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("")));
-        InsertStatementContext insertStatementContext = new InsertStatementContext(new SchemaMetaData(), Collections.emptyList(), insertStatement);
+        InsertStatementContext insertStatementContext = new InsertStatementContext(new PhysicalSchemaMetaData(), Collections.emptyList(), insertStatement);
         assertThat(insertStatementContext.getValueListCount(), is(1));
     }
     
@@ -332,7 +332,7 @@ public final class InsertStatementContextTest {
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("")));
-        InsertStatementContext insertStatementContext = new InsertStatementContext(new SchemaMetaData(), Collections.emptyList(), insertStatement);
+        InsertStatementContext insertStatementContext = new InsertStatementContext(new PhysicalSchemaMetaData(), Collections.emptyList(), insertStatement);
         List<String> columnNames = insertStatementContext.getInsertColumnNames();
         assertThat(columnNames.size(), is(1));
         assertThat(columnNames.iterator().next(), is("col"));
@@ -344,7 +344,7 @@ public final class InsertStatementContextTest {
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0,
                 new ColumnSegment(0, 0, new IdentifierValue("col")), new LiteralExpressionSegment(0, 0, 1)))));
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("")));
-        InsertStatementContext insertStatementContext = new InsertStatementContext(new SchemaMetaData(), Collections.emptyList(), insertStatement);
+        InsertStatementContext insertStatementContext = new InsertStatementContext(new PhysicalSchemaMetaData(), Collections.emptyList(), insertStatement);
         List<String> columnNames = insertStatementContext.getInsertColumnNames();
         assertThat(columnNames.size(), is(1));
         assertThat(columnNames.iterator().next(), is("col"));

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecoratorEngine;
 import org.apache.shardingsphere.infra.merge.engine.decorator.impl.TransparentResultDecorator;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
@@ -39,7 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine<EncryptRule> {
     
     @Override
-    public ResultDecorator newInstance(final DatabaseType databaseType, final SchemaMetaData schemaMetaData,
+    public ResultDecorator newInstance(final DatabaseType databaseType, final PhysicalSchemaMetaData schemaMetaData,
                                        final EncryptRule encryptRule, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
             return new EncryptDQLResultDecorator(new EncryptAlgorithmMetaData(schemaMetaData, 

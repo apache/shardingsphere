@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.binder.segment.insert.keygen.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -42,7 +42,7 @@ public final class GeneratedKeyContextEngine {
     
     private final InsertStatement insertStatement;
     
-    private final SchemaMetaData schemaMetaData;
+    private final PhysicalSchemaMetaData schemaMetaData;
     
     /**
      * Create generate key context.
@@ -62,7 +62,7 @@ public final class GeneratedKeyContextEngine {
         if (!schemaMetaData.containsTable(tableName)) {
             return Optional.empty();
         }
-        for (Entry<String, ColumnMetaData> entry : schemaMetaData.get(tableName).getColumns().entrySet()) {
+        for (Entry<String, PhysicalColumnMetaData> entry : schemaMetaData.get(tableName).getColumns().entrySet()) {
             if (entry.getValue().isGenerated()) {
                 return Optional.of(entry.getKey());
             }

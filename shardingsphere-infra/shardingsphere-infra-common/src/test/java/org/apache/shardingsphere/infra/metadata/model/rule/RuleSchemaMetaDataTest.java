@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.model.rule;
 
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -31,10 +31,10 @@ public final class RuleSchemaMetaDataTest {
 
     @Test
     public void assertGetSchemaMetaData() {
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
+        Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
         Map<String, Collection<String>> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
-        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaData(new SchemaMetaData(tableMetaDataMap), unconfiguredSchemaMetaDataMap);
-        SchemaMetaData schemaMetaData = ruleSchemaMetaData.getSchemaMetaData();
+        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaData(new PhysicalSchemaMetaData(tableMetaDataMap), unconfiguredSchemaMetaDataMap);
+        PhysicalSchemaMetaData schemaMetaData = ruleSchemaMetaData.getSchemaMetaData();
         assertNotNull("SchemaMetaData is null", schemaMetaData);
     }
 }

@@ -22,7 +22,7 @@ import com.google.common.collect.Maps;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnitFactory;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedResult;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -48,7 +48,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     private List<?> currentGroupByValues;
     
     public GroupByStreamMergedResult(final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults,
-                                     final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {
+                                     final SelectStatementContext selectStatementContext, final PhysicalSchemaMetaData schemaMetaData) throws SQLException {
         super(queryResults, selectStatementContext, schemaMetaData);
         this.selectStatementContext = selectStatementContext;
         currentRow = new ArrayList<>(labelAndIndexMap.size());

@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -50,8 +50,8 @@ public interface RuleMetaDataLoader<T extends ShardingSphereRule> extends Ordere
      * @return table name and meta data map
      * @throws SQLException SQL exception
      */
-    SchemaMetaData load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap, 
-                        DataNodes dataNodes, T rule, ConfigurationProperties props, Collection<String> excludedTableNames) throws SQLException;
+    PhysicalSchemaMetaData load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap,
+                                DataNodes dataNodes, T rule, ConfigurationProperties props, Collection<String> excludedTableNames) throws SQLException;
     
     /**
      * Load table meta data.
@@ -65,5 +65,6 @@ public interface RuleMetaDataLoader<T extends ShardingSphereRule> extends Ordere
      * @return meta data
      * @throws SQLException SQL exception
      */
-    Optional<TableMetaData> load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap, DataNodes dataNodes, String tableName, T rule, ConfigurationProperties props) throws SQLException;
+    Optional<PhysicalTableMetaData> load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap, 
+                                         DataNodes dataNodes, String tableName, T rule, ConfigurationProperties props) throws SQLException;
 }

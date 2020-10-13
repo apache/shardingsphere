@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.binder.segment.table;
 
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
@@ -56,7 +56,7 @@ public final class TablesContextTest {
     @Test
     public void assertFindTableNameWhenSingleTable() {
         SimpleTableSegment tableSegment = createTableSegment("table_1", "tbl_1");
-        Optional<String> actual = new TablesContext(Collections.singletonList(tableSegment)).findTableName(createColumnSegment(), mock(SchemaMetaData.class));
+        Optional<String> actual = new TablesContext(Collections.singletonList(tableSegment)).findTableName(createColumnSegment(), mock(PhysicalSchemaMetaData.class));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("table_1"));
     }
@@ -67,7 +67,7 @@ public final class TablesContextTest {
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         ColumnSegment columnSegment = createColumnSegment();
         columnSegment.setOwner(new OwnerSegment(0, 10, new IdentifierValue("table_1")));
-        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(columnSegment, mock(SchemaMetaData.class));
+        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(columnSegment, mock(PhysicalSchemaMetaData.class));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("table_1"));
     }
@@ -76,7 +76,7 @@ public final class TablesContextTest {
     public void assertFindTableNameWhenColumnSegmentOwnerAbsent() {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
-        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(createColumnSegment(), mock(SchemaMetaData.class));
+        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(createColumnSegment(), mock(PhysicalSchemaMetaData.class));
         assertFalse(actual.isPresent());
     }
     
@@ -84,7 +84,7 @@ public final class TablesContextTest {
     public void assertFindTableNameWhenColumnSegmentOwnerAbsentAndSchemaMetaDataContainsColumn() {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
-        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
+        PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
         when(schemaMetaData.containsColumn(anyString(), anyString())).thenReturn(true);
         Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(createColumnSegment(), schemaMetaData);
         assertTrue(actual.isPresent());

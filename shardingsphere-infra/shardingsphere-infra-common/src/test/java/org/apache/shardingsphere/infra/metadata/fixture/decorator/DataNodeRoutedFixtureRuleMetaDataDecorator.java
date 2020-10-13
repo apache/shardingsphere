@@ -19,17 +19,17 @@ package org.apache.shardingsphere.infra.metadata.fixture.decorator;
 
 import org.apache.shardingsphere.infra.metadata.fixture.rule.DataNodeRoutedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.model.rule.spi.RuleMetaDataDecorator;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 
 import java.util.Collections;
 
 public final class DataNodeRoutedFixtureRuleMetaDataDecorator implements RuleMetaDataDecorator<DataNodeRoutedFixtureRule> {
     
     @Override
-    public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final DataNodeRoutedFixtureRule rule) {
-        ColumnMetaData columnMetaData = new ColumnMetaData("id", 1, "INT", true, true, false);
-        return new TableMetaData(Collections.singletonList(columnMetaData), Collections.emptyList());
+    public PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final DataNodeRoutedFixtureRule rule) {
+        PhysicalColumnMetaData columnMetaData = new PhysicalColumnMetaData("id", 1, "INT", true, true, false);
+        return new PhysicalTableMetaData(Collections.singletonList(columnMetaData), Collections.emptyList());
     }
     
     @Override

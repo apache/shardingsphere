@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.binder.segment.select.projection.engine;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
@@ -45,11 +45,11 @@ import java.util.Optional;
  */
 public final class ProjectionsContextEngine {
     
-    private final SchemaMetaData schemaMetaData;
+    private final PhysicalSchemaMetaData schemaMetaData;
     
     private final ProjectionEngine projectionEngine;
     
-    public ProjectionsContextEngine(final SchemaMetaData schemaMetaData) {
+    public ProjectionsContextEngine(final PhysicalSchemaMetaData schemaMetaData) {
         this.schemaMetaData = schemaMetaData;
         projectionEngine = new ProjectionEngine(schemaMetaData);
     }

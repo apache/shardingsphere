@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingGeneratedKeyInsertValueParameterRewriter;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingPaginationParameterRewriter;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriterBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
@@ -43,7 +43,7 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
     private final RouteContext routeContext;
     
     @Override
-    public Collection<ParameterRewriter> getParameterRewriters(final SchemaMetaData schemaMetaData) {
+    public Collection<ParameterRewriter> getParameterRewriters(final PhysicalSchemaMetaData schemaMetaData) {
         Collection<ParameterRewriter> result = getParameterRewriters();
         for (ParameterRewriter each : result) {
             setUpParameterRewriters(each, schemaMetaData);
@@ -58,7 +58,7 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
         return result;
     }
     
-    private void setUpParameterRewriters(final ParameterRewriter parameterRewriter, final SchemaMetaData schemaMetaData) {
+    private void setUpParameterRewriters(final ParameterRewriter parameterRewriter, final PhysicalSchemaMetaData schemaMetaData) {
         if (parameterRewriter instanceof SchemaMetaDataAware) {
             ((SchemaMetaDataAware) parameterRewriter).setSchemaMetaData(schemaMetaData);
         }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.merge.engine.decorator;
 
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.model.schema.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 import java.sql.SQLException;
@@ -38,7 +38,7 @@ public interface ResultDecorator {
      * @return merged result
      * @throws SQLException SQL exception
      */
-    MergedResult decorate(QueryResult queryResult, SQLStatementContext<?> sqlStatementContext, SchemaMetaData schemaMetaData) throws SQLException;
+    MergedResult decorate(QueryResult queryResult, SQLStatementContext<?> sqlStatementContext, PhysicalSchemaMetaData schemaMetaData) throws SQLException;
     
     /**
      * Decorate merged result.
@@ -49,5 +49,5 @@ public interface ResultDecorator {
      * @return merged result
      * @throws SQLException SQL exception
      */
-    MergedResult decorate(MergedResult mergedResult, SQLStatementContext<?> sqlStatementContext, SchemaMetaData schemaMetaData) throws SQLException;
+    MergedResult decorate(MergedResult mergedResult, SQLStatementContext<?> sqlStatementContext, PhysicalSchemaMetaData schemaMetaData) throws SQLException;
 }
