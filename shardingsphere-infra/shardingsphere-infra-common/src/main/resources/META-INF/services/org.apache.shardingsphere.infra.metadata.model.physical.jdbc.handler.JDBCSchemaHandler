@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.metadata.model.physical.jdbc.loader.impl.OracleJDBCSchemaLoader
+org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.impl.OracleJDBCSchemaHandler

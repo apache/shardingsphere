@@ -15,37 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.loader.impl;
+package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.loader.JDBCSchemaLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Optional;
-import java.util.Properties;
 
 /**
- * JDBC schema loader of Oracle.
+ * JDBC schema handler.
  */
-@Getter
-@Setter
-public final class OracleJDBCSchemaLoader implements JDBCSchemaLoader {
+public interface JDBCSchemaHandler extends TypedSPI {
     
-    private Properties props;
-    
-    @Override
-    public String getSchema(final Connection connection) {
-        try {
-            return Optional.ofNullable(connection.getMetaData().getUserName()).map(String::toUpperCase).orElse(null);
-        } catch (final SQLException ignored) {
-            return null;
-        }
-    }
-    
-    @Override
-    public String getType() {
-        return "Oracle";
-    }
+    /**
+     * Get schema.
+     * 
+     * @param connection connection
+     * @return schema
+     */
+    String getSchema(Connection connection);
 }

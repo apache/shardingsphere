@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.model.physical.jdbc;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.loader.JDBCSchemaLoader;
+import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.JDBCSchemaHandler;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -51,7 +51,7 @@ import java.util.concurrent.Executor;
 public final class MetaDataConnectionAdapter implements Connection {
     
     static {
-        ShardingSphereServiceLoader.register(JDBCSchemaLoader.class);
+        ShardingSphereServiceLoader.register(JDBCSchemaHandler.class);
     }
     
     private final DatabaseType databaseType;
@@ -74,9 +74,9 @@ public final class MetaDataConnectionAdapter implements Connection {
     
     @Override
     public String getSchema() {
-        Optional<JDBCSchemaLoader> jdbcSchemaLoader = findJDBCSchemaLoader();
-        if (jdbcSchemaLoader.isPresent()) {
-            return jdbcSchemaLoader.get().getSchema(connection);
+        Optional<JDBCSchemaHandler> handler = findJDBCSchemaHandler();
+        if (handler.isPresent()) {
+            return handler.get().getSchema(connection);
         }
         try {
             return connection.getSchema();
@@ -85,9 +85,9 @@ public final class MetaDataConnectionAdapter implements Connection {
         }
     }
     
-    private Optional<JDBCSchemaLoader> findJDBCSchemaLoader() {
+    private Optional<JDBCSchemaHandler> findJDBCSchemaHandler() {
         try {
-            return Optional.of(TypedSPIRegistry.getRegisteredService(JDBCSchemaLoader.class, databaseType.getName(), new Properties()));
+            return Optional.of(TypedSPIRegistry.getRegisteredService(JDBCSchemaHandler.class, databaseType.getName(), new Properties()));
         } catch (final ServiceProviderNotFoundException ignored) {
             return Optional.empty();
         }
