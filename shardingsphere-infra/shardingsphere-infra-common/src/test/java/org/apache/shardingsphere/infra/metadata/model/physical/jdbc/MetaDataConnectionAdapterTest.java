@@ -19,6 +19,9 @@ package org.apache.shardingsphere.infra.metadata.model.physical.jdbc;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.JDBCSchemaHandler;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -43,6 +46,11 @@ public final class MetaDataConnectionAdapterTest {
     
     @Mock
     private Connection connection;
+    
+    @BeforeClass
+    public static void registerSPI() {
+        ShardingSphereServiceLoader.register(JDBCSchemaHandler.class);
+    }
     
     @Test
     public void assertGetCatalog() throws SQLException {
