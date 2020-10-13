@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.model.physical.model.table.Physi
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -53,12 +53,12 @@ public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRule
     @Override
     public RuleSchemaMetaData swapToObject(final YamlRuleSchemaMetaData yamlConfig) {
         PhysicalSchemaMetaData configured = Optional.ofNullable(yamlConfig.getConfiguredSchemaMetaData()).map(this::convertSchema).orElse(new PhysicalSchemaMetaData());
-        Map<String, Collection<String>> unconfigured = Optional.ofNullable(yamlConfig.getUnconfiguredSchemaMetaDataMap()).orElse(new HashMap<>());
+        Map<String, Collection<String>> unconfigured = Optional.ofNullable(yamlConfig.getUnconfiguredSchemaMetaDataMap()).orElse(new LinkedHashMap<>());
         return new RuleSchemaMetaData(configured, unconfigured);
     }
-
+    
     private PhysicalSchemaMetaData convertSchema(final YamlSchemaMetaData schema) {
-        return new PhysicalSchemaMetaData(schema.getTables().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertTable(entry.getValue()))));
+        return new PhysicalSchemaMetaData(schema.getTables().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertTable(entry.getValue()), (a, b) -> b, LinkedHashMap::new)));
     }
     
     private PhysicalTableMetaData convertTable(final YamlTableMetaData table) {
@@ -82,7 +82,8 @@ public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRule
     }
     
     private YamlSchemaMetaData convertYamlSchema(final PhysicalSchemaMetaData schema) {
-        Map<String, YamlTableMetaData> tables = schema.getAllTableNames().stream().collect(Collectors.toMap(each -> each, each -> convertYamlTable(schema.get(each))));
+        Map<String, YamlTableMetaData> tables = schema.getAllTableNames().stream()
+                .collect(Collectors.toMap(each -> each, each -> convertYamlTable(schema.get(each)), (a, b) -> b, LinkedHashMap::new));
         YamlSchemaMetaData result = new YamlSchemaMetaData();
         result.setTables(tables);
         return result;
@@ -96,19 +97,19 @@ public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRule
     }
 
     private Map<String, YamlIndexMetaData> convertYamlIndexes(final Map<String, PhysicalIndexMetaData> indexes) {
-        return indexes.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertYamlIndex(entry.getValue())));
+        return indexes.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertYamlIndex(entry.getValue()), (a, b) -> b, LinkedHashMap::new));
     }
-
+    
     private YamlIndexMetaData convertYamlIndex(final PhysicalIndexMetaData index) {
         YamlIndexMetaData result = new YamlIndexMetaData();
         result.setName(index.getName());
         return result;
     }
-
+    
     private Map<String, YamlColumnMetaData> convertYamlColumns(final Map<String, PhysicalColumnMetaData> columns) {
-        return columns.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertYamlColumn(entry.getValue())));
+        return columns.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertYamlColumn(entry.getValue()), (a, b) -> b, LinkedHashMap::new));
     }
-
+    
     private YamlColumnMetaData convertYamlColumn(final PhysicalColumnMetaData column) {
         YamlColumnMetaData result = new YamlColumnMetaData();
         result.setName(column.getName());
