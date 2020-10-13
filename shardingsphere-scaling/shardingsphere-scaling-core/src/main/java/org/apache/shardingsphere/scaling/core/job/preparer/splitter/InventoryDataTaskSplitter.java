@@ -31,7 +31,7 @@ import org.apache.shardingsphere.scaling.core.job.task.DefaultSyncTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.SyncTaskFactory;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -92,7 +92,7 @@ public final class InventoryDataTaskSplitter {
     }
     
     private boolean isSpiltByPrimaryKeyRange(final InventoryDumperConfiguration inventoryDumperConfig, final MetaDataManager metaDataManager) {
-        TableMetaData tableMetaData = metaDataManager.getTableMetaData(inventoryDumperConfig.getTableName());
+        PhysicalTableMetaData tableMetaData = metaDataManager.getTableMetaData(inventoryDumperConfig.getTableName());
         if (null == tableMetaData) {
             log.warn("Can't split range for table {}, reason: can not get table metadata ", inventoryDumperConfig.getTableName());
             return false;

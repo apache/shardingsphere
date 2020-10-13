@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -52,13 +52,13 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     private List<Comparable<?>> orderValues;
     
     public OrderByValue(final QueryResult queryResult, final Collection<OrderByItem> orderByItems, 
-                        final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {
+                        final SelectStatementContext selectStatementContext, final PhysicalSchemaMetaData schemaMetaData) throws SQLException {
         this.queryResult = queryResult;
         this.orderByItems = orderByItems;
         orderValuesCaseSensitive = getOrderValuesCaseSensitive(selectStatementContext, schemaMetaData);
     }
     
-    private List<Boolean> getOrderValuesCaseSensitive(final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {
+    private List<Boolean> getOrderValuesCaseSensitive(final SelectStatementContext selectStatementContext, final PhysicalSchemaMetaData schemaMetaData) throws SQLException {
         List<Boolean> result = new ArrayList<>(orderByItems.size());
         for (OrderByItem eachOrderByItem : orderByItems) {
             result.add(getOrderValuesCaseSensitiveFromTables(selectStatementContext, schemaMetaData, eachOrderByItem));
@@ -66,12 +66,12 @@ public final class OrderByValue implements Comparable<OrderByValue> {
         return result;
     }
     
-    private boolean getOrderValuesCaseSensitiveFromTables(final SelectStatementContext selectStatementContext, 
-                                                          final SchemaMetaData schemaMetaData, final OrderByItem eachOrderByItem) throws SQLException {
+    private boolean getOrderValuesCaseSensitiveFromTables(final SelectStatementContext selectStatementContext,
+                                                          final PhysicalSchemaMetaData schemaMetaData, final OrderByItem eachOrderByItem) throws SQLException {
         for (SimpleTableSegment eachSimpleTableSegment : selectStatementContext.getAllTables()) {
             String tableName = eachSimpleTableSegment.getTableName().getIdentifier().getValue();
-            TableMetaData tableMetaData = schemaMetaData.get(tableName);
-            Map<String, ColumnMetaData> columns = tableMetaData.getColumns();
+            PhysicalTableMetaData tableMetaData = schemaMetaData.get(tableName);
+            Map<String, PhysicalColumnMetaData> columns = tableMetaData.getColumns();
             OrderByItemSegment orderByItemSegment = eachOrderByItem.getSegment();
             if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
                 String columnName = ((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getIdentifier().getValue();

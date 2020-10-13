@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.metadata.model.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -31,22 +31,22 @@ import java.util.Map;
 public final class RuleSchemaMetaData {
     
     @Getter
-    private final SchemaMetaData configuredSchemaMetaData;
+    private final PhysicalSchemaMetaData configuredSchemaMetaData;
     
     @Getter
     private final Map<String, Collection<String>> unconfiguredSchemaMetaDataMap;
     
-    private final SchemaMetaData allSchemaMetaData;
+    private final PhysicalSchemaMetaData allSchemaMetaData;
     
-    public RuleSchemaMetaData(final SchemaMetaData configuredSchemaMetaData, final Map<String, Collection<String>> unconfiguredSchemaMetaDataMap) {
+    public RuleSchemaMetaData(final PhysicalSchemaMetaData configuredSchemaMetaData, final Map<String, Collection<String>> unconfiguredSchemaMetaDataMap) {
         this.configuredSchemaMetaData = configuredSchemaMetaData;
         this.unconfiguredSchemaMetaDataMap = unconfiguredSchemaMetaDataMap;
         allSchemaMetaData = createSchemaMetaData();
     }
     
-    private SchemaMetaData createSchemaMetaData() {
-        SchemaMetaData result = new SchemaMetaData();
-        unconfiguredSchemaMetaDataMap.values().stream().flatMap(Collection::stream).forEach(tableName -> result.put(tableName, new TableMetaData()));
+    private PhysicalSchemaMetaData createSchemaMetaData() {
+        PhysicalSchemaMetaData result = new PhysicalSchemaMetaData();
+        unconfiguredSchemaMetaDataMap.values().stream().flatMap(Collection::stream).forEach(tableName -> result.put(tableName, new PhysicalTableMetaData()));
         result.merge(configuredSchemaMetaData);
         return result;
     }
@@ -56,7 +56,7 @@ public final class RuleSchemaMetaData {
      *
      * @return schema meta data
      */
-    public SchemaMetaData getSchemaMetaData() {
+    public PhysicalSchemaMetaData getSchemaMetaData() {
         return allSchemaMetaData;
     }
     

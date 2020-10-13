@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 import java.util.Collection;
@@ -43,14 +43,14 @@ public final class SQLRewriteEntry {
         ShardingSphereServiceLoader.register(SQLRewriteContextDecorator.class);
     }
     
-    private final SchemaMetaData metaData;
+    private final PhysicalSchemaMetaData metaData;
     
     private final ConfigurationProperties props;
     
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, SQLRewriteContextDecorator> decorators;
     
-    public SQLRewriteEntry(final SchemaMetaData metaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
+    public SQLRewriteEntry(final PhysicalSchemaMetaData metaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
         this.metaData = metaData;
         this.props = props;
         decorators = OrderedSPIRegistry.getRegisteredServices(rules, SQLRewriteContextDecorator.class);

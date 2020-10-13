@@ -25,7 +25,7 @@ import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptInsertVal
 import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptPredicateParameterRewriter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriterBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
@@ -44,7 +44,7 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
     private final boolean queryWithCipherColumn;
     
     @Override
-    public Collection<ParameterRewriter> getParameterRewriters(final SchemaMetaData schemaMetaData) {
+    public Collection<ParameterRewriter> getParameterRewriters(final PhysicalSchemaMetaData schemaMetaData) {
         Collection<ParameterRewriter> result = getParameterRewriters();
         for (ParameterRewriter each : result) {
             setUpParameterRewriters(each, schemaMetaData);
@@ -61,7 +61,7 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
         return result;
     }
     
-    private void setUpParameterRewriters(final ParameterRewriter parameterRewriter, final SchemaMetaData schemaMetaData) {
+    private void setUpParameterRewriters(final ParameterRewriter parameterRewriter, final PhysicalSchemaMetaData schemaMetaData) {
         if (parameterRewriter instanceof SchemaMetaDataAware) {
             ((SchemaMetaDataAware) parameterRewriter).setSchemaMetaData(schemaMetaData);
         }

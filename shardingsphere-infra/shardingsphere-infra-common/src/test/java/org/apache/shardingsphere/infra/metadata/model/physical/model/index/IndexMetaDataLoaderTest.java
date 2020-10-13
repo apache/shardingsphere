@@ -60,9 +60,9 @@ public final class IndexMetaDataLoaderTest {
         when(databaseMetaData.getIndexInfo(TEST_CATALOG, null, TEST_TABLE, false, false)).thenReturn(indexResultSet);
         when(indexResultSet.next()).thenReturn(true, true, false);
         when(indexResultSet.getString("INDEX_NAME")).thenReturn("my_index");
-        Collection<IndexMetaData> actual = IndexMetaDataLoader.load(connection, TEST_TABLE);
+        Collection<PhysicalIndexMetaData> actual = PhysicalIndexMetaDataLoader.load(connection, TEST_TABLE);
         assertThat(actual.size(), is(1));
-        IndexMetaData indexMetaData = actual.iterator().next();
+        PhysicalIndexMetaData indexMetaData = actual.iterator().next();
         assertThat(indexMetaData.getName(), is("my_index"));
     }
 }

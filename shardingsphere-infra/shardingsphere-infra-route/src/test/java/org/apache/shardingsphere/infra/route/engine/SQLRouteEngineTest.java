@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.route.fixture.rule.RouteFailureRuleFixtur
 import org.apache.shardingsphere.infra.route.fixture.rule.RouteRuleFixture;
 import org.apache.shardingsphere.infra.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +60,7 @@ public final class SQLRouteEngineTest {
     
     @Before
     public void setUp() {
-        when(metaData.getRuleSchemaMetaData().getSchemaMetaData()).thenReturn(mock(SchemaMetaData.class));
+        when(metaData.getRuleSchemaMetaData().getSchemaMetaData()).thenReturn(mock(PhysicalSchemaMetaData.class));
     }
     
     @Test

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.refresh.impl;
 
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
@@ -45,7 +45,7 @@ public final class DropIndexStatementMetaDataRefreshStrategy implements MetaData
         Collection<String> indexNames = getIndexNames(sqlStatement);
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(sqlStatement);
         String tableName = simpleTableSegment.map(tableSegment -> tableSegment.getTableName().getIdentifier().getValue()).orElse("");
-        TableMetaData tableMetaData = metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().get(tableName);
+        PhysicalTableMetaData tableMetaData = metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().get(tableName);
         if (simpleTableSegment.isPresent()) {
             indexNames.forEach(each -> tableMetaData.getIndexes().remove(each));
         }
@@ -60,7 +60,7 @@ public final class DropIndexStatementMetaDataRefreshStrategy implements MetaData
         return dropIndexStatement.getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toCollection(LinkedList::new));
     }
     
-    private Optional<String> findLogicTableName(final SchemaMetaData schemaMetaData, final String logicIndexName) {
+    private Optional<String> findLogicTableName(final PhysicalSchemaMetaData schemaMetaData, final String logicIndexName) {
         return schemaMetaData.getAllTableNames().stream().filter(each -> schemaMetaData.get(each).getIndexes().containsKey(logicIndexName)).findFirst();
     }
 }

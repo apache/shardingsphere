@@ -21,8 +21,8 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.junit.Before;
@@ -42,7 +42,7 @@ public final class ShowTablesMergedResultTest {
     
     private ShardingRule shardingRule;
     
-    private SchemaMetaData schemaMetaData;
+    private PhysicalSchemaMetaData schemaMetaData;
     
     @Before
     public void setUp() {
@@ -57,10 +57,10 @@ public final class ShowTablesMergedResultTest {
         return new ShardingRule(shardingRuleConfig, Lists.newArrayList("ds"));
     }
     
-    private SchemaMetaData createSchemaMetaData() {
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
-        tableMetaDataMap.put("table", new TableMetaData(Collections.emptyList(), Collections.emptyList()));
-        return new SchemaMetaData(tableMetaDataMap);
+    private PhysicalSchemaMetaData createSchemaMetaData() {
+        Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
+        tableMetaDataMap.put("table", new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList()));
+        return new PhysicalSchemaMetaData(tableMetaDataMap);
     }
     
     private QueryResult createQueryResult(final String value) throws SQLException {

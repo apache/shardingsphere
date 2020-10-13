@@ -44,7 +44,7 @@ import org.apache.shardingsphere.scaling.mysql.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.WriteRowsEvent;
 import org.apache.shardingsphere.scaling.mysql.client.ConnectInfo;
 import org.apache.shardingsphere.scaling.mysql.client.MySQLClient;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
@@ -117,7 +117,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
     }
     
     private void handleWriteRowsEvent(final WriteRowsEvent event) {
-        TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
+        PhysicalTableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
         for (Serializable[] each : event.getAfterRows()) {
             DataRecord record = createDataRecord(event, each.length);
             record.setType(ScalingConstant.INSERT);
@@ -129,7 +129,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
     }
     
     private void handleUpdateRowsEvent(final UpdateRowsEvent event) {
-        TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
+        PhysicalTableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
         for (int i = 0; i < event.getBeforeRows().size(); i++) {
             Serializable[] beforeValues = event.getBeforeRows().get(i);
             Serializable[] afterValues = event.getAfterRows().get(i);
@@ -145,7 +145,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
     }
     
     private void handleDeleteRowsEvent(final DeleteRowsEvent event) {
-        TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
+        PhysicalTableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
         for (Serializable[] each : event.getBeforeRows()) {
             DataRecord record = createDataRecord(event, each.length);
             record.setType(ScalingConstant.DELETE);

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.merge.dal.impl;
 
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
@@ -30,7 +30,7 @@ public final class DecoratedEncryptColumnsMergedResult extends EncryptColumnsMer
     
     private final MergedResult mergedResult;
     
-    public DecoratedEncryptColumnsMergedResult(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final SchemaMetaData schemaMetaData) {
+    public DecoratedEncryptColumnsMergedResult(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final PhysicalSchemaMetaData schemaMetaData) {
         super(sqlStatementContext, schemaMetaData);
         this.mergedResult = mergedResult;
     }

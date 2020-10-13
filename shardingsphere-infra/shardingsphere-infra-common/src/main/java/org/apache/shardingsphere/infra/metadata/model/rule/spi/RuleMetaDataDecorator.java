@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.model.rule.spi;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 
 /**
  * Rule meta data decorator.
@@ -34,5 +34,5 @@ public interface RuleMetaDataDecorator<T extends ShardingSphereRule> extends Ord
      * @param rule rule
      * @return decorated table meta data
      */
-    TableMetaData decorate(String tableName, TableMetaData tableMetaData, T rule);
+    PhysicalTableMetaData decorate(String tableName, PhysicalTableMetaData tableMetaData, T rule);
 }

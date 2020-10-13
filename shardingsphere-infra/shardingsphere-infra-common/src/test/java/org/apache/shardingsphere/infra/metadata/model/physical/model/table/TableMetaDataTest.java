@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.model.physical.model.table;
 
-import org.apache.shardingsphere.infra.metadata.model.physical.model.column.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,16 +31,16 @@ import static org.junit.Assert.assertTrue;
 
 public final class TableMetaDataTest {
     
-    private TableMetaData tableMetaData;
+    private PhysicalTableMetaData tableMetaData;
     
     @Before
     public void setUp() {
-        tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("test", Types.INTEGER, "INT", true, false, true)), Collections.emptyList());
+        tableMetaData = new PhysicalTableMetaData(Collections.singletonList(new PhysicalColumnMetaData("test", Types.INTEGER, "INT", true, false, true)), Collections.emptyList());
     }
     
     @Test
     public void assertGetColumnMetaData() {
-        ColumnMetaData actual = tableMetaData.getColumnMetaData(0);
+        PhysicalColumnMetaData actual = tableMetaData.getColumnMetaData(0);
         assertThat(actual.getName(), is("test"));
         assertThat(actual.getDataType(), is(Types.INTEGER));
         assertThat(actual.getDataTypeName(), is("INT"));
@@ -63,7 +63,7 @@ public final class TableMetaDataTest {
     
     @Test
     public void assertEmptyColumnsWithDefaultConstructor() {
-        tableMetaData = new TableMetaData();
+        tableMetaData = new PhysicalTableMetaData();
         assertThat(tableMetaData.getColumns(), is(Collections.emptyMap()));
     }
 }

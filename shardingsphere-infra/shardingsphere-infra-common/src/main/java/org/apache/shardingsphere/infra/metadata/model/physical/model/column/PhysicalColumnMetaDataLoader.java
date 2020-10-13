@@ -32,10 +32,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Column meta data loader.
+ * Physical column meta data loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ColumnMetaDataLoader {
+public final class PhysicalColumnMetaDataLoader {
     
     private static final String COLUMN_NAME = "COLUMN_NAME";
     
@@ -54,8 +54,8 @@ public final class ColumnMetaDataLoader {
      * @return column meta data list
      * @throws SQLException SQL exception
      */
-    public static Collection<ColumnMetaData> load(final Connection connection, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
-        Collection<ColumnMetaData> result = new LinkedList<>();
+    public static Collection<PhysicalColumnMetaData> load(final Connection connection, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
+        Collection<PhysicalColumnMetaData> result = new LinkedList<>();
         Collection<String> primaryKeys = loadPrimaryKeys(connection, tableNamePattern);
         List<String> columnNames = new ArrayList<>();
         List<Integer> columnTypes = new ArrayList<>();
@@ -81,7 +81,7 @@ public final class ColumnMetaDataLoader {
         }
         for (int i = 0; i < columnNames.size(); i++) {
             // TODO load auto generated from database meta data
-            result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), columnTypeNames.get(i), isPrimaryKeys.get(i), false, isCaseSensitives.get(i)));
+            result.add(new PhysicalColumnMetaData(columnNames.get(i), columnTypes.get(i), columnTypeNames.get(i), isPrimaryKeys.get(i), false, isCaseSensitives.get(i)));
         }
         return result;
     }

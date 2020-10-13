@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.DescribeStatementContext;
@@ -90,7 +90,7 @@ public final class SQLStatementContextFactory {
      * @param sqlStatement SQL statement
      * @return SQL statement context
      */
-    public static SQLStatementContext<?> newInstance(final SchemaMetaData schemaMetaData, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public static SQLStatementContext<?> newInstance(final PhysicalSchemaMetaData schemaMetaData, final List<Object> parameters, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof DMLStatement) {
             return getDMLStatementContext(schemaMetaData, parameters, (DMLStatement) sqlStatement);
         }
@@ -106,7 +106,7 @@ public final class SQLStatementContextFactory {
         return new CommonSQLStatementContext<>(sqlStatement);
     }
     
-    private static SQLStatementContext<?> getDMLStatementContext(final SchemaMetaData schemaMetaData, final List<Object> parameters, final DMLStatement sqlStatement) {
+    private static SQLStatementContext<?> getDMLStatementContext(final PhysicalSchemaMetaData schemaMetaData, final List<Object> parameters, final DMLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             return new SelectStatementContext(schemaMetaData, parameters, (SelectStatement) sqlStatement);
         }

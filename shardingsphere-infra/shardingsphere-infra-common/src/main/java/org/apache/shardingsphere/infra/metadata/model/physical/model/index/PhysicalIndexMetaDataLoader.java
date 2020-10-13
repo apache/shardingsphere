@@ -27,10 +27,10 @@ import java.util.Collection;
 import java.util.HashSet;
 
 /**
- * Index meta data loader.
+ * Physical index meta data loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class IndexMetaDataLoader {
+public final class PhysicalIndexMetaDataLoader {
     
     private static final String INDEX_NAME = "INDEX_NAME";
     
@@ -43,13 +43,13 @@ public final class IndexMetaDataLoader {
      * @return index meta data list
      * @throws SQLException SQL exception
      */
-    public static Collection<IndexMetaData> load(final Connection connection, final String table) throws SQLException {
-        Collection<IndexMetaData> result = new HashSet<>();
+    public static Collection<PhysicalIndexMetaData> load(final Connection connection, final String table) throws SQLException {
+        Collection<PhysicalIndexMetaData> result = new HashSet<>();
         try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), connection.getSchema(), table, false, false)) {
             while (resultSet.next()) {
                 String indexName = resultSet.getString(INDEX_NAME);
                 if (null != indexName) {
-                    result.add(new IndexMetaData(indexName));
+                    result.add(new PhysicalIndexMetaData(indexName));
                 }
             }
         }

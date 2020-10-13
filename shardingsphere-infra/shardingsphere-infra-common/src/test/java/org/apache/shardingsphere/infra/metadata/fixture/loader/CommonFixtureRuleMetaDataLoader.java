@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.model.rule.spi.RuleMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -35,17 +35,17 @@ import java.util.Optional;
 public final class CommonFixtureRuleMetaDataLoader implements RuleMetaDataLoader<CommonFixtureRule> {
     
     @Override
-    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
-                               final DataNodes dataNodes, final CommonFixtureRule rule, final ConfigurationProperties props, final Collection<String> excludedTableNames) {
-        Map<String, TableMetaData> tables = new HashMap<>(2, 1);
-        tables.put("common_table_0", new TableMetaData(Collections.emptyList(), Collections.emptyList()));
-        tables.put("common_table_1", new TableMetaData(Collections.emptyList(), Collections.emptyList()));
-        return new SchemaMetaData(tables);
+    public PhysicalSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                       final DataNodes dataNodes, final CommonFixtureRule rule, final ConfigurationProperties props, final Collection<String> excludedTableNames) {
+        Map<String, PhysicalTableMetaData> tables = new HashMap<>(2, 1);
+        tables.put("common_table_0", new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList()));
+        tables.put("common_table_1", new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList()));
+        return new PhysicalSchemaMetaData(tables);
     }
     
     @Override
-    public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
-                                        final DataNodes dataNodes, final String tableName, final CommonFixtureRule rule, final ConfigurationProperties props) {
+    public Optional<PhysicalTableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                                final DataNodes dataNodes, final String tableName, final CommonFixtureRule rule, final ConfigurationProperties props) {
         return Optional.empty();
     }
     

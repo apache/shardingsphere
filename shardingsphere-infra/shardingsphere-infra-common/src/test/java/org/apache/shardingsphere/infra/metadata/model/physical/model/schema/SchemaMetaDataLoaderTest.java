@@ -70,7 +70,7 @@ public final class SchemaMetaDataLoaderTest {
     
     @Test
     public void assertLoadUnconfiguredTableNamesForOracle() throws SQLException {
-        Collection<String> tableNames = SchemaMetaDataLoader.loadUnconfiguredTableNames(dataSource, databaseType, Collections.emptyList());
+        Collection<String> tableNames = PhysicalSchemaMetaDataLoader.loadUnconfiguredTableNames(dataSource, databaseType, Collections.emptyList());
         assertThat(tableNames.size(), is(0));
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.route.hook;
 
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 
 import java.util.Collection;
 
@@ -42,7 +42,7 @@ public final class SPIRoutingHook implements RoutingHook {
     }
     
     @Override
-    public void finishSuccess(final RouteContext routeContext, final SchemaMetaData schemaMetaData) {
+    public void finishSuccess(final RouteContext routeContext, final PhysicalSchemaMetaData schemaMetaData) {
         for (RoutingHook each : routingHooks) {
             each.finishSuccess(routeContext, schemaMetaData);
         }

@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.MetaDataConnectionAdapter;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.column.ColumnMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.index.IndexMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.index.PhysicalIndexMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -31,10 +31,10 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * Table meta data loader.
+ * Physical table meta data loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TableMetaDataLoader {
+public final class PhysicalTableMetaDataLoader {
     
     /**
      * Load table meta data.
@@ -45,10 +45,11 @@ public final class TableMetaDataLoader {
      * @return table meta data
      * @throws SQLException SQL exception
      */
-    public static Optional<TableMetaData> load(final DataSource dataSource, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
+    public static Optional<PhysicalTableMetaData> load(final DataSource dataSource, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
         try (MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, dataSource.getConnection())) {
             return isTableExist(connectionAdapter, tableNamePattern)
-                    ? Optional.of(new TableMetaData(ColumnMetaDataLoader.load(connectionAdapter, tableNamePattern, databaseType), IndexMetaDataLoader.load(connectionAdapter, tableNamePattern)))
+                    ? Optional.of(new PhysicalTableMetaData(
+                            PhysicalColumnMetaDataLoader.load(connectionAdapter, tableNamePattern, databaseType), PhysicalIndexMetaDataLoader.load(connectionAdapter, tableNamePattern)))
                     : Optional.empty();
         }
     }

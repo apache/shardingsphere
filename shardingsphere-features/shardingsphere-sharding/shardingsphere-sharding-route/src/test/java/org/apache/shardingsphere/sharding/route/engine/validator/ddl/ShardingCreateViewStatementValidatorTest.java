@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateViewStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -54,7 +54,7 @@ public final class ShardingCreateViewStatementValidatorTest {
         sqlStatement.setSelect(selectStatement);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
-        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
+        PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
         when(metaData.getRuleSchemaMetaData()).thenReturn(ruleSchemaMetaData);
         when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
         when(schemaMetaData.getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
@@ -73,7 +73,7 @@ public final class ShardingCreateViewStatementValidatorTest {
         sqlStatement.setSelect(selectStatement);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
-        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
+        PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
         when(metaData.getRuleSchemaMetaData()).thenReturn(ruleSchemaMetaData);
         when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
         when(schemaMetaData.getAllTableNames()).thenReturn(Collections.singleton("t_order"));

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.model.physical.model.schema;
 
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,20 +28,20 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Schema meta data.
+ * Physical schema meta data.
  */
-public final class SchemaMetaData {
+public final class PhysicalSchemaMetaData {
     
-    private final Map<String, TableMetaData> tables;
+    private final Map<String, PhysicalTableMetaData> tables;
     
     @SuppressWarnings("CollectionWithoutInitialCapacity")
-    public SchemaMetaData() {
+    public PhysicalSchemaMetaData() {
         tables = new ConcurrentHashMap<>();
     }
     
-    public SchemaMetaData(final Map<String, TableMetaData> tables) {
+    public PhysicalSchemaMetaData(final Map<String, PhysicalTableMetaData> tables) {
         this.tables = new ConcurrentHashMap<>(tables.size(), 1);
-        for (Entry<String, TableMetaData> entry : tables.entrySet()) {
+        for (Entry<String, PhysicalTableMetaData> entry : tables.entrySet()) {
             this.tables.put(entry.getKey().toLowerCase(), entry.getValue());
         }
     }
@@ -61,7 +61,7 @@ public final class SchemaMetaData {
      * @param tableName tableName table name
      * @return table mata data
      */
-    public TableMetaData get(final String tableName) {
+    public PhysicalTableMetaData get(final String tableName) {
         return tables.get(tableName.toLowerCase());
     }
     
@@ -70,7 +70,7 @@ public final class SchemaMetaData {
      * 
      * @param schemaMetaData schema meta data
      */
-    public void merge(final SchemaMetaData schemaMetaData) {
+    public void merge(final PhysicalSchemaMetaData schemaMetaData) {
         tables.putAll(schemaMetaData.tables);
     }
     
@@ -80,7 +80,7 @@ public final class SchemaMetaData {
      * @param tableName table name
      * @param tableMetaData table meta data
      */
-    public void put(final String tableName, final TableMetaData tableMetaData) {
+    public void put(final String tableName, final PhysicalTableMetaData tableMetaData) {
         tables.put(tableName.toLowerCase(), tableMetaData);
     }
     

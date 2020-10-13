@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
@@ -48,7 +48,7 @@ public final class ShardingConditionEngineFactory {
      * @return sharding condition engine
      */
     public static ShardingConditionEngine<?> createShardingConditionEngine(final LogicSQL logicSQL, final ShardingSphereSchema schema, final ShardingRule rule) {
-        SchemaMetaData schemaMetaData = schema.getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData();
+        PhysicalSchemaMetaData schemaMetaData = schema.getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData();
         return logicSQL.getSqlStatementContext() instanceof InsertStatementContext
                 ? new InsertClauseShardingConditionEngine(rule, schemaMetaData) : new WhereClauseShardingConditionEngine(rule, schemaMetaData);
     }

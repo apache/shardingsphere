@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.fixture.rule.DataNodeRoutedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.model.rule.spi.RuleMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -35,19 +35,19 @@ import java.util.Optional;
 public final class DataNodeRoutedFixtureRuleMetaDataLoader implements RuleMetaDataLoader<DataNodeRoutedFixtureRule> {
     
     @Override
-    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
-                               final DataNodes dataNodes, final DataNodeRoutedFixtureRule rule, final ConfigurationProperties props, final Collection<String> excludedTableNames) {
-        Map<String, TableMetaData> tables = new HashMap<>(2, 1);
-        tables.put("data_node_routed_table_0", new TableMetaData(Collections.emptyList(), Collections.emptyList()));
-        tables.put("data_node_routed_table_1", new TableMetaData(Collections.emptyList(), Collections.emptyList()));
-        return new SchemaMetaData(tables);
+    public PhysicalSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                       final DataNodes dataNodes, final DataNodeRoutedFixtureRule rule, final ConfigurationProperties props, final Collection<String> excludedTableNames) {
+        Map<String, PhysicalTableMetaData> tables = new HashMap<>(2, 1);
+        tables.put("data_node_routed_table_0", new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList()));
+        tables.put("data_node_routed_table_1", new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList()));
+        return new PhysicalSchemaMetaData(tables);
     }
     
     @Override
-    public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
-                                        final DataNodes dataNodes, final String tableName, final DataNodeRoutedFixtureRule rule, final ConfigurationProperties props) {
+    public Optional<PhysicalTableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                                final DataNodes dataNodes, final String tableName, final DataNodeRoutedFixtureRule rule, final ConfigurationProperties props) {
         return ("data_node_routed_table_0".equals(tableName) || "data_node_routed_table_1".equals(tableName))
-                ? Optional.of(new TableMetaData(Collections.emptyList(), Collections.emptyList())) : Optional.empty();
+                ? Optional.of(new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList())) : Optional.empty();
     }
     
     @Override

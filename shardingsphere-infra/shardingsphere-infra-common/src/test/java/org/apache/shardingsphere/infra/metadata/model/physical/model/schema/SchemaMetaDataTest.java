@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.metadata.model.physical.model.schema;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -35,58 +35,58 @@ public final class SchemaMetaDataTest {
     
     @Test
     public void assertGetAllTableNames() {
-        assertThat(new SchemaMetaData(ImmutableMap.of("tbl", mock(TableMetaData.class))).getAllTableNames(), is(Sets.newHashSet("tbl")));
+        assertThat(new PhysicalSchemaMetaData(ImmutableMap.of("tbl", mock(PhysicalTableMetaData.class))).getAllTableNames(), is(Sets.newHashSet("tbl")));
     }
     
     @Test
     public void assertGet() {
-        TableMetaData tableMetaData = mock(TableMetaData.class);
-        assertThat(new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData)).get("tbl"), is(tableMetaData));
+        PhysicalTableMetaData tableMetaData = mock(PhysicalTableMetaData.class);
+        assertThat(new PhysicalSchemaMetaData(ImmutableMap.of("tbl", tableMetaData)).get("tbl"), is(tableMetaData));
     }
     
     @Test
     public void assertMerge() {
-        SchemaMetaData actual = new SchemaMetaData(Collections.emptyMap());
-        TableMetaData tableMetaData = mock(TableMetaData.class);
-        actual.merge(new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData)));
+        PhysicalSchemaMetaData actual = new PhysicalSchemaMetaData(Collections.emptyMap());
+        PhysicalTableMetaData tableMetaData = mock(PhysicalTableMetaData.class);
+        actual.merge(new PhysicalSchemaMetaData(ImmutableMap.of("tbl", tableMetaData)));
         assertThat(actual.get("tbl"), is(tableMetaData));
     }
     
     @Test
     public void assertPut() {
-        SchemaMetaData actual = new SchemaMetaData(Collections.emptyMap());
-        TableMetaData tableMetaData = mock(TableMetaData.class);
+        PhysicalSchemaMetaData actual = new PhysicalSchemaMetaData(Collections.emptyMap());
+        PhysicalTableMetaData tableMetaData = mock(PhysicalTableMetaData.class);
         actual.put("tbl", tableMetaData);
         assertThat(actual.get("tbl"), is(tableMetaData));
     }
     
     @Test
     public void assertRemove() {
-        SchemaMetaData actual = new SchemaMetaData(ImmutableMap.of("tbl", mock(TableMetaData.class)));
+        PhysicalSchemaMetaData actual = new PhysicalSchemaMetaData(ImmutableMap.of("tbl", mock(PhysicalTableMetaData.class)));
         actual.remove("tbl");
         assertNull(actual.get("tbl"));
     }
     
     @Test
     public void assertContainsTable() {
-        assertTrue(new SchemaMetaData(ImmutableMap.of("tbl", mock(TableMetaData.class))).containsTable("tbl"));
+        assertTrue(new PhysicalSchemaMetaData(ImmutableMap.of("tbl", mock(PhysicalTableMetaData.class))).containsTable("tbl"));
     }
     
     @Test
     public void assertContainsColumn() {
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", 0, "dataType", false, false, false)), Collections.emptyList());
-        assertTrue(new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData)).containsColumn("tbl", "col"));
+        PhysicalTableMetaData tableMetaData = new PhysicalTableMetaData(Collections.singletonList(new PhysicalColumnMetaData("col", 0, "dataType", false, false, false)), Collections.emptyList());
+        assertTrue(new PhysicalSchemaMetaData(ImmutableMap.of("tbl", tableMetaData)).containsColumn("tbl", "col"));
     }
     
     @Test
     public void assertGetAllColumnNamesWhenContainsKey() {
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", 0, "dataType", false, false, false)), Collections.emptyList());
-        assertThat(new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData)).getAllColumnNames("tbl"), is(Collections.singletonList("col")));
+        PhysicalTableMetaData tableMetaData = new PhysicalTableMetaData(Collections.singletonList(new PhysicalColumnMetaData("col", 0, "dataType", false, false, false)), Collections.emptyList());
+        assertThat(new PhysicalSchemaMetaData(ImmutableMap.of("tbl", tableMetaData)).getAllColumnNames("tbl"), is(Collections.singletonList("col")));
     }
     
     @Test
     public void assertGetAllColumnNamesWhenNotContainsKey() {
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", 0, "dataType", false, false, false)), Collections.emptyList());
-        assertThat(new SchemaMetaData(ImmutableMap.of("tbl1", tableMetaData)).getAllColumnNames("tbl2"), is(Collections.<String>emptyList()));
+        PhysicalTableMetaData tableMetaData = new PhysicalTableMetaData(Collections.singletonList(new PhysicalColumnMetaData("col", 0, "dataType", false, false, false)), Collections.emptyList());
+        assertThat(new PhysicalSchemaMetaData(ImmutableMap.of("tbl1", tableMetaData)).getAllColumnNames("tbl2"), is(Collections.<String>emptyList()));
     }
 }

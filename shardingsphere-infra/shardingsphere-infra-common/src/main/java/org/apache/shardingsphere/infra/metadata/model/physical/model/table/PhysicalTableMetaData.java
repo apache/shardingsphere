@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.column.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.index.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.index.PhysicalIndexMetaData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,34 +32,34 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Table meta data.
+ * Physical table meta data.
  */
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class TableMetaData {
+public final class PhysicalTableMetaData {
     
-    private final Map<String, ColumnMetaData> columns;
+    private final Map<String, PhysicalColumnMetaData> columns;
     
-    private final Map<String, IndexMetaData> indexes;
+    private final Map<String, PhysicalIndexMetaData> indexes;
     
     @Getter(AccessLevel.NONE)
     private final List<String> columnNames = new ArrayList<>();
     
     private final List<String> primaryKeyColumns = new ArrayList<>();
     
-    public TableMetaData() {
+    public PhysicalTableMetaData() {
         this(Collections.emptyList(), Collections.emptyList());
     }
     
-    public TableMetaData(final Collection<ColumnMetaData> columnMetaDataList, final Collection<IndexMetaData> indexMetaDataList) {
+    public PhysicalTableMetaData(final Collection<PhysicalColumnMetaData> columnMetaDataList, final Collection<PhysicalIndexMetaData> indexMetaDataList) {
         columns = getColumns(columnMetaDataList);
         indexes = getIndexes(indexMetaDataList);
     }
     
-    private Map<String, ColumnMetaData> getColumns(final Collection<ColumnMetaData> columnMetaDataList) {
-        Map<String, ColumnMetaData> result = new LinkedHashMap<>(columnMetaDataList.size(), 1);
-        for (ColumnMetaData each : columnMetaDataList) {
+    private Map<String, PhysicalColumnMetaData> getColumns(final Collection<PhysicalColumnMetaData> columnMetaDataList) {
+        Map<String, PhysicalColumnMetaData> result = new LinkedHashMap<>(columnMetaDataList.size(), 1);
+        for (PhysicalColumnMetaData each : columnMetaDataList) {
             String lowerColumnName = each.getName().toLowerCase();
             columnNames.add(lowerColumnName);
             result.put(lowerColumnName, each);
@@ -70,9 +70,9 @@ public final class TableMetaData {
         return Collections.synchronizedMap(result);
     }
     
-    private Map<String, IndexMetaData> getIndexes(final Collection<IndexMetaData> indexMetaDataList) {
-        Map<String, IndexMetaData> result = new LinkedHashMap<>(indexMetaDataList.size(), 1);
-        for (IndexMetaData each : indexMetaDataList) {
+    private Map<String, PhysicalIndexMetaData> getIndexes(final Collection<PhysicalIndexMetaData> indexMetaDataList) {
+        Map<String, PhysicalIndexMetaData> result = new LinkedHashMap<>(indexMetaDataList.size(), 1);
+        for (PhysicalIndexMetaData each : indexMetaDataList) {
             result.put(each.getName().toLowerCase(), each);
         }
         return Collections.synchronizedMap(result);
@@ -84,7 +84,7 @@ public final class TableMetaData {
      * @param columnIndex column index
      * @return column meta data
      */
-    public ColumnMetaData getColumnMetaData(final int columnIndex) {
+    public PhysicalColumnMetaData getColumnMetaData(final int columnIndex) {
         return columns.get(columnNames.get(columnIndex));
     }
     

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGener
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerators;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.builder.DefaultTokenGeneratorBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 
@@ -40,7 +40,7 @@ import java.util.List;
 @Getter
 public final class SQLRewriteContext {
     
-    private final SchemaMetaData schemaMetaData;
+    private final PhysicalSchemaMetaData schemaMetaData;
     
     private final SQLStatementContext<?> sqlStatementContext;
     
@@ -55,7 +55,7 @@ public final class SQLRewriteContext {
     @Getter(AccessLevel.NONE)
     private final SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
     
-    public SQLRewriteContext(final SchemaMetaData schemaMetaData, final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters) {
+    public SQLRewriteContext(final PhysicalSchemaMetaData schemaMetaData, final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters) {
         this.schemaMetaData = schemaMetaData;
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
