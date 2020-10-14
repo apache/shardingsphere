@@ -15,58 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.impl;
+package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Optional;
-import java.util.Properties;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandler;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
+import java.util.Optional;
+import java.util.Properties;
+
 /**
- * Database meta data dialect handler facade.
+ * Database meta data dialect handler factory.
  */
-public final class DatabaseMetaDataDialectHandlerFacade {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DatabaseMetaDataDialectHandlerFactory {
     
     static {
         ShardingSphereServiceLoader.register(DatabaseMetaDataDialectHandler.class);
     }
     
     /**
-     * Get schema.
-     *
-     * @param connection connection
+     * Find database meta data dialect handler.
+     * 
      * @param databaseType database type
-     * @return schema
+     * @return database meta data dialect handler
      */
-    public static String getSchema(final Connection connection, final DatabaseType databaseType) {
-        return findDatabaseSpecialHandler(databaseType).map(handler -> handler.getSchema(connection)).orElse(getSchema(connection));
-    }
-    
-    private static String getSchema(final Connection connection) {
-        try {
-            return connection.getSchema();
-        } catch (final SQLException ex) {
-            return null;
-        }
-    }
-    
-    /**
-     * Get table name pattern.
-     *
-     * @param tableNamePattern table name pattern
-     * @param databaseType database type
-     * @return table name pattern
-     */
-    public static String getTableNamePattern(final String tableNamePattern, final DatabaseType databaseType) {
-        return findDatabaseSpecialHandler(databaseType).map(handler -> handler.decorate(tableNamePattern)).orElse(tableNamePattern);
-    }
-    
-    private static Optional<DatabaseMetaDataDialectHandler> findDatabaseSpecialHandler(final DatabaseType databaseType) {
+    public static Optional<DatabaseMetaDataDialectHandler> findHandler(final DatabaseType databaseType) {
         try {
             return Optional.of(TypedSPIRegistry.getRegisteredService(DatabaseMetaDataDialectHandler.class, databaseType.getName(), new Properties()));
         } catch (final ServiceProviderNotFoundException ignored) {
