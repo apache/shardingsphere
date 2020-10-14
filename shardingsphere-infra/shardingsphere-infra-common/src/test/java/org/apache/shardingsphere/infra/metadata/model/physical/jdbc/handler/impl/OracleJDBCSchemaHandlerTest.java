@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.impl;
 
+import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.JDBCSchemaHandler;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -41,15 +45,15 @@ public final class OracleJDBCSchemaHandlerTest {
     @Mock
     private DatabaseMetaData databaseMetaData;
     
-    @Test
-    public void assertGetType() {
-        assertThat(new OracleJDBCSchemaHandler().getType(), is("Oracle"));
+    @Before
+    public void before() {
+        ShardingSphereServiceLoader.register(JDBCSchemaHandler.class);
     }
     
     @Test
     public void assertGetSchema() throws SQLException {
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getUserName()).thenReturn(USER_NAME);
-        assertThat(new OracleJDBCSchemaHandler().getSchema(connection), is(USER_NAME.toUpperCase()));
+        assertThat(TypedSPIRegistry.getRegisteredService(JDBCSchemaHandler.class).getSchema(connection), is(USER_NAME.toUpperCase()));
     }
 }
