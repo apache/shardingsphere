@@ -80,10 +80,6 @@ aggregationClause
     : selectClause ((UNION (ALL)? | EXCEPT | INTERSECT) selectClause)*
     ;
 
-unionClause
-    : selectClause (UNION (ALL)? selectClause)*
-    ;
-
 selectClause
     : SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause? orderByClause?
     ;
@@ -158,7 +154,7 @@ havingClause
     ;
 
 subquery
-    : LP_ unionClause RP_
+    : LP_ aggregationClause RP_
     ;
 
 withClause_

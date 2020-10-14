@@ -59,7 +59,6 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Tab
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableReferencesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TopContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithClause_Context;
@@ -350,12 +349,6 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
     }
     
     @Override
-    public ASTNode visitUnionClause(final UnionClauseContext ctx) {
-        // TODO :Unsupported for union SQL.
-        return visit(ctx.selectClause(0));
-    }
-    
-    @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
         SQLServerSelectStatement result = new SQLServerSelectStatement();
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
@@ -628,6 +621,6 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
     
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
-        return visit(ctx.unionClause());
+        return visit(ctx.aggregationClause());
     }
 }
