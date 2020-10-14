@@ -124,7 +124,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         } else if (event.getKey().equals(configurationNode.getRulePath(schemaName))) {
             return createRuleChangedEvent(schemaName, event);
         }
-        return createMetaDataChangedEvent(event);
+        return createMetaDataChangedEvent(schemaName, event);
     }
     
     private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
@@ -140,8 +140,8 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         return new RuleConfigurationsChangedEvent(schemaName, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()));
     }
     
-    private GovernanceEvent createMetaDataChangedEvent(final DataChangedEvent event) {
+    private GovernanceEvent createMetaDataChangedEvent(final String schemaName, final DataChangedEvent event) {
         RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlRuleSchemaMetaData.class));
-        return new MetaDataChangedEvent(existedSchemaNames, ruleSchemaMetaData);
+        return new MetaDataChangedEvent(Collections.singleton(schemaName), ruleSchemaMetaData);
     }
 }
