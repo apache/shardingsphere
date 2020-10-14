@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.Data
  */
 @Getter
 @Setter
-public class OracleDatabaseSpecialHandler implements DatabaseSpecialHandler {
+public final class OracleDatabaseSpecialHandler implements DatabaseSpecialHandler {
     
     private Properties props;
     

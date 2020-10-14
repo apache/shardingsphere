@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 /**
  * Database special handler facade.
  */
-public class DatabaseSpecialHandlerFacade {
+public final class DatabaseSpecialHandlerFacade {
     
     static {
         ShardingSphereServiceLoader.register(DatabaseSpecialHandler.class);
