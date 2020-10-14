@@ -74,7 +74,10 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                 }
             }
             if (isToGeneratedSQLToken(each, selectStatementContext, tableName)) {
-                result.add(generateSQLToken((ShorthandProjectionSegment) each, selectStatementContext.getProjectionsContext(), tableName, encryptTable));
+                ShorthandProjection shorthandProjection = getShorthandProjection((ShorthandProjectionSegment) each, selectStatementContext.getProjectionsContext());
+                if (!shorthandProjection.getActualColumns().isEmpty()) {
+                    result.add(generateSQLToken((ShorthandProjectionSegment) each, shorthandProjection, tableName, encryptTable));
+                }
             }
         }
         return result;
@@ -98,8 +101,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     }
     
     private SubstitutableColumnNameToken generateSQLToken(final ShorthandProjectionSegment segment, 
-                                                          final ProjectionsContext projectionsContext, final String tableName, final EncryptTable encryptTable) {
-        ShorthandProjection shorthandProjection = getShorthandProjection(segment, projectionsContext);
+                                                          final ShorthandProjection shorthandProjection, final String tableName, final EncryptTable encryptTable) {
         List<String> shorthandExtensionProjections = new LinkedList<>();
         for (ColumnProjection each : shorthandProjection.getActualColumns()) {
             if (encryptTable.getLogicColumns().contains(each.getName())) {
