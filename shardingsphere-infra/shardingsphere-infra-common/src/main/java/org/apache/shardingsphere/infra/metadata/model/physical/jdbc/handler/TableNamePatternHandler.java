@@ -25,10 +25,10 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 public interface TableNamePatternHandler extends TypedSPI {
     
     /**
-     * decorate table name pattern.
+     * Decorate table name pattern.
      * 
      * @param tableNamePattern table name pattern
-     * @return decorate of table name pattern
+     * @return decorated table name pattern
      */
     String decorate(String tableNamePattern);
 }
