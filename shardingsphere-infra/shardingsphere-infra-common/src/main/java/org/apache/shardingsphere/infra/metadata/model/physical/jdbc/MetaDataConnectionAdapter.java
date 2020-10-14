@@ -19,10 +19,7 @@ package org.apache.shardingsphere.infra.metadata.model.physical.jdbc;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.JDBCSchemaHandler;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.impl.DatabaseMetaDataDialectHandlerFacade;
 
 import java.sql.Array;
 import java.sql.Blob;
@@ -39,8 +36,8 @@ import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
+
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
@@ -49,10 +46,6 @@ import java.util.concurrent.Executor;
  */
 @RequiredArgsConstructor
 public final class MetaDataConnectionAdapter implements Connection {
-    
-    static {
-        ShardingSphereServiceLoader.register(JDBCSchemaHandler.class);
-    }
     
     private final DatabaseType databaseType;
     
@@ -74,23 +67,7 @@ public final class MetaDataConnectionAdapter implements Connection {
     
     @Override
     public String getSchema() {
-        return findJDBCSchemaHandler().map(handler -> handler.getSchema(connection)).orElse(getSchema(connection));
-    }
-
-    private String getSchema(final Connection connection) {
-        try {
-            return connection.getSchema();
-        } catch (final SQLException ex) {
-            return null;
-        }
-    }
-    
-    private Optional<JDBCSchemaHandler> findJDBCSchemaHandler() {
-        try {
-            return Optional.of(TypedSPIRegistry.getRegisteredService(JDBCSchemaHandler.class, databaseType.getName(), new Properties()));
-        } catch (final ServiceProviderNotFoundException ignored) {
-            return Optional.empty();
-        }
+        return DatabaseMetaDataDialectHandlerFacade.getSchema(connection, databaseType);
     }
     
     @Override

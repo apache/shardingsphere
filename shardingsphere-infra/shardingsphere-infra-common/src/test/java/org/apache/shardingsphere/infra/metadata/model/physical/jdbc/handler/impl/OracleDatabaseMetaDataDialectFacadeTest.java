@@ -17,43 +17,49 @@
 
 package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.impl;
 
-import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.JDBCSchemaHandler;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
-import org.junit.Before;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class OracleJDBCSchemaHandlerTest {
-    
+public final class OracleDatabaseMetaDataDialectFacadeTest {
+
     private static final String USER_NAME = "root";
-    
+
+    private static final String TABLE_NAME_PATTERN = "t_order_0";
+
+    private final DatabaseType oracleDatabaseType = DatabaseTypes.getTrunkDatabaseType("Oracle");
+
+    private final DatabaseType mysqlDatabaseType = DatabaseTypes.getTrunkDatabaseType("MySQL");
+
     @Mock
     private Connection connection;
-    
+
     @Mock
     private DatabaseMetaData databaseMetaData;
-    
-    @Before
-    public void before() {
-        ShardingSphereServiceLoader.register(JDBCSchemaHandler.class);
-    }
-    
+
     @Test
     public void assertGetSchema() throws SQLException {
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getUserName()).thenReturn(USER_NAME);
-        assertThat(TypedSPIRegistry.getRegisteredService(JDBCSchemaHandler.class).getSchema(connection), is(USER_NAME.toUpperCase()));
+        assertThat(DatabaseMetaDataDialectHandlerFacade.getSchema(connection, oracleDatabaseType), is(USER_NAME.toUpperCase()));
+    }
+    
+    @Test
+    public void assertGetTableNamePattern() {
+        assertThat(DatabaseMetaDataDialectHandlerFacade.getTableNamePattern(TABLE_NAME_PATTERN, oracleDatabaseType), is(TABLE_NAME_PATTERN.toUpperCase()));
+        assertThat(DatabaseMetaDataDialectHandlerFacade.getTableNamePattern(TABLE_NAME_PATTERN, mysqlDatabaseType), is(TABLE_NAME_PATTERN));
     }
 }

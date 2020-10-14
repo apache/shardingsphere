@@ -17,17 +17,13 @@
 
 package org.apache.shardingsphere.infra.metadata.model.physical.model.table;
 
-import java.util.Properties;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.MetaDataConnectionAdapter;
-import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.TableNamePatternHandler;
+import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.impl.DatabaseMetaDataDialectHandlerFacade;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.index.PhysicalIndexMetaDataLoader;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -40,11 +36,7 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PhysicalTableMetaDataLoader {
-    
-    static {
-        ShardingSphereServiceLoader.register(TableNamePatternHandler.class);
-    }
-    
+
     /**
      * Load table meta data.
      *
@@ -56,7 +48,7 @@ public final class PhysicalTableMetaDataLoader {
      */
     public static Optional<PhysicalTableMetaData> load(final DataSource dataSource, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
         try (MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, dataSource.getConnection())) {
-            String tableName = decorateTableNamePattern(tableNamePattern, databaseType);
+            String tableName = DatabaseMetaDataDialectHandlerFacade.getTableNamePattern(tableNamePattern, databaseType);
             return isTableExist(connectionAdapter, tableName)
                     ? Optional.of(new PhysicalTableMetaData(
                           PhysicalColumnMetaDataLoader.load(connectionAdapter, tableName, databaseType), PhysicalIndexMetaDataLoader.load(connectionAdapter, tableName)))
@@ -67,19 +59,6 @@ public final class PhysicalTableMetaDataLoader {
     private static boolean isTableExist(final Connection connection, final String tableNamePattern) throws SQLException {
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), tableNamePattern, null)) {
             return resultSet.next();
-        }
-    }
-
-    private static String decorateTableNamePattern(final String tableNamePattern, final DatabaseType databaseType) {
-        Optional<TableNamePatternHandler> tableNamePatternHandler = findTableNamePatternHandler(databaseType);
-        return tableNamePatternHandler.map(handler -> handler.decorate(tableNamePattern)).orElse(tableNamePattern);
-    }
-
-    private static Optional<TableNamePatternHandler> findTableNamePatternHandler(final DatabaseType databaseType) {
-        try {
-            return Optional.of(TypedSPIRegistry.getRegisteredService(TableNamePatternHandler.class, databaseType.getName(), new Properties()));
-        } catch (final ServiceProviderNotFoundException ignored) {
-            return Optional.empty();
         }
     }
 }

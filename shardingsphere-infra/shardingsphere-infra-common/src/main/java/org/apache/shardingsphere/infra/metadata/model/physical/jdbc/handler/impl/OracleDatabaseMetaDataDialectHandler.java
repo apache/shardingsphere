@@ -17,19 +17,31 @@
 
 package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.impl;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Optional;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.TableNamePatternHandler;
+import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandler;
 
 /**
- * Table name pattern handler of Oracle.
+ * Database meta data dialect handler of Oracle.
  */
 @Getter
 @Setter
-public final class OracleTableNamePatternHandler implements TableNamePatternHandler {
+public final class OracleDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
     
     private Properties props;
+    
+    @Override
+    public String getSchema(final Connection connection) {
+        try {
+            return Optional.ofNullable(connection.getMetaData().getUserName()).map(String::toUpperCase).orElse(null);
+        } catch (final SQLException ignored) {
+            return null;
+        }
+    }
     
     @Override
     public String decorate(final String tableNamePattern) {
