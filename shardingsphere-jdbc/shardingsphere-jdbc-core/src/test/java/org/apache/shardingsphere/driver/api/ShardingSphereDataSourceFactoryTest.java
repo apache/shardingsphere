@@ -104,7 +104,6 @@ public final class ShardingSphereDataSourceFactoryTest {
         String key = "max-pool-Size";
         int idx = key.indexOf("-");
         if (idx > 0) {
-            StringBuilder sb = new StringBuilder(key.length() - 1);
             do {
                 key = key.substring(0, idx) + key.substring(idx + 1, idx + 2).toUpperCase() + key.substring(idx + 2);
                 idx = key.indexOf("-");
