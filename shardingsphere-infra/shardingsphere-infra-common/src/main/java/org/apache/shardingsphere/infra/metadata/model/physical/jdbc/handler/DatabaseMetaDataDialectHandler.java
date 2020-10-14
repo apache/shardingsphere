@@ -21,9 +21,9 @@ import java.sql.Connection;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
 /**
- * Database special handler.
+ * Database meta data dialect handler.
  */
-public interface DatabaseSpecialHandler extends TypedSPI {
+public interface DatabaseMetaDataDialectHandler extends TypedSPI {
     
     /**
      * Get schema.

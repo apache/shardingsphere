@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.impl.OracleDatabaseSpecialHandler
+org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.impl.OracleDatabaseMetaDataDialectHandler

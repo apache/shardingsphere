@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class OracleDatabaseSpecialFacadeTest {
+public final class OracleDatabaseMetaDataDialectFacadeTest {
 
     private static final String USER_NAME = "root";
 
@@ -54,12 +54,12 @@ public final class OracleDatabaseSpecialFacadeTest {
     public void assertGetSchema() throws SQLException {
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getUserName()).thenReturn(USER_NAME);
-        assertThat(DatabaseSpecialHandlerFacade.getSchema(connection, oracleDatabaseType), is(USER_NAME.toUpperCase()));
+        assertThat(DatabaseMetaDataDialectHandlerFacade.getSchema(connection, oracleDatabaseType), is(USER_NAME.toUpperCase()));
     }
     
     @Test
-    public void assertDecorateTableNamePattern() {
-        assertThat(DatabaseSpecialHandlerFacade.getTableNamePattern(TABLE_NAME_PATTERN, oracleDatabaseType), is(TABLE_NAME_PATTERN.toUpperCase()));
-        assertThat(DatabaseSpecialHandlerFacade.getTableNamePattern(TABLE_NAME_PATTERN, mysqlDatabaseType), is(TABLE_NAME_PATTERN));
+    public void assertGetTableNamePattern() {
+        assertThat(DatabaseMetaDataDialectHandlerFacade.getTableNamePattern(TABLE_NAME_PATTERN, oracleDatabaseType), is(TABLE_NAME_PATTERN.toUpperCase()));
+        assertThat(DatabaseMetaDataDialectHandlerFacade.getTableNamePattern(TABLE_NAME_PATTERN, mysqlDatabaseType), is(TABLE_NAME_PATTERN));
     }
 }

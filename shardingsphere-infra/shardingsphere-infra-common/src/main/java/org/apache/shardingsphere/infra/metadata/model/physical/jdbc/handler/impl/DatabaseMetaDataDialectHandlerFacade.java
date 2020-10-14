@@ -22,18 +22,18 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.Properties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseSpecialHandler;
+import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandler;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 /**
- * Database special handler facade.
+ * Database meta data dialect handler facade.
  */
-public final class DatabaseSpecialHandlerFacade {
+public final class DatabaseMetaDataDialectHandlerFacade {
     
     static {
-        ShardingSphereServiceLoader.register(DatabaseSpecialHandler.class);
+        ShardingSphereServiceLoader.register(DatabaseMetaDataDialectHandler.class);
     }
     
     /**
@@ -66,9 +66,9 @@ public final class DatabaseSpecialHandlerFacade {
         return findDatabaseSpecialHandler(databaseType).map(handler -> handler.decorate(tableNamePattern)).orElse(tableNamePattern);
     }
     
-    private static Optional<DatabaseSpecialHandler> findDatabaseSpecialHandler(final DatabaseType databaseType) {
+    private static Optional<DatabaseMetaDataDialectHandler> findDatabaseSpecialHandler(final DatabaseType databaseType) {
         try {
-            return Optional.of(TypedSPIRegistry.getRegisteredService(DatabaseSpecialHandler.class, databaseType.getName(), new Properties()));
+            return Optional.of(TypedSPIRegistry.getRegisteredService(DatabaseMetaDataDialectHandler.class, databaseType.getName(), new Properties()));
         } catch (final ServiceProviderNotFoundException ignored) {
             return Optional.empty();
         }

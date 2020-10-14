@@ -23,14 +23,14 @@ import java.util.Optional;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseSpecialHandler;
+import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandler;
 
 /**
- * Database special handler of Oracle.
+ * Database meta data dialect handler of Oracle.
  */
 @Getter
 @Setter
-public final class OracleDatabaseSpecialHandler implements DatabaseSpecialHandler {
+public final class OracleDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
     
     private Properties props;
     
