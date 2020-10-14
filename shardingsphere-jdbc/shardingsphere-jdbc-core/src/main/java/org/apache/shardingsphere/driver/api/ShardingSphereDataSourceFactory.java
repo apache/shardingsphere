@@ -107,7 +107,7 @@ public final class ShardingSphereDataSourceFactory {
         return new ShardingSphereDataSource(fromDataSourceConfig(dataSourceConfigMap), configurations, props);
     }
 
-    /**Create datasources from datasource yaml configurations. Note: after this method, all yaml style keys in dataSourceConfigMap will be change to java style, e.g. max-pool-size to maxPoolSize.
+    /**Create datasources from datasource yaml configurations.
      * @param dataSourceConfigMap datasource config properties map
      * @return datasources map
      */
