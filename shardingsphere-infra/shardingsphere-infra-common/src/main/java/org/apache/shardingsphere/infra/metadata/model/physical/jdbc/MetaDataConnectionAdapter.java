@@ -74,10 +74,10 @@ public final class MetaDataConnectionAdapter implements Connection {
     
     @Override
     public String getSchema() {
-        Optional<JDBCSchemaHandler> handler = findJDBCSchemaHandler();
-        if (handler.isPresent()) {
-            return handler.get().getSchema(connection);
-        }
+        return findJDBCSchemaHandler().map(handler-> handler.getSchema(connection)).orElse(getSchema(connection));
+    }
+
+    private String getSchema(final Connection connection) {
         try {
             return connection.getSchema();
         } catch (final SQLException ex) {
