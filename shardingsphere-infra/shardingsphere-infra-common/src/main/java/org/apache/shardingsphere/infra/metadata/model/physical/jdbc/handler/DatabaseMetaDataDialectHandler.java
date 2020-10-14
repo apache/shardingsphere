@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler;
 
 import java.sql.Connection;
+import java.sql.SQLException;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
 /**
@@ -29,9 +31,15 @@ public interface DatabaseMetaDataDialectHandler extends TypedSPI {
      * Get schema.
      *
      * @param connection connection
-     * @return schema
+     * @return schema schema
      */
-    String getSchema(Connection connection);
+    default String getSchema(Connection connection) {
+        try {
+            return connection.getSchema();
+        } catch (SQLException e) {
+            return null;
+        }
+    }
     
     /**
      * Decorate table name pattern.
@@ -41,5 +49,14 @@ public interface DatabaseMetaDataDialectHandler extends TypedSPI {
      */
     default String decorate(String tableNamePattern) {
         return tableNamePattern;
+    }
+    
+    /**
+     * Get delimiter.
+     *
+     * @return delimiter
+     */
+    default Pair<String, String> getDelimiter() {
+        return Pair.of("", "");
     }
 }

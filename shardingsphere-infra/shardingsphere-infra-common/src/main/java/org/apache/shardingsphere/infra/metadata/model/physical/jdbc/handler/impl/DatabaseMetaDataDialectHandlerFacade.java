@@ -21,6 +21,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.Properties;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandler;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -39,9 +40,9 @@ public final class DatabaseMetaDataDialectHandlerFacade {
     /**
      * Get schema.
      *
-     * @param connection connection
+     * @param connection   connection
      * @param databaseType database type
-     * @return schema
+     * @return schema schema
      */
     public static String getSchema(final Connection connection, final DatabaseType databaseType) {
         return findDatabaseSpecialHandler(databaseType).map(handler -> handler.getSchema(connection)).orElse(getSchema(connection));
@@ -59,11 +60,21 @@ public final class DatabaseMetaDataDialectHandlerFacade {
      * Get table name pattern.
      *
      * @param tableNamePattern table name pattern
-     * @param databaseType database type
+     * @param databaseType     database type
      * @return table name pattern
      */
     public static String getTableNamePattern(final String tableNamePattern, final DatabaseType databaseType) {
         return findDatabaseSpecialHandler(databaseType).map(handler -> handler.decorate(tableNamePattern)).orElse(tableNamePattern);
+    }
+    
+    /**
+     * Get delimiter.
+     *
+     * @param databaseType database type
+     * @return delimiter of pair
+     */
+    public static Pair<String, String> getDelimiter(final DatabaseType databaseType) {
+        return findDatabaseSpecialHandler(databaseType).map(DatabaseMetaDataDialectHandler::getDelimiter).orElse(Pair.of("", ""));
     }
     
     private static Optional<DatabaseMetaDataDialectHandler> findDatabaseSpecialHandler(final DatabaseType databaseType) {

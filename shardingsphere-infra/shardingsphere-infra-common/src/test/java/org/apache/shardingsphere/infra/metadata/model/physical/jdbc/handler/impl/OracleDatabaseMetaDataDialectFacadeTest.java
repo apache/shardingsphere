@@ -21,9 +21,17 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -61,5 +69,36 @@ public final class OracleDatabaseMetaDataDialectFacadeTest {
     public void assertGetTableNamePattern() {
         assertThat(DatabaseMetaDataDialectHandlerFacade.getTableNamePattern(TABLE_NAME_PATTERN, oracleDatabaseType), is(TABLE_NAME_PATTERN.toUpperCase()));
         assertThat(DatabaseMetaDataDialectHandlerFacade.getTableNamePattern(TABLE_NAME_PATTERN, mysqlDatabaseType), is(TABLE_NAME_PATTERN));
+    }
+    
+    @Test
+    public void assertGetDelimiter() {
+        Pair<String, String> oracleDelimiter = DatabaseMetaDataDialectHandlerFacade.getDelimiter(new OracleDatabaseType());
+        assertThat(oracleDelimiter.getLeft(), is("\""));
+        assertThat(oracleDelimiter.getRight(), is("\""));
+    
+        Pair<String, String> h2Delimiter = DatabaseMetaDataDialectHandlerFacade.getDelimiter(new H2DatabaseType());
+        assertThat(h2Delimiter.getLeft(), is("\""));
+        assertThat(h2Delimiter.getRight(), is("\""));
+    
+        Pair<String, String> postgreSQLDelimiter = DatabaseMetaDataDialectHandlerFacade.getDelimiter(new PostgreSQLDatabaseType());
+        assertThat(postgreSQLDelimiter.getLeft(), is("\""));
+        assertThat(postgreSQLDelimiter.getRight(), is("\""));
+    
+        Pair<String, String> sql92Delimiter = DatabaseMetaDataDialectHandlerFacade.getDelimiter(new SQL92DatabaseType());
+        assertThat(sql92Delimiter.getLeft(), is("\""));
+        assertThat(sql92Delimiter.getRight(), is("\""));
+    
+        Pair<String, String> mariaDBDelimiter = DatabaseMetaDataDialectHandlerFacade.getDelimiter(new MariaDBDatabaseType());
+        assertThat(mariaDBDelimiter.getLeft(), is("`"));
+        assertThat(mariaDBDelimiter.getRight(), is("`"));
+        
+        Pair<String, String> mysqlDelimiter = DatabaseMetaDataDialectHandlerFacade.getDelimiter(new MySQLDatabaseType());
+        assertThat(mysqlDelimiter.getLeft(), is("`"));
+        assertThat(mysqlDelimiter.getRight(), is("`"));
+    
+        Pair<String, String> sqlServerDelimiter = DatabaseMetaDataDialectHandlerFacade.getDelimiter(new SQLServerDatabaseType());
+        assertThat(sqlServerDelimiter.getLeft(), is("["));
+        assertThat(sqlServerDelimiter.getRight(), is("]"));
     }
 }
