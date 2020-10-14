@@ -40,9 +40,9 @@ public final class DatabaseMetaDataDialectHandlerFacade {
     /**
      * Get schema.
      *
-     * @param connection   connection
+     * @param connection connection
      * @param databaseType database type
-     * @return schema schema
+     * @return schema
      */
     public static String getSchema(final Connection connection, final DatabaseType databaseType) {
         return findDatabaseSpecialHandler(databaseType).map(handler -> handler.getSchema(connection)).orElse(getSchema(connection));
@@ -60,7 +60,7 @@ public final class DatabaseMetaDataDialectHandlerFacade {
      * Get table name pattern.
      *
      * @param tableNamePattern table name pattern
-     * @param databaseType     database type
+     * @param databaseType database type
      * @return table name pattern
      */
     public static String getTableNamePattern(final String tableNamePattern, final DatabaseType databaseType) {

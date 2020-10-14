@@ -31,7 +31,7 @@ public interface DatabaseMetaDataDialectHandler extends TypedSPI {
      * Get schema.
      *
      * @param connection connection
-     * @return schema schema
+     * @return schema
      */
     default String getSchema(Connection connection) {
         try {
