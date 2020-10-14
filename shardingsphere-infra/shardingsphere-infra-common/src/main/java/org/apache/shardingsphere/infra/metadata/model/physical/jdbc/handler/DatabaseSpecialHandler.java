@@ -15,29 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.impl;
+package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler;
 
-import java.util.Properties;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.TableNamePatternHandler;
+import java.sql.Connection;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
 /**
- * Table name pattern handler of Oracle.
+ * Database special handler.
  */
-@Getter
-@Setter
-public final class OracleTableNamePatternHandler implements TableNamePatternHandler {
+public interface DatabaseSpecialHandler extends TypedSPI {
     
-    private Properties props;
+    /**
+     * Get schema.
+     *
+     * @param connection connection
+     * @return schema
+     */
+    String getSchema(Connection connection);
     
-    @Override
-    public String decorate(final String tableNamePattern) {
-        return tableNamePattern.toUpperCase();
-    }
-    
-    @Override
-    public String getType() {
-        return "Oracle";
+    /**
+     * Decorate table name pattern.
+     *
+     * @param tableNamePattern table name pattern
+     * @return decorated table name pattern
+     */
+    default String decorate(String tableNamePattern) {
+        return tableNamePattern;
     }
 }

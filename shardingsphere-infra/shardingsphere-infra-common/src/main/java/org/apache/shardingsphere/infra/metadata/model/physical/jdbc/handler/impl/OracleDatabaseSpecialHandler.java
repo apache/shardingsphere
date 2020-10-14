@@ -17,21 +17,20 @@
 
 package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.impl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.JDBCSchemaHandler;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.Properties;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseSpecialHandler;
 
 /**
- * JDBC schema handler of Oracle.
+ * Database special handler of Oracle.
  */
 @Getter
 @Setter
-public final class OracleJDBCSchemaHandler implements JDBCSchemaHandler {
+public class OracleDatabaseSpecialHandler implements DatabaseSpecialHandler {
     
     private Properties props;
     
@@ -42,6 +41,11 @@ public final class OracleJDBCSchemaHandler implements JDBCSchemaHandler {
         } catch (final SQLException ignored) {
             return null;
         }
+    }
+    
+    @Override
+    public String decorate(final String tableNamePattern) {
+        return tableNamePattern.toUpperCase();
     }
     
     @Override
