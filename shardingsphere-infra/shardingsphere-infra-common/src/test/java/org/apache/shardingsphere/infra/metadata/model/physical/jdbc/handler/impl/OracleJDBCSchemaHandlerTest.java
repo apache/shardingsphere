@@ -30,15 +30,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
-
-/**
- * Test for JDBC schema handler of Oracle.
- */
 @RunWith(MockitoJUnitRunner.class)
 public final class OracleJDBCSchemaHandlerTest {
-
+    
     private static final String USER_NAME = "root";
-
+    
     @Mock
     private Connection connection;
     
