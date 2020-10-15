@@ -35,7 +35,7 @@ public final class ShardingSphereMetaData {
     
     private final LogicSchemaMetaData schemaMetaData;
     
-    private final CachedDatabaseMetaData cachedDatabaseMetaData;
+    private final TableAddressingMetaData tableAddressingMetaData;
     
-    private final TableAddressingMetaData tableAddressingMetaData = new TableAddressingMetaData();
+    private final CachedDatabaseMetaData cachedDatabaseMetaData;
 }
