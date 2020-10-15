@@ -244,7 +244,7 @@ Answer:
 1. Update to 4.1.0 above.
 2. Configure(A tip here: then each range query will be broadcast to every sharding table):
 - Version 4.x: `allow.range.query.with.inline.sharding` to `true` (Default value is `false`).
-- Version 5.x: `allow-range-query-with-inline-sharding` to `true` (Default value is `false`).
+- Version 5.x: `allow-range-query-with-inline-sharding` to `true` in InlineShardingStrategy (Default value is `false`).
 
 ## 20. Why there may be an error when configure both shardingsphere-jdbc-spring-boot-starter and a spring-boot-starter of certain datasource pool(such as druid)?
  
