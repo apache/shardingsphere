@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.impl;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Optional;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,35 +24,21 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandler;
 
 /**
- * Database meta data dialect handler of Oracle.
+ * Database meta data dialect handler of SQLServer.
  */
 @Getter
 @Setter
-public final class OracleDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
+public final class SQLServerDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
     
     private Properties props;
-    
-    @Override
-    public String getSchema(final Connection connection) {
-        try {
-            return Optional.ofNullable(connection.getMetaData().getUserName()).map(String::toUpperCase).orElse(null);
-        } catch (final SQLException ignored) {
-            return null;
-        }
-    }
-    
-    @Override
-    public String decorate(final String tableNamePattern) {
-        return tableNamePattern.toUpperCase();
-    }
 
     @Override
     public Pair<String, String> getDelimiter() {
-        return Pair.of("\"", "\"");
+        return Pair.of("[", "]");
     }
 
     @Override
     public String getType() {
-        return "Oracle";
+        return "SQLServer";
     }
 }
