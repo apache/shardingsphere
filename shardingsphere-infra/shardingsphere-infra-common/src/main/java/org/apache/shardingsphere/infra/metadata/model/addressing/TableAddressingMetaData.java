@@ -15,27 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.model;
+package org.apache.shardingsphere.infra.metadata.model.addressing;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaData;
-import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.model.datasource.DataSourcesMetaData;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
 
 /**
- * ShardingSphere meta data.
+ * Table addressing meta data.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ShardingSphereMetaData {
+public final class TableAddressingMetaData {
     
-    private final DataSourcesMetaData dataSourcesMetaData;
-    
-    private final LogicSchemaMetaData schemaMetaData;
-    
-    private final CachedDatabaseMetaData cachedDatabaseMetaData;
-    
-    private final TableAddressingMetaData tableAddressingMetaData = new TableAddressingMetaData();
+    private final Multimap<String, String> tableDataSourceNamesMapper = HashMultimap.create();
 }
