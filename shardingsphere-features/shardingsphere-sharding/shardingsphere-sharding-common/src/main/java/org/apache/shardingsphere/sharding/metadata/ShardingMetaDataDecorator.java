@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.metadata;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.model.rule.spi.RuleMetaDataDecorator;
+import org.apache.shardingsphere.infra.metadata.model.logic.spi.LogicMetaDataDecorator;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -35,7 +35,7 @@ import java.util.Optional;
 /**
  * Table meta data decorator for sharding.
  */
-public final class ShardingMetaDataDecorator implements RuleMetaDataDecorator<ShardingRule> {
+public final class ShardingMetaDataDecorator implements LogicMetaDataDecorator<ShardingRule> {
     
     @Override
     public PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final ShardingRule shardingRule) {

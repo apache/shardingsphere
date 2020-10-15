@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.model.rule;
+package org.apache.shardingsphere.infra.metadata.model.logic;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
@@ -26,9 +26,9 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Rule schema meta data.
+ * Logic schema meta data.
  */
-public final class RuleSchemaMetaData {
+public final class LogicSchemaMetaData {
     
     @Getter
     private final PhysicalSchemaMetaData configuredSchemaMetaData;
@@ -38,7 +38,7 @@ public final class RuleSchemaMetaData {
     
     private final PhysicalSchemaMetaData allSchemaMetaData;
     
-    public RuleSchemaMetaData(final PhysicalSchemaMetaData configuredSchemaMetaData, final Map<String, Collection<String>> unconfiguredSchemaMetaDataMap) {
+    public LogicSchemaMetaData(final PhysicalSchemaMetaData configuredSchemaMetaData, final Map<String, Collection<String>> unconfiguredSchemaMetaDataMap) {
         this.configuredSchemaMetaData = configuredSchemaMetaData;
         this.unconfiguredSchemaMetaDataMap = unconfiguredSchemaMetaDataMap;
         allSchemaMetaData = createSchemaMetaData();

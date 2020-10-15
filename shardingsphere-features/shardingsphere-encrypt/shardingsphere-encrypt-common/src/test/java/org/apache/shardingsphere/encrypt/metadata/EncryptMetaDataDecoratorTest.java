@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.metadata;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.metadata.model.rule.spi.RuleMetaDataDecorator;
+import org.apache.shardingsphere.infra.metadata.model.logic.spi.LogicMetaDataDecorator;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
@@ -38,13 +38,13 @@ import static org.mockito.Mockito.when;
 public final class EncryptMetaDataDecoratorTest {
     
     static {
-        ShardingSphereServiceLoader.register(RuleMetaDataDecorator.class);
+        ShardingSphereServiceLoader.register(LogicMetaDataDecorator.class);
     }
     
     @Test
     public void assertDecorate() {
         EncryptRule rule = createEncryptRule();
-        EncryptMetaDataDecorator decorator = (EncryptMetaDataDecorator) OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(rule), RuleMetaDataDecorator.class).get(rule);
+        EncryptMetaDataDecorator decorator = (EncryptMetaDataDecorator) OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(rule), LogicMetaDataDecorator.class).get(rule);
         PhysicalTableMetaData actual = decorator.decorate("t_encrypt", createTableMetaData(), rule);
         assertThat(actual.getColumns().size(), is(2));
         assertTrue(actual.getColumns().containsKey("id"));

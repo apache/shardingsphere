@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDataSourceGroupBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDatabaseBroadcastRoutingEngine;
@@ -83,10 +83,10 @@ public final class ShardingRouteEngineFactory {
             return new ShardingDatabaseBroadcastRoutingEngine();
         }
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLRoutingEngine(tableNames, metaData.getRuleSchemaMetaData(), sqlStatementContext);
+            return getDDLRoutingEngine(tableNames, metaData.getSchemaMetaData(), sqlStatementContext);
         }
         if (sqlStatement instanceof DALStatement) {
-            return getDALRoutingEngine(shardingRule, metaData.getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap(), sqlStatement, tableNames);
+            return getDALRoutingEngine(shardingRule, metaData.getSchemaMetaData().getUnconfiguredSchemaMetaDataMap(), sqlStatement, tableNames);
         }
         if (sqlStatement instanceof DCLStatement) {
             return getDCLRoutingEngine(sqlStatementContext, metaData);
@@ -98,20 +98,20 @@ public final class ShardingRouteEngineFactory {
             return new ShardingUnicastRoutingEngine(tableNames);
         }
         if (!shardingRule.tableRuleExists(tableNames)) {
-            return new ShardingUnconfiguredTablesRoutingEngine(tableNames, metaData.getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap());
+            return new ShardingUnconfiguredTablesRoutingEngine(tableNames, metaData.getSchemaMetaData().getUnconfiguredSchemaMetaDataMap());
         }
         return getShardingRoutingEngine(shardingRule, shardingConditions, tableNames, props);
     }
     
-    private static ShardingRouteEngine getDDLRoutingEngine(final Collection<String> tableNames, final RuleSchemaMetaData ruleSchemaMetaData, final SQLStatementContext sqlStatementContext) {
+    private static ShardingRouteEngine getDDLRoutingEngine(final Collection<String> tableNames, final LogicSchemaMetaData logicSchemaMetaData, final SQLStatementContext<?> sqlStatementContext) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         boolean functionStatement = sqlStatement instanceof CreateFunctionStatement || sqlStatement instanceof AlterFunctionStatement || sqlStatement instanceof DropFunctionStatement;
         boolean procedureStatement = sqlStatement instanceof CreateProcedureStatement || sqlStatement instanceof AlterProcedureStatement || sqlStatement instanceof DropProcedureStatement;
         boolean viewStatement = sqlStatement instanceof CreateViewStatement || sqlStatement instanceof AlterViewStatement || sqlStatement instanceof DropViewStatement;
         if (functionStatement || procedureStatement || viewStatement) {
-            return new ShardingUnconfiguredTablesRoutingEngine(tableNames, ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap());
+            return new ShardingUnconfiguredTablesRoutingEngine(tableNames, logicSchemaMetaData.getUnconfiguredSchemaMetaDataMap());
         }
-        return new ShardingTableBroadcastRoutingEngine(ruleSchemaMetaData.getConfiguredSchemaMetaData(), sqlStatementContext);
+        return new ShardingTableBroadcastRoutingEngine(logicSchemaMetaData.getConfiguredSchemaMetaData(), sqlStatementContext);
     }
     
     private static ShardingRouteEngine getDALRoutingEngine(final ShardingRule shardingRule,
@@ -133,7 +133,7 @@ public final class ShardingRouteEngineFactory {
     
     private static ShardingRouteEngine getDCLRoutingEngine(final SQLStatementContext sqlStatementContext, final ShardingSphereMetaData metaData) {
         return isDCLForSingleTable(sqlStatementContext) 
-                ? new ShardingTableBroadcastRoutingEngine(metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData(), sqlStatementContext)
+                ? new ShardingTableBroadcastRoutingEngine(metaData.getSchemaMetaData().getConfiguredSchemaMetaData(), sqlStatementContext)
                 : new ShardingInstanceBroadcastRoutingEngine(metaData.getDataSourcesMetaData());
     }
     

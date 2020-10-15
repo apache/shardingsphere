@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyFactory;
-import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
@@ -100,12 +100,12 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (refreshStrategy.isPresent()) {
             refreshStrategy.get().refreshMetaData(
                     schema.getMetaData(), ProxyContext.getInstance().getSchemaContexts().getDatabaseType(), schema.getDataSources(), sqlStatement, this::loadTableMetaData);
-            GovernanceEventBus.getInstance().post(new MetaDataPersistEvent(schema.getName(), schema.getMetaData().getRuleSchemaMetaData()));
+            GovernanceEventBus.getInstance().post(new MetaDataPersistEvent(schema.getName(), schema.getMetaData().getSchemaMetaData()));
         }
     }
     
     private Optional<PhysicalTableMetaData> loadTableMetaData(final String tableName) throws SQLException {
-        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(schema.getRules());
+        LogicSchemaMetaDataLoader loader = new LogicSchemaMetaDataLoader(schema.getRules());
         return loader.load(ProxyContext.getInstance().getSchemaContexts().getDatabaseType(), schema.getDataSources(), tableName, ProxyContext.getInstance().getSchemaContexts().getProps());
     }
     
@@ -132,7 +132,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
-                schema.getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(), 
+                schema.getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData(), 
                 ProxyContext.getInstance().getSchemaContexts().getProps(), schema.getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }

@@ -60,7 +60,7 @@ public final class SQLRouteEngineTest {
     
     @Before
     public void setUp() {
-        when(metaData.getRuleSchemaMetaData().getSchemaMetaData()).thenReturn(mock(PhysicalSchemaMetaData.class));
+        when(metaData.getSchemaMetaData().getSchemaMetaData()).thenReturn(mock(PhysicalSchemaMetaData.class));
     }
     
     @Test
@@ -76,7 +76,7 @@ public final class SQLRouteEngineTest {
         assertThat(routeUnit.getDataSourceMapper().getActualName(), is("ds_0"));
         assertTrue(routeUnit.getTableMappers().isEmpty());
         verify(routingHook).start("SELECT 1");
-        verify(routingHook).finishSuccess(actual, metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData());
+        verify(routingHook).finishSuccess(actual, metaData.getSchemaMetaData().getConfiguredSchemaMetaData());
     }
     
     @Test(expected = UnsupportedOperationException.class)

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateTableStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -85,9 +85,9 @@ public final class ShardingCreateTableStatementValidatorTest {
     private void assertValidateCreateTable(final CreateTableStatement sqlStatement) {
         SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
-        when(ruleSchemaMetaData.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
-        when(metaData.getRuleSchemaMetaData()).thenReturn(ruleSchemaMetaData);
+        LogicSchemaMetaData logicSchemaMetaData = mock(LogicSchemaMetaData.class);
+        when(logicSchemaMetaData.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
+        when(metaData.getSchemaMetaData()).thenReturn(logicSchemaMetaData);
         new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
     
@@ -110,9 +110,9 @@ public final class ShardingCreateTableStatementValidatorTest {
     private void assertValidateCreateTableIfNotExists(final CreateTableStatement sqlStatement) {
         SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
-        when(ruleSchemaMetaData.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
-        when(metaData.getRuleSchemaMetaData()).thenReturn(ruleSchemaMetaData);
+        LogicSchemaMetaData logicSchemaMetaData = mock(LogicSchemaMetaData.class);
+        when(logicSchemaMetaData.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
+        when(metaData.getSchemaMetaData()).thenReturn(logicSchemaMetaData);
         new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
 }

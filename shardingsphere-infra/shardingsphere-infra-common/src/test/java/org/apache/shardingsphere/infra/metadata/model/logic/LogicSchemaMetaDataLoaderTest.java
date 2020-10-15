@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.model.rule;
+package org.apache.shardingsphere.infra.metadata.model.logic;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class RuleSchemaMetaDataLoaderTest {
+public final class LogicSchemaMetaDataLoaderTest {
     
     @Mock
     private DatabaseType databaseType;
@@ -53,7 +53,7 @@ public final class RuleSchemaMetaDataLoaderTest {
     @Mock
     private ConfigurationProperties props;
     
-    private final RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()));
+    private final LogicSchemaMetaDataLoader loader = new LogicSchemaMetaDataLoader(Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()));
     
     @Before
     public void setUp() throws SQLException {
@@ -70,15 +70,15 @@ public final class RuleSchemaMetaDataLoaderTest {
     
     @Test
     public void assertSyncLoadFullDatabase() throws SQLException {
-        assertRuleSchemaMetaData(loader.load(databaseType, dataSource, props));
+        assertLogicSchemaMetaData(loader.load(databaseType, dataSource, props));
     }
     
     @Test
     public void assertAsyncLoadFullDatabase() throws SQLException {
-        assertRuleSchemaMetaData(loader.load(databaseType, dataSource, props));
+        assertLogicSchemaMetaData(loader.load(databaseType, dataSource, props));
     }
     
-    private void assertRuleSchemaMetaData(final RuleSchemaMetaData actual) {
+    private void assertLogicSchemaMetaData(final LogicSchemaMetaData actual) {
         assertThat(actual.getConfiguredSchemaMetaData().getAllTableNames().size(), is(4));
         assertTrue(actual.getConfiguredSchemaMetaData().containsTable("common_table_0"));
         assertTrue(actual.getConfiguredSchemaMetaData().containsTable("common_table_1"));

@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.model.rule.spi;
+package org.apache.shardingsphere.governance.core.yaml.config.metadata;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * Rule meta data decorator.
+ * Logic schema meta data configuration for YAML.
  */
-public interface RuleMetaDataDecorator<T extends ShardingSphereRule> extends OrderedSPI<T> {
-    
-    /**
-     * Decorate table meta data.
-     *
-     * @param tableName table name
-     * @param tableMetaData table meta data
-     * @param rule rule
-     * @return decorated table meta data
-     */
-    PhysicalTableMetaData decorate(String tableName, PhysicalTableMetaData tableMetaData, T rule);
+@Getter
+@Setter
+public final class YamlLogicSchemaMetaData implements YamlConfiguration {
+
+    private YamlSchemaMetaData configuredSchemaMetaData;
+
+    private Map<String, Collection<String>> unconfiguredSchemaMetaDataMap;
 }

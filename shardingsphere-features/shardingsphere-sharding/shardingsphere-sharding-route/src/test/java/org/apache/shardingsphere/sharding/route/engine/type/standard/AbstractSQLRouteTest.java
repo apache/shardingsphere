@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.model.datasource.DataSourcesMetaData;
-import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
@@ -55,11 +55,11 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
     protected final RouteContext assertRoute(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createAllShardingRule();
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildRuleSchemaMetaData(), mock(CachedDatabaseMetaData.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildLogicSchemaMetaData(), mock(CachedDatabaseMetaData.class));
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         StandardSQLParserEngine standardSqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
-                metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData(), parameters, standardSqlParserEngine.parse(sql, false));
+                metaData.getSchemaMetaData().getConfiguredSchemaMetaData(), parameters, standardSqlParserEngine.parse(sql, false));
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, parameters);
         ShardingSphereSchema schema = new ShardingSphereSchema("sharding_db", Collections.emptyList(), Collections.singleton(shardingRule), Collections.emptyMap(), metaData);
         RouteContext result = new SQLRouteEngine(props, Collections.singletonList(shardingRule)).route(logicSQL, schema);
@@ -78,7 +78,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         return new DataSourcesMetaData(DatabaseTypes.getActualDatabaseType("MySQL"), dataSourceInfoMap);
     }
     
-    private RuleSchemaMetaData buildRuleSchemaMetaData() {
+    private LogicSchemaMetaData buildLogicSchemaMetaData() {
         Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
         tableMetaDataMap.put("t_order", new PhysicalTableMetaData(Arrays.asList(new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", true, false, false),
                 new PhysicalColumnMetaData("user_id", Types.INTEGER, "int", false, false, false),
@@ -91,6 +91,6 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         tableMetaDataMap.put("t_other", new PhysicalTableMetaData(Collections.singletonList(new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
         Map<String, Collection<String>> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
         unconfiguredSchemaMetaDataMap.put("ds_0", Collections.singletonList("t_category"));
-        return new RuleSchemaMetaData(new PhysicalSchemaMetaData(tableMetaDataMap), unconfiguredSchemaMetaDataMap);
+        return new LogicSchemaMetaData(new PhysicalSchemaMetaData(tableMetaDataMap), unconfiguredSchemaMetaDataMap);
     }
 }

@@ -66,7 +66,7 @@ public final class CreateIndexStatementMetaDataRefreshStrategyTest extends Abstr
         createIndexStatement.setIndex(new IndexSegment(1, 2, new IdentifierValue("t_order_index")));
         createIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), createIndexStatement, tableName -> Optional.empty());
-        assertTrue(getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("t_order_index"));
+        assertTrue(getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("t_order_index"));
     }
     
     @Test
@@ -93,6 +93,6 @@ public final class CreateIndexStatementMetaDataRefreshStrategyTest extends Abstr
         MetaDataRefreshStrategy<CreateIndexStatement> metaDataRefreshStrategy = new CreateIndexStatementMetaDataRefreshStrategy();
         createIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), createIndexStatement, tableName -> Optional.empty());
-        assertFalse(getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("t_order_index"));
+        assertFalse(getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("t_order_index"));
     }
 }
