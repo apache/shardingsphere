@@ -76,10 +76,10 @@ public final class ShardingDeleteStatementValidatorTest {
     
     private void assertValidateDeleteModifyMultiTables(final DeleteStatement sqlStatement) {
         DeleteMultiTableSegment tableSegment = new DeleteMultiTableSegment();
-        tableSegment.getActualDeleteTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
-        tableSegment.getActualDeleteTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("t_order_item")));
+        tableSegment.getActualDeleteTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
+        tableSegment.getActualDeleteTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("order")));
         sqlStatement.setTableSegment(tableSegment);
-        Collection<String> tableNames = Lists.newArrayList("t_order", "t_order_item");
+        Collection<String> tableNames = Lists.newArrayList("user", "order");
         DeleteStatementContext sqlStatementContext = new DeleteStatementContext(sqlStatement);
         when(shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(tableNames);
         when(shardingRule.isAllBindingTables(tableNames)).thenReturn(true);
