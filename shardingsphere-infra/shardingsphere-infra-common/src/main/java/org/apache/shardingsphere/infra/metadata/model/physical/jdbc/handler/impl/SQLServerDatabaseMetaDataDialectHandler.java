@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.impl;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Optional;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,35 +24,21 @@ import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.Data
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 /**
- * Database meta data dialect handler of Oracle.
+ * Database meta data dialect handler of SQLServer.
  */
 @Getter
 @Setter
-public final class OracleDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
+public final class SQLServerDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
     
     private Properties props;
-    
-    @Override
-    public String getSchema(final Connection connection) {
-        try {
-            return Optional.ofNullable(connection.getMetaData().getUserName()).map(String::toUpperCase).orElse(null);
-        } catch (final SQLException ignored) {
-            return null;
-        }
-    }
-    
-    @Override
-    public String decorate(final String tableNamePattern) {
-        return tableNamePattern.toUpperCase();
-    }
 
     @Override
     public QuoteCharacter getDelimiter() {
-        return QuoteCharacter.QUOTE;
+        return QuoteCharacter.BRACKETS;
     }
 
     @Override
     public String getType() {
-        return "Oracle";
+        return "SQLServer";
     }
 }

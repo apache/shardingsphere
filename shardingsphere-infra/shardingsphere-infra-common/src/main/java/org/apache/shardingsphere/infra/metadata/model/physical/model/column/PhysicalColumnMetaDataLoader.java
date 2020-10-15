@@ -30,6 +30,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandler;
+import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandlerFactory;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 /**
  * Physical column meta data loader.
@@ -87,24 +90,8 @@ public final class PhysicalColumnMetaDataLoader {
     }
     
     private static String generateEmptyResultSQL(final String table, final DatabaseType databaseType) {
-        // TODO consider add a getDialectDelimeter() interface in parse module
-        String delimiterLeft;
-        String delimiterRight;
-        String databaseTypeName = databaseType.getName();
-        if ("MySQL".equals(databaseTypeName) || "MariaDB".equals(databaseTypeName)) {
-            delimiterLeft = "`";
-            delimiterRight = "`";
-        } else if ("Oracle".equals(databaseTypeName) || "PostgreSQL".equals(databaseTypeName) || "H2".equals(databaseTypeName) || "SQL92".equals(databaseTypeName)) {
-            delimiterLeft = "\"";
-            delimiterRight = "\"";
-        } else if ("SQLServer".equals(databaseTypeName)) {
-            delimiterLeft = "[";
-            delimiterRight = "]";
-        } else {
-            delimiterLeft = "";
-            delimiterRight = "";
-        }
-        return "SELECT * FROM " + delimiterLeft + table + delimiterRight + " WHERE 1 != 1";
+        QuoteCharacter quoteCharacter = DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(DatabaseMetaDataDialectHandler::getDelimiter).orElse(QuoteCharacter.NONE);
+        return "SELECT * FROM " + quoteCharacter.getStartDelimiter() + table + quoteCharacter.getEndDelimiter() + " WHERE 1 != 1";
     }
     
     private static Collection<String> loadPrimaryKeys(final Connection connection, final String table) throws SQLException {
