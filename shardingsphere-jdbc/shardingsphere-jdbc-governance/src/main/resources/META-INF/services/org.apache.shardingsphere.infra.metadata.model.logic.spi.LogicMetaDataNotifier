@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.metadata.fixture.loader.CommonFixtureRuleMetaDataLoader
-org.apache.shardingsphere.infra.metadata.fixture.loader.DataNodeRoutedFixtureRuleMetaDataLoader
+org.apache.shardingsphere.driver.governance.internal.metadata.LogicSchemaMetaDataNotifier

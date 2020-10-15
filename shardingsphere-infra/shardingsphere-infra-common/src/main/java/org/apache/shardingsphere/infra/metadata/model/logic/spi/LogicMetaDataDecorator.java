@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.model.rule.spi;
+package org.apache.shardingsphere.infra.metadata.model.logic.spi;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 
 /**
- * Rule meta data decorator.
+ * Logic meta data decorator.
  */
-public interface RuleMetaDataDecorator<T extends ShardingSphereRule> extends OrderedSPI<T> {
+public interface LogicMetaDataDecorator<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
      * Decorate table meta data.

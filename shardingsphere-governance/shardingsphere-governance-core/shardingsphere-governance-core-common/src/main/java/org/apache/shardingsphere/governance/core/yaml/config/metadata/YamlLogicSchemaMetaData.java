@@ -25,11 +25,11 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Rule schema meta data configuration for YAML.
+ * Logic schema meta data configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlRuleSchemaMetaData implements YamlConfiguration {
+public final class YamlLogicSchemaMetaData implements YamlConfiguration {
 
     private YamlSchemaMetaData configuredSchemaMetaData;
 

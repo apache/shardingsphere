@@ -41,7 +41,7 @@ public final class UnconfiguredSchemaSQLRouter {
      */
     public void decorate(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereSchema schema) {
         if (isNeedUnconfiguredSchema(logicSQL.getSqlStatementContext().getSqlStatement())) {
-            for (String each : schema.getMetaData().getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().keySet()) {
+            for (String each : schema.getMetaData().getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().keySet()) {
                 routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
             }
         }

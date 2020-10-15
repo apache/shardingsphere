@@ -84,7 +84,7 @@ public final class DatabaseCommunicationEngineFactory {
     
     private LogicSQL createLogicSQL(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
         ShardingSphereSchema schema = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
-        PhysicalSchemaMetaData schemaMetaData = schema.getMetaData().getRuleSchemaMetaData().getSchemaMetaData();
+        PhysicalSchemaMetaData schemaMetaData = schema.getMetaData().getSchemaMetaData().getSchemaMetaData();
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, parameters, sqlStatement);
         return new LogicSQL(sqlStatementContext, sql, parameters);
     }

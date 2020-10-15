@@ -303,7 +303,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private LogicSQL createLogicSQL(final String sql) {
-        PhysicalSchemaMetaData schemaMetaData = schemaContexts.getDefaultSchema().getMetaData().getRuleSchemaMetaData().getSchemaMetaData();
+        PhysicalSchemaMetaData schemaMetaData = schemaContexts.getDefaultSchema().getMetaData().getSchemaMetaData().getSchemaMetaData();
         SQLStatement sqlStatement = schemaContexts.getSqlParserEngine().parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, Collections.emptyList(), sqlStatement);
         return new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
@@ -370,7 +370,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
         ShardingSphereSchema schema = schemaContexts.getDefaultSchema();
         MergeEngine mergeEngine = new MergeEngine(schemaContexts.getDatabaseType(),
-                schema.getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData(), schemaContexts.getProps(), schema.getRules());
+                schema.getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData(), schemaContexts.getProps(), schema.getRules());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }
     

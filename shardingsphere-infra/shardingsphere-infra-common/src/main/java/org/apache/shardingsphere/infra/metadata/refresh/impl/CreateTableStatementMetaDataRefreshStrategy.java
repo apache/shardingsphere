@@ -43,11 +43,11 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         Optional<PhysicalTableMetaData> tableMetaData = callback.load(tableName);
         if (tableMetaData.isPresent()) {
-            metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().put(tableName, tableMetaData.get());
-            metaData.getRuleSchemaMetaData().getSchemaMetaData().put(tableName, tableMetaData.get());
+            metaData.getSchemaMetaData().getConfiguredSchemaMetaData().put(tableName, tableMetaData.get());
+            metaData.getSchemaMetaData().getSchemaMetaData().put(tableName, tableMetaData.get());
         } else {
             refreshUnconfiguredMetaData(metaData, dataSourceMap, tableName);
-            metaData.getRuleSchemaMetaData().getSchemaMetaData().put(tableName, new PhysicalTableMetaData());
+            metaData.getSchemaMetaData().getSchemaMetaData().put(tableName, new PhysicalTableMetaData());
         }
     }
     
@@ -58,9 +58,9 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
     }
     
     private void refreshUnconfiguredMetaData(final ShardingSphereMetaData metaData, final String tableName, final String dataSourceName) {
-        Collection<String> schemaMetaData = metaData.getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get(dataSourceName);
+        Collection<String> schemaMetaData = metaData.getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get(dataSourceName);
         if (null == schemaMetaData) {
-            metaData.getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().put(dataSourceName, Lists.newArrayList(tableName));
+            metaData.getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().put(dataSourceName, Lists.newArrayList(tableName));
         } else {
             schemaMetaData.add(tableName);
         }

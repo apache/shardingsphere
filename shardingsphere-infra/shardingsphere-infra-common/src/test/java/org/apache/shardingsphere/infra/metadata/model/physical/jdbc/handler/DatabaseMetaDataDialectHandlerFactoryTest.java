@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.model;
+package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.model.datasource.DataSourcesMetaData;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
-/**
- * ShardingSphere meta data.
- */
-@RequiredArgsConstructor
-@Getter
-public final class ShardingSphereMetaData {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+@RunWith(MockitoJUnitRunner.class)
+public final class DatabaseMetaDataDialectHandlerFactoryTest {
     
-    private final DataSourcesMetaData dataSourcesMetaData;
+    @Test
+    public void assertFindHandlerForOracle() {
+        assertTrue(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypes.getTrunkDatabaseType("Oracle")).isPresent());
+    }
     
-    private final LogicSchemaMetaData schemaMetaData;
-    
-    private final CachedDatabaseMetaData cachedDatabaseMetaData;
+    @Test
+    public void assertFindHandlerMySQL() {
+        assertFalse(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypes.getTrunkDatabaseType("MySQL")).isPresent());
+    }
 }

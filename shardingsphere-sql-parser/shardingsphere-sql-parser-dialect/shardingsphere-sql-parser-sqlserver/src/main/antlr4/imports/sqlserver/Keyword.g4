@@ -579,3 +579,12 @@ PERCENT
 TIES
     : T I E S
     ;
+
+EXCEPT
+    : E X C E P T
+    ;
+   
+INTERSECT
+    : I N T E R S E C T
+    ;
+

@@ -38,7 +38,7 @@ public final class DropTableStatementMetaDataRefreshStrategy implements MetaData
     }
     
     private void removeMetaData(final ShardingSphereMetaData metaData, final String tableName) {
-        metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().remove(tableName);
-        metaData.getRuleSchemaMetaData().getSchemaMetaData().remove(tableName);
+        metaData.getSchemaMetaData().getConfiguredSchemaMetaData().remove(tableName);
+        metaData.getSchemaMetaData().getSchemaMetaData().remove(tableName);
     }
 }

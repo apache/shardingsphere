@@ -29,13 +29,13 @@ import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurat
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlRuleSchemaMetaData;
+import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlLogicSchemaMetaData;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
-import org.apache.shardingsphere.governance.core.yaml.swapper.RuleSchemaMetaDataYamlSwapper;
+import org.apache.shardingsphere.governance.core.yaml.swapper.LogicSchemaMetaDataYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
-import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -124,7 +124,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         } else if (event.getKey().equals(configurationNode.getRulePath(schemaName))) {
             return createRuleChangedEvent(schemaName, event);
         }
-        return createMetaDataChangedEvent(event);
+        return createMetaDataChangedEvent(schemaName, event);
     }
     
     private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
@@ -140,8 +140,8 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         return new RuleConfigurationsChangedEvent(schemaName, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()));
     }
     
-    private GovernanceEvent createMetaDataChangedEvent(final DataChangedEvent event) {
-        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlRuleSchemaMetaData.class));
-        return new MetaDataChangedEvent(existedSchemaNames, ruleSchemaMetaData);
+    private GovernanceEvent createMetaDataChangedEvent(final String schemaName, final DataChangedEvent event) {
+        LogicSchemaMetaData logicSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlLogicSchemaMetaData.class));
+        return new MetaDataChangedEvent(Collections.singleton(schemaName), logicSchemaMetaData);
     }
 }

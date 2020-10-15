@@ -38,14 +38,14 @@ public final class AlterTableStatementMetaDataRefreshStrategy implements MetaDat
     public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
                                 final Map<String, DataSource> dataSourceMap, final AlterTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        PhysicalSchemaMetaData schemaMetaData = metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData();
+        PhysicalSchemaMetaData schemaMetaData = metaData.getSchemaMetaData().getConfiguredSchemaMetaData();
         if (null != schemaMetaData && schemaMetaData.containsTable(tableName)) {
             callback.load(tableName).ifPresent(tableMetaData -> alterMetaData(metaData, tableName, tableMetaData));
         }
     }
     
     private void alterMetaData(final ShardingSphereMetaData metaData, final String tableName, final PhysicalTableMetaData tableMetaData) {
-        metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().put(tableName, tableMetaData);
-        metaData.getRuleSchemaMetaData().getSchemaMetaData().put(tableName, tableMetaData);
+        metaData.getSchemaMetaData().getConfiguredSchemaMetaData().put(tableName, tableMetaData);
+        metaData.getSchemaMetaData().getSchemaMetaData().put(tableName, tableMetaData);
     }
 }

@@ -39,7 +39,7 @@ import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.jdbc.test.MockedDataSource;
@@ -191,7 +191,7 @@ public final class GovernanceSchemaContextsTest {
     
     @Test
     public void assertMetaDataChanged() {
-        MetaDataChangedEvent event = new MetaDataChangedEvent(Collections.singletonList("schema_changed"), mock(RuleSchemaMetaData.class));
+        MetaDataChangedEvent event = new MetaDataChangedEvent(Collections.singletonList("schema_changed"), mock(LogicSchemaMetaData.class));
         governanceSchemaContexts.renew(event);
         assertTrue(governanceSchemaContexts.getSchemas().containsKey("schema"));
         assertFalse(governanceSchemaContexts.getSchemas().containsKey("schema_changed"));
@@ -199,7 +199,7 @@ public final class GovernanceSchemaContextsTest {
     
     @Test
     public void assertMetaDataChangedWithExistSchema() {
-        MetaDataChangedEvent event = new MetaDataChangedEvent(Collections.singletonList("schema"), mock(RuleSchemaMetaData.class));
+        MetaDataChangedEvent event = new MetaDataChangedEvent(Collections.singletonList("schema"), mock(LogicSchemaMetaData.class));
         governanceSchemaContexts.renew(event);
         assertThat(governanceSchemaContexts.getSchemas().get("schema"), not(schema));
     }

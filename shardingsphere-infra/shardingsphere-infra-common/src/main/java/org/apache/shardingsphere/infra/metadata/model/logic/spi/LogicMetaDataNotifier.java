@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler;
+package org.apache.shardingsphere.infra.metadata.model.logic.spi;
 
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
-
-import java.sql.Connection;
+import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
 /**
- * JDBC schema handler.
+ * Logic meta data notifier.
  */
-public interface JDBCSchemaHandler extends TypedSPI {
+public interface LogicMetaDataNotifier extends OrderedSPI<LogicSchemaMetaData> {
     
     /**
-     * Get schema.
+     * Notify rule meta data changed.
      * 
-     * @param connection connection
-     * @return schema
+     * @param schemaName schema name
+     * @param metaData meta data
      */
-    String getSchema(Connection connection);
+    void notify(String schemaName, LogicSchemaMetaData metaData);
 }

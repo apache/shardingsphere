@@ -257,7 +257,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/sharding_db/table", readYAML(META_DATA_FILE), ChangedType.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
-        assertTrue(((MetaDataChangedEvent) actual.get()).getRuleSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames().contains("t_order"));
+        assertTrue(((MetaDataChangedEvent) actual.get()).getLogicSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames().contains("t_order"));
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
