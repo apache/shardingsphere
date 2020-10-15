@@ -23,8 +23,8 @@ import java.util.Optional;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandler;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 /**
  * Database meta data dialect handler of Oracle.
@@ -50,8 +50,8 @@ public final class OracleDatabaseMetaDataDialectHandler implements DatabaseMetaD
     }
 
     @Override
-    public Pair<String, String> getDelimiter() {
-        return Pair.of("\"", "\"");
+    public QuoteCharacter getDelimiter() {
+        return QuoteCharacter.QUOTE;
     }
 
     @Override

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.imp
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandler;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 /**
  * Database meta data dialect handler of SQLServer.
@@ -33,8 +33,8 @@ public final class SQLServerDatabaseMetaDataDialectHandler implements DatabaseMe
     private Properties props;
 
     @Override
-    public Pair<String, String> getDelimiter() {
-        return Pair.of("[", "]");
+    public QuoteCharacter getDelimiter() {
+        return QuoteCharacter.BRACKETS;
     }
 
     @Override

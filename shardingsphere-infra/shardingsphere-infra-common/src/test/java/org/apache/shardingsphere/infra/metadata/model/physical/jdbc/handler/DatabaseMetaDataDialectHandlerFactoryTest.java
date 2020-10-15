@@ -22,19 +22,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DatabaseMetaDataDialectHandlerFactoryTest {
     
     @Test
-    public void assertFindHandlerForOracle() {
+    public void assertFindHandler() {
         assertTrue(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypes.getTrunkDatabaseType("Oracle")).isPresent());
-    }
-    
-    @Test
-    public void assertFindHandlerMySQL() {
-        assertFalse(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypes.getTrunkDatabaseType("MySQL")).isPresent());
+        assertTrue(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypes.getTrunkDatabaseType("MySQL")).isPresent());
     }
 }

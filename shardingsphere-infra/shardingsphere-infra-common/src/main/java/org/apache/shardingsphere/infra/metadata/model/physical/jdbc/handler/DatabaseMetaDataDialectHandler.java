@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 /**
  * Database meta data dialect handler.
@@ -56,7 +56,7 @@ public interface DatabaseMetaDataDialectHandler extends TypedSPI {
      *
      * @return delimiter
      */
-    default Pair<String, String> getDelimiter() {
-        return Pair.of("", "");
+    default QuoteCharacter getDelimiter() {
+        return QuoteCharacter.NONE;
     }
 }
