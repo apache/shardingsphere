@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
@@ -63,7 +64,10 @@ public final class ShardingInsertStatementValidatorTest {
     public void assertValidateInsertModifyMultiTables() {
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(
                 new PhysicalSchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement(true));
-        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class));
+        Collection<String> tableNames = Lists.newArrayList("user", "order");
+        when(shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(tableNames);
+        when(shardingRule.isAllBindingTables(tableNames)).thenReturn(true);
+        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", mock(ShardingSphereMetaData.class));
     }
     
     @Test
@@ -71,7 +75,7 @@ public final class ShardingInsertStatementValidatorTest {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(
                 new PhysicalSchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement(false));
-        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class));
+        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", mock(ShardingSphereMetaData.class));
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -79,7 +83,7 @@ public final class ShardingInsertStatementValidatorTest {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(
                 new PhysicalSchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement(false));
-        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class));
+        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", mock(ShardingSphereMetaData.class));
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -89,7 +93,7 @@ public final class ShardingInsertStatementValidatorTest {
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(
                 new PhysicalSchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTables().addAll(createSingleTablesContext().getTables());
-        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class));
+        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", mock(ShardingSphereMetaData.class));
     }
     
     @Test
@@ -99,7 +103,7 @@ public final class ShardingInsertStatementValidatorTest {
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(
                 new PhysicalSchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTables().addAll(createSingleTablesContext().getTables());
-        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class));
+        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", mock(ShardingSphereMetaData.class));
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -111,7 +115,7 @@ public final class ShardingInsertStatementValidatorTest {
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(
                 new PhysicalSchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTables().addAll(multiTablesContext.getTables());
-        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class));
+        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", mock(ShardingSphereMetaData.class));
     }
     
     @Test
@@ -123,7 +127,7 @@ public final class ShardingInsertStatementValidatorTest {
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(
                 new PhysicalSchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTables().addAll(multiTablesContext.getTables());
-        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class));
+        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", mock(ShardingSphereMetaData.class));
     }
     
     private InsertStatement createInsertStatement(final boolean includeMultiTable) {

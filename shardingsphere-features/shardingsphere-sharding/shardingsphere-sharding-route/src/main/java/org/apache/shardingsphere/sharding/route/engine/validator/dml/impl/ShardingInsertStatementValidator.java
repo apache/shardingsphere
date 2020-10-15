@@ -42,9 +42,10 @@ import java.util.Optional;
 public final class ShardingInsertStatementValidator extends ShardingDMLStatementValidator<InsertStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereMetaData metaData) {
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext, 
+                            final List<Object> parameters, final String sql, final ShardingSphereMetaData metaData) {
         if (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
-            validateMultipleTable(sqlStatementContext);
+            validateMultipleTable(shardingRule, sqlStatementContext, sql);
         }
         InsertStatement sqlStatement = sqlStatementContext.getSqlStatement();
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(sqlStatement);

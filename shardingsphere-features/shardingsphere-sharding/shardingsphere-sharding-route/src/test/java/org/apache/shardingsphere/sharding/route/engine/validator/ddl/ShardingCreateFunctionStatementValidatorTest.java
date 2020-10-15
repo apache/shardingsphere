@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContex
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateFunctionStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -76,7 +76,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
         when(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap()).thenReturn(unconfiguredSchemaMetaDataMap);
         when(ruleSchemaMetaData.getAllTableNames()).thenReturn(Collections.emptyList());
         SQLStatementContext<CreateFunctionStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
-        new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
+        new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", metaData);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -96,7 +96,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
         when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
         when(schemaMetaData.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
         SQLStatementContext<CreateFunctionStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
-        new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
+        new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", metaData);
     }
     
     @Test(expected = TableExistsException.class)
@@ -114,6 +114,6 @@ public final class ShardingCreateFunctionStatementValidatorTest {
         when(metaData.getRuleSchemaMetaData()).thenReturn(ruleSchemaMetaData);
         when(ruleSchemaMetaData.getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
         SQLStatementContext<CreateFunctionStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
-        new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
+        new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", metaData);
     }
 }

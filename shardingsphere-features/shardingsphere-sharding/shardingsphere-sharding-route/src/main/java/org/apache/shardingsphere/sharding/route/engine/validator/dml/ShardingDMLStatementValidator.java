@@ -21,7 +21,10 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
+import java.util.Collection;
 
 /**
  * Sharding dml statement validator.
@@ -31,11 +34,14 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
     /**
      * Validate multiple table.
      *
+     * @param shardingRule sharding rule
      * @param sqlStatementContext sqlStatementContext
+     * @param sql sql
      */
-    protected void validateMultipleTable(final SQLStatementContext<T> sqlStatementContext) {
-        if (1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
-            throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
+    protected void validateMultipleTable(final ShardingRule shardingRule, final SQLStatementContext<T> sqlStatementContext, final String sql) {
+        Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames());
+        if ((1 == shardingTableNames.size() || shardingRule.isAllBindingTables(shardingTableNames)) && 1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
+            throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sql);
         }
     }
 }

@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
@@ -94,10 +95,21 @@ public final class TableExtractor {
             rewriteTables.addAll(tableExtractor.getRewriteTables());
         }
         if (tableSegment instanceof JoinTableSegment) {
-            extractTablesFromTableSegment(((JoinTableSegment) tableSegment).getLeft());
-            extractTablesFromTableSegment(((JoinTableSegment) tableSegment).getRight());
-            extractTablesFromExpression(((JoinTableSegment) tableSegment).getCondition());
+            extractTablesFromJoinTableSegment((JoinTableSegment) tableSegment);
         }
+        if (tableSegment instanceof DeleteMultiTableSegment) {
+            DeleteMultiTableSegment deleteMultiTableSegment = (DeleteMultiTableSegment) tableSegment;
+            rewriteTables.addAll(deleteMultiTableSegment.getActualDeleteTables());
+            if (deleteMultiTableSegment.getRelationTable() instanceof JoinTableSegment) {
+                extractTablesFromJoinTableSegment((JoinTableSegment) deleteMultiTableSegment.getRelationTable());
+            }
+        }
+    }
+    
+    private void extractTablesFromJoinTableSegment(final JoinTableSegment tableSegment) {
+        extractTablesFromTableSegment(tableSegment.getLeft());
+        extractTablesFromTableSegment(tableSegment.getRight());
+        extractTablesFromExpression(tableSegment.getCondition());
     }
     
     private void extractTablesFromExpression(final ExpressionSegment expressionSegment) {
