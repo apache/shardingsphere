@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
+import java.util.Arrays;
+
 /**
  * Aggregation function enum.
  */
@@ -30,11 +32,6 @@ public enum AggregationType {
      * @return is aggregation type or not
      */
     public static boolean isAggregationType(final String aggregationType) {
-        for (AggregationType each : values()) {
-            if (aggregationType.equalsIgnoreCase(each.name())) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.stream(values()).anyMatch(each -> aggregationType.equalsIgnoreCase(each.name()));
     }
 }
