@@ -17,32 +17,20 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.TreeSet;
+import org.junit.Test;
 
-/**
- * Logical operator.
- */
-public enum LogicalOperator {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public final class AggregationTypeTest {
     
-    AND("AND", "&&"), 
-    OR("OR", "||");
-    
-    private final Collection<String> texts = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-    
-    LogicalOperator(final String... texts) {
-        this.texts.addAll(Arrays.asList(texts));
-    }
-    
-    /**
-     * Get logical operator value from text.
-     *
-     * @param text text
-     * @return logical operator value
-     */
-    public static Optional<LogicalOperator> valueFrom(final String text) {
-        return Arrays.stream(values()).filter(each -> each.texts.contains(text)).findFirst();
+    @Test
+    public void assertIsAggregationType() {
+        assertTrue(AggregationType.isAggregationType("MAX"));
+        assertTrue(AggregationType.isAggregationType("MIN"));
+        assertTrue(AggregationType.isAggregationType("SUM"));
+        assertTrue(AggregationType.isAggregationType("COUNT"));
+        assertTrue(AggregationType.isAggregationType("AVG"));
+        assertFalse(AggregationType.isAggregationType("XXX"));
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -40,12 +41,7 @@ public enum Paren {
      * @return is left paren or not
      */
     public static boolean isLeftParen(final char token) {
-        for (Paren each : values()) {
-            if (each.leftParen == token) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.stream(values()).anyMatch(each -> each.leftParen == token);
     }
     
     /**
@@ -56,11 +52,6 @@ public enum Paren {
      * @return match or not
      */
     public static boolean match(final char leftToken, final char rightToken) {
-        for (Paren each : values()) {
-            if (each.leftParen == leftToken && each.rightParen == rightToken) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.stream(values()).anyMatch(each -> each.leftParen == leftToken && each.rightParen == rightToken);
     }
 }

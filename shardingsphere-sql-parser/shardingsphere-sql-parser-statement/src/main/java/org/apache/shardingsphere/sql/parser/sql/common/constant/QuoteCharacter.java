@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
 import com.google.common.base.Strings;
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -52,11 +53,6 @@ public enum QuoteCharacter {
         if (Strings.isNullOrEmpty(value)) {
             return NONE;
         }
-        for (QuoteCharacter each : values()) {
-            if (NONE != each && each.startDelimiter.charAt(0) == value.charAt(0)) {
-                return each;
-            }
-        }
-        return NONE;
+        return Arrays.stream(values()).filter(each -> NONE != each && each.startDelimiter.charAt(0) == value.charAt(0)).findFirst().orElse(NONE);
     }
 }
