@@ -54,5 +54,4 @@
 #  proxy-hint-enabled: false
 #  query-with-cipher-column: true
 #  sql-show: false
-#  allow-range-query-with-inline-sharding: false
 #  check-table-metadata-enabled: false

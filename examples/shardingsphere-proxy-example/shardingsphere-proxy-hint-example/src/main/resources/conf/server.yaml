@@ -51,5 +51,4 @@ props:
   proxy-hint-enabled: true
   query-with-cipher-column: true
   sql-show: true
-  allow-range-query-with-inline-sharding: false
   check-table-metadata-enabled: false
