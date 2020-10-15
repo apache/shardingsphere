@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.metadata.fixture.loader;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.metadata.fixture.rule.DataNodeRoutedFixtureRule;
-import org.apache.shardingsphere.infra.metadata.model.rule.spi.RuleMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.fixture.rule.CommonFixtureRule;
+import org.apache.shardingsphere.infra.metadata.model.logic.spi.LogicMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 
@@ -32,31 +32,30 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public final class DataNodeRoutedFixtureRuleMetaDataLoader implements RuleMetaDataLoader<DataNodeRoutedFixtureRule> {
+public final class CommonFixtureLogicMetaDataLoader implements LogicMetaDataLoader<CommonFixtureRule> {
     
     @Override
     public PhysicalSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                       final DataNodes dataNodes, final DataNodeRoutedFixtureRule rule, final ConfigurationProperties props, final Collection<String> excludedTableNames) {
+                                       final DataNodes dataNodes, final CommonFixtureRule rule, final ConfigurationProperties props, final Collection<String> excludedTableNames) {
         Map<String, PhysicalTableMetaData> tables = new HashMap<>(2, 1);
-        tables.put("data_node_routed_table_0", new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList()));
-        tables.put("data_node_routed_table_1", new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList()));
+        tables.put("common_table_0", new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList()));
+        tables.put("common_table_1", new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList()));
         return new PhysicalSchemaMetaData(tables);
     }
     
     @Override
     public Optional<PhysicalTableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                final DataNodes dataNodes, final String tableName, final DataNodeRoutedFixtureRule rule, final ConfigurationProperties props) {
-        return ("data_node_routed_table_0".equals(tableName) || "data_node_routed_table_1".equals(tableName))
-                ? Optional.of(new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList())) : Optional.empty();
+                                                final DataNodes dataNodes, final String tableName, final CommonFixtureRule rule, final ConfigurationProperties props) {
+        return Optional.empty();
     }
     
     @Override
     public int getOrder() {
-        return 1;
+        return 0;
     }
     
     @Override
-    public Class<DataNodeRoutedFixtureRule> getTypeClass() {
-        return DataNodeRoutedFixtureRule.class;
+    public Class<CommonFixtureRule> getTypeClass() {
+        return CommonFixtureRule.class;
     }
 }

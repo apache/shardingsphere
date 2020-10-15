@@ -57,10 +57,10 @@ public final class ShardingCreateProcedureStatementValidator implements Sharding
     private void validateShardingTableAndTableExist(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> simpleTableSegments) {
         for (SimpleTableSegment each : simpleTableSegments) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            if (metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames().contains(tableName)) {
+            if (metaData.getSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames().contains(tableName)) {
                 throw new ShardingSphereException("Create procedure statement can not support sharding table '%s'.", tableName);
             }
-            for (Map.Entry<String, Collection<String>> entry : metaData.getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().entrySet()) {
+            for (Map.Entry<String, Collection<String>> entry : metaData.getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().entrySet()) {
                 if (!entry.getValue().contains(tableName)) {
                     throw new NoSuchTableException(entry.getKey(), tableName);
                 }
@@ -71,7 +71,7 @@ public final class ShardingCreateProcedureStatementValidator implements Sharding
     private void validateTableNotExist(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> simpleTableSegments) {
         for (SimpleTableSegment each : simpleTableSegments) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            if (metaData.getRuleSchemaMetaData().getAllTableNames().contains(tableName)) {
+            if (metaData.getSchemaMetaData().getAllTableNames().contains(tableName)) {
                 throw new TableExistsException(tableName);
             }
         }

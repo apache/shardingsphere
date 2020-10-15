@@ -42,7 +42,7 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     protected void validateShardingTable(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables, final SQLStatement sqlStatement) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            if (metaData.getRuleSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames().contains(tableName)) {
+            if (metaData.getSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames().contains(tableName)) {
                 throw new ShardingSphereException("Can not support sharding table '%s' for '%s'.", tableName, sqlStatement);
             }
         }
@@ -57,7 +57,7 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     protected void validateTableNotExist(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            if (metaData.getRuleSchemaMetaData().getAllTableNames().contains(tableName)) {
+            if (metaData.getSchemaMetaData().getAllTableNames().contains(tableName)) {
                 throw new TableExistsException(tableName);
             }
         }

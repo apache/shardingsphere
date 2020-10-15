@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.model.rule.spi;
+package org.apache.shardingsphere.infra.metadata.model.logic.spi;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -32,11 +32,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Rule meta data loader.
+ * Logic meta data loader.
  * 
  * @param <T> type of base rule
  */
-public interface RuleMetaDataLoader<T extends ShardingSphereRule> extends OrderedSPI<T> {
+public interface LogicMetaDataLoader<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
      * Load schema meta data.

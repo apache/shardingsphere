@@ -19,10 +19,10 @@ package org.apache.shardingsphere.governance.core.yaml.swapper;
 
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlColumnMetaData;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlIndexMetaData;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlRuleSchemaMetaData;
+import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlLogicSchemaMetaData;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchemaMetaData;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlTableMetaData;
-import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.index.PhysicalIndexMetaData;
@@ -38,23 +38,23 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Rule schema meta data configuration YAML swapper.
+ * Logic schema meta data configuration YAML swapper.
  */
-public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRuleSchemaMetaData, RuleSchemaMetaData> {
+public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlLogicSchemaMetaData, LogicSchemaMetaData> {
 
     @Override
-    public YamlRuleSchemaMetaData swapToYamlConfiguration(final RuleSchemaMetaData metaData) {
-        YamlRuleSchemaMetaData result = new YamlRuleSchemaMetaData();
+    public YamlLogicSchemaMetaData swapToYamlConfiguration(final LogicSchemaMetaData metaData) {
+        YamlLogicSchemaMetaData result = new YamlLogicSchemaMetaData();
         result.setConfiguredSchemaMetaData(convertYamlSchema(metaData.getConfiguredSchemaMetaData()));
         result.setUnconfiguredSchemaMetaDataMap(metaData.getUnconfiguredSchemaMetaDataMap());
         return result;
     }
     
     @Override
-    public RuleSchemaMetaData swapToObject(final YamlRuleSchemaMetaData yamlConfig) {
+    public LogicSchemaMetaData swapToObject(final YamlLogicSchemaMetaData yamlConfig) {
         PhysicalSchemaMetaData configured = Optional.ofNullable(yamlConfig.getConfiguredSchemaMetaData()).map(this::convertSchema).orElse(new PhysicalSchemaMetaData());
         Map<String, Collection<String>> unconfigured = Optional.ofNullable(yamlConfig.getUnconfiguredSchemaMetaDataMap()).orElse(new LinkedHashMap<>());
-        return new RuleSchemaMetaData(configured, unconfigured);
+        return new LogicSchemaMetaData(configured, unconfigured);
     }
     
     private PhysicalSchemaMetaData convertSchema(final YamlSchemaMetaData schema) {

@@ -90,7 +90,7 @@ public final class CreateTableStatementMetaDataRefreshStrategyTest extends Abstr
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), createTableStatement, tableName -> Optional.of(new PhysicalTableMetaData(
                 Collections.singletonList(new PhysicalColumnMetaData("order_id", 1, "String", true, false, false)),
                 Collections.singletonList(new PhysicalIndexMetaData("index")))));
-        assertTrue(getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().containsTable("t_order_0"));
+        assertTrue(getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData().containsTable("t_order_0"));
     }
     
     @Test
@@ -131,7 +131,7 @@ public final class CreateTableStatementMetaDataRefreshStrategyTest extends Abstr
         dataSourceSourceMap.put("t_order_item", initDataSource());
         MetaDataRefreshStrategy<CreateTableStatement> metaDataRefreshStrategy = new CreateTableStatementMetaDataRefreshStrategy();
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), new MySQLDatabaseType(), dataSourceSourceMap, createTableStatement, tableName -> Optional.empty());
-        assertTrue(getMetaData().getRuleSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get("t_order_item").contains("t_order_item_0"));
+        assertTrue(getMetaData().getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get("t_order_item").contains("t_order_item_0"));
     }
     
     private DataSource initDataSource() throws SQLException {

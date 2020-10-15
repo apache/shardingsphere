@@ -73,7 +73,7 @@ public final class QueryHeaderBuilder {
         boolean primaryKey;
         if (null != actualTableName && dataNodeRoutedRule.isPresent()) {
             tableName = dataNodeRoutedRule.get().findLogicTableByActualTable(actualTableName).orElse("");
-            PhysicalTableMetaData tableMetaData = schema.getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData().get(tableName);
+            PhysicalTableMetaData tableMetaData = schema.getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData().get(tableName);
             primaryKey = null != tableMetaData && tableMetaData.getColumns().get(columnName.toLowerCase()).isPrimaryKey();
         } else {
             tableName = actualTableName;

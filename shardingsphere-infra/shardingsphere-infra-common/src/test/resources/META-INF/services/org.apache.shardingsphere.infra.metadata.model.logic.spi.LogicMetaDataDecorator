@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.driver.governance.internal.metadata.RuleSchemaMetaDataNotifier
+org.apache.shardingsphere.infra.metadata.fixture.decorator.DataNodeRoutedLogicMetaDataDecoratorFixture

@@ -22,7 +22,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.index.PhysicalIndexMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
@@ -46,7 +46,7 @@ public abstract class AbstractMetaDataRefreshStrategyTest {
     private ShardingSphereMetaData buildMetaData() {
         PhysicalSchemaMetaData schemaMetaData = new PhysicalSchemaMetaData(ImmutableMap.of("t_order", new PhysicalTableMetaData(
                 Collections.singletonList(new PhysicalColumnMetaData("order_id", 1, "String", false, false, false)), Collections.singletonList(new PhysicalIndexMetaData("index")))));
-        return new ShardingSphereMetaData(null, new RuleSchemaMetaData(schemaMetaData, ImmutableMap.of("t_order_item", Lists.newArrayList("t_order_item"))), mock(CachedDatabaseMetaData.class));
+        return new ShardingSphereMetaData(null, new LogicSchemaMetaData(schemaMetaData, ImmutableMap.of("t_order_item", Lists.newArrayList("t_order_item"))), mock(CachedDatabaseMetaData.class));
     }
 }
 

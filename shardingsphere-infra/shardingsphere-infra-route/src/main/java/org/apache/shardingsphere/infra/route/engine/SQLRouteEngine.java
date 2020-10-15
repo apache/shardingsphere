@@ -65,7 +65,7 @@ public final class SQLRouteEngine {
         routingHook.start(logicSQL.getSql());
         try {
             RouteContext result = doRoute(logicSQL, schema);
-            routingHook.finishSuccess(result, schema.getMetaData().getRuleSchemaMetaData().getConfiguredSchemaMetaData());
+            routingHook.finishSuccess(result, schema.getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData());
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {

@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.model.rule.spi;
+package org.apache.shardingsphere.infra.metadata.model.logic.spi;
 
-import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 
 /**
- * Rule meta data notifier.
+ * Logic meta data decorator.
  */
-public interface RuleMetaDataNotifier extends OrderedSPI<RuleSchemaMetaData> {
+public interface LogicMetaDataDecorator<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
-     * Notify rule meta data changed.
-     * 
-     * @param schemaName schema name
-     * @param metaData meta data
+     * Decorate table meta data.
+     *
+     * @param tableName table name
+     * @param tableMetaData table meta data
+     * @param rule rule
+     * @return decorated table meta data
      */
-    void notify(String schemaName, RuleSchemaMetaData metaData);
+    PhysicalTableMetaData decorate(String tableName, PhysicalTableMetaData tableMetaData, T rule);
 }

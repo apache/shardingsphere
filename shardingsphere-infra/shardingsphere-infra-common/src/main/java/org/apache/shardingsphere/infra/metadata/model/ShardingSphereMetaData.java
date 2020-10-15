@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.model.datasource.DataSourcesMetaData;
-import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
 
 /**
  * ShardingSphere meta data.
@@ -32,7 +32,7 @@ public final class ShardingSphereMetaData {
     
     private final DataSourcesMetaData dataSourcesMetaData;
     
-    private final RuleSchemaMetaData ruleSchemaMetaData;
+    private final LogicSchemaMetaData schemaMetaData;
     
     private final CachedDatabaseMetaData cachedDatabaseMetaData;
 }

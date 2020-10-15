@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config.metadata;
+package org.apache.shardingsphere.infra.metadata.model.logic.spi;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-
-import java.util.Collection;
-import java.util.Map;
+import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
 /**
- * Rule schema meta data configuration for YAML.
+ * Logic meta data notifier.
  */
-@Getter
-@Setter
-public final class YamlRuleSchemaMetaData implements YamlConfiguration {
-
-    private YamlSchemaMetaData configuredSchemaMetaData;
-
-    private Map<String, Collection<String>> unconfiguredSchemaMetaDataMap;
+public interface LogicMetaDataNotifier extends OrderedSPI<LogicSchemaMetaData> {
+    
+    /**
+     * Notify rule meta data changed.
+     * 
+     * @param schemaName schema name
+     * @param metaData meta data
+     */
+    void notify(String schemaName, LogicSchemaMetaData metaData);
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.InsertClauseShardingConditionEngine;
@@ -53,10 +53,10 @@ public final class ShardingConditionEngineFactoryTest {
     public void setUp() {
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
         when(shardingSphereSchema.getMetaData()).thenReturn(shardingSphereMetaData);
-        RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
-        when(shardingSphereMetaData.getRuleSchemaMetaData()).thenReturn(ruleSchemaMetaData);
+        LogicSchemaMetaData logicSchemaMetaData = mock(LogicSchemaMetaData.class);
+        when(shardingSphereMetaData.getSchemaMetaData()).thenReturn(logicSchemaMetaData);
         PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
-        when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
+        when(logicSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
     }
     
     @Test

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.model.rule.spi.RuleMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.logic.spi.LogicMetaDataLoader;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 /**
  * Meta data loader for sharding.
  */
-public final class ShardingMetaDataLoader implements RuleMetaDataLoader<ShardingRule> {
+public final class ShardingMetaDataLoader implements LogicMetaDataLoader<ShardingRule> {
     
     private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
     

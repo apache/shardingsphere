@@ -29,9 +29,9 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLE
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutorCallback;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyFactory;
-import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.rule.RuleSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.model.rule.spi.RuleMetaDataNotifier;
+import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.logic.spi.LogicMetaDataNotifier;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
@@ -55,7 +55,7 @@ import java.util.Optional;
 public abstract class AbstractStatementExecutor {
     
     static {
-        ShardingSphereServiceLoader.register(RuleMetaDataNotifier.class);
+        ShardingSphereServiceLoader.register(LogicMetaDataNotifier.class);
     }
     
     private final Map<String, DataSource> dataSourceMap;
@@ -79,10 +79,10 @@ public abstract class AbstractStatementExecutor {
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatement);
         if (refreshStrategy.isPresent()) {
-            RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(schema.getRules());
+            LogicSchemaMetaDataLoader metaDataLoader = new LogicSchemaMetaDataLoader(schema.getRules());
             refreshStrategy.get().refreshMetaData(schema.getMetaData(), schemaContexts.getDatabaseType(), dataSourceMap, sqlStatement, 
                 tableName -> metaDataLoader.load(schemaContexts.getDatabaseType(), dataSourceMap, tableName, schemaContexts.getProps()));
-            notifyPersistRuleMetaData(DefaultSchema.LOGIC_NAME, schema.getMetaData().getRuleSchemaMetaData());
+            notifyPersistLogicMetaData(DefaultSchema.LOGIC_NAME, schema.getMetaData().getSchemaMetaData());
         }
     }
     
@@ -93,8 +93,8 @@ public abstract class AbstractStatementExecutor {
         return null != result && !result.isEmpty() && null != result.get(0) && result.get(0);
     }
     
-    private void notifyPersistRuleMetaData(final String schemaName, final RuleSchemaMetaData metaData) {
-        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(metaData), RuleMetaDataNotifier.class).values().forEach(each -> each.notify(schemaName, metaData));
+    private void notifyPersistLogicMetaData(final String schemaName, final LogicSchemaMetaData metaData) {
+        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(metaData), LogicMetaDataNotifier.class).values().forEach(each -> each.notify(schemaName, metaData));
     }
     
     /**

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.model.rule;
+package org.apache.shardingsphere.infra.metadata.model.logic;
 
 import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
@@ -27,14 +27,14 @@ import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 
-public final class RuleSchemaMetaDataTest {
+public final class LogicSchemaMetaDataTest {
 
     @Test
     public void assertGetSchemaMetaData() {
         Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
         Map<String, Collection<String>> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
-        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaData(new PhysicalSchemaMetaData(tableMetaDataMap), unconfiguredSchemaMetaDataMap);
-        PhysicalSchemaMetaData schemaMetaData = ruleSchemaMetaData.getSchemaMetaData();
+        LogicSchemaMetaData logicSchemaMetaData = new LogicSchemaMetaData(new PhysicalSchemaMetaData(tableMetaDataMap), unconfiguredSchemaMetaDataMap);
+        PhysicalSchemaMetaData schemaMetaData = logicSchemaMetaData.getSchemaMetaData();
         assertNotNull("SchemaMetaData is null", schemaMetaData);
     }
 }
