@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.model.physical.jdbc;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.impl.DatabaseMetaDataDialectHandlerFacade;
+import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandlerFactory;
 
 import java.sql.Array;
 import java.sql.Blob;
@@ -67,7 +67,15 @@ public final class MetaDataConnectionAdapter implements Connection {
     
     @Override
     public String getSchema() {
-        return DatabaseMetaDataDialectHandlerFacade.getSchema(connection, databaseType);
+        return DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(handler -> handler.getSchema(connection)).orElse(getSchema(connection));
+    }
+    
+    private String getSchema(final Connection connection) {
+        try {
+            return connection.getSchema();
+        } catch (final SQLException ex) {
+            return null;
+        }
     }
     
     @Override
