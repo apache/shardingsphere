@@ -69,7 +69,16 @@ public final class DatabaseMetaDataDialectHandlerTest {
         assertThat(oracleTableNamePattern, is(TABLE_NAME_PATTERN.toUpperCase()));
         String mysqlTableNamePattern = getTableNamePattern(new MySQLDatabaseType());
         assertThat(mysqlTableNamePattern, is(TABLE_NAME_PATTERN));
-        // TODO H2, MariaDB, PostgreSQL, SQLServer, SQL92 decorate table name pattern
+        String h2TableNamePattern = getTableNamePattern(new H2DatabaseType());
+        assertThat(h2TableNamePattern, is(TABLE_NAME_PATTERN));
+        String mariaDBTableNamePattern = getTableNamePattern(new MariaDBDatabaseType());
+        assertThat(mariaDBTableNamePattern, is(TABLE_NAME_PATTERN));
+        String postgreSQLTableNamePattern = getTableNamePattern(new PostgreSQLDatabaseType());
+        assertThat(postgreSQLTableNamePattern, is(TABLE_NAME_PATTERN));
+        String sqlServerTableNamePattern = getTableNamePattern(new SQLServerDatabaseType());
+        assertThat(sqlServerTableNamePattern, is(TABLE_NAME_PATTERN));
+        String sql92TableNamePattern = getTableNamePattern(new SQL92DatabaseType());
+        assertThat(sql92TableNamePattern, is(TABLE_NAME_PATTERN));
     }
     
     @Test
