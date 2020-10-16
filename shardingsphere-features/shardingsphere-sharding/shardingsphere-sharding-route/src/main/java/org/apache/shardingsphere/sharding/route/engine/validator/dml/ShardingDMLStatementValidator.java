@@ -49,7 +49,7 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
         Collection<String> allTableNames = new LinkedList<>(tableNames);
         allTableNames.removeAll(shardingRule.getShardingLogicTableNames(tableNames));
         allTableNames.removeAll(shardingRule.getBroadcastTables());
-        // TODO: 2020/10/16 validate other single table scenario
+        // TODO validate other single table scenario
         return 0 == allTableNames.size();
     }
 }
