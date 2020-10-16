@@ -30,7 +30,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -55,26 +54,27 @@ public final class TableAddressingMetaDataLoader {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static TableAddressingMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
-        TableAddressingMetaData result = initialize(databaseType, dataSourceMap);
+        TableAddressingMetaData result = initializeMetaData(databaseType, dataSourceMap);
         for (Entry<ShardingSphereRule, TableAddressingMetaDataDecorator> entry : OrderedSPIRegistry.getRegisteredServices(rules, TableAddressingMetaDataDecorator.class).entrySet()) {
             entry.getValue().decorate(entry.getKey(), result);
         }
         return result;
     }
     
-    private static TableAddressingMetaData initialize(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) throws SQLException {
+    private static TableAddressingMetaData initializeMetaData(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) throws SQLException {
         TableAddressingMetaData result = new TableAddressingMetaData();
-        for (String each : getAllTableNames(databaseType, dataSourceMap)) {
-            result.getTableDataSourceNamesMapper().put(each, new LinkedList<>());
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            appendMetaData(result, databaseType, entry.getKey(), entry.getValue());
         }
         return result;
     }
     
-    private static Collection<String> getAllTableNames(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        Collection<String> result = new LinkedHashSet<>();
-        for (DataSource each : dataSourceMap.values()) {
-            result.addAll(PhysicalSchemaMetaDataLoader.loadTableNames(each, databaseType, Collections.emptyList()));
+    private static void appendMetaData(final TableAddressingMetaData metaData, final DatabaseType databaseType, final String dataSourceName, final DataSource dataSource) throws SQLException {
+        for (String each : PhysicalSchemaMetaDataLoader.loadTableNames(dataSource, databaseType, Collections.emptyList())) {
+            if (!metaData.getTableDataSourceNamesMapper().containsKey(each)) {
+                metaData.getTableDataSourceNamesMapper().put(each, new LinkedHashSet<>());
+            }
+            metaData.getTableDataSourceNamesMapper().get(each).add(dataSourceName);
         }
-        return result;
     }
 }
