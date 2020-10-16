@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.scaling.utils;
 
 import com.google.gson.Gson;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 
 import java.io.IOException;
@@ -27,6 +29,7 @@ import java.io.InputStreamReader;
 /**
  * Scaling configuration util.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ScalingConfigurationUtil {
     
     private static final Gson GSON = new Gson();
