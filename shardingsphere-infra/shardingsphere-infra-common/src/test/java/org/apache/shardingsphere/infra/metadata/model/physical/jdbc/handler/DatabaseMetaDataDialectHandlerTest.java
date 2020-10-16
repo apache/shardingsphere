@@ -55,12 +55,28 @@ public final class DatabaseMetaDataDialectHandlerTest {
     public void assertGetSchema() throws SQLException {
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getUserName()).thenReturn(USER_NAME);
-        String schema = getSchema(new OracleDatabaseType());
-        assertThat(schema, is(USER_NAME.toUpperCase()));
+
+        String oracleSchema = getSchema(new OracleDatabaseType());
+        assertThat(oracleSchema, is(USER_NAME.toUpperCase()));
+
         when(connection.getSchema()).thenReturn(USER_NAME);
-        String schemaMySQL = getSchema(new MySQLDatabaseType());
-        assertThat(schemaMySQL, is(USER_NAME));
-        // TODO H2, MariaDB, PostgreSQL, SQLServer, SQL92 database getSchema
+        String mysqlSchema = getSchema(new MySQLDatabaseType());
+        assertThat(mysqlSchema, is(USER_NAME));
+
+        String h2Schema = getSchema(new H2DatabaseType());
+        assertThat(h2Schema, is(USER_NAME));
+
+        String mariaDBSchema = getSchema(new MariaDBDatabaseType());
+        assertThat(mariaDBSchema, is(USER_NAME));
+
+        String postgreSQLSchema = getSchema(new PostgreSQLDatabaseType());
+        assertThat(postgreSQLSchema, is(USER_NAME));
+
+        String sqlServerSchema = getSchema(new SQLServerDatabaseType());
+        assertThat(sqlServerSchema, is(USER_NAME));
+
+        String sql92Schema = getSchema(new SQL92DatabaseType());
+        assertThat(sql92Schema, is(USER_NAME));
     }
     
     @Test
