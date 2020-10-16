@@ -54,9 +54,9 @@ public final class MySQLJdbcDumper extends AbstractJDBCDumper {
         return formatMySQLParams(parameters);
     }
     
-    private String formatMySQLParams(final Map<String, String> params) {
+    private String formatMySQLParams(final Map<String, String> parameters) {
         StringBuilder result = new StringBuilder();
-        for (Entry<String, String> entry : params.entrySet()) {
+        for (Entry<String, String> entry : parameters.entrySet()) {
             result.append(entry.getKey());
             if (null != entry.getValue()) {
                 result.append("=").append(entry.getValue());
@@ -81,9 +81,9 @@ public final class MySQLJdbcDumper extends AbstractJDBCDumper {
     }
     
     @Override
-    protected PreparedStatement createPreparedStatement(final Connection conn, final String sql) throws SQLException {
-        PreparedStatement result = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        result.setFetchSize(100);
+    protected PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
+        PreparedStatement result = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        result.setFetchSize(Integer.MIN_VALUE);
         return result;
     }
 }

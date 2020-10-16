@@ -24,6 +24,9 @@ import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfig
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -34,17 +37,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class MySQLJdbcDumperTest {
     
     private DataSourceManager dataSourceManager;
     
     private MySQLJdbcDumper mySQLJdbcDumper;
+    
+    @Mock
+    private Connection connection;
     
     @Before
     public void setUp() {
@@ -92,10 +97,8 @@ public final class MySQLJdbcDumperTest {
     
     @Test
     public void assertCreatePreparedStatement() throws SQLException {
-        DataSource dataSource = dataSourceManager.getDataSource(mockDumperConfiguration().getDataSourceConfiguration());
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = mySQLJdbcDumper.createPreparedStatement(connection, "SELECT * FROM t_order")) {
-            assertThat(preparedStatement.getFetchSize(), is(100));
-        }
+        when(connection.prepareStatement("", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)).thenReturn(mock(PreparedStatement.class));
+        PreparedStatement preparedStatement = mySQLJdbcDumper.createPreparedStatement(connection, "");
+        verify(preparedStatement).setFetchSize(Integer.MIN_VALUE);
     }
 }
