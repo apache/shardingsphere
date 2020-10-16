@@ -354,7 +354,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     private Map<String, DataSource> getModifiedDataSources(final ShardingSphereSchema oldSchema, final Map<String, DataSourceConfiguration> newDataSourceConfigs) {
         Map<String, DataSourceConfiguration> modifiedDataSourceConfigs = newDataSourceConfigs.entrySet().stream()
                 .filter(entry -> isModifiedDataSource(oldSchema.getDataSources(), entry.getKey(), entry.getValue()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (key, repeatKey) -> key, LinkedHashMap::new));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         return DataSourceConverter.getDataSourceMap(modifiedDataSourceConfigs);
     }
     

@@ -45,7 +45,7 @@ public final class PrimaryReplicaReplicationRuleConfigurationYamlSwapper
     public YamlPrimaryReplicaReplicationRuleConfiguration swapToYamlConfiguration(final PrimaryReplicaReplicationRuleConfiguration data) {
         YamlPrimaryReplicaReplicationRuleConfiguration result = new YamlPrimaryReplicaReplicationRuleConfiguration();
         result.setDataSources(data.getDataSources().stream().collect(
-                Collectors.toMap(PrimaryReplicaReplicationDataSourceRuleConfiguration::getName, this::swapToYamlConfiguration, (a, b) -> b, LinkedHashMap::new)));
+                Collectors.toMap(PrimaryReplicaReplicationDataSourceRuleConfiguration::getName, this::swapToYamlConfiguration, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         if (null != data.getLoadBalancers()) {
             data.getLoadBalancers().forEach((key, value) -> result.getLoadBalancers().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         }

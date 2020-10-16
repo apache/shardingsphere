@@ -83,7 +83,8 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     private Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> yamlRuleConfigurations) {
         YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
-        return yamlRuleConfigurations.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules())));
+        return yamlRuleConfigurations.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
+            entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Authentication getAuthentication(final YamlAuthenticationConfiguration authConfig) {

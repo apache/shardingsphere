@@ -55,7 +55,7 @@ public final class DataSourceParameterConverter {
      */
     public static Map<String, DataSourceParameter> getDataSourceParameterMapFromYamlConfiguration(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
         return dataSourceParameters.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
+                .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private static DataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfig) {
@@ -104,7 +104,7 @@ public final class DataSourceParameterConverter {
      */
     public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSourceParameter> dataSourceParameterMap) {
         return dataSourceParameterMap.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceConfiguration(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
+                .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private static DataSourceConfiguration createDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {

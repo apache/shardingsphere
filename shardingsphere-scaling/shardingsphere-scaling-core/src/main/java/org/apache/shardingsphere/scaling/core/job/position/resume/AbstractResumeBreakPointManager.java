@@ -36,6 +36,7 @@ import org.apache.shardingsphere.scaling.core.job.position.PositionManagerFactor
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 
 import java.io.Closeable;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -138,7 +139,8 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
             InventoryPositions result = new InventoryPositions();
             JsonObject json = JsonParser.parseString(data).getAsJsonObject();
             Map<String, Object> unfinished = GSON.<Map<String, Object>>fromJson(json.getAsJsonObject(UNFINISHED), Map.class);
-            result.setUnfinished(unfinished.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> fromJson(entry.getValue()))));
+            result.setUnfinished(unfinished.entrySet().stream().collect(Collectors.toMap(Entry::getKey, 
+                entry -> fromJson(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
             result.setFinished(GSON.<Set<String>>fromJson(json.getAsJsonArray(FINISHED), Set.class));
             return result;
         }

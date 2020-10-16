@@ -41,7 +41,7 @@ public final class PrimaryReplicaReplicationRuleAlgorithmProviderConfigurationYa
     public YamlPrimaryReplicaReplicationRuleConfiguration swapToYamlConfiguration(final AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration data) {
         YamlPrimaryReplicaReplicationRuleConfiguration result = new YamlPrimaryReplicaReplicationRuleConfiguration();
         result.setDataSources(data.getDataSources().stream().collect(
-                Collectors.toMap(PrimaryReplicaReplicationDataSourceRuleConfiguration::getName, this::swapToYamlConfiguration, (a, b) -> b, LinkedHashMap::new)));
+                Collectors.toMap(PrimaryReplicaReplicationDataSourceRuleConfiguration::getName, this::swapToYamlConfiguration, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         if (null != data.getLoadBalanceAlgorithms()) {
             data.getLoadBalanceAlgorithms().forEach((key, value) -> result.getLoadBalancers().put(key, YamlShardingSphereAlgorithmConfiguration.buildByTypedSPI(value)));
         }

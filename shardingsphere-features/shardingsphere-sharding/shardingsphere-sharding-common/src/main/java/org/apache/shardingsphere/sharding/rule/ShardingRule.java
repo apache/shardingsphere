@@ -403,7 +403,7 @@ public final class ShardingRule implements DataNodeRoutedRule {
     
     @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
-        return tableRules.stream().collect(Collectors.toMap(TableRule::getLogicTable, TableRule::getActualDataNodes));
+        return tableRules.stream().collect(Collectors.toMap(TableRule::getLogicTable, TableRule::getActualDataNodes, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override

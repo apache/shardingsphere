@@ -58,7 +58,8 @@ public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlLog
     }
     
     private PhysicalSchemaMetaData convertSchema(final YamlSchemaMetaData schema) {
-        return new PhysicalSchemaMetaData(schema.getTables().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertTable(entry.getValue()), (a, b) -> b, LinkedHashMap::new)));
+        return new PhysicalSchemaMetaData(schema.getTables().entrySet().stream().collect(Collectors.toMap(Entry::getKey,
+            entry -> convertTable(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
     
     private PhysicalTableMetaData convertTable(final YamlTableMetaData table) {
@@ -83,7 +84,7 @@ public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlLog
     
     private YamlSchemaMetaData convertYamlSchema(final PhysicalSchemaMetaData schema) {
         Map<String, YamlTableMetaData> tables = schema.getAllTableNames().stream()
-                .collect(Collectors.toMap(each -> each, each -> convertYamlTable(schema.get(each)), (a, b) -> b, LinkedHashMap::new));
+                .collect(Collectors.toMap(each -> each, each -> convertYamlTable(schema.get(each)), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         YamlSchemaMetaData result = new YamlSchemaMetaData();
         result.setTables(tables);
         return result;
@@ -97,7 +98,7 @@ public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlLog
     }
 
     private Map<String, YamlIndexMetaData> convertYamlIndexes(final Map<String, PhysicalIndexMetaData> indexes) {
-        return indexes.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertYamlIndex(entry.getValue()), (a, b) -> b, LinkedHashMap::new));
+        return indexes.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertYamlIndex(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private YamlIndexMetaData convertYamlIndex(final PhysicalIndexMetaData index) {
@@ -107,7 +108,7 @@ public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlLog
     }
     
     private Map<String, YamlColumnMetaData> convertYamlColumns(final Map<String, PhysicalColumnMetaData> columns) {
-        return columns.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertYamlColumn(entry.getValue()), (a, b) -> b, LinkedHashMap::new));
+        return columns.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertYamlColumn(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private YamlColumnMetaData convertYamlColumn(final PhysicalColumnMetaData column) {

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,7 +36,7 @@ public final class TestShardingRule implements DataNodeRoutedRule {
     
     @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
-        return tableRules.stream().collect(Collectors.toMap(TestTableRule::getLogicTable, TestTableRule::getActualDataNodes));
+        return tableRules.stream().collect(Collectors.toMap(TestTableRule::getLogicTable, TestTableRule::getActualDataNodes, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override
