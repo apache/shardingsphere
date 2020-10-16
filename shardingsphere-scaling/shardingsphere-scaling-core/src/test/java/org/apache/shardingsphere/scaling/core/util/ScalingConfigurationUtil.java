@@ -18,39 +18,38 @@
 package org.apache.shardingsphere.scaling.core.util;
 
 import com.google.gson.Gson;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil;
-import org.junit.Before;
-import org.junit.Test;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class SyncConfigurationUtilTest {
+/**
+ * Scaling configuration util.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ScalingConfigurationUtil {
     
     private static final Gson GSON = new Gson();
     
-    private ScalingConfiguration scalingConfig;
-    
-    @Before
-    public void setUp() {
-        initConfig("/config.json");
-    }
-    
-    @Test
-    public void assertFilterByShardingDataSourceTables() {
-        List<SyncConfiguration> syncConfigs = (List<SyncConfiguration>) SyncConfigurationUtil.toSyncConfigurations(scalingConfig);
-        assertThat(syncConfigs.get(0).getDumperConfiguration().getTableNameMap().size(), is(1));
-    }
-    
-    private void initConfig(final String configFile) {
-        InputStream fileInputStream = SyncConfigurationUtilTest.class.getResourceAsStream(configFile);
-        InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-        scalingConfig = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
+    /**
+     * Init job from config file.
+     *
+     * @param configFile config file
+     * @return ShardingScalingJob
+     * @throws IOException IO exception
+     */
+    public static ShardingScalingJob initJob(final String configFile) throws IOException {
+        try (InputStream fileInputStream = ScalingConfigurationUtil.class.getResourceAsStream(configFile);
+             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream)) {
+            ScalingConfiguration scalingConfiguration = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
+            ShardingScalingJob shardingScalingJob = new ShardingScalingJob(scalingConfiguration);
+            shardingScalingJob.getSyncConfigurations().addAll(SyncConfigurationUtil.toSyncConfigurations(scalingConfiguration));
+            return shardingScalingJob;
+        }
     }
 }

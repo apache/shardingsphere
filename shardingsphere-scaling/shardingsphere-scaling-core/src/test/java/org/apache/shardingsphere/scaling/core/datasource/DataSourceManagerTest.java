@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.scaling.core.datasource;
 
-import com.google.gson.Gson;
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
+import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -38,21 +36,12 @@ import static org.junit.Assert.assertThat;
 
 public final class DataSourceManagerTest {
     
-    private static final Gson GSON = new Gson();
-    
     private List<SyncConfiguration> syncConfigurations;
     
     @Before
+    @SneakyThrows(IOException.class)
     public void setUp() {
-        initConfig("/config.json");
-    }
-    
-    @Test
-    public void assertCreateWithConfiguration() throws NoSuchFieldException, IllegalAccessException {
-        DataSourceManager dataSourceManager = new DataSourceManager(syncConfigurations);
-        Map<?, ?> cachedDataSources = ReflectionUtil.getFieldValueFromClass(dataSourceManager, "cachedDataSources", Map.class);
-        assertNotNull(cachedDataSources);
-        assertThat(cachedDataSources.size(), is(2));
+        syncConfigurations = ScalingConfigurationUtil.initJob("/config.json").getSyncConfigurations();
     }
     
     @Test
@@ -65,16 +54,10 @@ public final class DataSourceManagerTest {
     @Test
     public void assertClose() throws NoSuchFieldException, IllegalAccessException {
         DataSourceManager dataSourceManager = new DataSourceManager(syncConfigurations);
-        dataSourceManager.close();
         Map<?, ?> cachedDataSources = ReflectionUtil.getFieldValueFromClass(dataSourceManager, "cachedDataSources", Map.class);
         assertNotNull(cachedDataSources);
+        assertThat(cachedDataSources.size(), is(2));
+        dataSourceManager.close();
         assertThat(cachedDataSources.size(), is(0));
-    }
-    
-    private void initConfig(final String configFile) {
-        InputStream fileInputStream = DataSourceManagerTest.class.getResourceAsStream(configFile);
-        InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-        ScalingConfiguration scalingConfig = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
-        syncConfigurations = (List<SyncConfiguration>) SyncConfigurationUtil.toSyncConfigurations(scalingConfig);
     }
 }

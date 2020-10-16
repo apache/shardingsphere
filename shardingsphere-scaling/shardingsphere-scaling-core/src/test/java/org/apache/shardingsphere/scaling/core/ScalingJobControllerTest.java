@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.scaling.core;
 
-import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
+import com.google.common.collect.Maps;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.scaling.core.check.DataConsistencyCheckResult;
+import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
+import org.apache.shardingsphere.scaling.core.execute.engine.ShardingScalingExecuteEngine;
 import org.apache.shardingsphere.scaling.core.job.ScalingJobProgress;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
@@ -35,38 +33,32 @@ import org.apache.shardingsphere.scaling.core.job.position.resume.IncrementalPos
 import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManagerFactory;
 import org.apache.shardingsphere.scaling.core.schedule.SyncTaskControlStatus;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
+import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class ScalingJobControllerTest {
     
-    private static final String DATA_SOURCE_URL = "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
-    
-    private static final String USERNAME = "root";
-    
-    private static final String PASSWORD = "password";
-    
-    private ScalingJobController scalingJobController;
-    
-    private ShardingScalingJob shardingScalingJob;
+    private final ScalingJobController scalingJobController = new ScalingJobController();
     
     @Before
+    @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
-        ScalingContext.getInstance().init(mockServerConfiguration());
-        scalingJobController = new ScalingJobController();
-        shardingScalingJob = mockShardingScalingJob();
+        ScalingContext.getInstance().init(new ServerConfiguration());
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "taskExecuteEngine", mock(ShardingScalingExecuteEngine.class));
     }
     
     @Test
-    public void assertStartPreparedJob() {
+    public void assertStartJob() {
+        ShardingScalingJob shardingScalingJob = mockShardingScalingJob();
         scalingJobController.start(shardingScalingJob);
         SyncProgress progress = scalingJobController.getProgresses(shardingScalingJob.getJobId());
         assertTrue(progress instanceof ScalingJobProgress);
@@ -77,22 +69,13 @@ public final class ScalingJobControllerTest {
     }
     
     @Test
-    public void assertStartPreparingFailureJob() {
-        ShardingScalingJob shardingScalingJob = mockPreparingFailureShardingScalingJob();
-        scalingJobController.start(shardingScalingJob);
-        SyncProgress progress = scalingJobController.getProgresses(shardingScalingJob.getJobId());
-        assertTrue(progress instanceof ScalingJobProgress);
-        assertThat(((ScalingJobProgress) progress).getIncrementalDataTasks().size(), is(0));
-        assertThat(((ScalingJobProgress) progress).getInventoryDataTasks().size(), is(0));
-    }
-    
-    @Test
     public void assertStopExistJob() {
+        ShardingScalingJob shardingScalingJob = mockShardingScalingJob();
         scalingJobController.start(shardingScalingJob);
         scalingJobController.stop(shardingScalingJob.getJobId());
         SyncProgress progress = scalingJobController.getProgresses(shardingScalingJob.getJobId());
         assertTrue(progress instanceof ScalingJobProgress);
-        assertThat(((ScalingJobProgress) progress).getStatus(), not("RUNNING"));
+        assertThat(((ScalingJobProgress) progress).getStatus(), is(SyncTaskControlStatus.STOPPED.name()));
     }
     
     @Test(expected = ScalingJobNotFoundException.class)
@@ -102,14 +85,14 @@ public final class ScalingJobControllerTest {
     }
     
     @Test
-    public void assertListShardingScalingJobs() {
+    public void assertListJobs() {
         assertThat(scalingJobController.listShardingScalingJobs().size(), is(0));
-        scalingJobController.start(shardingScalingJob);
+        scalingJobController.start(mockShardingScalingJob());
         assertThat(scalingJobController.listShardingScalingJobs().size(), is(1));
     }
     
     @Test
-    public void assertOnlyIncrementalDataTasks() throws NoSuchFieldException, IllegalAccessException {
+    public void assertIncrementalDataTasksOnly() throws NoSuchFieldException, IllegalAccessException {
         ReflectionUtil.setFieldValue(ResumeBreakPointManagerFactory.class, null, "clazz", IncrementalPositionResumeBreakPointManager.class);
         ShardingScalingJob shardingScalingJob = mockShardingScalingJob();
         scalingJobController.start(shardingScalingJob);
@@ -119,48 +102,38 @@ public final class ScalingJobControllerTest {
         ReflectionUtil.setFieldValue(ResumeBreakPointManagerFactory.class, null, "clazz", FakeResumeBreakPointManager.class);
     }
     
-    private ServerConfiguration mockServerConfiguration() {
-        ServerConfiguration result = new ServerConfiguration();
-        result.setBlockQueueSize(1000);
-        result.setPort(8080);
-        result.setPushTimeout(1000);
-        result.setWorkerThread(30);
-        return result;
+    @Test
+    public void assertCheckExistJob() {
+        ShardingScalingJob shardingScalingJob = mockShardingScalingJob();
+        scalingJobController.start(shardingScalingJob);
+        shardingScalingJob.setDataConsistencyChecker(new DataConsistencyChecker() {
+            @Override
+            public Map<String, DataConsistencyCheckResult> countCheck() {
+                Map<String, DataConsistencyCheckResult> result = Maps.newHashMapWithExpectedSize(1);
+                result.put("t1", new DataConsistencyCheckResult(1, 1));
+                return result;
+            }
+            
+            @Override
+            public Map<String, Boolean> dataCheck() {
+                Map<String, Boolean> result = Maps.newHashMapWithExpectedSize(1);
+                result.put("t1", true);
+                return result;
+            }
+        });
+        Map<String, DataConsistencyCheckResult> checkResult = scalingJobController.check(shardingScalingJob.getJobId());
+        assertTrue(checkResult.get("t1").isCountValid());
+        assertTrue(checkResult.get("t1").isDataValid());
     }
     
+    @Test(expected = ScalingJobNotFoundException.class)
+    public void assertCheckNotExistJob() {
+        ShardingScalingJob shardingScalingJob = mockShardingScalingJob();
+        scalingJobController.check(shardingScalingJob.getJobId());
+    }
+    
+    @SneakyThrows(IOException.class)
     private ShardingScalingJob mockShardingScalingJob() {
-        ShardingScalingJob result = new ShardingScalingJob(mockScalingConfiguration());
-        result.getSyncConfigurations().add(new SyncConfiguration(3, mockDumperConfig(), mockImporterConfiguration()));
-        return result;
-    }
-    
-    private ScalingConfiguration mockScalingConfiguration() {
-        ScalingConfiguration result = new ScalingConfiguration();
-        result.setJobConfiguration(new JobConfiguration());
-        return result;
-    }
-    
-    private ImporterConfiguration mockImporterConfiguration() {
-        ImporterConfiguration result = new ImporterConfiguration();
-        result.setDataSourceConfiguration(new JDBCScalingDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD));
-        return result;
-    }
-    
-    private DumperConfiguration mockDumperConfig() {
-        ScalingDataSourceConfiguration dataSourceConfig = new JDBCScalingDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
-        DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceName("ds0");
-        result.setDataSourceConfiguration(dataSourceConfig);
-        Map<String, String> tableMap = new HashMap<>(1, 1);
-        tableMap.put("t_order", "t_order");
-        result.setTableNameMap(tableMap);
-        return result;
-    }
-    
-    private ShardingScalingJob mockPreparingFailureShardingScalingJob() {
-        ShardingScalingJob result = new ShardingScalingJob(mockScalingConfiguration());
-        result.getSyncConfigurations().add(new SyncConfiguration(3, mockDumperConfig(), mockImporterConfiguration()));
-        result.setStatus(SyncTaskControlStatus.PREPARING_FAILURE.name());
-        return result;
+        return ScalingConfigurationUtil.initJob("/config.json");
     }
 }

@@ -17,19 +17,15 @@
 
 package org.apache.shardingsphere.scaling.core.check;
 
-import com.google.gson.Gson;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
-import org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil;
-import org.junit.Before;
+import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -41,20 +37,10 @@ import static org.junit.Assert.assertTrue;
 
 public final class AbstractDataConsistencyCheckerTest {
     
-    private static final Gson GSON = new Gson();
-    
-    private DataConsistencyChecker dataConsistencyChecker;
-    
-    private ShardingScalingJob shardingScalingJob;
-    
-    @Before
-    public void setUp() {
-        mockShardingScalingJob();
-        dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance("H2", shardingScalingJob);
-    }
-    
     @Test
     public void assertCountCheck() {
+        ShardingScalingJob shardingScalingJob = mockShardingScalingJob();
+        DataConsistencyChecker dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance("H2", shardingScalingJob);
         initTableData(shardingScalingJob.getSyncConfigurations().get(0).getDumperConfiguration().getDataSourceConfiguration());
         initTableData(shardingScalingJob.getSyncConfigurations().get(0).getImporterConfiguration().getDataSourceConfiguration());
         Map<String, DataConsistencyCheckResult> resultMap = dataConsistencyChecker.countCheck();
@@ -73,11 +59,8 @@ public final class AbstractDataConsistencyCheckerTest {
         }
     }
     
-    private void mockShardingScalingJob() {
-        InputStream fileInputStream = AbstractDataConsistencyCheckerTest.class.getResourceAsStream("/config.json");
-        InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-        ScalingConfiguration scalingConfig = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
-        shardingScalingJob = new ShardingScalingJob(scalingConfig);
-        shardingScalingJob.getSyncConfigurations().addAll(SyncConfigurationUtil.toSyncConfigurations(scalingConfig));
+    @SneakyThrows(IOException.class)
+    private ShardingScalingJob mockShardingScalingJob() {
+        return ScalingConfigurationUtil.initJob("/config.json");
     }
 }

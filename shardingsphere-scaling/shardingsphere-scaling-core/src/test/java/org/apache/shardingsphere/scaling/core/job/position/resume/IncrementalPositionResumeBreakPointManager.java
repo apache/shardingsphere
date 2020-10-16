@@ -27,7 +27,7 @@ import java.util.Map;
 public final class IncrementalPositionResumeBreakPointManager extends AbstractResumeBreakPointManager {
     
     public IncrementalPositionResumeBreakPointManager(final String databaseType, final String taskPath) {
-        getIncrementalPositionManagerMap().put("ds0", new FixtureNopManager(""));
+        getIncrementalPositionManagerMap().put("ds_0", new FixtureNopManager(""));
     }
     
     @Override
