@@ -28,10 +28,23 @@ import static org.junit.Assert.assertThat;
 public final class PostgreSQLCommandCompletePacketTest {
     
     @Test
-    public void assertReadWrite() {
-        String sqlCommand = "SELECT * FROM t_order LIMIT 1";
+    public void assertSelectReadWrite() {
+        String sqlCommand = "SELECT";
         long rowCount = 1;
         String expectedString = sqlCommand + " " + rowCount;
+        int expectedStringLength = expectedString.length();
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufTestUtils.createByteBuf(expectedStringLength + 1));
+        PostgreSQLCommandCompletePacket packet = new PostgreSQLCommandCompletePacket(sqlCommand, rowCount);
+        assertThat(packet.getMessageType(), is(PostgreSQLCommandPacketType.COMMAND_COMPLETE.getValue()));
+        packet.write(payload);
+        assertThat(payload.readStringNul(), is(expectedString));
+    }
+    
+    @Test
+    public void assertInsertReadWrite() {
+        String sqlCommand = "INSERT";
+        long rowCount = 1;
+        String expectedString = sqlCommand + " 0 " + rowCount;
         int expectedStringLength = expectedString.length();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufTestUtils.createByteBuf(expectedStringLength + 1));
         PostgreSQLCommandCompletePacket packet = new PostgreSQLCommandCompletePacket(sqlCommand, rowCount);

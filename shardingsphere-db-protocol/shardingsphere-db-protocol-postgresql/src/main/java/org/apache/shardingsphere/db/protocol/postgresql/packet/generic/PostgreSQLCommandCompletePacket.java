@@ -46,6 +46,10 @@ public final class PostgreSQLCommandCompletePacket implements PostgreSQLPacket {
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-        payload.writeStringNul(sqlCommand + " " + rowCount);
+        if ("INSERT".equals(sqlCommand)) {
+            payload.writeStringNul(sqlCommand + " 0 " + rowCount);
+        } else {
+            payload.writeStringNul(sqlCommand + " " + rowCount);
+        }
     }
 }
