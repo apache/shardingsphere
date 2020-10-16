@@ -142,7 +142,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     
     @Override
     public void exceptionCaught(final ChannelHandlerContext context, final Throwable cause) {
-        log.warn("Http request handle occur error:", cause);
+        log.error("Http request handle occur error:", cause);
         response(GSON.toJson(ResponseContentUtil.handleException(cause.toString())), context, HttpResponseStatus.INTERNAL_SERVER_ERROR);
         context.close();
     }
