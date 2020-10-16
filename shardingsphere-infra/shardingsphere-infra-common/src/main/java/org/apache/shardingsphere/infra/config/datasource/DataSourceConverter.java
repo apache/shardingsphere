@@ -39,7 +39,8 @@ public final class DataSourceConverter {
      * @return data source map
      */
     public static Map<String, DataSource> getDataSourceMap(final Map<String, DataSourceConfiguration> dataSourceConfigMap) {
-        return dataSourceConfigMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().createDataSource(), (key, repeatKey) -> key, LinkedHashMap::new));
+        return dataSourceConfigMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
+            entry -> entry.getValue().createDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     /**
@@ -50,6 +51,6 @@ public final class DataSourceConverter {
      */
     public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSource> dataSourceMap) {
         return dataSourceMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry ->
-                DataSourceConfiguration.getDataSourceConfiguration(entry.getValue()), (key, repeatKey) -> key, LinkedHashMap::new));
+                DataSourceConfiguration.getDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }

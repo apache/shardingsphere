@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -60,7 +61,8 @@ public final class ProxyConfigurationLoader {
         File configPath = getResourceFile(path);
         Collection<YamlProxyRuleConfiguration> ruleConfigurations = loadRuleConfigurations(schemaNames, configPath);
         Preconditions.checkState(!ruleConfigurations.isEmpty() || null != serverConfig.getGovernance(), "Can not find any rule configurations file in path `%s`.", configPath.getPath());
-        return new YamlProxyConfiguration(serverConfig, ruleConfigurations.stream().collect(Collectors.toMap(YamlProxyRuleConfiguration::getSchemaName, each -> each)));
+        return new YamlProxyConfiguration(serverConfig, ruleConfigurations.stream().collect(Collectors.toMap(
+                YamlProxyRuleConfiguration::getSchemaName, each -> each, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
     
     private static File getResourceFile(final String path) {

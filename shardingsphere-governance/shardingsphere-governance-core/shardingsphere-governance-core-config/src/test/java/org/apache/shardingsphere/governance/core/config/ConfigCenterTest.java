@@ -240,7 +240,8 @@ public final class ConfigCenterTest {
     }
     
     private Map<String, DataSourceConfiguration> createDataSourceConfigurations() {
-        return createDataSourceMap().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> DataSourceConfiguration.getDataSourceConfiguration(entry.getValue())));
+        return createDataSourceMap().entrySet().stream().collect(Collectors.toMap(Entry::getKey, 
+            entry -> DataSourceConfiguration.getDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {

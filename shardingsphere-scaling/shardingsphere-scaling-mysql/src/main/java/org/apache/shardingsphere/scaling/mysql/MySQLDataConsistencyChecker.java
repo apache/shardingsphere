@@ -31,6 +31,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -49,13 +50,15 @@ public final class MySQLDataConsistencyChecker extends AbstractDataConsistencyCh
     @Override
     public Map<String, Boolean> dataCheck() {
         return distinctByValue(getShardingScalingJob().getSyncConfigurations()
-                .stream().flatMap(each -> each.getDumperConfiguration().getTableNameMap().entrySet().stream()).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u)))
-                .entrySet().stream().collect(Collectors.toMap(Entry::getValue, entry -> dataValid(entry.getKey(), entry.getValue())));
+                .stream().flatMap(each -> each.getDumperConfiguration().getTableNameMap().entrySet().stream())
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)))
+                .entrySet().stream().collect(Collectors.toMap(Entry::getValue, entry -> dataValid(entry.getKey(), entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, String> distinctByValue(final Map<String, String> tableNameMap) {
         Set<String> distinctSet = new HashSet<>();
-        return tableNameMap.entrySet().stream().filter(entry -> distinctSet.add(entry.getValue())).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> u));
+        return tableNameMap.entrySet().stream().filter(entry -> distinctSet.add(entry.getValue()))
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private boolean dataValid(final String actualTableName, final String logicTableName) {

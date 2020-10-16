@@ -43,6 +43,7 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -131,7 +132,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         YamlDataSourceConfigurationWrap result = YamlEngine.unmarshal(event.getValue(), YamlDataSourceConfigurationWrap.class);
         Preconditions.checkState(null != result && !result.getDataSources().isEmpty(), "No available data sources to load for governance.");
         return new DataSourceChangedEvent(schemaName, result.getDataSources().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> new DataSourceConfigurationYamlSwapper().swapToObject(entry.getValue()))));
+                .collect(Collectors.toMap(Entry::getKey, entry -> new DataSourceConfigurationYamlSwapper().swapToObject(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
     
     private GovernanceEvent createRuleChangedEvent(final String schemaName, final DataChangedEvent event) {

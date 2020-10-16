@@ -32,6 +32,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -50,7 +51,7 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
     public Map<String, DataConsistencyCheckResult> countCheck() {
         return shardingScalingJob.getSyncConfigurations()
                 .stream().flatMap(each -> each.getDumperConfiguration().getTableNameMap().values().stream()).collect(Collectors.toSet())
-                .stream().collect(Collectors.toMap(Function.identity(), this::countCheck));
+                .stream().collect(Collectors.toMap(Function.identity(), this::countCheck, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private DataConsistencyCheckResult countCheck(final String table) {

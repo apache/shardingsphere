@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,7 +39,8 @@ public final class DataSourcesMetaData {
     
     public DataSourcesMetaData(final DatabaseType databaseType, final Map<String, DatabaseAccessConfiguration> databaseAccessConfigs) {
         dataSourceMetaDataMap = databaseAccessConfigs.entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> databaseType.getDataSourceMetaData(entry.getValue().getUrl(), entry.getValue().getUsername())));
+                Collectors.toMap(Entry::getKey, entry -> databaseType.getDataSourceMetaData(entry.getValue().getUrl(),
+                        entry.getValue().getUsername()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     /**
