@@ -38,7 +38,7 @@ public final class PostgreSQLJdbcDumper extends AbstractJDBCDumper {
     @Override
     protected PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
         PreparedStatement result = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        result.setFetchSize(100);
+        result.setFetchSize(1);
         return result;
     }
 }

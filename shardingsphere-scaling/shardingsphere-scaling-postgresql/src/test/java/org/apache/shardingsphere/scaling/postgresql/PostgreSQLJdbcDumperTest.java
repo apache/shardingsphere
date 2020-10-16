@@ -70,7 +70,7 @@ public final class PostgreSQLJdbcDumperTest {
         DataSource dataSource = dataSourceManager.getDataSource(mockDumperConfiguration().getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = postgreSQLJdbcDumper.createPreparedStatement(connection, "SELECT * FROM t_order")) {
-            assertThat(preparedStatement.getFetchSize(), is(100));
+            assertThat(preparedStatement.getFetchSize(), is(1));
         }
     }
     
