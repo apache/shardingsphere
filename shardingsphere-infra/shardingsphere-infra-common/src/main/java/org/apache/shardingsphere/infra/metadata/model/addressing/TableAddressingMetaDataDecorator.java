@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
 /**
- * Table addressing meta data builder.
+ * Table addressing meta data decorator.
  * 
  * @param <T> type of ShardingSphere rule
  */

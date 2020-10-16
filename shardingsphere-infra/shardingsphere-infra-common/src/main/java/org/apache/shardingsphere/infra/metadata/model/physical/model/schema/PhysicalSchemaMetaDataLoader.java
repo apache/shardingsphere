@@ -47,15 +47,15 @@ public final class PhysicalSchemaMetaDataLoader {
     private static final String TABLE_NAME = "TABLE_NAME";
     
     /**
-     * Load unconfigured table name.
+     * Load all table names.
      *
      * @param dataSource data source
      * @param databaseType database type
      * @param excludedTableNames excluded table names
-     * @return unconfigured table names
+     * @return all table names
      * @throws SQLException SQL exception
      */
-    public static Collection<String> loadUnconfiguredTableNames(final DataSource dataSource, final DatabaseType databaseType, final Collection<String> excludedTableNames) throws SQLException {
+    public static Collection<String> loadTableNames(final DataSource dataSource, final DatabaseType databaseType, final Collection<String> excludedTableNames) throws SQLException {
         List<String> result;
         try (MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, dataSource.getConnection())) {
             result = loadAllTableNames(connectionAdapter);

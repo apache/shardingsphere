@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.infra.metadata.model.addressing;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import lombok.Getter;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Table addressing meta data.
@@ -27,5 +29,5 @@ import lombok.Getter;
 @Getter
 public final class TableAddressingMetaData {
     
-    private final Multimap<String, String> tableDataSourceNamesMapper = HashMultimap.create();
+    private final Map<String, Collection<String>> tableDataSourceNamesMapper = new HashMap<>();
 }
