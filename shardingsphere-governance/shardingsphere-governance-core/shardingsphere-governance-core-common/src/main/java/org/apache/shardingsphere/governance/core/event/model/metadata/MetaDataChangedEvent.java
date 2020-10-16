@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
 
-import java.util.Collection;
-
 /**
  * Meta data changed event.
  */
@@ -31,8 +29,7 @@ import java.util.Collection;
 @Getter
 public final class MetaDataChangedEvent implements GovernanceEvent {
 
-    // TODO Confirm whether it must be a collection
-    private final Collection<String> schemaNames;
+    private final String schemaName;
 
     private final LogicSchemaMetaData logicSchemaMetaData;
 }

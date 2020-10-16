@@ -220,7 +220,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         for (Entry<String, ShardingSphereSchema> entry : schemaContexts.getSchemas().entrySet()) {
             String schemaName = entry.getKey();
             ShardingSphereSchema oldSchema = entry.getValue();
-            ShardingSphereSchema newSchema = event.getSchemaNames().contains(schemaName) ? getChangedShardingSphereSchema(oldSchema, event.getLogicSchemaMetaData(), schemaName) : oldSchema;
+            ShardingSphereSchema newSchema = event.getSchemaName().equals(schemaName) ? getChangedShardingSphereSchema(oldSchema, event.getLogicSchemaMetaData(), schemaName) : oldSchema;
             newSchemas.put(schemaName, newSchema);
         }
         schemaContexts = new StandardSchemaContexts(newSchemas, schemaContexts.getSqlParserEngine(), schemaContexts.getExecutorKernel(), 
