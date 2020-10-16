@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sharding.rule.TableRule;
 import java.util.stream.Collectors;
 
 /**
- * Sharding table addressing meta data decorator.
+ * Table addressing meta data decorator of sharding.
  */
 public final class ShardingTableAddressingMetaDataDecorator implements TableAddressingMetaDataDecorator<ShardingRule> {
     
