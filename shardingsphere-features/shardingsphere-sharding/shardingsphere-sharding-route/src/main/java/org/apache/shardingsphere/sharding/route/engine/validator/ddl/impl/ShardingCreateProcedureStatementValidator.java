@@ -37,12 +37,12 @@ public final class ShardingCreateProcedureStatementValidator extends ShardingDDL
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateProcedureStatement> sqlStatementContext, 
-                            final List<Object> parameters, final String sql, final ShardingSphereMetaData metaData) {
+                            final List<Object> parameters, final ShardingSphereMetaData metaData) {
         Optional<RoutineBodySegment> routineBodySegment = CreateProcedureStatementHandler.getRoutineBodySegment(sqlStatementContext.getSqlStatement());
         routineBodySegment.ifPresent(routineBody -> {
             TableExtractor extractor = new TableExtractor();
             validateTableNotExist(metaData, extractor.extractNotExistTableFromRoutineBody(routineBody));
-            validateShardingTable(metaData, extractor.extractExistTableFromRoutineBody(routineBody), sql);
+            validateShardingTable(metaData, extractor.extractExistTableFromRoutineBody(routineBody));
         });
     }
     

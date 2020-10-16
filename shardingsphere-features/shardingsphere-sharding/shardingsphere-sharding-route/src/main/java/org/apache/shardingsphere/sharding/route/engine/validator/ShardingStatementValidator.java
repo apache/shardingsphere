@@ -38,10 +38,9 @@ public interface ShardingStatementValidator<T extends SQLStatement> {
      * @param shardingRule sharding rule
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
-     * @param sql sql
      * @param metaData meta data
      */
-    void preValidate(ShardingRule shardingRule, SQLStatementContext<T> sqlStatementContext, List<Object> parameters, String sql, ShardingSphereMetaData metaData);
+    void preValidate(ShardingRule shardingRule, SQLStatementContext<T> sqlStatementContext, List<Object> parameters, ShardingSphereMetaData metaData);
     
     /**
      * Validate whether sharding operation is supported after route.

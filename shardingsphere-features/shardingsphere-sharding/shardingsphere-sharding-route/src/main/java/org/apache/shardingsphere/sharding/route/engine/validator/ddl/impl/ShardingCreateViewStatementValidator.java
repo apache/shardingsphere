@@ -37,12 +37,12 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateViewStatement> sqlStatementContext, 
-                            final List<Object> parameters, final String sql, final ShardingSphereMetaData metaData) {
+                            final List<Object> parameters, final ShardingSphereMetaData metaData) {
         Optional<SelectStatement> selectStatement = CreateViewStatementHandler.getSelectStatement(sqlStatementContext.getSqlStatement());
         selectStatement.ifPresent(select -> {
             TableExtractor extractor = new TableExtractor();
             extractor.extractTablesFromSelect(select);
-            validateShardingTable(metaData, extractor.getRewriteTables(), sql);
+            validateShardingTable(metaData, extractor.getRewriteTables());
         });
     }
     

@@ -37,11 +37,11 @@ public final class ShardingCreateFunctionStatementValidator extends ShardingDDLS
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateFunctionStatement> sqlStatementContext, 
-                            final List<Object> parameters, final String sql, final ShardingSphereMetaData metaData) {
+                            final List<Object> parameters, final ShardingSphereMetaData metaData) {
         Optional<RoutineBodySegment> routineBodySegment = CreateFunctionStatementHandler.getRoutineBodySegment(sqlStatementContext.getSqlStatement());
         routineBodySegment.ifPresent(routineBody -> {
             TableExtractor extractor = new TableExtractor();
-            validateShardingTable(metaData, extractor.extractExistTableFromRoutineBody(routineBody), sql);
+            validateShardingTable(metaData, extractor.extractExistTableFromRoutineBody(routineBody));
             validateTableNotExist(metaData, extractor.extractNotExistTableFromRoutineBody(routineBody));
         });
     }

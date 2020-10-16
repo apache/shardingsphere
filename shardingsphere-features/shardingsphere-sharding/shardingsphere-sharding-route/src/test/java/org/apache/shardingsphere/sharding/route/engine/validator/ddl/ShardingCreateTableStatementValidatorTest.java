@@ -88,7 +88,7 @@ public final class ShardingCreateTableStatementValidatorTest {
         LogicSchemaMetaData logicSchemaMetaData = mock(LogicSchemaMetaData.class);
         when(logicSchemaMetaData.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
         when(metaData.getSchemaMetaData()).thenReturn(logicSchemaMetaData);
-        new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", metaData);
+        new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
     
     @Test
@@ -113,6 +113,6 @@ public final class ShardingCreateTableStatementValidatorTest {
         LogicSchemaMetaData logicSchemaMetaData = mock(LogicSchemaMetaData.class);
         when(logicSchemaMetaData.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
         when(metaData.getSchemaMetaData()).thenReturn(logicSchemaMetaData);
-        new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", metaData);
+        new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
 }

@@ -76,7 +76,7 @@ public final class ShardingCreateProcedureStatementValidatorTest {
         when(logicSchemaMetaData.getUnconfiguredSchemaMetaDataMap()).thenReturn(unconfiguredSchemaMetaDataMap);
         when(logicSchemaMetaData.getAllTableNames()).thenReturn(Collections.emptyList());
         SQLStatementContext<CreateProcedureStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
-        new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", metaData);
+        new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -96,7 +96,7 @@ public final class ShardingCreateProcedureStatementValidatorTest {
         when(logicSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
         when(schemaMetaData.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
         SQLStatementContext<CreateProcedureStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
-        new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", metaData);
+        new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
     
     @Test(expected = TableExistsException.class)
@@ -114,6 +114,6 @@ public final class ShardingCreateProcedureStatementValidatorTest {
         when(metaData.getSchemaMetaData()).thenReturn(logicSchemaMetaData);
         when(logicSchemaMetaData.getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
         SQLStatementContext<CreateProcedureStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
-        new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", metaData);
+        new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
 }

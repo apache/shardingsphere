@@ -76,7 +76,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
         when(logicSchemaMetaData.getUnconfiguredSchemaMetaDataMap()).thenReturn(unconfiguredSchemaMetaDataMap);
         when(logicSchemaMetaData.getAllTableNames()).thenReturn(Collections.emptyList());
         SQLStatementContext<CreateFunctionStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
-        new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", metaData);
+        new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -96,7 +96,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
         when(logicSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
         when(schemaMetaData.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
         SQLStatementContext<CreateFunctionStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
-        new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", metaData);
+        new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
     
     @Test(expected = TableExistsException.class)
@@ -114,6 +114,6 @@ public final class ShardingCreateFunctionStatementValidatorTest {
         when(metaData.getSchemaMetaData()).thenReturn(logicSchemaMetaData);
         when(logicSchemaMetaData.getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
         SQLStatementContext<CreateFunctionStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
-        new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", metaData);
+        new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
 }

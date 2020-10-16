@@ -43,9 +43,9 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext, 
-                            final List<Object> parameters, final String sql, final ShardingSphereMetaData metaData) {
+                            final List<Object> parameters, final ShardingSphereMetaData metaData) {
         if (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
-            validateMultipleTable(shardingRule, sqlStatementContext, sql);
+            validateShardingMultipleTable(shardingRule, sqlStatementContext);
         }
         InsertStatement sqlStatement = sqlStatementContext.getSqlStatement();
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(sqlStatement);

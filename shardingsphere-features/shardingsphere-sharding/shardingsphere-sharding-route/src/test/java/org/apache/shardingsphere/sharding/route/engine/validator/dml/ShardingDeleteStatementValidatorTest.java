@@ -78,11 +78,12 @@ public final class ShardingDeleteStatementValidatorTest {
         DeleteMultiTableSegment tableSegment = new DeleteMultiTableSegment();
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
         tableSegment.getActualDeleteTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("order")));
+        tableSegment.getActualDeleteTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("order_item")));
         sqlStatement.setTableSegment(tableSegment);
-        Collection<String> tableNames = Lists.newArrayList("user", "order");
         DeleteStatementContext sqlStatementContext = new DeleteStatementContext(sqlStatement);
-        when(shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(tableNames);
-        when(shardingRule.isAllBindingTables(tableNames)).thenReturn(true);
-        new ShardingDeleteStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", mock(ShardingSphereMetaData.class));
+        Collection<String> shardingTableNames = Lists.newArrayList("order", "order_item");
+        when(shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(shardingTableNames);
+        when(shardingRule.isAllBindingTables(shardingTableNames)).thenReturn(true);
+        new ShardingDeleteStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class));
     }
 }

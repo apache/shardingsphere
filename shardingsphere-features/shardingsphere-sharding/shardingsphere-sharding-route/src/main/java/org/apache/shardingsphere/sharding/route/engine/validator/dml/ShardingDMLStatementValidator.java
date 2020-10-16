@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Sharding dml statement validator.
@@ -32,16 +32,24 @@ import java.util.Collection;
 public abstract class ShardingDMLStatementValidator<T extends SQLStatement> implements ShardingStatementValidator<T> {
     
     /**
-     * Validate multiple table.
+     * Validate sharding multiple table.
      *
      * @param shardingRule sharding rule
      * @param sqlStatementContext sqlStatementContext
-     * @param sql sql
      */
-    protected void validateMultipleTable(final ShardingRule shardingRule, final SQLStatementContext<T> sqlStatementContext, final String sql) {
-        Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames());
-        if ((1 == shardingTableNames.size() || shardingRule.isAllBindingTables(shardingTableNames)) && 1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
-            throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sql);
+    protected void validateShardingMultipleTable(final ShardingRule shardingRule, final SQLStatementContext<T> sqlStatementContext) {
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
+        if ((1 == shardingTableNames.size() || shardingRule.isAllBindingTables(shardingTableNames)) && !isAllValidTables(shardingRule, tableNames)) {
+            throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", tableNames);
         }
+    }
+    
+    private boolean isAllValidTables(final ShardingRule shardingRule, final Collection<String> tableNames) {
+        Collection<String> allTableNames = new LinkedList<>(tableNames);
+        allTableNames.removeAll(shardingRule.getShardingLogicTableNames(tableNames));
+        allTableNames.removeAll(shardingRule.getBroadcastTables());
+        // TODO: 2020/10/16 validate other single table scenario
+        return 0 == allTableNames.size();
     }
 }

@@ -63,43 +63,43 @@ public final class ShardingUpdateStatementValidatorTest {
         joinTableSegment.setRight(new SimpleTableSegment(0, 0, new IdentifierValue("order")));
         updateStatement.setTableSegment(joinTableSegment);
         SQLStatementContext<UpdateStatement> sqlStatementContext = new UpdateStatementContext(updateStatement);
-        Collection<String> tableNames = Lists.newArrayList("user", "order");
+        Collection<String> tableNames = Lists.newArrayList("order", "order_item");
         when(shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(tableNames);
         when(shardingRule.isAllBindingTables(tableNames)).thenReturn(true);
-        new ShardingUpdateStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", mock(ShardingSphereMetaData.class));
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class));
     }
     
     @Test
     public void assertValidateUpdateWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()), Collections.emptyList(), "", mock(ShardingSphereMetaData.class));
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()), Collections.emptyList(), mock(ShardingSphereMetaData.class));
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertValidateUpdateWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()), Collections.emptyList(), "", mock(ShardingSphereMetaData.class));
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()), Collections.emptyList(), mock(ShardingSphereMetaData.class));
     }
     
     @Test
     public void assertValidateUpdateWithoutShardingKeyAndParameters() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
         List<Object> parameters = Arrays.asList(1, 1);
-        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()), parameters, "", mock(ShardingSphereMetaData.class));
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()), parameters, mock(ShardingSphereMetaData.class));
     }
     
     @Test
     public void assertValidateUpdateWithShardingKeyAndShardingParameterEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         List<Object> parameters = Arrays.asList(1, 1);
-        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatementAndParameters(1)), parameters, "", mock(ShardingSphereMetaData.class));
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatementAndParameters(1)), parameters, mock(ShardingSphereMetaData.class));
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertValidateUpdateWithShardingKeyAndShardingParameterNotEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         List<Object> parameters = Arrays.asList(1, 1);
-        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatementAndParameters(2)), parameters, "", mock(ShardingSphereMetaData.class));
+        new ShardingUpdateStatementValidator().preValidate(shardingRule, new UpdateStatementContext(createUpdateStatementAndParameters(2)), parameters, mock(ShardingSphereMetaData.class));
     }
     
     private UpdateStatement createUpdateStatement() {

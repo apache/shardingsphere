@@ -45,8 +45,8 @@ public final class ShardingUpdateStatementValidator extends ShardingDMLStatement
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<UpdateStatement> sqlStatementContext, 
-                            final List<Object> parameters, final String sql, final ShardingSphereMetaData metaData) {
-        validateMultipleTable(shardingRule, sqlStatementContext, sql);
+                            final List<Object> parameters, final ShardingSphereMetaData metaData) {
+        validateShardingMultipleTable(shardingRule, sqlStatementContext);
         UpdateStatement sqlStatement = sqlStatementContext.getSqlStatement();
         String tableName = sqlStatementContext.getTablesContext().getTables().iterator().next().getTableName().getIdentifier().getValue();
         for (AssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {

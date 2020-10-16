@@ -62,7 +62,7 @@ public final class ShardingCreateViewStatementValidatorTest {
         unconfiguredSchemaMetaDataMap.put("ds_0", Collections.singleton("t_order_item"));
         when(logicSchemaMetaData.getUnconfiguredSchemaMetaDataMap()).thenReturn(unconfiguredSchemaMetaDataMap);
         SQLStatementContext<CreateViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
-        new ShardingCreateViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", metaData);
+        new ShardingCreateViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -78,6 +78,6 @@ public final class ShardingCreateViewStatementValidatorTest {
         when(logicSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
         when(schemaMetaData.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
         SQLStatementContext<CreateViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
-        new ShardingCreateViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), "", metaData);
+        new ShardingCreateViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
 }
