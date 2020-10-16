@@ -143,6 +143,6 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     
     private GovernanceEvent createMetaDataChangedEvent(final String schemaName, final DataChangedEvent event) {
         LogicSchemaMetaData logicSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlLogicSchemaMetaData.class));
-        return new MetaDataChangedEvent(Collections.singleton(schemaName), logicSchemaMetaData);
+        return new MetaDataChangedEvent(schemaName, logicSchemaMetaData);
     }
 }

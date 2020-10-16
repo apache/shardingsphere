@@ -191,7 +191,7 @@ public final class GovernanceSchemaContextsTest {
     
     @Test
     public void assertMetaDataChanged() {
-        MetaDataChangedEvent event = new MetaDataChangedEvent(Collections.singletonList("schema_changed"), mock(LogicSchemaMetaData.class));
+        MetaDataChangedEvent event = new MetaDataChangedEvent("schema_changed", mock(LogicSchemaMetaData.class));
         governanceSchemaContexts.renew(event);
         assertTrue(governanceSchemaContexts.getSchemas().containsKey("schema"));
         assertFalse(governanceSchemaContexts.getSchemas().containsKey("schema_changed"));
@@ -199,7 +199,7 @@ public final class GovernanceSchemaContextsTest {
     
     @Test
     public void assertMetaDataChangedWithExistSchema() {
-        MetaDataChangedEvent event = new MetaDataChangedEvent(Collections.singletonList("schema"), mock(LogicSchemaMetaData.class));
+        MetaDataChangedEvent event = new MetaDataChangedEvent("schema", mock(LogicSchemaMetaData.class));
         governanceSchemaContexts.renew(event);
         assertThat(governanceSchemaContexts.getSchemas().get("schema"), not(schema));
     }
