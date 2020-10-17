@@ -33,7 +33,7 @@ public final class SQLServerDatabaseMetaDataDialectHandler implements DatabaseMe
     private Properties props;
 
     @Override
-    public QuoteCharacter getDelimiter() {
+    public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.BRACKETS;
     }
 

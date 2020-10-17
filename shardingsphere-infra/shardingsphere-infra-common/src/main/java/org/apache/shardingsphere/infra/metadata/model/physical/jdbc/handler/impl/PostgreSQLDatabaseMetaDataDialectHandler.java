@@ -33,7 +33,7 @@ public final class PostgreSQLDatabaseMetaDataDialectHandler implements DatabaseM
     private Properties props;
 
     @Override
-    public QuoteCharacter getDelimiter() {
+    public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
     }
 

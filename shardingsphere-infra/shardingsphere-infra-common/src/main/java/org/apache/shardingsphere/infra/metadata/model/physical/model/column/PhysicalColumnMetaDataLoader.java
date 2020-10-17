@@ -20,6 +20,9 @@ package org.apache.shardingsphere.infra.metadata.model.physical.model.column;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandler;
+import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandlerFactory;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -30,9 +33,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandler;
-import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandlerFactory;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 /**
  * Physical column meta data loader.
@@ -90,8 +90,8 @@ public final class PhysicalColumnMetaDataLoader {
     }
     
     private static String generateEmptyResultSQL(final String table, final DatabaseType databaseType) {
-        QuoteCharacter quoteCharacter = DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(DatabaseMetaDataDialectHandler::getDelimiter).orElse(QuoteCharacter.NONE);
-        return "SELECT * FROM " + quoteCharacter.getStartDelimiter() + table + quoteCharacter.getEndDelimiter() + " WHERE 1 != 1";
+        QuoteCharacter quoteCharacter = DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(DatabaseMetaDataDialectHandler::getQuoteCharacter).orElse(QuoteCharacter.NONE);
+        return String.format("SELECT * FROM %s%s%s WHERE 1 != 1", quoteCharacter.getStartDelimiter(), table, quoteCharacter.getEndDelimiter());
     }
     
     private static Collection<String> loadPrimaryKeys(final Connection connection, final String table) throws SQLException {

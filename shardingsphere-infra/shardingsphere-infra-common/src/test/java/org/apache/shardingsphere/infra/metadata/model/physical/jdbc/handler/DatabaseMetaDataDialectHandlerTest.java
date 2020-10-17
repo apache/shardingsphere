@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
@@ -33,6 +30,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -129,11 +130,11 @@ public final class DatabaseMetaDataDialectHandlerTest {
     }
     
     private QuoteCharacter findQuoteCharacter(final DatabaseType databaseType) {
-        return DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(DatabaseMetaDataDialectHandler::getDelimiter).orElse(QuoteCharacter.NONE);
+        return DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(DatabaseMetaDataDialectHandler::getQuoteCharacter).orElse(QuoteCharacter.NONE);
     }
     
     private String getTableNamePattern(final DatabaseType databaseType) {
-        return DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(handler -> handler.decorate(TABLE_NAME_PATTERN)).orElse(TABLE_NAME_PATTERN);
+        return DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(handler -> handler.formatTableNamePattern(TABLE_NAME_PATTERN)).orElse(TABLE_NAME_PATTERN);
     }
     
     private String getSchema(final DatabaseType databaseType) {

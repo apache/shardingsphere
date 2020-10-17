@@ -33,7 +33,7 @@ public final class MariaDBDatabaseMetaDataDialectHandler implements DatabaseMeta
     private Properties props;
 
     @Override
-    public QuoteCharacter getDelimiter() {
+    public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.BACK_QUOTE;
     }
 
