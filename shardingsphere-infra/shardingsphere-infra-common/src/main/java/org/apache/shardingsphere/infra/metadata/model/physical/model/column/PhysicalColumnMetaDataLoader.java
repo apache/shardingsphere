@@ -91,7 +91,7 @@ public final class PhysicalColumnMetaDataLoader {
     
     private static String generateEmptyResultSQL(final String table, final DatabaseType databaseType) {
         QuoteCharacter quoteCharacter = DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(DatabaseMetaDataDialectHandler::getQuoteCharacter).orElse(QuoteCharacter.NONE);
-        return "SELECT * FROM " + quoteCharacter.getStartDelimiter() + table + quoteCharacter.getEndDelimiter() + " WHERE 1 != 1";
+        return String.format("SELECT * FROM %s%s%s WHERE 1 != 1", quoteCharacter.getStartDelimiter(), table, quoteCharacter.getEndDelimiter());
     }
     
     private static Collection<String> loadPrimaryKeys(final Connection connection, final String table) throws SQLException {
