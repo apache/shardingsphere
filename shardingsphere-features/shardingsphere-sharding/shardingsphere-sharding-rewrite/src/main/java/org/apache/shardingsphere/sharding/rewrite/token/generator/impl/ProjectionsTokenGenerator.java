@@ -104,8 +104,7 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
         Preconditions.checkState(projection.getDerivedProjection() instanceof ColumnOrderByItemSegment);
         ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) projection.getDerivedProjection();
         ColumnOrderByItemSegment newColumnOrderByItem = generateNewColumnOrderByItem(columnOrderByItemSegment, routeUnit, tableExtractor);
-        String result = new StringBuilder().append(newColumnOrderByItem.getText()).append(" AS ").append(projection.getAlias().get()).append(" ").toString();
-        return result;
+        return new StringBuilder().append(newColumnOrderByItem.getText()).append(" AS ").append(projection.getAlias().get()).append(" ").toString();
     }
     
     private Optional<String> getActualTables(final RouteUnit routeUnit, final String logicalTableName) {
@@ -128,12 +127,9 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
         Optional<String> actualTableName = getActualTables(routeUnit, ownerSegment.get().getIdentifier().getValue());
         Preconditions.checkState(actualTableName.isPresent());
         ColumnSegment newColumnSegment = new ColumnSegment(0, 0, old.getColumn().getIdentifier());
-        String newOwnerString = String.format("%s%s%s", ownerSegment.get().getIdentifier().getQuoteCharacter().getStartDelimiter(), actualTableName.get(),
-                ownerSegment.get().getIdentifier().getQuoteCharacter().getEndDelimiter());
-        IdentifierValue newOwnerIdentifier = new IdentifierValue(newOwnerString);
+        IdentifierValue newOwnerIdentifier = new IdentifierValue(ownerSegment.get().getIdentifier().getQuoteCharacter().wrap(actualTableName.get()));
         OwnerSegment newOwner = new OwnerSegment(0, 0, newOwnerIdentifier);
         newColumnSegment.setOwner(newOwner);
-        ColumnOrderByItemSegment result = new ColumnOrderByItemSegment(newColumnSegment, old.getOrderDirection());
-        return result;
+        return new ColumnOrderByItemSegment(newColumnSegment, old.getOrderDirection());
     }
 }
