@@ -33,7 +33,7 @@ public final class SQL92DatabaseMetaDataDialectHandler implements DatabaseMetaDa
     private Properties props;
 
     @Override
-    public QuoteCharacter getDelimiter() {
+    public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
     }
 

@@ -45,12 +45,12 @@ public final class OracleDatabaseMetaDataDialectHandler implements DatabaseMetaD
     }
     
     @Override
-    public String decorate(final String tableNamePattern) {
+    public String formatTableNamePattern(final String tableNamePattern) {
         return tableNamePattern.toUpperCase();
     }
 
     @Override
-    public QuoteCharacter getDelimiter() {
+    public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
     }
 

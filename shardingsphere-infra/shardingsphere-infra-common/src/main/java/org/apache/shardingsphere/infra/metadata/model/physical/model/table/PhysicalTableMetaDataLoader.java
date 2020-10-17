@@ -36,7 +36,7 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PhysicalTableMetaDataLoader {
-
+    
     /**
      * Load table meta data.
      *
@@ -48,12 +48,16 @@ public final class PhysicalTableMetaDataLoader {
      */
     public static Optional<PhysicalTableMetaData> load(final DataSource dataSource, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
         try (MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, dataSource.getConnection())) {
-            String tableName = DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(handler -> handler.decorate(tableNamePattern)).orElse(tableNamePattern);
-            return isTableExist(connectionAdapter, tableName)
-                    ? Optional.of(new PhysicalTableMetaData(
-                          PhysicalColumnMetaDataLoader.load(connectionAdapter, tableName, databaseType), PhysicalIndexMetaDataLoader.load(connectionAdapter, tableName)))
+            String formattedTableNamePattern = formatTableNamePattern(tableNamePattern, databaseType);
+            return isTableExist(connectionAdapter, formattedTableNamePattern)
+                    ? Optional.of(new PhysicalTableMetaData(PhysicalColumnMetaDataLoader.load(
+                            connectionAdapter, formattedTableNamePattern, databaseType), PhysicalIndexMetaDataLoader.load(connectionAdapter, formattedTableNamePattern)))
                     : Optional.empty();
         }
+    }
+    
+    private static String formatTableNamePattern(final String tableNamePattern, final DatabaseType databaseType) {
+        return DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(handler -> handler.formatTableNamePattern(tableNamePattern)).orElse(tableNamePattern);
     }
     
     private static boolean isTableExist(final Connection connection, final String tableNamePattern) throws SQLException {

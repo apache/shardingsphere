@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Database meta data dialect handler.
@@ -33,30 +34,30 @@ public interface DatabaseMetaDataDialectHandler extends TypedSPI {
      * @param connection connection
      * @return schema
      */
-    default String getSchema(Connection connection) {
+    default String getSchema(final Connection connection) {
         try {
             return connection.getSchema();
-        } catch (SQLException e) {
+        } catch (final SQLException ignored) {
             return null;
         }
     }
     
     /**
-     * Decorate table name pattern.
+     * Format table name pattern.
      *
      * @param tableNamePattern table name pattern
-     * @return decorated table name pattern
+     * @return formatted table name pattern
      */
-    default String decorate(String tableNamePattern) {
+    default String formatTableNamePattern(final String tableNamePattern) {
         return tableNamePattern;
     }
     
     /**
-     * Get delimiter.
+     * Get quote character.
      *
-     * @return delimiter
+     * @return quote character
      */
-    default QuoteCharacter getDelimiter() {
+    default QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.NONE;
     }
 }
