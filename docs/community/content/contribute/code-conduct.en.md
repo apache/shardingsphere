@@ -35,7 +35,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Split codes that need to add notes with it into small methods, which are explained with method names.
  - Have constants on the left and variable on the right in `=` and `equals` conditional expressions; Have variable on the left and constants on the right in `greater than` and `less than` conditional expressions.
  - Beside using same names as input parameters and global fields in assign statement, avoid using `this` modifier.
- - Design class as `final` class expect abstract class for extend.
+ - Design class as `final` class except abstract class for extend.
  - Make nested loop structures a new method.
  - Order of members definition and parameters should be consistent during classes and methods.
  - Use guard clauses in priority.
