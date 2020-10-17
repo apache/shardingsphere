@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
 import com.google.common.base.Strings;
-import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
 
 /**
  * Quote character.
@@ -54,5 +55,15 @@ public enum QuoteCharacter {
             return NONE;
         }
         return Arrays.stream(values()).filter(each -> NONE != each && each.startDelimiter.charAt(0) == value.charAt(0)).findFirst().orElse(NONE);
+    }
+    
+    /**
+     * Wrap value with quote character.
+     * 
+     * @param value value to be wrapped
+     * @return wrapped value
+     */
+    public String wrap(final String value) {
+        return String.join(startDelimiter, value, endDelimiter);
     }
 }
