@@ -32,12 +32,12 @@ import java.util.Properties;
 public final class H2DatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
     
     private Properties props;
-
+    
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
     }
-
+    
     @Override
     public String getType() {
         return "H2";
