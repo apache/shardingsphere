@@ -26,10 +26,10 @@ import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.replication.primaryreplica.algorithm.config.AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration;
 import org.apache.shardingsphere.replication.primaryreplica.api.config.PrimaryReplicaReplicationRuleConfiguration;
 import org.apache.shardingsphere.replication.primaryreplica.api.config.rule.PrimaryReplicaReplicationDataSourceRuleConfiguration;
 import org.apache.shardingsphere.replication.primaryreplica.spi.ReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.replication.primaryreplica.algorithm.config.AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -76,9 +76,18 @@ public final class PrimaryReplicaReplicationRule implements DataSourceRoutedRule
     }
     
     /**
+     * Get all logic data source names.
+     *
+     * @return all logic data source names
+     */
+    public Collection<String> getAllLogicDataSourceNames() {
+        return dataSourceRules.keySet();
+    }
+    
+    /**
      * Get single data source rule.
      *
-     * @return Primary-replica replication data source rule
+     * @return primary-replica replication data source rule
      */
     public PrimaryReplicaReplicationDataSourceRule getSingleDataSourceRule() {
         return dataSourceRules.values().iterator().next();
@@ -88,7 +97,7 @@ public final class PrimaryReplicaReplicationRule implements DataSourceRoutedRule
      * Find data source rule.
      * 
      * @param dataSourceName data source name
-     * @return Primary-replica replication data source rule
+     * @return primary-replica replication data source rule
      */
     public Optional<PrimaryReplicaReplicationDataSourceRule> findDataSourceRule(final String dataSourceName) {
         return Optional.ofNullable(dataSourceRules.get(dataSourceName));

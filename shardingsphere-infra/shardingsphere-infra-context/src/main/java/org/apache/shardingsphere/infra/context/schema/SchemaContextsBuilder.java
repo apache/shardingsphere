@@ -28,6 +28,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaData;
+import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.model.datasource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
@@ -110,8 +112,9 @@ public final class SchemaContextsBuilder {
         long start = System.currentTimeMillis();
         DataSourcesMetaData dataSourceMetas = new DataSourcesMetaData(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
         LogicSchemaMetaData logicSchemaMetaData = new LogicSchemaMetaDataLoader(rules).load(databaseType, dataSourceMap, props);
+        TableAddressingMetaData tableAddressingMetaData = TableAddressingMetaDataLoader.load(databaseType, dataSourceMap, rules);
         CachedDatabaseMetaData cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSources.get(schemaName)).orElse(null);
-        ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, logicSchemaMetaData, cachedDatabaseMetaData);
+        ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, logicSchemaMetaData, tableAddressingMetaData, cachedDatabaseMetaData);
         log.info("Load meta data for schema {} finished, cost {} milliseconds.", schemaName, System.currentTimeMillis() - start);
         return result;
     }

@@ -27,9 +27,12 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaData;
 import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.model.datasource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -41,8 +44,6 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardi
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
 import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
@@ -207,8 +208,8 @@ public final class ShardingCTLHintBackendHandlerTest {
     
     private Map<String, ShardingSphereSchema> getSchemas() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.getMetaData()).thenReturn(new ShardingSphereMetaData(mock(DataSourcesMetaData.class), 
-                new LogicSchemaMetaData(new PhysicalSchemaMetaData(ImmutableMap.of("user", mock(PhysicalTableMetaData.class))), Collections.emptyMap()), mock(CachedDatabaseMetaData.class)));
+        when(schema.getMetaData()).thenReturn(new ShardingSphereMetaData(mock(DataSourcesMetaData.class), new LogicSchemaMetaData(new PhysicalSchemaMetaData(
+                ImmutableMap.of("user", mock(PhysicalTableMetaData.class))), Collections.emptyMap()), mock(TableAddressingMetaData.class), mock(CachedDatabaseMetaData.class)));
         when(schema.isComplete()).thenReturn(true);
         return Collections.singletonMap("schema", schema);
     }

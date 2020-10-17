@@ -140,7 +140,7 @@ public final class LogicSchemaMetaDataLoader {
                                                                        final Collection<String> excludedTableNames) throws SQLException {
         Map<String, Collection<String>> result = new HashMap<>(dataSourceMap.size(), 1);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            Collection<String> tableNames = PhysicalSchemaMetaDataLoader.loadUnconfiguredTableNames(entry.getValue(), databaseType, excludedTableNames);
+            Collection<String> tableNames = PhysicalSchemaMetaDataLoader.loadTableNames(entry.getValue(), databaseType, excludedTableNames);
             if (!tableNames.isEmpty()) {
                 result.put(entry.getKey(), tableNames);
             }

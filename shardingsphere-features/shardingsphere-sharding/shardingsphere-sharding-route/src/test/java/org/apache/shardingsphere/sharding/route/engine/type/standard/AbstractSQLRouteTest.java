@@ -17,24 +17,25 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
+import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaData;
 import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.model.datasource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.sharding.route.engine.fixture.AbstractRoutingEngineTest;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.sharding.route.engine.fixture.AbstractRoutingEngineTest;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.engine.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.engine.StandardSQLParserEngine;
 
@@ -55,7 +56,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
     protected final RouteContext assertRoute(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createAllShardingRule();
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildLogicSchemaMetaData(), mock(CachedDatabaseMetaData.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildLogicSchemaMetaData(), mock(TableAddressingMetaData.class), mock(CachedDatabaseMetaData.class));
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         StandardSQLParserEngine standardSqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
