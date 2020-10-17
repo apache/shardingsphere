@@ -64,9 +64,9 @@ public final class TableToken extends SQLToken implements Substitutable, RouteUn
         actualTableName = null == actualTableName ? tableName.getValue().toLowerCase() : actualTableName;
         String owner = "";
         if (null != this.owner && routeUnit.getDataSourceMapper().getLogicName().equals(this.owner.getValue())) {
-            owner = this.owner.getQuoteCharacter().getStartDelimiter() + routeUnit.getDataSourceMapper().getActualName() + this.owner.getQuoteCharacter().getEndDelimiter() + ".";
+            owner = this.owner.getQuoteCharacter().wrap(routeUnit.getDataSourceMapper().getActualName()) + ".";
         }
-        return Joiner.on("").join(owner, tableName.getQuoteCharacter().getStartDelimiter(), actualTableName, tableName.getQuoteCharacter().getEndDelimiter());
+        return Joiner.on("").join(owner, tableName.getQuoteCharacter().wrap(actualTableName));
     }
     
     private Map<String, String> getLogicAndActualTables(final RouteUnit routeUnit) {
