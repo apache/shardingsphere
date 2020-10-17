@@ -38,11 +38,11 @@ public final class PrimaryReplicaReplicationTableAddressingMetaDataDecorator imp
         }
     }
     
-    public void decorate(final PrimaryReplicaReplicationDataSourceRule dataSourceRule, final TableAddressingMetaData metaData) {
+    private void decorate(final PrimaryReplicaReplicationDataSourceRule dataSourceRule, final TableAddressingMetaData metaData) {
         for (Entry<String, Collection<String>> entry : metaData.getTableDataSourceNamesMapper().entrySet()) {
             entry.getValue().remove(dataSourceRule.getPrimaryDataSourceName());
             entry.getValue().removeAll(dataSourceRule.getReplicaDataSourceNames());
-            entry.getValue().add(entry.getKey());
+            entry.getValue().add(dataSourceRule.getName());
         }
     }
     

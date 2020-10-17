@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
@@ -40,7 +41,7 @@ public final class ShardingTableAddressingMetaDataDecorator implements TableAddr
         for (String each : tableRule.getActualDataNodes().stream().map(DataNode::getTableName).collect(Collectors.toSet())) {
             metaData.getTableDataSourceNamesMapper().remove(each);
         }
-        metaData.getTableDataSourceNamesMapper().put(tableRule.getLogicTable(), tableRule.getActualDatasourceNames());
+        metaData.getTableDataSourceNamesMapper().put(tableRule.getLogicTable(), new LinkedList<>(tableRule.getActualDatasourceNames()));
     }
     
     @Override
