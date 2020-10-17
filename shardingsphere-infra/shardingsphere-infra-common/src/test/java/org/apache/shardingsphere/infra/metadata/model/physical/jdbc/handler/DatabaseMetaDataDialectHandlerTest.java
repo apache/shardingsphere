@@ -99,7 +99,7 @@ public final class DatabaseMetaDataDialectHandlerTest {
     }
     
     @Test
-    public void assertGetDelimiter() {
+    public void assertGetQuoteCharacter() {
         QuoteCharacter oracleQuoteCharacter = findQuoteCharacter(new OracleDatabaseType());
         assertThat(oracleQuoteCharacter.getStartDelimiter(), is("\""));
         assertThat(oracleQuoteCharacter.getEndDelimiter(), is("\""));

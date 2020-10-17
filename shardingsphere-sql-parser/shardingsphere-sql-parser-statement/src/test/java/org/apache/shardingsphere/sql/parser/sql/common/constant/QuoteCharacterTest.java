@@ -25,24 +25,6 @@ import static org.junit.Assert.assertThat;
 public final class QuoteCharacterTest {
     
     @Test
-    public void assertGetStartDelimiter() {
-        assertThat(QuoteCharacter.BACK_QUOTE.getStartDelimiter(), is("`"));
-        assertThat(QuoteCharacter.SINGLE_QUOTE.getStartDelimiter(), is("'"));
-        assertThat(QuoteCharacter.QUOTE.getStartDelimiter(), is("\""));
-        assertThat(QuoteCharacter.BRACKETS.getStartDelimiter(), is("["));
-        assertThat(QuoteCharacter.NONE.getStartDelimiter(), is(""));
-    }
-    
-    @Test
-    public void assertGetEndDelimiter() {
-        assertThat(QuoteCharacter.BACK_QUOTE.getEndDelimiter(), is("`"));
-        assertThat(QuoteCharacter.SINGLE_QUOTE.getEndDelimiter(), is("'"));
-        assertThat(QuoteCharacter.QUOTE.getEndDelimiter(), is("\""));
-        assertThat(QuoteCharacter.BRACKETS.getEndDelimiter(), is("]"));
-        assertThat(QuoteCharacter.NONE.getEndDelimiter(), is(""));
-    }
-    
-    @Test
     public void assertGetQuoteCharacterWithNullValue() {
         assertThat(QuoteCharacter.getQuoteCharacter(null), is(QuoteCharacter.NONE));
     }
@@ -75,5 +57,10 @@ public final class QuoteCharacterTest {
     @Test
     public void assertGetQuoteCharacterWithBrackets() {
         assertThat(QuoteCharacter.getQuoteCharacter("[tbl]"), is(QuoteCharacter.BRACKETS));
+    }
+    
+    @Test
+    public void assertWarp() {
+        assertThat(QuoteCharacter.BACK_QUOTE.wrap("test"), is("`test`"));
     }
 }

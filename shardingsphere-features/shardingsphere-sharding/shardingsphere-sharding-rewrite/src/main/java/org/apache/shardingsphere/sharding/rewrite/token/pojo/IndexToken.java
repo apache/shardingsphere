@@ -55,13 +55,15 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     
     @Override
     public String toString(final RouteUnit routeUnit) {
-        StringBuilder result = new StringBuilder();
-        result.append(identifier.getQuoteCharacter().getStartDelimiter()).append(identifier.getValue());
+        return identifier.getQuoteCharacter().wrap(getIndexValue(routeUnit));
+    }
+    
+    private String getIndexValue(final RouteUnit routeUnit) {
+        StringBuilder result = new StringBuilder(identifier.getValue());
         Map<String, String> logicAndActualTables = getLogicAndActualTables(routeUnit);
         if (!logicAndActualTables.isEmpty()) {
             result.append("_").append(logicAndActualTables.values().iterator().next());
         }
-        result.append(identifier.getQuoteCharacter().getEndDelimiter());
         return result.toString();
     }
     

@@ -45,6 +45,6 @@ public final class IdentifierValue implements ValueASTNode<String> {
      * @return value with quote characters
      */
     public String getValueWithQuoteCharacters() {
-        return null == value ? "" : quoteCharacter.getStartDelimiter() + value + quoteCharacter.getEndDelimiter();
+        return null == value ? "" : quoteCharacter.wrap(value);
     }
 }
