@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.impl;
 
-import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+
+import java.util.Properties;
 
 /**
  * Database meta data dialect handler of SQLServer.
@@ -31,12 +32,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 public final class SQLServerDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
     
     private Properties props;
-
+    
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.BRACKETS;
     }
-
+    
     @Override
     public String getType() {
         return "SQLServer";

@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.impl;
 
-import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+
+import java.util.Properties;
 
 /**
  * Database meta data dialect handler of MariaDB.
@@ -29,14 +30,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 @Getter
 @Setter
 public final class MariaDBDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
-
+    
     private Properties props;
-
+    
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.BACK_QUOTE;
     }
-
+    
     @Override
     public String getType() {
         return "MariaDB";

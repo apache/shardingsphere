@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.impl;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Optional;
-import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Database meta data dialect handler of Oracle.
@@ -48,12 +49,12 @@ public final class OracleDatabaseMetaDataDialectHandler implements DatabaseMetaD
     public String formatTableNamePattern(final String tableNamePattern) {
         return tableNamePattern.toUpperCase();
     }
-
+    
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
     }
-
+    
     @Override
     public String getType() {
         return "Oracle";
