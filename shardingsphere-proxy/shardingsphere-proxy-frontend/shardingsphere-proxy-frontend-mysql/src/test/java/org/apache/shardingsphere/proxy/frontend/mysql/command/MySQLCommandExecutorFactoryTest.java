@@ -44,7 +44,6 @@ import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepa
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.reset.MySQLComStmtResetExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.fieldlist.MySQLComFieldListPacketExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor;
-import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,12 +69,12 @@ public final class MySQLCommandExecutorFactoryTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        when(backendConnection.getSchemaName()).thenReturn("schema");
+        when(backendConnection.getSchemaName()).thenReturn("logic_db");
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("schema", mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS));
-        field.set(ProxyContext.getInstance(), new StandardSchemaContexts(schemas, 
-                mock(ShardingSphereSQLParserEngine.class), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("logic_db", mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS));
+        field.set(ProxyContext.getInstance(), 
+                new StandardSchemaContexts(schemas, mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     @Test
@@ -90,8 +89,9 @@ public final class MySQLCommandExecutorFactoryTest {
     
     @Test
     public void assertNewInstanceWithComFieldList() {
-        assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_FIELD_LIST,
-                mock(MySQLComFieldListPacket.class), backendConnection), instanceOf(MySQLComFieldListPacketExecutor.class));
+        MySQLComFieldListPacket packet = mock(MySQLComFieldListPacket.class);
+        when(packet.getTable()).thenReturn("test");
+        assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_FIELD_LIST, packet, backendConnection), instanceOf(MySQLComFieldListPacketExecutor.class));
     }
     
     @Test
@@ -106,14 +106,15 @@ public final class MySQLCommandExecutorFactoryTest {
     
     @Test
     public void assertNewInstanceWithComStmtPrepare() {
-        assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_STMT_PREPARE,
-                mock(MySQLComStmtPreparePacket.class), backendConnection), instanceOf(MySQLComStmtPrepareExecutor.class));
+        assertThat(MySQLCommandExecutorFactory.newInstance(
+                MySQLCommandPacketType.COM_STMT_PREPARE, mock(MySQLComStmtPreparePacket.class), backendConnection), instanceOf(MySQLComStmtPrepareExecutor.class));
     }
     
     @Test
     public void assertNewInstanceWithComStmtExecute() {
-        assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_STMT_EXECUTE,
-                mock(MySQLComStmtExecutePacket.class), backendConnection), instanceOf(MySQLComStmtExecuteExecutor.class));
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getSql()).thenReturn("SELECT 1");
+        assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_STMT_EXECUTE, packet, backendConnection), instanceOf(MySQLComStmtExecuteExecutor.class));
     }
     
     @Test

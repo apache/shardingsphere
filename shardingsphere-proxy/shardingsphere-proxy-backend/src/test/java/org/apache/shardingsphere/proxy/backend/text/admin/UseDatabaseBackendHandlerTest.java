@@ -29,7 +29,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,8 +61,8 @@ public final class UseDatabaseBackendHandlerTest {
         when(backendConnection.getUsername()).thenReturn("root");
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(getSchemas(), 
-                mock(ShardingSphereSQLParserEngine.class), mock(ExecutorKernel.class), getAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        schemaContexts.set(ProxyContext.getInstance(), 
+                new StandardSchemaContexts(getSchemas(), mock(ExecutorKernel.class), getAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     private Map<String, ShardingSphereSchema> getSchemas() {
