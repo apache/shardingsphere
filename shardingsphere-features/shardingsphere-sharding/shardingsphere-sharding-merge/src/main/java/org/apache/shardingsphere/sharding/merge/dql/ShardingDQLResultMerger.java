@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -119,7 +119,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
         if (!paginationContext.isHasPagination() || 1 == queryResults.size()) {
             return mergedResult;
         }
-        String trunkDatabaseName = DatabaseTypes.getTrunkDatabaseType(databaseType.getName()).getName();
+        String trunkDatabaseName = DatabaseTypeRegistry.getTrunkDatabaseType(databaseType.getName()).getName();
         if ("MySQL".equals(trunkDatabaseName) || "PostgreSQL".equals(trunkDatabaseName)) {
             return new LimitDecoratorMergedResult(mergedResult, paginationContext);
         }

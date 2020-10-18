@@ -24,7 +24,7 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePrepar
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.driver.jdbc.util.JDBCTestSQL;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +60,7 @@ public final class StatementAdapterTest extends AbstractShardingSphereDataSource
     public void init() {
         ShardingSphereConnection connection = getShardingSphereDataSource().getConnection();
         shardingSphereConnections.add(connection);
-        statements.put(DatabaseTypes.getActualDatabaseType("H2"), connection.createStatement());
+        statements.put(DatabaseTypeRegistry.getActualDatabaseType("H2"), connection.createStatement());
     }
     
     @After
@@ -264,7 +264,7 @@ public final class StatementAdapterTest extends AbstractShardingSphereDataSource
         for (Entry<DatabaseType, Statement> each : statements.entrySet()) {
             each.getValue().executeQuery(sql);
             each.getValue().setMaxFieldSize(10);
-            assertThat(each.getValue().getMaxFieldSize(), is(DatabaseTypes.getActualDatabaseType("H2") == each.getKey() ? 0 : 10));
+            assertThat(each.getValue().getMaxFieldSize(), is(DatabaseTypeRegistry.getActualDatabaseType("H2") == each.getKey() ? 0 : 10));
         }
     }
     

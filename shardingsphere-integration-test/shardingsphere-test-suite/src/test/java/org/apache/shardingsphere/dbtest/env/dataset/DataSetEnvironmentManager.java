@@ -26,7 +26,7 @@ import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.executor.kernel.impl.ShardingSphereExecutorService;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
@@ -100,7 +100,7 @@ public final class DataSetEnvironmentManager {
             }
             String insertSQL;
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
-                insertSQL = generateInsertSQL(generateTableName(dataNode.getTableName(), DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL())), dataSetMetadata.getColumns());
+                insertSQL = generateInsertSQL(generateTableName(dataNode.getTableName(), DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL())), dataSetMetadata.getColumns());
             }
             insertTasks.add(new InsertTask(dataSourceMap.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
         }
@@ -217,7 +217,7 @@ public final class DataSetEnvironmentManager {
         public Void call() throws SQLException {
             try (Connection connection = dataSource.getConnection()) {
                 for (String each : tableNames) {
-                    String tableName = generateTableName(each, DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL()));
+                    String tableName = generateTableName(each, DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL()));
                     try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DELETE FROM %s", tableName))) {
                         preparedStatement.execute();
                     }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.protocol;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.proxy.frontend.fixture.DatabaseProtocolFrontendEngineFixture;
 import org.apache.shardingsphere.proxy.frontend.fixture.FixtureDatabaseType;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
@@ -30,7 +30,7 @@ public final class DatabaseProtocolFrontendEngineFactoryTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertNewInstanceWhenUnsupported() {
-        DatabaseProtocolFrontendEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("Oracle"));
+        DatabaseProtocolFrontendEngineFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("Oracle"));
     }
     
     @Test

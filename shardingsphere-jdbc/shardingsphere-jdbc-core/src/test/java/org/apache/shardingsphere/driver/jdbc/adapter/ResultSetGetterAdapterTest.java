@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForShardingTest;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.util.JDBCTestSQL;
@@ -63,7 +63,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
         statements.add(statement);
         ResultSet resultSet = statement.executeQuery(JDBCTestSQL.SELECT_ORDER_BY_USER_ID_SQL);
         resultSet.next();
-        resultSets.put(DatabaseTypes.getActualDatabaseType("H2"), resultSet);
+        resultSets.put(DatabaseTypeRegistry.getActualDatabaseType("H2"), resultSet);
     }
     
     @After
@@ -346,7 +346,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             try {
                 each.getValue().getTimestamp(1);
-                if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
+                if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
@@ -361,7 +361,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             try {
                 each.getValue().getTimestamp(columnName);
-                if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
+                if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
@@ -376,7 +376,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             try {
                 each.getValue().getTimestamp(1, Calendar.getInstance());
-                if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
+                if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
@@ -391,7 +391,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             try {
                 each.getValue().getTimestamp(columnName, Calendar.getInstance());
-                if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
+                if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
@@ -404,7 +404,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
     @Test
     public void assertGetAsciiStreamForColumnIndex() throws SQLException, IOException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
+            if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                 byte[] b = new byte[1];
                 each.getValue().getAsciiStream(1).read(b);
                 assertThat(new String(b), is("1"));
@@ -415,7 +415,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
     @Test
     public void assertGetAsciiStreamForColumnLabel() throws SQLException, IOException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
+            if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                 byte[] b = new byte[1];
                 each.getValue().getAsciiStream(columnName).read(b);
                 assertThat(new String(b), is("1"));
@@ -427,11 +427,11 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
     @Test
     public void assertGetUnicodeStreamForColumnIndex() throws SQLException, IOException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypes.getActualDatabaseType("Oracle") == each.getKey()) {
+            if (DatabaseTypeRegistry.getActualDatabaseType("Oracle") == each.getKey()) {
                 continue;
             }
             byte[] b = new byte[1];
-            if (DatabaseTypes.getActualDatabaseType("H2") == each.getKey() || DatabaseTypes.getActualDatabaseType("SQLServer") == each.getKey()) {
+            if (DatabaseTypeRegistry.getActualDatabaseType("H2") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("SQLServer") == each.getKey()) {
                 try {
                     each.getValue().getUnicodeStream(1).read(b);
                 } catch (final ShardingSphereException ignored) {
@@ -447,11 +447,11 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
     @Test
     public void assertGetUnicodeStreamForColumnLabel() throws SQLException, IOException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypes.getActualDatabaseType("Oracle") == each.getKey()) {
+            if (DatabaseTypeRegistry.getActualDatabaseType("Oracle") == each.getKey()) {
                 continue;
             }
             byte[] b = new byte[1];
-            if (DatabaseTypes.getActualDatabaseType("H2") == each.getKey() || DatabaseTypes.getActualDatabaseType("SQLServer") == each.getKey()) {
+            if (DatabaseTypeRegistry.getActualDatabaseType("H2") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("SQLServer") == each.getKey()) {
                 try {
                     each.getValue().getUnicodeStream(columnName).read(b);
                 } catch (final ShardingSphereException ignored) {
@@ -466,7 +466,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
     @Test
     public void assertGetBinaryStreamForColumnIndex() throws SQLException, IOException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
+            if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                 assertTrue(each.getValue().getBinaryStream(1).read() != -1);
             }
         }
@@ -475,7 +475,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
     @Test
     public void assertGetBinaryStreamForColumnLabel() throws SQLException, IOException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
+            if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                 assertTrue(each.getValue().getBinaryStream(columnName).read() != -1);
             }
         }
@@ -484,7 +484,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
     @Test
     public void assertGetCharacterStreamForColumnIndex() throws SQLException, IOException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
+            if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                 char[] c = new char[1];
                 each.getValue().getCharacterStream(1).read(c);
                 assertThat(c[0], is('1'));
@@ -495,7 +495,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
     @Test
     public void assertGetCharacterStreamForColumnLabel() throws SQLException, IOException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
+            if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                 char[] c = new char[1];
                 each.getValue().getCharacterStream(columnName).read(c);
                 assertThat(c[0], is('1'));
@@ -506,7 +506,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
     @Test
     public void assertGetBlobForColumnIndex() throws SQLException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypes.getActualDatabaseType("H2") == each.getKey()) {
+            if (DatabaseTypeRegistry.getActualDatabaseType("H2") == each.getKey()) {
                 try {
                     assertTrue(each.getValue().getBlob(1).length() > 0);
                     fail("Expected an SQLException to be thrown");
@@ -521,7 +521,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
     @Test
     public void assertGetBlobForColumnLabel() throws SQLException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypes.getActualDatabaseType("H2") == each.getKey()) {
+            if (DatabaseTypeRegistry.getActualDatabaseType("H2") == each.getKey()) {
                 try {
                     assertTrue(each.getValue().getBlob(columnName).length() > 0);
                     fail("Expected an SQLException to be thrown");
@@ -588,10 +588,10 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
     @Test
     public void assertGetSQLXMLForColumnIndex() throws SQLException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypes.getActualDatabaseType("Oracle") == each.getKey()) {
+            if (DatabaseTypeRegistry.getActualDatabaseType("Oracle") == each.getKey()) {
                 continue;
             }
-            if (DatabaseTypes.getActualDatabaseType("H2") == each.getKey() || DatabaseTypes.getActualDatabaseType("SQLServer") == each.getKey()) {
+            if (DatabaseTypeRegistry.getActualDatabaseType("H2") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("SQLServer") == each.getKey()) {
                 try {
                     each.getValue().getSQLXML(1);
                     fail("Expected an SQLException to be thrown");
@@ -608,10 +608,10 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingSphereData
     @Test
     public void assertGetSQLXMLForColumnLabel() throws SQLException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypes.getActualDatabaseType("Oracle") == each.getKey()) {
+            if (DatabaseTypeRegistry.getActualDatabaseType("Oracle") == each.getKey()) {
                 continue;
             }
-            if (DatabaseTypes.getActualDatabaseType("H2") == each.getKey() || DatabaseTypes.getActualDatabaseType("SQLServer") == each.getKey()) {
+            if (DatabaseTypeRegistry.getActualDatabaseType("H2") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("SQLServer") == each.getKey()) {
                 try {
                     each.getValue().getSQLXML(columnName);
                     fail("Expected an SQLException to be thrown");

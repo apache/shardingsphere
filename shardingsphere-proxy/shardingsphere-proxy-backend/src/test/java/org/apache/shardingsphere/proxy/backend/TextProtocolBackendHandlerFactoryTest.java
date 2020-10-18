@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class TextProtocolBackendHandlerFactoryTest {
     
-    private final DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("MySQL");
+    private final DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("MySQL");
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private BackendConnection backendConnection;

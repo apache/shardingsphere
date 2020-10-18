@@ -157,10 +157,10 @@ public final class SQLCasesLoader {
     }
     
     private static Collection<String> getDatabaseTypes(final String databaseTypes) {
-        return Strings.isNullOrEmpty(databaseTypes) ? getALlDatabaseTypes() : Splitter.on(',').trimResults().splitToList(databaseTypes);
+        return Strings.isNullOrEmpty(databaseTypes) ? getAllDatabaseTypes() : Splitter.on(',').trimResults().splitToList(databaseTypes);
     }
     
-    private static Collection<String> getALlDatabaseTypes() {
+    private static Collection<String> getAllDatabaseTypes() {
         return Arrays.asList("H2", "MySQL", "PostgreSQL", "Oracle", "SQLServer", "SQL92");
     }
     

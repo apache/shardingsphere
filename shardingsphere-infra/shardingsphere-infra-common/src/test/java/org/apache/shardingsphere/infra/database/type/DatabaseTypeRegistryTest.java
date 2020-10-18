@@ -25,50 +25,50 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class DatabaseTypesTest {
+public final class DatabaseTypeRegistryTest {
     
     @Test
     public void assertGetTrunkDatabaseTypeNameWithTrunkDatabaseType() {
-        assertThat(DatabaseTypes.getTrunkDatabaseTypeName(new MySQLDatabaseType()), is("MySQL"));
+        assertThat(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new MySQLDatabaseType()), is("MySQL"));
     }
     
     @Test
     public void assertGetTrunkDatabaseTypeNameWithBranchDatabaseType() {
-        assertThat(DatabaseTypes.getTrunkDatabaseTypeName(new MariaDBDatabaseType()), is("MySQL"));
+        assertThat(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new MariaDBDatabaseType()), is("MySQL"));
     }
     
     @Test
     public void assertGetActualDatabaseType() {
-        assertThat(DatabaseTypes.getActualDatabaseType("MySQL").getName(), is("MySQL"));
+        assertThat(DatabaseTypeRegistry.getActualDatabaseType("MySQL").getName(), is("MySQL"));
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertGetActualDatabaseTypeWithNotExistedDatabaseType() {
-        DatabaseTypes.getActualDatabaseType("Invalid");
+        DatabaseTypeRegistry.getActualDatabaseType("Invalid");
     }
     
     @Test
     public void assertGetTrunkDatabaseTypeWithTrunkDatabaseType() {
-        assertThat(DatabaseTypes.getTrunkDatabaseType("MySQL").getName(), is("MySQL"));
+        assertThat(DatabaseTypeRegistry.getTrunkDatabaseType("MySQL").getName(), is("MySQL"));
     }
     
     @Test
     public void assertGetTrunkDatabaseTypeWithBranchDatabaseType() {
-        assertThat(DatabaseTypes.getTrunkDatabaseType("H2").getName(), is("MySQL"));
+        assertThat(DatabaseTypeRegistry.getTrunkDatabaseType("H2").getName(), is("MySQL"));
     }
     
     @Test
     public void assertGetDatabaseTypeByStandardURL() {
-        assertThat(DatabaseTypes.getDatabaseTypeByURL("jdbc:mysql://localhost:3306/test").getName(), is("MySQL"));
+        assertThat(DatabaseTypeRegistry.getDatabaseTypeByURL("jdbc:mysql://localhost:3306/test").getName(), is("MySQL"));
     }
     
     @Test
     public void assertGetDatabaseTypeByURLAlias() {
-        assertThat(DatabaseTypes.getDatabaseTypeByURL("jdbc:mysqlx://localhost:3306/test").getName(), is("MySQL"));
+        assertThat(DatabaseTypeRegistry.getDatabaseTypeByURL("jdbc:mysqlx://localhost:3306/test").getName(), is("MySQL"));
     }
     
     @Test
     public void assertGetDatabaseTypeSQL92() {
-        assertThat(DatabaseTypes.getDatabaseTypeByURL("jdbc:sqlite:test").getName(), is("SQL92"));
+        assertThat(DatabaseTypeRegistry.getDatabaseTypeByURL("jdbc:sqlite:test").getName(), is("SQL92"));
     }
 }

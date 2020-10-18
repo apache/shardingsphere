@@ -22,7 +22,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bin
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.ConnectionScopeBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLParseCompletePacket;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -49,7 +49,8 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket<?>> execute() {
         if (!packet.getSql().isEmpty()) {
-            ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(ProxyContext.getInstance().getSchemaContexts().getDatabaseType()));
+            ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
+                    DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getSchemaContexts().getDatabaseType()));
             SQLStatement sqlStatement = sqlParserEngine.parse(packet.getSql(), true);
             binaryStatementRegistry.register(packet.getStatementId(), packet.getSql(), sqlStatement.getParameterCount(), packet.getBinaryStatementParameterTypes());
         }

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.context.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.context.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.jdbc.test.MockedDataSource;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public final class SchemaContextsBuilderTest {
     
     @Test
     public void assertBuildWithoutConfiguration() throws SQLException {
-        DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("FixtureDB");
+        DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("FixtureDB");
         SchemaContexts actual = new SchemaContextsBuilder(databaseType, Collections.emptyMap(), Collections.emptyMap(), null).build();
         assertThat(actual.getDatabaseType(), CoreMatchers.is(databaseType));
         assertTrue(actual.getSchemas().isEmpty());
@@ -52,7 +52,7 @@ public final class SchemaContextsBuilderTest {
     
     @Test
     public void assertBuildWithConfigurationsButWithoutDataSource() throws SQLException {
-        DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("FixtureDB");
+        DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("FixtureDB");
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "1");
         SchemaContexts actual = new SchemaContextsBuilder(databaseType, Collections.singletonMap("logic_db", Collections.emptyMap()), 
@@ -68,7 +68,7 @@ public final class SchemaContextsBuilderTest {
     
     @Test
     public void assertBuildWithConfigurationsAndDataSources() throws SQLException {
-        DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("FixtureDB");
+        DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("FixtureDB");
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "1");
         SchemaContexts actual = new SchemaContextsBuilder(databaseType, Collections.singletonMap("logic_db", Collections.singletonMap("ds", new MockedDataSource())),

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.model.datasource;
 
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -38,7 +38,7 @@ public final class DataSourcesMetaDataTest {
         Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap = new HashMap<>(2, 1);
         databaseAccessConfigurationMap.put("ds_0", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_0", "test"));
         databaseAccessConfigurationMap.put("ds_1", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3307/db_1", "test"));
-        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypes.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
+        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
         Collection<String> allInstanceDataSourceNames = dataSourcesMetaData.getAllInstanceDataSourceNames();
         assertNotNull(allInstanceDataSourceNames);
         assertThat(allInstanceDataSourceNames.size(), is(2));
@@ -50,7 +50,7 @@ public final class DataSourcesMetaDataTest {
         Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap = new HashMap<>(2, 1);
         databaseAccessConfigurationMap.put("ds_0", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_0", "test"));
         databaseAccessConfigurationMap.put("ds_1", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_1", "test"));
-        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypes.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
+        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
         Collection<String> allInstanceDataSourceNames = dataSourcesMetaData.getAllInstanceDataSourceNames();
         assertNotNull(allInstanceDataSourceNames);
         assertThat(allInstanceDataSourceNames.size(), is(1));
@@ -62,7 +62,7 @@ public final class DataSourcesMetaDataTest {
         Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap = new HashMap<>(2, 1);
         databaseAccessConfigurationMap.put("ds_0", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_0", "test"));
         databaseAccessConfigurationMap.put("ds_1", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_1", "test"));
-        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypes.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
+        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
         assertThat(dataSourcesMetaData.getDataSourceMetaData("ds_0").getCatalog(), is("db_0"));
     }
     
@@ -71,7 +71,7 @@ public final class DataSourcesMetaDataTest {
         Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap = new HashMap<>(2, 1);
         databaseAccessConfigurationMap.put("ds_0", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_0", "test"));
         databaseAccessConfigurationMap.put("ds_1", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_1", "test"));
-        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypes.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
+        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
         assertNull(dataSourcesMetaData.getDataSourceMetaData("ds_0").getSchema());
     }
 }

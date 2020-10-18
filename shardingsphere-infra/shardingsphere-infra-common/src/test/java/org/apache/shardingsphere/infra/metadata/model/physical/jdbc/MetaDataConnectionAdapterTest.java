@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.model.physical.jdbc;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -39,7 +39,7 @@ public final class MetaDataConnectionAdapterTest {
     
     private static final String TEST_SCHEMA = "schema";
     
-    private final DatabaseType databaseType = DatabaseTypes.getTrunkDatabaseType("MySQL");
+    private final DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType("MySQL");
     
     @Mock
     private Connection connection;

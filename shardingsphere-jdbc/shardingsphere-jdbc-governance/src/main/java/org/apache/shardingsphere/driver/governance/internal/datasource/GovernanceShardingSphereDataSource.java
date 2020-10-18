@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.SchemaContextsBuilder;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
@@ -108,7 +108,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     
     private DatabaseType createDatabaseType(final DataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL());
+            return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
         }
     }
     

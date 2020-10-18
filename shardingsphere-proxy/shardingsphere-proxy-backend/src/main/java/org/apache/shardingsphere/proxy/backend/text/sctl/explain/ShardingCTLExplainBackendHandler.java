@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
@@ -85,7 +85,8 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
     
     private LogicSQL createLogicSQL(final ShardingSphereSchema schema, final ShardingCTLExplainStatement explainStatement) {
         PhysicalSchemaMetaData schemaMetaData = schema.getMetaData().getSchemaMetaData().getSchemaMetaData();
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(ProxyContext.getInstance().getSchemaContexts().getDatabaseType()));
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
+                DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getSchemaContexts().getDatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(explainStatement.getSql(), false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, Collections.emptyList(), sqlStatement);
         return new LogicSQL(sqlStatementContext, explainStatement.getSql(), Collections.emptyList());

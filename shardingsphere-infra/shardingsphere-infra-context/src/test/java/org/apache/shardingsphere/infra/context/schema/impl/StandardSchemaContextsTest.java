@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.context.schema.impl;
 
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.junit.Test;
@@ -47,7 +47,7 @@ public final class StandardSchemaContextsTest {
         ExecutorKernel executorKernel = mock(ExecutorKernel.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         StandardSchemaContexts standardSchemaContexts = new StandardSchemaContexts(
-                Collections.singletonMap("logic_db", schema), executorKernel, new Authentication(), new ConfigurationProperties(new Properties()), DatabaseTypes.getTrunkDatabaseType("SQL92"));
+                Collections.singletonMap("logic_db", schema), executorKernel, new Authentication(), new ConfigurationProperties(new Properties()), DatabaseTypeRegistry.getTrunkDatabaseType("SQL92"));
         standardSchemaContexts.close();
         verify(executorKernel).close();
     }

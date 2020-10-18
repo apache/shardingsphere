@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
@@ -59,7 +59,7 @@ public final class GroupByStreamMergedResultTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()), createSelectStatementContext(), createSchemaMetaData());
         assertFalse(actual.next());
     }
@@ -83,7 +83,7 @@ public final class GroupByStreamMergedResultTest {
         when(queryResult3.getValue(4, Object.class)).thenReturn(new Date(0L));
         when(queryResult3.getValue(5, Object.class)).thenReturn(2, 2, 3);
         when(queryResult3.getValue(6, Object.class)).thenReturn(20, 20, 30);
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), createSchemaMetaData());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(new BigDecimal(40)));
@@ -125,7 +125,7 @@ public final class GroupByStreamMergedResultTest {
         when(queryResult3.getValue(3, Object.class)).thenReturn(1, 1, 1, 1, 3);
         when(queryResult3.getValue(5, Object.class)).thenReturn(1, 1, 3);
         when(queryResult3.getValue(6, Object.class)).thenReturn(10, 10, 30);
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), createSchemaMetaData());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(new BigDecimal(10)));

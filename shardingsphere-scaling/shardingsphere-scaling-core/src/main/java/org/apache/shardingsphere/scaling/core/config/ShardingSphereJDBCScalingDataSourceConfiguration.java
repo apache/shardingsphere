@@ -21,7 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.scaling.core.utils.ConfigurationYamlConverter;
 
 /**
@@ -47,7 +47,8 @@ public final class ShardingSphereJDBCScalingDataSourceConfiguration implements S
     @Override
     public DatabaseType getDatabaseType() {
         if (null == databaseType) {
-            databaseType = DatabaseTypes.getDatabaseTypeByURL(ConfigurationYamlConverter.loadDataSourceConfigurations(dataSource).values().iterator().next().getProps().get("jdbcUrl").toString());
+            databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(
+                    ConfigurationYamlConverter.loadDataSourceConfigurations(dataSource).values().iterator().next().getProps().get("jdbcUrl").toString());
         }
         return databaseType;
     }

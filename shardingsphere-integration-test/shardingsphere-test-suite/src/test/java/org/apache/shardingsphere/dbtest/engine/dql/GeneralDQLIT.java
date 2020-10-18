@@ -22,7 +22,7 @@ import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.dbtest.engine.SQLType;
 import org.apache.shardingsphere.dbtest.engine.util.IntegrateTestParameters;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -44,7 +44,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
     
     public GeneralDQLIT(final String path, final DQLIntegrateTestCaseAssertion assertion, final String ruleType,
                         final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(path, assertion, ruleType, DatabaseTypes.getActualDatabaseType(databaseType), caseType, sql);
+        super(path, assertion, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
         this.assertion = assertion;
     }
     

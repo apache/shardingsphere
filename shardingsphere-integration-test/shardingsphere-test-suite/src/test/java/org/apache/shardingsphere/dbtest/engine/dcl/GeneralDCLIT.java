@@ -21,7 +21,7 @@ import org.apache.shardingsphere.dbtest.cases.assertion.dcl.DCLIntegrateTestCase
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.dbtest.engine.SQLType;
 import org.apache.shardingsphere.dbtest.engine.util.IntegrateTestParameters;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -36,7 +36,7 @@ public final class GeneralDCLIT extends BaseDCLIT {
     
     public GeneralDCLIT(final String path, final DCLIntegrateTestCaseAssertion assertion, final String ruleType,
                         final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(path, assertion, ruleType, DatabaseTypes.getActualDatabaseType(databaseType), caseType, sql);
+        super(path, assertion, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
     }
     
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")
