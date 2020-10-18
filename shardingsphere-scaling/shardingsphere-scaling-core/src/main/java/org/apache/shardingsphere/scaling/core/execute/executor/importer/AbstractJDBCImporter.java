@@ -78,7 +78,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     @Override
     public final void write() {
         while (isRunning()) {
-            List<Record> records = channel.fetchRecords(100, 3);
+            List<Record> records = channel.fetchRecords(2048, 3);
             if (null != records && !records.isEmpty()) {
                 flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfiguration()), records);
                 if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
@@ -109,9 +109,11 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     private List<Record> doFlush(final DataSource dataSource, final List<Record> buffer) {
         int i = 0;
         try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
             for (; i < buffer.size(); i++) {
                 execute(connection, buffer.get(i));
             }
+            connection.commit();
         } catch (final SQLException ex) {
             log.error("flush failed: {}", buffer.get(i), ex);
             return buffer.subList(i, buffer.size());
