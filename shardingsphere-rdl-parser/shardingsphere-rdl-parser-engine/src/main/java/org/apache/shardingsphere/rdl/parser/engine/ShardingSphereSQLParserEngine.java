@@ -27,13 +27,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
  */
 public final class ShardingSphereSQLParserEngine implements SQLParserEngine {
     
+    private final StandardSQLParserEngine standardSqlParserEngine;
+
     private final RDLSQLParserEngine rdlsqlParserEngine;
     
-    private final StandardSQLParserEngine standardSqlParserEngine;
-    
     public ShardingSphereSQLParserEngine(final StandardSQLParserEngine standardSqlParserEngine) {
-        rdlsqlParserEngine = new RDLSQLParserEngine();
         this.standardSqlParserEngine = standardSqlParserEngine;
+        rdlsqlParserEngine = new RDLSQLParserEngine();
     }
     
     @Override
