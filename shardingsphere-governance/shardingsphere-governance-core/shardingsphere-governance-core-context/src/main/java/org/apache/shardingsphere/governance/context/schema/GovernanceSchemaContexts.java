@@ -41,7 +41,7 @@ import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.SchemaContextsBuilder;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
@@ -49,7 +49,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -110,7 +109,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         }
         DataSource dataSource = dataSourcesMap.values().iterator().next().values().iterator().next();
         try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL());
+            return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
         }
     }
     
@@ -122,11 +121,6 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     @Override
     public ShardingSphereSchema getDefaultSchema() {
         return schemaContexts.getDefaultSchema();
-    }
-    
-    @Override
-    public ShardingSphereSQLParserEngine getSqlParserEngine() {
-        return schemaContexts.getSqlParserEngine();
     }
     
     @Override
@@ -165,8 +159,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     public synchronized void renew(final SchemaAddedEvent event) throws SQLException {
         Map<String, ShardingSphereSchema> schemas = new HashMap<>(schemaContexts.getSchemas());
         schemas.put(event.getSchemaName(), createAddedSchemaContext(event));
-        schemaContexts = new StandardSchemaContexts(schemas, 
-                schemaContexts.getSqlParserEngine(), schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
+        schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
         governanceFacade.getConfigCenter().persistMetaData(event.getSchemaName(), schemaContexts.getSchemas().get(event.getSchemaName()).getMetaData().getSchemaMetaData());
         GovernanceEventBus.getInstance().post(
                 new DataSourceChangeCompletedEvent(event.getSchemaName(), schemaContexts.getDatabaseType(), schemas.get(event.getSchemaName()).getDataSources()));
@@ -181,8 +174,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     public synchronized void renew(final SchemaDeletedEvent event) {
         Map<String, ShardingSphereSchema> schemas = new HashMap<>(schemaContexts.getSchemas());
         schemas.remove(event.getSchemaName());
-        schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getSqlParserEngine(), schemaContexts.getExecutorKernel(), 
-                schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
+        schemaContexts = new StandardSchemaContexts(schemas, schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
         governanceFacade.getConfigCenter().deleteSchema(event.getSchemaName());
     }
     
@@ -194,8 +186,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     @Subscribe
     public synchronized void renew(final PropertiesChangedEvent event) {
         ConfigurationProperties props = new ConfigurationProperties(event.getProps());
-        schemaContexts = new StandardSchemaContexts(getChangedSchemas(), schemaContexts.getSqlParserEngine(), schemaContexts.getExecutorKernel(), 
-                schemaContexts.getAuthentication(), props, schemaContexts.getDatabaseType());
+        schemaContexts = new StandardSchemaContexts(getChangedSchemas(), schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), props, schemaContexts.getDatabaseType());
     }
     
     /**
@@ -205,8 +196,8 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final AuthenticationChangedEvent event) {
-        schemaContexts = new StandardSchemaContexts(schemaContexts.getSchemas(), schemaContexts.getSqlParserEngine(), schemaContexts.getExecutorKernel(), 
-                event.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
+        schemaContexts = new StandardSchemaContexts(
+                schemaContexts.getSchemas(), schemaContexts.getExecutorKernel(), event.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
     }
     
     /**
@@ -223,8 +214,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
             ShardingSphereSchema newSchema = event.getSchemaName().equals(schemaName) ? getChangedShardingSphereSchema(oldSchema, event.getLogicSchemaMetaData(), schemaName) : oldSchema;
             newSchemas.put(schemaName, newSchema);
         }
-        schemaContexts = new StandardSchemaContexts(newSchemas, schemaContexts.getSqlParserEngine(), schemaContexts.getExecutorKernel(), 
-                schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
+        schemaContexts = new StandardSchemaContexts(newSchemas, schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
     }
     
     /**
@@ -239,8 +229,8 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         String schemaName = event.getSchemaName();
         newSchemaContexts.remove(schemaName);
         newSchemaContexts.put(schemaName, getChangedSchema(schemaContexts.getSchemas().get(schemaName), event.getRuleConfigurations()));
-        schemaContexts = new StandardSchemaContexts(newSchemaContexts, schemaContexts.getSqlParserEngine(), schemaContexts.getExecutorKernel(), 
-                schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
+        schemaContexts = new StandardSchemaContexts(
+                newSchemaContexts, schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
         governanceFacade.getConfigCenter().persistMetaData(schemaName, newSchemaContexts.get(schemaName).getMetaData().getSchemaMetaData());
     }
     
@@ -256,8 +246,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         Map<String, ShardingSphereSchema> newSchemas = new HashMap<>(schemaContexts.getSchemas());
         newSchemas.remove(schemaName);
         newSchemas.put(schemaName, getChangedSchema(schemaContexts.getSchemas().get(schemaName), event.getDataSourceConfigurations()));
-        schemaContexts = new StandardSchemaContexts(newSchemas, schemaContexts.getSqlParserEngine(), schemaContexts.getExecutorKernel(), 
-                schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
+        schemaContexts = new StandardSchemaContexts(newSchemas, schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
         GovernanceEventBus.getInstance().post(
                 new DataSourceChangeCompletedEvent(event.getSchemaName(), schemaContexts.getDatabaseType(), newSchemas.get(event.getSchemaName()).getDataSources()));
     }
@@ -285,7 +274,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final CircuitStateChangedEvent event) {
-        schemaContexts = new StandardSchemaContexts(schemaContexts.getSchemas(), schemaContexts.getSqlParserEngine(), 
+        schemaContexts = new StandardSchemaContexts(schemaContexts.getSchemas(), 
                 schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType(), event.isCircuitBreak());
     }
     

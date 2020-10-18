@@ -43,7 +43,6 @@ import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.jdbc.test.MockedDataSource;
-import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.replication.primaryreplica.rule.PrimaryReplicaReplicationRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -106,8 +105,7 @@ public final class GovernanceSchemaContextsTest {
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
         when(governanceFacade.getConfigCenter()).thenReturn(configCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
-        governanceSchemaContexts = new GovernanceSchemaContexts(
-                new StandardSchemaContexts(createSchemas(), mock(ShardingSphereSQLParserEngine.class), mock(ExecutorKernel.class), authentication, props, databaseType), governanceFacade);
+        governanceSchemaContexts = new GovernanceSchemaContexts(new StandardSchemaContexts(createSchemas(), mock(ExecutorKernel.class), authentication, props, databaseType), governanceFacade);
     }
     
     private Map<String, ShardingSphereSchema> createSchemas() {

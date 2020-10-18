@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbtest.env;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.dbtest.env.datasource.DatabaseEnvironment;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
@@ -60,7 +60,7 @@ public final class IntegrateTestEnvironment {
         ruleTypes = Splitter.on(",").trimResults().splitToList(prop.getProperty("rule.types"));
         databaseTypes = new LinkedList<>();
         for (String each : prop.getProperty("databases", "H2").split(",")) {
-            databaseTypes.add(DatabaseTypes.getActualDatabaseType(each.trim()));
+            databaseTypes.add(DatabaseTypeRegistry.getActualDatabaseType(each.trim()));
         }
         databaseEnvironments = new HashMap<>(databaseTypes.size(), 1);
         for (DatabaseType each : databaseTypes) {

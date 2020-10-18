@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.model.physical.model.table;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.index.PhysicalIndexMetaData;
 import org.junit.Before;
@@ -52,7 +52,7 @@ public final class TableMetaDataLoaderTest {
     
     private static final String TEST_TABLE = "table";
     
-    private final DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("MySQL");
+    private final DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("MySQL");
     
     @Mock
     private DataSource dataSource;

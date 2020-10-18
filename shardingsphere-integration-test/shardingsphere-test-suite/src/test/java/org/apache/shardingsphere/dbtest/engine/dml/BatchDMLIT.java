@@ -23,7 +23,7 @@ import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.dbtest.engine.BatchIT;
 import org.apache.shardingsphere.dbtest.engine.SQLType;
 import org.apache.shardingsphere.dbtest.engine.util.IntegrateTestParameters;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -44,7 +44,7 @@ public final class BatchDMLIT extends BatchIT {
     
     public BatchDMLIT(final IntegrateTestCase integrateTestCase,
                       final String ruleType, final String databaseType, final String sql) throws IOException, JAXBException, SQLException {
-        super(integrateTestCase, ruleType, DatabaseTypes.getActualDatabaseType(databaseType), sql);
+        super(integrateTestCase, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), sql);
         this.integrateTestCase = integrateTestCase;
     }
     

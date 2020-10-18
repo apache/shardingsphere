@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForShardingTest;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.util.JDBCTestSQL;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -56,7 +56,7 @@ public final class ResultSetAdapterTest extends AbstractShardingSphereDataSource
         shardingSphereConnections.add(connection);
         Statement statement = connection.createStatement();
         statements.add(statement);
-        resultSets.put(DatabaseTypes.getActualDatabaseType("H2"), statement.executeQuery(JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL));
+        resultSets.put(DatabaseTypeRegistry.getActualDatabaseType("H2"), statement.executeQuery(JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL));
     }
     
     @After
@@ -83,7 +83,7 @@ public final class ResultSetAdapterTest extends AbstractShardingSphereDataSource
     private void assertClose(final AbstractResultSetAdapter actual, final DatabaseType type) throws SQLException {
         assertTrue(actual.isClosed());
         assertThat(actual.getResultSets().size(), is(4));
-        if (DatabaseTypes.getActualDatabaseType("Oracle") != type) {
+        if (DatabaseTypeRegistry.getActualDatabaseType("Oracle") != type) {
             for (ResultSet each : actual.getResultSets()) {
                 assertTrue(each.isClosed());
             }
@@ -105,7 +105,7 @@ public final class ResultSetAdapterTest extends AbstractShardingSphereDataSource
                 each.getValue().setFetchDirection(ResultSet.FETCH_REVERSE);
             } catch (final SQLException ignored) {
             }
-            if (each.getKey() == DatabaseTypes.getActualDatabaseType("MySQL") || each.getKey() == DatabaseTypes.getActualDatabaseType("PostgreSQL")) {
+            if (each.getKey() == DatabaseTypeRegistry.getActualDatabaseType("MySQL") || each.getKey() == DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL")) {
                 assertFetchDirection((AbstractResultSetAdapter) each.getValue(), ResultSet.FETCH_REVERSE, each.getKey());
             }
         }
@@ -114,18 +114,18 @@ public final class ResultSetAdapterTest extends AbstractShardingSphereDataSource
     private void assertFetchDirection(final AbstractResultSetAdapter actual, final int fetchDirection, final DatabaseType type) throws SQLException {
         // H2 do not implement getFetchDirection
         assertThat(actual.getFetchDirection(), is(
-                DatabaseTypes.getActualDatabaseType("H2") == type || DatabaseTypes.getActualDatabaseType("PostgreSQL") == type ? ResultSet.FETCH_FORWARD : fetchDirection));
+                DatabaseTypeRegistry.getActualDatabaseType("H2") == type || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == type ? ResultSet.FETCH_FORWARD : fetchDirection));
         assertThat(actual.getResultSets().size(), is(4));
         for (ResultSet each : actual.getResultSets()) {
             assertThat(each.getFetchDirection(), is(
-                    DatabaseTypes.getActualDatabaseType("H2") == type || DatabaseTypes.getActualDatabaseType("PostgreSQL") == type ? ResultSet.FETCH_FORWARD : fetchDirection));
+                    DatabaseTypeRegistry.getActualDatabaseType("H2") == type || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == type ? ResultSet.FETCH_FORWARD : fetchDirection));
         }
     }
     
     @Test
     public void assertSetFetchSize() throws SQLException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypes.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypes.getActualDatabaseType("PostgreSQL") == each.getKey()) {
+            if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
                 assertThat(each.getValue().getFetchSize(), is(0));
             }
             each.getValue().setFetchSize(100);
@@ -135,10 +135,10 @@ public final class ResultSetAdapterTest extends AbstractShardingSphereDataSource
     
     private void assertFetchSize(final AbstractResultSetAdapter actual, final DatabaseType type) throws SQLException {
         // H2 do not implement getFetchSize
-        assertThat(actual.getFetchSize(), is(DatabaseTypes.getActualDatabaseType("H2") == type ? 0 : 100));
+        assertThat(actual.getFetchSize(), is(DatabaseTypeRegistry.getActualDatabaseType("H2") == type ? 0 : 100));
         assertThat(actual.getResultSets().size(), is(4));
         for (ResultSet each : actual.getResultSets()) {
-            assertThat(each.getFetchSize(), is(DatabaseTypes.getActualDatabaseType("H2") == type ? 0 : 100));
+            assertThat(each.getFetchSize(), is(DatabaseTypeRegistry.getActualDatabaseType("H2") == type ? 0 : 100));
         }
     }
     

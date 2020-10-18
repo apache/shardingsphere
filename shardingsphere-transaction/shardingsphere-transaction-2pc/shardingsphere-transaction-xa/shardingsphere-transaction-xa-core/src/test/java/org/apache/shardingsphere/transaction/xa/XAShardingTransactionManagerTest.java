@@ -20,7 +20,7 @@ package org.apache.shardingsphere.transaction.xa;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -68,8 +68,8 @@ public final class XAShardingTransactionManagerTest {
     @Before
     public void setUp() {
         ReflectiveUtil.setProperty(xaShardingTransactionManager, "xaTransactionManager", xaTransactionManager);
-        Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(DatabaseTypes.getActualDatabaseType("H2"));
-        xaShardingTransactionManager.init(DatabaseTypes.getActualDatabaseType("H2"), resourceDataSources);
+        Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(DatabaseTypeRegistry.getActualDatabaseType("H2"));
+        xaShardingTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("H2"), resourceDataSources);
         verify(xaTransactionManager).init();
     }
     

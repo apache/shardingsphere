@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.H2XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.MariaDBXADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.MySQLXADataSourceDefinition;
@@ -33,31 +33,31 @@ public final class XADataSourceDefinitionFactoryTest {
     
     @Test
     public void assertCreateXAPropertiesForH2() {
-        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypes.getActualDatabaseType("H2")), instanceOf(H2XADataSourceDefinition.class));
+        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypeRegistry.getActualDatabaseType("H2")), instanceOf(H2XADataSourceDefinition.class));
     }
     
     @Test
     public void assertCreateXAPropertiesForMySQL() {
-        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypes.getActualDatabaseType("MySQL")), instanceOf(MySQLXADataSourceDefinition.class));
+        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypeRegistry.getActualDatabaseType("MySQL")), instanceOf(MySQLXADataSourceDefinition.class));
     }
 
     @Test
     public void assertCreateXAPropertiesForMariaDB() {
-        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypes.getActualDatabaseType("MariaDB")), instanceOf(MariaDBXADataSourceDefinition.class));
+        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypeRegistry.getActualDatabaseType("MariaDB")), instanceOf(MariaDBXADataSourceDefinition.class));
     }
     
     @Test
     public void assertCreateXAPropertiesForPostgreSQL() {
-        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypes.getActualDatabaseType("PostgreSQL")), instanceOf(PostgreSQLXADataSourceDefinition.class));
+        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL")), instanceOf(PostgreSQLXADataSourceDefinition.class));
     }
     
     @Test
     public void assertCreateXAPropertiesForOracle() {
-        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypes.getActualDatabaseType("Oracle")), instanceOf(OracleXADataSourceDefinition.class));
+        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypeRegistry.getActualDatabaseType("Oracle")), instanceOf(OracleXADataSourceDefinition.class));
     }
     
     @Test
     public void assertCreateXAPropertiesForSQLServer() {
-        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypes.getActualDatabaseType("SQLServer")), instanceOf(SQLServerXADataSourceDefinition.class));
+        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypeRegistry.getActualDatabaseType("SQLServer")), instanceOf(SQLServerXADataSourceDefinition.class));
     }
 }

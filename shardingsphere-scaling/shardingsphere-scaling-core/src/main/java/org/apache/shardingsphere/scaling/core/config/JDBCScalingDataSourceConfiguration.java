@@ -21,7 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
 /**
  * JDBC scaling data source configuration.
@@ -49,7 +49,7 @@ public final class JDBCScalingDataSourceConfiguration implements ScalingDataSour
     @Override
     public DatabaseType getDatabaseType() {
         if (null == databaseType) {
-            databaseType = DatabaseTypes.getDatabaseTypeByURL(jdbcUrl);
+            databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl);
         }
         return databaseType;
     }

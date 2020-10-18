@@ -28,8 +28,6 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -42,7 +40,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -57,13 +54,13 @@ public final class PostgreSQLComParseExecutorTest {
     
     @Test
     public void assertNewInstance() throws NoSuchFieldException, IllegalAccessException {
-        when(parsePacket.getSql()).thenReturn("sql");
+        when(parsePacket.getSql()).thenReturn("SELECT 1");
         when(parsePacket.getStatementId()).thenReturn("2");
         when(backendConnection.getConnectionId()).thenReturn(1);
         Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxyContext.getInstance(), new StandardSchemaContexts(getSchemas(),
-                mockSQLParserEngine(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        schemaContexts.set(ProxyContext.getInstance(), 
+                new StandardSchemaContexts(getSchemas(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         BinaryStatementRegistry.getInstance().register(1);
         PostgreSQLComParseExecutor actual = new PostgreSQLComParseExecutor(parsePacket, backendConnection);
         assertThat(actual.execute().iterator().next(), instanceOf(PostgreSQLParseCompletePacket.class));
@@ -72,14 +69,6 @@ public final class PostgreSQLComParseExecutorTest {
     private Map<String, ShardingSphereSchema> getSchemas() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         return Collections.singletonMap("schema", schema);
-    }
-    
-    private ShardingSphereSQLParserEngine mockSQLParserEngine() {
-        ShardingSphereSQLParserEngine result = mock(ShardingSphereSQLParserEngine.class);
-        SQLStatement sqlStatement = mock(SQLStatement.class);
-        when(result.parse(eq("sql"), eq(true))).thenReturn(sqlStatement);
-        when(sqlStatement.getParameterCount()).thenReturn(1);
-        return result;
     }
     
     @Test

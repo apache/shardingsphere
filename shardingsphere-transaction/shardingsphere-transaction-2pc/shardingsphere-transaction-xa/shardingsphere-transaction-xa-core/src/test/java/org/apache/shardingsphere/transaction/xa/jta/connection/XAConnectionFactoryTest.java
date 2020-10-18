@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.h2.jdbcx.JdbcXAConnection;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -45,33 +45,33 @@ public final class XAConnectionFactoryTest {
     @Test(expected = Exception.class)
     // TODO assert fail
     public void assertCreateMySQLXAConnection() {
-        XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("MySQL"), xaDataSource, connection);
+        XAConnectionFactory.createXAConnection(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), xaDataSource, connection);
     }
 
     @Test(expected = Exception.class)
     public void assertCreateMariaDBXAConnection() {
-        assertThat(XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("MariaDB"), xaDataSource, connection), instanceOf(MariaXaConnection.class));
+        assertThat(XAConnectionFactory.createXAConnection(DatabaseTypeRegistry.getActualDatabaseType("MariaDB"), xaDataSource, connection), instanceOf(MariaXaConnection.class));
     }
 
     @Test
     public void assertCreatePostgreSQLXAConnection() {
-        assertThat(XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("PostgreSQL"), xaDataSource, connection), instanceOf(PGXAConnection.class));
+        assertThat(XAConnectionFactory.createXAConnection(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), xaDataSource, connection), instanceOf(PGXAConnection.class));
     }
     
     @Test
     public void assertCreateH2XAConnection() {
-        assertThat(XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("H2"), xaDataSource, connection), instanceOf(JdbcXAConnection.class));
+        assertThat(XAConnectionFactory.createXAConnection(DatabaseTypeRegistry.getActualDatabaseType("H2"), xaDataSource, connection), instanceOf(JdbcXAConnection.class));
     }
     
     @Test
     @Ignore("oracle jdbc driver is not import because of the limitations of license")
     public void assertCreateOracleXAConnection() throws ClassNotFoundException {
         Class<?> clazz = Class.forName("oracle.jdbc.xa.client.OracleXAConnection");
-        assertThat(XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("Oracle"), xaDataSource, connection), instanceOf(clazz));
+        assertThat(XAConnectionFactory.createXAConnection(DatabaseTypeRegistry.getActualDatabaseType("Oracle"), xaDataSource, connection), instanceOf(clazz));
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertCreateUnknownXAConnectionThrowsUnsupportedOperationException() {
-        XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("SQL92"), xaDataSource, connection);
+        XAConnectionFactory.createXAConnection(DatabaseTypeRegistry.getActualDatabaseType("SQL92"), xaDataSource, connection);
     }
 }

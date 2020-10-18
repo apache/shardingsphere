@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,8 +41,6 @@ public final class StandardSchemaContexts implements SchemaContexts {
     
     private final Map<String, ShardingSphereSchema> schemas;
     
-    private final ShardingSphereSQLParserEngine sqlParserEngine;
-    
     private final ExecutorKernel executorKernel;
     
     private final Authentication authentication;
@@ -56,12 +53,12 @@ public final class StandardSchemaContexts implements SchemaContexts {
     
     public StandardSchemaContexts() {
         // TODO MySQLDatabaseType is invalid because it can not update again
-        this(new HashMap<>(), null, null, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType(), false);
+        this(new HashMap<>(), null, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType(), false);
     }
     
-    public StandardSchemaContexts(final Map<String, ShardingSphereSchema> schemas, final ShardingSphereSQLParserEngine sqlParserEngine, final ExecutorKernel executorKernel, 
+    public StandardSchemaContexts(final Map<String, ShardingSphereSchema> schemas, final ExecutorKernel executorKernel, 
                                   final Authentication authentication, final ConfigurationProperties props, final DatabaseType databaseType) {
-        this(schemas, sqlParserEngine, executorKernel, authentication, props, databaseType, false);
+        this(schemas, executorKernel, authentication, props, databaseType, false);
     }
     
     @Override

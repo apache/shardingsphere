@@ -22,19 +22,14 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.rdl.parser.engine.executor.RDLSQLParserExecutor;
 import org.apache.shardingsphere.rdl.parser.sql.visitor.ShardingSphereVisitor;
 import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.cache.SQLParseResultCache;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-
-import java.util.Optional;
 
 /**
  * RDL SQL parser engine.
  */
 @RequiredArgsConstructor
 public final class RDLSQLParserEngine implements SQLParserEngine {
-    
-    private final SQLParseResultCache cache = new SQLParseResultCache();
     
     private final ParsingHookRegistry parsingHookRegistry = ParsingHookRegistry.getInstance();
     
@@ -49,7 +44,7 @@ public final class RDLSQLParserEngine implements SQLParserEngine {
     public SQLStatement parse(final String sql, final boolean useCache) {
         parsingHookRegistry.start(sql);
         try {
-            SQLStatement result = parse0(sql, useCache);
+            SQLStatement result = parse0(sql);
             parsingHookRegistry.finishSuccess(result);
             return result;
             // CHECKSTYLE:OFF
@@ -60,18 +55,8 @@ public final class RDLSQLParserEngine implements SQLParserEngine {
         }
     }
     
-    private SQLStatement parse0(final String sql, final boolean useCache) {
-        if (useCache) {
-            Optional<SQLStatement> cachedSQLStatement = cache.getSQLStatement(sql);
-            if (cachedSQLStatement.isPresent()) {
-                return cachedSQLStatement.get();
-            }
-        }
+    private SQLStatement parse0(final String sql) {
         ParseTree parseTree = new RDLSQLParserExecutor(sql).execute().getRootNode();
-        SQLStatement result = (SQLStatement) new ShardingSphereVisitor().visit(parseTree);
-        if (useCache) {
-            cache.put(sql, result);
-        }
-        return result;
+        return (SQLStatement) new ShardingSphereVisitor().visit(parseTree);
     }
 }

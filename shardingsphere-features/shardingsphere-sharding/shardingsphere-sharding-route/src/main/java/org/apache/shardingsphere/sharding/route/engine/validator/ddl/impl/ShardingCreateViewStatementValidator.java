@@ -42,7 +42,7 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
         selectStatement.ifPresent(select -> {
             TableExtractor extractor = new TableExtractor();
             extractor.extractTablesFromSelect(select);
-            validateShardingTable(metaData, extractor.getRewriteTables(), sqlStatementContext.getSqlStatement());
+            validateShardingTable(metaData, extractor.getRewriteTables());
         });
     }
     

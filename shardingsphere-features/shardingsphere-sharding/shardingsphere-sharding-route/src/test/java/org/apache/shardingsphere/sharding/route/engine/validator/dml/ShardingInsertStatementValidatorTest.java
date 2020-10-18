@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDupl
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -62,7 +62,10 @@ public final class ShardingInsertStatementValidatorTest {
     @Test(expected = ShardingSphereException.class)
     public void assertValidateInsertModifyMultiTables() {
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(
-                new PhysicalSchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement(true));
+                new PhysicalSchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement());
+        Collection<String> shardingTableNames = Lists.newArrayList("order", "order_item");
+        when(shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(shardingTableNames);
+        when(shardingRule.isAllBindingTables(shardingTableNames)).thenReturn(true);
         new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class));
     }
     
@@ -70,7 +73,7 @@ public final class ShardingInsertStatementValidatorTest {
     public void assertValidateOnDuplicateKeyWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(
-                new PhysicalSchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement(false));
+                new PhysicalSchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement());
         new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class));
     }
     
@@ -78,7 +81,7 @@ public final class ShardingInsertStatementValidatorTest {
     public void assertValidateOnDuplicateKeyWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(
-                new PhysicalSchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement(false));
+                new PhysicalSchemaMetaData(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement());
         new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class));
     }
     
@@ -126,13 +129,10 @@ public final class ShardingInsertStatementValidatorTest {
         new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereMetaData.class));
     }
     
-    private InsertStatement createInsertStatement(final boolean includeMultiTable) {
+    private InsertStatement createInsertStatement() {
         MySQLInsertStatement result = new MySQLInsertStatement();
         result.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("id"));
-        if (includeMultiTable) {
-            columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("t")));
-        }
         AssignmentSegment assignmentSegment = new AssignmentSegment(0, 0, columnSegment, new ParameterMarkerExpressionSegment(0, 0, 1));
         result.setOnDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(assignmentSegment)));
         Collection<ColumnSegment> columns = new LinkedList<>();
@@ -142,7 +142,7 @@ public final class ShardingInsertStatementValidatorTest {
     }
 
     private InsertStatement createInsertSelectStatement() {
-        InsertStatement result = createInsertStatement(false);
+        InsertStatement result = createInsertStatement();
         SelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         result.setInsertSelect(new SubquerySegment(0, 0, selectStatement));

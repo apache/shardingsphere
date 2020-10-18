@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -29,7 +29,7 @@ public final class DatabaseMetaDataDialectHandlerFactoryTest {
     
     @Test
     public void assertFindHandler() {
-        assertTrue(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypes.getTrunkDatabaseType("Oracle")).isPresent());
-        assertTrue(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypes.getTrunkDatabaseType("MySQL")).isPresent());
+        assertTrue(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypeRegistry.getTrunkDatabaseType("Oracle")).isPresent());
+        assertTrue(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypeRegistry.getTrunkDatabaseType("MySQL")).isPresent());
     }
 }

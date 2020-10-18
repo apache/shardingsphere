@@ -27,10 +27,10 @@ import java.util.Optional;
 import java.util.ServiceLoader;
 
 /**
- * Database types.
+ * Database type registry.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseTypes {
+public final class DatabaseTypeRegistry {
     
     private static final Map<String, DatabaseType> DATABASE_TYPES = new HashMap<>();
     

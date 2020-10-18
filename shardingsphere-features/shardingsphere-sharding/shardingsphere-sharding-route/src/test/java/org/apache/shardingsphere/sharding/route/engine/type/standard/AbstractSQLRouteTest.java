@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaData;
 import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
@@ -76,7 +76,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         dataSourceInfoMap.put("main", mainDatabaseAccessConfig);
         dataSourceInfoMap.put("ds_0", databaseAccessConfiguration0);
         dataSourceInfoMap.put("ds_1", databaseAccessConfiguration1);
-        return new DataSourcesMetaData(DatabaseTypes.getActualDatabaseType("MySQL"), dataSourceInfoMap);
+        return new DataSourcesMetaData(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), dataSourceInfoMap);
     }
     
     private LogicSchemaMetaData buildLogicSchemaMetaData() {
