@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
@@ -73,7 +73,7 @@ public final class OrderByStreamMergedResultTest {
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createSchemaMetaData());
         assertFalse(actual.next());
     }
@@ -85,7 +85,7 @@ public final class OrderByStreamMergedResultTest {
             when(queryResults.get(i).getColumnName(1)).thenReturn("col1");
             when(queryResults.get(i).getColumnName(2)).thenReturn("col2");
         }
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         when(queryResults.get(0).next()).thenReturn(true, false);
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
@@ -107,7 +107,7 @@ public final class OrderByStreamMergedResultTest {
             when(queryResults.get(i).getColumnName(1)).thenReturn("col1");
             when(queryResults.get(i).getColumnName(2)).thenReturn("col2");
         }
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         when(queryResults.get(0).next()).thenReturn(true, false);
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
         when(queryResults.get(1).next()).thenReturn(true, true, true, false);
@@ -143,7 +143,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(1).getValue(1, Object.class)).thenReturn("B", "B", "a", "a");
         when(queryResults.get(2).next()).thenReturn(true, false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("A");
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createSchemaMetaData());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("A"));
@@ -169,7 +169,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(1).getValue(2, Object.class)).thenReturn("a", "a", "B", "B");
         when(queryResults.get(2).next()).thenReturn(true, false);
         when(queryResults.get(2).getValue(2, Object.class)).thenReturn("A");
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createSchemaMetaData());
         assertTrue(actual.next());
         assertThat(actual.getValue(2, Object.class).toString(), is("a"));

@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -59,8 +59,8 @@ public final class OracleXAConnectionWrapperTest {
     @Ignore("oracle jdbc driver is not import because of the limitations of license")
     public void setUp() throws SQLException {
         Connection connection = (Connection) mock(Class.forName("oracle.jdbc.internal.OracleConnection"));
-        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypes.getActualDatabaseType("Oracle"), "ds1");
-        xaDataSource = XADataSourceFactory.build(DatabaseTypes.getActualDatabaseType("Oracle"), dataSource);
+        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypeRegistry.getActualDatabaseType("Oracle"), "ds1");
+        xaDataSource = XADataSourceFactory.build(DatabaseTypeRegistry.getActualDatabaseType("Oracle"), dataSource);
         when(this.connection.unwrap(any())).thenReturn(connection);
         Method getVersionNumberMethod = connection.getClass().getDeclaredMethod("getVersionNumber");
         when(getVersionNumberMethod.invoke(connection)).thenReturn(MINIMUM_VERSION_OF_XA_SUPPORTED);

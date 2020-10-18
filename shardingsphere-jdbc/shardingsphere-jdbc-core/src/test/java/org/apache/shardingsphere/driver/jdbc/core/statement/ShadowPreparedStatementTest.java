@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForShadowTest;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -136,7 +136,7 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
     }
     
     private void assertResultSet(final boolean isShadow, final int resultSetCount, final Object cipherPwd) throws SQLException {
-        Map<String, DataSource> dataMaps = getDatabaseTypeMap().get(DatabaseTypes.getActualDatabaseType("H2"));
+        Map<String, DataSource> dataMaps = getDatabaseTypeMap().get(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         DataSource dataSource = isShadow ? dataMaps.get("jdbc_1") : dataMaps.get("jdbc_0");
         try (Statement statement = dataSource.getConnection().createStatement()) {
             ResultSet resultSet = statement.executeQuery(SELECT_SQL);
@@ -150,7 +150,7 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
     }
     
     private void assertResultSet(final boolean isShadow, final int id, final int resultSetCount, final Object cipherPwd) throws SQLException {
-        Map<String, DataSource> dataMaps = getDatabaseTypeMap().get(DatabaseTypes.getActualDatabaseType("H2"));
+        Map<String, DataSource> dataMaps = getDatabaseTypeMap().get(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         DataSource dataSource = isShadow ? dataMaps.get("jdbc_1") : dataMaps.get("jdbc_0");
         try (PreparedStatement statement = dataSource.getConnection().prepareStatement(SELECT_SQL_BY_ID)) {
             statement.setObject(1, id);

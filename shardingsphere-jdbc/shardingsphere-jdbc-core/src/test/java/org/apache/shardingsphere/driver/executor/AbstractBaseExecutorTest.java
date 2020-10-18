@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -68,7 +68,7 @@ public abstract class AbstractBaseExecutorTest {
         SchemaContexts schemaContexts = mock(StandardSchemaContexts.class, RETURNS_DEEP_STUBS);
         when(schemaContexts.getExecutorKernel()).thenReturn(executorKernel);
         when(schemaContexts.getProps()).thenReturn(createConfigurationProperties());
-        when(schemaContexts.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
+        when(schemaContexts.getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         ShardingRule shardingRule = mockShardingRule();
         when(schemaContexts.getDefaultSchema().getRules()).thenReturn(Collections.singletonList(shardingRule));
         TransactionContexts transactionContexts = mock(TransactionContexts.class);

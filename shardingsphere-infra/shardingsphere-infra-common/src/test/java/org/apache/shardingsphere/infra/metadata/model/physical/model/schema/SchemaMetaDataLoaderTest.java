@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.model.physical.model.schema;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +46,7 @@ public final class SchemaMetaDataLoaderTest {
     
     private static final String VIEW_TYPE = "VIEW";
     
-    private final DatabaseType databaseType = DatabaseTypes.getTrunkDatabaseType("Oracle");
+    private final DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType("Oracle");
     
     @Mock
     private DataSource dataSource;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.properties;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.util.HashMap;
@@ -36,7 +36,7 @@ public final class XADataSourceDefinitionFactory {
     
     static {
         for (XADataSourceDefinition each : ServiceLoader.load(XADataSourceDefinition.class)) {
-            XA_DATA_SOURCE_DEFINITIONS.put(DatabaseTypes.getActualDatabaseType(each.getDatabaseType()), each);
+            XA_DATA_SOURCE_DEFINITIONS.put(DatabaseTypeRegistry.getActualDatabaseType(each.getDatabaseType()), each);
         }
     }
     

@@ -41,7 +41,7 @@ import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.SchemaContextsBuilder;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
@@ -109,7 +109,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         }
         DataSource dataSource = dataSourcesMap.values().iterator().next().values().iterator().next();
         try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL());
+            return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
         }
     }
     

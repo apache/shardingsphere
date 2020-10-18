@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.model.physical.model.column;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,7 +47,7 @@ public final class ColumnMetaDataLoaderTest {
     
     private static final String TEST_TABLE = "table";
     
-    private final DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("MySQL");
+    private final DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("MySQL");
     
     @Mock
     private Connection connection;

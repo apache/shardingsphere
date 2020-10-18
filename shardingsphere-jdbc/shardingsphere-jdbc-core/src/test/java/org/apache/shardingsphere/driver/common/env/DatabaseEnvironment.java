@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.common.env;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.util.HashMap;
@@ -55,7 +55,7 @@ public final class DatabaseEnvironment {
     }
     
     private void fillH2() {
-        DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("H2");
+        DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("H2");
         DRIVER_CLASS_NAME.put(databaseType, "org.h2.Driver");
         URL.put(databaseType, "jdbc:h2:mem:%s;DATABASE_TO_UPPER=false;MODE=MySQL");
         USERNAME.put(databaseType, "sa");
@@ -64,7 +64,7 @@ public final class DatabaseEnvironment {
     }
     
     private void fillMySQL() {
-        DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("MySQL");
+        DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("MySQL");
         DRIVER_CLASS_NAME.put(databaseType, "com.mysql.jdbc.Driver");
         URL.put(databaseType, "jdbc:mysql://db.mysql:3306/%s?serverTimezone=UTC&useSSL=false");
         USERNAME.put(databaseType, "root");
@@ -73,7 +73,7 @@ public final class DatabaseEnvironment {
     }
     
     private void fillPostgreSQL() {
-        DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("PostgreSQL");
+        DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL");
         DRIVER_CLASS_NAME.put(databaseType, "org.postgresql.Driver");
         URL.put(databaseType, "jdbc:postgresql://db.psql:5432/%s");
         USERNAME.put(databaseType, "postgres");
@@ -82,7 +82,7 @@ public final class DatabaseEnvironment {
     }
     
     private void fillSQLServer() {
-        DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("SQLServer");
+        DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("SQLServer");
         DRIVER_CLASS_NAME.put(databaseType, "com.microsoft.sqlserver.jdbc.SQLServerDriver");
         URL.put(databaseType, "jdbc:sqlserver://db.mssql:1433;DatabaseName=%s");
         USERNAME.put(databaseType, "sa");
@@ -91,7 +91,7 @@ public final class DatabaseEnvironment {
     }
     
     private void fillOracle() {
-        DatabaseType databaseType = DatabaseTypes.getActualDatabaseType("Oracle");
+        DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("Oracle");
         DRIVER_CLASS_NAME.put(databaseType, "oracle.jdbc.driver.OracleDriver");
         URL.put(databaseType, "jdbc:oracle:thin:@db.oracle:1521/test");
         USERNAME.put(databaseType, "jdbc");

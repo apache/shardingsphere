@@ -21,7 +21,7 @@ import com.google.common.collect.Sets;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.common.env.DatabaseEnvironment;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.h2.tools.RunScript;
 import org.junit.BeforeClass;
 
@@ -41,7 +41,7 @@ public abstract class AbstractSQLTest {
     
     private static final List<String> DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "encrypt", "test_primary_ds", "test_replica_ds");
     
-    private static final Set<DatabaseType> DATABASE_TYPES = Sets.newHashSet(DatabaseTypes.getActualDatabaseType("H2"));
+    private static final Set<DatabaseType> DATABASE_TYPES = Sets.newHashSet(DatabaseTypeRegistry.getActualDatabaseType("H2"));
     
     private static final Map<DatabaseType, Map<String, DataSource>> DATABASE_TYPE_MAP = new HashMap<>();
     
