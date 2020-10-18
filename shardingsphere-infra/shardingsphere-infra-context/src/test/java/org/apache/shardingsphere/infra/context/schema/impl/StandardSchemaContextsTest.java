@@ -19,10 +19,9 @@ package org.apache.shardingsphere.infra.context.schema.impl;
 
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -45,11 +44,10 @@ public final class StandardSchemaContextsTest {
     
     @Test
     public void assertClose() {
-        ShardingSphereSQLParserEngine sqlParserEngine = mock(ShardingSphereSQLParserEngine.class);
         ExecutorKernel executorKernel = mock(ExecutorKernel.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         StandardSchemaContexts standardSchemaContexts = new StandardSchemaContexts(
-                Collections.singletonMap("logic_db", schema), sqlParserEngine, executorKernel, new Authentication(), new ConfigurationProperties(new Properties()), mock(DatabaseType.class));
+                Collections.singletonMap("logic_db", schema), executorKernel, new Authentication(), new ConfigurationProperties(new Properties()), DatabaseTypes.getTrunkDatabaseType("SQL92"));
         standardSchemaContexts.close();
         verify(executorKernel).close();
     }
