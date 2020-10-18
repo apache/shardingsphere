@@ -35,3 +35,6 @@ logs/
 # system ignore
 .DS_Store
 Thumbs.db
+
+# antlr ignore
+src/main/antlr4/imports/**/gen/
