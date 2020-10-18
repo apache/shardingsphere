@@ -28,7 +28,7 @@ changeReplicationFilter
     ;
 
 startSlave
-    : START SLAVE threadTypes_? utilOption_? connectionOptions_? channelOption_?
+    : START SLAVE threadTypes_? utilOption_? connectionOptions_ channelOption_?
     ;
 
 stopSlave
@@ -56,7 +56,7 @@ resetSlave
     ;
 
 threadTypes_
-    : threadType_*
+    : threadType_+
     ;
 
 threadType_
