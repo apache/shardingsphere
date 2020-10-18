@@ -18,18 +18,15 @@
 package org.apache.shardingsphere.infra.metadata.refresh.impl;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.TableMetaDataLoaderCallback;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -38,22 +35,22 @@ import java.util.Optional;
 public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<CreateTableStatement> {
     
     @Override
-    public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
-                                final Map<String, DataSource> dataSourceMap, final CreateTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
+    public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final Collection<String> routeDataSourceNames, 
+                                final CreateTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         Optional<PhysicalTableMetaData> tableMetaData = callback.load(tableName);
         if (tableMetaData.isPresent()) {
             metaData.getSchemaMetaData().getConfiguredSchemaMetaData().put(tableName, tableMetaData.get());
             metaData.getSchemaMetaData().getSchemaMetaData().put(tableName, tableMetaData.get());
         } else {
-            refreshUnconfiguredMetaData(metaData, dataSourceMap, tableName);
+            refreshUnconfiguredMetaData(metaData, routeDataSourceNames, tableName);
             metaData.getSchemaMetaData().getSchemaMetaData().put(tableName, new PhysicalTableMetaData());
         }
     }
     
-    private void refreshUnconfiguredMetaData(final ShardingSphereMetaData metaData, final Map<String, DataSource> dataSourceMap, final String tableName) {
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            refreshUnconfiguredMetaData(metaData, tableName, entry.getKey());
+    private void refreshUnconfiguredMetaData(final ShardingSphereMetaData metaData, final Collection<String> routeDataSourceNames, final String tableName) {
+        for (String each : routeDataSourceNames) {
+            refreshUnconfiguredMetaData(metaData, tableName, each);
         }
     }
     

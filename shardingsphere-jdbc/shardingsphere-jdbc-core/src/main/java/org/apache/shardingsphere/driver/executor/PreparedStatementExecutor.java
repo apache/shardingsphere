@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLE
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.impl.DefaultSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.MemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.StreamQueryResult;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -75,11 +76,12 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     }
     
     @Override
-    public int executeUpdate(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
+    public int executeUpdate(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, 
+                             final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<Integer> sqlExecutorCallback = createDefaultSQLExecutorCallbackWithInteger(isExceptionThrown);
         List<Integer> results = getSqlExecutor().execute(inputGroups, sqlExecutorCallback);
-        refreshTableMetaData(getSchemaContexts().getDefaultSchema(), sqlStatementContext.getSqlStatement());
+        refreshTableMetaData(getSchemaContexts().getDefaultSchema(), sqlStatementContext.getSqlStatement(), routeUnits);
         return isNeedAccumulate(
                 getSchemaContexts().getDefaultSchema().getRules().stream().filter(rule -> rule instanceof DataNodeRoutedRule).collect(Collectors.toList()), sqlStatementContext)
                 ? accumulate(results) : results.get(0);
@@ -96,10 +98,10 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     }
     
     @Override
-    public boolean execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatement sqlStatement) throws SQLException {
+    public boolean execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<Boolean> sqlExecutorCallback = createDefaultSQLExecutorCallbackWithBoolean(isExceptionThrown);
-        return executeAndRefreshMetaData(inputGroups, sqlStatement, sqlExecutorCallback);
+        return executeAndRefreshMetaData(inputGroups, sqlStatement, routeUnits, sqlExecutorCallback);
     }
     
     private DefaultSQLExecutorCallback<Boolean> createDefaultSQLExecutorCallbackWithBoolean(final boolean isExceptionThrown) {

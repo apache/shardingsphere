@@ -182,7 +182,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 Collection<InputGroup<StatementExecuteUnit>> inputGroups = getInputGroups();
                 cacheStatements(inputGroups);
                 reply();
-                return preparedStatementExecutor.executeUpdate(inputGroups, executionContext.getSqlStatementContext());
+                return preparedStatementExecutor.executeUpdate(inputGroups, executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
             } else {
                 return rawExecutor.executeUpdate(getRawInputGroups(), new RawSQLExecutorCallback());
             }
@@ -200,7 +200,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 Collection<InputGroup<StatementExecuteUnit>> inputGroups = getInputGroups();
                 cacheStatements(inputGroups);
                 reply();
-                return preparedStatementExecutor.execute(inputGroups, executionContext.getSqlStatementContext().getSqlStatement());
+                return preparedStatementExecutor.execute(inputGroups, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getRouteContext().getRouteUnits());
             } else {
                 // TODO process getStatement
                 return rawExecutor.execute(getRawInputGroups(), new RawSQLExecutorCallback());

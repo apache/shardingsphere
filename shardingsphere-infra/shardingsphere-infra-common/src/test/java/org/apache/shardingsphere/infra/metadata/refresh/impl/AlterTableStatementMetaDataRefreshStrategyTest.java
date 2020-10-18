@@ -44,34 +44,34 @@ import static org.mockito.Mockito.mock;
 public final class AlterTableStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
     @Test
-    public void refreshMySQLAlterTableMetaData() throws SQLException {
+    public void refreshMetaDataForMySQL() throws SQLException {
         refreshMetaData(new MySQLAlterTableStatement());
     }
 
     @Test
-    public void refreshOracleAlterTableMetaData() throws SQLException {
+    public void refreshMetaDataForOracle() throws SQLException {
         refreshMetaData(new OracleAlterTableStatement());
     }
 
     @Test
-    public void refreshPostgreSQLAlterTableMetaData() throws SQLException {
+    public void refreshMetaDataForPostgreSQL() throws SQLException {
         refreshMetaData(new PostgreSQLAlterTableStatement());
     }
 
     @Test
-    public void refreshSQL92AlterTableMetaData() throws SQLException {
+    public void refreshMetaDataForSQL92() throws SQLException {
         refreshMetaData(new SQL92AlterTableStatement());
     }
 
     @Test
-    public void refreshSQLServerAlterTableMetaData() throws SQLException {
+    public void refreshMetaDataForSQLServer() throws SQLException {
         refreshMetaData(new SQLServerAlterTableStatement());
     }
 
     private void refreshMetaData(final AlterTableStatement alterTableStatement) throws SQLException {
         MetaDataRefreshStrategy<AlterTableStatement> metaDataRefreshStrategy = new AlterTableStatementMetaDataRefreshStrategy();
         alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), alterTableStatement, tableName -> Optional.of(new PhysicalTableMetaData(
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyList(), alterTableStatement, tableName -> Optional.of(new PhysicalTableMetaData(
                 Collections.singletonList(new PhysicalColumnMetaData("order_id", 1, "String", true, false, false)),
                 Collections.singletonList(new PhysicalIndexMetaData("index_alter")))));
         assertTrue(getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("index_alter"));

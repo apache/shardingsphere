@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.infra.metadata.refresh.impl;
 
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.TableMetaDataLoaderCallback;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Alter table statement meta data refresh strategy.
@@ -35,8 +34,8 @@ import java.util.Map;
 public final class AlterTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<AlterTableStatement> {
     
     @Override
-    public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
-                                final Map<String, DataSource> dataSourceMap, final AlterTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
+    public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final Collection<String> routeDataSourceNames, 
+                                final AlterTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         PhysicalSchemaMetaData schemaMetaData = metaData.getSchemaMetaData().getConfiguredSchemaMetaData();
         if (null != schemaMetaData && schemaMetaData.containsTable(tableName)) {
