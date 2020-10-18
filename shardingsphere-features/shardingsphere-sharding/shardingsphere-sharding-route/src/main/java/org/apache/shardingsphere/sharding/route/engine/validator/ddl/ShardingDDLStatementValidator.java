@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 
 import java.util.Collection;
@@ -37,13 +36,12 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
      *
      * @param metaData meta data
      * @param tables tables
-     * @param sqlStatement sqlStatement
      */
-    protected void validateShardingTable(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables, final SQLStatement sqlStatement) {
+    protected void validateShardingTable(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
             if (metaData.getSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames().contains(tableName)) {
-                throw new ShardingSphereException("Can not support sharding table '%s' for '%s'.", tableName, sqlStatement);
+                throw new ShardingSphereException("Can not support sharding table '%s'.", tableName);
             }
         }
     }
@@ -62,5 +60,4 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
             }
         }
     }
-    
 }

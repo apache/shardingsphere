@@ -41,7 +41,7 @@ public final class ShardingCreateFunctionStatementValidator extends ShardingDDLS
         Optional<RoutineBodySegment> routineBodySegment = CreateFunctionStatementHandler.getRoutineBodySegment(sqlStatementContext.getSqlStatement());
         routineBodySegment.ifPresent(routineBody -> {
             TableExtractor extractor = new TableExtractor();
-            validateShardingTable(metaData, extractor.extractExistTableFromRoutineBody(routineBody), sqlStatementContext.getSqlStatement());
+            validateShardingTable(metaData, extractor.extractExistTableFromRoutineBody(routineBody));
             validateTableNotExist(metaData, extractor.extractNotExistTableFromRoutineBody(routineBody));
         });
     }
