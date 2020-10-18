@@ -23,8 +23,7 @@ import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.TableMetaDataLoaderCallback;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 
-import javax.sql.DataSource;
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Drop table statement meta data refresh strategy.
@@ -32,13 +31,19 @@ import java.util.Map;
 public final class DropTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<DropTableStatement> {
     
     @Override
-    public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
-                                final Map<String, DataSource> dataSourceMap, final DropTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
-        sqlStatement.getTables().forEach(each -> removeMetaData(metaData, each.getTableName().getIdentifier().getValue()));
+    public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final Collection<String> routeDataSourceNames, 
+                                final DropTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
+        sqlStatement.getTables().forEach(each -> removeMetaData(metaData, each.getTableName().getIdentifier().getValue(), routeDataSourceNames));
     }
     
-    private void removeMetaData(final ShardingSphereMetaData metaData, final String tableName) {
+    private void removeMetaData(final ShardingSphereMetaData metaData, final String tableName, final Collection<String> routeDataSourceNames) {
         metaData.getSchemaMetaData().getConfiguredSchemaMetaData().remove(tableName);
+        for (String each : routeDataSourceNames) {
+            Collection<String> schemaMetaData = metaData.getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get(each);
+            if (null != schemaMetaData) {
+                schemaMetaData.remove(tableName);
+            }
+        }
         metaData.getSchemaMetaData().getSchemaMetaData().remove(tableName);
     }
 }

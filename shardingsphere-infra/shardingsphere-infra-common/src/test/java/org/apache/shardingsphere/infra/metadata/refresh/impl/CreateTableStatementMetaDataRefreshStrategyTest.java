@@ -35,51 +35,43 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL9
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
 import org.junit.Test;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class CreateTableStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
     @Test
-    public void refreshMySQLCreateTableMetaData() throws SQLException {
+    public void refreshMetaDataForMySQL() throws SQLException {
         MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
         createTableStatement.setNotExisted(false);
         refreshMetaData(createTableStatement);
     }
 
     @Test
-    public void refreshOracleCreateTableMetaData() throws SQLException {
+    public void refreshMetaDataForOracle() throws SQLException {
         OracleCreateTableStatement createTableStatement = new OracleCreateTableStatement();
         refreshMetaData(createTableStatement);
     }
 
     @Test
-    public void refreshPostgreSQLCreateTableMetaData() throws SQLException {
+    public void refreshMetaDataForPostgreSQL() throws SQLException {
         PostgreSQLCreateTableStatement createTableStatement = new PostgreSQLCreateTableStatement();
         createTableStatement.setNotExisted(false);
         refreshMetaData(createTableStatement);
     }
 
     @Test
-    public void refreshSQL92CreateTableMetaData() throws SQLException {
+    public void refreshMetaDataForSQL92() throws SQLException {
         SQL92CreateTableStatement createTableStatement = new SQL92CreateTableStatement();
         refreshMetaData(createTableStatement);
     }
 
     @Test
-    public void refreshSQLServerCreateTableMetaData() throws SQLException {
+    public void refreshMetaDataForSQLServer() throws SQLException {
         SQLServerCreateTableStatement createTableStatement = new SQLServerCreateTableStatement();
         refreshMetaData(createTableStatement);
     }
@@ -87,74 +79,48 @@ public final class CreateTableStatementMetaDataRefreshStrategyTest extends Abstr
     private void refreshMetaData(final CreateTableStatement createTableStatement) throws SQLException {
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
         MetaDataRefreshStrategy<CreateTableStatement> metaDataRefreshStrategy = new CreateTableStatementMetaDataRefreshStrategy();
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), createTableStatement, tableName -> Optional.of(new PhysicalTableMetaData(
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyList(), createTableStatement, tableName -> Optional.of(new PhysicalTableMetaData(
                 Collections.singletonList(new PhysicalColumnMetaData("order_id", 1, "String", true, false, false)),
                 Collections.singletonList(new PhysicalIndexMetaData("index")))));
         assertTrue(getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData().containsTable("t_order_0"));
     }
     
     @Test
-    public void assertRefreshMySQLCreateTableMetaDataWithUnConfigured() throws SQLException {
+    public void refreshMetaDataWithUnConfiguredForMySQL() throws SQLException {
         MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
         createTableStatement.setNotExisted(false);
-        assertRefreshMetaDataWithUnConfigured(createTableStatement);
+        refreshMetaDataWithUnConfigured(createTableStatement);
     }
 
     @Test
-    public void assertRefreshOracleCreateTableMetaDataWithUnConfigured() throws SQLException {
+    public void refreshMetaDataWithUnConfiguredForOracle() throws SQLException {
         OracleCreateTableStatement createTableStatement = new OracleCreateTableStatement();
-        assertRefreshMetaDataWithUnConfigured(createTableStatement);
+        refreshMetaDataWithUnConfigured(createTableStatement);
     }
 
     @Test
-    public void assertRefreshPostgreSQLCreateTableMetaDataWithUnConfigured() throws SQLException {
+    public void refreshMetaDataWithUnConfiguredForPostgreSQL() throws SQLException {
         PostgreSQLCreateTableStatement createTableStatement = new PostgreSQLCreateTableStatement();
         createTableStatement.setNotExisted(false);
-        assertRefreshMetaDataWithUnConfigured(createTableStatement);
+        refreshMetaDataWithUnConfigured(createTableStatement);
     }
 
     @Test
-    public void assertRefreshSQL92CreateTableMetaDataWithUnConfigured() throws SQLException {
+    public void refreshMetaDataWithUnConfiguredForSQL92() throws SQLException {
         SQL92CreateTableStatement createTableStatement = new SQL92CreateTableStatement();
-        assertRefreshMetaDataWithUnConfigured(createTableStatement);
+        refreshMetaDataWithUnConfigured(createTableStatement);
     }
 
     @Test
-    public void assertRefreshSQLServerCreateTableMetaDataWithUnConfigured() throws SQLException {
+    public void refreshMetaDataWithUnConfiguredForSQLServer() throws SQLException {
         SQLServerCreateTableStatement createTableStatement = new SQLServerCreateTableStatement();
-        assertRefreshMetaDataWithUnConfigured(createTableStatement);
+        refreshMetaDataWithUnConfigured(createTableStatement);
     }
 
-    private void assertRefreshMetaDataWithUnConfigured(final CreateTableStatement createTableStatement) throws SQLException {
+    private void refreshMetaDataWithUnConfigured(final CreateTableStatement createTableStatement) throws SQLException {
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item_0"))));
-        Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>(1, 1);
-        dataSourceSourceMap.put("t_order_item", initDataSource());
         MetaDataRefreshStrategy<CreateTableStatement> metaDataRefreshStrategy = new CreateTableStatementMetaDataRefreshStrategy();
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), new MySQLDatabaseType(), dataSourceSourceMap, createTableStatement, tableName -> Optional.empty());
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), new MySQLDatabaseType(), Collections.singletonList("t_order_item"), createTableStatement, tableName -> Optional.empty());
         assertTrue(getMetaData().getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get("t_order_item").contains("t_order_item_0"));
-    }
-    
-    private DataSource initDataSource() throws SQLException {
-        final String catalog = "catalog";
-        final String table = "t_order_item_0";
-        DataSource result = mock(DataSource.class);
-        Connection connection = mock(Connection.class);
-        when(result.getConnection()).thenReturn(connection);
-        when(connection.getCatalog()).thenReturn(catalog);
-        when(connection.getSchema()).thenReturn("");
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        Statement statement = mock(Statement.class);
-        when(connection.createStatement()).thenReturn(statement);
-        ResultSet columnMetaDataResultSet = mock(ResultSet.class);
-        ResultSet primaryKeyResultSet = mock(ResultSet.class);
-        ResultSet tableResultSet = mock(ResultSet.class);
-        ResultSet indexMetaDataResultSet = mock(ResultSet.class);
-        when(databaseMetaData.getColumns(catalog, "", table, "%")).thenReturn(columnMetaDataResultSet);
-        when(databaseMetaData.getPrimaryKeys(catalog, "", table)).thenReturn(primaryKeyResultSet);
-        when(databaseMetaData.getTables(catalog, "", table, null)).thenReturn(tableResultSet);
-        when(databaseMetaData.getIndexInfo(catalog, "", table, false, false)).thenReturn(indexMetaDataResultSet);
-        when(tableResultSet.next()).thenReturn(true);
-        return result;
     }
 }

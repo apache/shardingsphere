@@ -41,34 +41,66 @@ import static org.mockito.Mockito.mock;
 public final class DropTableStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
     @Test
-    public void refreshMySQLDropTableMetaData() throws SQLException {
+    public void refreshDropTableMetaDataForMySQL() throws SQLException {
         refreshMetaData(new MySQLDropTableStatement());   
     }
     
     @Test
-    public void refreshOracleDropTableMetaData() throws SQLException {
+    public void refreshDropTableMetaDataForOracle() throws SQLException {
         refreshMetaData(new OracleDropTableStatement());
     }
     
     @Test
-    public void refreshPostgreSQLDropTableMetaData() throws SQLException {
+    public void refreshDropTableMetaDataForPostgreSQL() throws SQLException {
         refreshMetaData(new PostgreSQLDropTableStatement());
     }
     
     @Test
-    public void refreshSQL92DropTableMetaData() throws SQLException {
+    public void refreshDropTableMetaDataForSQL92() throws SQLException {
         refreshMetaData(new SQL92DropTableStatement());
     }
     
     @Test
-    public void refreshSQLServerDropTableMetaData() throws SQLException {
+    public void refreshDropTableMetaDataForSQLServer() throws SQLException {
         refreshMetaData(new SQLServerDropTableStatement());
     }
     
     private void refreshMetaData(final DropTableStatement dropTableStatement) throws SQLException {
         MetaDataRefreshStrategy<DropTableStatement> metaDataRefreshStrategy = new DropTableStatementMetaDataRefreshStrategy();
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), dropTableStatement, tableName -> Optional.empty());
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyList(), dropTableStatement, tableName -> Optional.empty());
         assertFalse(getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData().containsTable("t_order"));
+    }
+    
+    @Test
+    public void refreshMetaDataWithUnConfiguredForMySQL() throws SQLException {
+        refreshMetaDataWithUnConfigured(new MySQLDropTableStatement());
+    }
+    
+    @Test
+    public void refreshMetaDataWithUnConfiguredForOracle() throws SQLException {
+        refreshMetaDataWithUnConfigured(new OracleDropTableStatement());
+    }
+    
+    @Test
+    public void refreshMetaDataWithUnConfiguredForPostgreSQL() throws SQLException {
+        refreshMetaDataWithUnConfigured(new PostgreSQLDropTableStatement());
+    }
+    
+    @Test
+    public void refreshMetaDataWithUnConfiguredForSQL92() throws SQLException {
+        refreshMetaDataWithUnConfigured(new SQL92DropTableStatement());
+    }
+    
+    @Test
+    public void refreshMetaDataWithUnConfiguredForSQLServer() throws SQLException {
+        refreshMetaDataWithUnConfigured(new SQLServerDropTableStatement());
+    }
+    
+    private void refreshMetaDataWithUnConfigured(final DropTableStatement dropTableStatement) throws SQLException {
+        MetaDataRefreshStrategy<DropTableStatement> metaDataRefreshStrategy = new DropTableStatementMetaDataRefreshStrategy();
+        dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.singletonList("t_order_item"), dropTableStatement, tableName -> Optional.empty());
+        assertFalse(getMetaData().getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get("t_order_item").contains("t_order_item"));
     }
 }

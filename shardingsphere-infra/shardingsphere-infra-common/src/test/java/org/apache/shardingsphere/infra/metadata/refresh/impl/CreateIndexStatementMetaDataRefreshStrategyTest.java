@@ -42,22 +42,22 @@ import static org.mockito.Mockito.mock;
 public final class CreateIndexStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
     @Test
-    public void refreshMySQLCreateIndexMetaData() throws SQLException {
+    public void refreshMetaDataForMySQL() throws SQLException {
         refreshMetaData(new MySQLCreateIndexStatement());
     }
     
     @Test
-    public void refreshOracleCreateIndexMetaData() throws SQLException {
+    public void refreshMetaDataForOracle() throws SQLException {
         refreshMetaData(new OracleCreateIndexStatement());
     }
     
     @Test
-    public void refreshPostgreSQLCreateIndexMetaData() throws SQLException {
+    public void refreshMetaDataForPostgreSQL() throws SQLException {
         refreshMetaData(new PostgreSQLCreateIndexStatement());
     }
     
     @Test
-    public void refreshSQLServerCreateIndexMetaData() throws SQLException {
+    public void refreshMetaDataForSQLServer() throws SQLException {
         refreshMetaData(new SQLServerCreateIndexStatement());
     }
     
@@ -65,34 +65,34 @@ public final class CreateIndexStatementMetaDataRefreshStrategyTest extends Abstr
         MetaDataRefreshStrategy<CreateIndexStatement> metaDataRefreshStrategy = new CreateIndexStatementMetaDataRefreshStrategy();
         createIndexStatement.setIndex(new IndexSegment(1, 2, new IdentifierValue("t_order_index")));
         createIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), createIndexStatement, tableName -> Optional.empty());
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyList(), createIndexStatement, tableName -> Optional.empty());
         assertTrue(getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("t_order_index"));
     }
     
     @Test
-    public void refreshMySQLCreateIndexMetaDataIfIndexIsNull() throws SQLException {
+    public void refreshMetaDataIfIndexIsNullForMySQL() throws SQLException {
         refreshMetaDataIfIndexIsNull(new MySQLCreateIndexStatement());
     }
     
     @Test
-    public void refreshOracleCreateIndexMetaDataIfIndexIsNull() throws SQLException {
+    public void refreshMetaDataIfIndexIsNullForOracle() throws SQLException {
         refreshMetaDataIfIndexIsNull(new OracleCreateIndexStatement());
     }
     
     @Test
-    public void refreshPostgreSQLCreateIndexMetaDataIfIndexIsNull() throws SQLException {
+    public void refreshMetaDataIfIndexIsNullForPostgreSQL() throws SQLException {
         refreshMetaDataIfIndexIsNull(new PostgreSQLCreateIndexStatement());
     }
     
     @Test
-    public void refreshSQLServerCreateIndexMetaDataIfIndexIsNull() throws SQLException {
+    public void refreshMetaDataIfIndexIsNullForSQLServer() throws SQLException {
         refreshMetaDataIfIndexIsNull(new SQLServerCreateIndexStatement());
     }
     
     private void refreshMetaDataIfIndexIsNull(final CreateIndexStatement createIndexStatement) throws SQLException {
         MetaDataRefreshStrategy<CreateIndexStatement> metaDataRefreshStrategy = new CreateIndexStatementMetaDataRefreshStrategy();
         createIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), createIndexStatement, tableName -> Optional.empty());
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyList(), createIndexStatement, tableName -> Optional.empty());
         assertFalse(getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("t_order_index"));
     }
 }
