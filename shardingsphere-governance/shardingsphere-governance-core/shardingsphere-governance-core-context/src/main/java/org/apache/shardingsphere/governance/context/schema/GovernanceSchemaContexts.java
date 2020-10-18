@@ -49,7 +49,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -122,11 +121,6 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     @Override
     public ShardingSphereSchema getDefaultSchema() {
         return schemaContexts.getDefaultSchema();
-    }
-    
-    @Override
-    public ShardingSphereSQLParserEngine getSqlParserEngine() {
-        return schemaContexts.getSqlParserEngine();
     }
     
     @Override
@@ -280,7 +274,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final CircuitStateChangedEvent event) {
-        schemaContexts = new StandardSchemaContexts(schemaContexts.getSchemas(), schemaContexts.getSqlParserEngine(), 
+        schemaContexts = new StandardSchemaContexts(schemaContexts.getSchemas(), 
                 schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType(), event.isCircuitBreak());
     }
     
