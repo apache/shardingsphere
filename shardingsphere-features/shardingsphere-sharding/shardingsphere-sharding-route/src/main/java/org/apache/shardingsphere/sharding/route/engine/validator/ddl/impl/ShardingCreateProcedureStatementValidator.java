@@ -24,9 +24,11 @@ import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDL
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateProcedureStatementHandler;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,7 +44,9 @@ public final class ShardingCreateProcedureStatementValidator extends ShardingDDL
         routineBodySegment.ifPresent(routineBody -> {
             TableExtractor extractor = new TableExtractor();
             validateTableNotExist(metaData, extractor.extractNotExistTableFromRoutineBody(routineBody));
-            validateShardingTable(metaData, extractor.extractExistTableFromRoutineBody(routineBody));
+            Collection<SimpleTableSegment> existTables = extractor.extractExistTableFromRoutineBody(routineBody);
+            validateShardingTable(metaData, existTables);
+            validateTableExist(metaData, existTables);
         });
     }
     
