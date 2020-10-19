@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.mysql.visitor.impl;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.TCLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TransactionCharacteristicContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Scope_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ScopeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AutoCommitValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitContext;
@@ -45,8 +45,8 @@ public final class MySQLTCLVisitor extends MySQLVisitor implements TCLVisitor {
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
         MySQLSetTransactionStatement result = new MySQLSetTransactionStatement();
-        if (null != ctx.scope_()) {
-            Scope_Context scopeContext = ctx.scope_();
+        if (null != ctx.scope()) {
+            ScopeContext scopeContext = ctx.scope();
             if (null != scopeContext.GLOBAL()) {
                 result.setScope(scopeContext.GLOBAL().getText());
             } else if (null != scopeContext.SESSION()) {
@@ -55,11 +55,11 @@ public final class MySQLTCLVisitor extends MySQLVisitor implements TCLVisitor {
         }
         if (null != ctx.transactionCharacteristic()) {
             for (TransactionCharacteristicContext each : ctx.transactionCharacteristic()) {
-                if (null != each.level_()) {
-                    result.setIsolationLevel(each.level_().getText());
+                if (null != each.level()) {
+                    result.setIsolationLevel(each.level().getText());
                 }
-                if (null != each.accessMode_()) {
-                    result.setAccessMode(each.accessMode_().getText());
+                if (null != each.accessMode()) {
+                    result.setAccessMode(each.accessMode().getText());
                 }
             }
         }
