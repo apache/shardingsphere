@@ -39,8 +39,7 @@ public final class DataSourceConnectionUrlUtilTest {
         segment.setPort("3306");
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
         String actual = DataSourceConnectionUrlUtil.getUrl(segment, databaseType);
-        String expected = String.format("%s//%s:%s/%s", "jdbc:mysql:",
-                segment.getHostName(), segment.getPort(), segment.getDb());
+        String expected = "jdbc:mysql://127.0.0.1:3306/test";
         assertThat(actual, is(expected));
     }
 
@@ -51,11 +50,9 @@ public final class DataSourceConnectionUrlUtilTest {
         segment.setDb("test");
         segment.setUser("root");
         segment.setPort("3306");
-
         PostgreSQLDatabaseType databaseType = new PostgreSQLDatabaseType();
         String actual = DataSourceConnectionUrlUtil.getUrl(segment, databaseType);
-        String expected = String.format("%s//%s:%s/%s", "jdbc:postgresql:",
-                segment.getHostName(), segment.getPort(), segment.getDb());
+        String expected = String.format("jdbc:postgresql://127.0.0.1:3306/test");
         assertThat(actual, is(expected));
     }
 }
