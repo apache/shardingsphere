@@ -30,9 +30,9 @@ public final class MySQLDatabaseMetaDataDialectHandlerTest extends AbstractDatab
     
     @Test
     public void assertGetSchema() throws SQLException {
-        when(getConnection().getSchema()).thenReturn(USER_NAME);
+        when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
         String mysqlSchema = getSchema(new MySQLDatabaseType());
-        assertThat(mysqlSchema, is(USER_NAME));
+        assertThat(mysqlSchema, is(DATABASE_NAME));
     }
     
     @Test

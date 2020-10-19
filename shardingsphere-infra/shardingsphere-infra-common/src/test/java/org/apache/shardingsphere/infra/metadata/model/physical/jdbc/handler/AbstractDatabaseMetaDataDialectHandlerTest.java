@@ -31,7 +31,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public abstract class AbstractDatabaseMetaDataDialectHandlerTest {
     
-    protected static final String USER_NAME = "root";
+    protected static final String DATABASE_NAME = "demo_ds";
     
     protected static final String TABLE_NAME_PATTERN = "t_order_0";
     
