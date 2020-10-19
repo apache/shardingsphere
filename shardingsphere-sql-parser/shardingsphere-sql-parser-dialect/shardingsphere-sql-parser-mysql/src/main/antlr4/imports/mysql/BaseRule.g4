@@ -232,6 +232,10 @@ name
 tableNames
     : LP_? tableName (COMMA_ tableName)* RP_?
     ;
+    
+viewNames
+    : viewName (COMMA_ viewName)*
+    ;
 
 columnNames
     : LP_? columnName (COMMA_ columnName)* RP_?
