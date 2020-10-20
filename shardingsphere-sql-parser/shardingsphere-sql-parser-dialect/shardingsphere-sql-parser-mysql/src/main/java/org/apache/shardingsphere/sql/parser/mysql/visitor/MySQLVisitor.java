@@ -47,7 +47,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Identif
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IntervalExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MatchExpression_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MatchExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NullValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OrderByClauseContext;
@@ -458,10 +458,10 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         if (null != ctx.columnName()) {
             return visit(ctx.columnName());
         }
-        if (null != ctx.matchExpression_()) {
-            return visit(ctx.matchExpression_());
+        if (null != ctx.matchExpression()) {
+            return visit(ctx.matchExpression());
         }
-        if (null != ctx.notOperator_()) {
+        if (null != ctx.notOperator()) {
             ASTNode expression = visit(ctx.simpleExpr(0));
             if (expression instanceof ExistsSubqueryExpression) {
                 ((ExistsSubqueryExpression) expression).setNot(true);
@@ -647,7 +647,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     }
     
     @Override
-    public final ASTNode visitMatchExpression_(final MatchExpression_Context ctx) {
+    public final ASTNode visitMatchExpression(final MatchExpressionContext ctx) {
         visit(ctx.expr());
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);

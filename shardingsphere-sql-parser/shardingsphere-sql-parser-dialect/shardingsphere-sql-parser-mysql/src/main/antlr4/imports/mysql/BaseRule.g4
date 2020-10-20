@@ -57,7 +57,7 @@ literals
     ;
 
 stringLiterals
-    : characterSetName_? STRING_ collateClause_?
+    : characterSetName? STRING_ collateClause?
     ;
 
 numberLiterals
@@ -70,11 +70,11 @@ dateTimeLiterals
     ;
 
 hexadecimalLiterals
-    : characterSetName_? HEX_DIGIT_ collateClause_?
+    : characterSetName? HEX_DIGIT_ collateClause?
     ;
 
 bitValueLiterals
-    : characterSetName_? BIT_NUM_ collateClause_?
+    : characterSetName? BIT_NUM_ collateClause?
     ;
 
 booleanLiterals
@@ -85,7 +85,7 @@ nullValueLiterals
     : NULL
     ;
 
-characterSetName_
+characterSetName
     : IDENTIFIER_
     ;
 
@@ -150,11 +150,21 @@ unreservedWord
     ;
 
 variable
-    : (AT_? AT_)? scope? DOT_? identifier
+    : (AT_? AT_)? scope? DOT_? internalVariableName
     ;
 
 scope
-    : GLOBAL | PERSIST | PERSIST_ONLY | SESSION | LOCAL | NEW
+    : GLOBAL | PERSIST | PERSIST_ONLY | SESSION | LOCAL
+    ;
+
+internalVariableName
+    : identifier
+    | DEFAULT DOT_ identifier
+    | identifier DOT_ identifier
+    ;
+
+setExprOrDefault
+    : expr | DEFAULT | ALL | BINARY | ROW | SYSTEM
     ;
 
 schemaName
@@ -317,14 +327,14 @@ expr
     : booleanPrimary
     | expr logicalOperator expr
     | expr XOR expr
-    | notOperator_ expr
+    | notOperator expr
     ;
 
 logicalOperator
     : OR | OR_ | AND | AND_
     ;
 
-notOperator_
+notOperator
     : NOT | NOT_
     ;
 
@@ -376,12 +386,12 @@ simpleExpr
     | simpleExpr COLLATE (STRING_ | identifier)
     | variable
     | simpleExpr OR_ simpleExpr
-    | (PLUS_ | MINUS_ | TILDE_ | notOperator_ | BINARY) simpleExpr
+    | (PLUS_ | MINUS_ | TILDE_ | notOperator | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
     | identifier (JSON_SEPARATOR | JSON_UNQUOTED_SEPARATOR) STRING_
-    | matchExpression_
+    | matchExpression
     | caseExpression
     | intervalExpression
     ;
@@ -391,7 +401,7 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ overClause_?
+    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ overClause?
     ;
 
 aggregationFunctionName
@@ -402,37 +412,37 @@ distinct
     : DISTINCT
     ;
 
-overClause_
-    : OVER (LP_ windowSpecification_ RP_ | identifier)
+overClause
+    : OVER (LP_ windowSpecification RP_ | identifier)
     ;
 
-windowSpecification_
-    : identifier? partitionClause_? orderByClause? frameClause_?
+windowSpecification
+    : identifier? partitionClause? orderByClause? frameClause?
     ;
 
-partitionClause_
+partitionClause
     : PARTITION BY expr (COMMA_ expr)*
     ;
 
-frameClause_
-    : (ROWS | RANGE) (frameStart_ | frameBetween_)
+frameClause
+    : (ROWS | RANGE) (frameStart | frameBetween)
     ;
 
-frameStart_
+frameStart
     : CURRENT ROW | UNBOUNDED PRECEDING | UNBOUNDED FOLLOWING | expr PRECEDING | expr FOLLOWING
     ;
 
-frameEnd_
-    : frameStart_
+frameEnd
+    : frameStart
     ;
 
-frameBetween_
-    : BETWEEN frameStart_ AND frameEnd_
+frameBetween
+    : BETWEEN frameStart AND frameEnd
     ;
 
 specialFunction
     : groupConcatFunction | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction 
-    | charFunction | trimFunction_ | weightStringFunction | valuesFunction_ | currentUserFunction
+    | charFunction | trimFunction | weightStringFunction | valuesFunction | currentUserFunction
     ;
 
 currentUserFunction
@@ -444,7 +454,7 @@ groupConcatFunction
     ;
 
 windowFunction
-    : identifier LP_ expr (COMMA_ expr)* RP_ overClause_
+    : identifier LP_ expr (COMMA_ expr)* RP_ overClause
     ;
 
 castFunction
@@ -470,26 +480,26 @@ extractFunction
     ;
 
 charFunction
-    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
+    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier)? RP_
     ;
 
-trimFunction_
+trimFunction
     : TRIM LP_ (LEADING | BOTH | TRAILING) STRING_ FROM STRING_ RP_
     ;
 
-valuesFunction_
+valuesFunction
     : VALUES LP_ columnName RP_
     ;
 
 weightStringFunction
-    : WEIGHT_STRING LP_ expr (AS dataType)? levelClause_? RP_
+    : WEIGHT_STRING LP_ expr (AS dataType)? levelClause? RP_
     ;
 
-levelClause_
-    : LEVEL (levelInWeightListElement_ (COMMA_ levelInWeightListElement_)* | NUMBER_ MINUS_ NUMBER_)
+levelClause
+    : LEVEL (levelInWeightListElement (COMMA_ levelInWeightListElement)* | NUMBER_ MINUS_ NUMBER_)
     ;
 
-levelInWeightListElement_
+levelInWeightListElement
     : NUMBER_ (ASC | DESC)? REVERSE?
     ;
 
@@ -503,26 +513,26 @@ shorthandRegularFunction
     ;
   
 completeRegularFunction
-    : regularFunctionName_ (LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_)
+    : regularFunctionName (LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_)
     ;
     
-regularFunctionName_
+regularFunctionName
     : IF | LOCALTIME | LOCALTIMESTAMP | REPLACE | INTERVAL | MOD
     | DATABASE | LEFT | RIGHT | DATE | DAY | GEOMCOLLECTION | GEOMETRYCOLLECTION
     | LINESTRING | MULTILINESTRING | MULTIPOINT | MULTIPOLYGON | POINT | POLYGON
     | TIME | TIMESTAMP | TIMESTAMPADD | TIMESTAMPDIFF | DATE | CURRENT_TIMESTAMP | identifier
     ;
 
-matchExpression_
-    : MATCH columnNames AGAINST LP_ expr matchSearchModifier_? RP_
+matchExpression
+    : MATCH columnNames AGAINST LP_ expr matchSearchModifier? RP_
     ;
 
-matchSearchModifier_
+matchSearchModifier
     : IN NATURAL LANGUAGE MODE | IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION | IN BOOLEAN MODE | WITH QUERY EXPANSION
     ;
 
 caseExpression
-    : CASE simpleExpr? caseWhen_+ caseElse_? END
+    : CASE simpleExpr? caseWhen+ caseElse? END
     ;
 
 datetimeExpr
@@ -533,11 +543,11 @@ binaryLogFileIndexNumber
     : NUMBER_
     ;
 
-caseWhen_
+caseWhen
     : WHEN expr THEN expr
     ;
 
-caseElse_
+caseElse
     : ELSE expr
     ;
 
@@ -546,10 +556,10 @@ intervalExpression
     ;
     
 intervalValue
-    : expr intervalUnit_
+    : expr intervalUnit
     ;
 
-intervalUnit_
+intervalUnit
     : MICROSECOND | SECOND | MINUTE | HOUR | DAY | WEEK | MONTH
     | QUARTER | YEAR | SECOND_MICROSECOND | MINUTE_MICROSECOND | MINUTE_SECOND | HOUR_MICROSECOND | HOUR_SECOND
     | HOUR_MINUTE | DAY_MICROSECOND | DAY_SECOND | DAY_MINUTE | DAY_HOUR | YEAR_MONTH
@@ -568,7 +578,7 @@ orderByItem
     ;
 
 dataType
-    : dataTypeName dataTypeLength? characterSet_? collateClause_? (UNSIGNED | SIGNED)? ZEROFILL? | dataTypeName collectionOptions characterSet_? collateClause_?
+    : dataTypeName dataTypeLength? characterSet? collateClause? (UNSIGNED | SIGNED)? ZEROFILL? | dataTypeName collectionOptions characterSet? collateClause?
     ;
 
 dataTypeName
@@ -587,31 +597,31 @@ collectionOptions
     : LP_ STRING_ (COMMA_ STRING_)* RP_
     ;
 
-characterSet_
-    : (CHARSET | CHAR SET | CHARACTER SET) EQ_? ignoredIdentifier_
+characterSet
+    : (CHARSET | CHAR SET | CHARACTER SET) EQ_? ignoredIdentifier
     ;
 
-collateClause_
-    : COLLATE EQ_? (STRING_ | ignoredIdentifier_)
+collateClause
+    : COLLATE EQ_? (STRING_ | ignoredIdentifier)
     ;
 
-ignoredIdentifier_
+ignoredIdentifier
     : identifier (DOT_ identifier)?
     ;
 
 ignoredIdentifiers_
-    : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
+    : ignoredIdentifier (COMMA_ ignoredIdentifier)*
     ;
 
 fieldOrVarSpec
     : LP_ (identifier (COMMA_ identifier)*)? RP_
     ;
 
-notExistClause_
+notExistClause
     : IF NOT EXISTS
     ;
 
-existClause_
+existClause
     : IF EXISTS
     ;
 
@@ -619,7 +629,7 @@ pattern
     : STRING_
     ;
 
-connectionId_
+connectionId
     : NUMBER_
     ;
     
