@@ -20,8 +20,12 @@ package org.apache.shardingsphere.rdl.parser.binder.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+
+import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.DataSourceConnectionSegment;
 
 /**
@@ -43,6 +47,12 @@ public final class DataSourceConnectionUrlUtil {
                 return getUrl(connectionSegment, new MySQLDatabaseType().getJdbcUrlPrefixes().iterator().next());
             case "PostgreSQL":
                 return getUrl(connectionSegment, new PostgreSQLDatabaseType().getJdbcUrlPrefixes().iterator().next());
+            case "MariaDB":
+                return getUrl(connectionSegment, new MariaDBDatabaseType().getJdbcUrlPrefixes().iterator().next());
+            case "Oracle":
+                return getUrl(connectionSegment, new OracleDatabaseType().getJdbcUrlPrefixes().iterator().next());
+            case "SQLServer":
+                return getUrl(connectionSegment, new SQLServerDatabaseType().getJdbcUrlPrefixes().iterator().next());
             default:
                 throw new UnsupportedOperationException(String.format("ShardingSphere can not get url from %s.", databaseType.getName()));
         }
