@@ -231,8 +231,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     @Override
     public ASTNode visitSetClause(final SetClauseContext ctx) {
         ColumnSegment columnSegment = (ColumnSegment) visit(ctx.setTarget());
-        SQLSegment sqlSegment = (SQLSegment) visit(ctx.aExpr());
-        ExpressionSegment expressionSegment = new CommonExpressionSegment(sqlSegment.getStartIndex(), sqlSegment.getStopIndex(), sqlSegment.toString());
+        ExpressionSegment expressionSegment = (ExpressionSegment) visit(ctx.aExpr());
         return new AssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegment, expressionSegment);
     }
     
