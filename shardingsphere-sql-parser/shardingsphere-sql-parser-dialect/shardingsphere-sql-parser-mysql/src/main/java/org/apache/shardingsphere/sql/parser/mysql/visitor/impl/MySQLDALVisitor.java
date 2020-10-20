@@ -302,12 +302,12 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     @Override
     public ASTNode visitSetName(final SetNameContext ctx) {
         MySQLSetStatement result = new MySQLSetStatement();
-        if (null != ctx.characterSetName_() || null != ctx.DEFAULT()) {
+        if (null != ctx.characterSetName() || null != ctx.DEFAULT()) {
             VariableAssignSegment characterSet = new VariableAssignSegment();
             VariableSegment variable = new VariableSegment();
             variable.setVariable("charset");
             characterSet.setVariable(variable);
-            String assignValue = (null != ctx.DEFAULT()) ? ctx.DEFAULT().getText() : ctx.characterSetName_().getText();
+            String assignValue = (null != ctx.DEFAULT()) ? ctx.DEFAULT().getText() : ctx.characterSetName().getText();
             characterSet.setAssignValue(assignValue);
         }
         if (null != ctx.collationName_()) {
@@ -327,7 +327,7 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
         VariableSegment variable = new VariableSegment();
         String variableName = (null != ctx.CHARSET()) ? ctx.CHARSET().getText() : "charset";
         variable.setVariable(variableName);
-        String assignValue = (null != ctx.DEFAULT()) ? ctx.DEFAULT().getText() : ctx.characterSetName_().getText();
+        String assignValue = (null != ctx.DEFAULT()) ? ctx.DEFAULT().getText() : ctx.characterSetName().getText();
         characterSet.setAssignValue(assignValue);
         return result;
     }
@@ -338,7 +338,7 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         result.setVariable((VariableSegment) visit(ctx.variable()));
-        result.setAssignValue(ctx.expr().getText());
+        result.setAssignValue(ctx.setExprOrDefault().getText());
         return result;
     }
     
@@ -350,10 +350,10 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
         if (null != ctx.scope()) {
             result.setScope(ctx.scope().getText());
         }
-        result.setVariable(ctx.identifier().getText());
+        result.setVariable(ctx.internalVariableName().getText());
         return result;
     }
-    
+
     @Override
     public ASTNode visitFromSchema(final FromSchemaContext ctx) {
         return new FromSchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());

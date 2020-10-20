@@ -30,7 +30,7 @@ help
 explain
     : (DESC | DESCRIBE | EXPLAIN)
     (tableName (columnName | pattern)?
-    | explainType? (explainableStatement | FOR CONNECTION connectionId_)
+    | explainType? (explainableStatement | FOR CONNECTION connectionId)
     | ANALYZE select)
     ;
 
@@ -47,11 +47,11 @@ showTableStatus
     ;
 
 showColumns
-    : SHOW EXTENDED? FULL? (COLUMNS | FIELDS) fromTable fromSchema? (showColumnLike_ | showWhereClause_)?
+    : SHOW EXTENDED? FULL? (COLUMNS | FIELDS) fromTable fromSchema? (showColumnLike | showWhereClause)?
     ;
 
 showIndex
-    : SHOW EXTENDED? (INDEX | INDEXES | KEYS) fromTable fromSchema? showWhereClause_?
+    : SHOW EXTENDED? (INDEX | INDEXES | KEYS) fromTable fromSchema? showWhereClause?
     ;
 
 showCreateTable
@@ -74,16 +74,16 @@ showLike
     : LIKE stringLiterals
     ;
 
-showColumnLike_
+showColumnLike
     : LIKE stringLiterals
     ;
 
-showWhereClause_
+showWhereClause
     : WHERE expr
     ;
 
 showFilter
-    : showLike | showWhereClause_
+    : showLike | showWhereClause
     ;
 
 showProfileType
@@ -95,7 +95,7 @@ setVariable
     ;
 
 variableAssign
-    : variable EQ_ expr
+    : variable EQ_? setExprOrDefault
     ;
 
 showBinaryLogs
@@ -115,7 +115,7 @@ showCollation
     ;
 
 showCreateDatabase
-    : SHOW CREATE (DATABASE | SCHEMA) notExistClause_? schemaName
+    : SHOW CREATE (DATABASE | SCHEMA) notExistClause? schemaName
     ;
 
 showCreateEvent
@@ -235,18 +235,18 @@ showWarnings
     ;
 
 setCharacter
-    : SET (CHARACTER SET | CHARSET) (characterSetName_ | DEFAULT)
+    : SET (CHARACTER SET | CHARSET) (characterSetName | DEFAULT)
     ;
 
 setName
-    : SET NAMES (characterSetName_ (COLLATE collationName_)? | DEFAULT)
+    : SET NAMES (characterSetName (COLLATE collationName_)? | DEFAULT)
     ;
 
 clone
-    : CLONE cloneAction_
+    : CLONE cloneAction
     ;
 
-cloneAction_
+cloneAction
     : LOCAL DATA DIRECTORY EQ_? cloneDir SEMI_
     | INSTANCE FROM cloneInstance IDENTIFIED BY STRING_ (DATA DIRECTORY EQ_? cloneDir)? (REQUIRE NO? SSL)?
     ;
@@ -278,10 +278,10 @@ analyzeTable
     ;
 
 checkTable
-    : CHECK TABLE tableNames checkTableOption_
+    : CHECK TABLE tableNames checkTableOption
     ;
 
-checkTableOption_
+checkTableOption
     : FOR UPGRADE | QUICK | FAST | MEDIUM | EXTENDED | CHANGE
     ;
 
@@ -297,16 +297,16 @@ repairTable
     ;
 
 alterResourceGroup
-    : ALTER RESOURCE GROUP groupName (VCPU EQ_? vcpuSpec_ (COMMA_ vcpuSpec_)*)? (THREAD_PRIORITY EQ_? NUMBER_)?
+    : ALTER RESOURCE GROUP groupName (VCPU EQ_? vcpuSpec (COMMA_ vcpuSpec)*)? (THREAD_PRIORITY EQ_? NUMBER_)?
     (ENABLE | DISABLE FORCE?)?
     ;
 
-vcpuSpec_
+vcpuSpec
     : NUMBER_ | NUMBER_ MINUS_ NUMBER_
     ;
 
 createResourceGroup
-    : CREATE RESOURCE GROUP groupName TYPE EQ_ (SYSTEM | USER) (VCPU EQ_? vcpuSpec_ (COMMA_ vcpuSpec_)*)? 
+    : CREATE RESOURCE GROUP groupName TYPE EQ_ (SYSTEM | USER) (VCPU EQ_? vcpuSpec (COMMA_ vcpuSpec)*)?
     (THREAD_PRIORITY EQ_? NUMBER_)? (ENABLE | DISABLE )?
     ;
 
@@ -335,15 +335,15 @@ partitionList
     ;
 
 flush
-    : FLUSH (NO_WRITE_TO_BINLOG | LOCAL)? (flushOption_ (COMMA_ flushOption_)* | tablesOption_)
+    : FLUSH (NO_WRITE_TO_BINLOG | LOCAL)? (flushOption (COMMA_ flushOption)* | tablesOption)
     ;
 
-flushOption_
+flushOption
     : BINARY LOGS | ENGINE LOGS | ERROR LOGS | GENERAL LOGS | HOSTS | LOGS | PRIVILEGES | OPTIMIZER_COSTS
     | RELAY LOGS (FOR CHANNEL channelName)? | SLOW LOGS | STATUS | USER_RESOURCES 
     ;
 
-tablesOption_
+tablesOption
     : TABLES |TABLES tableName (COMMA_ tableName)* | TABLES WITH READ LOCK | TABLES tableName (COMMA_ tableName)* WITH READ LOCK
     | TABLES tableName (COMMA_ tableName)* FOR EXPORT
     ;
@@ -357,15 +357,15 @@ loadIndexInfo
     ;
 
 resetStatement
-    : RESET resetOption_ (COMMA_ resetOption_)*
+    : RESET resetOption (COMMA_ resetOption)*
     ;
 
-resetOption_
+resetOption
     : MASTER | SLAVE | QUERY CACHE
     ;
 
 resetPersist
-    : RESET PERSIST (existClause_? IDENTIFIER_)
+    : RESET PERSIST (existClause? IDENTIFIER_)
     ;
 
 restart

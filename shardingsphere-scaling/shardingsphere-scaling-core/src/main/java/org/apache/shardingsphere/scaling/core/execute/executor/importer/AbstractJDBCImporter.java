@@ -109,9 +109,11 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     private List<Record> doFlush(final DataSource dataSource, final List<Record> buffer) {
         int i = 0;
         try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
             for (; i < buffer.size(); i++) {
                 execute(connection, buffer.get(i));
             }
+            connection.commit();
         } catch (final SQLException ex) {
             log.error("flush failed: {}", buffer.get(i), ex);
             return buffer.subList(i, buffer.size());
