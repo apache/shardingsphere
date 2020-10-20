@@ -613,7 +613,7 @@ ignoredIdentifier
     : identifier (DOT_ identifier)?
     ;
 
-ignoredIdentifiers_
+ignoredIdentifiers
     : ignoredIdentifier (COMMA_ ignoredIdentifier)*
     ;
 

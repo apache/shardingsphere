@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Ass
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentValuesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNamesContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CteClause_Context;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CteClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExprContext;
@@ -42,10 +42,10 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Mul
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MultipleTablesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByItemContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputClause_Context;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputTableName_Context;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputWithColumn_Context;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputWithColumns_Context;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputTableNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputWithColumnContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputWithColumnsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QualifiedShorthandContext;
@@ -61,7 +61,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Tab
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TopContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WhereClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithClause_Context;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
@@ -135,8 +135,8 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         } else {
             result = (SQLServerInsertStatement) visit(ctx.insertSelectClause());
         }
-        if (null != ctx.withClause_()) {
-            result.setWithSegment((WithSegment) visit(ctx.withClause_()));
+        if (null != ctx.withClause()) {
+            result.setWithSegment((WithSegment) visit(ctx.withClause()));
         }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setParameterCount(getCurrentParameterIndex());
@@ -147,20 +147,20 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
     public ASTNode visitInsertDefaultValue(final InsertDefaultValueContext ctx) {
         SQLServerInsertStatement result = new SQLServerInsertStatement();
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
-        if (null != ctx.outputClause_()) {
-            result.setOutputSegment((OutputSegment) visit(ctx.outputClause_()));
+        if (null != ctx.outputClause()) {
+            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
         }
         return result;
     }
     
     @Override
-    public ASTNode visitOutputClause_(final OutputClause_Context ctx) {
+    public ASTNode visitOutputClause(final OutputClauseContext ctx) {
         OutputSegment result = new OutputSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        if (null != ctx.outputWithColumns_()) {
-            OutputWithColumns_Context outputWithColumnsContext = ctx.outputWithColumns_();
-            List<OutputWithColumn_Context> outputWithColumnContexts = outputWithColumnsContext.outputWithColumn_();
+        if (null != ctx.outputWithColumns()) {
+            OutputWithColumnsContext outputWithColumnsContext = ctx.outputWithColumns();
+            List<OutputWithColumnContext> outputWithColumnContexts = outputWithColumnsContext.outputWithColumn();
             Collection<ColumnProjectionSegment> outputColumns = new LinkedList<>();
-            for (OutputWithColumn_Context each : outputWithColumnContexts) {
+            for (OutputWithColumnContext each : outputWithColumnContexts) {
                 ColumnSegment column = new ColumnSegment(each.start.getStartIndex(), each.stop.getStopIndex(), new IdentifierValue(each.name().getText()));
                 ColumnProjectionSegment outputColumn = new ColumnProjectionSegment(column);
                 if (null != each.alias()) {
@@ -170,8 +170,8 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
             }
             result.getOutputColumns().addAll(outputColumns);
         }
-        if (null != ctx.outputTableName_()) {
-            OutputTableName_Context outputTableNameContext = ctx.outputTableName_();
+        if (null != ctx.outputTableName()) {
+            OutputTableNameContext outputTableNameContext = ctx.outputTableName();
             TableNameSegment tableName = new TableNameSegment(outputTableNameContext.start.getStartIndex(), 
                     outputTableNameContext.stop.getStopIndex(), new IdentifierValue(outputTableNameContext.getText()));
             result.setTableName(tableName);
@@ -189,8 +189,8 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         SQLServerInsertStatement result = new SQLServerInsertStatement();
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
-        if (null != ctx.outputClause_()) {
-            result.setOutputSegment((OutputSegment) visit(ctx.outputClause_()));
+        if (null != ctx.outputClause()) {
+            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
         }
         return result;
     }
@@ -208,8 +208,8 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         SQLServerInsertStatement result = new SQLServerInsertStatement();
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         result.setInsertSelect(createInsertSelectSegment(ctx));
-        if (null != ctx.outputClause_()) {
-            result.setOutputSegment((OutputSegment) visit(ctx.outputClause_()));
+        if (null != ctx.outputClause()) {
+            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
         }
         return result;
     }
@@ -230,10 +230,10 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
     }
 
     @Override
-    public ASTNode visitWithClause_(final WithClause_Context ctx) {
-        List<CteClause_Context> cteClauses = ctx.cteClause_();
+    public ASTNode visitWithClause(final WithClauseContext ctx) {
+        List<CteClauseContext> cteClauses = ctx.cteClause();
         Collection<CommonTableExpressionSegment> commonTableExpressions = new LinkedList<>();
-        for (CteClause_Context cte : cteClauses) {
+        for (CteClauseContext cte : cteClauses) {
             SubquerySegment subquery = new SubquerySegment(cte.start.getStartIndex(), cte.stop.getStopIndex(), (SQLServerSelectStatement) visit(cte.subquery()));
             IdentifierValue identifier = (IdentifierValue) visit(cte.identifier());
             CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(cte.start.getStartIndex(), cte.stop.getStopIndex(), identifier, subquery);

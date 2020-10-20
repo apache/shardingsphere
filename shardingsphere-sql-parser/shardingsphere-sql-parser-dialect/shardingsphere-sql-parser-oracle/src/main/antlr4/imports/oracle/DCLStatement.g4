@@ -20,30 +20,30 @@ grammar DCLStatement;
 import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
 
 grant
-    : GRANT (objectPrivilegeClause | systemPrivilegeClause_ | roleClause_) 
+    : GRANT (objectPrivilegeClause | systemPrivilegeClause | roleClause)
     ;
 
 revoke
-    : REVOKE (objectPrivilegeClause | systemPrivilegeClause_ | roleClause_)
+    : REVOKE (objectPrivilegeClause | systemPrivilegeClause | roleClause)
     ;
 
 objectPrivilegeClause
-    : objectPrivileges_ ON onObjectClause
+    : objectPrivileges ON onObjectClause
     ;
 
-systemPrivilegeClause_
-    : systemPrivilege_
+systemPrivilegeClause
+    : systemPrivilege
     ;
     
-roleClause_
-    : ignoredIdentifiers_
+roleClause
+    : ignoredIdentifiers
     ;
 
-objectPrivileges_
-    : objectPrivilegeType_ columnNames? (COMMA_ objectPrivilegeType_ columnNames?)*
+objectPrivileges
+    : objectPrivilegeType columnNames? (COMMA_ objectPrivilegeType columnNames?)*
     ;
 
-objectPrivilegeType_
+objectPrivilegeType
     : ALL PRIVILEGES?
     | SELECT
     | INSERT
@@ -73,226 +73,226 @@ onObjectClause
     | tableName
     ;
 
-systemPrivilege_
+systemPrivilege
     : ALL PRIVILEGES
-    | advisorFrameworkSystemPrivilege_
-    | clustersSystemPrivilege_
-    | contextsSystemPrivilege_
-    | dataRedactionSystemPrivilege_
-    | databaseSystemPrivilege_
-    | databaseLinksSystemPrivilege_
-    | debuggingSystemPrivilege_
-    | dictionariesSystemPrivilege_
-    | dimensionsSystemPrivilege_
-    | directoriesSystemPrivilege_
-    | editionsSystemPrivilege_
-    | flashbackDataArchivesPrivilege_
-    | indexesSystemPrivilege_
-    | indexTypesSystemPrivilege_
-    | jobSchedulerObjectsSystemPrivilege_
-    | keyManagementFrameworkSystemPrivilege_
-    | librariesFrameworkSystemPrivilege_
-    | logminerFrameworkSystemPrivilege_
-    | materizlizedViewsSystemPrivilege_
-    | miningModelsSystemPrivilege_
-    | olapCubesSystemPrivilege_
-    | olapCubeMeasureFoldersSystemPrivilege_
-    | olapCubeDiminsionsSystemPrivilege_
-    | olapCubeBuildProcessesSystemPrivilege_
-    | operatorsSystemPrivilege_
-    | outlinesSystemPrivilege_
-    | planManagementSystemPrivilege_
-    | pluggableDatabasesSystemPrivilege_
-    | proceduresSystemPrivilege_
-    | profilesSystemPrivilege_
-    | rolesSystemPrivilege_
-    | rollbackSegmentsSystemPrivilege_
-    | sequencesSystemPrivilege_
-    | sessionsSystemPrivilege_
-    | sqlTranslationProfilesSystemPrivilege_
-    | synonymsSystemPrivilege_
-    | tablesSystemPrivilege_
-    | tablespacesSystemPrivilege_
-    | triggersSystemPrivilege_
-    | typesSystemPrivilege_
-    | usersSystemPrivilege_
-    | viewsSystemPrivilege_
-    | miscellaneousSystemPrivilege_
+    | advisorFrameworkSystemPrivilege
+    | clustersSystemPrivilege
+    | contextsSystemPrivilege
+    | dataRedactionSystemPrivilege
+    | databaseSystemPrivilege
+    | databaseLinksSystemPrivilege
+    | debuggingSystemPrivilege
+    | dictionariesSystemPrivilege
+    | dimensionsSystemPrivilege
+    | directoriesSystemPrivilege
+    | editionsSystemPrivilege
+    | flashbackDataArchivesPrivilege
+    | indexesSystemPrivilege
+    | indexTypesSystemPrivilege
+    | jobSchedulerObjectsSystemPrivilege
+    | keyManagementFrameworkSystemPrivilege
+    | librariesFrameworkSystemPrivilege
+    | logminerFrameworkSystemPrivilege
+    | materizlizedViewsSystemPrivilege
+    | miningModelsSystemPrivilege
+    | olapCubesSystemPrivilege
+    | olapCubeMeasureFoldersSystemPrivilege
+    | olapCubeDiminsionsSystemPrivilege
+    | olapCubeBuildProcessesSystemPrivilege
+    | operatorsSystemPrivilege
+    | outlinesSystemPrivilege
+    | planManagementSystemPrivilege
+    | pluggableDatabasesSystemPrivilege
+    | proceduresSystemPrivilege
+    | profilesSystemPrivilege
+    | rolesSystemPrivilege
+    | rollbackSegmentsSystemPrivilege
+    | sequencesSystemPrivilege
+    | sessionsSystemPrivilege
+    | sqlTranslationProfilesSystemPrivilege
+    | synonymsSystemPrivilege
+    | tablesSystemPrivilege
+    | tablespacesSystemPrivilege
+    | triggersSystemPrivilege
+    | typesSystemPrivilege
+    | usersSystemPrivilege
+    | viewsSystemPrivilege
+    | miscellaneousSystemPrivilege
     ;
 
-systemPrivilegeOperation_
+systemPrivilegeOperation
     : (CREATE | ALTER | DROP | SELECT | INSERT | UPDATE | DELETE | EXECUTE) ANY?
     ;
 
-advisorFrameworkSystemPrivilege_
-    : systemPrivilegeOperation_? SQL PROFILE | ADVISOR | ADMINISTER ANY? SQL (TUNING SET | MANAGEMENT OBJECT)
+advisorFrameworkSystemPrivilege
+    : systemPrivilegeOperation? SQL PROFILE | ADVISOR | ADMINISTER ANY? SQL (TUNING SET | MANAGEMENT OBJECT)
     ;
 
-clustersSystemPrivilege_
-    : systemPrivilegeOperation_ CLUSTER
+clustersSystemPrivilege
+    : systemPrivilegeOperation CLUSTER
     ;
 
-contextsSystemPrivilege_
-    : systemPrivilegeOperation_ CONTEXT
+contextsSystemPrivilege
+    : systemPrivilegeOperation CONTEXT
     ;
 
-dataRedactionSystemPrivilege_
+dataRedactionSystemPrivilege
     : EXEMPT REDACTION POLICY
     ;
 
-databaseSystemPrivilege_
+databaseSystemPrivilege
     : ALTER (DATABASE | SYSTEM) | AUDIT SYSTEM
     ;
 
-databaseLinksSystemPrivilege_
+databaseLinksSystemPrivilege
     : (CREATE | ALTER | DROP) PUBLIC? DATABASE LINK
     ;
 
-debuggingSystemPrivilege_
+debuggingSystemPrivilege
     : DEBUG (CONNECT SESSION | ANY PROCEDURE)
     ;
 
-dictionariesSystemPrivilege_
+dictionariesSystemPrivilege
     : ANALYZE ANY DICTIONARY
     ;
 
-dimensionsSystemPrivilege_
-    : systemPrivilegeOperation_ DIMENSION
+dimensionsSystemPrivilege
+    : systemPrivilegeOperation DIMENSION
     ;
 
-directoriesSystemPrivilege_
-    : systemPrivilegeOperation_ DIRECTORY
+directoriesSystemPrivilege
+    : systemPrivilegeOperation DIRECTORY
     ;
 
-editionsSystemPrivilege_
-    : systemPrivilegeOperation_ EDITION
+editionsSystemPrivilege
+    : systemPrivilegeOperation EDITION
     ;
 
-flashbackDataArchivesPrivilege_
+flashbackDataArchivesPrivilege
     : FLASHBACK ARCHIVE ADMINISTER
     ;
 
-indexesSystemPrivilege_
-    : systemPrivilegeOperation_ INDEX
+indexesSystemPrivilege
+    : systemPrivilegeOperation INDEX
     ;
 
-indexTypesSystemPrivilege_
-    : systemPrivilegeOperation_ INDEXTYPE
+indexTypesSystemPrivilege
+    : systemPrivilegeOperation INDEXTYPE
     ;
 
-jobSchedulerObjectsSystemPrivilege_
+jobSchedulerObjectsSystemPrivilege
     : CREATE (ANY | EXTERNAL)? JOB | EXECUTE ANY (CLASS | PROGRAM) | MANAGE SCHEDULER
     ;
 
-keyManagementFrameworkSystemPrivilege_
+keyManagementFrameworkSystemPrivilege
     : ADMINISTER KEY MANAGEMENT
     ;
 
-librariesFrameworkSystemPrivilege_
-    : systemPrivilegeOperation_ LIBRARY
+librariesFrameworkSystemPrivilege
+    : systemPrivilegeOperation LIBRARY
     ;
 
-logminerFrameworkSystemPrivilege_
+logminerFrameworkSystemPrivilege
     : LOGMINING
     ;
 
-materizlizedViewsSystemPrivilege_
-    : systemPrivilegeOperation_ MATERIALIZED VIEW | GLOBAL? QUERY REWRITE | ON COMMIT REFRESH | FLASHBACK ANY TABLE
+materizlizedViewsSystemPrivilege
+    : systemPrivilegeOperation MATERIALIZED VIEW | GLOBAL? QUERY REWRITE | ON COMMIT REFRESH | FLASHBACK ANY TABLE
     ;
 
-miningModelsSystemPrivilege_
-    : (systemPrivilegeOperation_ | COMMENT ANY) MINING MODEL
+miningModelsSystemPrivilege
+    : (systemPrivilegeOperation | COMMENT ANY) MINING MODEL
     ;
 
-olapCubesSystemPrivilege_
-    : systemPrivilegeOperation_ CUBE
+olapCubesSystemPrivilege
+    : systemPrivilegeOperation CUBE
     ;
 
-olapCubeMeasureFoldersSystemPrivilege_
-    : systemPrivilegeOperation_ MEASURE FOLDER
+olapCubeMeasureFoldersSystemPrivilege
+    : systemPrivilegeOperation MEASURE FOLDER
     ;
 
-olapCubeDiminsionsSystemPrivilege_
-    : systemPrivilegeOperation_ CUBE DIMENSION
+olapCubeDiminsionsSystemPrivilege
+    : systemPrivilegeOperation CUBE DIMENSION
     ;
 
-olapCubeBuildProcessesSystemPrivilege_
-    : systemPrivilegeOperation_ CUBE BUILD PROCESS
+olapCubeBuildProcessesSystemPrivilege
+    : systemPrivilegeOperation CUBE BUILD PROCESS
     ;
 
-operatorsSystemPrivilege_
-    : systemPrivilegeOperation_ OPERATOR
+operatorsSystemPrivilege
+    : systemPrivilegeOperation OPERATOR
     ;
 
-outlinesSystemPrivilege_
-    : systemPrivilegeOperation_ OUTLINE
+outlinesSystemPrivilege
+    : systemPrivilegeOperation OUTLINE
     ;
 
-planManagementSystemPrivilege_
+planManagementSystemPrivilege
     : ADMINISTER SQL MANAGEMENT OBJECT
     ;
 
-pluggableDatabasesSystemPrivilege_
+pluggableDatabasesSystemPrivilege
     : CREATE PLUGGABLE DATABASE | SET CONTAINER
     ;
 
-proceduresSystemPrivilege_
-    : systemPrivilegeOperation_ PROCEDURE 
+proceduresSystemPrivilege
+    : systemPrivilegeOperation PROCEDURE 
     ;
 
-profilesSystemPrivilege_
-    : systemPrivilegeOperation_ PROFILE 
+profilesSystemPrivilege
+    : systemPrivilegeOperation PROFILE 
     ;
 
-rolesSystemPrivilege_
-    : (systemPrivilegeOperation_ | GRANT ANY) ROLE 
+rolesSystemPrivilege
+    : (systemPrivilegeOperation | GRANT ANY) ROLE 
     ;
 
-rollbackSegmentsSystemPrivilege_
-    : systemPrivilegeOperation_ ROLLBACK SEGMENT 
+rollbackSegmentsSystemPrivilege
+    : systemPrivilegeOperation ROLLBACK SEGMENT 
     ;
 
-sequencesSystemPrivilege_
-    : systemPrivilegeOperation_ SEQUENCE 
+sequencesSystemPrivilege
+    : systemPrivilegeOperation SEQUENCE 
     ;
 
-sessionsSystemPrivilege_
+sessionsSystemPrivilege
     : (CREATE | ALTER | RESTRICTED) SESSION | ALTER RESOURCE COST
     ;
 
-sqlTranslationProfilesSystemPrivilege_
-    : (systemPrivilegeOperation_ | USE ANY) SQL TRANSLATION PROFILE | TRANSLATE ANY SQL
+sqlTranslationProfilesSystemPrivilege
+    : (systemPrivilegeOperation | USE ANY) SQL TRANSLATION PROFILE | TRANSLATE ANY SQL
     ;
 
-synonymsSystemPrivilege_
-    : systemPrivilegeOperation_ SYNONYM | DROP PUBLIC SYNONYM
+synonymsSystemPrivilege
+    : systemPrivilegeOperation SYNONYM | DROP PUBLIC SYNONYM
     ;
 
-tablesSystemPrivilege_
-    : (systemPrivilegeOperation_ | (BACKUP | LOCK | READ | FLASHBACK) ANY) TABLE
+tablesSystemPrivilege
+    : (systemPrivilegeOperation | (BACKUP | LOCK | READ | FLASHBACK) ANY) TABLE
     ;
 
-tablespacesSystemPrivilege_
-    : (systemPrivilegeOperation_ | MANAGE | UNLIMITED) TABLESPACE
+tablespacesSystemPrivilege
+    : (systemPrivilegeOperation | MANAGE | UNLIMITED) TABLESPACE
     ;
 
-triggersSystemPrivilege_
-    : systemPrivilegeOperation_ TRIGGER | ADMINISTER DATABASE TRIGGER
+triggersSystemPrivilege
+    : systemPrivilegeOperation TRIGGER | ADMINISTER DATABASE TRIGGER
     ;
 
-typesSystemPrivilege_
-    : (systemPrivilegeOperation_ | UNDER ANY) TYPE
+typesSystemPrivilege
+    : (systemPrivilegeOperation | UNDER ANY) TYPE
     ;
 
-usersSystemPrivilege_
-    : systemPrivilegeOperation_ USER
+usersSystemPrivilege
+    : systemPrivilegeOperation USER
     ;
 
-viewsSystemPrivilege_
-    : (systemPrivilegeOperation_ | (UNDER | MERGE) ANY) VIEW
+viewsSystemPrivilege
+    : (systemPrivilegeOperation | (UNDER | MERGE) ANY) VIEW
     ;
 
-miscellaneousSystemPrivilege_
+miscellaneousSystemPrivilege
     : ANALYZE ANY | AUDIT ANY | BECOME USER | CHANGE NOTIFICATION | COMMENT ANY TABLE | EXEMPT ACCESS POLICY | FORCE ANY? TRANSACTION
     | GRANT ANY OBJECT? PRIVILEGE | INHERIT ANY PRIVILEGES | KEEP DATE TIME | KEEP SYSGUID | PURGE DBA_RECYCLEBIN | RESUMABLE
     | SELECT ANY (DICTIONARY | TRANSACTION) | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER

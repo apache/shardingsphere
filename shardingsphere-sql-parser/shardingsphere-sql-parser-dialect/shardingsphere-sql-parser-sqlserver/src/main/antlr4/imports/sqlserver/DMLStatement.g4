@@ -20,19 +20,19 @@ grammar DMLStatement;
 import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
 
 insert
-    : withClause_? INSERT top? INTO? tableName (AS? alias)? (insertDefaultValue | insertValuesClause | insertSelectClause)
+    : withClause? INSERT top? INTO? tableName (AS? alias)? (insertDefaultValue | insertValuesClause | insertSelectClause)
     ;
     
 insertDefaultValue
-    : columnNames? outputClause_? DEFAULT VALUES
+    : columnNames? outputClause? DEFAULT VALUES
     ;
 
 insertValuesClause
-    : columnNames? outputClause_? VALUES assignmentValues (COMMA_ assignmentValues)*
+    : columnNames? outputClause? VALUES assignmentValues (COMMA_ assignmentValues)*
     ;
 
 insertSelectClause
-    : columnNames? outputClause_? select
+    : columnNames? outputClause? select
     ;
 
 update
@@ -157,30 +157,30 @@ subquery
     : LP_ aggregationClause RP_
     ;
 
-withClause_
-    : WITH cteClause_ (COMMA_ cteClause_)*
+withClause
+    : WITH cteClause (COMMA_ cteClause)*
     ;
 
-cteClause_
+cteClause
     : identifier columnNames? AS subquery
     ;
 
-outputClause_
-    : OUTPUT (outputWithColumns_ | outputWithAaterisk_) (INTO outputTableName_ columnNames?)?
+outputClause
+    : OUTPUT (outputWithColumns | outputWithAaterisk) (INTO outputTableName columnNames?)?
     ;
 
-outputWithColumns_
-    : outputWithColumn_ (COMMA_ outputWithColumn_)*
+outputWithColumns
+    : outputWithColumn (COMMA_ outputWithColumn)*
     ;
 
-outputWithColumn_
+outputWithColumn
     : (INSERTED | DELETED) DOT_ name (AS? alias)?
     ;
 
-outputWithAaterisk_
+outputWithAaterisk
     : (INSERTED | DELETED) DOT_ASTERISK_
     ;
 
-outputTableName_
+outputTableName
     : (AT_ name) | tableName
     ;
