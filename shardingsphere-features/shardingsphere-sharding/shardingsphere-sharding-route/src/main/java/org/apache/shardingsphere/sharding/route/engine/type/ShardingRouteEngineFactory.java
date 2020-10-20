@@ -110,11 +110,14 @@ public final class ShardingRouteEngineFactory {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         boolean functionStatement = sqlStatement instanceof CreateFunctionStatement || sqlStatement instanceof AlterFunctionStatement || sqlStatement instanceof DropFunctionStatement;
         boolean procedureStatement = sqlStatement instanceof CreateProcedureStatement || sqlStatement instanceof AlterProcedureStatement || sqlStatement instanceof DropProcedureStatement;
+        if (functionStatement || procedureStatement) {
+            return new ShardingDatabaseBroadcastRoutingEngine();
+        }
         boolean viewStatement = sqlStatement instanceof CreateViewStatement || sqlStatement instanceof AlterViewStatement || sqlStatement instanceof DropViewStatement;
         boolean tableStatement = sqlStatement instanceof CreateTableStatement || sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement;
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         boolean modifyTableWithoutShardingRule = tableStatement && !tableNames.isEmpty() && !shardingRule.tableRuleExists(tableNames);
-        if (functionStatement || procedureStatement || viewStatement || modifyTableWithoutShardingRule) {
+        if (viewStatement || modifyTableWithoutShardingRule) {
             return new ShardingUnconfiguredTablesRoutingEngine(tableNames, schemaMetaData.getUnconfiguredSchemaMetaDataMap(), sqlStatement);
         }
         return new ShardingTableBroadcastRoutingEngine(schemaMetaData.getConfiguredSchemaMetaData(), sqlStatementContext);

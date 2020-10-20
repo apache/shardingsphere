@@ -70,9 +70,9 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FlowCon
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ForeignKeyOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GeneratedOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IfStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IndexDefinition_Context;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KeyPart_Context;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KeyParts_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IndexDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KeyPartContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KeyPartsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoopStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReferenceDefinitionContext;
@@ -156,6 +156,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         MySQLCreateViewStatement result = new MySQLCreateViewStatement();
+        result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setSelect((MySQLSelectStatement) visit(ctx.select()));
         return result;
     }
@@ -163,13 +164,17 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @Override
     public ASTNode visitAlterView(final AlterViewContext ctx) {
         MySQLAlterViewStatement result = new MySQLAlterViewStatement();
+        result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setSelect((MySQLSelectStatement) visit(ctx.select()));
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        return new MySQLDropViewStatement();
+        MySQLDropViewStatement result = new MySQLDropViewStatement();
+        result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.viewNames())).getValue());
+        return result;
     }
     
     @Override
@@ -201,7 +206,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
         MySQLCreateTableStatement result = new MySQLCreateTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setNotExisted(null != ctx.notExistClause_());
+        result.setNotExisted(null != ctx.notExistClause());
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
@@ -228,17 +233,17 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
             if (null != each.checkConstraintDefinition()) {
                 result.getValue().add((ConstraintDefinitionSegment) visit(each.checkConstraintDefinition()));
             }
-            if (null != each.indexDefinition_()) {
-                result.getValue().add((ConstraintDefinitionSegment) visit(each.indexDefinition_()));
+            if (null != each.indexDefinition()) {
+                result.getValue().add((ConstraintDefinitionSegment) visit(each.indexDefinition()));
             }
         }
         return result;
     }
     
     @Override
-    public ASTNode visitIndexDefinition_(final IndexDefinition_Context ctx) {
+    public ASTNode visitIndexDefinition(final IndexDefinitionContext ctx) {
         ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(ctx.keyParts_());
+        CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(ctx.keyParts());
         result.getIndexColumns().addAll(columnSegments.getValue());
         if (null != ctx.indexName()) {
             result.setIndexName((IndexSegment) visit(ctx.indexName()));
@@ -366,17 +371,17 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     public ASTNode visitConstraintDefinition(final ConstraintDefinitionContext ctx) {
         ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         if (null != ctx.primaryKeyOption()) {
-            result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.primaryKeyOption().keyParts_())).getValue());
+            result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.primaryKeyOption().keyParts())).getValue());
         }
         if (null != ctx.foreignKeyOption()) {
             result.setReferencedTable((SimpleTableSegment) visit(ctx.foreignKeyOption()));
         }
-        if (null != ctx.uniqueOption_()) {
-            CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(ctx.uniqueOption_().keyParts_());
+        if (null != ctx.uniqueOption()) {
+            CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(ctx.uniqueOption().keyParts());
             result.getIndexColumns().addAll(columnSegments.getValue());
-            if (null != ctx.uniqueOption_().indexName()) {
-                result.setIndexName(new IndexSegment(ctx.uniqueOption_().indexName().start.getStartIndex(), ctx.uniqueOption_().indexName().stop.getStopIndex(),
-                        (IdentifierValue) visit(ctx.uniqueOption_().indexName())));
+            if (null != ctx.uniqueOption().indexName()) {
+                result.setIndexName(new IndexSegment(ctx.uniqueOption().indexName().start.getStartIndex(), ctx.uniqueOption().indexName().stop.getStopIndex(),
+                        (IdentifierValue) visit(ctx.uniqueOption().indexName())));
             }
         }
         return result;
@@ -480,10 +485,10 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     }
     
     @Override
-    public ASTNode visitKeyParts_(final KeyParts_Context ctx) {
+    public ASTNode visitKeyParts(final KeyPartsContext ctx) {
         CollectionValue<ColumnSegment> result = new CollectionValue<>();
-        List<KeyPart_Context> keyParts = ctx.keyPart_();
-        for (KeyPart_Context each : keyParts) {
+        List<KeyPartContext> keyParts = ctx.keyPart();
+        for (KeyPartContext each : keyParts) {
             if (null != each.columnName()) {
                 result.getValue().add((ColumnSegment) visit(each.columnName()));
             }

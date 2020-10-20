@@ -19,12 +19,14 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
+import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Sharding ddl statement validator.
@@ -42,6 +44,23 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
             String tableName = each.getTableName().getIdentifier().getValue();
             if (metaData.getSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames().contains(tableName)) {
                 throw new ShardingSphereException("Can not support sharding table '%s'.", tableName);
+            }
+        }
+    }
+    
+    /**
+     * Validate table exist.
+     *
+     * @param metaData meta data
+     * @param tables tables
+     */
+    protected void validateTableExist(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables) {
+        for (SimpleTableSegment each : tables) {
+            String tableName = each.getTableName().getIdentifier().getValue();
+            for (Map.Entry<String, Collection<String>> entry : metaData.getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().entrySet()) {
+                if (!entry.getValue().contains(tableName)) {
+                    throw new NoSuchTableException(entry.getKey(), tableName);
+                }
             }
         }
     }
