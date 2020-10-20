@@ -66,6 +66,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Substri
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnreservedWordContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ViewNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ViewNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WeightStringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
@@ -243,6 +245,16 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     }
     
     @Override
+    public final ASTNode visitViewName(final ViewNameContext ctx) {
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier())));
+        OwnerContext owner = ctx.owner();
+        if (null != owner) {
+            result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
+        }
+        return result;
+    }
+    
+    @Override
     public final ASTNode visitColumnName(final ColumnNameContext ctx) {
         ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
         OwnerContext owner = ctx.owner();
@@ -261,6 +273,15 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     public final ASTNode visitTableNames(final TableNamesContext ctx) {
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
         for (TableNameContext each : ctx.tableName()) {
+            result.getValue().add((SimpleTableSegment) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitViewNames(final ViewNamesContext ctx) {
+        CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
+        for (ViewNameContext each : ctx.viewName()) {
             result.getValue().add((SimpleTableSegment) visit(each));
         }
         return result;

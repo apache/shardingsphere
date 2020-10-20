@@ -156,6 +156,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         MySQLCreateViewStatement result = new MySQLCreateViewStatement();
+        result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setSelect((MySQLSelectStatement) visit(ctx.select()));
         return result;
     }
@@ -163,13 +164,17 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @Override
     public ASTNode visitAlterView(final AlterViewContext ctx) {
         MySQLAlterViewStatement result = new MySQLAlterViewStatement();
+        result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setSelect((MySQLSelectStatement) visit(ctx.select()));
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        return new MySQLDropViewStatement();
+        MySQLDropViewStatement result = new MySQLDropViewStatement();
+        result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.viewNames())).getValue());
+        return result;
     }
     
     @Override

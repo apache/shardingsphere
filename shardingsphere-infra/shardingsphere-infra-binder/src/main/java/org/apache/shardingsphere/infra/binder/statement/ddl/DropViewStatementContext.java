@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
+package org.apache.shardingsphere.infra.binder.statement.ddl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
 
 /**
- * Drop view statement.
+ * Drop view statement context.
  */
 @Getter
-public abstract class DropViewStatement extends AbstractSQLStatement implements DDLStatement {
+public final class DropViewStatementContext extends CommonSQLStatementContext<DropViewStatement> {
     
-    private final Collection<SimpleTableSegment> views = new LinkedList<>();
+    private final TablesContext tablesContext;
+    
+    public DropViewStatementContext(final DropViewStatement sqlStatement) {
+        super(sqlStatement);
+        tablesContext = new TablesContext(sqlStatement.getViews());
+    }
 }

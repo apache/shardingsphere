@@ -227,7 +227,7 @@ alterView
     ;
 
 dropView
-    : DROP VIEW existClause? viewName (COMMA_ viewName)* (RESTRICT | CASCADE)?
+    : DROP VIEW existClause? viewNames (RESTRICT | CASCADE)?
     ;
 
 createTablespaceInnodb

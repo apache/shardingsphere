@@ -22,14 +22,18 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.refresh.impl.AlterTableStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.impl.CreateIndexStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.impl.CreateTableStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.refresh.impl.CreateViewStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.impl.DropIndexStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.impl.DropTableStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.refresh.impl.DropViewStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,6 +54,8 @@ public final class MetaDataRefreshStrategyFactory {
         REGISTRY.put(DropTableStatement.class, new DropTableStatementMetaDataRefreshStrategy());
         REGISTRY.put(CreateIndexStatement.class, new CreateIndexStatementMetaDataRefreshStrategy());
         REGISTRY.put(DropIndexStatement.class, new DropIndexStatementMetaDataRefreshStrategy());
+        REGISTRY.put(CreateViewStatement.class, new CreateViewStatementMetaDataRefreshStrategy());
+        REGISTRY.put(DropViewStatement.class, new DropViewStatementMetaDataRefreshStrategy());
     }
     
     /**
