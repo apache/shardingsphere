@@ -56,10 +56,10 @@ insertValuesClause
     ;
 
 update
-    : UPDATE updateSpecification_? tableReferences setAssignmentsClause whereClause?
+    : UPDATE updateSpecification? tableReferences setAssignmentsClause whereClause?
     ;
 
-updateSpecification_
+updateSpecification
     : ONLY
     ;
 
@@ -81,10 +81,10 @@ assignmentValue
     ;
 
 delete
-    : DELETE deleteSpecification_? (singleTableClause | multipleTablesClause) whereClause?
+    : DELETE deleteSpecification? (singleTableClause | multipleTablesClause) whereClause?
     ;
 
-deleteSpecification_
+deleteSpecification
     : ONLY
     ;
 

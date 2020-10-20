@@ -162,7 +162,7 @@ exprList
 // TODO comb expr
 expr
     : expr logicalOperator expr
-    | notOperator_ expr
+    | notOperator expr
     | LP_ expr RP_
     | booleanPrimary
     ;
@@ -171,7 +171,7 @@ logicalOperator
     : OR | OR_ | AND | AND_
     ;
 
-notOperator_
+notOperator
     : NOT | NOT_
     ;
 
@@ -248,26 +248,26 @@ castFunction
     ;
 
 charFunction
-    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
+    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier)? RP_
     ;
 
 regularFunction
-    : regularFunctionName_ LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
-regularFunctionName_
+regularFunctionName
     : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
 caseExpression
-    : CASE simpleExpr? caseWhen_+ caseElse_?
+    : CASE simpleExpr? caseWhen+ caseElse?
     ;
 
-caseWhen_
+caseWhen
     : WHEN expr THEN expr
     ;
 
-caseElse_
+caseElse
     : ELSE expr
     ;
 
@@ -363,12 +363,12 @@ constructorExpr
     : NEW dataTypeName exprList
     ;
 
-ignoredIdentifier_
+ignoredIdentifier
     : IDENTIFIER_
     ;
 
-ignoredIdentifiers_
-    : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
+ignoredIdentifiers
+    : ignoredIdentifier (COMMA_ ignoredIdentifier)*
     ;
 
 matchNone

@@ -436,18 +436,18 @@ alterSpecification
     | renameTableSpecification
     | (WITHOUT | WITH) VALIDATION
     | ADD PARTITION LP_ partitionDefinition RP_
-    | DROP PARTITION ignoredIdentifiers_
-    | DISCARD PARTITION (ignoredIdentifiers_ | ALL) TABLESPACE
-    | IMPORT PARTITION (ignoredIdentifiers_ | ALL) TABLESPACE
-    | TRUNCATE PARTITION (ignoredIdentifiers_ | ALL)
+    | DROP PARTITION ignoredIdentifiers
+    | DISCARD PARTITION (ignoredIdentifiers | ALL) TABLESPACE
+    | IMPORT PARTITION (ignoredIdentifiers | ALL) TABLESPACE
+    | TRUNCATE PARTITION (ignoredIdentifiers | ALL)
     | COALESCE PARTITION NUMBER_
-    | REORGANIZE PARTITION ignoredIdentifiers_ INTO partitionDefinitions
+    | REORGANIZE PARTITION ignoredIdentifiers INTO partitionDefinitions
     | EXCHANGE PARTITION ignoredIdentifier WITH TABLE tableName ((WITH | WITHOUT) VALIDATION)?
-    | ANALYZE PARTITION (ignoredIdentifiers_ | ALL)
-    | CHECK PARTITION (ignoredIdentifiers_ | ALL)
-    | OPTIMIZE PARTITION (ignoredIdentifiers_ | ALL)
-    | REBUILD PARTITION (ignoredIdentifiers_ | ALL)
-    | REPAIR PARTITION (ignoredIdentifiers_ | ALL)
+    | ANALYZE PARTITION (ignoredIdentifiers | ALL)
+    | CHECK PARTITION (ignoredIdentifiers | ALL)
+    | OPTIMIZE PARTITION (ignoredIdentifiers | ALL)
+    | REBUILD PARTITION (ignoredIdentifiers | ALL)
+    | REPAIR PARTITION (ignoredIdentifiers | ALL)
     | REMOVE PARTITIONING
     | UPGRADE PARTITIONING
     ;

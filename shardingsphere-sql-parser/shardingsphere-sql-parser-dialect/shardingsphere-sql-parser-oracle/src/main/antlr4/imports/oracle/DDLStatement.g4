@@ -20,11 +20,11 @@ grammar DDLStatement;
 import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
 
 createTable
-    : CREATE createTableSpecification_ TABLE tableName createDefinitionClause
+    : CREATE createTableSpecification TABLE tableName createDefinitionClause
     ;
 
 createIndex
-    : CREATE createIndexSpecification_ INDEX indexName ON createIndexDefinitionClause
+    : CREATE createIndexSpecification INDEX indexName ON createIndexDefinitionClause
     ;
 
 alterTable
@@ -33,7 +33,7 @@ alterTable
 
 // TODO hongjun throw exeption when alter index on oracle
 alterIndex
-    : ALTER INDEX indexName renameIndexClause_
+    : ALTER INDEX indexName renameIndexClause
     ;
 
 dropTable
@@ -48,7 +48,7 @@ truncateTable
     : TRUNCATE TABLE tableName
     ;
 
-createTableSpecification_
+createTableSpecification
     : (GLOBAL TEMPORARY)?
     ;
 
@@ -57,7 +57,7 @@ tablespaceClauseWithParen
     ;
 
 tablespaceClause
-    : TABLESPACE ignoredIdentifier_
+    : TABLESPACE ignoredIdentifier
     ;
 
 domainIndexClause
@@ -77,14 +77,14 @@ relationalProperty
     ;
 
 columnDefinition
-    : columnName dataType SORT? visibleClause_ (defaultNullClause_ expr | identityClause)? (ENCRYPT encryptionSpecification_)? (inlineConstraint+ | inlineRefConstraint)?
+    : columnName dataType SORT? visibleClause (defaultNullClause expr | identityClause)? (ENCRYPT encryptionSpecification)? (inlineConstraint+ | inlineRefConstraint)?
     ;
 
-visibleClause_
+visibleClause
     : (VISIBLE | INVISIBLE)?
     ;
 
-defaultNullClause_
+defaultNullClause
     : DEFAULT (ON NULL)?
     ;
 
@@ -111,12 +111,12 @@ identityOption
     | NOORDER
     ;
 
-encryptionSpecification_
+encryptionSpecification
     : (USING STRING_)? (IDENTIFIED BY STRING_)? STRING_? (NO? SALT)?
     ;
 
 inlineConstraint
-    : (CONSTRAINT ignoredIdentifier_)? (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_) constraintState*
+    : (CONSTRAINT ignoredIdentifier)? (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_) constraintState*
     ;
 
 referencesClause
@@ -146,15 +146,15 @@ exceptionsClause
     ;
 
 usingIndexClause
-    : USING INDEX (indexName | createIndexClause_)?
+    : USING INDEX (indexName | createIndexClause)?
     ;
 
-createIndexClause_ 
+createIndexClause
     :  LP_ createIndex RP_
     ;
 
 inlineRefConstraint
-    : SCOPE IS tableName | WITH ROWID | (CONSTRAINT ignoredIdentifier_)? referencesClause constraintState*
+    : SCOPE IS tableName | WITH ROWID | (CONSTRAINT ignoredIdentifier)? referencesClause constraintState*
     ;
 
 virtualColumnDefinition
@@ -162,7 +162,7 @@ virtualColumnDefinition
     ;
 
 outOfLineConstraint
-    : (CONSTRAINT ignoredIdentifier_)?
+    : (CONSTRAINT ignoredIdentifier)?
     (UNIQUE columnNames
     | primaryKey columnNames 
     | FOREIGN KEY columnNames referencesClause
@@ -173,26 +173,26 @@ outOfLineConstraint
 outOfLineRefConstraint
     : SCOPE FOR LP_ lobItem RP_ IS tableName
     | REF LP_ lobItem RP_ WITH ROWID
-    | (CONSTRAINT ignoredIdentifier_)? FOREIGN KEY lobItemList referencesClause constraintState*
+    | (CONSTRAINT ignoredIdentifier)? FOREIGN KEY lobItemList referencesClause constraintState*
     ;
 
-createIndexSpecification_
+createIndexSpecification
     : (UNIQUE | BITMAP)?
     ;
 
 tableIndexClause
-    : tableName alias? indexExpressions_
+    : tableName alias? indexExpressions
     ;
 
-indexExpressions_
-    : LP_ indexExpression_ (COMMA_ indexExpression_)* RP_
+indexExpressions
+    : LP_ indexExpression (COMMA_ indexExpression)* RP_
     ;
 
-indexExpression_
+indexExpression
     : (columnName | expr) (ASC | DESC)?
     ;
 
-bitmapJoinIndexClause_
+bitmapJoinIndexClause
     : tableName columnSortsClause_ FROM tableAlias WHERE expr
     ;
 
@@ -205,7 +205,7 @@ columnSortClause_
     ;
 
 createIndexDefinitionClause
-    : tableIndexClause | bitmapJoinIndexClause_
+    : tableIndexClause | bitmapJoinIndexClause
     ;
 
 tableAlias
@@ -217,10 +217,10 @@ alterDefinitionClause
     ;
 
 alterTableProperties
-    : renameTableSpecification_ | REKEY encryptionSpecification_
+    : renameTableSpecification | REKEY encryptionSpecification
     ;
 
-renameTableSpecification_
+renameTableSpecification
     : RENAME TO identifier
     ;
 
@@ -265,7 +265,7 @@ modifyColumnSpecification
     ;
 
 modifyColProperties
-    : columnName dataType? (DEFAULT expr)? (ENCRYPT encryptionSpecification_ | DECRYPT)? inlineConstraint* 
+    : columnName dataType? (DEFAULT expr)? (ENCRYPT encryptionSpecification | DECRYPT)? inlineConstraint*
     ;
 
 modifyColSubstitutable
@@ -309,7 +309,7 @@ modifyConstraintClause
     ;
 
 constraintWithName
-    : CONSTRAINT ignoredIdentifier_
+    : CONSTRAINT ignoredIdentifier
     ;
 
 constraintOption
@@ -321,13 +321,13 @@ constraintPrimaryOrUnique
     ;
 
 renameConstraintClause
-    : RENAME constraintWithName TO ignoredIdentifier_
+    : RENAME constraintWithName TO ignoredIdentifier
     ;
 
 dropConstraintClause
     : DROP
     (
-    constraintPrimaryOrUnique CASCADE? ((KEEP | DROP) INDEX)? | (CONSTRAINT ignoredIdentifier_ CASCADE?)
+    constraintPrimaryOrUnique CASCADE? ((KEEP | DROP) INDEX)? | (CONSTRAINT ignoredIdentifier CASCADE?)
     ) 
     ;
 
@@ -343,6 +343,6 @@ objectProperty
     : (columnName | attributeName) (DEFAULT expr)? (inlineConstraint* | inlineRefConstraint?) | outOfLineConstraint | outOfLineRefConstraint
     ;
 
-renameIndexClause_
+renameIndexClause
     : (RENAME TO indexName)?
     ;
