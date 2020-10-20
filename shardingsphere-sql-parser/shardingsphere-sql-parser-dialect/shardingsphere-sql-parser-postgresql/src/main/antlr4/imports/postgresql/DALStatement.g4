@@ -24,8 +24,8 @@ show
     ;
 
 set
-    : SET runtimeScope_?
-    (timeZoneClause_
+    : SET runtimeScope?
+    (timeZoneClause
     | configurationParameterClause
     | varName FROM CURRENT
     | TIME ZONE zoneValue
@@ -38,11 +38,11 @@ set
     | XML OPTION documentOrContent)
     ;
 
-runtimeScope_
+runtimeScope
     : SESSION | LOCAL
     ;
 
-timeZoneClause_
+timeZoneClause
     : TIME ZONE (numberLiterals | LOCAL | DEFAULT)
     ;
 
