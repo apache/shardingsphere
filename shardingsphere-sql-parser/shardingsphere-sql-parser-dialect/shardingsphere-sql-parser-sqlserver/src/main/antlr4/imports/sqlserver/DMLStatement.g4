@@ -57,7 +57,7 @@ assignmentValue
     ;
 
 delete
-    : withClause_? DELETE top? (singleTableClause | multipleTablesClause) outputClause_ whereClause?
+    : withClause_? DELETE top? (singleTableClause | multipleTablesClause) outputClause_? whereClause?
     ;
 
 singleTableClause
