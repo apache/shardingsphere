@@ -522,4 +522,29 @@
             <row-count value="10" parameter-index="3" start-index="89" stop-index="89" literal-start-index="96" literal-stop-index="97" />
         </limit>
     </update>
+
+    <update sql-case-id="update_with_number" parameters="1, 1">
+        <table name="t_order" start-index="7" stop-index="13" />
+        <set start-index="15" stop-index="30" literal-stop-index="30">
+            <assignment start-index="19" stop-index="30" literal-stop-index="30">
+                <column name="order_id" start-index="19" stop-index="26" />
+                <assignment-value>
+                    <parameter-marker-expression value="0" start-index="30" stop-index="30" />
+                    <literal-expression value="1" start-index="30" stop-index="30" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="32" stop-index="48" literal-start-index="43" literal-stop-index="43">
+            <and-predicate>
+                <predicate start-index="38" stop-index="48" literal-start-index="60" literal-stop-index="60">
+                    <column-left-value name="user_id" start-index="38" stop-index="44" literal-start-index="38" literal-stop-index="44" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="48" stop-index="48" />
+                        <literal-expression value="1" start-index="48" stop-index="48" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </update>
 </sql-parser-test-cases>
