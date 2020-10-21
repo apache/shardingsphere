@@ -32,7 +32,7 @@ import java.util.Optional;
  * Standard SQL parser engine.
  */
 @RequiredArgsConstructor
-public final class StandardSQLParserEngine implements SQLParserEngine {
+public final class StandardSQLParserEngine implements SQLStatementParserEngine {
     
     private final String databaseTypeName;
     
