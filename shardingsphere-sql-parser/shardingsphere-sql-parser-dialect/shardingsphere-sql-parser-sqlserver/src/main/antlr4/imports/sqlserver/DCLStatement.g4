@@ -161,7 +161,7 @@ classType_
     ;
 
 roleClause_
-    : ignoredIdentifiers_
+    : ignoredIdentifiers
     ;
 
 createUser

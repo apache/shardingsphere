@@ -72,7 +72,7 @@ columnDefinitionOption
     | COLLATE collationName
     | SPARSE
     | MASKED WITH LP_ FUNCTION EQ_ STRING_ RP_
-    | (CONSTRAINT ignoredIdentifier_)? DEFAULT expr
+    | (CONSTRAINT ignoredIdentifier)? DEFAULT expr
     | IDENTITY (LP_ NUMBER_ COMMA_ NUMBER_ RP_)?
     | NOT FOR REPLICATION
     | GENERATED ALWAYS AS ROW (START | END) HIDDEN_?
@@ -84,11 +84,11 @@ columnDefinitionOption
     ;
 
 encryptedOptions
-    : LP_ COLUMN_ENCRYPTION_KEY EQ_ ignoredIdentifier_ COMMA_ ENCRYPTION_TYPE EQ_ (DETERMINISTIC | RANDOMIZED) COMMA_ ALGORITHM EQ_ STRING_ RP_
+    : LP_ COLUMN_ENCRYPTION_KEY EQ_ ignoredIdentifier COMMA_ ENCRYPTION_TYPE EQ_ (DETERMINISTIC | RANDOMIZED) COMMA_ ALGORITHM EQ_ STRING_ RP_
     ;
 
 columnConstraint
-    : (CONSTRAINT ignoredIdentifier_)? (primaryKeyConstraint | columnForeignKeyConstraint | checkConstraint)
+    : (CONSTRAINT ignoredIdentifier)? (primaryKeyConstraint | columnForeignKeyConstraint | checkConstraint)
     ;
 
 primaryKeyConstraint
@@ -116,7 +116,7 @@ onSchemaColumn
     ;
 
 onFileGroup
-    : ON ignoredIdentifier_
+    : ON ignoredIdentifier
     ;
 
 onString
@@ -164,7 +164,7 @@ onDefault
     ;
 
 fileStreamOn
-    : FILESTREAM_ON (ignoredIdentifier_ | schemaName | STRING_)
+    : FILESTREAM_ON (ignoredIdentifier | schemaName | STRING_)
     ;
 
 columnConstraints
@@ -176,11 +176,11 @@ computedColumnDefinition
     ;
 
 columnSetDefinition 
-    : ignoredIdentifier_ IDENTIFIER_ COLUMN_SET FOR ALL_SPARSE_COLUMNS
+    : ignoredIdentifier IDENTIFIER_ COLUMN_SET FOR ALL_SPARSE_COLUMNS
     ;
 
 tableConstraint 
-    : (CONSTRAINT ignoredIdentifier_)? (tablePrimaryConstraint | tableForeignKeyConstraint | checkConstraint)
+    : (CONSTRAINT ignoredIdentifier)? (tablePrimaryConstraint | tableForeignKeyConstraint | checkConstraint)
     ;
 
 tablePrimaryConstraint
@@ -224,11 +224,11 @@ periodClause
     ;
 
 partitionScheme
-    : (ON (schemaName LP_ columnName RP_ | ignoredIdentifier_ | STRING_))?
+    : (ON (schemaName LP_ columnName RP_ | ignoredIdentifier | STRING_))?
     ;
 
 fileGroup
-    : (TEXTIMAGE_ON (ignoredIdentifier_ | STRING_))? ((FILESTREAM_ON (schemaName) | ignoredIdentifier_ STRING_))? (WITH tableOptions)?
+    : (TEXTIMAGE_ON (ignoredIdentifier | STRING_))? ((FILESTREAM_ON (schemaName) | ignoredIdentifier STRING_))? (WITH tableOptions)?
     ;
 
 tableOptions
@@ -237,11 +237,11 @@ tableOptions
 
 tableOption
     : DATA_COMPRESSION EQ_ (NONE | ROW | PAGE) (ON PARTITIONS LP_ partitionExpressions RP_)?
-    | FILETABLE_DIRECTORY EQ_ ignoredIdentifier_ 
+    | FILETABLE_DIRECTORY EQ_ ignoredIdentifier 
     | FILETABLE_COLLATE_FILENAME EQ_ (collationName | DATABASE_DEAULT)
-    | FILETABLE_PRIMARY_KEY_CONSTRAINT_NAME EQ_ ignoredIdentifier_
-    | FILETABLE_STREAMID_UNIQUE_CONSTRAINT_NAME EQ_ ignoredIdentifier_
-    | FILETABLE_FULLPATH_UNIQUE_CONSTRAINT_NAME EQ_ ignoredIdentifier_
+    | FILETABLE_PRIMARY_KEY_CONSTRAINT_NAME EQ_ ignoredIdentifier
+    | FILETABLE_STREAMID_UNIQUE_CONSTRAINT_NAME EQ_ ignoredIdentifier
+    | FILETABLE_FULLPATH_UNIQUE_CONSTRAINT_NAME EQ_ ignoredIdentifier
     | SYSTEM_VERSIONING EQ_ ON onHistoryTableClause?
     | REMOTE_DATA_ARCHIVE EQ_ (ON tableStretchOptions? | OFF migrationState)
     | tableOperationOption
@@ -311,7 +311,7 @@ alterColumnAddOption
     ;
 
 constraintForColumn
-    : (CONSTRAINT ignoredIdentifier_)? DEFAULT simpleExpr FOR columnName
+    : (CONSTRAINT ignoredIdentifier)? DEFAULT simpleExpr FOR columnName
     ;
 
 generatedColumnNamesClause
@@ -323,7 +323,7 @@ generatedColumnNameClause
     ;
 
 generatedColumnName
-    : columnName dataTypeName GENERATED ALWAYS AS ROW (START | END)? HIDDEN_? (NOT NULL)? (CONSTRAINT ignoredIdentifier_)?
+    : columnName dataTypeName GENERATED ALWAYS AS ROW (START | END)? HIDDEN_? (NOT NULL)? (CONSTRAINT ignoredIdentifier)?
     ;
 
 alterDrop
@@ -335,7 +335,7 @@ alterTableDropConstraint
     ;
 
 dropConstraintName
-    : ignoredIdentifier_ dropConstraintWithClause?
+    : ignoredIdentifier dropConstraintWithClause?
     ;
 
 dropConstraintWithClause
@@ -343,7 +343,7 @@ dropConstraintWithClause
     ;
 
 dropConstraintOption
-    : (MAXDOP EQ_ NUMBER_ | ONLINE EQ_ onOffOption | MOVE TO (schemaName LP_ columnName RP_ | ignoredIdentifier_ | STRING_))
+    : (MAXDOP EQ_ NUMBER_ | ONLINE EQ_ onOffOption | MOVE TO (schemaName LP_ columnName RP_ | ignoredIdentifier | STRING_))
     ;
 
 onOffOption
@@ -359,11 +359,11 @@ dropIndexSpecification
     ;
 
 alterCheckConstraint 
-    : WITH? (CHECK | NOCHECK) CONSTRAINT (ALL | ignoredIdentifiers_)
+    : WITH? (CHECK | NOCHECK) CONSTRAINT (ALL | ignoredIdentifiers)
     ;
 
 alterTrigger 
-    : (ENABLE| DISABLE) TRIGGER (ALL | ignoredIdentifiers_)
+    : (ENABLE| DISABLE) TRIGGER (ALL | ignoredIdentifiers)
     ;
 
 alterSwitch
@@ -375,7 +375,7 @@ alterSet
     ;
 
 setFileStreamClause
-    : FILESTREAM_ON EQ_ (schemaName | ignoredIdentifier_ | STRING_)
+    : FILESTREAM_ON EQ_ (schemaName | ignoredIdentifier | STRING_)
     ;
 
 setSystemVersionClause
@@ -411,7 +411,7 @@ indexNonClusterClause
     ;
 
 alterTableIndexOnClause
-    : ON ignoredIdentifier_ | DEFAULT
+    : ON ignoredIdentifier | DEFAULT
     ;
 
 indexClusterClause

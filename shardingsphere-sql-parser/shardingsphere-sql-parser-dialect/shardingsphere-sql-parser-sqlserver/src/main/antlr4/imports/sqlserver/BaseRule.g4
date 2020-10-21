@@ -154,7 +154,7 @@ primaryKey
 // TODO comb expr
 expr
     : expr logicalOperator expr
-    | notOperator_ expr
+    | notOperator expr
     | LP_ expr RP_
     | booleanPrimary
     ;
@@ -163,7 +163,7 @@ logicalOperator
     : OR | OR_ | AND | AND_
     ;
 
-notOperator_
+notOperator
     : NOT | NOT_
     ;
 
@@ -240,7 +240,7 @@ castFunction
     ;
 
 charFunction
-    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
+    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier)? RP_
     ;
 
 regularFunction
@@ -281,7 +281,7 @@ orderByItem
     ;
 
 dataType
-    : dataTypeName (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? ignoredIdentifier_ RP_)?
+    : dataTypeName (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? ignoredIdentifier RP_)?
     ;
 
 dataTypeName
@@ -406,12 +406,12 @@ onLowPriorLockWait
     : ON (LP_ lowPriorityLockWait RP_)?
     ;
 
-ignoredIdentifier_
+ignoredIdentifier
     : IDENTIFIER_
     ;
 
-ignoredIdentifiers_
-    : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
+ignoredIdentifiers
+    : ignoredIdentifier (COMMA_ ignoredIdentifier)*
     ;
 
 matchNone
