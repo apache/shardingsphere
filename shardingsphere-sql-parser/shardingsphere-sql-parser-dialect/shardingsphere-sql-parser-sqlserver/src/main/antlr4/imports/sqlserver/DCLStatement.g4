@@ -20,11 +20,11 @@ grammar DCLStatement;
 import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
 
 grant
-    : GRANT (classPrivilegesClause | classTypePrivilegesClause | roleClause_)
+    : GRANT (classPrivilegesClause | classTypePrivilegesClause | roleClause)
     ;
 
 revoke
-    : REVOKE (optionForClause_? classPrivilegesClause | classTypePrivilegesClause | roleClause_)
+    : REVOKE (optionForClause? classPrivilegesClause | classTypePrivilegesClause | roleClause)
     ;
 
 deny
@@ -32,53 +32,53 @@ deny
     ;
 
 classPrivilegesClause
-    : classPrivileges_ (ON onClassClause)?
+    : classPrivileges (ON onClassClause)?
     ;
 
 classTypePrivilegesClause
-    : classTypePrivileges_ (ON onClassTypeClause)?
+    : classTypePrivileges (ON onClassTypeClause)?
     ;
 
-optionForClause_
+optionForClause
     : GRANT OPTION FOR
     ;
 
-classPrivileges_
-    : privilegeType_ columnNames? (COMMA_ privilegeType_ columnNames?)*
+classPrivileges
+    : privilegeType columnNames? (COMMA_ privilegeType columnNames?)*
     ;
 
 onClassClause
-    : class_? tableName
+    : onClass? tableName
     ;
 
-classTypePrivileges_
-    : privilegeType_ (COMMA_ privilegeType_)*
+classTypePrivileges
+    : privilegeType (COMMA_ privilegeType)*
     ;
 
 onClassTypeClause
-    : classType_? tableName
+    : classType? tableName
     ;
 
-privilegeType_
+privilegeType
     : ALL PRIVILEGES?
-    | basicPermission_ | objectPermission_
-    | serverPermission_ | serverPrincipalPermission_
-    | databasePermission_ | databasePrincipalPermission_ | schemaPermission_
-    | serviceBrokerPermission_ | endpointPermission_
-    | certificatePermission_ | symmetricKeyPermission_ | asymmetricKeyPermission_
-    | assemblyPermission_ | availabilityGroupPermission_ | fullTextPermission_
+    | basicPermission | objectPermission
+    | serverPermission | serverPrincipalPermission
+    | databasePermission | databasePrincipalPermission | schemaPermission
+    | serviceBrokerPermission | endpointPermission
+    | certificatePermission | symmetricKeyPermission | asymmetricKeyPermission
+    | assemblyPermission | availabilityGroupPermission | fullTextPermission
     ;
 
-basicPermission_
+basicPermission
     : CONTROL SERVER? | TAKE OWNERSHIP | ALTER | VIEW ANY? DEFINITION | REFERENCES
     | SELECT | INSERT | UPDATE | DELETE | EXECUTE | RECEIVE
     ;
 
-objectPermission_
+objectPermission
     : VIEW CHANGE TRACKING
     ;
 
-serverPermission_
+serverPermission
     : ALTER (RESOURCES | SETTINGS | TRACE | SERVER STATE)
     | ALTER ANY (AVAILABILITY GROUP | CONNECTION | CREDENTIAL | DATABASE | ENDPOINT | EVENT NOTIFICATION | EVENT SESSION | LINKED SERVER | LOGIN | SERVER AUDIT | SERVER ROLE)
     | CREATE (AVAILABILITY GROUP | DDL EVENT NOTIFICATION | ENDPOINT | SERVER ROLE | TRACE EVENT NOTIFICATION)
@@ -91,19 +91,19 @@ serverPermission_
     | SHUTDOWN
     ;
 
-serverPrincipalPermission_
+serverPrincipalPermission
     : IMPERSONATE | ALTER ANY (LOGIN | SERVER ROLE)
     ;
 
-databasePermission_
+databasePermission
     : ALTER TRACE
     | ALTER ANY (DATABASE (AUDIT | DDL TRIGGER | EVENT NOTIFICATION | EVENT SESSION | SCOPED CONFIGURATION)? | DATASPACE | SCHEMA
-      | SERVICE AUDIT?| USER | APPLICATION? ROLE | CERTIFICATE | CONTRACT | ASSEMBLY | CONNECTION
-      | (SYMMETRIC | ASYMMETRIC | COLUMN ENCRYPTION) KEY | COLUMN MASTER KEY DEFINITION
-      | EXTERNAL (DATA SOURCE | FILE FORMAT | LIBRARY)
-      | FULLTEXT CATALOG | MASK | MESSAGE TYPE | REMOTE SERVICE BINDING | ROUTE | EVENT SESSION | SECURITY POLICY)
+    | SERVICE AUDIT?| USER | APPLICATION? ROLE | CERTIFICATE | CONTRACT | ASSEMBLY | CONNECTION
+    | (SYMMETRIC | ASYMMETRIC | COLUMN ENCRYPTION) KEY | COLUMN MASTER KEY DEFINITION
+    | EXTERNAL (DATA SOURCE | FILE FORMAT | LIBRARY)
+    | FULLTEXT CATALOG | MASK | MESSAGE TYPE | REMOTE SERVICE BINDING | ROUTE | EVENT SESSION | SECURITY POLICY)
     | CREATE (DATABASE | DATABASE DDL EVENT NOTIFICATION | SCHEMA | TABLE | VIEW | SERVICE | TYPE | DEFAULT | AGGREGATE | ASSEMBLY | (SYMMETRIC | ASYMMETRIC) KEY 
-      | CERTIFICATE | CONTRACT | FULLTEXT CATALOG | FUNCTION | MESSAGE TYPE | PROCEDURE | QUEUE | REMOTE SERVICE BINDING | ROLE | ROUTE | RULE | SYNONYM | XML SCHEMA COLLECTION)
+    | CERTIFICATE | CONTRACT | FULLTEXT CATALOG | FUNCTION | MESSAGE TYPE | PROCEDURE | QUEUE | REMOTE SERVICE BINDING | ROLE | ROUTE | RULE | SYNONYM | XML SCHEMA COLLECTION)
     | CREATE ANY (DATABASE | EXTERNAL LIBRARY)
     | VIEW ((DATABASE | SERVER) STATE | DDL EVENT NOTIFICATION)
     | VIEW ANY (COLUMN (MASTER | ENCRYPTION) KEY DEFINITION | DEFINITION)
@@ -112,55 +112,55 @@ databasePermission_
     | AUTHENTICATE SERVER? | SHOWPLAN | SUBSCRIBE QUERY NOTIFICATIONS | UNMASK | CHECKPOINT | ADMINISTER DATABASE BULK OPERATIONS
     ;
 
-databasePrincipalPermission_
+databasePrincipalPermission
     : IMPERSONATE | ALTER ANY (USER | APPLICATION? ROLE)
     ;
 
-schemaPermission_
+schemaPermission
     : ALTER ANY SCHEMA | CREATE SEQUENCE | VIEW CHANGE TRACKING
     ;
 
-serviceBrokerPermission_
+serviceBrokerPermission
     : ALTER ANY (CONTRACT | MESSAGE TYPE | REMOTE SERVICE BINDING | ROUTE | SERVICE)
     ;
 
-endpointPermission_
+endpointPermission
     : ALTER ANY ENDPOINT
     ;
 
-certificatePermission_
+certificatePermission
     : ALTER ANY CERTIFICATE
     ;
 
-symmetricKeyPermission_
+symmetricKeyPermission
     : ALTER ANY SYMMETRIC KEY
     ;
 
-asymmetricKeyPermission_
+asymmetricKeyPermission
     : ALTER ANY ASYMMETRIC KEY
     ;
 
-assemblyPermission_
+assemblyPermission
     : ALTER ANY ASSEMBLY
     ;
 
-availabilityGroupPermission_
+availabilityGroupPermission
     : ALTER ANY AVAILABILITY GROUP | CONNECT
     ;
 
-fullTextPermission_
+fullTextPermission
     : ALTER ANY FULLTEXT CATALOG
     ;
 
-class_
+onClass
     : IDENTIFIER_ COLON_ COLON_
     ;
 
-classType_
+classType
     : (LOGIN | DATABASE | OBJECT | ROLE | SCHEMA | USER) COLON_ COLON_
     ;
 
-roleClause_
+roleClause
     : ignoredIdentifiers
     ;
 
