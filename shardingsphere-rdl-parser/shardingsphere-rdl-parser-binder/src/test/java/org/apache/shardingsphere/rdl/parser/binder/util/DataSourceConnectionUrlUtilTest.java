@@ -35,11 +35,7 @@ public final class DataSourceConnectionUrlUtilTest {
 
     @Test
     public void assertMySQLGetUrl() {
-        DataSourceConnectionSegment segment = new DataSourceConnectionSegment();
-        segment.setHostName("127.0.0.1");
-        segment.setDb("test");
-        segment.setUser("root");
-        segment.setPort("3306");
+        DataSourceConnectionSegment segment = buildDataSourceConnectionSegment();
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
         String actual = DataSourceConnectionUrlUtil.getUrl(segment, databaseType);
         String expected = "jdbc:mysql://127.0.0.1:3306/test";
@@ -48,53 +44,46 @@ public final class DataSourceConnectionUrlUtilTest {
 
     @Test
     public void assertPostgreSQLGetUrl() {
-        DataSourceConnectionSegment segment = new DataSourceConnectionSegment();
-        segment.setHostName("127.0.0.1");
-        segment.setDb("test");
-        segment.setUser("root");
-        segment.setPort("3306");
+        DataSourceConnectionSegment segment = buildDataSourceConnectionSegment();
         PostgreSQLDatabaseType databaseType = new PostgreSQLDatabaseType();
         String actual = DataSourceConnectionUrlUtil.getUrl(segment, databaseType);
-        String expected = String.format("jdbc:postgresql://127.0.0.1:3306/test");
+        String expected = "jdbc:postgresql://127.0.0.1:3306/test";
         assertThat(actual, is(expected));
     }
 
     @Test
     public void assertMariaDBGetUrl() {
-        DataSourceConnectionSegment segment = new DataSourceConnectionSegment();
-        segment.setHostName("127.0.0.1");
-        segment.setDb("test");
-        segment.setUser("root");
-        segment.setPort("3306");
+        DataSourceConnectionSegment segment = buildDataSourceConnectionSegment();
         MariaDBDatabaseType databaseType = new MariaDBDatabaseType();
         String actual = DataSourceConnectionUrlUtil.getUrl(segment, databaseType);
-        String expected = String.format("jdbc:mariadb://127.0.0.1:3306/test");
+        String expected = "jdbc:mariadb://127.0.0.1:3306/test";
         assertThat(actual, is(expected));
     }
 
     @Test
     public void assertOracleGetUrl() {
-        DataSourceConnectionSegment segment = new DataSourceConnectionSegment();
-        segment.setHostName("127.0.0.1");
-        segment.setDb("test");
-        segment.setUser("root");
-        segment.setPort("3306");
+        DataSourceConnectionSegment segment = buildDataSourceConnectionSegment();
         OracleDatabaseType databaseType = new OracleDatabaseType();
         String actual = DataSourceConnectionUrlUtil.getUrl(segment, databaseType);
-        String expected = String.format("jdbc:oracle://127.0.0.1:3306/test");
+        String expected = "jdbc:oracle://127.0.0.1:3306/test";
         assertThat(actual, is(expected));
     }
 
     @Test
     public void assertSQLServerGetUrl() {
+        DataSourceConnectionSegment segment = buildDataSourceConnectionSegment();
+        SQLServerDatabaseType databaseType = new SQLServerDatabaseType();
+        String actual = DataSourceConnectionUrlUtil.getUrl(segment, databaseType);
+        String expected = "jdbc:microsoft:sqlserver://127.0.0.1:3306/test";
+        assertThat(actual, is(expected));
+    }
+    
+    private DataSourceConnectionSegment buildDataSourceConnectionSegment() {
         DataSourceConnectionSegment segment = new DataSourceConnectionSegment();
         segment.setHostName("127.0.0.1");
         segment.setDb("test");
         segment.setUser("root");
         segment.setPort("3306");
-        SQLServerDatabaseType databaseType = new SQLServerDatabaseType();
-        String actual = DataSourceConnectionUrlUtil.getUrl(segment, databaseType);
-        String expected = String.format("jdbc:microsoft:sqlserver://127.0.0.1:3306/test");
-        assertThat(actual, is(expected));
+        return segment;
     }
 }
