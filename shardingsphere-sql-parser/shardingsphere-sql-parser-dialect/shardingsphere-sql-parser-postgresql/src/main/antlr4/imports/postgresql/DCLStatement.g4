@@ -28,7 +28,7 @@ revoke
     ;
 
 privilegeClause
-    : privileges ON onObjectClause (FROM | TO) granteeList (WITH GRANT OPTION)?
+    : privilegeTypes ON onObjectClause (FROM | TO) granteeList (WITH GRANT OPTION)?
     ;
     
 roleClause
@@ -39,7 +39,7 @@ optionForClause
     : (GRANT | ADMIN) OPTION FOR
     ;
 
-privileges
+privilegeTypes
     : privilegeType columnNames? (COMMA_ privilegeType columnNames?)*
     ;
 
