@@ -100,7 +100,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
         PostgreSQLCreateTableStatement result = new PostgreSQLCreateTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setNotExisted(null != ctx.tableNotExistClause_());
+        result.setNotExisted(null != ctx.tableNotExistClause());
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
