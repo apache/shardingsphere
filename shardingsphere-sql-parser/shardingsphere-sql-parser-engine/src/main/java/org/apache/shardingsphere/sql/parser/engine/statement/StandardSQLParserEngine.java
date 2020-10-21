@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine;
+package org.apache.shardingsphere.sql.parser.engine.statement;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -32,7 +32,7 @@ import java.util.Optional;
  * Standard SQL parser engine.
  */
 @RequiredArgsConstructor
-public final class StandardSQLParserEngine implements SQLStatementParserEngine {
+public final class StandardSQLParserEngine implements StatementSQLParserEngine {
     
     private final String databaseTypeName;
     

@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine;
+package org.apache.shardingsphere.sql.parser.engine.statement;
 
+import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * SQL statement parser engine.
  */
-public interface SQLStatementParserEngine extends SQLParserEngine<SQLStatement> {
+public interface StatementSQLParserEngine extends SQLParserEngine<SQLStatement> {
     
     @Override
     SQLStatement parse(String sql, boolean useCache);

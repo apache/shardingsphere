@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser;
 
-import org.apache.shardingsphere.sql.parser.engine.SQLStatementParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.engine.statement.StandardSQLParserEngineFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,13 +33,13 @@ public final class SQLParseEngineFactoryTest {
     @Before
     @After
     public void reset() throws NoSuchFieldException, IllegalAccessException {
-        Field field = SQLStatementParserEngineFactory.class.getDeclaredField("ENGINES");
+        Field field = StandardSQLParserEngineFactory.class.getDeclaredField("ENGINES");
         field.setAccessible(true);
-        ((Map) field.get(SQLStatementParserEngineFactory.class)).clear();
+        ((Map) field.get(StandardSQLParserEngineFactory.class)).clear();
     }
     
     @Test
     public void assertGetSQLParseEngine() {
-        assertThat(SQLStatementParserEngineFactory.getSQLParserEngine("MySQL"), is(SQLStatementParserEngineFactory.getSQLParserEngine("MySQL")));
+        assertThat(StandardSQLParserEngineFactory.getSQLParserEngine("MySQL"), is(StandardSQLParserEngineFactory.getSQLParserEngine("MySQL")));
     }
 }

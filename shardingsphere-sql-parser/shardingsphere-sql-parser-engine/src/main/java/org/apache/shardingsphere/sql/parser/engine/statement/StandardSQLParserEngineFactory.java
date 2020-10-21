@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine;
+package org.apache.shardingsphere.sql.parser.engine.statement;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * SQL statement parser engine factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLStatementParserEngineFactory {
+public final class StandardSQLParserEngineFactory {
     
     private static final Map<String, StandardSQLParserEngine> ENGINES = new ConcurrentHashMap<>();
     
