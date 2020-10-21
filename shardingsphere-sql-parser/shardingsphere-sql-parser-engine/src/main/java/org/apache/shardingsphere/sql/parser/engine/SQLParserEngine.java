@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.engine;
 
 /**
- * Query SQL parser engine.
+ * SQL parser engine.
  */
 public interface SQLParserEngine<T> {
     
@@ -27,7 +27,7 @@ public interface SQLParserEngine<T> {
      *
      * @param sql SQL
      * @param useCache use cache or not
-     * @return SQL statement
+     * @return T
      */
     T parse(String sql, boolean useCache);
 }

@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * SQL parser engine factory.
+ * SQL statement parser engine factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLStatementParserEngineFactory {

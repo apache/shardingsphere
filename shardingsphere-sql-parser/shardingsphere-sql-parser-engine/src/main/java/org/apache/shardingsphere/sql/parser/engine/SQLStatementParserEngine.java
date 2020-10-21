@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.engine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Query SQL statement parser engine.
+ * SQL statement parser engine.
  */
 public interface SQLStatementParserEngine extends SQLParserEngine<SQLStatement> {
     
