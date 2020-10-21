@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.engine.statement.StandardSQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.engine.statement.standard.StandardSQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.SQLStatementAssert;

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.cache;
 
+import org.apache.shardingsphere.sql.parser.engine.statement.standard.StandardSQLParsedResultCache;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.Test;
@@ -26,31 +27,31 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class SQLParseResultCacheTest {
+public final class StandardSQLParsedResultCacheTest {
     
     @Test
     public void assertGetSQLStatementWithinCache() {
-        SQLParseResultCache actual = new SQLParseResultCache();
+        StandardSQLParsedResultCache actual = new StandardSQLParsedResultCache();
         SQLStatement selectStatement = new MySQLSelectStatement();
         actual.put("SELECT 1", selectStatement);
-        assertTrue(actual.getSQLStatement("SELECT 1").isPresent());
-        assertThat(actual.getSQLStatement("SELECT 1").get(), is(selectStatement));
+        assertTrue(actual.get("SELECT 1").isPresent());
+        assertThat(actual.get("SELECT 1").get(), is(selectStatement));
     }
     
     @Test
     public void assertGetSQLStatementWithoutCache() {
-        SQLParseResultCache actual = new SQLParseResultCache();
+        StandardSQLParsedResultCache actual = new StandardSQLParsedResultCache();
         SQLStatement selectStatement = new MySQLSelectStatement();
         actual.put("SELECT 1", selectStatement);
-        assertFalse(actual.getSQLStatement("SELECT 2").isPresent());
+        assertFalse(actual.get("SELECT 2").isPresent());
     }
     
     @Test
     public void assertClear() {
-        SQLParseResultCache actual = new SQLParseResultCache();
+        StandardSQLParsedResultCache actual = new StandardSQLParsedResultCache();
         SQLStatement selectStatement = new MySQLSelectStatement();
         actual.put("SELECT 1", selectStatement);
         actual.clear();
-        assertFalse(actual.getSQLStatement("SELECT 1").isPresent());
+        assertFalse(actual.get("SELECT 1").isPresent());
     }
 }
