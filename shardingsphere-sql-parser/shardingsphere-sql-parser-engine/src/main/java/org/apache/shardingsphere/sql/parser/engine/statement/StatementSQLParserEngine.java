@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * SQL statement parser engine.
+ * Statement SQL parser engine.
  */
 public interface StatementSQLParserEngine extends SQLParserEngine<SQLStatement> {
     
