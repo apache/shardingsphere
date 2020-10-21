@@ -22,19 +22,20 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedDelimiterSQLSegment;
 
 import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Expected tables.
  */
 @Getter
 @Setter
-public final class ExpectedTables extends AbstractExpectedDelimiterSQLSegment {
+public final class ExpectedTable extends AbstractExpectedDelimiterSQLSegment {
     
     @XmlElement(name = "simple-table")
-    private final List<ExpectedSimpleTable> simpleTables = new LinkedList<>();
+    private ExpectedSimpleTable simpleTable;
     
     @XmlElement(name = "subquery-table")
-    private final List<ExpectedSubqueryTable> subqueryTables = new LinkedList<>();
+    private ExpectedSubqueryTable subqueryTable;
+
+    @XmlElement(name = "join-table")
+    private ExpectedJoinTable joinTable;
 }

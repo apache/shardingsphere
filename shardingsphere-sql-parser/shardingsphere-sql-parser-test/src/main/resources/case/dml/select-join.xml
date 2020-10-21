@@ -18,14 +18,14 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="select_inner_join_related_with_alias" parameters="1000">
-        <table-reference>
-            <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="24" />
-            </table-factor>
+        <from>
             <join-table>
-                <table-factor>
-                    <table name="t_order_item" alias="i" start-index="37" stop-index="50" />
-                </table-factor>
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" alias="i" start-index="37" stop-index="50" />
+                </right>
                 <joinSpecification>
                     <and-predicate>
                         <predicate start-index="55" stop-index="77">
@@ -39,7 +39,7 @@
                     </and-predicate>
                 </joinSpecification>
             </join-table>
-        </table-reference>
+        </from>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -62,14 +62,14 @@
     </select>
 
     <select sql-case-id="select_inner_join_related_with_name" parameters="1000">
-        <table-reference>
-            <table-factor>
-                <table name="t_order" start-index="27" stop-index="33" />
-            </table-factor>
+        <from>
             <join-table>
-                <table-factor>
-                    <table name="t_order_item" start-index="40" stop-index="51" />
-                </table-factor>
+                <left>
+                    <simple-table name="t_order" start-index="27" stop-index="33" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" start-index="40" stop-index="51" />
+                </right>
                 <joinSpecification>
                     <and-predicate>
                         <predicate start-index="56" stop-index="95">
@@ -83,7 +83,7 @@
                     </and-predicate>
                 </joinSpecification>
             </join-table>
-        </table-reference>
+        </from>
         <projections start-index="7" stop-index="20">
             <shorthand-projection start-index="7" stop-index="20">
                 <owner name="t_order_item" start-index="7" stop-index="18" />
@@ -106,17 +106,16 @@
     </select>
 
     <select sql-case-id="select_join_using" parameters="1000">
-        <table-reference>
-            <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="24" />
-            </table-factor>
+        <from>
             <join-table>
-                <table-factor>
-                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
-                </table-factor>
-                <joinSpecification />
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" alias="i" start-index="31" stop-index="44" />
+                </right>
             </join-table>
-        </table-reference>
+        </from>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />

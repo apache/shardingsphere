@@ -75,6 +75,9 @@ public abstract class SQLParserParameterizedTest {
     
     @Test
     public final void assertSupportedSQL() {
+        if ("select_pagination_with_top_percent_with_ties_for_greater_than_and_equal".equals(sqlCaseId)) {
+            System.out.println("fasdf");
+        }
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());

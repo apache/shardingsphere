@@ -18,11 +18,9 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="select_sub_query_with_project">
-        <table-reference>
-            <table-factor>
-                <table name="t_order" start-index="40" stop-index="46" />
-            </table-factor>
-        </table-reference>
+        <from>
+            <simple-table name="t_order" start-index="40" stop-index="46" />
+        </from>
         <projections start-index="7" stop-index="33">
             <column-projection name="order_id" start-index="7" stop-index="14" />
             <subquery-projection start-index="17" stop-index="26" alias="num">
@@ -43,70 +41,39 @@
                 <owner start-index="7" stop-index="7" name="t"/>
             </shorthand-projection>
         </projections>
-        <table-reference>
-            <table-factor>
-                <subqueryTable alias="t">
-                    <subquery>
-                        <select>
-                            <projections start-index="24" stop-index="24">
-                                <shorthand-projection start-index="24" stop-index="24" />
-                            </projections>
-                            <table-reference>
-                                <table-factor>
-                                    <table start-index="31" stop-index="37" name="t_order"/>
-                                </table-factor>
-                            </table-reference>
-                            <where start-index="39" stop-index="62">
-                                <and-predicate>
-                                    <predicate start-index="45" stop-index="62">
-                                        <column-left-value start-index="45" stop-index="52" name="order_id" />
-                                        <in-right-value>
-                                            <literal-expression start-index="58" stop-index="58" value="3" />
-                                            <parameter-marker-expression start-index="58" stop-index="58" value="0" />
-                                            <literal-expression start-index="61" stop-index="61" value="4" />
-                                            <parameter-marker-expression start-index="61" stop-index="61" value="1"/>
-                                        </in-right-value>
-                                    </predicate>
-                                </and-predicate>
-                            </where>
-                        </select>
-                    </subquery>
-                </subqueryTable>
-            </table-factor>
-        </table-reference>
-        <tables>
-            <subquery-table start-index="17" stop-index="62" alias="t">
-                <select>
-                    <tables>
-                        <simple-table name="t_order" start-index="31" stop-index="37" />
-                    </tables>
-                    <projections start-index="24" stop-index="24">
-                        <shorthand-projection start-index="24" stop-index="24" />
-                    </projections>
-                    <where start-index="39" stop-index="62" literal-stop-index="62">
-                        <and-predicate>
-                            <predicate start-index="45" stop-index="62" literal-stop-index="62">
-                                <column-left-value name="order_id" start-index="45" stop-index="52" />
-                                <in-right-value>
-                                    <parameter-marker-expression value="1" />
-                                    <parameter-marker-expression value="2" />
-                                    <literal-expression value="3" />
-                                    <literal-expression value="4" />
-                                </in-right-value>
-                            </predicate>
-                        </and-predicate>
-                    </where>
-                </select>
+        <from>
+            <subquery-table alias="t">
+                <subquery>
+                    <select>
+                        <projections start-index="24" stop-index="24">
+                            <shorthand-projection start-index="24" stop-index="24" />
+                        </projections>
+                        <from>
+                            <simple-table start-index="31" stop-index="37" name="t_order"/>
+                        </from>
+                        <where start-index="39" stop-index="62">
+                            <and-predicate>
+                                <predicate start-index="45" stop-index="62">
+                                    <column-left-value start-index="45" stop-index="52" name="order_id" />
+                                    <in-right-value>
+                                        <literal-expression start-index="58" stop-index="58" value="3" />
+                                        <parameter-marker-expression start-index="58" stop-index="58" value="0" />
+                                        <literal-expression start-index="61" stop-index="61" value="4" />
+                                        <parameter-marker-expression start-index="61" stop-index="61" value="1"/>
+                                    </in-right-value>
+                                </predicate>
+                            </and-predicate>
+                        </where>
+                    </select>
+                </subquery>
             </subquery-table>
-        </tables>
+        </from>
     </select>
 
     <select sql-case-id="select_with_equal_subquery">
-        <table-reference>
-            <table-factor>
-                <table name="t_order" start-index="14" stop-index="20" />
-            </table-factor>
-        </table-reference>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -146,11 +113,9 @@
     </select>
 
     <select sql-case-id="select_with_in_subquery">
-        <table-reference>
-            <table-factor>
-                <table name="t_order" start-index="14" stop-index="20" />
-            </table-factor>
-        </table-reference>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -161,11 +126,9 @@
                     <in-right-value>
                         <subquery-expression start-index="39" stop-index="93" literal-start-index="39" literal-stop-index="93">
                             <select>
-                                <table-reference>
-                                    <table-factor>
-                                        <table name="t_order_item" start-index="60" stop-index="71" />
-                                    </table-factor>
-                                </table-reference>
+                                <from>
+                                    <simple-table name="t_order_item" start-index="60" stop-index="71" />
+                                </from>
                                 <projections start-index="47" stop-index="53">
                                     <column-projection name="user_id" start-index="47" stop-index="53" />
                                 </projections>
@@ -189,11 +152,9 @@
     </select>
 
     <select sql-case-id="select_with_between_subquery" parameters="12">
-        <table-reference>
-            <table-factor>
-                <table name="t_order" start-index="14" stop-index="20" />
-            </table-factor>
-        </table-reference>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -204,11 +165,9 @@
                     <between-right-value>
                         <between-subquery-expression start-index="44" stop-index="97" literal-start-index="44" literal-stop-index="97" >
                             <select>
-                                <table-reference>
-                                    <table-factor>
-                                        <table name="t_order_item" start-index="65" stop-index="76" />
-                                    </table-factor>
-                                </table-reference>
+                                <from>
+                                    <simple-table name="t_order_item" start-index="65" stop-index="76" />
+                                </from>
                                 <projections start-index="52" stop-index="58">
                                     <column-projection name="user_id" start-index="52" stop-index="58" />
                                 </projections>
