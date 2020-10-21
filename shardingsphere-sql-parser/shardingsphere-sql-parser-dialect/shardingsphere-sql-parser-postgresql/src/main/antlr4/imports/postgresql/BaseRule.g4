@@ -20,7 +20,7 @@ grammar BaseRule;
 import Keyword, PostgreSQLKeyword, Symbol, Literals;
 
 parameterMarker
-    : QUESTION_ literalsType_?
+    : QUESTION_ literalsType?
     ;
 
 reservedKeyword
@@ -104,22 +104,22 @@ reservedKeyword
     ;
 
 numberLiterals
-   : MINUS_? NUMBER_ literalsType_?
+   : MINUS_? NUMBER_ literalsType?
    ;
 
-literalsType_
+literalsType
     : TYPE_CAST_ IDENTIFIER_
     ;
 
 identifier
-    : unicodeEscapes_? IDENTIFIER_ uescape_? |  unreservedWord 
+    : unicodeEscapes? IDENTIFIER_ uescape? |  unreservedWord 
     ;
 
-unicodeEscapes_
+unicodeEscapes
     : ('U' | 'u') AMPERSAND_
     ;
 
-uescape_
+uescape
     : UESCAPE STRING_
     ;
     
@@ -1312,7 +1312,7 @@ selectWithParens
     ;
 
 dataType
-    : dataTypeName dataTypeLength? characterSet_? collateClause_? | dataTypeName LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
+    : dataTypeName dataTypeLength? characterSet? collateClause_? | dataTypeName LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet? collateClause_?
     ;
 
 dataTypeName
@@ -1326,20 +1326,20 @@ dataTypeLength
     : LP_ NUMBER_ (COMMA_ NUMBER_)? RP_
     ;
 
-characterSet_
-    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier_
+characterSet
+    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier
     ;
 
 collateClause_
-    : COLLATE EQ_? (STRING_ | ignoredIdentifier_)
+    : COLLATE EQ_? (STRING_ | ignoredIdentifier)
     ;
 
-ignoredIdentifier_
+ignoredIdentifier
     : identifier (DOT_ identifier)?
     ;
 
-ignoredIdentifiers_
-    : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
+ignoredIdentifiers
+    : ignoredIdentifier (COMMA_ ignoredIdentifier)*
     ;
 
 signedIconst
