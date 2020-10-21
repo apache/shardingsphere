@@ -41,10 +41,7 @@ public final class SelectStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "from")
     private ExpectedTable from;
-    
-//    @XmlElement(name = "tables")
-//    private final ExpectedTables tables = new ExpectedTables();
-    
+
     @XmlElement(name = "projections")
     private final ExpectedProjections projections = new ExpectedProjections();
     
