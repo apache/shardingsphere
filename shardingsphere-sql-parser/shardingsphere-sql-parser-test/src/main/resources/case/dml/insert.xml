@@ -1160,11 +1160,6 @@
             <from>
                 <simple-table name="t_order" start-index="86" stop-index="92" />
             </from>
-<!--            <table-reference>-->
-<!--                <table-factor>-->
-<!--                    <table name="t_order" start-index="86" stop-index="92" />-->
-<!--                </table-factor>-->
-<!--            </table-reference>-->
             <projections start-index="55" stop-index="79">
                 <column-projection name="order_id" start-index="55" stop-index="62" />
                 <column-projection name="user_id" start-index="65" stop-index="71" />
