@@ -20,30 +20,30 @@ grammar DCLStatement;
 import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule, DDLStatement;
 
 grant
-    : GRANT (privilegeClause | roleClause_)
+    : GRANT (privilegeClause | roleClause)
     ;
 
 revoke
-    : REVOKE optionForClause_? (privilegeClause | roleClause_) (CASCADE | RESTRICT)?
+    : REVOKE optionForClause? (privilegeClause | roleClause) (CASCADE | RESTRICT)?
     ;
 
 privilegeClause
-    : privileges_ ON onObjectClause (FROM | TO) granteeList (WITH GRANT OPTION)?
+    : privileges ON onObjectClause (FROM | TO) granteeList (WITH GRANT OPTION)?
     ;
     
-roleClause_
+roleClause
     : privilegeList (FROM | TO) roleList (WITH ADMIN OPTION)? (GRANTED BY roleSpec)?
     ;
 
-optionForClause_
+optionForClause
     : (GRANT | ADMIN) OPTION FOR
     ;
 
-privileges_
-    : privilegeType_ columnNames? (COMMA_ privilegeType_ columnNames?)*
+privileges
+    : privilegeType columnNames? (COMMA_ privilegeType columnNames?)*
     ;
 
-privilegeType_
+privilegeType
     : SELECT
     | INSERT
     | UPDATE
