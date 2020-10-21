@@ -20,7 +20,7 @@ grammar BaseRule;
 import Keyword, PostgreSQLKeyword, Symbol, Literals;
 
 parameterMarker
-    : QUESTION_ literalsType_?
+    : QUESTION_ literalsType?
     ;
 
 reservedKeyword
@@ -104,22 +104,22 @@ reservedKeyword
     ;
 
 numberLiterals
-   : MINUS_? NUMBER_ literalsType_?
+   : MINUS_? NUMBER_ literalsType?
    ;
 
-literalsType_
+literalsType
     : TYPE_CAST_ IDENTIFIER_
     ;
 
 identifier
-    : unicodeEscapes_? IDENTIFIER_ uescape_? |  unreservedWord 
+    : unicodeEscapes? IDENTIFIER_ uescape? |  unreservedWord 
     ;
 
-unicodeEscapes_
+unicodeEscapes
     : ('U' | 'u') AMPERSAND_
     ;
 
-uescape_
+uescape
     : UESCAPE STRING_
     ;
     
@@ -676,7 +676,50 @@ allOp
     ;
 
 op
-    : (AND_ | OR_ | NOT_ | TILDE_ | VERTICAL_BAR_ | AMPERSAND_ | SIGNED_LEFT_SHIFT_ | SIGNED_RIGHT_SHIFT_ | CARET_ | MOD_ | COLON_ | PLUS_ | MINUS_ | ASTERISK_ |   SLASH_ | BACKSLASH_ |   DOT_ | DOT_ASTERISK_ |  SAFE_EQ_ |   DEQ_ | EQ_ | CQ_ | NEQ_ | GT_ | GTE_ | LT_ | LTE_ | POUND_ | LP_ | RP_ | LBE_ | RBE_ | LBT_ | RBT_ | COMMA_ | DQ_ | SQ_ | BQ_ | QUESTION_ |   AT_ | SEMI_ | TILDE_TILDE_ |  NOT_TILDE_TILDE_ | TYPE_CAST_ )+
+    : (AND_
+    | OR_
+    | NOT_
+    | TILDE_
+    | VERTICAL_BAR_
+    | AMPERSAND_
+    | SIGNED_LEFT_SHIFT_
+    | SIGNED_RIGHT_SHIFT_
+    | CARET_
+    | MOD_
+    | COLON_
+    | PLUS_
+    | MINUS_
+    | ASTERISK_
+    | SLASH_
+    | BACKSLASH_
+    | DOT_
+    | DOT_ASTERISK_
+    | SAFE_EQ_
+    | DEQ_
+    | EQ_
+    | CQ_
+    | NEQ_
+    | GT_
+    | GTE_
+    | LT_
+    | LTE_
+    | POUND_
+    | LP_
+    | RP_
+    | LBE_
+    | RBE_
+    | LBT_
+    | RBT_
+    | COMMA_
+    | DQ_
+    | SQ_
+    | BQ_
+    | QUESTION_
+    | AT_
+    | SEMI_
+    | TILDE_TILDE_
+    | NOT_TILDE_TILDE_
+    | TYPE_CAST_ )+
     ;
 
 mathOperator
@@ -1173,7 +1216,7 @@ tableFuncElement
     ;
 
 collateClause
-    : COLLATE anyName
+    : COLLATE EQ_? anyName
     ;
 
 anyName
@@ -1312,7 +1355,7 @@ selectWithParens
     ;
 
 dataType
-    : dataTypeName dataTypeLength? characterSet_? collateClause_? | dataTypeName LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
+    : dataTypeName dataTypeLength? characterSet? collateClause? | dataTypeName LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet? collateClause?
     ;
 
 dataTypeName
@@ -1326,20 +1369,16 @@ dataTypeLength
     : LP_ NUMBER_ (COMMA_ NUMBER_)? RP_
     ;
 
-characterSet_
-    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier_
+characterSet
+    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier
     ;
 
-collateClause_
-    : COLLATE EQ_? (STRING_ | ignoredIdentifier_)
-    ;
-
-ignoredIdentifier_
+ignoredIdentifier
     : identifier (DOT_ identifier)?
     ;
 
-ignoredIdentifiers_
-    : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
+ignoredIdentifiers
+    : ignoredIdentifier (COMMA_ ignoredIdentifier)*
     ;
 
 signedIconst

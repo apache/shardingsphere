@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sqlserver;
+package org.apache.shardingsphere.sql.parser.postgresql;
 
 import org.apache.shardingsphere.test.sql.parser.parameterized.engine.SQLParserParameterizedTest;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.SQLCaseType;

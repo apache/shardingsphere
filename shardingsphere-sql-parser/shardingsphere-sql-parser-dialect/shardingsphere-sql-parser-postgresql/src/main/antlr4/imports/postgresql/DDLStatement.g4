@@ -20,9 +20,9 @@ grammar DDLStatement;
 import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule,DMLStatement;
 
 createTable
-    : CREATE createTableSpecification_ TABLE tableNotExistClause_? tableName
+    : CREATE createTableSpecification TABLE tableNotExistClause? tableName
       (createDefinitionClause | (OF anyName (LP_ typedTableElementList RP_)?) | (PARTITION OF qualifiedName (LP_ typedTableElementList RP_)? partitionBoundSpec))
-      inheritClause_ partitionSpec? tableAccessMethodClause? withOption? onCommitOption? tableSpace?
+      inheritClause partitionSpec? tableAccessMethodClause? withOption? onCommitOption? tableSpace?
       (AS select withData?)?
       (EXECUTE name executeParamClause withData?)?
     ;
@@ -88,7 +88,7 @@ accessMethod
     ;
 
 createIndex
-    : CREATE createIndexSpecification_ INDEX concurrentlyClause_ (indexNotExistClause_ indexName)? ON onlyClause_ tableName
+    : CREATE createIndexSpecification INDEX concurrentlyClause (indexNotExistClause indexName)? ON onlyClause tableName
       accessMethodClause? LP_ indexParams RP_ include? (WITH reloptions)? tableSpace? whereClause?
     ;
 
@@ -105,7 +105,7 @@ accessMethodClause
     ;
 
 createDatabase
-    : CREATE DATABASE name WITH? createDatabaseSpecification_*
+    : CREATE DATABASE name WITH? createDatabaseSpecification*
     ;
 
 createView
@@ -128,7 +128,7 @@ dropDatabase
     : DROP DATABASE (IF EXISTS)? name
     ;
 
-createDatabaseSpecification_
+createDatabaseSpecification
     :  createdbOptName EQ_? (signedIconst | booleanOrString | DEFAULT)
     ;
 
@@ -144,16 +144,16 @@ createdbOptName
 
 alterTable
     : ALTER TABLE
-    ( tableExistClause_ onlyClause_ tableNameClause alterDefinitionClause
+    ( tableExistClause onlyClause tableNameClause alterDefinitionClause
     | ALL IN TABLESPACE tableNameClause (OWNED BY roleList)? SET TABLESPACE name NOWAIT?)
     ;
 
 alterIndex
-    : ALTER INDEX (indexExistClause_ | ALL IN TABLESPACE) indexName alterIndexDefinitionClause_
+    : ALTER INDEX (indexExistClause | ALL IN TABLESPACE) indexName alterIndexDefinitionClause
     ;
 
 dropTable
-    : DROP TABLE tableExistClause_ tableNames dropTableOpt?
+    : DROP TABLE tableExistClause tableNames dropTableOpt?
     ;
 
 dropTableOpt
@@ -161,7 +161,7 @@ dropTableOpt
     ;
 
 dropIndex
-    : DROP INDEX concurrentlyClause_ indexExistClause_ indexNames dropIndexOpt?
+    : DROP INDEX concurrentlyClause indexExistClause indexNames dropIndexOpt?
     ;
 
 dropIndexOpt
@@ -169,7 +169,7 @@ dropIndexOpt
     ;
 
 truncateTable
-    : TRUNCATE TABLE? onlyClause_ tableNamesClause restartSeqs? dropTableOpt?
+    : TRUNCATE TABLE? onlyClause tableNamesClause restartSeqs? dropTableOpt?
     ;
 
 restartSeqs
@@ -177,11 +177,11 @@ restartSeqs
     | RESTART IDENTITY
     ;
 
-createTableSpecification_
+createTableSpecification
     : ((GLOBAL | LOCAL)? (TEMPORARY | TEMP) | UNLOGGED)?
     ;
 
-tableNotExistClause_
+tableNotExistClause
     : IF NOT EXISTS
     ;
 
@@ -194,7 +194,7 @@ createDefinition
     ;
 
 columnDefinition
-    : columnName dataType collateClause_? columnConstraint*
+    : columnName dataType collateClause? columnConstraint*
     ;
 
 columnConstraint
@@ -202,7 +202,7 @@ columnConstraint
     ;
 
 constraintClause
-    : CONSTRAINT ignoredIdentifier_
+    : CONSTRAINT ignoredIdentifier
     ;
 
 columnConstraintOption
@@ -242,7 +242,7 @@ sequenceOption
     ;
 
 indexParameters
-    : (USING INDEX TABLESPACE ignoredIdentifier_)?
+    : (USING INDEX TABLESPACE ignoredIdentifier)?
     | INCLUDE columnNames
     | WITH definition
     ;
@@ -267,7 +267,7 @@ tableConstraintOption
     : checkOption
     | UNIQUE columnNames indexParameters
     | primaryKey columnNames indexParameters
-    | EXCLUDE (USING ignoredIdentifier_)? LP_ exclusionConstraintList RP_ indexParameters exclusionWhereClause?
+    | EXCLUDE (USING ignoredIdentifier)? LP_ exclusionConstraintList RP_ indexParameters exclusionWhereClause?
     | FOREIGN KEY columnNames REFERENCES tableName columnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action)*
     ;
 
@@ -284,7 +284,7 @@ exclusionConstraintElem
     | indexElem WITH OPERATOR LP_ anyOperator RP_
     ;
 
-inheritClause_
+inheritClause
     : (INHERITS tableNames)?
     ;
 
@@ -311,27 +311,27 @@ partStrategy
     | unreservedWord
     ;
 
-createIndexSpecification_
+createIndexSpecification
     : UNIQUE?
     ;
 
-concurrentlyClause_
+concurrentlyClause
     : CONCURRENTLY?
     ;
 
-indexNotExistClause_
+indexNotExistClause
     : (IF NOT EXISTS)?
     ;
 
-onlyClause_
+onlyClause
     : ONLY?
     ;
 
-tableExistClause_
+tableExistClause
     : (IF EXISTS)?
     ;
 
-asteriskClause_
+asteriskClause
     : ASTERISK_?
     ;
 
@@ -339,7 +339,7 @@ alterDefinitionClause
     : alterTableActions
     | renameColumnSpecification
     | renameConstraint
-    | renameTableSpecification_
+    | renameTableSpecification
     | SET SCHEMA name
     | partitionCmd
     ;
@@ -349,7 +349,7 @@ partitionCmd
     | DETACH PARTITION qualifiedName
     ;
 
-alterIndexDefinitionClause_
+alterIndexDefinitionClause
     : renameIndexSpecification | alterIndexDependsOnExtension | alterIndexSetTableSpace | alterTableCmds | indexPartitionCmd
     ;
 
@@ -362,11 +362,11 @@ renameIndexSpecification
     ;
 
 alterIndexDependsOnExtension
-    : DEPENDS ON EXTENSION ignoredIdentifier_
+    : DEPENDS ON EXTENSION ignoredIdentifier
     ;
 
 alterIndexSetTableSpace
-    : (OWNED BY ignoredIdentifiers_)? SET TABLESPACE name (NOWAIT)?
+    : (OWNED BY ignoredIdentifiers)? SET TABLESPACE name (NOWAIT)?
     ;
 
 tableNamesClause
@@ -386,18 +386,18 @@ alterTableAction
     | dropColumnSpecification
     | modifyColumnSpecification
     | addConstraintSpecification
-    | ALTER CONSTRAINT ignoredIdentifier_ constraintOptionalParam
-    | VALIDATE CONSTRAINT ignoredIdentifier_
-    | DROP CONSTRAINT indexExistClause_ ignoredIdentifier_ (RESTRICT | CASCADE)?
-    | (DISABLE | ENABLE) TRIGGER (ignoredIdentifier_ | ALL | USER)?
-    | ENABLE (REPLICA | ALWAYS) TRIGGER ignoredIdentifier_
-    | (DISABLE | ENABLE) RULE ignoredIdentifier_
-    | ENABLE (REPLICA | ALWAYS) RULE ignoredIdentifier_
+    | ALTER CONSTRAINT ignoredIdentifier constraintOptionalParam
+    | VALIDATE CONSTRAINT ignoredIdentifier
+    | DROP CONSTRAINT indexExistClause ignoredIdentifier (RESTRICT | CASCADE)?
+    | (DISABLE | ENABLE) TRIGGER (ignoredIdentifier | ALL | USER)?
+    | ENABLE (REPLICA | ALWAYS) TRIGGER ignoredIdentifier
+    | (DISABLE | ENABLE) RULE ignoredIdentifier
+    | ENABLE (REPLICA | ALWAYS) RULE ignoredIdentifier
     | (DISABLE | ENABLE | (NO? FORCE)) ROW LEVEL SECURITY
     | CLUSTER ON indexName
     | SET WITHOUT CLUSTER
     | SET (WITH | WITHOUT) OIDS
-    | SET TABLESPACE ignoredIdentifier_
+    | SET TABLESPACE ignoredIdentifier
     | SET (LOGGED | UNLOGGED)
     | SET LP_ storageParameterWithValue (COMMA_ storageParameterWithValue)* RP_
     | RESET LP_ storageParameter (COMMA_ storageParameter)* RP_
@@ -405,7 +405,7 @@ alterTableAction
     | NO INHERIT tableName
     | OF dataTypeName
     | NOT OF
-    | OWNER TO (ignoredIdentifier_ | CURRENT_USER | SESSION_USER)
+    | OWNER TO (ignoredIdentifier | CURRENT_USER | SESSION_USER)
     | REPLICA IDENTITY (DEFAULT | (USING INDEX indexName) | FULL | NOTHING)
     ;
 
@@ -414,21 +414,21 @@ addColumnSpecification
     ;
 
 dropColumnSpecification
-    : DROP COLUMN? columnExistClause_ columnName (RESTRICT | CASCADE)?
+    : DROP COLUMN? columnExistClause columnName (RESTRICT | CASCADE)?
     ;
 
-columnExistClause_
+columnExistClause
     : (IF EXISTS)?
     ;
 
 modifyColumnSpecification
-    : modifyColumn (SET DATA)? TYPE dataType collateClause_? (USING aExpr)?
+    : modifyColumn (SET DATA)? TYPE dataType collateClause? (USING aExpr)?
     | modifyColumn SET DEFAULT aExpr
     | modifyColumn DROP DEFAULT
     | modifyColumn (SET | DROP) NOT NULL
     | modifyColumn ADD GENERATED (ALWAYS | (BY DEFAULT)) AS IDENTITY (LP_ sequenceOptions RP_)?
     | modifyColumn alterColumnSetOption alterColumnSetOption*
-    | modifyColumn DROP IDENTITY columnExistClause_
+    | modifyColumn DROP IDENTITY columnExistClause
     | modifyColumn SET STATISTICS NUMBER_
     | modifyColumn SET LP_ attributeOptions RP_
     | modifyColumn RESET LP_ attributeOptions RP_
@@ -456,7 +456,7 @@ addConstraintSpecification
     ;
 
 tableConstraintUsingIndex
-    : (CONSTRAINT ignoredIdentifier_)? (UNIQUE | primaryKey) USING INDEX indexName constraintOptionalParam
+    : (CONSTRAINT ignoredIdentifier)? (UNIQUE | primaryKey) USING INDEX indexName constraintOptionalParam
     ;
 
 storageParameterWithValue
@@ -472,14 +472,14 @@ renameColumnSpecification
     ;
 
 renameConstraint
-    : RENAME CONSTRAINT ignoredIdentifier_ TO ignoredIdentifier_
+    : RENAME CONSTRAINT ignoredIdentifier TO ignoredIdentifier
     ;
 
-renameTableSpecification_
+renameTableSpecification
     : RENAME TO identifier
     ;
 
-indexExistClause_
+indexExistClause
     : (IF EXISTS)?
     ;
 
@@ -944,11 +944,11 @@ alterGroupClauses
     ;
 
 alterLanguage
-    : ALTER PROCEDURAL? LANGUAGE (colId RENAME TO colId | OWNER TO (ignoredIdentifier_ | CURRENT_USER | SESSION_USER))
+    : ALTER PROCEDURAL? LANGUAGE (colId RENAME TO colId | OWNER TO (ignoredIdentifier | CURRENT_USER | SESSION_USER))
     ;
 
 alterLargeObject
-    : ALTER LARGE OBJECT numericOnly OWNER TO (ignoredIdentifier_ | CURRENT_USER | SESSION_USER)
+    : ALTER LARGE OBJECT numericOnly OWNER TO (ignoredIdentifier | CURRENT_USER | SESSION_USER)
     ;
 
 alterMaterializedView

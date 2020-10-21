@@ -51,8 +51,8 @@ public final class PostgreSQLDALVisitor extends PostgreSQLVisitor implements DAL
         Collection<VariableAssignSegment> variableAssigns = new LinkedList<>();
         if (null != ctx.configurationParameterClause()) {
             VariableAssignSegment variableAssignSegment = (VariableAssignSegment) visit(ctx.configurationParameterClause());
-            if (null != ctx.runtimeScope_()) {
-                variableAssignSegment.getVariable().setScope(ctx.runtimeScope_().getText());
+            if (null != ctx.runtimeScope()) {
+                variableAssignSegment.getVariable().setScope(ctx.runtimeScope().getText());
             }
             variableAssigns.add(variableAssignSegment);
             result.getVariableAssigns().addAll(variableAssigns);
