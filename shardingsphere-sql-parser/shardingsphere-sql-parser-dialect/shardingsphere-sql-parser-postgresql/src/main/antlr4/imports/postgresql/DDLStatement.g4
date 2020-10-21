@@ -194,7 +194,7 @@ createDefinition
     ;
 
 columnDefinition
-    : columnName dataType collateClause_? columnConstraint*
+    : columnName dataType collateClause? columnConstraint*
     ;
 
 columnConstraint
@@ -422,7 +422,7 @@ columnExistClause
     ;
 
 modifyColumnSpecification
-    : modifyColumn (SET DATA)? TYPE dataType collateClause_? (USING aExpr)?
+    : modifyColumn (SET DATA)? TYPE dataType collateClause? (USING aExpr)?
     | modifyColumn SET DEFAULT aExpr
     | modifyColumn DROP DEFAULT
     | modifyColumn (SET | DROP) NOT NULL

@@ -1173,7 +1173,7 @@ tableFuncElement
     ;
 
 collateClause
-    : COLLATE anyName
+    : COLLATE EQ_? anyName
     ;
 
 anyName
@@ -1312,7 +1312,7 @@ selectWithParens
     ;
 
 dataType
-    : dataTypeName dataTypeLength? characterSet? collateClause_? | dataTypeName LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet? collateClause_?
+    : dataTypeName dataTypeLength? characterSet? collateClause? | dataTypeName LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet? collateClause?
     ;
 
 dataTypeName
@@ -1328,10 +1328,6 @@ dataTypeLength
 
 characterSet
     : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier
-    ;
-
-collateClause_
-    : COLLATE EQ_? (STRING_ | ignoredIdentifier)
     ;
 
 ignoredIdentifier
