@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine.statement;
+package org.apache.shardingsphere.sql.parser.engine.statement.standard;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.cache.SQLParseResultCache;
+import org.apache.shardingsphere.sql.parser.engine.statement.StatementSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
 import org.apache.shardingsphere.sql.parser.core.visitor.ParseTreeVisitorFactory;
 import org.apache.shardingsphere.sql.parser.core.visitor.VisitorRule;
@@ -36,7 +36,7 @@ public final class StandardSQLParserEngine implements StatementSQLParserEngine {
     
     private final String databaseTypeName;
     
-    private final SQLParseResultCache cache = new SQLParseResultCache();
+    private final StandardSQLParsedResultCache cache = new StandardSQLParsedResultCache();
     
     private final ParsingHookRegistry parsingHookRegistry = ParsingHookRegistry.getInstance();
     
@@ -64,7 +64,7 @@ public final class StandardSQLParserEngine implements StatementSQLParserEngine {
     
     private SQLStatement parse0(final String sql, final boolean useCache) {
         if (useCache) {
-            Optional<SQLStatement> cachedSQLStatement = cache.getSQLStatement(sql);
+            Optional<SQLStatement> cachedSQLStatement = cache.get(sql);
             if (cachedSQLStatement.isPresent()) {
                 return cachedSQLStatement.get();
             }

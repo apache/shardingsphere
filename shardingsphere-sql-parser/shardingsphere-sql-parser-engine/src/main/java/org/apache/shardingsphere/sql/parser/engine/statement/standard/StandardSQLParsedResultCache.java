@@ -15,44 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.cache;
+package org.apache.shardingsphere.sql.parser.engine.statement.standard;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import org.apache.shardingsphere.sql.parser.engine.SQLParsedResultCache;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Optional;
 
 /**
- * SQL parse result cache.
+ * Standard SQL parsed result cache.
  */
-public final class SQLParseResultCache {
+public final class StandardSQLParsedResultCache implements SQLParsedResultCache<SQLStatement> {
     
     private final Cache<String, SQLStatement> cache = CacheBuilder.newBuilder().softValues().initialCapacity(2000).maximumSize(65535).build();
     
-    /**
-     * Put SQL and parse result into cache.
-     * 
-     * @param sql SQL
-     * @param sqlStatement SQL statement
-     */
+    @Override
     public void put(final String sql, final SQLStatement sqlStatement) {
         cache.put(sql, sqlStatement);
     }
     
-    /**
-     * Get SQL statement.
-     *
-     * @param sql SQL
-     * @return SQL statement
-     */
-    public Optional<SQLStatement> getSQLStatement(final String sql) {
+    @Override
+    public Optional<SQLStatement> get(final String sql) {
         return Optional.ofNullable(cache.getIfPresent(sql));
     }
     
-    /**
-     * Clear cache.
-     */
+    @Override
     public synchronized void clear() {
         cache.invalidateAll();
     }

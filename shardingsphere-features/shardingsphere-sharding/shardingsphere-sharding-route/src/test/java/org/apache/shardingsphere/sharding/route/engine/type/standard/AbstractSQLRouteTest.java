@@ -36,8 +36,8 @@ import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.route.engine.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.engine.statement.StandardSQLParserEngineFactory;
-import org.apache.shardingsphere.sql.parser.engine.statement.StandardSQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.statement.standard.StandardSQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.engine.statement.standard.StandardSQLParserEngine;
 
 import java.sql.Types;
 import java.util.Arrays;
