@@ -202,7 +202,7 @@ columnConstraint
     ;
 
 constraintClause
-    : CONSTRAINT ignoredIdentifier_
+    : CONSTRAINT ignoredIdentifier
     ;
 
 columnConstraintOption
@@ -242,7 +242,7 @@ sequenceOption
     ;
 
 indexParameters
-    : (USING INDEX TABLESPACE ignoredIdentifier_)?
+    : (USING INDEX TABLESPACE ignoredIdentifier)?
     | INCLUDE columnNames
     | WITH definition
     ;
@@ -267,7 +267,7 @@ tableConstraintOption
     : checkOption
     | UNIQUE columnNames indexParameters
     | primaryKey columnNames indexParameters
-    | EXCLUDE (USING ignoredIdentifier_)? LP_ exclusionConstraintList RP_ indexParameters exclusionWhereClause?
+    | EXCLUDE (USING ignoredIdentifier)? LP_ exclusionConstraintList RP_ indexParameters exclusionWhereClause?
     | FOREIGN KEY columnNames REFERENCES tableName columnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action)*
     ;
 
@@ -362,11 +362,11 @@ renameIndexSpecification
     ;
 
 alterIndexDependsOnExtension
-    : DEPENDS ON EXTENSION ignoredIdentifier_
+    : DEPENDS ON EXTENSION ignoredIdentifier
     ;
 
 alterIndexSetTableSpace
-    : (OWNED BY ignoredIdentifiers_)? SET TABLESPACE name (NOWAIT)?
+    : (OWNED BY ignoredIdentifiers)? SET TABLESPACE name (NOWAIT)?
     ;
 
 tableNamesClause
@@ -386,18 +386,18 @@ alterTableAction
     | dropColumnSpecification
     | modifyColumnSpecification
     | addConstraintSpecification
-    | ALTER CONSTRAINT ignoredIdentifier_ constraintOptionalParam
-    | VALIDATE CONSTRAINT ignoredIdentifier_
-    | DROP CONSTRAINT indexExistClause ignoredIdentifier_ (RESTRICT | CASCADE)?
-    | (DISABLE | ENABLE) TRIGGER (ignoredIdentifier_ | ALL | USER)?
-    | ENABLE (REPLICA | ALWAYS) TRIGGER ignoredIdentifier_
-    | (DISABLE | ENABLE) RULE ignoredIdentifier_
-    | ENABLE (REPLICA | ALWAYS) RULE ignoredIdentifier_
+    | ALTER CONSTRAINT ignoredIdentifier constraintOptionalParam
+    | VALIDATE CONSTRAINT ignoredIdentifier
+    | DROP CONSTRAINT indexExistClause ignoredIdentifier (RESTRICT | CASCADE)?
+    | (DISABLE | ENABLE) TRIGGER (ignoredIdentifier | ALL | USER)?
+    | ENABLE (REPLICA | ALWAYS) TRIGGER ignoredIdentifier
+    | (DISABLE | ENABLE) RULE ignoredIdentifier
+    | ENABLE (REPLICA | ALWAYS) RULE ignoredIdentifier
     | (DISABLE | ENABLE | (NO? FORCE)) ROW LEVEL SECURITY
     | CLUSTER ON indexName
     | SET WITHOUT CLUSTER
     | SET (WITH | WITHOUT) OIDS
-    | SET TABLESPACE ignoredIdentifier_
+    | SET TABLESPACE ignoredIdentifier
     | SET (LOGGED | UNLOGGED)
     | SET LP_ storageParameterWithValue (COMMA_ storageParameterWithValue)* RP_
     | RESET LP_ storageParameter (COMMA_ storageParameter)* RP_
@@ -405,7 +405,7 @@ alterTableAction
     | NO INHERIT tableName
     | OF dataTypeName
     | NOT OF
-    | OWNER TO (ignoredIdentifier_ | CURRENT_USER | SESSION_USER)
+    | OWNER TO (ignoredIdentifier | CURRENT_USER | SESSION_USER)
     | REPLICA IDENTITY (DEFAULT | (USING INDEX indexName) | FULL | NOTHING)
     ;
 
@@ -456,7 +456,7 @@ addConstraintSpecification
     ;
 
 tableConstraintUsingIndex
-    : (CONSTRAINT ignoredIdentifier_)? (UNIQUE | primaryKey) USING INDEX indexName constraintOptionalParam
+    : (CONSTRAINT ignoredIdentifier)? (UNIQUE | primaryKey) USING INDEX indexName constraintOptionalParam
     ;
 
 storageParameterWithValue
@@ -472,7 +472,7 @@ renameColumnSpecification
     ;
 
 renameConstraint
-    : RENAME CONSTRAINT ignoredIdentifier_ TO ignoredIdentifier_
+    : RENAME CONSTRAINT ignoredIdentifier TO ignoredIdentifier
     ;
 
 renameTableSpecification
@@ -944,11 +944,11 @@ alterGroupClauses
     ;
 
 alterLanguage
-    : ALTER PROCEDURAL? LANGUAGE (colId RENAME TO colId | OWNER TO (ignoredIdentifier_ | CURRENT_USER | SESSION_USER))
+    : ALTER PROCEDURAL? LANGUAGE (colId RENAME TO colId | OWNER TO (ignoredIdentifier | CURRENT_USER | SESSION_USER))
     ;
 
 alterLargeObject
-    : ALTER LARGE OBJECT numericOnly OWNER TO (ignoredIdentifier_ | CURRENT_USER | SESSION_USER)
+    : ALTER LARGE OBJECT numericOnly OWNER TO (ignoredIdentifier | CURRENT_USER | SESSION_USER)
     ;
 
 alterMaterializedView
