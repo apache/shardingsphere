@@ -18,22 +18,22 @@
 package org.apache.shardingsphere.rdl.parser.engine;
 
 import org.apache.shardingsphere.rdl.parser.engine.engine.RDLSQLParserEngine;
-import org.apache.shardingsphere.sql.parser.engine.SQLStatementParserEngineFactory;
-import org.apache.shardingsphere.sql.parser.engine.SQLStatementParserEngine;
-import org.apache.shardingsphere.sql.parser.engine.StandardSQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.statement.StandardSQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.engine.statement.StatementSQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.statement.StandardSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * Sharding sphere SQL parser engine.
  */
-public final class ShardingSphereSQLParserEngine implements SQLStatementParserEngine {
+public final class ShardingSphereSQLParserEngine implements StatementSQLParserEngine {
     
     private final StandardSQLParserEngine standardSqlParserEngine;
 
     private final RDLSQLParserEngine rdlsqlParserEngine;
     
     public ShardingSphereSQLParserEngine(final String databaseTypeName) {
-        standardSqlParserEngine = SQLStatementParserEngineFactory.getSQLParserEngine(databaseTypeName);
+        standardSqlParserEngine = StandardSQLParserEngineFactory.getSQLParserEngine(databaseTypeName);
         rdlsqlParserEngine = new RDLSQLParserEngine();
     }
     

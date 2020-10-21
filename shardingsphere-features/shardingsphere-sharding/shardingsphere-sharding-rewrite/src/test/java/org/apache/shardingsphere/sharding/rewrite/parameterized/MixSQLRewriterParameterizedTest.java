@@ -47,8 +47,8 @@ import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.sql.parser.engine.SQLStatementParserEngineFactory;
-import org.apache.shardingsphere.sql.parser.engine.StandardSQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.statement.StandardSQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.engine.statement.StandardSQLParserEngine;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.io.File;
@@ -84,7 +84,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(
                 new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(ruleConfigurations.getRules()), ruleConfigurations.getDataSources().keySet());
         StandardSQLParserEngine standardSqlParserEngine =
-                SQLStatementParserEngineFactory.getSQLParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
+                StandardSQLParserEngineFactory.getSQLParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
         ShardingSphereMetaData metaData = createShardingSphereMetaData();
         ConfigurationProperties props = new ConfigurationProperties(ruleConfigurations.getProps());
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(

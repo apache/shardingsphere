@@ -36,8 +36,8 @@ import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.route.engine.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.engine.SQLStatementParserEngineFactory;
-import org.apache.shardingsphere.sql.parser.engine.StandardSQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.statement.StandardSQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.engine.statement.StandardSQLParserEngine;
 
 import java.sql.Types;
 import java.util.Arrays;
@@ -58,7 +58,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         ShardingRule shardingRule = createAllShardingRule();
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildLogicSchemaMetaData(), mock(TableAddressingMetaData.class), mock(CachedDatabaseMetaData.class));
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        StandardSQLParserEngine standardSqlParserEngine = SQLStatementParserEngineFactory.getSQLParserEngine("MySQL");
+        StandardSQLParserEngine standardSqlParserEngine = StandardSQLParserEngineFactory.getSQLParserEngine("MySQL");
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
                 metaData.getSchemaMetaData().getConfiguredSchemaMetaData(), parameters, standardSqlParserEngine.parse(sql, false));
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, parameters);
