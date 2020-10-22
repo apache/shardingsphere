@@ -39,11 +39,11 @@ public final class SQLVisitorFactory {
      * 
      * @param databaseTypeName name of database type
      * @param type type
-     * @param SQLVisitorRule visitor rule
+     * @param sqlVisitorRule visitor rule
      * @return parse tree visitor
      */
-    public static ParseTreeVisitor newInstance(final String databaseTypeName, final SQLVisitorType type, final SQLVisitorRule SQLVisitorRule) {
-        return createParseTreeVisitor(getSQLVisitorFacadeEngine(databaseTypeName, type), SQLVisitorRule.getType());
+    public static ParseTreeVisitor newInstance(final String databaseTypeName, final SQLVisitorType type, final SQLVisitorRule sqlVisitorRule) {
+        return createParseTreeVisitor(getSQLVisitorFacadeEngine(databaseTypeName, type), sqlVisitorRule.getType());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
