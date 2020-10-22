@@ -40,7 +40,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OutOfL
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OutOfLineRefConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RelationalPropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TruncateTableContext;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.impl.statement.OracleStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
