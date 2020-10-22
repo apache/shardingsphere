@@ -301,6 +301,9 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         } else {
             result.setTableSegment((TableSegment) visit(ctx.singleTableClause()));
         }
+        if (null != ctx.outputClause()) {
+            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+        }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
