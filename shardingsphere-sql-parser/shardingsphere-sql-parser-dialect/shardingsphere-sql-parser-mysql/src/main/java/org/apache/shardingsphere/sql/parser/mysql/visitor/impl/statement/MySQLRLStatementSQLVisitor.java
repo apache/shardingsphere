@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.impl.RLSt
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeMasterToContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StartSlaveContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StopSlaveContext;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.impl.statement.MySQLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLChangeMasterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLStartSlaveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLStopSlaveStatement;

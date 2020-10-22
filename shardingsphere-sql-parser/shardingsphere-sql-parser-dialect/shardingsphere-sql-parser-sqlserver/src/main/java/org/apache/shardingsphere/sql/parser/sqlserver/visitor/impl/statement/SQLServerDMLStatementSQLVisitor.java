@@ -113,7 +113,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerUpdateStatement;
-import org.apache.shardingsphere.sql.parser.sqlserver.visitor.impl.statement.SQLServerStatementSQLVisitor;
 
 import java.util.Collection;
 import java.util.Collections;

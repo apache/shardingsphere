@@ -46,7 +46,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDropUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerGrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerRevokeStatement;
-import org.apache.shardingsphere.sql.parser.sqlserver.visitor.impl.statement.SQLServerStatementSQLVisitor;
 
 import java.util.Collection;
 import java.util.Collections;

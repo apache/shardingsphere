@@ -57,7 +57,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerTruncateStatement;
-import org.apache.shardingsphere.sql.parser.sqlserver.visitor.impl.statement.SQLServerStatementSQLVisitor;
 
 import java.util.Collection;
 import java.util.Collections;

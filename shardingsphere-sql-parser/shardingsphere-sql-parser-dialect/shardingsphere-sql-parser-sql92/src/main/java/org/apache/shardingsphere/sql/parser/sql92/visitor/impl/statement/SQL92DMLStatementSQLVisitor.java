@@ -86,7 +86,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL9
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql92.visitor.impl.statement.SQL92StatementSQLVisitor;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropUs
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GrantContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ObjectPrivilegeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RevokeContext;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.impl.statement.OracleStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleAlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleAlterUserStatement;

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.RevokeC
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dcl.SQL92GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dcl.SQL92RevokeStatement;
-import org.apache.shardingsphere.sql.parser.sql92.visitor.impl.statement.SQL92StatementSQLVisitor;
 
 import java.util.Collection;
 import java.util.Collections;
