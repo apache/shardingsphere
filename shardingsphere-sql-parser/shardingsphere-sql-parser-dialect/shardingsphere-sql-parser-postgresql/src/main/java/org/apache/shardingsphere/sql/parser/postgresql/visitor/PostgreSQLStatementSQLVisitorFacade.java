@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.mysql.visitor;
+package org.apache.shardingsphere.sql.parser.postgresql.visitor;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DALVisitor;
@@ -24,45 +24,44 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DDLVisito
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.RLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLVisitor;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.impl.MySQLDALVisitor;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.impl.MySQLDCLVisitor;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.impl.MySQLDDLVisitor;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.impl.MySQLDMLVisitor;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.impl.MySQLRLVisitor;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.impl.MySQLTCLVisitor;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.impl.PostgreSQLDALVisitor;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.impl.PostgreSQLDCLVisitor;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.impl.PostgreSQLDDLVisitor;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.impl.PostgreSQLDMLVisitor;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.impl.PostgreSQLTCLVisitor;
 
 /**
- * Visitor facade for MySQL.
+ * Visitor facade for PostgreSQL.
  */
-public final class MyStatementSQLVisitorFacade implements StatementSQLVisitorFacade {
+public final class PostgreSQLStatementSQLVisitorFacade implements StatementSQLVisitorFacade {
     
     @Override
     public Class<? extends DMLVisitor> getDMLVisitorClass() {
-        return MySQLDMLVisitor.class;
+        return PostgreSQLDMLVisitor.class;
     }
     
     @Override
     public Class<? extends DDLVisitor> getDDLVisitorClass() {
-        return MySQLDDLVisitor.class;
+        return PostgreSQLDDLVisitor.class;
     }
     
     @Override
     public Class<? extends TCLVisitor> getTCLVisitorClass() {
-        return MySQLTCLVisitor.class;
+        return PostgreSQLTCLVisitor.class;
     }
     
     @Override
     public Class<? extends DCLVisitor> getDCLVisitorClass() {
-        return MySQLDCLVisitor.class;
+        return PostgreSQLDCLVisitor.class;
     }
     
     @Override
     public Class<? extends DALVisitor> getDALVisitorClass() {
-        return MySQLDALVisitor.class;
+        return PostgreSQLDALVisitor.class;
     }
     
     @Override
     public Class<? extends RLVisitor> getRLVisitorClass() {
-        return MySQLRLVisitor.class;
+        return null;
     }
 }

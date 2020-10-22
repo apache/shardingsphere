@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.postgresql.visitor;
+package org.apache.shardingsphere.sql.parser.sql92.visitor;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DALVisitor;
@@ -24,40 +24,40 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DDLVisito
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.RLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.impl.PostgreSQLDALVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.impl.PostgreSQLDCLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.impl.PostgreSQLDDLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.impl.PostgreSQLDMLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.impl.PostgreSQLTCLVisitor;
+import org.apache.shardingsphere.sql.parser.sql92.visitor.impl.SQL92DALVisitor;
+import org.apache.shardingsphere.sql.parser.sql92.visitor.impl.SQL92DCLVisitor;
+import org.apache.shardingsphere.sql.parser.sql92.visitor.impl.SQL92DDLVisitor;
+import org.apache.shardingsphere.sql.parser.sql92.visitor.impl.SQL92DMLVisitor;
+import org.apache.shardingsphere.sql.parser.sql92.visitor.impl.SQL92TCLVisitor;
 
 /**
- * Visitor facade for PostgreSQL.
+ * Visitor facade for SQL92.
  */
-public final class PostgreStatementSQLVisitorFacade implements StatementSQLVisitorFacade {
+public final class SQL92StatementSQLVisitorFacade implements StatementSQLVisitorFacade {
     
     @Override
     public Class<? extends DMLVisitor> getDMLVisitorClass() {
-        return PostgreSQLDMLVisitor.class;
+        return SQL92DMLVisitor.class;
     }
     
     @Override
     public Class<? extends DDLVisitor> getDDLVisitorClass() {
-        return PostgreSQLDDLVisitor.class;
+        return SQL92DDLVisitor.class;
     }
     
     @Override
     public Class<? extends TCLVisitor> getTCLVisitorClass() {
-        return PostgreSQLTCLVisitor.class;
+        return SQL92TCLVisitor.class;
     }
     
     @Override
     public Class<? extends DCLVisitor> getDCLVisitorClass() {
-        return PostgreSQLDCLVisitor.class;
+        return SQL92DCLVisitor.class;
     }
     
     @Override
     public Class<? extends DALVisitor> getDALVisitorClass() {
-        return PostgreSQLDALVisitor.class;
+        return SQL92DALVisitor.class;
     }
     
     @Override

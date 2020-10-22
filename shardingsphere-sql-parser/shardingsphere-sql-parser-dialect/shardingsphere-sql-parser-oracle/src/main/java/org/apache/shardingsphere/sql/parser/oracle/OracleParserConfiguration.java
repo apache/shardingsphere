@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.oracle.lexer.OracleLexer;
 import org.apache.shardingsphere.sql.parser.oracle.parser.OracleParser;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.OracleVisitorFacadeStatement;
+import org.apache.shardingsphere.sql.parser.oracle.visitor.OracleStatementSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 
 /**
@@ -47,6 +47,6 @@ public final class OracleParserConfiguration implements SQLParserConfiguration {
     
     @Override
     public Class<? extends StatementSQLVisitorFacade> getVisitorFacadeClass() {
-        return OracleVisitorFacadeStatement.class;
+        return OracleStatementSQLVisitorFacade.class;
     }
 }

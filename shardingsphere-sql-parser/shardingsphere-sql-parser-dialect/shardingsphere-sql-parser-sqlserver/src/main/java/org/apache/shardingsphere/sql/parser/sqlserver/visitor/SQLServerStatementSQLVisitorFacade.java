@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.oracle.visitor;
+package org.apache.shardingsphere.sql.parser.sqlserver.visitor;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DALVisitor;
@@ -24,40 +24,40 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DDLVisito
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.RLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLVisitor;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.impl.OracleDALVisitor;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.impl.OracleDCLVisitor;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.impl.OracleDDLVisitor;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.impl.OracleDMLVisitor;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.impl.OracleTCLVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.impl.SQLServerDALVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.impl.SQLServerDCLVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.impl.SQLServerDDLVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.impl.SQLServerDMLVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.impl.SQLServerTCLVisitor;
 
 /**
- * Visitor facade for Oracle.
+ * Visitor facade for SQLServer.
  */
-public final class OracleVisitorFacadeStatement implements StatementSQLVisitorFacade {
+public final class SQLServerStatementSQLVisitorFacade implements StatementSQLVisitorFacade {
     
     @Override
     public Class<? extends DMLVisitor> getDMLVisitorClass() {
-        return OracleDMLVisitor.class;
+        return SQLServerDMLVisitor.class;
     }
     
     @Override
     public Class<? extends DDLVisitor> getDDLVisitorClass() {
-        return OracleDDLVisitor.class;
+        return SQLServerDDLVisitor.class;
     }
     
     @Override
     public Class<? extends TCLVisitor> getTCLVisitorClass() {
-        return OracleTCLVisitor.class;
+        return SQLServerTCLVisitor.class;
     }
     
     @Override
     public Class<? extends DCLVisitor> getDCLVisitorClass() {
-        return OracleDCLVisitor.class;
+        return SQLServerDCLVisitor.class;
     }
     
     @Override
     public Class<? extends DALVisitor> getDALVisitorClass() {
-        return OracleDALVisitor.class;
+        return SQLServerDALVisitor.class;
     }
     
     @Override
