@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.value;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.ASTNode;
 
 /**
  * Value AST node.
