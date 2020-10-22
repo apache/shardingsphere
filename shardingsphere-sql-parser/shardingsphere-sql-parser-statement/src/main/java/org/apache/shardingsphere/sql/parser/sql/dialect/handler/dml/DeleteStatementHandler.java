@@ -21,10 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerDeleteStatement;
 
 import java.util.Optional;
 
@@ -56,6 +59,19 @@ public final class DeleteStatementHandler implements SQLStatementHandler {
     public static Optional<LimitSegment> getLimitSegment(final DeleteStatement deleteStatement) {
         if (deleteStatement instanceof MySQLStatement) {
             return ((MySQLDeleteStatement) deleteStatement).getLimit();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Get output segment.
+     * 
+     * @param deleteStatement delete statement
+     * @return output segment
+     */
+    public static Optional<OutputSegment> getOutputSegment(final DeleteStatement deleteStatement) {
+        if (deleteStatement instanceof SQLServerStatement) {
+            return ((SQLServerDeleteStatement) deleteStatement).getOutputSegment();
         }
         return Optional.empty();
     }

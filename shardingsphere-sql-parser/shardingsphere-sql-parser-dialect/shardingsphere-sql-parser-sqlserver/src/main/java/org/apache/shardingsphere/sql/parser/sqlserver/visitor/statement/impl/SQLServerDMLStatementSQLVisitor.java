@@ -301,6 +301,9 @@ public final class SQLServerDMLStatementSQLVisitor extends SQLServerStatementSQL
         } else {
             result.setTableSegment((TableSegment) visit(ctx.singleTableClause()));
         }
+        if (null != ctx.outputClause()) {
+            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+        }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
