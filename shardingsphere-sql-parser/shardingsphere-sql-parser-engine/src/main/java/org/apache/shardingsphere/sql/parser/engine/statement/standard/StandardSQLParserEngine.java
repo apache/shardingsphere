@@ -20,10 +20,11 @@ package org.apache.shardingsphere.sql.parser.engine.statement.standard;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorType;
+import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
 import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorFactory;
 import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorRule;
+import org.apache.shardingsphere.sql.parser.engine.SQLParsedResultCache;
 import org.apache.shardingsphere.sql.parser.engine.statement.StatementSQLParserEngine;
-import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -37,7 +38,7 @@ public final class StandardSQLParserEngine implements StatementSQLParserEngine {
     
     private final String databaseTypeName;
     
-    private final StandardSQLParsedResultCache cache = new StandardSQLParsedResultCache();
+    private final SQLParsedResultCache<SQLStatement> cache = new SQLParsedResultCache<>();
     
     private final ParsingHookRegistry parsingHookRegistry = ParsingHookRegistry.getInstance();
     
