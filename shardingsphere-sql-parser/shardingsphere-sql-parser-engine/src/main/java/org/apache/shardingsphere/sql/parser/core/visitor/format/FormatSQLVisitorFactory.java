@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.visitor.statement;
+package org.apache.shardingsphere.sql.parser.core.visitor.format;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.format.FormatSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.core.SQLParserConfigurationRegistry;
 import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorRule;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -29,10 +29,10 @@ import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementType;
 
 /**
- * Statement SQL visitor factory.
+ * Format SQL visitor factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StatementSQLVisitorFactory {
+public final class FormatSQLVisitorFactory {
     
     /** 
      * New instance of statement SQL visitor.
@@ -47,8 +47,8 @@ public final class StatementSQLVisitorFactory {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static ParseTreeVisitor createParseTreeVisitor(final SQLParserConfiguration config, final SQLStatementType type) {
-        StatementSQLVisitorFacade visitorFacade =
-                config.getVisitorFacadeClass().getConstructor().newInstance().getStatementSQLVisitorFacadeClass().getConstructor().newInstance();
+        FormatSQLVisitorFacade visitorFacade =
+                config.getVisitorFacadeClass().getConstructor().newInstance().getFormatSQLVisitorFacadeClass().getConstructor().newInstance();
         switch (type) {
             case DML:
                 return (ParseTreeVisitor) visitorFacade.getDMLVisitorClass().getConstructor().newInstance();

@@ -15,42 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.spi;
+package org.apache.shardingsphere.sql.parser.oracle.visitor;
 
-import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.format.FormatSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.oracle.visitor.format.OracleFormatSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementSQLVisitorFacade;
 
 /**
- * SQL parser configuration.
+ * Oracle SQL visitor facade.
  */
-public interface SQLParserConfiguration {
+public final class OracleSQLVisitorFacade implements SQLVisitorFacade {
     
-    /**
-     * Get name of database type.
-     *
-     * @return name of database type
-     */
-    String getDatabaseTypeName();
+    @Override
+    public Class<? extends StatementSQLVisitorFacade> getStatementSQLVisitorFacadeClass() {
+        return OracleStatementSQLVisitorFacade.class;
+    }
     
-    /**
-     * Get SQL lexer class type.
-     *
-     * @return SQL lexer class type
-     */
-    Class<? extends SQLLexer> getLexerClass();
-    
-    /**
-     * Get SQL parser class type.
-     * 
-     * @return SQL parser class type
-     */
-    Class<? extends SQLParser> getParserClass();
-    
-    /**
-     * Get SQL visitor facade class.
-     *
-     * @return SQL visitor facade class
-     */
-    Class<? extends SQLVisitorFacade> getVisitorFacadeClass();
+    @Override
+    public Class<? extends FormatSQLVisitorFacade> getFormatSQLVisitorFacadeClass() {
+        return OracleFormatSQLVisitorFacade.class;
+    }
 }

@@ -15,42 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.spi;
+package org.apache.shardingsphere.sql.parser.api.visitor;
 
-import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.format.FormatSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
 
 /**
- * SQL parser configuration.
+ * SQL visitor facade.
  */
-public interface SQLParserConfiguration {
+public interface SQLVisitorFacade {
     
     /**
-     * Get name of database type.
+     * Get Statement visitor facade class.
      *
-     * @return name of database type
+     * @return DML visitor class
      */
-    String getDatabaseTypeName();
+    Class<? extends StatementSQLVisitorFacade> getStatementSQLVisitorFacadeClass();
     
     /**
-     * Get SQL lexer class type.
+     * Get Format visitor facade class.
      *
-     * @return SQL lexer class type
+     * @return DDL visitor class
      */
-    Class<? extends SQLLexer> getLexerClass();
-    
-    /**
-     * Get SQL parser class type.
-     * 
-     * @return SQL parser class type
-     */
-    Class<? extends SQLParser> getParserClass();
-    
-    /**
-     * Get SQL visitor facade class.
-     *
-     * @return SQL visitor facade class
-     */
-    Class<? extends SQLVisitorFacade> getVisitorFacadeClass();
+    Class<? extends FormatSQLVisitorFacade> getFormatSQLVisitorFacadeClass();
 }

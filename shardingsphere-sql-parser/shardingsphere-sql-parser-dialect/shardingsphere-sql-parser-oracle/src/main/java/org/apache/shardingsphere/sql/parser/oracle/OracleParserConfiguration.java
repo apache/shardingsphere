@@ -19,10 +19,10 @@ package org.apache.shardingsphere.sql.parser.oracle;
 
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.oracle.lexer.OracleLexer;
 import org.apache.shardingsphere.sql.parser.oracle.parser.OracleParser;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.OracleStatementSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.oracle.visitor.OracleSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 
 /**
@@ -46,7 +46,7 @@ public final class OracleParserConfiguration implements SQLParserConfiguration {
     }
     
     @Override
-    public Class<? extends StatementSQLVisitorFacade> getVisitorFacadeClass() {
-        return OracleStatementSQLVisitorFacade.class;
+    public Class<? extends SQLVisitorFacade> getVisitorFacadeClass() {
+        return OracleSQLVisitorFacade.class;
     }
 }

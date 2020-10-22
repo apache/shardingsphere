@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.postgresql.visitor;
+package org.apache.shardingsphere.sql.parser.sql92.visitor.statement;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DALStatementSQLVisitor;
@@ -24,40 +24,40 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DDLStatem
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.RLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDALStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDCLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDDLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDMLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLTCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl.SQL92DALStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl.SQL92DCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl.SQL92DDLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl.SQL92DMLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl.SQL92TCLStatementSQLVisitor;
 
 /**
- * Statement SQL Visitor facade for PostgreSQL.
+ * Statement SQL Visitor facade for SQL92.
  */
-public final class PostgreSQLStatementSQLVisitorFacade implements StatementSQLVisitorFacade {
+public final class SQL92StatementSQLVisitorFacade implements StatementSQLVisitorFacade {
     
     @Override
     public Class<? extends DMLStatementSQLVisitor> getDMLVisitorClass() {
-        return PostgreSQLDMLStatementSQLVisitor.class;
+        return SQL92DMLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DDLStatementSQLVisitor> getDDLVisitorClass() {
-        return PostgreSQLDDLStatementSQLVisitor.class;
+        return SQL92DDLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends TCLStatementSQLVisitor> getTCLVisitorClass() {
-        return PostgreSQLTCLStatementSQLVisitor.class;
+        return SQL92TCLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DCLStatementSQLVisitor> getDCLVisitorClass() {
-        return PostgreSQLDCLStatementSQLVisitor.class;
+        return SQL92DCLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DALStatementSQLVisitor> getDALVisitorClass() {
-        return PostgreSQLDALStatementSQLVisitor.class;
+        return SQL92DALStatementSQLVisitor.class;
     }
     
     @Override
