@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sql.parser.oracle;
 
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.facade.SQLVisitorFacadeEngine;
 import org.apache.shardingsphere.sql.parser.oracle.lexer.OracleLexer;
 import org.apache.shardingsphere.sql.parser.oracle.parser.OracleParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.facade.SQLVisitorFacadeEngine;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.OracleSQLVisitorFacadeEngine;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 

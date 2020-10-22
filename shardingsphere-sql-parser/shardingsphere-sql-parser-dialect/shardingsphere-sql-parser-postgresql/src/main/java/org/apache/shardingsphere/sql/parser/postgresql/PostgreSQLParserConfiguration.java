@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sql.parser.postgresql;
 
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.facade.SQLVisitorFacadeEngine;
 import org.apache.shardingsphere.sql.parser.postgresql.lexer.PostgreSQLLexer;
 import org.apache.shardingsphere.sql.parser.postgresql.parser.PostgreSQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.facade.SQLVisitorFacadeEngine;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.PostgreSQLSQLVisitorFacadeEngine;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 
