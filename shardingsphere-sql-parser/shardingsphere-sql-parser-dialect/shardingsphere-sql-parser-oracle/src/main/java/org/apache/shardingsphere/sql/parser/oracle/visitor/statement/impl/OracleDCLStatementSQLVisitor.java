@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.impl.DCLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateRoleContext;

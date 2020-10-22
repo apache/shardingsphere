@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DALStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.impl.DALStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementSQLVisitor;
 
 /**

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.api.parser;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.ASTNode;
 
 /**
  * SQL parser.

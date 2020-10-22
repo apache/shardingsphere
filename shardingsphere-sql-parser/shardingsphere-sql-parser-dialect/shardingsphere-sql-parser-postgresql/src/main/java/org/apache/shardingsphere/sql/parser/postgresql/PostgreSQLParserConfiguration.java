@@ -19,10 +19,10 @@ package org.apache.shardingsphere.sql.parser.postgresql;
 
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.facade.SQLVisitorFacadeEngine;
 import org.apache.shardingsphere.sql.parser.postgresql.lexer.PostgreSQLLexer;
 import org.apache.shardingsphere.sql.parser.postgresql.parser.PostgreSQLParser;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.PostgreSQLSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.PostgreSQLSQLVisitorFacadeEngine;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 
 /**
@@ -46,7 +46,7 @@ public final class PostgreSQLParserConfiguration implements SQLParserConfigurati
     }
     
     @Override
-    public Class<? extends SQLVisitorFacade> getVisitorFacadeClass() {
-        return PostgreSQLSQLVisitorFacade.class;
+    public Class<? extends SQLVisitorFacadeEngine> getVisitorFacadeEngineClass() {
+        return PostgreSQLSQLVisitorFacadeEngine.class;
     }
 }

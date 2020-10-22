@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor.format.impl;
+package org.apache.shardingsphere.sql.parser.api.visitor.impl.statement;
 
 /**
- * DCL format SQL visitor.
+ * AST node.
  */
-public interface DCLFormatSQLVisitor {
+public interface ASTNode {
 }

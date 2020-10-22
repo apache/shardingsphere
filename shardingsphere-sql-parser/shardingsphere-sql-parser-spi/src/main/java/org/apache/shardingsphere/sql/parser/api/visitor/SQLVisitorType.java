@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.api.visitor;
 
+import lombok.RequiredArgsConstructor;
+
 /**
- * SQL visitor type.
+ * SQL Visitor type.
  */
+@RequiredArgsConstructor
 public enum SQLVisitorType {
     
     STATEMENT, FORMAT

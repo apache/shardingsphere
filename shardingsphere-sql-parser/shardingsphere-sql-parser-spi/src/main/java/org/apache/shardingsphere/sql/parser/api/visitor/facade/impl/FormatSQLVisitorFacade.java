@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor.format;
+package org.apache.shardingsphere.sql.parser.api.visitor.facade.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DALFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DCLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DDLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DMLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.RLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.TCLFormatSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.facade.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.format.DALFormatSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.format.DCLFormatSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.format.DDLFormatSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.format.DMLFormatSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.format.RLFormatSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.format.TCLFormatSQLVisitor;
 
 /**
  * Format SQL visitor facade.
  */
-public interface FormatSQLVisitorFacade {
+public interface FormatSQLVisitorFacade extends SQLVisitorFacade {
     
     /**
      * Get DML visitor class.

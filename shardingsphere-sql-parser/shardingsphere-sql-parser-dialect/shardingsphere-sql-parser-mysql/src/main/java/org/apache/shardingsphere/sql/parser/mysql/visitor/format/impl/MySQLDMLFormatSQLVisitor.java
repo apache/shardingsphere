@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DMLFormatSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.format.DMLFormatSQLVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.format.MySQLFormatSQLVisitor;
 
 /**

@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
+package org.apache.shardingsphere.sql.parser.api.visitor.impl.format;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.impl.format.DALFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.format.MySQLFormatSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.SQLVisitor;
 
 /**
- * DAL Format SQL visitor for MySQL.
+ * DDL format SQL visitor.
  */
-public final class MySQLDALFormatSQLVisitor extends MySQLFormatSQLVisitor implements DALFormatSQLVisitor {
+public interface DDLFormatSQLVisitor extends SQLVisitor {
 }

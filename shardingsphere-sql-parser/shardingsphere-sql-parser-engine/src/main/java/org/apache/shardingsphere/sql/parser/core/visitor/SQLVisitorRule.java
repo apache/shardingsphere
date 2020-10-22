@@ -23,7 +23,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementType;
 
 /**
- * Statement SQL Visitor rule.
+ * SQL Visitor rule.
  */
 @RequiredArgsConstructor
 public enum SQLVisitorRule {

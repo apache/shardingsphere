@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.FormatSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.facade.SQLVisitorFacadeEngine;
+import org.apache.shardingsphere.sql.parser.api.visitor.facade.impl.FormatSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.facade.impl.StatementSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.format.MySQLFormatSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementSQLVisitorFacade;
 
 /**
- * MySQL SQL visitor facade.
+ * MySQL SQL visitor facade engine.
  */
-public final class MySQLSQLVisitorFacade implements SQLVisitorFacade {
+public final class MySQLSQLVisitorFacadeEngine implements SQLVisitorFacadeEngine {
     
     @Override
     public Class<? extends StatementSQLVisitorFacade> getStatementSQLVisitorFacadeClass() {

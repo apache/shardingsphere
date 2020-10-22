@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.FormatSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.facade.SQLVisitorFacadeEngine;
+import org.apache.shardingsphere.sql.parser.api.visitor.facade.impl.FormatSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.facade.impl.StatementSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.format.PostgreSQLFormatSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementSQLVisitorFacade;
 
 /**
- * PostgreSQL SQL visitor facade.
+ * PostgreSQL SQL visitor facade engine.
  */
-public final class PostgreSQLSQLVisitorFacade implements SQLVisitorFacade {
+public final class PostgreSQLSQLVisitorFacadeEngine implements SQLVisitorFacadeEngine {
     
     @Override
     public Class<? extends StatementSQLVisitorFacade> getStatementSQLVisitorFacadeClass() {

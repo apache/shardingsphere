@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor.format.impl;
+package org.apache.shardingsphere.sql.parser.api.visitor.impl.format;
+
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.SQLVisitor;
 
 /**
- * RL format SQL visitor.
+ * TCL format SQL visitor.
  */
-public interface RLFormatSQLVisitor {
+public interface TCLFormatSQLVisitor extends SQLVisitor {
 }

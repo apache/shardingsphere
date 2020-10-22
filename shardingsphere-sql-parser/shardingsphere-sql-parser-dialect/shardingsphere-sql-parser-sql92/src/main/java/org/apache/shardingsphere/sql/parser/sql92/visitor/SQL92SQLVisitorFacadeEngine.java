@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.oracle.visitor;
+package org.apache.shardingsphere.sql.parser.sql92.visitor;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.FormatSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.format.OracleFormatSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.facade.SQLVisitorFacadeEngine;
+import org.apache.shardingsphere.sql.parser.api.visitor.facade.impl.FormatSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.facade.impl.StatementSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.sql92.visitor.format.SQL92FormatSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementSQLVisitorFacade;
 
 /**
- * Oracle SQL visitor facade.
+ * SQL92 SQL visitor facade engine.
  */
-public final class OracleSQLVisitorFacade implements SQLVisitorFacade {
+public final class SQL92SQLVisitorFacadeEngine implements SQLVisitorFacadeEngine {
     
     @Override
     public Class<? extends StatementSQLVisitorFacade> getStatementSQLVisitorFacadeClass() {
-        return OracleStatementSQLVisitorFacade.class;
+        return SQL92StatementSQLVisitorFacade.class;
     }
     
     @Override
     public Class<? extends FormatSQLVisitorFacade> getFormatSQLVisitorFacadeClass() {
-        return OracleFormatSQLVisitorFacade.class;
+        return SQL92FormatSQLVisitorFacade.class;
     }
 }

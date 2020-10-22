@@ -19,10 +19,10 @@ package org.apache.shardingsphere.sql.parser.mysql;
 
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.facade.SQLVisitorFacadeEngine;
 import org.apache.shardingsphere.sql.parser.mysql.lexer.MySQLLexer;
 import org.apache.shardingsphere.sql.parser.mysql.parser.MySQLParser;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.MySQLSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.MySQLSQLVisitorFacadeEngine;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 
 /**
@@ -46,7 +46,7 @@ public final class MySQLParserConfiguration implements SQLParserConfiguration {
     }
     
     @Override
-    public Class<? extends SQLVisitorFacade> getVisitorFacadeClass() {
-        return MySQLSQLVisitorFacade.class;
+    public Class<? extends SQLVisitorFacadeEngine> getVisitorFacadeEngineClass() {
+        return MySQLSQLVisitorFacadeEngine.class;
     }
 }

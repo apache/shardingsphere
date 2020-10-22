@@ -15,27 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor;
+package org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.format.FormatSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.SQLVisitor;
 
 /**
- * SQL visitor facade.
+ * DAL Statement SQL visitor.
  */
-public interface SQLVisitorFacade {
-    
-    /**
-     * Get Statement visitor facade class.
-     *
-     * @return DML visitor class
-     */
-    Class<? extends StatementSQLVisitorFacade> getStatementSQLVisitorFacadeClass();
-    
-    /**
-     * Get Format visitor facade class.
-     *
-     * @return DDL visitor class
-     */
-    Class<? extends FormatSQLVisitorFacade> getFormatSQLVisitorFacadeClass();
+public interface DALStatementSQLVisitor extends SQLVisitor {
 }
