@@ -22,8 +22,8 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 import org.apache.shardingsphere.sql.parser.sqlserver.lexer.SQLServerLexer;
 import org.apache.shardingsphere.sql.parser.sqlserver.parser.SQLServerParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.facade.SQLVisitorFacadeFactory;
-import org.apache.shardingsphere.sql.parser.sqlserver.visitor.facade.SQLServerSQLVisitorFacadeFactory;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacadeFactory;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.SQLServerSQLVisitorFacadeFactory;
 
 /**
  * SQL parser configuration for SQLServer.
