@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.api.visitor.statement;
 
 /**
- * DCL visitor.
+ * AST node.
  */
-public interface DCLVisitor {
+public interface ASTNode {
 }

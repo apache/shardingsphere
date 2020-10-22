@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.oracle.visitor.impl;
 
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValueContext;

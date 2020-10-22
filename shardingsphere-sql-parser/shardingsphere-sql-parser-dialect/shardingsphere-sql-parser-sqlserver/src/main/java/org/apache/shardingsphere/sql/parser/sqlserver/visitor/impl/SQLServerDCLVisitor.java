@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.impl;
 
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.DCLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DCLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterLoginContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterUserContext;

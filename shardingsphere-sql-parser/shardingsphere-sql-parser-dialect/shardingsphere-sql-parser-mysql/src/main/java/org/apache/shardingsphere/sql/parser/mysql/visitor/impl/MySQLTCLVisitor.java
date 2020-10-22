@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.impl;
 
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.TCLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TransactionCharacteristicContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ScopeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AutoCommitValueContext;

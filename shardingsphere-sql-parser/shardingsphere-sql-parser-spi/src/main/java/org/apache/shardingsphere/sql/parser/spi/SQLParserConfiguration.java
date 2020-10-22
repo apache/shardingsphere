@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.spi;
 
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
 
 /**
  * SQL parser configuration.
@@ -52,5 +52,5 @@ public interface SQLParserConfiguration {
      *
      * @return SQL visitor facade class
      */
-    Class<? extends SQLVisitorFacade> getVisitorFacadeClass();
+    Class<? extends StatementSQLVisitorFacade> getVisitorFacadeClass();
 }

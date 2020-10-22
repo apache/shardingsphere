@@ -19,10 +19,10 @@ package org.apache.shardingsphere.sql.parser.engine.statement.standard;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.sql.parser.core.visitor.statement.StatementVisitorFactory;
+import org.apache.shardingsphere.sql.parser.core.visitor.statement.StatementVisitorRule;
 import org.apache.shardingsphere.sql.parser.engine.statement.StatementSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
-import org.apache.shardingsphere.sql.parser.core.visitor.ParseTreeVisitorFactory;
-import org.apache.shardingsphere.sql.parser.core.visitor.VisitorRule;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -70,7 +70,7 @@ public final class StandardSQLParserEngine implements StatementSQLParserEngine {
             }
         }
         ParseTree parseTree = new SQLParserExecutor(databaseTypeName, sql).execute().getRootNode();
-        SQLStatement result = (SQLStatement) ParseTreeVisitorFactory.newInstance(databaseTypeName, VisitorRule.valueOf(parseTree.getClass())).visit(parseTree);
+        SQLStatement result = (SQLStatement) StatementVisitorFactory.newInstance(databaseTypeName, StatementVisitorRule.valueOf(parseTree.getClass())).visit(parseTree);
         if (useCache) {
             cache.put(sql, result);
         }

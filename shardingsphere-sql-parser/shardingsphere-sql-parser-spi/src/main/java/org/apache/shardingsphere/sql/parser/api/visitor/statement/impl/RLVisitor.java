@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor.statement;
+package org.apache.shardingsphere.sql.parser.api.visitor.statement.impl;
 
 /**
- * TCL visitor.
+ * RL visitor.
  */
-public interface TCLVisitor {
+public interface RLVisitor {
 }

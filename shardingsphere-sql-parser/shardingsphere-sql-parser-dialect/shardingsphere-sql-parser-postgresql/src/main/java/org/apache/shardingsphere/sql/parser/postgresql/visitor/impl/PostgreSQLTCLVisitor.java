@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.impl;
 
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.TCLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RollbackContext;

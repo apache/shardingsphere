@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.visitor;
+package org.apache.shardingsphere.sql.parser.core.visitor.statement;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.core.SQLParserConfigurationRegistry;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
@@ -31,22 +31,22 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementTyp
  * Parse tree visitor factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ParseTreeVisitorFactory {
+public final class StatementVisitorFactory {
     
     /** 
      * New instance of SQL visitor.
      * 
      * @param databaseTypeName name of database type
-     * @param visitorRule visitor rule
+     * @param statementVisitorRule visitor rule
      * @return parse tree visitor
      */
-    public static ParseTreeVisitor newInstance(final String databaseTypeName, final VisitorRule visitorRule) {
-        return createParseTreeVisitor(SQLParserConfigurationRegistry.getInstance().getSQLParserConfiguration(databaseTypeName), visitorRule.getType());
+    public static ParseTreeVisitor newInstance(final String databaseTypeName, final StatementVisitorRule statementVisitorRule) {
+        return createParseTreeVisitor(SQLParserConfigurationRegistry.getInstance().getSQLParserConfiguration(databaseTypeName), statementVisitorRule.getType());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static ParseTreeVisitor createParseTreeVisitor(final SQLParserConfiguration config, final SQLStatementType type) {
-        SQLVisitorFacade visitorFacade = config.getVisitorFacadeClass().getConstructor().newInstance();
+        StatementSQLVisitorFacade visitorFacade = config.getVisitorFacadeClass().getConstructor().newInstance();
         switch (type) {
             case DML:
                 return (ParseTreeVisitor) visitorFacade.getDMLVisitorClass().getConstructor().newInstance();
