@@ -15,24 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.visitor;
+package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
 
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.core.visitor.statement.StatementSQLVisitorRule;
-import org.junit.Test;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.format.DMLFormatSQLVisitor;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.format.MySQLFormatSQLVisitor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class StatementSQLVisitorRuleTest {
-    
-    @Test
-    public void assertValueOfParseTreeClassSuccess() {
-        assertThat(StatementSQLVisitorRule.valueOf(SelectContext.class), is(StatementSQLVisitorRule.SELECT));
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertValueOfParseTreeClassFailure() {
-        StatementSQLVisitorRule.valueOf(ParseTree.class);
-    }
+/**
+ * DML Format SQL visitor for MySQL.
+ */
+public final class MySQLDMLFormatSQLVisitor extends MySQLFormatSQLVisitor implements DMLFormatSQLVisitor {
 }

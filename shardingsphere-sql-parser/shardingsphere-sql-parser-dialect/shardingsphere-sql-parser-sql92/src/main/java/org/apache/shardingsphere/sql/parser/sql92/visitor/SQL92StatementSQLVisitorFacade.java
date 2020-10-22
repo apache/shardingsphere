@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.visitor;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DALStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DCLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DDLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.RLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.facade.impl.StatementSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.impl.DALStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.impl.DCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.impl.DDLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.impl.DMLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.impl.RLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.impl.TCLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl.SQL92DALStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl.SQL92DCLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl.SQL92DDLStatementSQLVisitor;

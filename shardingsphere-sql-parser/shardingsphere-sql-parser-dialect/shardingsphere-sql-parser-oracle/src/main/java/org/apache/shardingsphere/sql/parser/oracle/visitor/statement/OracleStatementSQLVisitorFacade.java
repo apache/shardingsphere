@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.oracle.visitor;
+package org.apache.shardingsphere.sql.parser.oracle.visitor.statement;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DALStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DCLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DDLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.RLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.facade.impl.StatementSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.impl.DALStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.impl.DCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.impl.DDLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.impl.DMLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.impl.RLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.impl.TCLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl.OracleDALStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl.OracleDCLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl.OracleDDLStatementSQLVisitor;

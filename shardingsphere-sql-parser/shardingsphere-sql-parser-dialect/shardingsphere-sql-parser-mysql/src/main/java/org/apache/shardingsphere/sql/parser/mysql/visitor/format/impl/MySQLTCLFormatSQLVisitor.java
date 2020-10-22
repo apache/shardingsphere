@@ -15,10 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor.statement.impl;
+package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
+
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.format.TCLFormatSQLVisitor;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.format.MySQLFormatSQLVisitor;
 
 /**
- * DDL Statement SQL visitor.
+ * TCL Format SQL visitor for MySQL.
  */
-public interface DDLStatementSQLVisitor {
+public final class MySQLTCLFormatSQLVisitor extends MySQLFormatSQLVisitor implements TCLFormatSQLVisitor {
 }

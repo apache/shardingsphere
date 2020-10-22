@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.impl.statement.impl.TCLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.SetTransactionContext;
