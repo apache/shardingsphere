@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.facade.SQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.facade.SQLVisitorFacadeEngine;
+import org.apache.shardingsphere.sql.parser.api.visitor.facade.SQLVisitorFacadeFactory;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorType;
 import org.apache.shardingsphere.sql.parser.core.SQLParserConfigurationRegistry;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -48,7 +48,7 @@ public final class SQLVisitorFactory {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static SQLVisitorFacade getSQLVisitorFacadeEngine(final String databaseTypeName, final SQLVisitorType type) {
-        SQLVisitorFacadeEngine facade = SQLParserConfigurationRegistry.getInstance().getSQLParserConfiguration(databaseTypeName).getVisitorFacadeEngineClass().getConstructor().newInstance();
+        SQLVisitorFacadeFactory facade = SQLParserConfigurationRegistry.getInstance().getSQLParserConfiguration(databaseTypeName).getVisitorFacadeEngineClass().getConstructor().newInstance();
         switch (type) {
             case STATEMENT:
                 return facade.getStatementSQLVisitorFacadeClass().getConstructor().newInstance();

@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sql.parser.sql92;
 
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.facade.SQLVisitorFacadeEngine;
+import org.apache.shardingsphere.sql.parser.api.visitor.facade.SQLVisitorFacadeFactory;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 import org.apache.shardingsphere.sql.parser.sql92.lexer.SQL92Lexer;
 import org.apache.shardingsphere.sql.parser.sql92.parser.SQL92Parser;
-import org.apache.shardingsphere.sql.parser.sql92.visitor.SQL92SQLVisitorFacadeEngine;
+import org.apache.shardingsphere.sql.parser.sql92.visitor.facade.SQL92SQLVisitorFacadeFactory;
 
 /**
  * SQL parser configuration for SQL92.
@@ -46,7 +46,7 @@ public final class SQL92ParserConfiguration implements SQLParserConfiguration {
     }
     
     @Override
-    public Class<? extends SQLVisitorFacadeEngine> getVisitorFacadeEngineClass() {
-        return SQL92SQLVisitorFacadeEngine.class;
+    public Class<? extends SQLVisitorFacadeFactory> getVisitorFacadeEngineClass() {
+        return SQL92SQLVisitorFacadeFactory.class;
     }
 }
