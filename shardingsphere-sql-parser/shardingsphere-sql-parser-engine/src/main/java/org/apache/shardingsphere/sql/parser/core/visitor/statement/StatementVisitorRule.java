@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.visitor;
+package org.apache.shardingsphere.sql.parser.core.visitor.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementTyp
  * Visitor rule.
  */
 @RequiredArgsConstructor
-public enum VisitorRule {
+public enum StatementVisitorRule {
     
     SELECT("Select", SQLStatementType.DML),
     
@@ -201,9 +201,9 @@ public enum VisitorRule {
      * @param parseTreeClass parse tree class
      * @return visitor rule
      */
-    public static VisitorRule valueOf(final Class<? extends ParseTree> parseTreeClass) {
+    public static StatementVisitorRule valueOf(final Class<? extends ParseTree> parseTreeClass) {
         String parseTreeClassName = parseTreeClass.getSimpleName();
-        for (VisitorRule each : values()) {
+        for (StatementVisitorRule each : values()) {
             if (each.getContextName().equals(parseTreeClassName)) {
                 return each;
             }

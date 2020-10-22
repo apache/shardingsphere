@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor;
+package org.apache.shardingsphere.sql.parser.api.visitor.statement;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.DALVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.DCLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.RLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.TCLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DALVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DCLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DDLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.RLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLVisitor;
 
 /**
  * SQL visitor facade.
  */
-public interface SQLVisitorFacade {
+public interface StatementSQLVisitorFacade {
     
     /**
      * Get DML visitor class.

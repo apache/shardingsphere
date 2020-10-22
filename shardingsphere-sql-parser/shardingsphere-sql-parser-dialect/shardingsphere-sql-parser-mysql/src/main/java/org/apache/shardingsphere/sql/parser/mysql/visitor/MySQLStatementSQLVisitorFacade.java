@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.DALVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.DCLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.RLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.TCLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DALVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DCLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DDLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.RLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.impl.MySQLDALVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.impl.MySQLDCLVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.impl.MySQLDDLVisitor;
@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.mysql.visitor.impl.MySQLTCLVisitor;
 /**
  * Visitor facade for MySQL.
  */
-public final class MySQLVisitorFacade implements SQLVisitorFacade {
+public final class MySQLStatementSQLVisitorFacade implements StatementSQLVisitorFacade {
     
     @Override
     public Class<? extends DMLVisitor> getDMLVisitorClass() {

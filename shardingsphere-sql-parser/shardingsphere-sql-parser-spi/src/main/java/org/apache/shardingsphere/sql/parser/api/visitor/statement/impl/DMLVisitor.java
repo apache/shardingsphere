@@ -15,23 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.visitor;
+package org.apache.shardingsphere.sql.parser.api.visitor.statement.impl;
 
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class VisitorRuleTest {
-    
-    @Test
-    public void assertValueOfParseTreeClassSuccess() {
-        assertThat(VisitorRule.valueOf(SelectContext.class), is(VisitorRule.SELECT));
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertValueOfParseTreeClassFailure() {
-        VisitorRule.valueOf(ParseTree.class);
-    }
+/**
+ * DML visitor.
+ */
+public interface DMLVisitor {
 }

@@ -15,10 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api;
+package org.apache.shardingsphere.sql.parser.core.visitor;
 
-/**
- * AST node.
- */
-public interface ASTNode {
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.sql.parser.core.visitor.statement.StatementVisitorRule;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class StatementVisitorRuleTest {
+    
+    @Test
+    public void assertValueOfParseTreeClassSuccess() {
+        assertThat(StatementVisitorRule.valueOf(SelectContext.class), is(StatementVisitorRule.SELECT));
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertValueOfParseTreeClassFailure() {
+        StatementVisitorRule.valueOf(ParseTree.class);
+    }
 }

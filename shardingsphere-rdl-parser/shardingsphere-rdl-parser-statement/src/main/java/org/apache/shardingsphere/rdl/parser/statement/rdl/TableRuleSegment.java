@@ -19,7 +19,7 @@ package org.apache.shardingsphere.rdl.parser.statement.rdl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
 
 import java.util.Collection;
 

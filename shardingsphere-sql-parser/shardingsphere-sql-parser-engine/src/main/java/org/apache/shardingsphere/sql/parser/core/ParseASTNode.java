@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.core;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
 
 /**
  * Parse AST node.

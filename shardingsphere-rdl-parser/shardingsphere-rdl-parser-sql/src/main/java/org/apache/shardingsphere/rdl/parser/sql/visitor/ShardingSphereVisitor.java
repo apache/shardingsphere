@@ -31,7 +31,7 @@ import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesState
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.DataSourceConnectionSegment;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.TableRuleSegment;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 
 import java.util.Collection;
