@@ -21,6 +21,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.facade.SQLVisitorFacadeE
 import org.apache.shardingsphere.sql.parser.api.visitor.facade.impl.FormatSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.facade.impl.StatementSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.format.SQL92FormatSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementSQLVisitorFacade;
 
 /**
  * SQL92 SQL visitor facade engine.
