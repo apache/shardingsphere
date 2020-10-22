@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.oracle.visitor;
+package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DALStatementSQLVisitor;
@@ -24,40 +24,40 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DDLStatem
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.RLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl.OracleDALStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl.OracleDCLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl.OracleDDLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl.OracleDMLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl.OracleTCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerDALStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerDCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerDDLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerDMLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerTCLStatementSQLVisitor;
 
 /**
- * Visitor facade for Oracle.
+ * Statement SQL Visitor facade for SQLServer.
  */
-public final class OracleStatementSQLVisitorFacade implements StatementSQLVisitorFacade {
+public final class SQLServerStatementSQLVisitorFacade implements StatementSQLVisitorFacade {
     
     @Override
     public Class<? extends DMLStatementSQLVisitor> getDMLVisitorClass() {
-        return OracleDMLStatementSQLVisitor.class;
+        return SQLServerDMLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DDLStatementSQLVisitor> getDDLVisitorClass() {
-        return OracleDDLStatementSQLVisitor.class;
+        return SQLServerDDLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends TCLStatementSQLVisitor> getTCLVisitorClass() {
-        return OracleTCLStatementSQLVisitor.class;
+        return SQLServerTCLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DCLStatementSQLVisitor> getDCLVisitorClass() {
-        return OracleDCLStatementSQLVisitor.class;
+        return SQLServerDCLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DALStatementSQLVisitor> getDALVisitorClass() {
-        return OracleDALStatementSQLVisitor.class;
+        return SQLServerDALStatementSQLVisitor.class;
     }
     
     @Override
