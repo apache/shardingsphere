@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.facade.impl.StatementSQL
 import org.apache.shardingsphere.sql.parser.sql92.visitor.format.SQL92FormatSQLVisitorFacade;
 
 /**
- * SQL92 SQL visitor facade.
+ * SQL92 SQL visitor facade engine.
  */
 public final class SQL92SQLVisitorFacadeEngine implements SQLVisitorFacadeEngine {
     

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.postgresql.visitor.format.PostgreSQL
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementSQLVisitorFacade;
 
 /**
- * PostgreSQL SQL visitor facade.
+ * PostgreSQL SQL visitor facade engine.
  */
 public final class PostgreSQLSQLVisitorFacadeEngine implements SQLVisitorFacadeEngine {
     

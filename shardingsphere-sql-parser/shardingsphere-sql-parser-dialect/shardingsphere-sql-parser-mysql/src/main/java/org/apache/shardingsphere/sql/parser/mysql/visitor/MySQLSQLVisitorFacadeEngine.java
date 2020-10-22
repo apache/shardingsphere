@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.mysql.visitor.format.MySQLFormatSQLV
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementSQLVisitorFacade;
 
 /**
- * MySQL SQL visitor facade.
+ * MySQL SQL visitor facade engine.
  */
 public final class MySQLSQLVisitorFacadeEngine implements SQLVisitorFacadeEngine {
     

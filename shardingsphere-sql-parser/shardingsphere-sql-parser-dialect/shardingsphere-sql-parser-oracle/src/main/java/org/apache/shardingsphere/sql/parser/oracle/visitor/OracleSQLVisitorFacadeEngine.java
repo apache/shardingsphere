@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.oracle.visitor.format.OracleFormatSQ
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementSQLVisitorFacade;
 
 /**
- * Oracle SQL visitor facade.
+ * Oracle SQL visitor facade engine.
  */
 public final class OracleSQLVisitorFacadeEngine implements SQLVisitorFacadeEngine {
     
