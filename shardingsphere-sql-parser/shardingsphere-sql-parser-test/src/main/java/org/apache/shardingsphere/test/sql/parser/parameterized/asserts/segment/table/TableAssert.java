@@ -60,16 +60,12 @@ public final class TableAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final TableSegment actual, final ExpectedTable expected) {
         if (actual instanceof JoinTableSegment) {
             assertIs(assertContext, (JoinTableSegment) actual, expected.getJoinTable());
-
         } else if (actual instanceof SimpleTableSegment) {
             assertIs(assertContext, (SimpleTableSegment) actual, expected.getSimpleTable());
-
         } else if (actual instanceof SubqueryTableSegment) {
             assertIs(assertContext, (SubqueryTableSegment) actual, expected.getSubqueryTable());
-
         } else if (actual instanceof DeleteMultiTableSegment) {
             return;
-
         } else {
             return;
         }
