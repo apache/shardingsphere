@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.cache;
 
-import org.apache.shardingsphere.sql.parser.engine.statement.standard.StandardSQLParsedResultCache;
+import org.apache.shardingsphere.sql.parser.engine.SQLParsedResultCache;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.Test;
@@ -27,11 +27,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class StandardSQLParsedResultCacheTest {
+public final class SQLParsedResultCacheTest {
     
     @Test
     public void assertGetSQLStatementWithinCache() {
-        StandardSQLParsedResultCache actual = new StandardSQLParsedResultCache();
+        SQLParsedResultCache actual = new SQLParsedResultCache();
         SQLStatement selectStatement = new MySQLSelectStatement();
         actual.put("SELECT 1", selectStatement);
         assertTrue(actual.get("SELECT 1").isPresent());
@@ -40,7 +40,7 @@ public final class StandardSQLParsedResultCacheTest {
     
     @Test
     public void assertGetSQLStatementWithoutCache() {
-        StandardSQLParsedResultCache actual = new StandardSQLParsedResultCache();
+        SQLParsedResultCache actual = new SQLParsedResultCache();
         SQLStatement selectStatement = new MySQLSelectStatement();
         actual.put("SELECT 1", selectStatement);
         assertFalse(actual.get("SELECT 2").isPresent());
@@ -48,7 +48,7 @@ public final class StandardSQLParsedResultCacheTest {
     
     @Test
     public void assertClear() {
-        StandardSQLParsedResultCache actual = new StandardSQLParsedResultCache();
+        SQLParsedResultCache actual = new SQLParsedResultCache();
         SQLStatement selectStatement = new MySQLSelectStatement();
         actual.put("SELECT 1", selectStatement);
         actual.clear();

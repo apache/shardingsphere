@@ -17,20 +17,27 @@
 
 package org.apache.shardingsphere.sql.parser.engine;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 import java.util.Optional;
 
 /**
- * SQL parsed result cache.
+ * Standard SQL parsed result cache.
  */
-public interface SQLParsedResultCache<T> {
+public final class SQLParsedResultCache<T> {
+    
+    private final Cache<String, T> cache = CacheBuilder.newBuilder().softValues().initialCapacity(2000).maximumSize(65535).build();
     
     /**
      * Put SQL and parsed result into cache.
-     * 
+     *
      * @param sql SQL
      * @param parsedResult parsed result
      */
-    void put(String sql, T parsedResult);
+    public void put(final String sql, final T parsedResult) {
+        cache.put(sql, parsedResult);
+    }
     
     /**
      * Get parsed result.
@@ -38,10 +45,14 @@ public interface SQLParsedResultCache<T> {
      * @param sql SQL
      * @return parsed result
      */
-    Optional<T> get(String sql);
+    public Optional<T> get(final String sql) {
+        return Optional.ofNullable(cache.getIfPresent(sql));
+    }
     
     /**
      * Clear cache.
      */
-    void clear();
+    public synchronized void clear() {
+        cache.invalidateAll();
+    }
 }

@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
 import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.SQLParsedResultCache;
 
 import java.util.Optional;
 
@@ -32,7 +33,7 @@ public final class ASTSQLParserEngine implements SQLParserEngine<ParseTree> {
     
     private final String databaseTypeName;
     
-    private final ASTSQLParsedResultCache cache = new ASTSQLParsedResultCache();
+    private final SQLParsedResultCache<ParseTree> cache = new SQLParsedResultCache<>();
     
     @Override
     public ParseTree parse(final String sql, final boolean useCache) {
