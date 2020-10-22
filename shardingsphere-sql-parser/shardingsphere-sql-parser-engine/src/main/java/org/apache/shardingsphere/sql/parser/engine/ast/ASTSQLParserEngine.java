@@ -17,32 +17,35 @@
 
 package org.apache.shardingsphere.sql.parser.engine.ast;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.engine.SQLParsedResultCache;
+import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
+import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
 
 import java.util.Optional;
 
 /**
- * AST SQL parsed result cache.
+ * AST SQL parser engine.
  */
-public final class ASTSQLParseResultCache implements SQLParsedResultCache<ParseTree> {
+@RequiredArgsConstructor
+public final class ASTSQLParserEngine implements SQLParserEngine<ParseTree> {
     
-    private final Cache<String, ParseTree> cache = CacheBuilder.newBuilder().softValues().initialCapacity(2000).maximumSize(65535).build();
+    private final String databaseTypeName;
     
-    @Override
-    public void put(final String sql, final ParseTree parseTree) {
-        cache.put(sql, parseTree);
-    }
+    private final ASTSQLParsedResultCache cache = new ASTSQLParsedResultCache();
     
     @Override
-    public Optional<ParseTree> get(final String sql) {
-        return Optional.ofNullable(cache.getIfPresent(sql));
-    }
-    
-    @Override
-    public synchronized void clear() {
-        cache.invalidateAll();
+    public ParseTree parse(final String sql, final boolean useCache) {
+        if (useCache) {
+            Optional<ParseTree> parsedResult = cache.get(sql);
+            if (parsedResult.isPresent()) {
+                return parsedResult.get();
+            }
+        }
+        ParseTree result = new SQLParserExecutor(databaseTypeName, sql).execute().getRootNode();
+        if (useCache) {
+            cache.put(sql, result);
+        }
+        return result;
     }
 }
