@@ -18,50 +18,50 @@
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DALVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DCLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DDLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.RLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLVisitor;
-import org.apache.shardingsphere.sql.parser.sqlserver.visitor.impl.SQLServerDALVisitor;
-import org.apache.shardingsphere.sql.parser.sqlserver.visitor.impl.SQLServerDCLVisitor;
-import org.apache.shardingsphere.sql.parser.sqlserver.visitor.impl.SQLServerDDLVisitor;
-import org.apache.shardingsphere.sql.parser.sqlserver.visitor.impl.SQLServerDMLVisitor;
-import org.apache.shardingsphere.sql.parser.sqlserver.visitor.impl.SQLServerTCLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DALStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DDLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.RLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerDALStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerDCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerDDLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerDMLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerTCLStatementSQLVisitor;
 
 /**
- * Visitor facade for SQLServer.
+ * Statement SQL Visitor facade for SQLServer.
  */
 public final class SQLServerStatementSQLVisitorFacade implements StatementSQLVisitorFacade {
     
     @Override
-    public Class<? extends DMLVisitor> getDMLVisitorClass() {
-        return SQLServerDMLVisitor.class;
+    public Class<? extends DMLStatementSQLVisitor> getDMLVisitorClass() {
+        return SQLServerDMLStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends DDLVisitor> getDDLVisitorClass() {
-        return SQLServerDDLVisitor.class;
+    public Class<? extends DDLStatementSQLVisitor> getDDLVisitorClass() {
+        return SQLServerDDLStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends TCLVisitor> getTCLVisitorClass() {
-        return SQLServerTCLVisitor.class;
+    public Class<? extends TCLStatementSQLVisitor> getTCLVisitorClass() {
+        return SQLServerTCLStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends DCLVisitor> getDCLVisitorClass() {
-        return SQLServerDCLVisitor.class;
+    public Class<? extends DCLStatementSQLVisitor> getDCLVisitorClass() {
+        return SQLServerDCLStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends DALVisitor> getDALVisitorClass() {
-        return SQLServerDALVisitor.class;
+    public Class<? extends DALStatementSQLVisitor> getDALVisitorClass() {
+        return SQLServerDALStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends RLVisitor> getRLVisitorClass() {
+    public Class<? extends RLStatementSQLVisitor> getRLVisitorClass() {
         return null;
     }
 }

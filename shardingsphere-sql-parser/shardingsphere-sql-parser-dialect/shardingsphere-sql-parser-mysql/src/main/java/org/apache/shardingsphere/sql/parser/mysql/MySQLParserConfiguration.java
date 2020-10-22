@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.StatementSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.mysql.lexer.MySQLLexer;
 import org.apache.shardingsphere.sql.parser.mysql.parser.MySQLParser;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.MySQLStatementSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 
 /**
