@@ -17,13 +17,29 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml;
 
+import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+
+import java.util.Optional;
 
 /**
  * SQLServer delete statement.
  */
+@Setter
 @ToString
 public final class SQLServerDeleteStatement extends DeleteStatement implements SQLServerStatement {
+    
+    private OutputSegment outputSegment;
+    
+    /**
+     * Get output segment.
+     *
+     * @return output segment.
+     */
+    public Optional<OutputSegment> getOutputSegment() {
+        return Optional.ofNullable(outputSegment);
+    }
 }

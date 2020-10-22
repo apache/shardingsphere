@@ -24,4 +24,8 @@
     <sql-case id="delete_with_special_comments_returning_without_sharding_value" value="DELETE /*+ index(status) */ ONLY (t_order) WHERE status=1 RETURNING *" db-types="Oracle" />
     <sql-case id="delete_with_alias" value="DELETE o FROM t_order AS o WHERE status=?" db-types="MySQL,Oracle,SQLServer"/>
     <sql-case id="delete_with_order_by_row_count" value="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status=? ORDER BY order_id LIMIT ?" db-types="MySQL"/>
+    <sql-case id="delete_with_output_clause" value="DELETE FROM t_order OUTPUT DELETED.order_id, DELETED.user_id INTO @MyTableVar (temp_order_id, temp_user_id) WHERE order_id = ?" db-types="SQLServer" />
+    <sql-case id="delete_with_output_clause_without_output_table_columns" value="DELETE FROM t_order OUTPUT DELETED.order_id, DELETED.user_id INTO @MyTableVar WHERE order_id = ?" db-types="SQLServer" />
+    <sql-case id="delete_with_output_clause_without_output_table" value="DELETE FROM t_order OUTPUT DELETED.order_id, DELETED.user_id WHERE order_id = ?" db-types="SQLServer" />
+    <sql-case id="delete_with_output_clause_column_shorthand" value="DELETE FROM t_order OUTPUT DELETED.* WHERE order_id = ?" db-types="SQLServer" />
 </sql-cases>
