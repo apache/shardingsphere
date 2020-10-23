@@ -35,6 +35,8 @@ public abstract class AbstractDatabaseMetaDataDialectHandlerTest {
     
     protected static final String TABLE_NAME_PATTERN = "t_order_0";
     
+    protected static final String USER_NAME = "demo_user";
+
     @Mock
     private Connection connection;
     
