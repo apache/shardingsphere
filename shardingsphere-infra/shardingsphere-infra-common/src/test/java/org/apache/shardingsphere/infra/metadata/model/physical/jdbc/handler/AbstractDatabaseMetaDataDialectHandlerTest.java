@@ -34,7 +34,9 @@ public abstract class AbstractDatabaseMetaDataDialectHandlerTest {
     protected static final String DATABASE_NAME = "demo_ds";
     
     protected static final String TABLE_NAME_PATTERN = "t_order_0";
-    
+
+    protected static final String DATABASE_USER_NAME = "demo_user";
+
     @Mock
     private Connection connection;
     
@@ -52,7 +54,8 @@ public abstract class AbstractDatabaseMetaDataDialectHandlerTest {
     protected String getSchema(final DatabaseType databaseType) {
         return DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(handler -> handler.getSchema(connection)).orElse(getSchema(connection));
     }
-    
+
+
     private String getSchema(final Connection connection) {
         try {
             return connection.getSchema();
