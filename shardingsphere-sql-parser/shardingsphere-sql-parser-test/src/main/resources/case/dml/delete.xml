@@ -265,4 +265,36 @@
             </and-predicate>
         </where>
     </delete>
+
+    <delete sql-case-id="delete_with_top" parameters="1000">
+        <table name="t_order" start-index="20" stop-index="26" />
+        <where start-index="28" stop-index="45" literal-stop-index="48">
+            <and-predicate>
+                <predicate start-index="34" stop-index="45" literal-stop-index="48">
+                    <column-left-value name="order_id" start-index="34" stop-index="41" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="45" stop-index="45" />
+                        <literal-expression value="1000" start-index="45" stop-index="48" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </delete>
+
+    <delete sql-case-id="delete_with_top_percent" parameters="1000">
+        <table name="t_order" start-index="28" stop-index="34" />
+        <where start-index="36" stop-index="53" literal-stop-index="56">
+            <and-predicate>
+                <predicate start-index="42" stop-index="53" literal-stop-index="56">
+                    <column-left-value name="order_id" start-index="42" stop-index="49" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="53" stop-index="53" />
+                        <literal-expression value="1000" start-index="53" stop-index="56" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </delete>
 </sql-parser-test-cases>

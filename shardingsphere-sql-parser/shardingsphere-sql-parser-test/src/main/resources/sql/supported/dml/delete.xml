@@ -28,4 +28,6 @@
     <sql-case id="delete_with_output_clause_without_output_table_columns" value="DELETE FROM t_order OUTPUT DELETED.order_id, DELETED.user_id INTO @MyTableVar WHERE order_id = ?" db-types="SQLServer" />
     <sql-case id="delete_with_output_clause_without_output_table" value="DELETE FROM t_order OUTPUT DELETED.order_id, DELETED.user_id WHERE order_id = ?" db-types="SQLServer" />
     <sql-case id="delete_with_output_clause_column_shorthand" value="DELETE FROM t_order OUTPUT DELETED.* WHERE order_id = ?" db-types="SQLServer" />
+    <sql-case id="delete_with_top" value="DELETE TOP(10) FROM t_order WHERE order_id = ?" db-types="SQLServer" />
+    <sql-case id="delete_with_top_percent" value="DELETE TOP(10) PERCENT FROM t_order WHERE order_id = ?" db-types="SQLServer" />
 </sql-cases>
