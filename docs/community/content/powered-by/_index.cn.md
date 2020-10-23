@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 147 家公司。
+共计 148 家公司。
 
 ### 金融行业
 <ul>
@@ -107,6 +107,7 @@ chapter = true
     <li><a href="https://www.newbeescm.com/" rel="nofollow">蜂网</a></li>
     <li><a href="https://www.dianwoda.com/" rel="nofollow">点我达</a></li>   
     <li><a href="https://www.keking.com" rel="nofollow">凯京科技</a></li>
+    <li><a href="https://www.jdl.cn/" rel="nofollow">京东物流</a></li>
 </ul>
 
 ### 旅游服务
