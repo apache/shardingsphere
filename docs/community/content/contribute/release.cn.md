@@ -123,13 +123,15 @@ gpg --keyserver hkp://pool.sks-keyservers.net --send-key 700E6065
 </settings>
 ```
 
-**2. 更新版本说明**
+**2. 更新版本说明和示例版本**
 
 在Github主干上更新如下文件，并提交PR到主干：
- 
+
 ```
 https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md
 ```
+
+更新`examples`模块的pom，将版本由${CURRENT.VERSION}替换为${RELEASE.VERSION}。
 
 **3. 创建发布分支**
 
@@ -164,8 +166,6 @@ mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 ```shell
 mvn release:clean
 ```
-
-然后准备执行发布。发布之前需要更新examples和shardingsphere-ui两个模块的pom，将版本由${CURRENT.VERSION}替换为${RELEASE.VERSION}。
 
 ```shell
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github用户名}
