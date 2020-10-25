@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DALStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetCharacterContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetNameContext;

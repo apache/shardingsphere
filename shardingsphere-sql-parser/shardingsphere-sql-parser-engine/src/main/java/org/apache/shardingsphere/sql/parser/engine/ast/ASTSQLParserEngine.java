@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sql.parser.engine.ast;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.sql.parser.engine.SQLParsedResultCache;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
 import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.engine.SQLParsedResultCache;
 
 import java.util.Optional;
 

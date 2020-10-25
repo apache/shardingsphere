@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AliasClauseContext;

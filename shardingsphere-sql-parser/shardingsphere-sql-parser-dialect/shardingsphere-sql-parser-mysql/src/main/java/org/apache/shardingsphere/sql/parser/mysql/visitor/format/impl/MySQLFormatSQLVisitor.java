@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.TCLFormatSQLVisitor;
+import lombok.AccessLevel;
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
 
 /**
- * TCL Format SQL visitor for MySQL.
+ * MySQL Format SQL visitor for MySQL.
  */
-public class MySQLFormatSQLVisitor implements TCLFormatSQLVisitor {
+@Getter(AccessLevel.PROTECTED)
+public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<String> {
 }
