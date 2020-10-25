@@ -46,7 +46,7 @@ public final class SQLServerParserConfiguration implements SQLParserConfiguratio
     }
     
     @Override
-    public Class<? extends SQLVisitorFacadeFactory> getVisitorFacadeEngineClass() {
+    public Class<? extends SQLVisitorFacadeFactory> getVisitorFacadeFactoryClass() {
         return SQLServerSQLVisitorFacadeFactory.class;
     }
 }

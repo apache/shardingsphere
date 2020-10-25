@@ -46,7 +46,7 @@ public final class MySQLParserConfiguration implements SQLParserConfiguration {
     }
     
     @Override
-    public Class<? extends SQLVisitorFacadeFactory> getVisitorFacadeEngineClass() {
+    public Class<? extends SQLVisitorFacadeFactory> getVisitorFacadeFactoryClass() {
         return MySQLSQLVisitorFacadeFactory.class;
     }
 }

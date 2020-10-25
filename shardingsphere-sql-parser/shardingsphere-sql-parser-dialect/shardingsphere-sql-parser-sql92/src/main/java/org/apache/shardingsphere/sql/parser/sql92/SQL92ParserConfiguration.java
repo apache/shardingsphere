@@ -46,7 +46,7 @@ public final class SQL92ParserConfiguration implements SQLParserConfiguration {
     }
     
     @Override
-    public Class<? extends SQLVisitorFacadeFactory> getVisitorFacadeEngineClass() {
+    public Class<? extends SQLVisitorFacadeFactory> getVisitorFacadeFactoryClass() {
         return SQL92SQLVisitorFacadeFactory.class;
     }
 }
