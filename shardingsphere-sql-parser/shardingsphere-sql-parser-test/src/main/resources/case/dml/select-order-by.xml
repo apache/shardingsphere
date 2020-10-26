@@ -18,11 +18,9 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="select_order_by_asc_and_index_desc">
-        <table-reference>
-            <table-factor>
-                <table name="t_order" alias="o" start-index="14" stop-index="22" />
-            </table-factor>
-        </table-reference>
+        <from>
+            <simple-table name="t_order" alias="o" start-index="14" stop-index="22" />
+        </from>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -35,16 +33,16 @@
     </select>
 
     <select sql-case-id="select_order_by_desc_and_index_asc">
-        <table-reference>
-            <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="24" />
-            </table-factor>
-        </table-reference>
-        <table-reference>
-            <table-factor>
-                <table name="t_order_item" alias="i" start-index="27" stop-index="40" />
-            </table-factor>
-        </table-reference>
+        <from>
+            <join-table>
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" alias="i" start-index="27" stop-index="40" />
+                </right>
+            </join-table>
+        </from>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -82,11 +80,9 @@
     </select>
 
     <select sql-case-id="select_order_by_with_ordered_column">
-        <table-reference>
-            <table-factor>
-                <table name="t_order" alias="o" start-index="40" stop-index="48" />
-            </table-factor>
-        </table-reference>
+        <from>
+            <simple-table name="t_order" alias="o" start-index="40" stop-index="48" />
+        </from>
         <projections start-index="7" stop-index="33">
             <column-projection name="order_id" alias="gen_order_id_" start-index="7" stop-index="16">
                 <owner name="o" start-index="7" stop-index="7" />
@@ -100,16 +96,16 @@
     </select>
 
     <select sql-case-id="select_order_by_with_date">
-        <table-reference>
-            <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="24" />
-            </table-factor>
-        </table-reference>
-        <table-reference>
-            <table-factor>
-                <table name="t_order_item" alias="i" start-index="27" stop-index="40" />
-            </table-factor>
-        </table-reference>
+        <from>
+            <join-table>
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" alias="i" start-index="27" stop-index="40" />
+                </right>
+            </join-table>
+        </from>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -152,11 +148,9 @@
 
     <!-- //TODO add order-by-null-type -->
     <select sql-case-id="select_order_by_for_nulls_first">
-        <table-reference>
-            <table-factor>
-                <table  name="t_order" alias="o" start-index="40" stop-index="48" />
-            </table-factor>
-        </table-reference>
+        <from>
+            <simple-table name="t_order" alias="o" start-index="40" stop-index="48" />
+        </from>
         <projections start-index="7" stop-index="33">
             <column-projection name="order_id" alias="gen_order_id_" start-index="7" stop-index="16">
                 <owner name="o" start-index="7" stop-index="7" />
@@ -171,11 +165,9 @@
 
     <!-- //TODO add order-by-null-type -->
     <select sql-case-id="select_order_by_for_nulls_last">
-        <table-reference>
-            <table-factor>
-                <table name="t_order" alias="o" start-index="40" stop-index="48" />
-            </table-factor>
-        </table-reference>
+        <from>
+            <simple-table name="t_order" alias="o" start-index="40" stop-index="48" />
+        </from>
         <projections start-index="7" stop-index="33">
             <column-projection name="order_id" alias="gen_order_id_" start-index="7" stop-index="16">
                 <owner name="o" start-index="7" stop-index="7" />
@@ -189,11 +181,9 @@
     </select>
 
     <select sql-case-id="select_order_by_with_multiple_stars">
-        <table-reference>
-            <table-factor>
-                <table name="t_order" alias="o" start-index="29" stop-index="37" />
-            </table-factor>
-        </table-reference>
+        <from>
+            <simple-table name="t_order" alias="o" start-index="29" stop-index="37" />
+        </from>
         <projections start-index="7" stop-index="22">
             <shorthand-projection start-index="7" stop-index="7" />
             <shorthand-projection start-index="20" stop-index="22">
@@ -209,11 +199,9 @@
     </select>
 
     <select sql-case-id="select_order_by_with_alias_star_alias_name">
-        <table-reference>
-            <table-factor>
-                <table  name="t_order" alias="o" start-index="16" stop-index="24" />
-            </table-factor>
-        </table-reference>
+        <from>
+            <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
+        </from>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="o" start-index="7" stop-index="7" />
@@ -227,11 +215,9 @@
     </select>
 
     <select sql-case-id="select_order_by_with_star_table_alias">
-        <table-reference>
-            <table-factor>
-                <table name="t_order" alias="o" start-index="14" stop-index="22" />
-            </table-factor>
-        </table-reference>
+        <from>
+            <simple-table name="t_order" alias="o" start-index="14" stop-index="22" />
+        </from>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -241,11 +227,9 @@
     </select>
 
     <select sql-case-id="select_order_by_with_table_star_table_name">
-        <table-reference>
-            <table-factor>
-                <table name="t_order" start-index="22" stop-index="28" />
-            </table-factor>
-        </table-reference>
+        <from>
+            <simple-table name="t_order" start-index="22" stop-index="28" />
+        </from>
         <projections start-index="7" stop-index="15">
             <shorthand-projection start-index="7" stop-index="15">
                 <owner name="t_order" start-index="7" stop-index="13" />
@@ -259,11 +243,9 @@
     </select>
 
     <select sql-case-id="select_order_by_with_star_no_table_alias">
-        <table-reference>
-            <table-factor>
-                <table name="t_order" start-index="14" stop-index="20" />
-            </table-factor>
-        </table-reference>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -273,14 +255,14 @@
     </select>
 
     <select sql-case-id="select_order_by_with_table_star_without_table_name">
-        <table-reference>
-            <table-factor>
-                <table name="t_order" alias="o" start-index="21" stop-index="29" />
-            </table-factor>
+        <from>
             <join-table>
-                <table-factor>
-                    <table name="t_order_item" alias="i" start-index="36" stop-index="49" />
-                </table-factor>
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="21" stop-index="29" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" alias="i" start-index="36" stop-index="49" />
+                </right>
                 <joinSpecification>
                     <and-predicate>
                         <predicate start-index="54" stop-index="74">
@@ -302,7 +284,7 @@
                     </and-predicate>
                 </joinSpecification>
             </join-table>
-        </table-reference>
+        </from>
         <projections start-index="7" stop-index="14">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
