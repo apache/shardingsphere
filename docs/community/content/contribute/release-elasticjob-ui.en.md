@@ -211,10 +211,10 @@ gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.ta
 **Compare release source with github tag**
 
 ```
-curl -Lo tag-elasticjob-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere-elasticjob-ui/archive/shardingsphere-elasticjob-ui-${RELEASE.VERSION}.zip
-unzip tag-elasticjob-ui-${RELEASE.VERSION}.zip
+curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere-elasticjob-ui/archive/${RELEASE.VERSION}.zip
+unzip tag-${RELEASE.VERSION}.zip
 unzip apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src.zip
-diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src/ shardingsphere-elasticjob-ui-${RELEASE.VERSION}/
+diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src shardingsphere-elasticjob-ui-${RELEASE.VERSION}
 ```
 
 **Check source package**
@@ -276,7 +276,7 @@ The release candidates:
 https://dist.apache.org/repos/dist/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}/
 
 Git tag for the release:
-https://github.com/apache/shardingsphere-elasticjob-ui/tree/elasticjob-ui-${RELEASE.VERSION}/
+https://github.com/apache/shardingsphere-elasticjob-ui/tree/${RELEASE.VERSION}/
 
 Release Commit ID:
 https://github.com/apache/shardingsphere-elasticjob-ui/commit/xxxxxxxxxxxxxxxxxxxxxxx
