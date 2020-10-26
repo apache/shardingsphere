@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.api.visitor.operation;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLOperationVisitor;
-
 /**
  * SQL format visitor.
  */

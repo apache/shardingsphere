@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.api.visitor.type;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.type.SQLTypeVisitor;
-
 /**
  * DCL SQL visitor.
  */
