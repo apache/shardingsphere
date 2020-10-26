@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine.statement.standard;
+package org.apache.shardingsphere.sql.parser.engine.standard;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -33,7 +33,7 @@ public final class StandardSQLParserEngineFactory {
     
     /**
      * Get SQL parser engine.
-     *
+     *x
      * @param databaseTypeName name of database type
      * @return SQL parser engine
      */

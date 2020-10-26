@@ -56,7 +56,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
         String sql = String.format(SQL, packet.getTable(), schemaName);
         ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
                 DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getSchemaContexts().getDatabaseType()));
-        SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
+        SQLStatement sqlStatement = sqlParserEngine.parseToSQLStatement(sql, false);
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(sqlStatement, sql, backendConnection);
     }
     

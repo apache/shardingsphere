@@ -15,38 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine.ast;
+package org.apache.shardingsphere.sql.parser.cache;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorType;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * AST SQL parser engine factory.
+ * SQL Parsed result caches.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ASTSQLParserEngineFactory {
+public final class SQLParsedResultCaches {
     
-    private static final Map<String, ASTSQLParserEngine> ENGINES = new ConcurrentHashMap<>();
+    private final Map<SQLVisitorType, SQLParsedResultCache> cacheMap = new ConcurrentHashMap<>();
     
     /**
-     * Get SQL parser engine.
+     * Get SQL parsed result cache.
      *
-     * @param databaseTypeName name of database type
-     * @return SQL parser engine
+     * @param type  type
+     * @return SQL parsed result cache
      */
-    public static ASTSQLParserEngine getSQLParserEngine(final String databaseTypeName) {
-        if (ENGINES.containsKey(databaseTypeName)) {
-            return ENGINES.get(databaseTypeName);
+    public SQLParsedResultCache getCache(final SQLVisitorType type) {
+        if (cacheMap.containsKey(type)) {
+            return cacheMap.get(type);
         }
-        synchronized (ENGINES) {
-            if (ENGINES.containsKey(databaseTypeName)) {
-                return ENGINES.get(databaseTypeName);
+        synchronized (cacheMap) {
+            if (cacheMap.containsKey(type)) {
+                return cacheMap.get(type);
             }
-            ASTSQLParserEngine result = new ASTSQLParserEngine(databaseTypeName);
-            ENGINES.put(databaseTypeName, result);
+            SQLParsedResultCache result = new SQLParsedResultCache<>();
+            cacheMap.put(type, result);
             return result;
         }
     }

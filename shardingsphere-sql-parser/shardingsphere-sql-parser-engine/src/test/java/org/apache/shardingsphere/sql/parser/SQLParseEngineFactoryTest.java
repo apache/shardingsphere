@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser;
 
-import org.apache.shardingsphere.sql.parser.engine.statement.standard.StandardSQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.engine.standard.StandardSQLParserEngineFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
