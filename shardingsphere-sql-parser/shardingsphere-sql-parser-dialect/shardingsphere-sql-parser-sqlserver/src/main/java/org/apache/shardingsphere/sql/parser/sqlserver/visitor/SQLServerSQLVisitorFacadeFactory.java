@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor;
 
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacadeFactory;
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.format.SQLFormatVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.statement.SQLStatementVisitorFacade;
-import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.facade.SQLServerStatementSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.format.facade.SQLServerFormatSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.facade.SQLServerStatementSQLVisitorFacade;
 
 /**
  * SQLServer SQL visitor facade engine.
@@ -29,12 +28,12 @@ import org.apache.shardingsphere.sql.parser.sqlserver.visitor.format.facade.SQLS
 public final class SQLServerSQLVisitorFacadeFactory implements SQLVisitorFacadeFactory {
     
     @Override
-    public Class<? extends SQLStatementVisitorFacade> getStatementSQLVisitorFacadeClass() {
+    public Class<? extends SQLVisitorFacade> getStatementSQLVisitorFacadeClass() {
         return SQLServerStatementSQLVisitorFacade.class;
     }
     
     @Override
-    public Class<? extends SQLFormatVisitorFacade> getFormatSQLVisitorFacadeClass() {
+    public Class<? extends SQLVisitorFacade> getFormatSQLVisitorFacadeClass() {
         return SQLServerFormatSQLVisitorFacade.class;
     }
 }

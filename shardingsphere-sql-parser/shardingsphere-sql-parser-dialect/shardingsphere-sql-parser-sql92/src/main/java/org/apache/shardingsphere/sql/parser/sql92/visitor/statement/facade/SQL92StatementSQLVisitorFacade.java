@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.facade;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.statement.SQLStatementVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DDLSQLVisitor;
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl.SQL92TC
 /**
  * Statement SQL Visitor facade for SQL92.
  */
-public final class SQL92StatementSQLVisitorFacade implements SQLStatementVisitorFacade {
+public final class SQL92StatementSQLVisitorFacade implements SQLVisitorFacade {
     
     @Override
     public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {

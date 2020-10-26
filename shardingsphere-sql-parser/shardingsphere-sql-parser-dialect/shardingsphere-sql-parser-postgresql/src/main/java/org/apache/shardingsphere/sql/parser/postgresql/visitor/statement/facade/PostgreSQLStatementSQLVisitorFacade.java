@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.facade;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.statement.SQLStatementVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DDLSQLVisitor;
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.Po
 /**
  * Statement SQL Visitor facade for PostgreSQL.
  */
-public final class PostgreSQLStatementSQLVisitorFacade implements SQLStatementVisitorFacade {
+public final class PostgreSQLStatementSQLVisitorFacade implements SQLVisitorFacade {
     
     @Override
     public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {
