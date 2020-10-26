@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.api.visitor.statement.impl;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * DAL Statement SQL visitor.
+ * DAL statement SQL visitor.
  */
 public interface DALStatementSQLVisitor extends SQLVisitor {
 }

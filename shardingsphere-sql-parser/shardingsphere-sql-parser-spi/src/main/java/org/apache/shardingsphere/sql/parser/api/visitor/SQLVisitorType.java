@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sql.parser.api.visitor;
 
 /**
- * SQL Visitor type.
+ * SQL visitor type.
  */
 public enum SQLVisitorType {
     
-    STATEMENT, FORMAT;
+    STATEMENT, FORMAT
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.api.visitor.statement.impl;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * TCL Statement SQL visitor.
+ * TCL statement SQL visitor.
  */
 public interface TCLStatementSQLVisitor extends SQLVisitor {
 }

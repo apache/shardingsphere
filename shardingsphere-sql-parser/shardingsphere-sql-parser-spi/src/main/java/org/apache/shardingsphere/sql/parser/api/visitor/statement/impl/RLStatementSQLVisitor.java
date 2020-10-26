@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.api.visitor.statement.impl;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * RL Statement SQL visitor.
+ * RL statement SQL visitor.
  */
 public interface RLStatementSQLVisitor extends SQLVisitor {
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.api.visitor.statement.impl;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * DCL Statement SQL visitor.
+ * DCL statement SQL visitor.
  */
 public interface DCLStatementSQLVisitor extends SQLVisitor {
 }
