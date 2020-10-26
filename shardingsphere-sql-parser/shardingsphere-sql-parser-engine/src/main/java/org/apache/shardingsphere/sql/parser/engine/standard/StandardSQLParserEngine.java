@@ -46,8 +46,8 @@ public final class StandardSQLParserEngine implements SQLParserEngine {
     
     /**
      * Parse to AST.
-     * @param sql sql 
-     * @param useCache user cache
+     * @param sql SQL
+     * @param useCache use cache or not
      * @return parse tree
      */
     public ParseTree parseToAST(final String sql, final boolean useCache) {
@@ -85,7 +85,7 @@ public final class StandardSQLParserEngine implements SQLParserEngine {
     /**
      * Parse.
      *
-     * @param sql sql
+     * @param sql SQL
      * @param visitor visitor
      * @return object
      */

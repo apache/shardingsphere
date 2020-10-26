@@ -27,9 +27,9 @@ public interface SQLParserEngine {
     /**
      * Parse to SQL Statement.
      * 
-     * @param sql sql 
-     * @param useCache use cache
-     * @return sql statement
+     * @param sql SQL
+     * @param useCache use cache or not
+     * @return SQL statement
      */
     SQLStatement parseToSQLStatement(String sql, boolean useCache);
 }
