@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 
 /**
  * DAL Statement SQL visitor for Oracle.
