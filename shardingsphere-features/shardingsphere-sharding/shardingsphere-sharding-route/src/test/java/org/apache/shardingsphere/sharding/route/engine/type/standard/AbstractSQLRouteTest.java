@@ -36,8 +36,8 @@ import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.route.engine.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.engine.statement.standard.StandardSQLParserEngineFactory;
-import org.apache.shardingsphere.sql.parser.engine.statement.standard.StandardSQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.standard.StandardSQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.engine.standard.StandardSQLParserEngine;
 
 import java.sql.Types;
 import java.util.Arrays;
@@ -60,7 +60,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         StandardSQLParserEngine standardSqlParserEngine = StandardSQLParserEngineFactory.getSQLParserEngine("MySQL");
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
-                metaData.getSchemaMetaData().getConfiguredSchemaMetaData(), parameters, standardSqlParserEngine.parse(sql, false));
+                metaData.getSchemaMetaData().getConfiguredSchemaMetaData(), parameters, standardSqlParserEngine.parseToSQLStatement(sql, false));
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, parameters);
         ShardingSphereSchema schema = new ShardingSphereSchema("sharding_db", Collections.emptyList(), Collections.singleton(shardingRule), Collections.emptyMap(), metaData);
         RouteContext result = new SQLRouteEngine(props, Collections.singletonList(shardingRule)).route(logicSQL, schema);

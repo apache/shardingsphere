@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.cache;
 
-import org.apache.shardingsphere.sql.parser.engine.SQLParsedResultCache;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.Test;
