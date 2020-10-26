@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.rdl.parser.engine;
 
 import org.apache.shardingsphere.rdl.parser.engine.engine.RDLSQLParserEngine;
-import org.apache.shardingsphere.sql.parser.engine.statement.standard.StandardSQLParserEngineFactory;
-import org.apache.shardingsphere.sql.parser.engine.statement.StatementSQLParserEngine;
-import org.apache.shardingsphere.sql.parser.engine.statement.standard.StandardSQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.standard.StandardSQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.standard.StandardSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * Sharding sphere SQL parser engine.
  */
-public final class ShardingSphereSQLParserEngine implements StatementSQLParserEngine {
+public final class ShardingSphereSQLParserEngine implements SQLParserEngine {
     
     private final StandardSQLParserEngine standardSqlParserEngine;
 
@@ -38,14 +38,14 @@ public final class ShardingSphereSQLParserEngine implements StatementSQLParserEn
     }
     
     @Override
-    public SQLStatement parse(final String sql, final boolean useCache) {
+    public SQLStatement parseToSQLStatement(final String sql, final boolean useCache) {
         SQLStatement result;
         try {
-            result = standardSqlParserEngine.parse(sql, useCache);
+            result = standardSqlParserEngine.parseToSQLStatement(sql, useCache);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            result = rdlsqlParserEngine.parse(sql, useCache);
+            result = rdlsqlParserEngine.parseToSQLStatement(sql, useCache);
         }
         return result;
     }

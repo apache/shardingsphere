@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.engine.statement.standard.StandardSQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.engine.standard.StandardSQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.SQLStatementAssert;
@@ -78,7 +78,7 @@ public abstract class SQLParserParameterizedTest {
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
-        SQLStatement actual = StandardSQLParserEngineFactory.getSQLParserEngine(databaseType).parse(sql, false);
+        SQLStatement actual = StandardSQLParserEngineFactory.getSQLParserEngine(databaseType).parseToSQLStatement(sql, false);
         SQLStatementAssert.assertIs(new SQLCaseAssertContext(sqlCaseId, sqlCaseType), actual, expected);
     }
 }

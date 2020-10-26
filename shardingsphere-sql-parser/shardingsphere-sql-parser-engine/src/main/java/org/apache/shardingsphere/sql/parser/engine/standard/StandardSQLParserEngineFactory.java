@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine.statement.standard;
+package org.apache.shardingsphere.sql.parser.engine.standard;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
