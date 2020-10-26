@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser.mysql.visitor;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacadeFactory;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.facade.FormatSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.facade.StatementSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.format.SQLFormatVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.statement.SQLStatementVisitorFacade;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.format.facade.MySQLFormatSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.facade.MySQLStatementSQLVisitorFacade;
 
@@ -29,12 +29,12 @@ import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.facade.MySQL
 public final class MySQLSQLVisitorFacadeFactory implements SQLVisitorFacadeFactory {
     
     @Override
-    public Class<? extends StatementSQLVisitorFacade> getStatementSQLVisitorFacadeClass() {
+    public Class<? extends SQLStatementVisitorFacade> getStatementSQLVisitorFacadeClass() {
         return MySQLStatementSQLVisitorFacade.class;
     }
     
     @Override
-    public Class<? extends FormatSQLVisitorFacade> getFormatSQLVisitorFacadeClass() {
+    public Class<? extends SQLFormatVisitorFacade> getFormatSQLVisitorFacadeClass() {
         return MySQLFormatSQLVisitorFacade.class;
     }
 }

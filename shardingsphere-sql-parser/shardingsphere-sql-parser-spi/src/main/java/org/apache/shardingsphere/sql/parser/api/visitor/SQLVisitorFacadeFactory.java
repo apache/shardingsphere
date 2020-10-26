@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.api.visitor;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.format.facade.FormatSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.facade.StatementSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.format.SQLFormatVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.statement.SQLStatementVisitorFacade;
 
 /**
  * SQL visitor facade engine.
@@ -30,12 +30,12 @@ public interface SQLVisitorFacadeFactory {
      *
      * @return DML visitor class
      */
-    Class<? extends StatementSQLVisitorFacade> getStatementSQLVisitorFacadeClass();
+    Class<? extends SQLStatementVisitorFacade> getStatementSQLVisitorFacadeClass();
     
     /**
      * Get format visitor facade class.
      *
      * @return DDL visitor class
      */
-    Class<? extends FormatSQLVisitorFacade> getFormatSQLVisitorFacadeClass();
+    Class<? extends SQLFormatVisitorFacade> getFormatSQLVisitorFacadeClass();
 }

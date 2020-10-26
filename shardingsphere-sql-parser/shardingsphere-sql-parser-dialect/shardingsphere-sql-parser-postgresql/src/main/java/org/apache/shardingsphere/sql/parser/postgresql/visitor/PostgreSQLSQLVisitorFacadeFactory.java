@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser.postgresql.visitor;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacadeFactory;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.facade.FormatSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.facade.StatementSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.format.SQLFormatVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.statement.SQLStatementVisitorFacade;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.format.facade.PostgreSQLFormatSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.facade.PostgreSQLStatementSQLVisitorFacade;
 
@@ -29,12 +29,12 @@ import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.facade.
 public final class PostgreSQLSQLVisitorFacadeFactory implements SQLVisitorFacadeFactory {
     
     @Override
-    public Class<? extends StatementSQLVisitorFacade> getStatementSQLVisitorFacadeClass() {
+    public Class<? extends SQLStatementVisitorFacade> getStatementSQLVisitorFacadeClass() {
         return PostgreSQLStatementSQLVisitorFacade.class;
     }
     
     @Override
-    public Class<? extends FormatSQLVisitorFacade> getFormatSQLVisitorFacadeClass() {
+    public Class<? extends SQLFormatVisitorFacade> getFormatSQLVisitorFacadeClass() {
         return PostgreSQLFormatSQLVisitorFacade.class;
     }
 }

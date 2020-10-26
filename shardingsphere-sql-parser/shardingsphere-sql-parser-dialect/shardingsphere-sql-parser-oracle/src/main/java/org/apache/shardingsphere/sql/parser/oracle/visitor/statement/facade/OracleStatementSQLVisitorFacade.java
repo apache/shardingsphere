@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.facade;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.facade.StatementSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DALStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DCLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DDLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.RLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.statement.SQLStatementVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl.OracleDALStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl.OracleDCLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl.OracleDDLStatementSQLVisitor;
@@ -33,35 +33,35 @@ import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl.Oracle
 /**
  * Visitor facade for Oracle.
  */
-public final class OracleStatementSQLVisitorFacade implements StatementSQLVisitorFacade {
+public final class OracleStatementSQLVisitorFacade implements SQLStatementVisitorFacade {
     
     @Override
-    public Class<? extends DMLStatementSQLVisitor> getDMLVisitorClass() {
+    public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {
         return OracleDMLStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends DDLStatementSQLVisitor> getDDLVisitorClass() {
+    public Class<? extends DDLSQLVisitor> getDDLVisitorClass() {
         return OracleDDLStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends TCLStatementSQLVisitor> getTCLVisitorClass() {
+    public Class<? extends TCLSQLVisitor> getTCLVisitorClass() {
         return OracleTCLStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends DCLStatementSQLVisitor> getDCLVisitorClass() {
+    public Class<? extends DCLSQLVisitor> getDCLVisitorClass() {
         return OracleDCLStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends DALStatementSQLVisitor> getDALVisitorClass() {
+    public Class<? extends DALSQLVisitor> getDALVisitorClass() {
         return OracleDALStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends RLStatementSQLVisitor> getRLVisitorClass() {
+    public Class<? extends RLSQLVisitor> getRLVisitorClass() {
         return null;
     }
 }

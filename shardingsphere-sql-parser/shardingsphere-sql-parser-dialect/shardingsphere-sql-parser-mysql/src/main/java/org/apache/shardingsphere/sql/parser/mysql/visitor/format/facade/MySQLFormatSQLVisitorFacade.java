@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.format.facade;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.format.facade.FormatSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DALFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DCLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DDLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DMLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.RLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.TCLFormatSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.format.SQLFormatVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl.MySQLDALFormatSQLVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl.MySQLDCLFormatSQLVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl.MySQLDDLFormatSQLVisitor;
@@ -34,35 +34,35 @@ import org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl.MySQLTCLFo
 /**
  * Format SQL Visitor facade for MySQL.
  */
-public final class MySQLFormatSQLVisitorFacade implements FormatSQLVisitorFacade {
+public final class MySQLFormatSQLVisitorFacade implements SQLFormatVisitorFacade {
     
     @Override
-    public Class<? extends DMLFormatSQLVisitor> getDMLVisitorClass() {
+    public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {
         return MySQLDMLFormatSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends DDLFormatSQLVisitor> getDDLVisitorClass() {
+    public Class<? extends DDLSQLVisitor> getDDLVisitorClass() {
         return MySQLDDLFormatSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends TCLFormatSQLVisitor> getTCLVisitorClass() {
+    public Class<? extends TCLSQLVisitor> getTCLVisitorClass() {
         return MySQLTCLFormatSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends DCLFormatSQLVisitor> getDCLVisitorClass() {
+    public Class<? extends DCLSQLVisitor> getDCLVisitorClass() {
         return MySQLDCLFormatSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends DALFormatSQLVisitor> getDALVisitorClass() {
+    public Class<? extends DALSQLVisitor> getDALVisitorClass() {
         return MySQLDALFormatSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends RLFormatSQLVisitor> getRLVisitorClass() {
+    public Class<? extends RLSQLVisitor> getRLVisitorClass() {
         return MySQLRLFormatSQLVisitor.class;
     }
 }

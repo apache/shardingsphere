@@ -17,46 +17,46 @@
 
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.format.facade;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.format.facade.FormatSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DALFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DCLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DDLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DMLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.RLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.TCLFormatSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.format.SQLFormatVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.TCLSQLVisitor;
 
 /**
  * Format SQL Visitor facade for MySQL.
  */
-public final class SQLServerFormatSQLVisitorFacade implements FormatSQLVisitorFacade {
+public final class SQLServerFormatSQLVisitorFacade implements SQLFormatVisitorFacade {
     
     @Override
-    public Class<? extends DMLFormatSQLVisitor> getDMLVisitorClass() {
+    public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {
         throw new UnsupportedOperationException();
     }
     
     @Override
-    public Class<? extends DDLFormatSQLVisitor> getDDLVisitorClass() {
+    public Class<? extends DDLSQLVisitor> getDDLVisitorClass() {
         throw new UnsupportedOperationException();
     }
     
     @Override
-    public Class<? extends TCLFormatSQLVisitor> getTCLVisitorClass() {
+    public Class<? extends TCLSQLVisitor> getTCLVisitorClass() {
         throw new UnsupportedOperationException();
     }
     
     @Override
-    public Class<? extends DCLFormatSQLVisitor> getDCLVisitorClass() {
+    public Class<? extends DCLSQLVisitor> getDCLVisitorClass() {
         throw new UnsupportedOperationException();
     }
     
     @Override
-    public Class<? extends DALFormatSQLVisitor> getDALVisitorClass() {
+    public Class<? extends DALSQLVisitor> getDALVisitorClass() {
         throw new UnsupportedOperationException();
     }
     
     @Override
-    public Class<? extends RLFormatSQLVisitor> getRLVisitorClass() {
+    public Class<? extends RLSQLVisitor> getRLVisitorClass() {
         throw new UnsupportedOperationException();
     }
 }
