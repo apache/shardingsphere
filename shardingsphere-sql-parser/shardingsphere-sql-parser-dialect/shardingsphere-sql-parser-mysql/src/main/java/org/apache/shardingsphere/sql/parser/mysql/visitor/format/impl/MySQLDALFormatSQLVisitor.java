@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DALFormatSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.format.SQLFormatVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DALSQLVisitor;
 
 /**
  * DAL Format SQL visitor for MySQL.
  */
-public final class MySQLDALFormatSQLVisitor extends MySQLFormatSQLVisitor implements DALFormatSQLVisitor {
+public final class MySQLDALFormatSQLVisitor extends MySQLFormatSQLVisitor implements DALSQLVisitor, SQLFormatVisitor {
 }

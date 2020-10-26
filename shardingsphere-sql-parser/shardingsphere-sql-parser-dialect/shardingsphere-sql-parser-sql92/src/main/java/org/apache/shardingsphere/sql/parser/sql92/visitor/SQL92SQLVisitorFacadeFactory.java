@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser.sql92.visitor;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacadeFactory;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.facade.FormatSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.facade.StatementSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.format.SQLFormatVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.statement.SQLStatementVisitorFacade;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.format.facade.SQL92FormatSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.facade.SQL92StatementSQLVisitorFacade;
 
@@ -29,12 +29,12 @@ import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.facade.SQL92
 public final class SQL92SQLVisitorFacadeFactory implements SQLVisitorFacadeFactory {
     
     @Override
-    public Class<? extends StatementSQLVisitorFacade> getStatementSQLVisitorFacadeClass() {
+    public Class<? extends SQLStatementVisitorFacade> getStatementSQLVisitorFacadeClass() {
         return SQL92StatementSQLVisitorFacade.class;
     }
     
     @Override
-    public Class<? extends FormatSQLVisitorFacade> getFormatSQLVisitorFacadeClass() {
+    public Class<? extends SQLFormatVisitorFacade> getFormatSQLVisitorFacadeClass() {
         return SQL92FormatSQLVisitorFacade.class;
     }
 }

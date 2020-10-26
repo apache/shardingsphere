@@ -15,60 +15,60 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor.format.facade;
+package org.apache.shardingsphere.sql.parser.api.visitor.operation.format;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DALFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DCLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DDLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DMLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.RLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.TCLFormatSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.TCLSQLVisitor;
 
 /**
- * Format SQL visitor facade.
+ * SQL format visitor facade.
  */
-public interface FormatSQLVisitorFacade extends SQLVisitorFacade {
+public interface SQLFormatVisitorFacade extends SQLVisitorFacade {
     
     /**
      * Get DML visitor class.
      *
      * @return DML visitor class
      */
-    Class<? extends DMLFormatSQLVisitor> getDMLVisitorClass();
+    Class<? extends DMLSQLVisitor> getDMLVisitorClass();
     
     /**
      * Get DDL visitor class.
      *
      * @return DDL visitor class
      */
-    Class<? extends DDLFormatSQLVisitor> getDDLVisitorClass();
+    Class<? extends DDLSQLVisitor> getDDLVisitorClass();
     
     /**
      * Get TCL visitor class.
      *
      * @return TCL visitor class
      */
-    Class<? extends TCLFormatSQLVisitor> getTCLVisitorClass();
+    Class<? extends TCLSQLVisitor> getTCLVisitorClass();
     
     /**
      * Get DCL visitor class.
      *
      * @return DCL visitor class
      */
-    Class<? extends DCLFormatSQLVisitor> getDCLVisitorClass();
+    Class<? extends DCLSQLVisitor> getDCLVisitorClass();
     
     /**
      * Get DAL visitor class.
      *
      * @return DAL visitor class
      */
-    Class<? extends DALFormatSQLVisitor> getDALVisitorClass();
+    Class<? extends DALSQLVisitor> getDALVisitorClass();
     
     /**
      * Get RL visitor class.
      * 
      * @return RL visitor class
      */
-    Class<? extends RLFormatSQLVisitor> getRLVisitorClass();
+    Class<? extends RLSQLVisitor> getRLVisitorClass();
 }

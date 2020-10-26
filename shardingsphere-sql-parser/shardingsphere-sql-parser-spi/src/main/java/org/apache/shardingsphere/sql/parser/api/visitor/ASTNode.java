@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor.format.impl;
-
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+package org.apache.shardingsphere.sql.parser.api.visitor;
 
 /**
- * DML format SQL visitor.
+ * AST node.
  */
-public interface DMLFormatSQLVisitor extends SQLVisitor {
+public interface ASTNode {
 }

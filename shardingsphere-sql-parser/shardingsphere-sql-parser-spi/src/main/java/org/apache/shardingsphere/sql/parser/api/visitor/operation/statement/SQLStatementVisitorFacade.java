@@ -15,60 +15,60 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor.statement.facade;
+package org.apache.shardingsphere.sql.parser.api.visitor.operation.statement;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DALStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DCLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DDLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.RLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.TCLSQLVisitor;
 
 /**
- * Statement SQL visitor facade.
+ * SQL statement visitor facade.
  */
-public interface StatementSQLVisitorFacade extends SQLVisitorFacade {
+public interface SQLStatementVisitorFacade extends SQLVisitorFacade {
     
     /**
      * Get DML visitor class.
      *
      * @return DML visitor class
      */
-    Class<? extends DMLStatementSQLVisitor> getDMLVisitorClass();
+    Class<? extends DMLSQLVisitor> getDMLVisitorClass();
     
     /**
      * Get DDL visitor class.
      *
      * @return DDL visitor class
      */
-    Class<? extends DDLStatementSQLVisitor> getDDLVisitorClass();
+    Class<? extends DDLSQLVisitor> getDDLVisitorClass();
     
     /**
      * Get TCL visitor class.
      *
      * @return TCL visitor class
      */
-    Class<? extends TCLStatementSQLVisitor> getTCLVisitorClass();
+    Class<? extends TCLSQLVisitor> getTCLVisitorClass();
     
     /**
      * Get DCL visitor class.
      *
      * @return DCL visitor class
      */
-    Class<? extends DCLStatementSQLVisitor> getDCLVisitorClass();
+    Class<? extends DCLSQLVisitor> getDCLVisitorClass();
     
     /**
      * Get DAL visitor class.
      *
      * @return DAL visitor class
      */
-    Class<? extends DALStatementSQLVisitor> getDALVisitorClass();
+    Class<? extends DALSQLVisitor> getDALVisitorClass();
     
     /**
      * Get RL visitor class.
      * 
      * @return RL visitor class
      */
-    Class<? extends RLStatementSQLVisitor> getRLVisitorClass();
+    Class<? extends RLSQLVisitor> getRLVisitorClass();
 }

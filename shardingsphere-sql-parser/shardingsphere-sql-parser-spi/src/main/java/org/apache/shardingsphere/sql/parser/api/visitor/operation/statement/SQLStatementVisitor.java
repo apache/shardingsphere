@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor.format.impl;
+package org.apache.shardingsphere.sql.parser.api.visitor.operation.statement;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLOperationVisitor;
 
 /**
- * DAL format SQL visitor.
+ * SQL statement visitor.
  */
-public interface DALFormatSQLVisitor extends SQLVisitor {
+public interface SQLStatementVisitor extends SQLOperationVisitor {
 }
