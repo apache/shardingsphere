@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor.type.impl;
-
-import org.apache.shardingsphere.sql.parser.api.visitor.type.SQLTypeVisitor;
+package org.apache.shardingsphere.sql.parser.api.visitor.type;
 
 /**
- * DAL SQL visitor.
+ * DDL SQL visitor.
  */
-public interface DALSQLVisitor extends SQLTypeVisitor {
+public interface DDLSQLVisitor extends SQLTypeVisitor {
 }

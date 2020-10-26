@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.format.SQLFormatVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLFormatVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
 
 /**
  * RL Format SQL visitor for MySQL.

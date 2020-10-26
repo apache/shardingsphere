@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.facade;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.statement.SQLStatementVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DALSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DDLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.DMLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.RLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.impl.TCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDALStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDCLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDDLStatementSQLVisitor;
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.Po
 /**
  * Statement SQL Visitor facade for PostgreSQL.
  */
-public final class PostgreSQLStatementSQLVisitorFacade implements SQLStatementVisitorFacade {
+public final class PostgreSQLStatementSQLVisitorFacade implements SQLVisitorFacade {
     
     @Override
     public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {
