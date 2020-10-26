@@ -205,10 +205,10 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.
 **Compare release source with github tag**
 
 ```
-curl -Lo tag-shardingsphere-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere-ui/archive/shardingsphere-ui-${RELEASE.VERSION}.zip
-unzip tag-shardingsphere-ui-${RELEASE.VERSION}.zip
+curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere-ui/archive/${RELEASE.VERSION}.zip
+unzip tag-${RELEASE.VERSION}.zip
 unzip apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip
-diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src/ shardingsphere-shardingsphere-ui-${RELEASE.VERSION}/
+diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src shardingsphere-shardingsphere-ui-${RELEASE.VERSION}
 ```
 
 **Check source package**
@@ -270,7 +270,7 @@ The release candidates:
 https://dist.apache.org/repos/dist/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}/
 
 Git tag for the release:
-https://github.com/apache/shardingsphere-ui/tree/shardingsphere-ui-${RELEASE.VERSION}/
+https://github.com/apache/shardingsphere-ui/tree/${RELEASE.VERSION}/
 
 Release Commit ID:
 https://github.com/apache/shardingsphere-ui/commit/xxxxxxxxxxxxxxxxxxxxxxx
