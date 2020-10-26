@@ -46,7 +46,7 @@ public final class PostgreSQLParserConfiguration implements SQLParserConfigurati
     }
     
     @Override
-    public Class<? extends SQLVisitorFacadeFactory> getVisitorFacadeEngineClass() {
+    public Class<? extends SQLVisitorFacadeFactory> getVisitorFacadeFactoryClass() {
         return PostgreSQLSQLVisitorFacadeFactory.class;
     }
 }

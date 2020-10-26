@@ -48,7 +48,7 @@ public final class SQLVisitorFactory {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static SQLVisitorFacade getSQLVisitorFacadeEngine(final String databaseTypeName, final SQLVisitorType type) {
-        SQLVisitorFacadeFactory facade = SQLParserConfigurationRegistry.getInstance().getSQLParserConfiguration(databaseTypeName).getVisitorFacadeEngineClass().getConstructor().newInstance();
+        SQLVisitorFacadeFactory facade = SQLParserConfigurationRegistry.getInstance().getSQLParserConfiguration(databaseTypeName).getVisitorFacadeFactoryClass().getConstructor().newInstance();
         switch (type) {
             case STATEMENT:
                 return facade.getStatementSQLVisitorFacadeClass().getConstructor().newInstance();

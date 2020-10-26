@@ -52,5 +52,5 @@ public interface SQLParserConfiguration {
      *
      * @return SQL visitor facade factory class
      */
-    Class<? extends SQLVisitorFacadeFactory> getVisitorFacadeEngineClass();
+    Class<? extends SQLVisitorFacadeFactory> getVisitorFacadeFactoryClass();
 }
