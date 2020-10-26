@@ -17,17 +17,19 @@
 
 package org.apache.shardingsphere.sql.parser.engine;
 
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
 /**
- * SQL parser engine.
+ * Statement SQL parser engine.
  */
-public interface SQLParserEngine<T> {
+public interface SQLParserEngine {
     
     /**
-     * Parse SQL.
-     *
-     * @param sql SQL
-     * @param useCache use cache or not
-     * @return T
+     * Parse to SQL Statement.
+     * 
+     * @param sql sql 
+     * @param useCache use cache
+     * @return sql statement
      */
-    T parse(String sql, boolean useCache);
+    SQLStatement parseToSQLStatement(String sql, boolean useCache);
 }

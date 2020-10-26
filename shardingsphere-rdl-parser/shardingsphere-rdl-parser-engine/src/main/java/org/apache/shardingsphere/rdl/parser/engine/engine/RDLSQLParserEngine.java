@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.rdl.parser.engine.executor.RDLSQLParserExecutor;
 import org.apache.shardingsphere.rdl.parser.sql.visitor.ShardingSphereVisitor;
-import org.apache.shardingsphere.sql.parser.engine.statement.StatementSQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
  * RDL SQL parser engine.
  */
 @RequiredArgsConstructor
-public final class RDLSQLParserEngine implements StatementSQLParserEngine {
+public final class RDLSQLParserEngine implements SQLParserEngine {
     
     private final ParsingHookRegistry parsingHookRegistry = ParsingHookRegistry.getInstance();
     
@@ -41,7 +41,7 @@ public final class RDLSQLParserEngine implements StatementSQLParserEngine {
      * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
      */
     @Override
-    public SQLStatement parse(final String sql, final boolean useCache) {
+    public SQLStatement parseToSQLStatement(final String sql, final boolean useCache) {
         parsingHookRegistry.start(sql);
         try {
             SQLStatement result = parse0(sql);
