@@ -26,14 +26,14 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.facade.Stateme
 public interface SQLVisitorFacadeFactory {
     
     /**
-     * Get Statement visitor facade class.
+     * Get statement visitor facade class.
      *
      * @return DML visitor class
      */
     Class<? extends StatementSQLVisitorFacade> getStatementSQLVisitorFacadeClass();
     
     /**
-     * Get Format visitor facade class.
+     * Get format visitor facade class.
      *
      * @return DDL visitor class
      */
