@@ -67,7 +67,12 @@ public final class MySQLFormatSQLVisitorFacade implements SQLVisitorFacade {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
+        return "MySQL";
+    }
+    
+    @Override
+    public String getVisitorType() {
         return "FORMAT";
     }
 }

@@ -66,7 +66,12 @@ public final class SQLServerStatementSQLVisitorFacade implements SQLVisitorFacad
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
+        return "SQLServer";
+    }
+    
+    @Override
+    public String getVisitorType() {
         return "STATEMENT";
     }
 }

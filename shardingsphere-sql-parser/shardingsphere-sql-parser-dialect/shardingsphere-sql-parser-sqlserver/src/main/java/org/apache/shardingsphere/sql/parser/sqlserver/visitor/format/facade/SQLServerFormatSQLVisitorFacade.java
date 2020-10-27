@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
 
 /**
- * Format SQL Visitor facade for MySQL.
+ * Format SQL Visitor facade for SQLServer.
  */
 public final class SQLServerFormatSQLVisitorFacade implements SQLVisitorFacade {
     
@@ -61,7 +61,12 @@ public final class SQLServerFormatSQLVisitorFacade implements SQLVisitorFacade {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
+        return "SQLServer";
+    }
+    
+    @Override
+    public String getVisitorType() {
         return "FORMAT";
     }
 }

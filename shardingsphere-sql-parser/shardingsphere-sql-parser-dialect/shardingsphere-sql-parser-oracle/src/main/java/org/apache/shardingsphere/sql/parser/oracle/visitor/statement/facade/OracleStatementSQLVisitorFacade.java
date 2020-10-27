@@ -66,7 +66,12 @@ public final class OracleStatementSQLVisitorFacade implements SQLVisitorFacade {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
+        return "Oracle";
+    }
+    
+    @Override
+    public String getVisitorType() {
         return "STATEMENT";
     }
 }

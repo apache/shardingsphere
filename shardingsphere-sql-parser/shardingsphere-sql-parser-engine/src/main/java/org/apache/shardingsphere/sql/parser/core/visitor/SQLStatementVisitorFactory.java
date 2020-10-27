@@ -21,9 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.core.SQLParserConfigurationRegistry;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementType;
 
 /**
@@ -40,12 +39,8 @@ public final class SQLStatementVisitorFactory {
      * @return parse tree visitor
      */
     public static ParseTreeVisitor newInstance(final String databaseTypeName, final SQLVisitorRule sqlVisitorRule) {
-        return createParseTreeVisitor(getSQLVisitorFacadeEngine(databaseTypeName), sqlVisitorRule.getType());
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static SQLVisitorFacade getSQLVisitorFacadeEngine(final String databaseTypeName) {
-        return SQLParserConfigurationRegistry.getInstance().getSQLParserConfiguration(databaseTypeName).getSQLVisitorFacadeClasses().get("STATEMENT").getConstructor().newInstance();
+        SQLVisitorFacade facade = SQLVisitorFacadeRegistry.getInstance().getSQLVisitorFacade(databaseTypeName, "STATEMENT");
+        return createParseTreeVisitor(facade, sqlVisitorRule.getType());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
