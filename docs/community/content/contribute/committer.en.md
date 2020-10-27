@@ -35,7 +35,7 @@ After a contributor participates ShardingSphere community actively, PMC and Comm
  - Add issue labels, such as bug, enhancement, discussion, etc;
  - Add milestone.
  
-3. Pull Request that committer submits needs to mark labels and milestone based on the type and release period.
+3. Pull Request that committer submits needs to add labels and milestone based on the type and release period.
 
 4. When committer reviewed and approved any Pull Request, committer could squash and merge to master. If there is any question you concerned about this Pull Request, please reply directly to the related issue.
 
