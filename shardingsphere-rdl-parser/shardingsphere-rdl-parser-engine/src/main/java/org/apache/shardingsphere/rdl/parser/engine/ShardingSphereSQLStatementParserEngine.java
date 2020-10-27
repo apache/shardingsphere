@@ -21,6 +21,7 @@ import org.apache.shardingsphere.rdl.parser.engine.engine.RDLSQLStatementParserE
 import org.apache.shardingsphere.sql.parser.statement.SQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.statement.standard.StandardSQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.standard.StandardSQLStatementParserEngineFactory;
 
 /**
  * ShardingSphere SQL statement parser engine.
@@ -32,7 +33,7 @@ public final class ShardingSphereSQLStatementParserEngine implements SQLStatemen
     private final RDLSQLStatementParserEngine rdlSQLStatementParserEngine;
     
     public ShardingSphereSQLStatementParserEngine(final String databaseTypeName) {
-        standardSQLStatementParserEngine = new StandardSQLStatementParserEngine(databaseTypeName);
+        standardSQLStatementParserEngine = StandardSQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseTypeName);
         rdlSQLStatementParserEngine = new RDLSQLStatementParserEngine();
     }
     
