@@ -26,6 +26,7 @@ ShardingSphere社区遵循[Apache Community’s process](http://community.apache
 
  - 包括（标记issue，回复issue，关闭issue）。
  - 将issue assign给熟悉该模块的Contributor/Committer，即Assignee。
+ - 轮值周期为一周
  
 > 轮值Committer名单在Committer交流群里实时更新，轮值岗位设定目的是发挥大家的主人翁意识，增进归属感，ShardingSphere社区属于每一位PMC/Committer。
 
