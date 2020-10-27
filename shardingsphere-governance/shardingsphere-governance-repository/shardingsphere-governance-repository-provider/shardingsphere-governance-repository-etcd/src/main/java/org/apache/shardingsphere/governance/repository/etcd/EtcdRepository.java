@@ -109,8 +109,8 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
             for (WatchEvent each : response.getEvents()) {
                 ChangedType changedType = getEventChangedType(each);
                 if (ChangedType.IGNORED != changedType) {
-                    dataChangedEventListener.onChange(new DataChangedEvent(each.getKeyValue().getKey().toString(StandardCharsets.UTF_8)
-                            , each.getKeyValue().getValue().toString(StandardCharsets.UTF_8), changedType));
+                    dataChangedEventListener.onChange(new DataChangedEvent(each.getKeyValue().getKey().toString(StandardCharsets.UTF_8),
+                            each.getKeyValue().getValue().toString(StandardCharsets.UTF_8), changedType));
                 }
             }
         });
