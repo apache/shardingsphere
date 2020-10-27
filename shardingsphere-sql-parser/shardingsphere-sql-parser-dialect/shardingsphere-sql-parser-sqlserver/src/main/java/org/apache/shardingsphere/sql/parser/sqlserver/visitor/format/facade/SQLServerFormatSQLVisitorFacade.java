@@ -59,4 +59,9 @@ public final class SQLServerFormatSQLVisitorFacade implements SQLVisitorFacade {
     public Class<? extends RLSQLVisitor> getRLVisitorClass() {
         throw new UnsupportedOperationException();
     }
+    
+    @Override
+    public String getType() {
+        return "FORMAT";
+    }
 }

@@ -19,11 +19,15 @@ package org.apache.shardingsphere.sql.parser.sqlserver;
 
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 import org.apache.shardingsphere.sql.parser.sqlserver.lexer.SQLServerLexer;
 import org.apache.shardingsphere.sql.parser.sqlserver.parser.SQLServerParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacadeFactory;
-import org.apache.shardingsphere.sql.parser.sqlserver.visitor.SQLServerSQLVisitorFacadeFactory;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.format.facade.SQLServerFormatSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.facade.SQLServerStatementSQLVisitorFacade;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * SQL parser configuration for SQLServer.
@@ -46,7 +50,10 @@ public final class SQLServerParserConfiguration implements SQLParserConfiguratio
     }
     
     @Override
-    public Class<? extends SQLVisitorFacadeFactory> getVisitorFacadeFactoryClass() {
-        return SQLServerSQLVisitorFacadeFactory.class;
+    public Map<String, Class<? extends SQLVisitorFacade>> getSQLVisitorFacadeClasses() {
+        Map<String, Class<? extends SQLVisitorFacade>> result = new HashMap<>(2, 1);
+        result.put("STATEMENT", SQLServerStatementSQLVisitorFacade.class);
+        result.put("FORMAT", SQLServerFormatSQLVisitorFacade.class);
+        return result;
     }
 }

@@ -59,4 +59,9 @@ public final class PostgreSQLFormatSQLVisitorFacade implements SQLVisitorFacade 
     public Class<? extends RLSQLVisitor> getRLVisitorClass() {
         throw new UnsupportedOperationException();
     }
+    
+    @Override
+    public String getType() {
+        return "FORMAT";
+    }
 }

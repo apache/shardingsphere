@@ -19,7 +19,9 @@ package org.apache.shardingsphere.sql.parser.spi;
 
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacadeFactory;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
+
+import java.util.Map;
 
 /**
  * SQL parser configuration.
@@ -48,9 +50,9 @@ public interface SQLParserConfiguration {
     Class<? extends SQLParser> getParserClass();
     
     /**
-     * Get SQL visitor facade factory class.
+     * Get SQL visitor facade classes.
      *
-     * @return SQL visitor facade factory class
+     * @return SQL visitor facade classes
      */
-    Class<? extends SQLVisitorFacadeFactory> getVisitorFacadeFactoryClass();
+    Map<String, Class<? extends SQLVisitorFacade>> getSQLVisitorFacadeClasses();
 }
