@@ -105,15 +105,51 @@ singleTableClause
     ;
 
 multipleTablesClause
-    : multipleTableNames FROM tableReferences | FROM multipleTableNames USING tableReferences
+    : tableAliasRefList FROM tableReferences | FROM tableAliasRefList USING tableReferences
+//    : multipleTableNames FROM tableReferences | FROM multipleTableNames USING tableReferences
     ;
 
 multipleTableNames
     : tableName DOT_ASTERISK_? (COMMA_ tableName DOT_ASTERISK_?)*
     ;
 
-select 
-    : withClause? unionClause
+//select
+//    : withClause? unionClause
+//    ;
+
+select
+    : queryExpression lockClauseList?
+    | queryExpressionParens
+    | selectWithInto
+    ;
+
+selectWithInto
+    : LP_ selectWithInto RP_
+    | queryExpression selectIntoExpression lockClauseList?
+    | queryExpression lockClauseList selectIntoExpression
+    ;
+
+queryExpression
+    : withClause? (queryExpressionBody | queryExpressionParens) orderByClause? limitClause?
+    ;
+
+queryExpressionBody
+    : queryPrimary
+    | queryExpressionParens UNION unionOption? (queryPrimary | queryExpressionParens)
+    ;
+
+queryExpressionParens
+    : LP_ (queryExpressionParens | queryExpression lockClauseList?) RP_
+    ;
+
+queryPrimary
+    : querySpecification
+    | tableValueConstructor
+    | explicitTable
+    ;
+
+querySpecification
+    : SELECT selectSpecification* projections selectIntoExpression? fromClause? whereClause? groupByClause? havingClause? windowClause?
     ;
 
 call
@@ -177,12 +213,12 @@ loadXmlStatement
       (setAssignmentsClause)?
     ;
 
-tableStatement
-    : TABLE tableName (ORDER BY columnName)? (LIMIT NUMBER_ (OFFSET NUMBER_)?)?
+explicitTable
+    : TABLE tableName
     ;
 
-valuesStatement
-    : VALUES rowConstructorList (ORDER BY columnDesignator)? (LIMIT BY NUMBER_)?
+tableValueConstructor
+    : VALUES rowConstructorList
     ;
 
 columnDesignator
@@ -201,13 +237,13 @@ cteClause
     : ignoredIdentifier columnNames? AS subquery
     ;
 
-unionClause
-    : selectClause (UNION (ALL | DISTINCT)? selectClause)*
-    ;
+//unionClause
+//    : selectClause (UNION unionOption? selectClause)*
+//    ;
 
-selectClause
-    : LP_? SELECT selectSpecification* projections selectIntoExpression? fromClause? whereClause? groupByClause? havingClause? windowClause? orderByClause? limitClause? selectIntoExpression? lockClause? RP_?
-    ;
+//selectClause
+//    : LP_? SELECT selectSpecification* projections selectIntoExpression? fromClause? whereClause? groupByClause? havingClause? windowClause? orderByClause? limitClause? selectIntoExpression? lockClause? RP_?
+//    ;
 
 selectSpecification
     : duplicateSpecification | HIGH_PRIORITY | STRAIGHT_JOIN | SQL_SMALL_RESULT | SQL_BIG_RESULT | SQL_BUFFER_RESULT | (SQL_CACHE | SQL_NO_CACHE) | SQL_CALC_FOUND_ROWS
@@ -308,7 +344,8 @@ windowItem
     ;
 
 subquery
-    : LP_ unionClause RP_
+//    : LP_ unionClause RP_
+    : queryExpressionParens
     ;
 
 selectLinesInto
@@ -325,5 +362,31 @@ selectIntoExpression
     ;
 
 lockClause
-    : FOR UPDATE | LOCK IN SHARE MODE
+    : FOR lockStrength lockedRowAction?
+    | FOR lockStrength
+    | LOCK IN SHARE MODE
+    ;
+
+lockClauseList
+    : lockClause+
+    ;
+
+lockStrength
+    : UPDATE | SHARE
+    ;
+
+lockedRowAction
+    : SKIP_SYMBOL LOCKED | NOWAIT
+    ;
+
+tableLockingList
+    : OF tableAliasRefList
+    ;
+
+tableIdentOptWild
+    : tableName DOT_ASTERISK_?
+    ;
+
+tableAliasRefList
+    : tableIdentOptWild+
     ;

@@ -2259,9 +2259,9 @@ SIMPLE
     : S I M P L E
     ;
 
-//SKIP
-//    : S K I P
-//    ;
+SKIP_SYMBOL
+    : S K I P
+    ;
 
 SLAVE
     : S L A V E

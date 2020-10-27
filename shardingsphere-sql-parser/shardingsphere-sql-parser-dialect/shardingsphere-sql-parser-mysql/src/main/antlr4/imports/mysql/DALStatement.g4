@@ -381,7 +381,7 @@ explainType
     ;
 
 explainableStatement
-    : select | tableStatement | delete | insert | replace | update
+    : select | delete | insert | replace | update
     ;
 
 formatName
