@@ -19,11 +19,15 @@ package org.apache.shardingsphere.sql.parser.postgresql;
 
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacadeFactory;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.postgresql.lexer.PostgreSQLLexer;
 import org.apache.shardingsphere.sql.parser.postgresql.parser.PostgreSQLParser;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.PostgreSQLSQLVisitorFacadeFactory;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.format.facade.PostgreSQLFormatSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.facade.PostgreSQLStatementSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * SQL parser configuration for PostgreSQL.
@@ -46,7 +50,10 @@ public final class PostgreSQLParserConfiguration implements SQLParserConfigurati
     }
     
     @Override
-    public Class<? extends SQLVisitorFacadeFactory> getVisitorFacadeFactoryClass() {
-        return PostgreSQLSQLVisitorFacadeFactory.class;
+    public Map<String, Class<? extends SQLVisitorFacade>> getSQLVisitorFacadeClasses() {
+        Map<String, Class<? extends SQLVisitorFacade>> result = new HashMap<>(2, 1);
+        result.put("STATEMENT", PostgreSQLStatementSQLVisitorFacade.class);
+        result.put("FORMAT", PostgreSQLFormatSQLVisitorFacade.class);
+        return result;
     }
 }
