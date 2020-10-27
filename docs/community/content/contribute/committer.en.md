@@ -23,7 +23,7 @@ After a contributor participates ShardingSphere community actively, PMC and Comm
 
 ##  Committer Routine
 
-1. Weekly rotating committers needs to check the list of Pull Requests and issues to be processed in the community on a daily basis.
+1. Weekly rotating committers needs to check the list of pull requests and issues to be processed in the community on a daily basis.
 
  - Including label issue, reply issue, close issue;
  - Assign issue to the appropriate committer, namely assignee;
@@ -35,9 +35,9 @@ After a contributor participates ShardingSphere community actively, PMC and Comm
  - Add issue labels, such as bug, enhancement, discussion, etc;
  - Add milestone.
  
-3. Pull Request that committer submits needs to add labels and milestone based on the type and release period.
+3. Pull request that committer submits needs to add labels and milestone based on the type and release period.
 
-4. When committer reviewed and approved any Pull Request, committer could squash and merge to master. If there is any question you concerned about this Pull Request, please reply directly to the related issue.
+4. When committer reviewed and approved any pull request, committer could squash and merge to master. If there is any question you concerned about this pull request, please reply directly to the related issue.
 
 ### Committer rota
 
