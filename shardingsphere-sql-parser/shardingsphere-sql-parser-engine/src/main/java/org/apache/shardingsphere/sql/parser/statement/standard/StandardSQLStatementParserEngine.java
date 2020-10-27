@@ -20,15 +20,13 @@ package org.apache.shardingsphere.sql.parser.statement.standard;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorType;
 import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
-import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCaches;
 import org.apache.shardingsphere.sql.parser.core.visitor.SQLStatementVisitorFactory;
 import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorRule;
-import org.apache.shardingsphere.sql.parser.statement.SQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.engine.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.SQLStatementParserEngine;
 
 import java.util.Optional;
 
@@ -40,7 +38,7 @@ public final class StandardSQLStatementParserEngine implements SQLStatementParse
     
     private final String databaseTypeName;
     
-    private final SQLParsedResultCaches caches = new SQLParsedResultCaches();
+    private final SQLParsedResultCache<SQLStatement> cache = new SQLParsedResultCache<>();
     
     private final ParsingHookRegistry parsingHookRegistry = ParsingHookRegistry.getInstance();
     
@@ -66,29 +64,23 @@ public final class StandardSQLStatementParserEngine implements SQLStatementParse
     }
     
     private SQLStatement parse0(final String sql, final boolean useCache) {
-        Optional<SQLStatement> statement = getCache(sql, useCache);
+        if (!useCache) {
+            return parseSQLStatement(sql);
+        }
+        Optional<SQLStatement> statement = cache.get(sql);
         if (statement.isPresent()) {
             return statement.get();
         }
-        ParseTree parseTree = SQLParserEngineFactory.getSQLParserEngine(databaseTypeName).parse(sql, useCache);
-        ParseTreeVisitor visitor = SQLStatementVisitorFactory.newInstance(databaseTypeName, SQLVisitorRule.valueOf(parseTree.getClass()));
-        SQLStatement result = (SQLStatement) parseTree.accept(visitor);
-        putCache(sql, result, useCache);
+        SQLStatement result = parseSQLStatement(sql);
+        cache.put(sql, result);
         return result;
     }
     
-    private Optional getCache(final String sql, final boolean useCache) {
-        if (useCache) {
-            SQLParsedResultCache cache = caches.getCache(SQLVisitorType.STATEMENT);
-            return cache.get(sql);
-        }
-        return Optional.empty();
+    @SuppressWarnings("unchecked")
+    private SQLStatement parseSQLStatement(final String sql) {
+        ParseTree parseTree = SQLParserEngineFactory.getSQLParserEngine(databaseTypeName).parse(sql, false);
+        ParseTreeVisitor<SQLStatement> visitor = SQLStatementVisitorFactory.newInstance(databaseTypeName, SQLVisitorRule.valueOf(parseTree.getClass()));
+        return parseTree.accept(visitor);
     }
-    
-    private void putCache(final String sql, final Object parsedResult, final boolean useCache) {
-        if (useCache) {
-            SQLParsedResultCache cache = caches.getCache(SQLVisitorType.STATEMENT);
-            cache.put(sql, parsedResult);
-        }
-    }
+
 }
