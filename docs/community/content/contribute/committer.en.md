@@ -31,13 +31,14 @@ After a contributor participates ShardingSphere community actively, PMC and Comm
  
 2. After a committer is assigned with an issue, the following work is required:
 
- - Estimate whether it is a long-term issue. If it is, please mark it as pending;
+ - Estimate whether it is a long-term issue. If it is, please label it as pending;
  - Add issue labels, such as bug, enhancement, discussion, etc;
- - Add Milestone.
+ - Add milestone.
  
-3. Pull Request that committer submits needs to mark labels and milestone based on the type and time.
+3. Pull Request that committer submits needs to mark labels and milestone based on the type and release period.
 
 4. When committer reviewed and approved any Pull Request, committer could squash and merge to master. If there is any question you concerned about this Pull Request, please reply directly to the related issue.
+
 ### Committer rota
 
 | Name                | GitHub ID               |
