@@ -32,9 +32,9 @@ ShardingSphere社区遵循[Apache Community’s process](http://community.apache
 
  - 判断是否是长期issue，如是，则标记为pending；
  - 判断issue类型，如：bug，enhancement，discussion等；
- - 判断Milestone，并标记。
+ - 标记Milestone。
 
-3. Committer提交的PR，需要根据PR类型和时间标注Label和Milestone。
+3. Committer提交的PR，需要根据PR类型和当前发布的周期标注Label和Milestone。
 
 4. Committer review PR时，可以进行squash and merge to master的操作, 如果有问题可以加上change request或者@相关人员协助处理。
 
