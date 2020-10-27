@@ -87,7 +87,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         ShardingSphereMetaData metaData = createShardingSphereMetaData();
         ConfigurationProperties props = new ConfigurationProperties(yamlRootRuleConfigs.getProps());
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchemaMetaData().getConfiguredSchemaMetaData(), 
-                getTestParameters().getInputParameters(), standardSQLStatementParserEngine.parseToSQLStatement(getTestParameters().getInputSQL(), false));
+                getTestParameters().getInputParameters(), standardSQLStatementParserEngine.parse(getTestParameters().getInputSQL(), false));
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
         ShardingSphereSchema schema = new ShardingSphereSchema("sharding_db", Collections.emptyList(), rules, Collections.emptyMap(), metaData);
         RouteContext routeContext = new SQLRouteEngine(props, rules).route(logicSQL, schema);

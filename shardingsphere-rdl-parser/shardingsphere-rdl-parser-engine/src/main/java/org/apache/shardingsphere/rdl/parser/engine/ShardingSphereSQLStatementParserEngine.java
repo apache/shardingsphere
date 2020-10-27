@@ -17,34 +17,34 @@
 
 package org.apache.shardingsphere.rdl.parser.engine;
 
-import org.apache.shardingsphere.rdl.parser.engine.engine.RDLSQLParserEngine;
+import org.apache.shardingsphere.rdl.parser.engine.engine.RDLSQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.statement.SQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.statement.standard.StandardSQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Sharding sphere SQL parser engine.
+ * ShardingSphere SQL statement parser engine.
  */
-public final class ShardingSphereSQLParserEngine implements SQLStatementParserEngine {
+public final class ShardingSphereSQLStatementParserEngine implements SQLStatementParserEngine {
     
     private final StandardSQLStatementParserEngine standardSQLStatementParserEngine;
-
-    private final RDLSQLParserEngine rdlsqlParserEngine;
     
-    public ShardingSphereSQLParserEngine(final String databaseTypeName) {
+    private final RDLSQLStatementParserEngine rdlSQLStatementParserEngine;
+    
+    public ShardingSphereSQLStatementParserEngine(final String databaseTypeName) {
         standardSQLStatementParserEngine = new StandardSQLStatementParserEngine(databaseTypeName);
-        rdlsqlParserEngine = new RDLSQLParserEngine();
+        rdlSQLStatementParserEngine = new RDLSQLStatementParserEngine();
     }
     
     @Override
-    public SQLStatement parseToSQLStatement(final String sql, final boolean useCache) {
+    public SQLStatement parse(final String sql, final boolean useCache) {
         SQLStatement result;
         try {
-            result = standardSQLStatementParserEngine.parseToSQLStatement(sql, useCache);
+            result = standardSQLStatementParserEngine.parse(sql, useCache);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            result = rdlsqlParserEngine.parseToSQLStatement(sql, useCache);
+            result = rdlSQLStatementParserEngine.parse(sql, useCache);
         }
         return result;
     }

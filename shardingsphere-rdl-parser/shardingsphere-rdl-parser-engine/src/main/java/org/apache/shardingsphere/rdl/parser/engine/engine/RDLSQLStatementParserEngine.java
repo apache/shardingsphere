@@ -26,25 +26,26 @@ import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * RDL SQL parser engine.
+ * RDL SQL statement parser engine.
  */
 @RequiredArgsConstructor
-public final class RDLSQLParserEngine implements SQLStatementParserEngine {
+public final class RDLSQLStatementParserEngine implements SQLStatementParserEngine {
     
     private final ParsingHookRegistry parsingHookRegistry = ParsingHookRegistry.getInstance();
     
-    // TODO check skywalking plugin
     /*
      * To make sure SkyWalking will be available at the next release of ShardingSphere,
      * a new plugin should be provided to SkyWalking project if this API changed.
      *
      * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
      */
+    @SuppressWarnings("OverlyBroadCatchBlock")
     @Override
-    public SQLStatement parseToSQLStatement(final String sql, final boolean useCache) {
+    public SQLStatement parse(final String sql, final boolean useCache) {
         parsingHookRegistry.start(sql);
         try {
-            SQLStatement result = parse0(sql);
+            ParseTree parseTree = new RDLSQLParserExecutor(sql).execute().getRootNode();
+            SQLStatement result = (SQLStatement) new ShardingSphereVisitor().visit(parseTree);
             parsingHookRegistry.finishSuccess(result);
             return result;
             // CHECKSTYLE:OFF
@@ -54,9 +55,5 @@ public final class RDLSQLParserEngine implements SQLStatementParserEngine {
             throw ex;
         }
     }
-    
-    private SQLStatement parse0(final String sql) {
-        ParseTree parseTree = new RDLSQLParserExecutor(sql).execute().getRootNode();
-        return (SQLStatement) new ShardingSphereVisitor().visit(parseTree);
-    }
+
 }

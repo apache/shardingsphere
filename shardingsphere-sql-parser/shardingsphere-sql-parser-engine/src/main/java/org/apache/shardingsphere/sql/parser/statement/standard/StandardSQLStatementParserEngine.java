@@ -51,10 +51,10 @@ public final class StandardSQLStatementParserEngine implements SQLStatementParse
      */
     @SuppressWarnings("OverlyBroadCatchBlock")
     @Override
-    public SQLStatement parseToSQLStatement(final String sql, final boolean useCache) {
+    public SQLStatement parse(final String sql, final boolean useCache) {
         parsingHookRegistry.start(sql);
         try {
-            SQLStatement result = parseToSQLStatement0(sql, useCache);
+            SQLStatement result = parse0(sql, useCache);
             parsingHookRegistry.finishSuccess(result);
             return result;
             // CHECKSTYLE:OFF
@@ -65,7 +65,7 @@ public final class StandardSQLStatementParserEngine implements SQLStatementParse
         }
     }
     
-    private SQLStatement parseToSQLStatement0(final String sql, final boolean useCache) {
+    private SQLStatement parse0(final String sql, final boolean useCache) {
         Optional<SQLStatement> statement = getCache(sql, useCache);
         if (statement.isPresent()) {
             return statement.get();
