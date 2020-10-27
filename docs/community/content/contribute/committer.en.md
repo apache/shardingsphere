@@ -23,11 +23,17 @@ After a contributor participate ShardingSphere community actively, PMC and Commi
 
 ##  Committer Routine
 
-1. Committer needs to check the list of Pull Requests and issues to be processed in the community every day and assign them to the appropriate committer, namely assignee.
+1. Weekly rotating committers needs to check the list of Pull Requests and issues to be processed in the community on a daily basis.
+
+ - Including(mark issue lable, reply issue, close issue).
+ - Assign issue to the appropriate committer, namely assignee.
+ - The rotation period is one week. 
+ 
+>Committer rota will update in the group chat, this position is aims to bring out the sense of community ownership and greater the sense of belonging, the Apache ShardingSphere is belongs to every PMC/Committer!
 
 2. After a committer is assigned with an issue, the following work is required:
 
- - Judge whether it is a long-term issue. If it is, please mark it as pending.
+ - Estimate whether it is a long-term issue. If it is, please mark it as pending.
  - Add issue labels, such as bug, enhancement, discussion, etc.
  - Add Milestone labels.
  
@@ -36,3 +42,19 @@ After a contributor participate ShardingSphere community actively, PMC and Commi
 4. When committer reviewed and approved any Pull Request, committer could squash and merge to master. If there is any question you concerned about this Pull Request, contact us and we could disscuss.
 
 > To be noticed: At least one committer is expected to be in the assignee list of that issue before it is completed.
+
+
+### Committer rota
+
+| Name                | GitHub ID               |
+| :------------------ | :---------------------- |
+| YangWen Ou          | avalon566               |
+| Xiaofeng Jiang      | SteNicholas             |
+| Zhengqiang Duan     | strongduanmu            |
+| Zonglei Dong        | dongzl                  |
+| Liang Zhang (Chair) | terrymanu               |
+| Yonglun Zhang       | tuohai666, zhangyonglun |
+| Juan Pan            | tristaZero              |
+| Haoran Meng         | menghaoranss            |
+| Kimm King           | kimmking                |
+| Xiao Yu             | yu199195                |
