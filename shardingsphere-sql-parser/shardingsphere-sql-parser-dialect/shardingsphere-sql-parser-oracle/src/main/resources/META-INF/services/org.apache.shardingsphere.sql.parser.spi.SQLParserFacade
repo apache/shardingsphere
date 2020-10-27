@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.sqlserver.SQLServerParserConfiguration
+org.apache.shardingsphere.sql.parser.oracle.OracleParserFacade

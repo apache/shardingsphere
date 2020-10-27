@@ -17,25 +17,25 @@
 
 package org.apache.shardingsphere.sql.parser.core;
 
-import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
 /**
- * SQL parser configuration registry.
+ * SQL parser facade registry.
  */
-public final class SQLParserConfigurationRegistry {
+public final class SQLParserFacadeRegistry {
     
-    private static final SQLParserConfigurationRegistry INSTANCE = new SQLParserConfigurationRegistry();
+    private static final SQLParserFacadeRegistry INSTANCE = new SQLParserFacadeRegistry();
     
-    private final Map<String, SQLParserConfiguration> configurations;
+    private final Map<String, SQLParserFacade> facades;
     
-    private SQLParserConfigurationRegistry() {
-        configurations = new HashMap<>();
-        for (SQLParserConfiguration each : ServiceLoader.load(SQLParserConfiguration.class)) {
-            configurations.put(each.getDatabaseTypeName(), each);
+    private SQLParserFacadeRegistry() {
+        facades = new HashMap<>();
+        for (SQLParserFacade each : ServiceLoader.load(SQLParserFacade.class)) {
+            facades.put(each.getDatabaseType(), each);
         }
     }
     
@@ -44,20 +44,20 @@ public final class SQLParserConfigurationRegistry {
      *
      * @return instance
      */
-    public static SQLParserConfigurationRegistry getInstance() {
+    public static SQLParserFacadeRegistry getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Get SQL parser configuration.
+     * Get SQL parser facade.
      * 
-     * @param databaseTypeName database type name
-     * @return SQL parser configuration
+     * @param databaseType database type
+     * @return SQL parser facade
      */
-    public SQLParserConfiguration getSQLParserConfiguration(final String databaseTypeName) {
-        if (configurations.containsKey(databaseTypeName)) {
-            return configurations.get(databaseTypeName);
+    public SQLParserFacade getSQLParserFacade(final String databaseType) {
+        if (facades.containsKey(databaseType)) {
+            return facades.get(databaseType);
         }
-        throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseTypeName));
+        throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
     }
 }

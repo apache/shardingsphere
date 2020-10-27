@@ -15,31 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql92;
+package org.apache.shardingsphere.sql.parser.spi;
 
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
-import org.apache.shardingsphere.sql.parser.sql92.lexer.SQL92Lexer;
-import org.apache.shardingsphere.sql.parser.sql92.parser.SQL92Parser;
 
 /**
- * SQL parser configuration for SQL92.
+ * SQL parser facade.
  */
-public final class SQL92ParserConfiguration implements SQLParserConfiguration {
+public interface SQLParserFacade {
     
-    @Override
-    public String getDatabaseTypeName() {
-        return "SQL92";
-    }
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    String getDatabaseType();
     
-    @Override
-    public Class<? extends SQLLexer> getLexerClass() {
-        return SQL92Lexer.class;
-    }
+    /**
+     * Get SQL lexer class type.
+     *
+     * @return SQL lexer class type
+     */
+    Class<? extends SQLLexer> getLexerClass();
     
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return SQL92Parser.class;
-    }
+    /**
+     * Get SQL parser class type.
+     * 
+     * @return SQL parser class type
+     */
+    Class<? extends SQLParser> getParserClass();
 }
