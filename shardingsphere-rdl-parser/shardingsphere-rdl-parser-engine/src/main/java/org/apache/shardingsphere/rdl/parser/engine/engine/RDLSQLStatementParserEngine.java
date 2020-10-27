@@ -54,5 +54,4 @@ public final class RDLSQLStatementParserEngine implements SQLStatementParserEngi
             throw ex;
         }
     }
-
 }

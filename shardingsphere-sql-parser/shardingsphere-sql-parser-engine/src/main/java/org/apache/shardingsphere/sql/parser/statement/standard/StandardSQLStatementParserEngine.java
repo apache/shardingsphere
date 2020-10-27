@@ -82,5 +82,4 @@ public final class StandardSQLStatementParserEngine implements SQLStatementParse
         ParseTreeVisitor<SQLStatement> visitor = SQLStatementVisitorFactory.newInstance(databaseTypeName, SQLVisitorRule.valueOf(parseTree.getClass()));
         return parseTree.accept(visitor);
     }
-
 }
