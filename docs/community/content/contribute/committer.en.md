@@ -23,11 +23,16 @@ After a contributor participate ShardingSphere community actively, PMC and Commi
 
 ##  Committer Routine
 
-1. Committer needs to check the list of Pull Requests and issues to be processed in the community every day and assign them to the appropriate committer, namely assignee.
+1. Weekly rotating committers needs to check the list of Pull Requests and issues to be processed in the community on a daily basis.
+
+ - Including(mark issue lable, reply issue, close issue).
+ - Assign issue to the appropriate committer, namely assignee.
+ 
+>Committer rota will update in the group chat, this position is aims to bring out the sense of community ownership and greater the sense of belonging, the Apache ShardingSphere is belongs to every PMC/Committer!
 
 2. After a committer is assigned with an issue, the following work is required:
 
- - Judge whether it is a long-term issue. If it is, please mark it as pending.
+ - Estimate whether it is a long-term issue. If it is, please mark it as pending.
  - Add issue labels, such as bug, enhancement, discussion, etc.
  - Add Milestone labels.
  
