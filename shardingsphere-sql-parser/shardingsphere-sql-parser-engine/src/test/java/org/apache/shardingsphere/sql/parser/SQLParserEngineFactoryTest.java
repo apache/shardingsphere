@@ -28,7 +28,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class SQLParseEngineFactoryTest {
+public final class SQLParserEngineFactoryTest {
     
     @Before
     @After
@@ -39,7 +39,7 @@ public final class SQLParseEngineFactoryTest {
     }
     
     @Test
-    public void assertGetSQLParseEngine() {
+    public void assertGetSQLParserEngine() {
         assertThat(StandardSQLParserEngineFactory.getSQLParserEngine("MySQL"), is(StandardSQLParserEngineFactory.getSQLParserEngine("MySQL")));
     }
 }
