@@ -22,25 +22,21 @@ ShardingSphere社区遵循[Apache Community’s process](http://community.apache
 
 ## 日常工作
 
-1. 每周负责轮值的Committer需要每天查看社区待处理的Pull Request和Issue列表，负责问题的处理。
+1. 每周负责轮值的Committer需要每天查看社区待处理的Pull Request和Issue列表，负责问题的处理：
 
- - 包括（标记issue，回复issue，关闭issue）。
- - 将issue assign给熟悉该模块的Contributor/Committer，即Assignee。
- - 轮值周期为一周
- 
-> 轮值Committer名单在Committer交流群里实时更新，轮值岗位设定目的是发挥大家的主人翁意识，增进归属感，ShardingSphere社区属于每一位PMC/Committer。
+ - 包括标记issue，回复issue，关闭issue等；
+ - 将issue分配至熟悉该模块的贡献者；
+ - 轮值周期为一周。
 
 2. Assignee在被分配issue后，需要进行如下判断：
 
- - 判断是否是长期issue，如是，则标记为pending。
- - 判断issue类型，如：bug，enhancement，discussion等。
- - 判断Milestone，并标记。
+ - 判断是否是长期issue，如是，则标记为pending；
+ - 判断issue类型，如：bug，enhancement，discussion等；
+ - 标记Milestone。
 
-3. Committer提交的Pull Request，需要根据PR类型和时间标注label 和 milestone。
+3. Committer提交的PR，需要根据PR类型和当前发布的周期标注Label和Milestone。
 
-4. Committer review Pull Request时，可以进行squash and merge to master的操作, 如果有问题可以加上 change request 或者@相关人员协助处理。
-
-> 注意: 无论是否是社区issue，都必须有assignee，直到issue完成。
+4. Committer review PR时，可以进行squash and merge to master的操作, 如果有问题可以加上change request或者@相关人员协助处理。
 
 ### 轮值顺序表
 
@@ -50,7 +46,7 @@ ShardingSphere社区遵循[Apache Community’s process](http://community.apache
 | 蒋晓峰          | SteNicholas             |
 | 端正强          | strongduanmu            |
 | 董宗磊          | dongzl                  |
-| 张亮 (Chair)    | terrymanu               |
+| 张亮            | terrymanu               |
 | 张永伦          | tuohai666, zhangyonglun |
 | 潘娟            | tristaZero              |
 | 孟浩然          | menghaoranss            |
