@@ -19,8 +19,7 @@ package org.apache.shardingsphere.sql.parser.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorType;
-import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCaches;
+import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
 
 import java.util.Optional;
@@ -33,7 +32,7 @@ public final class SQLParserEngine {
     
     private final String databaseTypeName;
     
-    private final SQLParsedResultCaches caches = new SQLParsedResultCaches();
+    private final SQLParsedResultCache<ParseTree> cache = new SQLParsedResultCache<>();
     
     /**
      * Parse SQL.
@@ -43,25 +42,19 @@ public final class SQLParserEngine {
      * @return parse tree
      */
     public ParseTree parse(final String sql, final boolean useCache) {
-        Optional<ParseTree> parseTree = getCache(sql, useCache, SQLVisitorType.FORMAT);
+        if (!useCache) {
+            return parse(sql);
+        }
+        Optional<ParseTree> parseTree = cache.get(sql);
         if (parseTree.isPresent()) {
             return parseTree.get();
         }
         ParseTree result = new SQLParserExecutor(databaseTypeName, sql).execute().getRootNode();
-        putCache(sql, result, useCache, SQLVisitorType.FORMAT);
+        cache.put(sql, result);
         return result;
     }
-
-    private Optional getCache(final String sql, final boolean useCache, final SQLVisitorType type) {
-        if (useCache) {
-            return caches.getCache(type).get(sql);
-        }
-        return Optional.empty();
-    }
     
-    private void putCache(final String sql, final Object parsedResult, final boolean useCache, final SQLVisitorType type) {
-        if (useCache) {
-            caches.getCache(type).put(sql, parsedResult);
-        }
+    private ParseTree parse(final String sql) {
+        return new SQLParserExecutor(databaseTypeName, sql).execute().getRootNode();
     }
 }
