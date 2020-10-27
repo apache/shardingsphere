@@ -19,15 +19,9 @@ package org.apache.shardingsphere.sql.parser.mysql;
 
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.mysql.lexer.MySQLLexer;
 import org.apache.shardingsphere.sql.parser.mysql.parser.MySQLParser;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.format.facade.MySQLFormatSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.facade.MySQLStatementSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * SQL parser configuration for MySQL.
@@ -47,13 +41,5 @@ public final class MySQLParserConfiguration implements SQLParserConfiguration {
     @Override
     public Class<? extends SQLParser> getParserClass() {
         return MySQLParser.class;
-    }
-    
-    @Override
-    public Map<String, Class<? extends SQLVisitorFacade>> getSQLVisitorFacadeClasses() {
-        Map<String, Class<? extends SQLVisitorFacade>> result = new HashMap<>(2, 1);
-        result.put("STATEMENT", MySQLStatementSQLVisitorFacade.class);
-        result.put("FORMAT", MySQLFormatSQLVisitorFacade.class);
-        return result;
     }
 }
