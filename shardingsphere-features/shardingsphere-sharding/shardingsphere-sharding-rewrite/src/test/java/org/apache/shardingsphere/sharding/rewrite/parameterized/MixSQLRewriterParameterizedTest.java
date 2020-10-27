@@ -47,7 +47,7 @@ import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.sql.parser.engine.standard.StandardSQLStatementParserEngine;
+import org.apache.shardingsphere.sql.parser.statement.standard.StandardSQLStatementParserEngine;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.io.File;

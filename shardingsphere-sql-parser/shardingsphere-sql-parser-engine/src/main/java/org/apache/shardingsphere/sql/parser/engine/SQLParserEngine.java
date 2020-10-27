@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine.standard;
+package org.apache.shardingsphere.sql.parser.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorType;
 import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCaches;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
@@ -27,10 +26,10 @@ import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
 import java.util.Optional;
 
 /**
- * Standard SQL parser engine.
+ * SQL parser engine.
  */
 @RequiredArgsConstructor
-public final class StandardSQLParserEngine {
+public final class SQLParserEngine {
     
     private final String databaseTypeName;
     
@@ -48,26 +47,11 @@ public final class StandardSQLParserEngine {
         if (parseTree.isPresent()) {
             return parseTree.get();
         }
-        ParseTree result = parse0(sql);
+        ParseTree result = new SQLParserExecutor(databaseTypeName, sql).execute().getRootNode();
         putCache(sql, result, useCache, SQLVisitorType.FORMAT);
         return result;
     }
-    
-    /**
-     * Parse.
-     *
-     * @param sql SQL to be parsed
-     * @param visitor visitor
-     * @return object
-     */
-    public Object parse(final String sql, final ParseTreeVisitor visitor) {
-        return parse0(sql).accept(visitor);
-    }
 
-    private ParseTree parse0(final String sql) {
-        return new SQLParserExecutor(databaseTypeName, sql).execute().getRootNode();
-    }
-    
     private Optional getCache(final String sql, final boolean useCache, final SQLVisitorType type) {
         if (useCache) {
             return caches.getCache(type).get(sql);

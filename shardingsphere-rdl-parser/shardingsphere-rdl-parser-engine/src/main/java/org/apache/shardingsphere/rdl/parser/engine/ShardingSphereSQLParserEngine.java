@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.rdl.parser.engine;
 
 import org.apache.shardingsphere.rdl.parser.engine.engine.RDLSQLParserEngine;
-import org.apache.shardingsphere.sql.parser.engine.SQLStatementParserEngine;
-import org.apache.shardingsphere.sql.parser.engine.standard.StandardSQLStatementParserEngine;
+import org.apache.shardingsphere.sql.parser.statement.SQLStatementParserEngine;
+import org.apache.shardingsphere.sql.parser.statement.standard.StandardSQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**

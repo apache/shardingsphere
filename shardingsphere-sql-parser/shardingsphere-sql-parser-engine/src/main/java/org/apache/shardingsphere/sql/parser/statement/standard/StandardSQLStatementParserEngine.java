@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine.standard;
+package org.apache.shardingsphere.sql.parser.statement.standard;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -25,7 +25,8 @@ import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
 import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCaches;
 import org.apache.shardingsphere.sql.parser.core.visitor.SQLStatementVisitorFactory;
 import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorRule;
-import org.apache.shardingsphere.sql.parser.engine.SQLStatementParserEngine;
+import org.apache.shardingsphere.sql.parser.statement.SQLStatementParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -69,7 +70,7 @@ public final class StandardSQLStatementParserEngine implements SQLStatementParse
         if (statement.isPresent()) {
             return statement.get();
         }
-        ParseTree parseTree = StandardSQLParserEngineFactory.getSQLParserEngine(databaseTypeName).parse(sql, useCache);
+        ParseTree parseTree = SQLParserEngineFactory.getSQLParserEngine(databaseTypeName).parse(sql, useCache);
         ParseTreeVisitor visitor = SQLStatementVisitorFactory.newInstance(databaseTypeName, SQLVisitorRule.valueOf(parseTree.getClass()));
         SQLStatement result = (SQLStatement) parseTree.accept(visitor);
         putCache(sql, result, useCache);
