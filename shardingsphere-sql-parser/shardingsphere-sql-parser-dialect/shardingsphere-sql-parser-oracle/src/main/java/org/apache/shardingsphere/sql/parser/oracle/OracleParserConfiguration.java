@@ -19,15 +19,9 @@ package org.apache.shardingsphere.sql.parser.oracle;
 
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.oracle.lexer.OracleLexer;
 import org.apache.shardingsphere.sql.parser.oracle.parser.OracleParser;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.format.facade.OracleFormatSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.facade.OracleStatementSQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * SQL parser configuration for Oracle.
@@ -47,13 +41,5 @@ public final class OracleParserConfiguration implements SQLParserConfiguration {
     @Override
     public Class<? extends SQLParser> getParserClass() {
         return OracleParser.class;
-    }
-    
-    @Override
-    public Map<String, Class<? extends SQLVisitorFacade>> getSQLVisitorFacadeClasses() {
-        Map<String, Class<? extends SQLVisitorFacade>> result = new HashMap<>(2, 1);
-        result.put("STATEMENT", OracleStatementSQLVisitorFacade.class);
-        result.put("FORMAT", OracleFormatSQLVisitorFacade.class);
-        return result;
     }
 }

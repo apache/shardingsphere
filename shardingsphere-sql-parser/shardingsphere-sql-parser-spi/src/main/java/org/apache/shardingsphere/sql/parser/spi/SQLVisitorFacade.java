@@ -15,12 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor;
+package org.apache.shardingsphere.sql.parser.spi;
+
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
  * SQL visitor facade.
  */
 public interface SQLVisitorFacade {
+    
+    /**
+     * Get name of database type.
+     *
+     * @return name of database type
+     */
+    String getDatabaseType();
+    
+    /**
+     * Get SQL visitor type.
+     *
+     * @return SQL visitor type
+     */
+    String getVisitorType();
     
     /**
      * Get DML visitor class.
@@ -63,11 +79,4 @@ public interface SQLVisitorFacade {
      * @return RL visitor class
      */
     Class<? extends SQLVisitor> getRLVisitorClass();
-    
-    /**
-     * Get SQL visitor facade type.
-     * 
-     * @return SQL visitor facade type
-     */
-    String getType();
 }

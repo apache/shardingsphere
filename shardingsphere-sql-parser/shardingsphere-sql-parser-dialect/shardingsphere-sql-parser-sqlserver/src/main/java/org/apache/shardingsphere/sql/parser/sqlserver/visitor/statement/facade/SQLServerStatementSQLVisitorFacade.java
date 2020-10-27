@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.facade;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
@@ -66,7 +66,12 @@ public final class SQLServerStatementSQLVisitorFacade implements SQLVisitorFacad
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
+        return "SQLServer";
+    }
+    
+    @Override
+    public String getVisitorType() {
         return "STATEMENT";
     }
 }
