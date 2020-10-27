@@ -17,19 +17,44 @@
 
 package org.apache.shardingsphere.sql.parser.engine;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
+import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
+
+import java.util.Optional;
 
 /**
- * Statement SQL parser engine.
+ * SQL parser engine.
  */
-public interface SQLParserEngine {
+@RequiredArgsConstructor
+public final class SQLParserEngine {
+    
+    private final String databaseTypeName;
+    
+    private final SQLParsedResultCache<ParseTree> cache = new SQLParsedResultCache<>();
     
     /**
-     * Parse to SQL Statement.
+     * Parse SQL.
      * 
-     * @param sql SQL
-     * @param useCache use cache or not
-     * @return SQL statement
+     * @param sql SQL to be parsed
+     * @param useCache whether use cache
+     * @return parse tree
      */
-    SQLStatement parseToSQLStatement(String sql, boolean useCache);
+    public ParseTree parse(final String sql, final boolean useCache) {
+        if (!useCache) {
+            return parse(sql);
+        }
+        Optional<ParseTree> parseTree = cache.get(sql);
+        if (parseTree.isPresent()) {
+            return parseTree.get();
+        }
+        ParseTree result = new SQLParserExecutor(databaseTypeName, sql).execute().getRootNode();
+        cache.put(sql, result);
+        return result;
+    }
+    
+    private ParseTree parse(final String sql) {
+        return new SQLParserExecutor(databaseTypeName, sql).execute().getRootNode();
+    }
 }

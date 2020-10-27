@@ -23,40 +23,31 @@ import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacadeFactory;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorType;
 import org.apache.shardingsphere.sql.parser.core.SQLParserConfigurationRegistry;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementType;
 
 /**
- * SQL visitor factory.
+ * SQL statement visitor factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLVisitorFactory {
+public final class SQLStatementVisitorFactory {
     
     /** 
-     * New instance of statement SQL visitor.
+     * New instance of SQL statement visitor.
      * 
      * @param databaseTypeName name of database type
-     * @param type type
-     * @param sqlVisitorRule visitor rule
+     * @param sqlVisitorRule SQL visitor rule
      * @return parse tree visitor
      */
-    public static ParseTreeVisitor newInstance(final String databaseTypeName, final SQLVisitorType type, final SQLVisitorRule sqlVisitorRule) {
-        return createParseTreeVisitor(getSQLVisitorFacadeEngine(databaseTypeName, type), sqlVisitorRule.getType());
+    public static ParseTreeVisitor newInstance(final String databaseTypeName, final SQLVisitorRule sqlVisitorRule) {
+        return createParseTreeVisitor(getSQLVisitorFacadeEngine(databaseTypeName), sqlVisitorRule.getType());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static SQLVisitorFacade getSQLVisitorFacadeEngine(final String databaseTypeName, final SQLVisitorType type) {
+    private static SQLVisitorFacade getSQLVisitorFacadeEngine(final String databaseTypeName) {
         SQLVisitorFacadeFactory facade = SQLParserConfigurationRegistry.getInstance().getSQLParserConfiguration(databaseTypeName).getVisitorFacadeFactoryClass().getConstructor().newInstance();
-        switch (type) {
-            case STATEMENT:
-                return facade.getStatementSQLVisitorFacadeClass().getConstructor().newInstance();
-            case FORMAT:
-                return facade.getFormatSQLVisitorFacadeClass().getConstructor().newInstance();
-            default:
-                throw new SQLParsingException("Can not support SQL visitor type: `%s`", type);
-        }
+        return facade.getStatementSQLVisitorFacadeClass().getConstructor().newInstance();
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine.standard;
+package org.apache.shardingsphere.sql.parser.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -24,12 +24,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Standard SQL parser engine factory.
+ * SQL parser engine factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StandardSQLParserEngineFactory {
+public final class SQLParserEngineFactory {
     
-    private static final Map<String, StandardSQLParserEngine> ENGINES = new ConcurrentHashMap<>();
+    private static final Map<String, SQLParserEngine> ENGINES = new ConcurrentHashMap<>();
     
     /**
      * Get SQL parser engine.
@@ -37,7 +37,7 @@ public final class StandardSQLParserEngineFactory {
      * @param databaseTypeName name of database type
      * @return SQL parser engine
      */
-    public static StandardSQLParserEngine getSQLParserEngine(final String databaseTypeName) {
+    public static SQLParserEngine getSQLParserEngine(final String databaseTypeName) {
         if (ENGINES.containsKey(databaseTypeName)) {
             return ENGINES.get(databaseTypeName);
         }
@@ -45,7 +45,7 @@ public final class StandardSQLParserEngineFactory {
             if (ENGINES.containsKey(databaseTypeName)) {
                 return ENGINES.get(databaseTypeName);
             }
-            StandardSQLParserEngine result = new StandardSQLParserEngine(databaseTypeName);
+            SQLParserEngine result = new SQLParserEngine(databaseTypeName);
             ENGINES.put(databaseTypeName, result);
             return result;
         }

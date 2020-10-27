@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser;
+package org.apache.shardingsphere.sql.parser.engine;
 
-import org.apache.shardingsphere.sql.parser.engine.standard.StandardSQLParserEngineFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,18 +27,18 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class SQLParseEngineFactoryTest {
+public final class SQLParserEngineFactoryTest {
     
     @Before
     @After
     public void reset() throws NoSuchFieldException, IllegalAccessException {
-        Field field = StandardSQLParserEngineFactory.class.getDeclaredField("ENGINES");
+        Field field = SQLParserEngineFactory.class.getDeclaredField("ENGINES");
         field.setAccessible(true);
-        ((Map) field.get(StandardSQLParserEngineFactory.class)).clear();
+        ((Map) field.get(SQLParserEngineFactory.class)).clear();
     }
     
     @Test
-    public void assertGetSQLParseEngine() {
-        assertThat(StandardSQLParserEngineFactory.getSQLParserEngine("MySQL"), is(StandardSQLParserEngineFactory.getSQLParserEngine("MySQL")));
+    public void assertGetSQLParserEngine() {
+        assertThat(SQLParserEngineFactory.getSQLParserEngine("MySQL"), is(SQLParserEngineFactory.getSQLParserEngine("MySQL")));
     }
 }

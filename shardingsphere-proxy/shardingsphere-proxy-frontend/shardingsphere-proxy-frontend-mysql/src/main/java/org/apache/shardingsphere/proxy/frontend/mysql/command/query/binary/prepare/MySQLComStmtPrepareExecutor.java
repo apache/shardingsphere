@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
-import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
@@ -50,9 +50,9 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
+        ShardingSphereSQLStatementParserEngine sqlStatementParserEngine = new ShardingSphereSQLStatementParserEngine(
                 DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getSchemaContexts().getDatabaseType()));
-        SQLStatement sqlStatement = sqlParserEngine.parseToSQLStatement(packet.getSql(), true);
+        SQLStatement sqlStatement = sqlStatementParserEngine.parse(packet.getSql(), true);
         if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {
             throw new UnsupportedPreparedStatementException();
         }
