@@ -15,34 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.spi;
+package org.apache.shardingsphere.sql.parser.oracle;
 
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.oracle.lexer.OracleLexer;
+import org.apache.shardingsphere.sql.parser.oracle.parser.OracleParser;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 
 /**
- * SQL parser configuration.
+ * SQL parser facade for Oracle.
  */
-public interface SQLParserConfiguration {
+public final class OracleParserFacade implements SQLParserFacade {
     
-    /**
-     * Get database type.
-     *
-     * @return database type
-     */
-    String getDatabaseType();
+    @Override
+    public String getDatabaseType() {
+        return "Oracle";
+    }
     
-    /**
-     * Get SQL lexer class type.
-     *
-     * @return SQL lexer class type
-     */
-    Class<? extends SQLLexer> getLexerClass();
+    @Override
+    public Class<? extends SQLLexer> getLexerClass() {
+        return OracleLexer.class;
+    }
     
-    /**
-     * Get SQL parser class type.
-     * 
-     * @return SQL parser class type
-     */
-    Class<? extends SQLParser> getParserClass();
+    @Override
+    public Class<? extends SQLParser> getParserClass() {
+        return OracleParser.class;
+    }
 }

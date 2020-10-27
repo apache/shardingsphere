@@ -27,8 +27,8 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.core.SQLParserConfigurationRegistry;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
+import org.apache.shardingsphere.sql.parser.core.SQLParserFacadeRegistry;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 
 import java.nio.CharBuffer;
 
@@ -46,11 +46,11 @@ public final class SQLParserFactory {
      * @return SQL parser
      */
     public static SQLParser newInstance(final String databaseTypeName, final String sql) {
-        return createSQLParser(sql, SQLParserConfigurationRegistry.getInstance().getSQLParserConfiguration(databaseTypeName));
+        return createSQLParser(sql, SQLParserFacadeRegistry.getInstance().getSQLParserFacade(databaseTypeName));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static SQLParser createSQLParser(final String sql, final SQLParserConfiguration config) {
+    private static SQLParser createSQLParser(final String sql, final SQLParserFacade config) {
         CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(sql.toCharArray()));
         CodePointCharStream codePointCharStream = CodePointCharStream.fromBuffer(buffer);
         Lexer lexer = (Lexer) config.getLexerClass().getConstructor(CharStream.class).newInstance(codePointCharStream);

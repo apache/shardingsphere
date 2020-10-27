@@ -15,31 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.postgresql;
+package org.apache.shardingsphere.sql.parser.spi;
 
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.postgresql.lexer.PostgreSQLLexer;
-import org.apache.shardingsphere.sql.parser.postgresql.parser.PostgreSQLParser;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 
 /**
- * SQL parser configuration for PostgreSQL.
+ * SQL parser facade.
  */
-public final class PostgreSQLParserConfiguration implements SQLParserConfiguration {
+public interface SQLParserFacade {
     
-    @Override
-    public String getDatabaseType() {
-        return "PostgreSQL";
-    }
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    String getDatabaseType();
     
-    @Override
-    public Class<? extends SQLLexer> getLexerClass() {
-        return PostgreSQLLexer.class;
-    }
+    /**
+     * Get SQL lexer class type.
+     *
+     * @return SQL lexer class type
+     */
+    Class<? extends SQLLexer> getLexerClass();
     
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return PostgreSQLParser.class;
-    }
+    /**
+     * Get SQL parser class type.
+     * 
+     * @return SQL parser class type
+     */
+    Class<? extends SQLParser> getParserClass();
 }
