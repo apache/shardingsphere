@@ -22,26 +22,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-primary-replica-replication</artifactId>
+        <artifactId>shardingsphere-features</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-primary-replica-replication-common</artifactId>
+    <artifactId>shardingsphere-replica-query</artifactId>
     <name>${project.artifactId}</name>
+    <packaging>pom</packaging>
     
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-primary-replica-replication-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>shardingsphere-replica-query-api</module>
+        <module>shardingsphere-replica-query-common</module>
+        <module>shardingsphere-replica-query-route</module>
+        <module>shardingsphere-replica-query-spring</module>
+    </modules>
 </project>

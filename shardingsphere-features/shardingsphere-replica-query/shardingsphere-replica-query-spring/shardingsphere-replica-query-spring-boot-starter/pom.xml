@@ -22,22 +22,39 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-primary-replica-replication</artifactId>
+        <artifactId>shardingsphere-replica-query-spring</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-primary-replica-replication-route</artifactId>
+    <artifactId>shardingsphere-replica-query-spring-boot-starter</artifactId>
     <name>${project.artifactId}</name>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-route</artifactId>
+            <artifactId>shardingsphere-replica-query-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-primary-replica-replication-common</artifactId>
+            <artifactId>shardingsphere-jdbc-spring-boot-starter-infra</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--auto configuration-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

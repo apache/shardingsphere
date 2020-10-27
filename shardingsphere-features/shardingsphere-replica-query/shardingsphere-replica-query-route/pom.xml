@@ -22,17 +22,22 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-features</artifactId>
+        <artifactId>shardingsphere-replica-query</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-primary-replica-replication</artifactId>
+    <artifactId>shardingsphere-replica-query-route</artifactId>
     <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
     
-    <modules>
-        <module>shardingsphere-primary-replica-replication-api</module>
-        <module>shardingsphere-primary-replica-replication-common</module>
-        <module>shardingsphere-primary-replica-replication-route</module>
-        <module>shardingsphere-primary-replica-replication-spring</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-route</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-replica-query-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
