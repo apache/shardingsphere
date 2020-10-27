@@ -22,7 +22,13 @@ ShardingSphere社区遵循[Apache Community’s process](http://community.apache
 
 ## 日常工作
 
-1. Committer需要每天查看社区待处理的Pull Request和Issue列表，指定给合适的Committer，即Assignee。
+1. 每周负责轮值的Committer需要每天查看社区待处理的Pull Request和Issue列表，负责问题的处理。
+
+ - 包括（标记issue，回复issue，关闭issue）。
+ - 将issue assign给熟悉该模块的Contributor/Committer，即Assignee。
+ - 轮值周期为一周
+ 
+> 轮值Committer名单在Committer交流群里实时更新，轮值岗位设定目的是发挥大家的主人翁意识，增进归属感，ShardingSphere社区属于每一位PMC/Committer。
 
 2. Assignee在被分配issue后，需要进行如下判断：
 
@@ -35,3 +41,18 @@ ShardingSphere社区遵循[Apache Community’s process](http://community.apache
 4. Committer review Pull Request时，可以进行squash and merge to master的操作, 如果有问题可以加上 change request 或者@相关人员协助处理。
 
 > 注意: 无论是否是社区issue，都必须有assignee，直到issue完成。
+
+### 轮值顺序表
+
+| 名字            | GitHub ID              |
+| :-------------- | :--------------------- |
+| 欧阳文          | avalon566               |
+| 蒋晓峰          | SteNicholas             |
+| 端正强          | strongduanmu            |
+| 董宗磊          | dongzl                  |
+| 张亮 (Chair)    | terrymanu               |
+| 张永伦          | tuohai666, zhangyonglun |
+| 潘娟            | tristaZero              |
+| 孟浩然          | menghaoranss            |
+| 秦金卫          | kimmking                |
+| 肖宇            | yu199195                |
