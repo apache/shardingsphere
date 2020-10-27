@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql92.parser.SQL92Parser;
 public final class SQL92ParserConfiguration implements SQLParserConfiguration {
     
     @Override
-    public String getDatabaseTypeName() {
+    public String getDatabaseType() {
         return "SQL92";
     }
     

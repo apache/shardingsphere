@@ -35,7 +35,7 @@ public final class SQLParserConfigurationRegistry {
     private SQLParserConfigurationRegistry() {
         configurations = new HashMap<>();
         for (SQLParserConfiguration each : ServiceLoader.load(SQLParserConfiguration.class)) {
-            configurations.put(each.getDatabaseTypeName(), each);
+            configurations.put(each.getDatabaseType(), each);
         }
     }
     

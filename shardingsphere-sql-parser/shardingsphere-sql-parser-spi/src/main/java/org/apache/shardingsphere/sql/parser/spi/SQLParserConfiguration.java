@@ -26,11 +26,11 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 public interface SQLParserConfiguration {
     
     /**
-     * Get name of database type.
+     * Get database type.
      *
-     * @return name of database type
+     * @return database type
      */
-    String getDatabaseTypeName();
+    String getDatabaseType();
     
     /**
      * Get SQL lexer class type.

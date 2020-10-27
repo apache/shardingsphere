@@ -25,16 +25,16 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 public interface SQLVisitorFacade {
     
     /**
-     * Get name of database type.
+     * Get database type.
      *
-     * @return name of database type
+     * @return database type
      */
     String getDatabaseType();
     
     /**
-     * Get SQL visitor type.
+     * Get visitor type.
      *
-     * @return SQL visitor type
+     * @return visitor type
      */
     String getVisitorType();
     

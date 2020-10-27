@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sqlserver.parser.SQLServerParser;
 public final class SQLServerParserConfiguration implements SQLParserConfiguration {
     
     @Override
-    public String getDatabaseTypeName() {
+    public String getDatabaseType() {
         return "SQLServer";
     }
     

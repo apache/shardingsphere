@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 public final class MySQLParserConfiguration implements SQLParserConfiguration {
     
     @Override
-    public String getDatabaseTypeName() {
+    public String getDatabaseType() {
         return "MySQL";
     }
     
