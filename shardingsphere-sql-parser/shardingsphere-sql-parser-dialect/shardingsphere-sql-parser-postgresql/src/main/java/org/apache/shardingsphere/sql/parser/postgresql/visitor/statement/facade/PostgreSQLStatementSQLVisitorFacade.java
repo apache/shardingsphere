@@ -64,4 +64,9 @@ public final class PostgreSQLStatementSQLVisitorFacade implements SQLVisitorFaca
     public Class<? extends RLSQLVisitor> getRLVisitorClass() {
         return null;
     }
+    
+    @Override
+    public String getType() {
+        return "STATEMENT";
+    }
 }

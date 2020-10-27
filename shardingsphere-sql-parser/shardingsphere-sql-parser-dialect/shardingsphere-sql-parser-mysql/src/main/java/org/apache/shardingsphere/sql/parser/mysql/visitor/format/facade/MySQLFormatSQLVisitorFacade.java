@@ -65,4 +65,9 @@ public final class MySQLFormatSQLVisitorFacade implements SQLVisitorFacade {
     public Class<? extends RLSQLVisitor> getRLVisitorClass() {
         return MySQLRLFormatSQLVisitor.class;
     }
+    
+    @Override
+    public String getType() {
+        return "FORMAT";
+    }
 }

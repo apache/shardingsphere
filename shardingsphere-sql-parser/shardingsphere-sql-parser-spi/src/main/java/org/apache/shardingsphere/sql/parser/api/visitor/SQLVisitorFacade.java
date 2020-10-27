@@ -63,4 +63,11 @@ public interface SQLVisitorFacade {
      * @return RL visitor class
      */
     Class<? extends SQLVisitor> getRLVisitorClass();
+    
+    /**
+     * Get SQL visitor facade type.
+     * 
+     * @return SQL visitor facade type
+     */
+    String getType();
 }

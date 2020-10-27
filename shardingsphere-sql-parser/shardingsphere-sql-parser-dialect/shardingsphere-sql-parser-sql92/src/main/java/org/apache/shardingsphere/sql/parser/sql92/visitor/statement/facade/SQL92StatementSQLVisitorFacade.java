@@ -64,4 +64,9 @@ public final class SQL92StatementSQLVisitorFacade implements SQLVisitorFacade {
     public Class<? extends RLSQLVisitor> getRLVisitorClass() {
         return null;
     }
+    
+    @Override
+    public String getType() {
+        return "STATEMENT";
+    }
 }
