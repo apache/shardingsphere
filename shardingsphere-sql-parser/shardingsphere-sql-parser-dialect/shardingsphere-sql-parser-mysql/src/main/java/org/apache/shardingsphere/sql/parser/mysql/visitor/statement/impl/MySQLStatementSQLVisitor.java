@@ -1294,9 +1294,4 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
     }
-    
-//    @Override
-//    public ASTNode visitLockClause(final MySQLStatementParser.LockClauseContext ctx) {
-//        return new LockSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-//    }
 }

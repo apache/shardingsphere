@@ -106,16 +106,11 @@ singleTableClause
 
 multipleTablesClause
     : tableAliasRefList FROM tableReferences | FROM tableAliasRefList USING tableReferences
-//    : multipleTableNames FROM tableReferences | FROM multipleTableNames USING tableReferences
     ;
 
 multipleTableNames
     : tableName DOT_ASTERISK_? (COMMA_ tableName DOT_ASTERISK_?)*
     ;
-
-//select
-//    : withClause? unionClause
-//    ;
 
 select
     : queryExpression lockClauseList?
@@ -237,14 +232,6 @@ cteClause
     : ignoredIdentifier columnNames? AS subquery
     ;
 
-//unionClause
-//    : selectClause (UNION unionOption? selectClause)*
-//    ;
-
-//selectClause
-//    : LP_? SELECT selectSpecification* projections selectIntoExpression? fromClause? whereClause? groupByClause? havingClause? windowClause? orderByClause? limitClause? selectIntoExpression? lockClause? RP_?
-//    ;
-
 selectSpecification
     : duplicateSpecification | HIGH_PRIORITY | STRAIGHT_JOIN | SQL_SMALL_RESULT | SQL_BIG_RESULT | SQL_BUFFER_RESULT | (SQL_CACHE | SQL_NO_CACHE) | SQL_CALC_FOUND_ROWS
     ;
@@ -344,7 +331,6 @@ windowItem
     ;
 
 subquery
-//    : LP_ unionClause RP_
     : queryExpressionParens
     ;
 
