@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.core.SQLParserConfigurationRegistry;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementType;

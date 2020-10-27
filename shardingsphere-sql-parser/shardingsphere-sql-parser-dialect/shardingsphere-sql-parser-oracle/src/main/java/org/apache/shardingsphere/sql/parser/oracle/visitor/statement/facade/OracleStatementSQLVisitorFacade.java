@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.facade;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;

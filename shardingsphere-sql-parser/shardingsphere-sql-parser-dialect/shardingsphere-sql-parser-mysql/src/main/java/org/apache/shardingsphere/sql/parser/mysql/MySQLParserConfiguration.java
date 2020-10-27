@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.mysql;
 
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.mysql.lexer.MySQLLexer;
 import org.apache.shardingsphere.sql.parser.mysql.parser.MySQLParser;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.format.facade.MySQLFormatSQLVisitorFacade;
