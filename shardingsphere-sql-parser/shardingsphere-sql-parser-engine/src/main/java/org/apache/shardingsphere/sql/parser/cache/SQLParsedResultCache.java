@@ -54,8 +54,7 @@ public final class SQLParsedResultCache<T> {
     /**
      * Clear cache.
      */
-    // TODO investigate why add synchronized here
-    public synchronized void clear() {
+    public void clear() {
         cache.invalidateAll();
     }
 }
