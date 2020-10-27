@@ -21,19 +21,18 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.PlaceholderRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
 
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Distribution channel.
@@ -42,74 +41,55 @@ public final class DistributionChannel implements Channel {
     
     private final int channelNumber;
     
-    /**
-     * key = channel id, value = channel.
-     */
-    private final Map<String, MemoryChannel> channels = new HashMap<>();
+    private final BitSetChannel[] channels;
     
-    /**
-     * key = thread id, value = channel id.
-     */
-    private final Map<String, String> channelAssignment = new HashMap<>();
+    private final BitSetChannel autoAckChannel = new AutoAcknowledgeBitSetChannel();
+    
+    private final Map<String, Integer> channelAssignment = new HashMap<>();
     
     private final AckCallback ackCallback;
     
-    private final Queue<Record> toBeAcknowledgeRecords = new ConcurrentLinkedQueue<>();
+    private final AtomicLong indexAutoIncreaseGenerator = new AtomicLong();
     
-    private final Map<Position, Record> pendingAcknowledgeRecords = new ConcurrentHashMap<>();
+    private final Queue<Integer> toBeAckBitSetIndexes = new ConcurrentLinkedQueue<>();
+    
+    private long lastAckIndex;
     
     private ScheduledExecutorService scheduleAckRecordsExecutor;
     
     public DistributionChannel(final int channelNumber, final AckCallback ackCallback) {
         this.channelNumber = channelNumber;
         this.ackCallback = ackCallback;
+        channels = new BitSetChannel[channelNumber];
         for (int i = 0; i < channelNumber; i++) {
-            channels.put(Integer.toString(i), new MemoryChannel(new SingleChannelAckCallback()));
+            channels[i] = new BlockingQueueBitSetChannel();
         }
         scheduleAckRecords();
     }
     
     private void scheduleAckRecords() {
         scheduleAckRecordsExecutor = Executors.newSingleThreadScheduledExecutor();
-        scheduleAckRecordsExecutor.scheduleAtFixedRate(this::ackRecords0, 5, 1, TimeUnit.SECONDS);
-    }
-    
-    private synchronized void ackRecords0() {
-        List<Record> result = new LinkedList<>();
-        while (!toBeAcknowledgeRecords.isEmpty()) {
-            Record record = toBeAcknowledgeRecords.peek();
-            if (pendingAcknowledgeRecords.containsKey(record.getPosition())) {
-                result.add(record);
-                toBeAcknowledgeRecords.poll();
-                pendingAcknowledgeRecords.remove(record.getPosition());
-            } else {
-                break;
-            }
-        }
-        if (!result.isEmpty()) {
-            ackCallback.onAck(result);
-        }
+        scheduleAckRecordsExecutor.scheduleWithFixedDelay(this::ackRecords0, 5, 1, TimeUnit.SECONDS);
     }
     
     @Override
     public void pushRecord(final Record record) throws InterruptedException {
         if (FinishedRecord.class.equals(record.getClass())) {
-            // broadcast
-            for (Entry<String, MemoryChannel> entry : channels.entrySet()) {
-                entry.getValue().pushRecord(record);
+            for (int i = 0; i < channels.length; i++) {
+                pushRecord(record, i);
             }
         } else if (DataRecord.class.equals(record.getClass())) {
-            toBeAcknowledgeRecords.add(record);
-            // hash by table name
-            DataRecord dataRecord = (DataRecord) record;
-            String index = Integer.toString(Math.abs(dataRecord.hashCode()) % channelNumber);
-            channels.get(index).pushRecord(dataRecord);
+            pushRecord(record, Math.abs(record.hashCode() % channelNumber));
         } else if (PlaceholderRecord.class.equals(record.getClass())) {
-            toBeAcknowledgeRecords.add(record);
-            pendingAcknowledgeRecords.put(record.getPosition(), record);
+            pushRecord(record, -1);
         } else {
             throw new RuntimeException("Not Support Record Type");
         }
+    }
+    
+    private void pushRecord(final Record record, final int index) throws InterruptedException {
+        toBeAckBitSetIndexes.add(index);
+        getBitSetChannel(index).pushRecord(record, indexAutoIncreaseGenerator.getAndIncrement());
     }
     
     @Override
@@ -122,19 +102,42 @@ public final class DistributionChannel implements Channel {
         findChannel().ack();
     }
     
-    @Override
-    public void close() {
-        for (MemoryChannel each : channels.values()) {
-            each.close();
+    private synchronized void ackRecords0() {
+        int count = shouldAckCount();
+        if (0 == count) {
+            return;
         }
-        scheduleAckRecordsExecutor.shutdown();
-        ackRecords0();
+        ackCallback.onAck(fetchAckRecords(count));
+        lastAckIndex += count;
+        for (BitSetChannel channel : channels) {
+            channel.clear(lastAckIndex);
+        }
     }
     
-    private Channel findChannel() {
+    private int shouldAckCount() {
+        BitSet bitSet = autoAckChannel.getAckBitSet(lastAckIndex);
+        for (BitSetChannel channel : channels) {
+            bitSet.or(channel.getAckBitSet(lastAckIndex));
+        }
+        return bitSet.nextClearBit(0);
+    }
+    
+    private List<Record> fetchAckRecords(final int count) {
+        List<Record> records = new LinkedList<>();
+        for (int i = 0; i < count; i++) {
+            records.add(getBitSetChannel(toBeAckBitSetIndexes.remove()).removeAckRecord());
+        }
+        return records;
+    }
+    
+    private BitSetChannel getBitSetChannel(final Integer index) {
+        return index == -1 ? autoAckChannel : channels[index];
+    }
+    
+    private BitSetChannel findChannel() {
         String threadId = Long.toString(Thread.currentThread().getId());
         checkAssignment(threadId);
-        return channels.get(channelAssignment.get(threadId));
+        return channels[channelAssignment.get(threadId)];
     }
     
     private void checkAssignment(final String threadId) {
@@ -148,20 +151,20 @@ public final class DistributionChannel implements Channel {
     }
     
     private void assignmentChannel(final String threadId) {
-        for (Entry<String, MemoryChannel> entry : channels.entrySet()) {
-            if (!channelAssignment.containsValue(entry.getKey())) {
-                channelAssignment.put(threadId, entry.getKey());
+        for (int i = 0; i < channels.length; i++) {
+            if (!channelAssignment.containsValue(i)) {
+                channelAssignment.put(threadId, i);
             }
         }
     }
     
-    private final class SingleChannelAckCallback implements AckCallback {
-        
-        @Override
-        public void onAck(final List<Record> records) {
-            for (Record record : records) {
-                pendingAcknowledgeRecords.put(record.getPosition(), record);
-            }
+    @Override
+    public void close() {
+        scheduleAckRecordsExecutor.shutdown();
+        ackRecords0();
+        for (BitSetChannel each : channels) {
+            each.close();
         }
+        toBeAckBitSetIndexes.clear();
     }
 }
