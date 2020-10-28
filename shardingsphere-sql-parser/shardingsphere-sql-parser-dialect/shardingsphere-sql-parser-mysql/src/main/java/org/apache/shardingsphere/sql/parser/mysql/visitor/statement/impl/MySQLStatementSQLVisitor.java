@@ -498,9 +498,72 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
-        return visit(ctx.unionClause());
+        return visit(ctx.queryExpressionParens());
     }
-    
+
+    @Override
+    public ASTNode visitQueryExpressionParens(final MySQLStatementParser.QueryExpressionParensContext ctx) {
+        if (null != ctx.queryExpressionParens()) {
+            return visit(ctx.queryExpressionParens());
+        }
+        MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.queryExpression());
+        if (null != ctx.lockClauseList()) {
+            result.setLock((LockSegment) visit(ctx.lockClauseList()));
+        }
+        result.setParameterCount(getCurrentParameterIndex());
+        return result;
+    }
+
+    @Override
+    public ASTNode visitLockClauseList(final MySQLStatementParser.LockClauseListContext ctx) {
+        return new LockSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+    }
+
+    @Override
+    public ASTNode visitQueryExpression(final MySQLStatementParser.QueryExpressionContext ctx) {
+        MySQLSelectStatement result;
+        if (null != ctx.queryExpressionBody()) {
+            result = (MySQLSelectStatement) visit(ctx.queryExpressionBody());
+        } else {
+            result = (MySQLSelectStatement) visit(ctx.queryExpressionParens());
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.limitClause()) {
+            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+        }
+        return result;
+    }
+
+    @Override
+    public ASTNode visitQueryExpressionBody(final MySQLStatementParser.QueryExpressionBodyContext ctx) {
+        if (1 == ctx.getChildCount() && ctx.getChild(0) instanceof MySQLStatementParser.QueryPrimaryContext) {
+            return visit(ctx.queryPrimary());
+        }
+        throw new IllegalStateException("union select is not supported yet.");
+    }
+
+    @Override
+    public ASTNode visitQuerySpecification(final MySQLStatementParser.QuerySpecificationContext ctx) {
+        MySQLSelectStatement result = new MySQLSelectStatement();
+        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+        if (null != ctx.selectSpecification()) {
+            result.getProjections().setDistinctRow(isDistinct(ctx));
+        }
+        if (null != ctx.fromClause()) {
+            TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
+            result.setFrom(tableSource);
+        }
+        if (null != ctx.whereClause()) {
+            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+        }
+        if (null != ctx.groupByClause()) {
+            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
+        }
+        return result;
+    }
+
     @Override
     public final ASTNode visitIntervalExpression(final IntervalExpressionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.intervalValue().expr()));
@@ -950,14 +1013,14 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         DeleteMultiTableSegment result = new DeleteMultiTableSegment();
         TableSegment relateTableSource = (TableSegment) visit(ctx.tableReferences());
         result.setRelationTable(relateTableSource);
-        result.setActualDeleteTables(generateTablesFromTableMultipleTableNames(ctx.multipleTableNames()));
+        result.setActualDeleteTables(generateTablesFromTableMultipleTableNames(ctx.tableAliasRefList()));
         return result;
     }
     
-    private List<SimpleTableSegment> generateTablesFromTableMultipleTableNames(final MySQLStatementParser.MultipleTableNamesContext ctx) {
+    private List<SimpleTableSegment> generateTablesFromTableMultipleTableNames(final MySQLStatementParser.TableAliasRefListContext ctx) {
         List<SimpleTableSegment> result = new LinkedList<>();
-        for (TableNameContext each : ctx.tableName()) {
-            result.add((SimpleTableSegment) visit(each));
+        for (MySQLStatementParser.TableIdentOptWildContext each : ctx.tableIdentOptWild()) {
+            result.add((SimpleTableSegment) visit(each.tableName()));
         }
         return result;
     }
@@ -965,47 +1028,20 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     @Override
     public ASTNode visitSelect(final MySQLStatementParser.SelectContext ctx) {
         // TODO :Unsupported for withClause.
-        MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.unionClause());
+        MySQLSelectStatement result;
+        if (null != ctx.queryExpression()) {
+            result = (MySQLSelectStatement) visit(ctx.queryExpression());
+            if (null != ctx.lockClauseList()) {
+                result.setLock((LockSegment) visit(ctx.lockClauseList()));
+            }
+        } else {
+            result = (MySQLSelectStatement) visit(ctx.getChild(0));
+        }
         result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     
-    @Override
-    public ASTNode visitUnionClause(final MySQLStatementParser.UnionClauseContext ctx) {
-        // TODO :Unsupported for union SQL.
-        return visit(ctx.selectClause(0));
-    }
-    
-    @Override
-    public ASTNode visitSelectClause(final MySQLStatementParser.SelectClauseContext ctx) {
-        MySQLSelectStatement result = new MySQLSelectStatement();
-        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
-        if (null != ctx.selectSpecification()) {
-            result.getProjections().setDistinctRow(isDistinct(ctx));
-        }
-        if (null != ctx.fromClause()) {
-            TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
-            result.setFrom(tableSource);
-        }
-        if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
-        }
-        if (null != ctx.groupByClause()) {
-            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
-        }
-        if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
-        }
-        if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
-        }
-        if (null != ctx.lockClause()) {
-            result.setLock((LockSegment) visit(ctx.lockClause()));
-        }
-        return result;
-    }
-    
-    private boolean isDistinct(final MySQLStatementParser.SelectClauseContext ctx) {
+    private boolean isDistinct(final MySQLStatementParser.QuerySpecificationContext ctx) {
         for (MySQLStatementParser.SelectSpecificationContext each : ctx.selectSpecification()) {
             if (((BooleanLiteralValue) visit(each)).getValue()) {
                 return true;
@@ -1257,10 +1293,5 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
         }
         return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
-    }
-    
-    @Override
-    public ASTNode visitLockClause(final MySQLStatementParser.LockClauseContext ctx) {
-        return new LockSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
     }
 }
