@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Map.Entry;
 
 /**
- * Table addressing meta data decorator of primary replica replication.
+ * Table addressing meta data decorator of replica query.
  */
 public final class PrimaryReplicaReplicationTableAddressingMetaDataDecorator implements TableAddressingMetaDataDecorator<PrimaryReplicaReplicationRule> {
     

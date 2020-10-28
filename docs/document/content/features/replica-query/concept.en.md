@@ -12,7 +12,7 @@ It refers to the database used in data insertion, update and deletion. It only s
 
 It refers to the database used in data query. It supports multiple replica databases.
 
-## Primary replica Replication
+## Primary Replica Replication
 
 It refers to the operation to asynchronously replicate data from the primary database to the replica database. 
 Because of replica query asynchronization, there may be short-time data inconsistency between them.  
