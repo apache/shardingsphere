@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine;
+package org.apache.shardingsphere.sql.parser.api.parser;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -33,20 +33,20 @@ public final class SQLParserEngineFactory {
     
     /**
      * Get SQL parser engine.
-     *x
-     * @param databaseTypeName name of database type
+     *
+     * @param databaseType database type
      * @return SQL parser engine
      */
-    public static SQLParserEngine getSQLParserEngine(final String databaseTypeName) {
-        if (ENGINES.containsKey(databaseTypeName)) {
-            return ENGINES.get(databaseTypeName);
+    public static SQLParserEngine getSQLParserEngine(final String databaseType) {
+        if (ENGINES.containsKey(databaseType)) {
+            return ENGINES.get(databaseType);
         }
         synchronized (ENGINES) {
-            if (ENGINES.containsKey(databaseTypeName)) {
-                return ENGINES.get(databaseTypeName);
+            if (ENGINES.containsKey(databaseType)) {
+                return ENGINES.get(databaseType);
             }
-            SQLParserEngine result = new SQLParserEngine(databaseTypeName);
-            ENGINES.put(databaseTypeName, result);
+            SQLParserEngine result = new SQLParserEngine(databaseType);
+            ENGINES.put(databaseType, result);
             return result;
         }
     }

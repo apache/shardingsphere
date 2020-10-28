@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core;
+package org.apache.shardingsphere.sql.parser.core.parser;
 
 import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 

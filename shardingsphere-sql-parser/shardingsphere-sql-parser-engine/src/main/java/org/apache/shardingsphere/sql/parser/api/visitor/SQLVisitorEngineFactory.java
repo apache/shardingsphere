@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.rdl.parser.sql.parser;
+package org.apache.shardingsphere.sql.parser.api.visitor;
 
-import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * SQL parser for RDL.
+ * SQL visitor engine factory.
  */
-public final class ShardingSphereParser extends ShardingSphereStatementParser implements SQLParser {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SQLVisitorEngineFactory {
     
-    public ShardingSphereParser(final TokenStream input) {
-        super(input);
-    }
-    
-    @Override
-    public ASTNode parse() {
-        return new ParseASTNode(execute());
+    /**
+     * Get SQL visitor engine.
+     *
+     * @param databaseType database type
+     * @param visitorType visitor type
+     * @param <T> type of visitor result
+     * @return SQL visitor engine
+     */
+    public static <T> SQLVisitorEngine<T> getSQLVisitorEngine(final String databaseType, final String visitorType) {
+        return new SQLVisitorEngine<>(databaseType, visitorType);
     }
 }

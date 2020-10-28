@@ -21,9 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
-import org.apache.shardingsphere.sql.parser.core.visitor.SQLStatementVisitorFactory;
+import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorFactory;
 import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorRule;
-import org.apache.shardingsphere.sql.parser.engine.SQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.SQLStatementParserEngine;
@@ -76,10 +76,9 @@ public final class StandardSQLStatementParserEngine implements SQLStatementParse
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     private SQLStatement parseSQLStatement(final String sql) {
         ParseTree parseTree = SQLParserEngineFactory.getSQLParserEngine(databaseTypeName).parse(sql, false);
-        ParseTreeVisitor<SQLStatement> visitor = SQLStatementVisitorFactory.newInstance(databaseTypeName, SQLVisitorRule.valueOf(parseTree.getClass()));
+        ParseTreeVisitor<SQLStatement> visitor = SQLVisitorFactory.newInstance(databaseTypeName, "STATEMENT", SQLVisitorRule.valueOf(parseTree.getClass()));
         return parseTree.accept(visitor);
     }
 }
