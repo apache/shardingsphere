@@ -49,16 +49,16 @@ public final class SQLParserFactory {
     @SneakyThrows(ReflectiveOperationException.class)
     public static SQLParser newInstance(final String databaseType, final String sql) {
         SQLParserFacade sqlParserFacade = SQLParserFacadeRegistry.getInstance().getSQLParserFacade(databaseType);
-        return getSQLParser(getTokenStream(sql, sqlParserFacade.getLexerClass()), sqlParserFacade.getParserClass());
+        return createSQLParser(createTokenStream(sql, sqlParserFacade.getLexerClass()), sqlParserFacade.getParserClass());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static SQLParser getSQLParser(final TokenStream tokenStream, final Class<? extends SQLParser> parserClass) {
+    private static SQLParser createSQLParser(final TokenStream tokenStream, final Class<? extends SQLParser> parserClass) {
         return parserClass.getConstructor(TokenStream.class).newInstance(tokenStream);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static TokenStream getTokenStream(final String sql, final Class<? extends SQLLexer> lexerClass) {
+    private static TokenStream createTokenStream(final String sql, final Class<? extends SQLLexer> lexerClass) {
         Lexer lexer = (Lexer) lexerClass.getConstructor(CharStream.class).newInstance(getSQLCharStream(sql));
         return new CommonTokenStream(lexer);
     }
