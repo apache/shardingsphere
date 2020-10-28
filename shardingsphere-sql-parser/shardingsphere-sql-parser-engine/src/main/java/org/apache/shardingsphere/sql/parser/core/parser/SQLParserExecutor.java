@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 @RequiredArgsConstructor
 public final class SQLParserExecutor {
     
-    private final String databaseTypeName;
+    private final String databaseType;
     
     private final String sql;
     
@@ -51,16 +51,19 @@ public final class SQLParserExecutor {
     }
     
     private ParseASTNode twoPhaseParse() {
-        SQLParser sqlParser = SQLParserFactory.newInstance(databaseTypeName, sql);
+        SQLParser sqlParser = SQLParserFactory.newInstance(databaseType, sql);
         try {
-            ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
-            ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
+            setPredictionMode((Parser) sqlParser, PredictionMode.SLL);
             return (ParseASTNode) sqlParser.parse();
         } catch (final ParseCancellationException ex) {
             ((Parser) sqlParser).reset();
-            ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
-            ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.LL);
+            setPredictionMode((Parser) sqlParser, PredictionMode.LL);
             return (ParseASTNode) sqlParser.parse();
         }
+    }
+    
+    private void setPredictionMode(final Parser sqlParser, final PredictionMode mode) {
+        sqlParser.setErrorHandler(new BailErrorStrategy());
+        sqlParser.getInterpreter().setPredictionMode(mode);
     }
 }

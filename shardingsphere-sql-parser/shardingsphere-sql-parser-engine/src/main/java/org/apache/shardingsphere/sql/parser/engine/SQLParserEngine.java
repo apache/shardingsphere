@@ -30,7 +30,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class SQLParserEngine {
     
-    private final String databaseTypeName;
+    private final String databaseType;
     
     private final SQLParsedResultCache<ParseTree> cache = new SQLParsedResultCache<>();
     
@@ -49,12 +49,12 @@ public final class SQLParserEngine {
         if (parseTree.isPresent()) {
             return parseTree.get();
         }
-        ParseTree result = new SQLParserExecutor(databaseTypeName, sql).execute().getRootNode();
+        ParseTree result = new SQLParserExecutor(databaseType, sql).execute().getRootNode();
         cache.put(sql, result);
         return result;
     }
     
     private ParseTree parse(final String sql) {
-        return new SQLParserExecutor(databaseTypeName, sql).execute().getRootNode();
+        return new SQLParserExecutor(databaseType, sql).execute().getRootNode();
     }
 }
