@@ -34,19 +34,19 @@ public final class StandardSQLStatementParserEngineFactory {
     /**
      * Get standard SQL statement parser engine.
      *x
-     * @param databaseTypeName name of database type
+     * @param databaseType name of database type
      * @return standard SQL statement parser engine
      */
-    public static StandardSQLStatementParserEngine getSQLStatementParserEngine(final String databaseTypeName) {
-        if (ENGINES.containsKey(databaseTypeName)) {
-            return ENGINES.get(databaseTypeName);
+    public static StandardSQLStatementParserEngine getSQLStatementParserEngine(final String databaseType) {
+        if (ENGINES.containsKey(databaseType)) {
+            return ENGINES.get(databaseType);
         }
         synchronized (ENGINES) {
-            if (ENGINES.containsKey(databaseTypeName)) {
-                return ENGINES.get(databaseTypeName);
+            if (ENGINES.containsKey(databaseType)) {
+                return ENGINES.get(databaseType);
             }
-            StandardSQLStatementParserEngine result = new StandardSQLStatementParserEngine(databaseTypeName);
-            ENGINES.put(databaseTypeName, result);
+            StandardSQLStatementParserEngine result = new StandardSQLStatementParserEngine(databaseType);
+            ENGINES.put(databaseType, result);
             return result;
         }
     }
