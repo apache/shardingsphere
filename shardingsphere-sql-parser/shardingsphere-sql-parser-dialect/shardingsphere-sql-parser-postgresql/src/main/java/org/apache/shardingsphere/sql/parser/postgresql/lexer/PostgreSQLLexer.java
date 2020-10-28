@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.postgresql.lexer;
 
 import org.antlr.v4.runtime.CharStream;
-import org.apache.shardingsphere.sql.parser.engine.lexer.SQLLexer;
+import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementLexer;
 
 /**

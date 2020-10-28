@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine.visitor.type;
+package org.apache.shardingsphere.sql.parser.api.visitor.type;
+
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * TCL SQL visitor.
+ * SQL type visitor.
  */
-public interface TCLSQLVisitor extends SQLTypeVisitor {
+public interface SQLTypeVisitor extends SQLVisitor {
 }

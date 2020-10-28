@@ -15,26 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine.visitor;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+package org.apache.shardingsphere.sql.parser.api.visitor.type;
 
 /**
- * SQL visitor engine factory.
+ * DML SQL visitor.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLVisitorEngineFactory {
-    
-    /**
-     * Get SQL visitor engine.
-     *
-     * @param databaseType database type
-     * @param visitorType visitor type
-     * @param <T> type of visitor result
-     * @return SQL visitor engine
-     */
-    public static <T> SQLVisitorEngine<T> getSQLVisitorEngine(final String databaseType, final String visitorType) {
-        return new SQLVisitorEngine<>(databaseType, visitorType);
-    }
+public interface DMLSQLVisitor extends SQLTypeVisitor {
 }

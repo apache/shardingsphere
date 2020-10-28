@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
 
-import org.apache.shardingsphere.sql.parser.engine.visitor.operation.SQLFormatVisitor;
-import org.apache.shardingsphere.sql.parser.engine.visitor.type.TCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLFormatVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
 
 /**
  * TCL Format SQL visitor for MySQL.

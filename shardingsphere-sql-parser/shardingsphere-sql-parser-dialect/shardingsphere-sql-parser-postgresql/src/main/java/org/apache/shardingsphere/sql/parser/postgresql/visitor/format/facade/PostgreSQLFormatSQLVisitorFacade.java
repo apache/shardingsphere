@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.format.facade;
 
 import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.engine.visitor.type.DALSQLVisitor;
-import org.apache.shardingsphere.sql.parser.engine.visitor.type.DCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.engine.visitor.type.DDLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.engine.visitor.type.DMLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.engine.visitor.type.RLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.engine.visitor.type.TCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
 
 /**
  * Format SQL Visitor facade for PostgreSQL.

@@ -15,19 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine.parser;
-
-import org.apache.shardingsphere.sql.parser.engine.visitor.ASTNode;
+package org.apache.shardingsphere.sql.parser.api.visitor.operation;
 
 /**
- * SQL parser.
+ * SQL statement visitor.
  */
-public interface SQLParser {
-    
-    /**
-     * Parse SQL.
-     * 
-     * @return AST node
-     */
-    ASTNode parse();
+public interface SQLStatementVisitor extends SQLOperationVisitor {
 }

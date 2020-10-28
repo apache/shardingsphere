@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine.lexer;
+package org.apache.shardingsphere.sql.parser.api.lexer;
 
 /**
  * SQL lexer.

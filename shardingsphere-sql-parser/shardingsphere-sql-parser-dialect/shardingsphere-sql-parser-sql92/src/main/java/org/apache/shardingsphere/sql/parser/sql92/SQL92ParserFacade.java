@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql92;
 
-import org.apache.shardingsphere.sql.parser.engine.lexer.SQLLexer;
-import org.apache.shardingsphere.sql.parser.engine.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 import org.apache.shardingsphere.sql.parser.sql92.lexer.SQL92Lexer;
 import org.apache.shardingsphere.sql.parser.sql92.parser.SQL92Parser;
