@@ -37,15 +37,17 @@ public final class SQLVisitorFactory {
      * @param databaseType database type
      * @param visitorType SQL visitor type
      * @param visitorRule SQL visitor rule
+     * @param <T> type of visitor result
      * @return parse tree visitor
      */
-    public static ParseTreeVisitor newInstance(final String databaseType, final String visitorType, final SQLVisitorRule visitorRule) {
+    public static <T> ParseTreeVisitor<T> newInstance(final String databaseType, final String visitorType, final SQLVisitorRule visitorRule) {
         SQLVisitorFacade facade = SQLVisitorFacadeRegistry.getInstance().getSQLVisitorFacade(databaseType, visitorType);
         return createParseTreeVisitor(facade, visitorRule.getType());
     }
     
+    @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private static ParseTreeVisitor createParseTreeVisitor(final SQLVisitorFacade visitorFacade, final SQLStatementType type) {
+    private static <T> ParseTreeVisitor<T> createParseTreeVisitor(final SQLVisitorFacade visitorFacade, final SQLStatementType type) {
         switch (type) {
             case DML:
                 return (ParseTreeVisitor) visitorFacade.getDMLVisitorClass().getConstructor().newInstance();

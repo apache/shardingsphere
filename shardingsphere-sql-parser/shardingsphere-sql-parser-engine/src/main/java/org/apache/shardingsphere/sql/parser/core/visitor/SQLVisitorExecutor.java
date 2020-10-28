@@ -39,7 +39,6 @@ public final class SQLVisitorExecutor<T> {
      * @param parseTree parse tree
      * @return visit result
      */
-    @SuppressWarnings("unchecked")
     public T visit(final ParseTree parseTree) {
         ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseTree.getClass()));
         return parseTree.accept(visitor);

@@ -76,7 +76,6 @@ public final class StandardSQLStatementParserEngine implements SQLStatementParse
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     private SQLStatement parseSQLStatement(final String sql) {
         ParseTree parseTree = SQLParserEngineFactory.getSQLParserEngine(databaseTypeName).parse(sql, false);
         ParseTreeVisitor<SQLStatement> visitor = SQLVisitorFactory.newInstance(databaseTypeName, "STATEMENT", SQLVisitorRule.valueOf(parseTree.getClass()));
