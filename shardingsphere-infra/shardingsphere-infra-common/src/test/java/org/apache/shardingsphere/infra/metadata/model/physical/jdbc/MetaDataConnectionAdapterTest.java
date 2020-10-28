@@ -66,6 +66,13 @@ public final class MetaDataConnectionAdapterTest {
     }
     
     @Test
+    public void  assertGetSchemaBySPI() throws SQLException {
+        when(connection.getSchema()).thenReturn(TEST_SCHEMA);
+        MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, connection);
+        assertThat(connectionAdapter.getSchema(), is(TEST_SCHEMA));
+    }
+    
+    @Test
     public void assertGetSchemaReturnNullWhenThrowsSQLException() throws SQLException {
         when(connection.getSchema()).thenThrow(SQLException.class);
         MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, connection);
