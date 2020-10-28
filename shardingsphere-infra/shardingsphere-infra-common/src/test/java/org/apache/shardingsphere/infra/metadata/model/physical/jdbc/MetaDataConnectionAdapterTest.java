@@ -40,7 +40,7 @@ public final class MetaDataConnectionAdapterTest {
     private static final String TEST_CATALOG = "catalog";
     
     private static final String TEST_SCHEMA = "schema";
-
+    
     private final DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType("MySQL");
     
     private final DatabaseType oracleDatabaseType = DatabaseTypeRegistry.getTrunkDatabaseType("Oracle");
