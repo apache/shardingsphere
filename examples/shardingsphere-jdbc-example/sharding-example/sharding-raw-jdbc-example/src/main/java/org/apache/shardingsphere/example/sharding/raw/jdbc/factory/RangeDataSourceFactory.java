@@ -37,9 +37,9 @@ public final class RangeDataSourceFactory {
                 return new ShardingTablesConfigurationRange().getDataSource();
             case SHARDING_DATABASES_AND_TABLES:
                 return new ShardingDatabasesAndTablesConfigurationRange().getDataSource();
-            case PRIMARY_REPLICA_REPLICATION:
+            case REPLICA_QUERY:
                 return new PrimaryReplicaReplicationConfiguration().getDataSource();
-            case SHARDING_PRIMARY_REPLICA_REPLICATION:
+            case SHARDING_REPLICA_QUERY:
                 return new ShardingPrimaryReplicaReplicationConfigurationRange().getDataSource();
             default:
                 throw new UnsupportedOperationException(shardingType.name());

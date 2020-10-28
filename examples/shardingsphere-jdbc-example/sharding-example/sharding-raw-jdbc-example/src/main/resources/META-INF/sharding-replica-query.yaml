@@ -97,7 +97,7 @@ rules:
       props:
           worker-id: 123
 
-- !PRIMARY_REPLICA_REPLICATION
+- !REPLICA_QUERY
   dataSources:
     ds_0:
       primaryDataSourceName: primary_ds_0

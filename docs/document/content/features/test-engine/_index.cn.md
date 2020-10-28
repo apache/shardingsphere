@@ -17,4 +17,4 @@ SQL解析单元测试全面覆盖SQL占位符和字面量维度。整合测试�
 >
 >SQL-TYPE : 是 DAL，DCL，DDL，DML，DQL，TCL 中的某一个或者集合
 >
->SHARDING-TYPE : 是 db，dbtbl_with_primary_replica_replication，primary_replica_replication，tbl 中的某一个或者集合
+>SHARDING-TYPE : 是 db，dbtbl_with_replica_query，replica_query，tbl 中的某一个或者集合

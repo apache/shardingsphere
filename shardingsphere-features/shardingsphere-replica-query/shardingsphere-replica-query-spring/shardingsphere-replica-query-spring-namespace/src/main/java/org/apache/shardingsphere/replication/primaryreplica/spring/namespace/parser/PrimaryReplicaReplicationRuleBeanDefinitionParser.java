@@ -59,7 +59,7 @@ public final class PrimaryReplicaReplicationRuleBeanDefinitionParser extends Abs
     
     private BeanDefinition parsePrimaryReplicaReplicationDataSourceRuleConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(PrimaryReplicaReplicationDataSourceRuleConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(PrimaryReplicaReplicationRuleBeanDefinitionTag.PRIMARY_REPLICA_REPLICATION_DATA_SOURCE_ID_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(PrimaryReplicaReplicationRuleBeanDefinitionTag.REPLICA_QUERY_DATA_SOURCE_ID_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(PrimaryReplicaReplicationRuleBeanDefinitionTag.PRIMARY_DATA_SOURCE_NAME_ATTRIBUTE));
         factory.addConstructorArgValue(parseReplicaDataSourcesRef(element));
         factory.addConstructorArgValue(element.getAttribute(PrimaryReplicaReplicationRuleBeanDefinitionTag.LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE));

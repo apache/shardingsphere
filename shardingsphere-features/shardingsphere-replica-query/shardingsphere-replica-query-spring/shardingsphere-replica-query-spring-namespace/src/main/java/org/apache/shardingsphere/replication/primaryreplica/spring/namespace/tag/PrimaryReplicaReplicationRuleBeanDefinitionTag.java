@@ -30,7 +30,7 @@ public final class PrimaryReplicaReplicationRuleBeanDefinitionTag {
     
     public static final String DATA_SOURCE_TAG = "data-source-rule";
     
-    public static final String PRIMARY_REPLICA_REPLICATION_DATA_SOURCE_ID_ATTRIBUTE = "id";
+    public static final String REPLICA_QUERY_DATA_SOURCE_ID_ATTRIBUTE = "id";
     
     public static final String PRIMARY_DATA_SOURCE_NAME_ATTRIBUTE = "primary-data-source-name";
     

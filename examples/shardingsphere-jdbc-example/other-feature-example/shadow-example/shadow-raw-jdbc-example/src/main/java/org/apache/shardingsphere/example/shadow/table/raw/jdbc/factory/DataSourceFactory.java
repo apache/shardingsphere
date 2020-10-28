@@ -36,7 +36,7 @@ public final class DataSourceFactory {
                 return new ShardingShadowDatabasesConfiguration().getDataSource();
             case ENCRYPT_SHADOW:
                 return new EncryptShadowDatabasesConfiguration().getDataSource();
-            case PRIMARY_REPLICA_REPLICATION_SHADOW:
+            case REPLICA_QUERY_SHADOW:
                 return new PrimaryReplicaReplicationShadowDatabasesConfiguration().getDataSource();
             default:
                 throw new UnsupportedOperationException(shardingType.name());

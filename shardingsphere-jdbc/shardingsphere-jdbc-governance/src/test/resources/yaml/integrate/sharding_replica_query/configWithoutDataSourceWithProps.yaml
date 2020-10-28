@@ -70,7 +70,7 @@ rules:
     increment:
       type: INCREMENT
 
-- !PRIMARY_REPLICA_REPLICATION
+- !REPLICA_QUERY
   dataSources:
     pr_ds_0:
       primaryDataSourceName: primary_ds_0

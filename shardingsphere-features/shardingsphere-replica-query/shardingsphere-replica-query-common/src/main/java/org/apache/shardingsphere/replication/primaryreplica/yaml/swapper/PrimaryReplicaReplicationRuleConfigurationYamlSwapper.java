@@ -86,7 +86,7 @@ public final class PrimaryReplicaReplicationRuleConfigurationYamlSwapper
     
     @Override
     public String getRuleTagName() {
-        return "PRIMARY_REPLICA_REPLICATION";
+        return "REPLICA_QUERY";
     }
     
     @Override

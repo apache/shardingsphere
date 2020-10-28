@@ -76,7 +76,7 @@ public final class RegistryCenterTest {
     public void assertLoadDisabledDataSources() {
         List<String> disabledDataSources = Collections.singletonList("replica_ds_0");
         when(registryRepository.getChildrenKeys(anyString())).thenReturn(disabledDataSources);
-        registryCenter.loadDisabledDataSources("primary_replica_db");
+        registryCenter.loadDisabledDataSources("replica_query_db");
         verify(registryRepository).getChildrenKeys(anyString());
         verify(registryRepository).get(anyString());
     }

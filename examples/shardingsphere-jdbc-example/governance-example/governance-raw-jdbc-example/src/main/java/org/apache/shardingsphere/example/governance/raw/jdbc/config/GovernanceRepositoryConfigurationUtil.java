@@ -34,7 +34,7 @@ public final class GovernanceRepositoryConfigurationUtil {
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 return new GovernanceConfiguration("governance-sharding-data-source", governanceCenterConfig, overwrite);
-            case PRIMARY_REPLICA_REPLICATION:
+            case REPLICA_QUERY:
                 return new GovernanceConfiguration("governance-replica-query-data-source", governanceCenterConfig, overwrite);
             case ENCRYPT:
                 return new GovernanceConfiguration("governance-encrypt-data-source", governanceCenterConfig, overwrite);
@@ -55,7 +55,7 @@ public final class GovernanceRepositoryConfigurationUtil {
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 return new GovernanceConfiguration("governance-zookeeper-sharding-data-source", zookeeperConfig, nacosConfig, overwrite);
-            case PRIMARY_REPLICA_REPLICATION:
+            case REPLICA_QUERY:
                 return new GovernanceConfiguration("governance-zookeeper-replica-query-data-source", zookeeperConfig, nacosConfig, overwrite);
             case ENCRYPT:
                 return new GovernanceConfiguration("governance-zookeeper-encrypt-data-source", zookeeperConfig, nacosConfig, overwrite);

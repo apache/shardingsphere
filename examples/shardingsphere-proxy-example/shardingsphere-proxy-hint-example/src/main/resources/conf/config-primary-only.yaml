@@ -36,7 +36,7 @@ dataSources:
     url: jdbc:mysql://localhost:3306/demo_replica_ds_1
 
 rules:
-- !PRIMARY_REPLICA_REPLICATION
+- !REPLICA_QUERY
   dataSources:
     pr_ds:
       name: pr_ds

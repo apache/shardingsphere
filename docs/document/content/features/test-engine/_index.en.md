@@ -19,4 +19,4 @@ Therefore, one SQL can drive 5 kinds of database parsing * 2 kinds of parameter 
 >
 >SQL-TYPE : is one of or collection of dal,dcl，ddl，dml，dql，tcl
 >
->SHARDING-TYPE : is one of or collection of db，dbtbl_with_primary_replica_replication，primary_replica_replication，tbl
+>SHARDING-TYPE : is one of or collection of db，dbtbl_with_replica_query，replica_query，tbl

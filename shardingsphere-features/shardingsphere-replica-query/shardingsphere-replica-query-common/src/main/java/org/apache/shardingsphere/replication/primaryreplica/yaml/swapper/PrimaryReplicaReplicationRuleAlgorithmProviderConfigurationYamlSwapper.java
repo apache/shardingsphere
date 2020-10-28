@@ -80,7 +80,7 @@ public final class PrimaryReplicaReplicationRuleAlgorithmProviderConfigurationYa
     
     @Override
     public String getRuleTagName() {
-        return "PRIMARY_REPLICA_REPLICATION";
+        return "REPLICA_QUERY";
     }
     
     @Override

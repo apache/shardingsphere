@@ -9,7 +9,7 @@ weight = 2
 dataSource: # Omit data source configuration
 
 rules:
-- !PRIMARY_REPLICA_REPLICATION
+- !REPLICA_QUERY
   dataSources:
     <data-source-name> (+): # Logic data source name of replica query
       primaryDataSourceName: # Primary data source name

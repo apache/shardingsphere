@@ -47,7 +47,7 @@ rules:
     - shadow_primary_ds
     - shadow_replica_ds
 
-- !PRIMARY_REPLICA_REPLICATION
+- !REPLICA_QUERY
   dataSources:
     pr_ds:
       name: pr_ds

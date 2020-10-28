@@ -73,7 +73,7 @@ public final class PrimaryReplicaReplicationRuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToObjectWithLoadBalanceAlgorithmType() {
         YamlPrimaryReplicaReplicationRuleConfiguration yamlConfig = createYamlPrimaryReplicaReplicationRuleConfiguration();
-        yamlConfig.getDataSources().get("primary_replica_ds").setLoadBalancerName("RANDOM");
+        yamlConfig.getDataSources().get("replica_query_ds").setLoadBalancerName("RANDOM");
         PrimaryReplicaReplicationRuleConfiguration actual = getPrimaryReplicaReplicationRuleConfigurationYamlSwapper().swapToObject(yamlConfig);
         assertPrimaryReplicaReplicationRuleConfiguration(actual);
         assertThat(actual.getDataSources().iterator().next().getLoadBalancerName(), is("RANDOM"));
@@ -89,16 +89,16 @@ public final class PrimaryReplicaReplicationRuleConfigurationYamlSwapperTest {
     
     private YamlPrimaryReplicaReplicationRuleConfiguration createYamlPrimaryReplicaReplicationRuleConfiguration() {
         YamlPrimaryReplicaReplicationRuleConfiguration result = new YamlPrimaryReplicaReplicationRuleConfiguration();
-        result.getDataSources().put("primary_replica_ds", new YamlPrimaryReplicaReplicationDataSourceRuleConfiguration());
-        result.getDataSources().get("primary_replica_ds").setName("primary_replica_ds");
-        result.getDataSources().get("primary_replica_ds").setPrimaryDataSourceName("primary_ds");
-        result.getDataSources().get("primary_replica_ds").setReplicaDataSourceNames(Arrays.asList("replica_ds_0", "replica_ds_1"));
+        result.getDataSources().put("replica_query_ds", new YamlPrimaryReplicaReplicationDataSourceRuleConfiguration());
+        result.getDataSources().get("replica_query_ds").setName("replica_query_ds");
+        result.getDataSources().get("replica_query_ds").setPrimaryDataSourceName("primary_ds");
+        result.getDataSources().get("replica_query_ds").setReplicaDataSourceNames(Arrays.asList("replica_ds_0", "replica_ds_1"));
         return result;
     }
     
     private void assertPrimaryReplicaReplicationRuleConfiguration(final PrimaryReplicaReplicationRuleConfiguration actual) {
         PrimaryReplicaReplicationDataSourceRuleConfiguration group = actual.getDataSources().iterator().next();
-        assertThat(group.getName(), is("primary_replica_ds"));
+        assertThat(group.getName(), is("replica_query_ds"));
         assertThat(group.getPrimaryDataSourceName(), is("primary_ds"));
         assertThat(group.getReplicaDataSourceNames(), is(Arrays.asList("replica_ds_0", "replica_ds_1")));
     }

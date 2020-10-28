@@ -16,7 +16,7 @@
 #
 
 rules:
-  - !PRIMARY_REPLICA_REPLICATION
+  - !REPLICA_QUERY
     loadBalancers:
       roundRobin:
         type: ROUND_ROBIN

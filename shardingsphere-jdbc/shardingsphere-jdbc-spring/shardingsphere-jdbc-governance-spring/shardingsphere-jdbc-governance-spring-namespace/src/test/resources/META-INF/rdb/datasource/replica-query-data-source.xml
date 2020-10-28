@@ -24,7 +24,7 @@
                         http://www.springframework.org/schema/context 
                         http://www.springframework.org/schema/context/spring-context.xsd 
                         ">
-    <context:property-placeholder location="classpath:conf/rdb/primary_replica_replication_conf.properties" ignore-unresolvable="true" />
+    <context:property-placeholder location="classpath:conf/rdb/replica_query_conf.properties" ignore-unresolvable="true" />
     
     <bean id="dbtbl_primary_0" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="${dbtbl_primary_0.driver}"/>

@@ -36,12 +36,12 @@ dataSources:
     maxTotal: 100
 
 rules:
-- !PRIMARY_REPLICA_REPLICATION
+- !REPLICA_QUERY
   dataSources:
     pr_ds:
       name: pr_ds
       primaryDataSourceName: db_primary
-      replicaDataSourceNames:
+      replicaDataSourceNames: 
         - replica_ds_0
         - replica_ds_1
 

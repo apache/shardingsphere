@@ -33,7 +33,7 @@ dataSources:
     password:
 
 rules:
-- !PRIMARY_REPLICA_REPLICATION
+- !REPLICA_QUERY
   dataSources:
     pr_ds:
       name: pr_ds

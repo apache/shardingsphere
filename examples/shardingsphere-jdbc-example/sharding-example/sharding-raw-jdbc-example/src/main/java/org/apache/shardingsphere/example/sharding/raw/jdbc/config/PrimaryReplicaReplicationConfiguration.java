@@ -36,7 +36,7 @@ public final class PrimaryReplicaReplicationConfiguration implements ExampleConf
     @Override
     public DataSource getDataSource() throws SQLException {
         PrimaryReplicaReplicationDataSourceRuleConfiguration dataSourceConfig = new PrimaryReplicaReplicationDataSourceRuleConfiguration(
-                "demo_primary_replica_ds", "demo_primary_ds", Arrays.asList("demo_replica_ds_0", "demo_replica_ds_1"), null);
+                "demo_replica_query_ds", "demo_primary_ds", Arrays.asList("demo_replica_ds_0", "demo_replica_ds_1"), null);
         PrimaryReplicaReplicationRuleConfiguration ruleConfig = new PrimaryReplicaReplicationRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap());
         return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(ruleConfig), new Properties());
     }

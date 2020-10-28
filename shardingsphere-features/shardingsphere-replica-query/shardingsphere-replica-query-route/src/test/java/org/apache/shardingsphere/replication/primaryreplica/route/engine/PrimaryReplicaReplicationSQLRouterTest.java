@@ -58,7 +58,7 @@ public final class PrimaryReplicaReplicationSQLRouterTest {
     
     private static final String DATASOURCE_NAME = "ds";
     
-    private static final String NON_PRIMARY_REPLICA_DATASOURCE_NAME = "nonPrDatasource";
+    private static final String NONE_REPLICA_QUERY_DATASOURCE_NAME = "noneReplicaQueryDatasource";
     
     private static final String PRIMARY_DATASOURCE = "primary";
     
@@ -103,7 +103,7 @@ public final class PrimaryReplicaReplicationSQLRouterTest {
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
         sqlRouter.decorateRouteContext(actual, logicSQL, schema, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
-        assertThat(routedDataSourceNames.next(), is(NON_PRIMARY_REPLICA_DATASOURCE_NAME));
+        assertThat(routedDataSourceNames.next(), is(NONE_REPLICA_QUERY_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
     }
     
@@ -129,7 +129,7 @@ public final class PrimaryReplicaReplicationSQLRouterTest {
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
         sqlRouter.decorateRouteContext(actual, logicSQL, schema, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
-        assertThat(routedDataSourceNames.next(), is(NON_PRIMARY_REPLICA_DATASOURCE_NAME));
+        assertThat(routedDataSourceNames.next(), is(NONE_REPLICA_QUERY_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(REPLICA_DATASOURCE));
     }
     
@@ -155,7 +155,7 @@ public final class PrimaryReplicaReplicationSQLRouterTest {
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereMetaData.class));
         sqlRouter.decorateRouteContext(actual, logicSQL, schema, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
-        assertThat(routedDataSourceNames.next(), is(NON_PRIMARY_REPLICA_DATASOURCE_NAME));
+        assertThat(routedDataSourceNames.next(), is(NONE_REPLICA_QUERY_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
     }
     
@@ -173,7 +173,7 @@ public final class PrimaryReplicaReplicationSQLRouterTest {
         RouteContext result = new RouteContext();
         RouteUnit routeUnit = new RouteUnit(new RouteMapper(DATASOURCE_NAME, DATASOURCE_NAME), Collections.singletonList(new RouteMapper("table", "table_0")));
         result.getRouteUnits().add(routeUnit);
-        result.getRouteUnits().add(new RouteUnit(new RouteMapper(NON_PRIMARY_REPLICA_DATASOURCE_NAME, NON_PRIMARY_REPLICA_DATASOURCE_NAME), Collections.emptyList()));
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(NONE_REPLICA_QUERY_DATASOURCE_NAME, NONE_REPLICA_QUERY_DATASOURCE_NAME), Collections.emptyList()));
         return result;
     }
 }

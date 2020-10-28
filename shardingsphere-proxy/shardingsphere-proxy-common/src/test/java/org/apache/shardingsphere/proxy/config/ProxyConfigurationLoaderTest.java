@@ -45,7 +45,7 @@ public final class ProxyConfigurationLoaderTest {
         assertThat(actual.getServerConfiguration().getGovernance().getRegistryCenter().getServerLists(), is("localhost:2181"));
         assertThat(actual.getRuleConfigurations().size(), is(3));
         assertShardingRuleConfiguration(actual.getRuleConfigurations().get("sharding_db"));
-        assertPrimaryReplicaReplicationRuleConfiguration(actual.getRuleConfigurations().get("primary_replica_db"));
+        assertPrimaryReplicaReplicationRuleConfiguration(actual.getRuleConfigurations().get("replica_query_db"));
         assertEncryptRuleConfiguration(actual.getRuleConfigurations().get("encrypt_db"));
     }
     
@@ -74,7 +74,7 @@ public final class ProxyConfigurationLoaderTest {
     }
     
     private void assertPrimaryReplicaReplicationRuleConfiguration(final YamlProxyRuleConfiguration actual) {
-        assertThat(actual.getSchemaName(), is("primary_replica_db"));
+        assertThat(actual.getSchemaName(), is("replica_query_db"));
         assertThat(actual.getDataSources().size(), is(3));
         assertNull(actual.getDataSource());
         assertDataSourceParameter(actual.getDataSources().get("primary_ds"), "jdbc:mysql://127.0.0.1:3306/primary_ds");

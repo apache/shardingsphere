@@ -22,7 +22,7 @@
 # 
 ######################################################################################################
 
-schemaName: primary_replica_replication_db
+schemaName: replica_query_db
 
 dataSourceCommon:
   username: root
@@ -43,7 +43,7 @@ dataSources:
     url: jdbc:mysql://127.0.0.1:3306/replica_ds_1?serverTimezone=UTC&useSSL=false
 
 rules:
-- !PRIMARY_REPLICA_REPLICATION
+- !REPLICA_QUERY
   dataSources:
     pr_ds:
       name: pr_ds

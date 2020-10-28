@@ -38,7 +38,7 @@ import java.sql.SQLException;
 public final class YamlConfigurationExampleMain {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
-//    private static ShardingType shardingType = ShardingType.PRIMARY_REPLICA_REPLICATION;
+//    private static ShardingType shardingType = ShardingType.REPLICA_QUERY;
 //    private static ShardingType shardingType = ShardingType.ENCRYPT;
 //    private static ShardingType shardingType = ShardingType.SHADOW;
     
@@ -63,7 +63,7 @@ public final class YamlConfigurationExampleMain {
             case SHARDING_DATABASES_AND_TABLES:
                 yamlFilePath = String.format("/META-INF/%s/%s/sharding-databases-tables.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
                 return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
-            case PRIMARY_REPLICA_REPLICATION:
+            case REPLICA_QUERY:
                 yamlFilePath = String.format("/META-INF/%s/%s/replica-query.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
                 return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
             case ENCRYPT:

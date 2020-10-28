@@ -75,7 +75,7 @@ public final class PrimaryReplicaReplicationRuleAlgorithmProviderConfigurationYa
     
     @Test
     public void assertGetRuleTagName() {
-        assertThat(swapper.getRuleTagName(), is("PRIMARY_REPLICA_REPLICATION"));
+        assertThat(swapper.getRuleTagName(), is("REPLICA_QUERY"));
     }
     
     @Test

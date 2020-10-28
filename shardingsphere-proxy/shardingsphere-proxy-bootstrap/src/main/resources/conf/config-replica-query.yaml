@@ -43,7 +43,7 @@
 #    url: jdbc:postgresql://127.0.0.1:5432/demo_replica_ds_1?serverTimezone=UTC&useSSL=false
 #
 #rules:
-#- !PRIMARY_REPLICA_REPLICATION
+#- !REPLICA_QUERY
 #  dataSources:
 #    pr_ds:
 #      name: pr_ds
@@ -58,7 +58,7 @@
 #
 ######################################################################################################
 
-#schemaName: primary_replica_db
+#schemaName: replica_query_db
 #
 #dataSourceCommon:
 #  username: root
@@ -79,7 +79,7 @@
 #    url: jdbc:mysql://127.0.0.1:3306/demo_replica_ds_1?serverTimezone=UTC&useSSL=false
 #
 #rules:
-#- !PRIMARY_REPLICA_REPLICATION
+#- !REPLICA_QUERY
 #  dataSources:
 #    pr_ds:
 #      name: pr_ds

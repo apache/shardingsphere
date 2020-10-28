@@ -35,9 +35,9 @@ public final class YamlDataSourceFactory {
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-tables.yaml"));
             case SHARDING_DATABASES_AND_TABLES:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases-tables.yaml"));
-            case PRIMARY_REPLICA_REPLICATION:
+            case REPLICA_QUERY:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/replica-query.yaml"));
-            case SHARDING_PRIMARY_REPLICA_REPLICATION:
+            case SHARDING_REPLICA_QUERY:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-replica-query.yaml"));
             default:
                 throw new UnsupportedOperationException(shardingType.name());

@@ -9,7 +9,7 @@ weight = 2
 dataSources: # 省略数据源配置
 
 rules:
-- !PRIMARY_REPLICA_REPLICATION
+- !REPLICA_QUERY
   dataSources:
     <data-source-name> (+): # 读写分离逻辑数据源名称
       primaryDataSourceName: # 主库数据源名称
