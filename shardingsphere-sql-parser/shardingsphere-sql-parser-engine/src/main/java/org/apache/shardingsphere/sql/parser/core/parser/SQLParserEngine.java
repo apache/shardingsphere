@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.engine;
+package org.apache.shardingsphere.sql.parser.core.parser;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
-import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
 
 import java.util.Optional;
 
@@ -43,7 +42,7 @@ public final class SQLParserEngine {
      */
     public ParseTree parse(final String sql, final boolean useCache) {
         if (!useCache) {
-            return parse(sql);
+            return new SQLParserExecutor(databaseType, sql).execute().getRootNode();
         }
         Optional<ParseTree> parseTree = cache.get(sql);
         if (parseTree.isPresent()) {
@@ -52,9 +51,5 @@ public final class SQLParserEngine {
         ParseTree result = new SQLParserExecutor(databaseType, sql).execute().getRootNode();
         cache.put(sql, result);
         return result;
-    }
-    
-    private ParseTree parse(final String sql) {
-        return new SQLParserExecutor(databaseType, sql).execute().getRootNode();
     }
 }
