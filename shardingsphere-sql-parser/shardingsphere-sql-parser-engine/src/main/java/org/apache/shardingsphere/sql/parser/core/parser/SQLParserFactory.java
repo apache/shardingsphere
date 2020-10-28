@@ -46,7 +46,6 @@ public final class SQLParserFactory {
      * @param sql SQL
      * @return SQL parser
      */
-    @SneakyThrows(ReflectiveOperationException.class)
     public static SQLParser newInstance(final String databaseType, final String sql) {
         SQLParserFacade sqlParserFacade = SQLParserFacadeRegistry.getInstance().getSQLParserFacade(databaseType);
         return createSQLParser(createTokenStream(sql, sqlParserFacade.getLexerClass()), sqlParserFacade.getParserClass());
