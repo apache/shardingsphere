@@ -21,7 +21,7 @@ import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
 
 /**
  * SQL parser for RDL.

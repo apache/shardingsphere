@@ -28,7 +28,6 @@ import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.core.SQLParserFacadeRegistry;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 
 import java.nio.CharBuffer;
