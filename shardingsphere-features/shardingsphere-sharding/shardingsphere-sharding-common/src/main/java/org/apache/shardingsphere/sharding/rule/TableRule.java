@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rule;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
@@ -119,11 +120,15 @@ public final class TableRule {
         if (null == tableShardingStrategyConfig) {
             return new LinkedList<>();
         }
-        List<String> result = new LinkedList<>();
         List<String> dataSources = Strings.isNullOrEmpty(tableRuleConfig.getActualDataSources()) ? new LinkedList<>(dataSourceNames)
                 : new InlineExpressionParser(tableRuleConfig.getActualDataSources()).splitAndEvaluate();
+        return fillDataSouceNames(shardingAlgorithm.getAutoTablesAmount(), dataSources);
+    }
+    
+    private List<String> fillDataSouceNames(int amount, List<String> dataSources) {
+        List<String> result = new LinkedList<>();
         Iterator<String> iterator = dataSources.iterator();
-        for (int i = 0; i < shardingAlgorithm.getAutoTablesAmount(); i++) {
+        for (int i = 0; i < amount; i++) {
             if (!iterator.hasNext()) {
                 iterator = dataSources.iterator();
             }
