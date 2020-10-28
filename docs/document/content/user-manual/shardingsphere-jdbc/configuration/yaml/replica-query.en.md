@@ -1,5 +1,5 @@
 +++
-title = "Primary-Replica Replication"
+title = "Replica Query"
 weight = 2
 +++
 
@@ -11,7 +11,7 @@ dataSource: # Omit data source configuration
 rules:
 - !PRIMARY_REPLICA_REPLICATION
   dataSources:
-    <data-source-name> (+): # Logic data source name of primary-replica replication
+    <data-source-name> (+): # Logic data source name of replica query
       primaryDataSourceName: # Primary data source name
       replicaDataSourceNames: 
         - <replica-data-source-name> (+) # Replica data source name

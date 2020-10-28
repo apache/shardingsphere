@@ -36,7 +36,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Primary-replica replication rule bean definition parser.
+ * Replica query rule bean definition parser.
  */
 public final class PrimaryReplicaReplicationRuleBeanDefinitionParser extends AbstractBeanDefinitionParser {
     

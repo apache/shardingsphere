@@ -21,18 +21,18 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Primary-replica replication order.
+ * Replica query order.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PrimaryReplicaReplicationOrder {
     
     /**
-     * Primary-replica replication order.
+     * Replica query order.
      */
     public static final int ORDER = 10;
     
     /**
-     * Algorithm provider Primary-replica replication order.
+     * Algorithm provider replica query order.
      */
     public static final int ALGORITHM_PROVIDER_ORDER = 11;
 }

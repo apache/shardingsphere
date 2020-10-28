@@ -6,7 +6,7 @@ weight = 5
 
 ## Target
 
-The performance of ShardingSphere-JDBC, ShardingSphere-Proxy and MySQL would be compared here. INSERT & UPDATE & DELETE which regarded as a set of associated operation and SELECT which focus on sharding optimization are used to evaluate performance for the basic scenarios (single route, primary-replica replication & encrypt & sharding, full route). While another set of associated operation, INSERT & SELECT & DELETE, is used to evaluate performance for primary-replica replication.
+The performance of ShardingSphere-JDBC, ShardingSphere-Proxy and MySQL would be compared here. INSERT & UPDATE & DELETE which regarded as a set of associated operation and SELECT which focus on sharding optimization are used to evaluate performance for the basic scenarios (single route, replica query & encrypt & sharding, full route). While another set of associated operation, INSERT & SELECT & DELETE, is used to evaluate performance for replica query.
 To achieve the result better, these tests are performed with jmeter which based on a certain amount of data with 20 concurrent threads for 30 minutes, and one MySQL has been deployed on one machine, while the scenario of MySQL used for comparison is deployed on one machine with one instance.
 
 ## Test Scenarios
@@ -16,12 +16,12 @@ To achieve the result better, these tests are performed with jmeter which based 
 On the basis of one thousand data volume, four databases that are deployed on the same machine and each contains 1024 tables with `id` used for database sharding and `k` used for table sharding are designed for this scenario, single route select sql statement is chosen here.
 While as a comparison, MySQL runs with INSERT & UPDATE & DELETE statement and single route select sql statement on the basis of one thousand data volume.
 
-### Primary-Replica Replication
+### Replica Query
 
 One primary database and one replica database, which are deployed on different machines, are designed for this scenario based on ten thousand data volume.
 While as a comparison, MySQL runs with INSERT & SELECT & DELETE sql statement on the basis of ten thousand data volume.
 
-### Primary-Replica Replication & Encrypt & Sharding
+### Replica Query & Encrypt & Sharding
 
 On the basis of one thousand data volume, four databases that are deployed on different machines and each contains 1024 tables with `id` used for database sharding, `k` used for table sharding, `c` encrypted with aes and  `pad` encrypted with md5 are designed for this scenario, single route select sql statement is chosen here.
 While as a comparison, MySQL runs with INSERT & UPDATE & DELETE statement and single route select sql statement on the basis of one thousand data volume.
@@ -109,7 +109,7 @@ shardingRule:
       none:
 ```
 
-#### Primary-Replica Replication Configuration
+#### Replica Query Configuration
 
 ```yaml
 schemaName: sharding_db
@@ -138,7 +138,7 @@ primaryReplicaReplicationRule:
     - replica_ds_0
 ```
 
-#### Primary-Replica Replication & Encrypt & Sharding Configuration
+#### Replica Query & Encrypt & Sharding Configuration
 
 ```yaml
 schemaName: sharding_db

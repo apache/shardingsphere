@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Primary-replica replication rule configuration.
+ * Replica query rule configuration.
  */
 @RequiredArgsConstructor
 @Getter

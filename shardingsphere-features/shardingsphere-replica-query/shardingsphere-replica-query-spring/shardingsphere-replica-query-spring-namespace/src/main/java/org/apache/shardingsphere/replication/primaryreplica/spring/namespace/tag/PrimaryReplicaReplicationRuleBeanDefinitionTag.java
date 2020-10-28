@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Primary-replica replication rule bean definition tag.
+ * Replica query rule bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PrimaryReplicaReplicationRuleBeanDefinitionTag {

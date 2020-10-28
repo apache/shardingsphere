@@ -1,5 +1,5 @@
 +++
-title = "Primary-Replica Replication"
+title = "Replica Query"
 weight = 2
 +++
 

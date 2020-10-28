@@ -49,12 +49,12 @@ chapter = true
 | -------------------- | ----------------------------------------------- |
 | SQLRouter            | Used to process routing results                 |
 
-| *Implementation Class*             | *Description*                                               |
-| ---------------------------------- | ----------------------------------------------------------- |
-| ShardingSQLRouter                  | Used to process sharding routing results                    |
-| PrimaryReplicaReplicationSQLRouter | Used to process primary-replica replication routing results |
-| ConsensusReplicationSQLRouter      | Used to process consensus replication routing results       |
-| ShadowRouteSQLRouter               | Used to process shadow database routing results             |
+| *Implementation Class*             | *Description*                                         |
+| ---------------------------------- | ----------------------------------------------------- |
+| ShardingSQLRouter                  | Used to process sharding routing results              |
+| PrimaryReplicaReplicationSQLRouter | Used to process replica query routing results         |
+| ConsensusReplicationSQLRouter      | Used to process consensus replication routing results |
+| ShadowRouteSQLRouter               | Used to process shadow database routing results       |
 
 ## SQLRewriteContextDecorator
 

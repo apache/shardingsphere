@@ -29,7 +29,7 @@ public interface ReplicaLoadBalanceAlgorithm extends ShardingSphereAlgorithm {
     /**
      * Get data source.
      * 
-     * @param name primary-replica replication logic data source name
+     * @param name replica query logic data source name
      * @param primaryDataSourceName name of primary data sources
      * @param replicaDataSourceNames names of replica data sources
      * @return name of selected data source

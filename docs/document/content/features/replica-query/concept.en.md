@@ -15,7 +15,7 @@ It refers to the database used in data query. It supports multiple replica datab
 ## Primary replica Replication
 
 It refers to the operation to asynchronously replicate data from the primary database to the replica database. 
-Because of primary-replica replication asynchronization, there may be short-time data inconsistency between them.  
+Because of replica query asynchronization, there may be short-time data inconsistency between them.  
 
 ## Load Balance Strategy
 

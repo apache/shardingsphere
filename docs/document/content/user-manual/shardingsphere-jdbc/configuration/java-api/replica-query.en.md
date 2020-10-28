@@ -1,5 +1,5 @@
 +++
-title = "Primary-Replica Replication"
+title = "Replica Query"
 weight = 2
 +++
 
@@ -14,7 +14,7 @@ Attributes:
 | dataSources (+)   | Collection\<PrimaryReplicaReplicationDataSourceRuleConfiguration\> | Data sources of primary and replicas                                 |
 | loadBalancers (*) | Map\<String, ShardingSphereAlgorithmConfiguration\>                | Load balance algorithm name and configurations of replica data sources |
 
-## Primary-Replica Replication Data Source Configuration
+## Replica Query Data Source Configuration
 
 Class name: PrimaryReplicaReplicationDataSourceRuleConfiguration
 
@@ -22,7 +22,7 @@ Attributes:
 
 | *Name*                     | *DataType*           | *Description*                                  | *Default Value*                    |
 | -------------------------- | -------------------- | ---------------------------------------------- | ---------------------------------- |
-| name                       | String               | Primary-replica replication data source name   | -                                  |
+| name                       | String               | Replica query data source name                 | -                                  |
 | primaryDataSourceName      | String               | Primary sources source name                    | -                                  |
 | replicaDataSourceNames (+) | Collection\<String\> | Replica sources source name list               | -                                  |
 | loadBalancerName (?)       | String               | Load balance algorithm name of replica sources | Round robin load balance algorithm |

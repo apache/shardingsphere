@@ -39,7 +39,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Primary-replica replication rule.
+ * Replica query rule.
  */
 public final class PrimaryReplicaReplicationRule implements DataSourceRoutedRule, StatusContainedRule {
     
@@ -52,7 +52,7 @@ public final class PrimaryReplicaReplicationRule implements DataSourceRoutedRule
     private final Map<String, PrimaryReplicaReplicationDataSourceRule> dataSourceRules;
     
     public PrimaryReplicaReplicationRule(final PrimaryReplicaReplicationRuleConfiguration config) {
-        Preconditions.checkArgument(!config.getDataSources().isEmpty(), "Primary-replica replication data source rules can not be empty.");
+        Preconditions.checkArgument(!config.getDataSources().isEmpty(), "Replica query data source rules can not be empty.");
         config.getLoadBalancers().forEach((key, value) -> loadBalancers.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ReplicaLoadBalanceAlgorithm.class)));
         dataSourceRules = new HashMap<>(config.getDataSources().size(), 1);
         for (PrimaryReplicaReplicationDataSourceRuleConfiguration each : config.getDataSources()) {
@@ -64,7 +64,7 @@ public final class PrimaryReplicaReplicationRule implements DataSourceRoutedRule
     }
     
     public PrimaryReplicaReplicationRule(final AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration config) {
-        Preconditions.checkArgument(!config.getDataSources().isEmpty(), "Primary-replica replication data source rules can not be empty.");
+        Preconditions.checkArgument(!config.getDataSources().isEmpty(), "Replica query data source rules can not be empty.");
         loadBalancers.putAll(config.getLoadBalanceAlgorithms());
         dataSourceRules = new HashMap<>(config.getDataSources().size(), 1);
         for (PrimaryReplicaReplicationDataSourceRuleConfiguration each : config.getDataSources()) {
@@ -87,7 +87,7 @@ public final class PrimaryReplicaReplicationRule implements DataSourceRoutedRule
     /**
      * Get single data source rule.
      *
-     * @return primary-replica replication data source rule
+     * @return replica query data source rule
      */
     public PrimaryReplicaReplicationDataSourceRule getSingleDataSourceRule() {
         return dataSourceRules.values().iterator().next();
@@ -97,7 +97,7 @@ public final class PrimaryReplicaReplicationRule implements DataSourceRoutedRule
      * Find data source rule.
      * 
      * @param dataSourceName data source name
-     * @return primary-replica replication data source rule
+     * @return replica query data source rule
      */
     public Optional<PrimaryReplicaReplicationDataSourceRule> findDataSourceRule(final String dataSourceName) {
         return Optional.ofNullable(dataSourceRules.get(dataSourceName));

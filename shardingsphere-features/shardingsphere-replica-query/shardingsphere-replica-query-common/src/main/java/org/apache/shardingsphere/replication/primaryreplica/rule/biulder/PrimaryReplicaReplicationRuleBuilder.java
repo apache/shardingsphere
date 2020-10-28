@@ -25,7 +25,7 @@ import org.apache.shardingsphere.replication.primaryreplica.rule.PrimaryReplicaR
 import java.util.Collection;
 
 /**
- * Primary-replica replication rule builder.
+ * Replica query rule builder.
  */
 public final class PrimaryReplicaReplicationRuleBuilder implements ShardingSphereRuleBuilder<PrimaryReplicaReplicationRule, PrimaryReplicaReplicationRuleConfiguration> {
     

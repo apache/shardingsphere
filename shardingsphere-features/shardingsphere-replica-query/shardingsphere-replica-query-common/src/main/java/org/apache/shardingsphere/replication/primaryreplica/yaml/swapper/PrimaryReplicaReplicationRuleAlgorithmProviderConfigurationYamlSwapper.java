@@ -32,7 +32,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Primary-replica replication rule configuration YAML swapper.
+ * Replica query rule configuration YAML swapper.
  */
 public final class PrimaryReplicaReplicationRuleAlgorithmProviderConfigurationYamlSwapper
         implements YamlRuleConfigurationSwapper<YamlPrimaryReplicaReplicationRuleConfiguration, AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration> {

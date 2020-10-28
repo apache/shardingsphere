@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 /**
- * Primary-replica replication data source rule configuration.
+ * Replica query data source rule configuration.
  */
 @RequiredArgsConstructor
 @Getter

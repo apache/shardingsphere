@@ -1,6 +1,6 @@
 +++
 pre = "<b>5.5. </b>"
-title = "Primary-Replica Replication"
+title = "Replica Query"
 weight = 5
 chapter = true
 +++

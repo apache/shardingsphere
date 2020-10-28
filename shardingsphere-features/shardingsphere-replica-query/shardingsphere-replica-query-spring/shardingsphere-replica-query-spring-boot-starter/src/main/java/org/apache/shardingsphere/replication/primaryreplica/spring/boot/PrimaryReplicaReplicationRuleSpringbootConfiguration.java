@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Rule spring boot configuration for primary-replica replication.
+ * Rule spring boot configuration for replica query.
  */
 @Configuration
 @EnableConfigurationProperties(YamlPrimaryReplicaReplicationRuleSpringBootConfiguration.class)
@@ -53,10 +53,10 @@ public class PrimaryReplicaReplicationRuleSpringbootConfiguration {
     private final YamlPrimaryReplicaReplicationRuleSpringBootConfiguration yamlConfig;
     
     /**
-     * Primary-replica replication rule configuration for spring boot.
+     * Replica query rule configuration for spring boot.
      *
      * @param loadBalanceAlgorithms load balance algorithms
-     * @return Primary-replica replication rule configuration
+     * @return replica query rule configuration
      */
     @Bean
     public RuleConfiguration primaryReplicaReplicationRuleConfiguration(final ObjectProvider<Map<String, ReplicaLoadBalanceAlgorithm>> loadBalanceAlgorithms) {
@@ -67,10 +67,10 @@ public class PrimaryReplicaReplicationRuleSpringbootConfiguration {
     }
     
     /**
-     * Primary-replica replication algorithm provided bean registry.
+     * Replica query algorithm provided bean registry.
      *
      * @param environment environment
-     * @return Primary-replica replication algorithm provided bean registry
+     * @return replica query algorithm provided bean registry
      */
     @Bean
     public static PrimaryReplicaReplicationAlgorithmProvidedBeanRegistry primaryReplicaReplicationAlgorithmProvidedBeanRegistry(final Environment environment) {

@@ -11,4 +11,4 @@ through which developers can quickly and clearly understand the functions provid
 This chapter is a configuration manual for ShardingSphere-JDBC, which can also be referred to as a dictionary if necessary.
 
 ShardingSphere-JDBC has provided 4 kinds of configuration methods for different situations. 
-By configuration, application developers can flexibly use data sharding, primary-replica replication, consensus replication, data encryption, shadow database or the combination of them.
+By configuration, application developers can flexibly use data sharding, replica query, consensus replication, data encryption, shadow database or the combination of them.

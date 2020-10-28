@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Primary-replica replication data source rule configuration for YAML.
+ * Replica query data source rule configuration for YAML.
  */
 @Getter
 @Setter

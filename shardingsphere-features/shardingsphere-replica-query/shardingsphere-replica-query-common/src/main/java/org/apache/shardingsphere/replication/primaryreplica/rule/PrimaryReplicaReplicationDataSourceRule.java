@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Primary-replica replication data source rule.
+ * Replica query data source rule.
  */
 @Getter
 public final class PrimaryReplicaReplicationDataSourceRule {

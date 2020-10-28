@@ -62,7 +62,7 @@ try (
 ### Data Source Configuration
 
 It is divided into single data source configuration and multi data source configuration.
-Single data source configuration used for data encryption rules; and multi data source configuration used for fragmentation, primary-replica replication and other rules.
+Single data source configuration used for data encryption rules; and multi data source configuration used for fragmentation, replica query and other rules.
 If features such as encryption and sharding are used in combination, a multi data source configuration should be used.
 
 #### Single Data Source Configuration

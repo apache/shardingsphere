@@ -36,7 +36,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Primary-replica replication SQL router.
+ * Replica query SQL router.
  */
 public final class PrimaryReplicaReplicationSQLRouter implements SQLRouter<PrimaryReplicaReplicationRule> {
     

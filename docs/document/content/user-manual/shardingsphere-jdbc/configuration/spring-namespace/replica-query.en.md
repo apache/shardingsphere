@@ -1,5 +1,5 @@
 +++
-title = "Primary-Replica Replication"
+title = "Replica Query"
 weight = 2
 +++
 
@@ -9,10 +9,10 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/replica-query
 
 \<replica-query:rule />
 
-| *Name*               | *Type*    | *Description*                                              |
-| -------------------- | --------- | ---------------------------------------------------------- |
-| id                   | Attribute | Spring Bean Id                                             |
-| data-source-rule (+) | Tag       | Primary-replica replication data source rule configuration |
+| *Name*               | *Type*    | *Description*                                |
+| -------------------- | --------- | -------------------------------------------- |
+| id                   | Attribute | Spring Bean Id                               |
+| data-source-rule (+) | Tag       | Replica query data source rule configuration |
 
 \<replica-query:data-source-rule />
 

@@ -30,7 +30,7 @@ public final class PrimaryReplicaReplicationAlgorithmProvidedBeanRegistry extend
     private static final String ALGORITHMS = "spring.shardingsphere.rules.replica-query.load-balancers.";
     
     /**
-     * Instantiates a new primary-replica replication algorithm provided bean registry.
+     * Instantiates a new replica query algorithm provided bean registry.
      *
      * @param environment environment
      */

@@ -52,7 +52,7 @@ Zookeeper command is as follows:
 
 ### Disable Replica Database
 
-Under primary-replica replication scenarios, users can write `DISABLED` (case insensitive) to sub-nodes of data source name to disable replica database sources. Delete `DISABLED` or the node to enable it.
+Under replica query scenarios, users can write `DISABLED` (case insensitive) to sub-nodes of data source name to disable replica database sources. Delete `DISABLED` or the node to enable it.
 
 Zookeeper command is as follows:
 
