@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.parser;
+package org.apache.shardingsphere.sql.parser.engine.parser;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.BailErrorStrategy;
@@ -23,33 +23,53 @@ import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
+import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.core.parser.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
+import java.util.Optional;
+
 /**
- * SQL parser executor.
+ * SQL parser engine.
  */
 @RequiredArgsConstructor
-public final class SQLParserExecutor {
+public final class SQLParserEngine {
     
     private final String databaseType;
     
-    private final String sql;
+    private final SQLParsedResultCache<ParseTree> cache = new SQLParsedResultCache<>();
     
     /**
-     * Execute to parse SQL.
+     * Parse.
      *
-     * @return AST node
+     * @param sql SQL to be parsed
+     * @param useCache whether use cache
+     * @return parse tree
      */
-    public ParseASTNode execute() {
-        ParseASTNode result = twoPhaseParse();
-        if (result.getRootNode() instanceof ErrorNode) {
-            throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
+    public ParseTree parse(final String sql, final boolean useCache) {
+        if (!useCache) {
+            return parse(sql);
         }
+        Optional<ParseTree> parseTree = cache.get(sql);
+        if (parseTree.isPresent()) {
+            return parseTree.get();
+        }
+        ParseTree result = parse(sql);
+        cache.put(sql, result);
         return result;
     }
     
-    private ParseASTNode twoPhaseParse() {
+    private ParseTree parse(final String sql) {
+        ParseASTNode result = twoPhaseParse(sql);
+        if (result.getRootNode() instanceof ErrorNode) {
+            throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
+        }
+        return result.getRootNode();
+    }
+    
+    private ParseASTNode twoPhaseParse(final String sql) {
         SQLParser sqlParser = SQLParserFactory.newInstance(databaseType, sql);
         try {
             setPredictionMode((Parser) sqlParser, PredictionMode.SLL);

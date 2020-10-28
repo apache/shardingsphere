@@ -30,7 +30,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementLexer;
 import org.apache.shardingsphere.rdl.parser.sql.parser.ShardingSphereParser;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.engine.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 

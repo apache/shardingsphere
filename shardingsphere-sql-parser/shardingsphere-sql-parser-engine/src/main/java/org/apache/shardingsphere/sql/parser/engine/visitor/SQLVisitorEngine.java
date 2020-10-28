@@ -15,41 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.parser;
+package org.apache.shardingsphere.sql.parser.engine.visitor;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
-
-import java.util.Optional;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
+import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorFactory;
+import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorRule;
 
 /**
- * SQL parser engine.
+ * SQL visitor engnie.
+ * 
+ * @param <T> type of return value
  */
 @RequiredArgsConstructor
-public final class SQLParserEngine {
+public final class SQLVisitorEngine<T> {
     
     private final String databaseType;
     
-    private final SQLParsedResultCache<ParseTree> cache = new SQLParsedResultCache<>();
+    private final String visitorType;
     
     /**
-     * Parse SQL.
-     * 
-     * @param sql SQL to be parsed
-     * @param useCache whether use cache
-     * @return parse tree
+     * Visit parse tree.
+     *
+     * @param parseTree parse tree
+     * @return visit result
      */
-    public ParseTree parse(final String sql, final boolean useCache) {
-        if (!useCache) {
-            return new SQLParserExecutor(databaseType, sql).execute().getRootNode();
-        }
-        Optional<ParseTree> parseTree = cache.get(sql);
-        if (parseTree.isPresent()) {
-            return parseTree.get();
-        }
-        ParseTree result = new SQLParserExecutor(databaseType, sql).execute().getRootNode();
-        cache.put(sql, result);
-        return result;
+    public T visit(final ParseTree parseTree) {
+        ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseTree.getClass()));
+        return parseTree.accept(visitor);
     }
 }

@@ -15,32 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.visitor;
-
-import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeVisitor;
+package org.apache.shardingsphere.sql.parser.engine.visitor.operation;
 
 /**
- * SQL visitor executor.
- * 
- * @param <T> type of return value
+ * SQL statement visitor.
  */
-@RequiredArgsConstructor
-public final class SQLVisitorExecutor<T> {
-    
-    private final String databaseType;
-    
-    private final String visitorType;
-    
-    /**
-     * Visit parse tree.
-     *
-     * @param parseTree parse tree
-     * @return visit result
-     */
-    public T visit(final ParseTree parseTree) {
-        ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseTree.getClass()));
-        return parseTree.accept(visitor);
-    }
+public interface SQLStatementVisitor extends SQLOperationVisitor {
 }

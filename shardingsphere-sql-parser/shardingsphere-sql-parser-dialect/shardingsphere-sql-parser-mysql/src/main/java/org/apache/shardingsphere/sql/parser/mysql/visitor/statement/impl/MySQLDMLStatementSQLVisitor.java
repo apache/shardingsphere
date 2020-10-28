@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.engine.visitor.operation.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.engine.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.engine.visitor.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLCallStatement;

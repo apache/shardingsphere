@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.spi;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.engine.visitor.SQLVisitor;
 
 /**
  * SQL visitor facade.

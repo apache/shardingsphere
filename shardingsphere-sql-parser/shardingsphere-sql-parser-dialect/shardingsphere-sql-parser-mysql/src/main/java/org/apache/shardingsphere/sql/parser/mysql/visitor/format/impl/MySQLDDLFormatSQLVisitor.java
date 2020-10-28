@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLFormatVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.engine.visitor.operation.SQLFormatVisitor;
+import org.apache.shardingsphere.sql.parser.engine.visitor.type.DDLSQLVisitor;
 
 /**
  * DDL Format SQL visitor for MySQL.

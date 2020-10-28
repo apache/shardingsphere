@@ -23,7 +23,7 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
 import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorFactory;
 import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorRule;
-import org.apache.shardingsphere.sql.parser.api.SQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.engine.parser.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.SQLStatementParserEngine;

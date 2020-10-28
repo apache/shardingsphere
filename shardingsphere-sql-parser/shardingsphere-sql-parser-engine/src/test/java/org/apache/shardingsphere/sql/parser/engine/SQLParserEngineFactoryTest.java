@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api;
+package org.apache.shardingsphere.sql.parser.engine;
 
+import org.apache.shardingsphere.sql.parser.engine.parser.SQLParserEngineFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

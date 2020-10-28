@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api;
+package org.apache.shardingsphere.sql.parser.engine.parser;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.core.parser.SQLParserEngine;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,7 +33,7 @@ public final class SQLParserEngineFactory {
     
     /**
      * Get SQL parser engine.
-     *x
+     *
      * @param databaseType database type
      * @return SQL parser engine
      */

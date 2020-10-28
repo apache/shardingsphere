@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser.mysql.parser;
 
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.engine.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.engine.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
 import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
 
