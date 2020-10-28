@@ -5,18 +5,18 @@ weight = 2
 
 ## Root Configuration
 
-Class name: PrimaryReplicaReplicationRuleConfiguration
+Class name: ReplicaQueryRuleConfiguration
 
 Attributes:
 
-| *Name*            | *DataType*                                                         | *Description*                                                        |
-| ----------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------- |
-| dataSources (+)   | Collection\<PrimaryReplicaReplicationDataSourceRuleConfiguration\> | Data sources of primary and replicas                                 |
-| loadBalancers (*) | Map\<String, ShardingSphereAlgorithmConfiguration\>                | Load balance algorithm name and configurations of replica data sources |
+| *Name*            | *DataType*                                            | *Description*                                                          |
+| ----------------- | ----------------------------------------------------- | ---------------------------------------------------------------------- |
+| dataSources (+)   | Collection\<ReplicaQueryDataSourceRuleConfiguration\> | Data sources of primary and replicas                                   |
+| loadBalancers (*) | Map\<String, ShardingSphereAlgorithmConfiguration\>   | Load balance algorithm name and configurations of replica data sources |
 
 ## Replica Query Data Source Configuration
 
-Class name: PrimaryReplicaReplicationDataSourceRuleConfiguration
+Class name: ReplicaQueryDataSourceRuleConfiguration
 
 Attributes:
 

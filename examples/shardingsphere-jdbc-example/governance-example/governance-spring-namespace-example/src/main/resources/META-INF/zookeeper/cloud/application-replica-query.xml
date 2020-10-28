@@ -32,15 +32,15 @@
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     <import resource="classpath*:META-INF/zookeeper/registry-center.xml" />
     
-    <governance:data-source id="primaryReplicaReplicationDataSource" reg-center-ref="regCenter" />
+    <governance:data-source id="replicaQueryDataSource" reg-center-ref="regCenter" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="primaryReplicaReplicationDataSource" />
+        <property name="dataSource" ref="replicaQueryDataSource" />
     </bean>
     <tx:annotation-driven />
     
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="primaryReplicaReplicationDataSource" />
+        <property name="dataSource" ref="replicaQueryDataSource" />
         <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml" />
     </bean>
     

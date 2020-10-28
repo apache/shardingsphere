@@ -149,12 +149,12 @@
             <sharding:broadcast-table-rule table="t_address"/>
         </sharding:broadcast-table-rules>
     </sharding:rule>
-    <replica-query:rule id="primaryReplicaReplicationRule">
+    <replica-query:rule id="replicaQueryRule">
         <replica-query:data-source-rule id="demo_pr_ds_0" primary-data-source-name="demo_primary_ds_0" replica-data-source-names="demo_primary_ds_0_replica_0, demo_primary_ds_0_replica_1" load-balance-algorithm-ref="randomStrategy" />
         <replica-query:data-source-rule id="demo_pr_ds_1" primary-data-source-name="demo_primary_ds_1" replica-data-source-names="demo_primary_ds_1_replica_0, demo_primary_ds_1_replica_1" load-balance-algorithm-ref="randomStrategy" />
     </replica-query:rule>
     
-    <shardingsphere:data-source id="shardingDataSource" data-source-names="demo_primary_ds_0,demo_primary_ds_1,demo_primary_ds_0_replica_0, demo_primary_ds_0_replica_1,demo_primary_ds_1_replica_0, demo_primary_ds_1_replica_1" rule-refs="shardingRule, primaryReplicaReplicationRule">
+    <shardingsphere:data-source id="shardingDataSource" data-source-names="demo_primary_ds_0,demo_primary_ds_1,demo_primary_ds_0_replica_0, demo_primary_ds_0_replica_1,demo_primary_ds_1_replica_0, demo_primary_ds_1_replica_1" rule-refs="shardingRule, replicaQueryRule">
         <props>
             <prop key="sql-show">false</prop>
         </props>

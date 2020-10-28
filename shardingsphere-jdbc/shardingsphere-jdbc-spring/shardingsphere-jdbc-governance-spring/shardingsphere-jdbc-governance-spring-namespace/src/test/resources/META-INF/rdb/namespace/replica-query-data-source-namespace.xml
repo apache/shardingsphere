@@ -29,19 +29,19 @@
     <replica-query:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM" />
     <replica-query:load-balance-algorithm id="roundRobinLoadBalanceAlgorithm" type="ROUND_ROBIN" />
     
-    <replica-query:rule id="defaultPrimaryReplicaReplicationRule">
+    <replica-query:rule id="defaultReplicaQueryRule">
         <replica-query:data-source-rule id="default_dbtbl_0" primary-data-source-name="dbtbl_primary_0" replica-data-source-names="dbtbl_0_replica_0, dbtbl_0_replica_1" />
     </replica-query:rule>
     
-    <replica-query:rule id="randomPrimaryReplicaReplicationRule">
+    <replica-query:rule id="randomReplicaQueryRule">
         <replica-query:data-source-rule id="random_dbtbl_0" primary-data-source-name="dbtbl_primary_0" replica-data-source-names="dbtbl_0_replica_0, dbtbl_0_replica_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm" />
     </replica-query:rule>
     
-    <replica-query:rule id="roundRobinPrimaryReplicaReplicationRule">
+    <replica-query:rule id="roundRobinReplicaQueryRule">
         <replica-query:data-source-rule id="roundRobin_dbtbl_0" primary-data-source-name="dbtbl_primary_0" replica-data-source-names="dbtbl_0_replica_0, dbtbl_0_replica_1" load-balance-algorithm-ref="roundRobinLoadBalanceAlgorithm" />
     </replica-query:rule>
     
-    <replica-query:rule id="refPrimaryReplicaReplicationRule">
+    <replica-query:rule id="refReplicaQueryRule">
         <replica-query:data-source-rule id="random_dbtbl_1" primary-data-source-name="dbtbl_primary_1" replica-data-source-names="dbtbl_1_replica_0, dbtbl_1_replica_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm" />
     </replica-query:rule>
 </beans>

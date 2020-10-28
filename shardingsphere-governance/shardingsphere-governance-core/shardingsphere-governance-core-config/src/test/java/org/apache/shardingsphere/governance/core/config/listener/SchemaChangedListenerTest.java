@@ -30,7 +30,7 @@ import org.apache.shardingsphere.governance.repository.api.listener.DataChangedE
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.replication.primaryreplica.api.config.PrimaryReplicaReplicationRuleConfiguration;
+import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -105,15 +105,15 @@ public final class SchemaChangedListenerTest {
     }
     
     @Test
-    public void assertCreatePrimaryReplicaReplicationRuleChangedEventForExistedSchema() {
+    public void assertCreateReplicaQueryRuleChangedEventForExistedSchema() {
         String rule = readYAML(REPLICA_QUERY_RULE_FILE);
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/replica_query_db/rule", rule, ChangedType.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         RuleConfigurationsChangedEvent event = (RuleConfigurationsChangedEvent) actual.get();
         assertThat(event.getSchemaName(), is("replica_query_db"));
-        assertThat(event.getRuleConfigurations().iterator().next(), instanceOf(PrimaryReplicaReplicationRuleConfiguration.class));
-        PrimaryReplicaReplicationRuleConfiguration ruleConfig = (PrimaryReplicaReplicationRuleConfiguration) event.getRuleConfigurations().iterator().next();
+        assertThat(event.getRuleConfigurations().iterator().next(), instanceOf(ReplicaQueryRuleConfiguration.class));
+        ReplicaQueryRuleConfiguration ruleConfig = (ReplicaQueryRuleConfiguration) event.getRuleConfigurations().iterator().next();
         assertThat(ruleConfig.getDataSources().iterator().next().getPrimaryDataSourceName(), is("primary_ds"));
     }
     
@@ -151,7 +151,7 @@ public final class SchemaChangedListenerTest {
     }
     
     @Test
-    public void assertCreatePrimaryReplicaReplicationSchemaAddedEventForNewSchema() {
+    public void assertCreateReplicaQuerySchemaAddedEventForNewSchema() {
         String dataSource = readYAML(DATA_SOURCE_FILE);
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db/datasource", dataSource, ChangedType.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
@@ -214,7 +214,7 @@ public final class SchemaChangedListenerTest {
     }
     
     @Test
-    public void assertCreateAddedEventWithPrimaryReplicaReplicationRuleConfigurationForNewSchema() {
+    public void assertCreateAddedEventWithReplicaQueryRuleConfigurationForNewSchema() {
         String rule = readYAML(REPLICA_QUERY_RULE_FILE);
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db/rule", rule, ChangedType.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);

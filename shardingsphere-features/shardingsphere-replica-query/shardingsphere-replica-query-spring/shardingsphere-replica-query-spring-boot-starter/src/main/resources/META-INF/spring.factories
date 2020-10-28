@@ -16,4 +16,4 @@
 #
 
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.apache.shardingsphere.replication.primaryreplica.spring.boot.PrimaryReplicaReplicationRuleSpringbootConfiguration
+org.apache.shardingsphere.replicaquery.spring.boot.ReplicaQueryRuleSpringbootConfiguration

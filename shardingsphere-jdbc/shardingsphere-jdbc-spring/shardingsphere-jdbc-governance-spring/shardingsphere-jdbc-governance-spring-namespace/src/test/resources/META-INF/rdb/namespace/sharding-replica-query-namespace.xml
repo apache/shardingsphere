@@ -50,22 +50,22 @@
     <sharding:key-generate-strategy id="keyGenerateStrategy" column="order_id" algorithm-ref="incrementAlgorithm" />
     <replica-query:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM" />
     
-    <sharding:rule id="primaryReplicaReplicationShardingDataSourceByDefaultStrategyShardingRule" default-key-generate-strategy-ref="keyGenerateStrategy">
+    <sharding:rule id="replicaQueryShardingDataSourceByDefaultStrategyShardingRule" default-key-generate-strategy-ref="keyGenerateStrategy">
         <sharding:table-rules>
             <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generate-strategy-ref="keyGenerateStrategy" />
         </sharding:table-rules>
     </sharding:rule>
-    <replica-query:rule id="primaryReplicaReplicationShardingDataSourceByDefaultStrategy">
+    <replica-query:rule id="replicaQueryShardingDataSourceByDefaultStrategy">
         <replica-query:data-source-rule id="dbtbl_0" primary-data-source-name="dbtbl_primary_0" replica-data-source-names="dbtbl_0_replica_0,dbtbl_0_replica_1"/>
         <replica-query:data-source-rule id="dbtbl_1" primary-data-source-name="dbtbl_primary_1" replica-data-source-names="dbtbl_1_replica_0,dbtbl_1_replica_1"/>
     </replica-query:rule>
     
-    <sharding:rule id="primaryReplicaReplicationShardingDataSourceByUserStrategyShardingRule" default-key-generate-strategy-ref="keyGenerateStrategy">
+    <sharding:rule id="replicaQueryShardingDataSourceByUserStrategyShardingRule" default-key-generate-strategy-ref="keyGenerateStrategy">
         <sharding:table-rules>
             <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generate-strategy-ref="keyGenerateStrategy" />
         </sharding:table-rules>
     </sharding:rule>
-    <replica-query:rule id="primaryReplicaReplicationShardingDataSourceByUserStrategy">
+    <replica-query:rule id="replicaQueryShardingDataSourceByUserStrategy">
         <replica-query:data-source-rule id="dbtbl_0" primary-data-source-name="dbtbl_primary_0" replica-data-source-names="dbtbl_0_replica_0,dbtbl_0_replica_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm"/>
         <replica-query:data-source-rule id="dbtbl_1" primary-data-source-name="dbtbl_primary_1" replica-data-source-names="dbtbl_1_replica_0,dbtbl_1_replica_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm"/>
     </replica-query:rule>

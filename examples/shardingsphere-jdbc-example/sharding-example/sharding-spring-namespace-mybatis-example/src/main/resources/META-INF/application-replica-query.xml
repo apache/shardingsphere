@@ -58,19 +58,19 @@
     
     <replica-query:load-balance-algorithm id="randomStrategy" type="RANDOM" />
     
-    <replica-query:rule id="primaryReplicaReplicationRule">
+    <replica-query:rule id="replicaQueryRule">
         <replica-query:data-source-rule id="demo_ds" primary-data-source-name="demo_primary_ds" replica-data-source-names="demo_replica_ds_0, demo_replica_ds_1" load-balance-algorithm-ref="randomStrategy" />
     </replica-query:rule>
     
-    <shardingsphere:data-source id="primaryReplicaReplicationDataSource" data-source-names="demo_primary_ds, demo_replica_ds_0, demo_replica_ds_1" rule-refs="primaryReplicaReplicationRule" />
+    <shardingsphere:data-source id="replicaQueryDataSource" data-source-names="demo_primary_ds, demo_replica_ds_0, demo_replica_ds_1" rule-refs="replicaQueryRule" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="primaryReplicaReplicationDataSource" />
+        <property name="dataSource" ref="replicaQueryDataSource" />
     </bean>
     <tx:annotation-driven />
     
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="primaryReplicaReplicationDataSource" />
+        <property name="dataSource" ref="replicaQueryDataSource" />
         <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml" />
     </bean>
     

@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.replication.primaryreplica.yaml.swapper.PrimaryReplicaReplicationRuleAlgorithmProviderConfigurationYamlSwapper
-org.apache.shardingsphere.replication.primaryreplica.yaml.swapper.PrimaryReplicaReplicationRuleConfigurationYamlSwapper
+org.apache.shardingsphere.replicaquery.yaml.swapper.ReplicaQueryRuleAlgorithmProviderConfigurationYamlSwapper
+org.apache.shardingsphere.replicaquery.yaml.swapper.ReplicaQueryRuleConfigurationYamlSwapper

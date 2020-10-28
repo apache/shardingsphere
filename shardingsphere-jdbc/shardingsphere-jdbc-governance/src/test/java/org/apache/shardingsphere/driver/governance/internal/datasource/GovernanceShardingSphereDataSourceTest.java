@@ -34,8 +34,8 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.replication.primaryreplica.api.config.PrimaryReplicaReplicationRuleConfiguration;
-import org.apache.shardingsphere.replication.primaryreplica.api.config.rule.PrimaryReplicaReplicationDataSourceRuleConfiguration;
+import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
+import org.apache.shardingsphere.replicaquery.api.config.rule.ReplicaQueryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -97,7 +97,7 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @Test
     public void assertRenewRules() throws SQLException {
-        governanceSchemaContexts.renew(new RuleConfigurationsChangedEvent(DefaultSchema.LOGIC_NAME, Arrays.asList(getShardingRuleConfiguration(), getPrimaryReplicaReplicationRuleConfiguration())));
+        governanceSchemaContexts.renew(new RuleConfigurationsChangedEvent(DefaultSchema.LOGIC_NAME, Arrays.asList(getShardingRuleConfiguration(), getReplicaQueryRuleConfiguration())));
         assertThat(((ShardingRule) governanceSchemaContexts.getDefaultSchema().getRules().iterator().next()).getTableRules().size(), is(1));
     }
     
@@ -107,10 +107,10 @@ public final class GovernanceShardingSphereDataSourceTest {
         return result;
     }
     
-    private PrimaryReplicaReplicationRuleConfiguration getPrimaryReplicaReplicationRuleConfiguration() {
-        PrimaryReplicaReplicationDataSourceRuleConfiguration dataSourceConfig
-                = new PrimaryReplicaReplicationDataSourceRuleConfiguration("pr_ds", "primary_ds", Collections.singletonList("replica_ds"), "roundRobin");
-        return new PrimaryReplicaReplicationRuleConfiguration(
+    private ReplicaQueryRuleConfiguration getReplicaQueryRuleConfiguration() {
+        ReplicaQueryDataSourceRuleConfiguration dataSourceConfig
+                = new ReplicaQueryDataSourceRuleConfiguration("pr_ds", "primary_ds", Collections.singletonList("replica_ds"), "roundRobin");
+        return new ReplicaQueryRuleConfiguration(
                 Collections.singleton(dataSourceConfig), ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties())));
     }
     

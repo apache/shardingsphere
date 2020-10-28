@@ -32,6 +32,6 @@
             <prop key="operation-timeout-milliseconds">1000</prop>
         </props>
     </governance:reg-center>
-    <governance:data-source id="dataSourceByDefaultStrategyGovernance" data-source-names="dbtbl_primary_0,dbtbl_0_replica_0,dbtbl_0_replica_1,dbtbl_primary_1,dbtbl_1_replica_0,dbtbl_1_replica_1" rule-refs="primaryReplicaReplicationShardingDataSourceByDefaultStrategyShardingRule, primaryReplicaReplicationShardingDataSourceByDefaultStrategy" reg-center-ref="regCenter" />
-    <governance:data-source id="dataSourceByUserStrategyGovernance" data-source-names="dbtbl_primary_0,dbtbl_0_replica_0,dbtbl_0_replica_1,dbtbl_primary_1,dbtbl_1_replica_0,dbtbl_1_replica_1" rule-refs="primaryReplicaReplicationShardingDataSourceByUserStrategyShardingRule, primaryReplicaReplicationShardingDataSourceByUserStrategy" reg-center-ref="regCenter" />
+    <governance:data-source id="dataSourceByDefaultStrategyGovernance" data-source-names="dbtbl_primary_0,dbtbl_0_replica_0,dbtbl_0_replica_1,dbtbl_primary_1,dbtbl_1_replica_0,dbtbl_1_replica_1" rule-refs="replicaQueryShardingDataSourceByDefaultStrategyShardingRule, replicaQueryShardingDataSourceByDefaultStrategy" reg-center-ref="regCenter" />
+    <governance:data-source id="dataSourceByUserStrategyGovernance" data-source-names="dbtbl_primary_0,dbtbl_0_replica_0,dbtbl_0_replica_1,dbtbl_primary_1,dbtbl_1_replica_0,dbtbl_1_replica_1" rule-refs="replicaQueryShardingDataSourceByUserStrategyShardingRule, replicaQueryShardingDataSourceByUserStrategy" reg-center-ref="regCenter" />
 </beans>

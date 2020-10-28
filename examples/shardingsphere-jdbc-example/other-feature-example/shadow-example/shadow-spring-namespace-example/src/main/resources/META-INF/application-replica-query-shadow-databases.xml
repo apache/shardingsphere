@@ -68,7 +68,7 @@
     
     <shadow:rule id="shadowRule" column="shadow" sourceDataSourceNames="primary_ds,replica_ds" shadowDataSourceNames="shadow_primary_ds,shadow_replica_ds"/>
 
-    <shardingsphere:data-source id="shadowDataSource" data-source-names="primary_ds,replica_ds,shadow_primary_ds,shadow_replica_ds" rule-refs="shadowRule,primaryReplicaReplicationRule">
+    <shardingsphere:data-source id="shadowDataSource" data-source-names="primary_ds,replica_ds,shadow_primary_ds,shadow_replica_ds" rule-refs="shadowRule,replicaQueryRule">
         <props>
             <prop key="sql-show">true</prop>
         </props>
@@ -76,7 +76,7 @@
     
     <replica-query:load-balance-algorithm id="randomStrategy" type="RANDOM" />
     
-    <replica-query:rule id="primaryReplicaReplicationRule">
+    <replica-query:rule id="replicaQueryRule">
         <replica-query:data-source-rule id="demo_ds" primary-data-source-name="primary_ds" replica-data-source-names="replica_ds" load-balance-algorithm-ref="randomStrategy" />
     </replica-query:rule>
     

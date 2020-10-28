@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.config;
 
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.replication.primaryreplica.yaml.config.YamlPrimaryReplicaReplicationRuleConfiguration;
-import org.apache.shardingsphere.replication.primaryreplica.yaml.config.rule.YamlPrimaryReplicaReplicationDataSourceRuleConfiguration;
+import org.apache.shardingsphere.replicaquery.yaml.config.YamlReplicaQueryRuleConfiguration;
+import org.apache.shardingsphere.replicaquery.yaml.config.rule.YamlReplicaQueryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -45,7 +45,7 @@ public final class ProxyConfigurationLoaderTest {
         assertThat(actual.getServerConfiguration().getGovernance().getRegistryCenter().getServerLists(), is("localhost:2181"));
         assertThat(actual.getRuleConfigurations().size(), is(3));
         assertShardingRuleConfiguration(actual.getRuleConfigurations().get("sharding_db"));
-        assertPrimaryReplicaReplicationRuleConfiguration(actual.getRuleConfigurations().get("replica_query_db"));
+        assertReplicaQueryRuleConfiguration(actual.getRuleConfigurations().get("replica_query_db"));
         assertEncryptRuleConfiguration(actual.getRuleConfigurations().get("encrypt_db"));
     }
     
@@ -73,7 +73,7 @@ public final class ProxyConfigurationLoaderTest {
         assertNotNull(actual.getDefaultDatabaseStrategy().getNone());
     }
     
-    private void assertPrimaryReplicaReplicationRuleConfiguration(final YamlProxyRuleConfiguration actual) {
+    private void assertReplicaQueryRuleConfiguration(final YamlProxyRuleConfiguration actual) {
         assertThat(actual.getSchemaName(), is("replica_query_db"));
         assertThat(actual.getDataSources().size(), is(3));
         assertNull(actual.getDataSource());
@@ -84,15 +84,15 @@ public final class ProxyConfigurationLoaderTest {
             each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(configuration -> (YamlShardingRuleConfiguration) configuration).isPresent());
         assertFalse(actual.getRules().stream().filter(
             each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(configuration -> (YamlEncryptRuleConfiguration) configuration).isPresent());
-        Optional<YamlPrimaryReplicaReplicationRuleConfiguration> ruleConfig = actual.getRules().stream().filter(
-            each -> each instanceof YamlPrimaryReplicaReplicationRuleConfiguration).findFirst().map(configuration -> (YamlPrimaryReplicaReplicationRuleConfiguration) configuration);
+        Optional<YamlReplicaQueryRuleConfiguration> ruleConfig = actual.getRules().stream().filter(
+            each -> each instanceof YamlReplicaQueryRuleConfiguration).findFirst().map(configuration -> (YamlReplicaQueryRuleConfiguration) configuration);
         assertTrue(ruleConfig.isPresent());
-        for (YamlPrimaryReplicaReplicationDataSourceRuleConfiguration each : ruleConfig.get().getDataSources().values()) {
-            assertPrimaryReplicaReplicationRuleConfiguration(each);
+        for (YamlReplicaQueryDataSourceRuleConfiguration each : ruleConfig.get().getDataSources().values()) {
+            assertReplicaQueryRuleConfiguration(each);
         }
     }
     
-    private void assertPrimaryReplicaReplicationRuleConfiguration(final YamlPrimaryReplicaReplicationDataSourceRuleConfiguration actual) {
+    private void assertReplicaQueryRuleConfiguration(final YamlReplicaQueryDataSourceRuleConfiguration actual) {
         assertThat(actual.getName(), is("pr_ds"));
         assertThat(actual.getPrimaryDataSourceName(), is("primary_ds"));
         assertThat(actual.getReplicaDataSourceNames().size(), is(2));

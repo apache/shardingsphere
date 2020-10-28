@@ -5,18 +5,18 @@ weight = 2
 
 ## 配置入口
 
-类名称：PrimaryReplicaReplicationRuleConfiguration
+类名称：ReplicaQueryRuleConfiguration
 
 可配置属性：
 
-| *名称*             | *数据类型*                                                         | *说明*            |
-| ----------------- | ------------------------------------------------------------------ | ----------------- |
-| dataSources (+)   | Collection\<PrimaryReplicaReplicationDataSourceRuleConfiguration\> | 主从数据源配置      |
-| loadBalancers (*) | Map\<String, ShardingSphereAlgorithmConfiguration\>                | 从库负载均衡算法配置 |
+| *名称*             | *数据类型*                                             | *说明*            |
+| ----------------- | ----------------------------------------------------- | ----------------- |
+| dataSources (+)   | Collection\<ReplicaQueryDataSourceRuleConfiguration\> | 主从数据源配置      |
+| loadBalancers (*) | Map\<String, ShardingSphereAlgorithmConfiguration\>   | 从库负载均衡算法配置 |
 
 ## 主从数据源配置
 
-类名称：PrimaryReplicaReplicationDataSourceRuleConfiguration
+类名称：ReplicaQueryDataSourceRuleConfiguration
 
 可配置属性：
 
