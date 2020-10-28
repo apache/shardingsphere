@@ -26,6 +26,7 @@ import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFacadeRegistry;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
@@ -38,22 +39,32 @@ import java.nio.CharBuffer;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLParserFactory {
     
-    /** 
+    /**
      * New instance of SQL parser.
      * 
-     * @param databaseTypeName name of database type
+     * @param databaseType database type
      * @param sql SQL
      * @return SQL parser
      */
-    public static SQLParser newInstance(final String databaseTypeName, final String sql) {
-        return createSQLParser(sql, SQLParserFacadeRegistry.getInstance().getSQLParserFacade(databaseTypeName));
+    @SneakyThrows(ReflectiveOperationException.class)
+    public static SQLParser newInstance(final String databaseType, final String sql) {
+        SQLParserFacade sqlParserFacade = SQLParserFacadeRegistry.getInstance().getSQLParserFacade(databaseType);
+        return getSQLParser(getTokenStream(sql, sqlParserFacade.getLexerClass()), sqlParserFacade.getParserClass());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static SQLParser createSQLParser(final String sql, final SQLParserFacade config) {
+    private static SQLParser getSQLParser(final TokenStream tokenStream, final Class<? extends SQLParser> parserClass) {
+        return parserClass.getConstructor(TokenStream.class).newInstance(tokenStream);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private static TokenStream getTokenStream(final String sql, final Class<? extends SQLLexer> lexerClass) {
+        Lexer lexer = (Lexer) lexerClass.getConstructor(CharStream.class).newInstance(getSQLCharStream(sql));
+        return new CommonTokenStream(lexer);
+    }
+    
+    private static CharStream getSQLCharStream(final String sql) {
         CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(sql.toCharArray()));
-        CodePointCharStream codePointCharStream = CodePointCharStream.fromBuffer(buffer);
-        Lexer lexer = (Lexer) config.getLexerClass().getConstructor(CharStream.class).newInstance(codePointCharStream);
-        return config.getParserClass().getConstructor(TokenStream.class).newInstance(new CommonTokenStream(lexer));
+        return CodePointCharStream.fromBuffer(buffer);
     }
 }
