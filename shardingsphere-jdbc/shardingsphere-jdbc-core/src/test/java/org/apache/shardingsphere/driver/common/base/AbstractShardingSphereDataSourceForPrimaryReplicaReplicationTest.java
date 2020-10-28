@@ -36,7 +36,7 @@ public abstract class AbstractShardingSphereDataSourceForPrimaryReplicaReplicati
     
     private static ShardingSphereDataSource dataSource;
     
-    private static final String CONFIG = "config-primary-replica-replication.yaml";
+    private static final String CONFIG = "config-replica-query.yaml";
     
     private static final List<String> DATA_SOURCE_NAMES = Arrays.asList("test_primary_ds", "test_replica_ds");
     

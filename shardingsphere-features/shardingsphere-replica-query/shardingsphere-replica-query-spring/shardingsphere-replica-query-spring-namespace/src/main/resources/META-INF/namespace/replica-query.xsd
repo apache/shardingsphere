@@ -16,10 +16,10 @@
   ~ limitations under the License.
   -->
 
-<xsd:schema xmlns="http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication"
+<xsd:schema xmlns="http://shardingsphere.apache.org/schema/shardingsphere/replica-query"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:beans="http://www.springframework.org/schema/beans"
-            targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication"
+            targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/replica-query"
             elementFormDefault="qualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd" />
     

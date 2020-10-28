@@ -60,7 +60,7 @@ public class PrimaryReplicaReplicationRuleSpringbootConfiguration {
      */
     @Bean
     public RuleConfiguration primaryReplicaReplicationRuleConfiguration(final ObjectProvider<Map<String, ReplicaLoadBalanceAlgorithm>> loadBalanceAlgorithms) {
-        AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration result = swapper.swapToObject(yamlConfig.getPrimaryReplicaReplication());
+        AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration result = swapper.swapToObject(yamlConfig.getReplicaQuery());
         Map<String, ReplicaLoadBalanceAlgorithm> balanceAlgorithmMap = Optional.ofNullable(loadBalanceAlgorithms.getIfAvailable()).orElse(Collections.emptyMap());
         result.setLoadBalanceAlgorithms(balanceAlgorithmMap);
         return result;

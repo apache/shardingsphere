@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = GovernanceSpringBootPrimaryReplicaReplicationTest.class)
 @SpringBootApplication
-@ActiveProfiles("primary-replica-replication")
+@ActiveProfiles("replica-query")
 public class GovernanceSpringBootPrimaryReplicaReplicationTest {
     
     @Resource

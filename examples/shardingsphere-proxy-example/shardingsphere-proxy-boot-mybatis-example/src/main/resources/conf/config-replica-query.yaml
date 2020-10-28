@@ -18,7 +18,7 @@
 ######################################################################################################
 # 
 # Here you can configure the rules for the proxy.
-# This example is configuration of primary-replica-replication rule.
+# This example is configuration of replica-query rule.
 # 
 ######################################################################################################
 

@@ -5,16 +5,16 @@ weight = 2
 
 ## Configuration Item Explanation
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication/primary-replica-replication-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication/primary-replica-replication-5.0.0.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query-5.0.0.xsd)
 
-\<primary-replica-replication:rule />
+\<replica-query:rule />
 
 | *Name*               | *Type*    | *Description*                                              |
 | -------------------- | --------- | ---------------------------------------------------------- |
 | id                   | Attribute | Spring Bean Id                                             |
 | data-source-rule (+) | Tag       | Primary-replica replication data source rule configuration |
 
-\<primary-replica-replication:data-source-rule />
+\<replica-query:data-source-rule />
 
 | *Name*                     | *Type*     | *Description*                                                              |
 | -------------------------- | ---------- | -------------------------------------------------------------------------- |
@@ -23,7 +23,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/primary-repli
 | replica-data-source-names  | Attribute  | Replica data source names, multiple data source names separated with comma |
 | load-balance-algorithm-ref | Attribute  | Load balance algorithm name                                                |
 
-\<primary-replica-replication:load-balance-algorithm />
+\<replica-query:load-balance-algorithm />
 
 | *Name*    | *Type*     | *Description*                     |
 | --------- | ---------- | --------------------------------- |

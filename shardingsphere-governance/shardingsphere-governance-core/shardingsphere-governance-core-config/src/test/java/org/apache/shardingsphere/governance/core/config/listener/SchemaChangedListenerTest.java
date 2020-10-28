@@ -60,7 +60,7 @@ public final class SchemaChangedListenerTest {
     
     private static final String SHARDING_RULE_FILE = "yaml/sharding-rule.yaml";
     
-    private static final String PRIMARY_REPLICA_REPLICATION_RULE_FILE = "yaml/primary-replica-replication-rule.yaml";
+    private static final String PRIMARY_REPLICA_REPLICATION_RULE_FILE = "yaml/replica-query-rule.yaml";
     
     private static final String ENCRYPT_RULE_FILE = "yaml/encrypt-rule.yaml";
     

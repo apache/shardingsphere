@@ -33,7 +33,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@ContextConfiguration(locations = "classpath:META-INF/spring/primary-replica-replication-application-context.xml")
+@ContextConfiguration(locations = "classpath:META-INF/spring/replica-query-application-context.xml")
 public final class PrimaryReplicaReplicationSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Resource

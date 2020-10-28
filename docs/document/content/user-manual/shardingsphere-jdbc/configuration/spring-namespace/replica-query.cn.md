@@ -5,16 +5,16 @@ weight = 2
 
 ## 配置项说明
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication/primary-replica-replication-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication/primary-replica-replication-5.0.0.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query-5.0.0.xsd)
 
-\<primary-replica-replication:rule />
+\<replica-query:rule />
 
 | *名称*                | *类型* | *说明*           |
 | -------------------- | ------ | --------------- |
 | id                   | 属性   | Spring Bean Id   |
 | data-source-rule (+) | 标签   | 读写分离数据源规则配置 |
 
-\<primary-replica-replication:data-source-rule />
+\<replica-query:data-source-rule />
 
 | *名称*                     | *类型* | *说明*                          |
 | -------------------------- | ----- | ------------------------------- |
@@ -24,7 +24,7 @@ weight = 2
 | load-balance-algorithm-ref | 属性  | 负载均衡算法名称                   |
 
 
-\<primary-replica-replication:load-balance-algorithm />
+\<replica-query:load-balance-algorithm />
 
 | *名称*    | *类型* | *说明*            |
 | --------- | ----- | ----------------- |

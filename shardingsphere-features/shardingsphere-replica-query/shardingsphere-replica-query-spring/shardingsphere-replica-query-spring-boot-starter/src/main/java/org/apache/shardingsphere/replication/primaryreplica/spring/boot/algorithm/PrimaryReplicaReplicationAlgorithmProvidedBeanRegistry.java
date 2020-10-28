@@ -23,11 +23,11 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.env.Environment;
 
 /**
- * Primary-replica replication algorithm provided bean registry.
+ * Replica query algorithm provided bean registry.
  */
 public final class PrimaryReplicaReplicationAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry<ReplicaLoadBalanceAlgorithm> {
     
-    private static final String ALGORITHMS = "spring.shardingsphere.rules.primary-replica-replication.load-balancers.";
+    private static final String ALGORITHMS = "spring.shardingsphere.rules.replica-query.load-balancers.";
     
     /**
      * Instantiates a new primary-replica replication algorithm provided bean registry.

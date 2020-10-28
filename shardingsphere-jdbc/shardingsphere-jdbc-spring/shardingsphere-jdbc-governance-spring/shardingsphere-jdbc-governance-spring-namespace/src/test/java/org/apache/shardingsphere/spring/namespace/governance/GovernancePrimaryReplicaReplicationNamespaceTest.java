@@ -41,7 +41,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/primary-replica-replication-governance.xml")
+@ContextConfiguration(locations = "classpath:META-INF/rdb/replica-query-governance.xml")
 public class GovernancePrimaryReplicaReplicationNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @BeforeClass

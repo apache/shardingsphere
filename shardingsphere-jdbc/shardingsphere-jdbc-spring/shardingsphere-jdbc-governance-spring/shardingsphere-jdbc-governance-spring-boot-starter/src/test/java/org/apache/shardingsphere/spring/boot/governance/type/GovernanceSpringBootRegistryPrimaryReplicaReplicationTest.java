@@ -47,12 +47,12 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = GovernanceSpringBootRegistryPrimaryReplicaReplicationTest.class)
 @SpringBootApplication
-@ActiveProfiles("registry-primary-replica-replication")
+@ActiveProfiles("registry-replica-query")
 public class GovernanceSpringBootRegistryPrimaryReplicaReplicationTest {
     
-    private static final String DATA_SOURCE_FILE = "yaml/primary-replica-replication-databases.yaml";
+    private static final String DATA_SOURCE_FILE = "yaml/replica-query-databases.yaml";
     
-    private static final String RULE_FILE = "yaml/primary-replica-replication-rule.yaml";
+    private static final String RULE_FILE = "yaml/replica-query-rule.yaml";
     
     @Resource
     private DataSource dataSource;

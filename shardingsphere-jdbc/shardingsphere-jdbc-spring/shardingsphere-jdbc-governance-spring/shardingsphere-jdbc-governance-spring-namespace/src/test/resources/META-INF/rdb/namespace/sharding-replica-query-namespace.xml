@@ -19,15 +19,15 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
-       xmlns:primary-replica-replication="http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication"
+       xmlns:replica-query="http://shardingsphere.apache.org/schema/shardingsphere/replica-query"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication
-                           http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication/primary-replica-replication.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/replica-query
+                           http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query.xsd
                            ">
-    <import resource="../datasource/primary-replica-replication-data-source.xml" />
+    <import resource="../datasource/replica-query-data-source.xml" />
     
     <sharding:sharding-algorithm id="standardModuloDatabaseShardingAlgorithm" type="STANDARD_TEST_DB" />
     <sharding:sharding-algorithm id="standardModuloTableShardingAlgorithm" type="STANDARD_TEST_TBL" />
@@ -48,25 +48,25 @@
     <sharding:none-strategy id="noneStrategy" />
     
     <sharding:key-generate-strategy id="keyGenerateStrategy" column="order_id" algorithm-ref="incrementAlgorithm" />
-    <primary-replica-replication:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM" />
+    <replica-query:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM" />
     
     <sharding:rule id="primaryReplicaReplicationShardingDataSourceByDefaultStrategyShardingRule" default-key-generate-strategy-ref="keyGenerateStrategy">
         <sharding:table-rules>
             <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generate-strategy-ref="keyGenerateStrategy" />
         </sharding:table-rules>
     </sharding:rule>
-    <primary-replica-replication:rule id="primaryReplicaReplicationShardingDataSourceByDefaultStrategy">
-        <primary-replica-replication:data-source-rule id="dbtbl_0" primary-data-source-name="dbtbl_primary_0" replica-data-source-names="dbtbl_0_replica_0,dbtbl_0_replica_1"/>
-        <primary-replica-replication:data-source-rule id="dbtbl_1" primary-data-source-name="dbtbl_primary_1" replica-data-source-names="dbtbl_1_replica_0,dbtbl_1_replica_1"/>
-    </primary-replica-replication:rule>
+    <replica-query:rule id="primaryReplicaReplicationShardingDataSourceByDefaultStrategy">
+        <replica-query:data-source-rule id="dbtbl_0" primary-data-source-name="dbtbl_primary_0" replica-data-source-names="dbtbl_0_replica_0,dbtbl_0_replica_1"/>
+        <replica-query:data-source-rule id="dbtbl_1" primary-data-source-name="dbtbl_primary_1" replica-data-source-names="dbtbl_1_replica_0,dbtbl_1_replica_1"/>
+    </replica-query:rule>
     
     <sharding:rule id="primaryReplicaReplicationShardingDataSourceByUserStrategyShardingRule" default-key-generate-strategy-ref="keyGenerateStrategy">
         <sharding:table-rules>
             <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generate-strategy-ref="keyGenerateStrategy" />
         </sharding:table-rules>
     </sharding:rule>
-    <primary-replica-replication:rule id="primaryReplicaReplicationShardingDataSourceByUserStrategy">
-        <primary-replica-replication:data-source-rule id="dbtbl_0" primary-data-source-name="dbtbl_primary_0" replica-data-source-names="dbtbl_0_replica_0,dbtbl_0_replica_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm"/>
-        <primary-replica-replication:data-source-rule id="dbtbl_1" primary-data-source-name="dbtbl_primary_1" replica-data-source-names="dbtbl_1_replica_0,dbtbl_1_replica_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm"/>
-    </primary-replica-replication:rule>
+    <replica-query:rule id="primaryReplicaReplicationShardingDataSourceByUserStrategy">
+        <replica-query:data-source-rule id="dbtbl_0" primary-data-source-name="dbtbl_primary_0" replica-data-source-names="dbtbl_0_replica_0,dbtbl_0_replica_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm"/>
+        <replica-query:data-source-rule id="dbtbl_1" primary-data-source-name="dbtbl_primary_1" replica-data-source-names="dbtbl_1_replica_0,dbtbl_1_replica_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm"/>
+    </replica-query:rule>
 </beans>

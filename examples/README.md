@@ -68,7 +68,7 @@ shardingsphere-example
 
 | Example | Description |
 |---------|-------------|
-| [sharding](shardingsphere-jdbc-example/sharding-example) | show how to use sharding-table\sharding-database\primary-replica-replication with ShardingSphere-JDBC |
+| [sharding](shardingsphere-jdbc-example/sharding-example) | show how to use sharding-table\sharding-database\replica-query with ShardingSphere-JDBC |
 | [springboot jpa](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example) | show how to use SpringBoot JPA with ShardingSphere |
 | [springboot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | show how to use SpringBoot Mybatis with ShardingSphere |
 | [governance](shardingsphere-jdbc-example/governance-example) | show how to use ShardingSphere governance |

@@ -20,50 +20,49 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:primary-replica-replication="http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication"
-       xmlns:governance="http://shardingsphere.apache.org/schema/shardingsphere/governance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
+       xmlns:replica-query="http://shardingsphere.apache.org/schema/shardingsphere/replica-query"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
                            http://www.springframework.org/schema/beans/spring-beans.xsd 
                            http://www.springframework.org/schema/context 
                            http://www.springframework.org/schema/context/spring-context.xsd
                            http://www.springframework.org/schema/tx 
                            http://www.springframework.org/schema/tx/spring-tx.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication
-                           http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication/primary-replica-replication.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/governance
-                           http://shardingsphere.apache.org/schema/shardingsphere/governance/governance.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/replica-query
+                           http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query.xsd
                            ">
-    <import resource="classpath*:META-INF/zookeeper/registry-center.xml"/>
-    <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis"/>
+    <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     
     <bean id="demo_primary_ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_primary_ds?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
     </bean>
     
     <bean id="demo_replica_ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_replica_ds_0"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_replica_ds_0?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
     </bean>
     
     <bean id="demo_replica_ds_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_replica_ds_1"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_replica_ds_1?useSSL=false"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
     
-    <primary-replica-replication:load-balance-algorithm id="randomStrategy" type="RANDOM" />
+    <replica-query:load-balance-algorithm id="randomStrategy" type="RANDOM" />
     
-    <primary-replica-replication:rule id="primaryReplicaReplicationRule">
-        <primary-replica-replication:data-source-rule id="demo_ds" primary-data-source-name="demo_primary_ds" replica-data-source-names="demo_replica_ds_0, demo_replica_ds_1" load-balance-algorithm-ref="randomStrategy" />
-    </primary-replica-replication:rule>
+    <replica-query:rule id="primaryReplicaReplicationRule">
+        <replica-query:data-source-rule id="demo_ds" primary-data-source-name="demo_primary_ds" replica-data-source-names="demo_replica_ds_0, demo_replica_ds_1" load-balance-algorithm-ref="randomStrategy" />
+    </replica-query:rule>
     
-    <governance:data-source id="primaryReplicaReplicationDataSource" data-source-names="demo_primary_ds, demo_replica_ds_0, demo_replica_ds_1" rule-refs="primaryReplicaReplicationRule" reg-center-ref="regCenter" />
+    <shardingsphere:data-source id="primaryReplicaReplicationDataSource" data-source-names="demo_primary_ds, demo_replica_ds_0, demo_replica_ds_1" rule-refs="primaryReplicaReplicationRule" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="primaryReplicaReplicationDataSource" />

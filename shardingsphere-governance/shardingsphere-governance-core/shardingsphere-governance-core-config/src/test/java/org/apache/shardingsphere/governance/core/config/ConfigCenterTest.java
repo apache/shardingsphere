@@ -82,7 +82,7 @@ public final class ConfigCenterTest {
     
     private static final String SHARDING_AND_ENCRYPT_RULE_YAML = "yaml/configCenter/data-sharding-encrypt-rule.yaml";
     
-    private static final String PRIMARY_REPLICA_REPLICATION_RULE_YAML = "yaml/configCenter/data-primary-replica-replication-rule.yaml";
+    private static final String PRIMARY_REPLICA_REPLICATION_RULE_YAML = "yaml/configCenter/data-replica-query-rule.yaml";
     
     private static final String ENCRYPT_RULE_YAML = "yaml/configCenter/data-encrypt-rule.yaml";
     

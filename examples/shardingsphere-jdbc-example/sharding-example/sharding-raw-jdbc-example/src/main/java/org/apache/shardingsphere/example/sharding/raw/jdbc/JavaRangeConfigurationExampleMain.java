@@ -30,7 +30,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /*
- * Please make sure primary-replica-replication data sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
+ * Please make sure primary replica data replication sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
  */
 public final class JavaRangeConfigurationExampleMain {
     

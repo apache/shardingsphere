@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-http\://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication/primary-replica-replication.xsd=META-INF/namespace/primary-replica-replication.xsd
+http\://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query.xsd=META-INF/namespace/replica-query.xsd

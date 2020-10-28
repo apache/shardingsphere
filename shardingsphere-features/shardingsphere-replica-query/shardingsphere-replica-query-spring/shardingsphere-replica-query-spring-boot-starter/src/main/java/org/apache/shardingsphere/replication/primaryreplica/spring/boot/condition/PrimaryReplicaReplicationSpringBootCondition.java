@@ -24,15 +24,15 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Spring boot condition for primary-replica replication.
+ * Spring boot condition for replica query.
  */
 public final class PrimaryReplicaReplicationSpringBootCondition extends SpringBootCondition {
     
-    private static final String PREFIX = "spring.shardingsphere.rules.primary-replica-replication";
+    private static final String PREFIX = "spring.shardingsphere.rules.replica-query";
     
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
         return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), PREFIX)
-                ? ConditionOutcome.match() : ConditionOutcome.noMatch("Can't find ShardingSphere primary-replica replication rule configuration in local file.");
+                ? ConditionOutcome.match() : ConditionOutcome.noMatch("Can't find ShardingSphere replica-query rule configuration in local file.");
     }
 }

@@ -22,7 +22,7 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:shadow="http://shardingsphere.apache.org/schema/shardingsphere/shadow"
-       xmlns:primary-replica-replication="http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication"
+       xmlns:replica-query="http://shardingsphere.apache.org/schema/shardingsphere/replica-query"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd 
                            http://www.springframework.org/schema/tx 
@@ -33,8 +33,8 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication
-                           http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication/primary-replica-replication.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/replica-query
+                           http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query.xsd
                            ">
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     
@@ -74,11 +74,11 @@
         </props>
     </shardingsphere:data-source>
     
-    <primary-replica-replication:load-balance-algorithm id="randomStrategy" type="RANDOM" />
+    <replica-query:load-balance-algorithm id="randomStrategy" type="RANDOM" />
     
-    <primary-replica-replication:rule id="primaryReplicaReplicationRule">
-        <primary-replica-replication:data-source-rule id="demo_ds" primary-data-source-name="primary_ds" replica-data-source-names="replica_ds" load-balance-algorithm-ref="randomStrategy" />
-    </primary-replica-replication:rule>
+    <replica-query:rule id="primaryReplicaReplicationRule">
+        <replica-query:data-source-rule id="demo_ds" primary-data-source-name="primary_ds" replica-data-source-names="replica_ds" load-balance-algorithm-ref="randomStrategy" />
+    </replica-query:rule>
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="shadowDataSource" />

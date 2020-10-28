@@ -23,7 +23,7 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
-       xmlns:primary-replica-replication="http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication"
+       xmlns:replica-query="http://shardingsphere.apache.org/schema/shardingsphere/replica-query"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context
@@ -34,8 +34,8 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication
-                           http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication/primary-replica-replication.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/replica-query
+                           http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query.xsd
                            ">
     <context:annotation-config />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.jpa"/>
@@ -105,7 +105,7 @@
         <property name="maximumPoolSize" value="16"/>
     </bean>
     
-    <primary-replica-replication:load-balance-algorithm id="randomStrategy" type="RANDOM" />
+    <replica-query:load-balance-algorithm id="randomStrategy" type="RANDOM" />
     
     <sharding:sharding-algorithm id="databaseAlgorithm" type="INLINE">
         <props>
@@ -149,10 +149,10 @@
             <sharding:broadcast-table-rule table="t_address"/>
         </sharding:broadcast-table-rules>
     </sharding:rule>
-    <primary-replica-replication:rule id="primaryReplicaReplicationRule">
-        <primary-replica-replication:data-source-rule id="demo_pr_ds_0" primary-data-source-name="demo_primary_ds_0" replica-data-source-names="demo_primary_ds_0_replica_0, demo_primary_ds_0_replica_1" load-balance-algorithm-ref="randomStrategy" />
-        <primary-replica-replication:data-source-rule id="demo_pr_ds_1" primary-data-source-name="demo_primary_ds_1" replica-data-source-names="demo_primary_ds_1_replica_0, demo_primary_ds_1_replica_1" load-balance-algorithm-ref="randomStrategy" />
-    </primary-replica-replication:rule>
+    <replica-query:rule id="primaryReplicaReplicationRule">
+        <replica-query:data-source-rule id="demo_pr_ds_0" primary-data-source-name="demo_primary_ds_0" replica-data-source-names="demo_primary_ds_0_replica_0, demo_primary_ds_0_replica_1" load-balance-algorithm-ref="randomStrategy" />
+        <replica-query:data-source-rule id="demo_pr_ds_1" primary-data-source-name="demo_primary_ds_1" replica-data-source-names="demo_primary_ds_1_replica_0, demo_primary_ds_1_replica_1" load-balance-algorithm-ref="randomStrategy" />
+    </replica-query:rule>
     
     <shardingsphere:data-source id="shardingDataSource" data-source-names="demo_primary_ds_0,demo_primary_ds_1,demo_primary_ds_0_replica_0, demo_primary_ds_0_replica_1,demo_primary_ds_1_replica_0, demo_primary_ds_1_replica_1" rule-refs="shardingRule, primaryReplicaReplicationRule">
         <props>

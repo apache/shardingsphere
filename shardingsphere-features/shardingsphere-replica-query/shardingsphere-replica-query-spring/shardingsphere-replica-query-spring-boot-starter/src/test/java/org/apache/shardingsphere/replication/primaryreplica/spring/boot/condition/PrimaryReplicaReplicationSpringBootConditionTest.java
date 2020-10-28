@@ -49,7 +49,7 @@ public final class PrimaryReplicaReplicationSpringBootConditionTest {
     @Test
     public void assertMatch() {
         MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.rules.primary-replica-replication.data-sources.pr_ds.primary-data-source-name", "primary_ds");
+        mockEnvironment.setProperty("spring.shardingsphere.rules.replica-query.data-sources.pr_ds.primary-data-source-name", "primary_ds");
         ConditionContext context = mock(ConditionContext.class);
         AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
         when(context.getEnvironment()).thenReturn(mockEnvironment);

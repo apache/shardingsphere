@@ -16,15 +16,15 @@
   ~ limitations under the License.
   -->
 
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:governance="http://shardingsphere.apache.org/schema/shardingsphere/governance"
+       xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/governance
-                           http://shardingsphere.apache.org/schema/shardingsphere/governance/governance.xsd 
+                           http://shardingsphere.apache.org/schema/shardingsphere/governance/governance.xsd
                            ">
-    <import resource="namespace/sharding-primary-replica-replication-namespace.xml" />
+    <import resource="namespace/replica-query-data-source-namespace.xml" />
     
     <governance:reg-center id="regCenter" type="TestRegistry" server-lists="localhost:3181">
         <props>
@@ -32,6 +32,15 @@
             <prop key="operation-timeout-milliseconds">1000</prop>
         </props>
     </governance:reg-center>
-    <governance:data-source id="dataSourceByDefaultStrategyGovernance" data-source-names="dbtbl_primary_0,dbtbl_0_replica_0,dbtbl_0_replica_1,dbtbl_primary_1,dbtbl_1_replica_0,dbtbl_1_replica_1" rule-refs="primaryReplicaReplicationShardingDataSourceByDefaultStrategyShardingRule, primaryReplicaReplicationShardingDataSourceByDefaultStrategy" reg-center-ref="regCenter" />
-    <governance:data-source id="dataSourceByUserStrategyGovernance" data-source-names="dbtbl_primary_0,dbtbl_0_replica_0,dbtbl_0_replica_1,dbtbl_primary_1,dbtbl_1_replica_0,dbtbl_1_replica_1" rule-refs="primaryReplicaReplicationShardingDataSourceByUserStrategyShardingRule, primaryReplicaReplicationShardingDataSourceByUserStrategy" reg-center-ref="regCenter" />
+    
+    <governance:data-source id="defaultGovernanceDataSource" data-source-names="dbtbl_primary_0, dbtbl_0_replica_0, dbtbl_0_replica_1" rule-refs="defaultPrimaryReplicaReplicationRule" reg-center-ref="regCenter">
+        <props>
+            <prop key="sql-show">${sql_show}</prop>
+            <prop key="executor-size">10</prop>
+            <prop key="foo">bar</prop>
+        </props>
+    </governance:data-source>
+    <governance:data-source id="randomGovernanceDataSource" data-source-names="dbtbl_primary_0, dbtbl_0_replica_0, dbtbl_0_replica_1" rule-refs="randomPrimaryReplicaReplicationRule" reg-center-ref="regCenter" />
+    <governance:data-source id="roundRobinGovernanceDataSource" data-source-names="dbtbl_primary_0, dbtbl_0_replica_0, dbtbl_0_replica_1" rule-refs="roundRobinPrimaryReplicaReplicationRule" reg-center-ref="regCenter" />
+    <governance:data-source id="refGovernanceDataSource" data-source-names="dbtbl_primary_1, dbtbl_1_replica_0, dbtbl_1_replica_1" rule-refs="refPrimaryReplicaReplicationRule" reg-center-ref="regCenter" />
 </beans>

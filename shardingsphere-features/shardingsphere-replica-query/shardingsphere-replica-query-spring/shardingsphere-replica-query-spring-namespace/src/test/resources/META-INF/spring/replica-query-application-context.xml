@@ -18,19 +18,19 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:primary-replica-replication="http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication"
+       xmlns:replica-query="http://shardingsphere.apache.org/schema/shardingsphere/replica-query"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd 
-                           http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication
-                           http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication/primary-replica-replication.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/replica-query
+                           http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query.xsd
                            ">
-    <primary-replica-replication:load-balance-algorithm id="randomLoadbalancer" type="RANDOM" />
+    <replica-query:load-balance-algorithm id="randomLoadbalancer" type="RANDOM" />
     
-    <primary-replica-replication:rule id="defaultRule">
-        <primary-replica-replication:data-source-rule id="default_ds" primary-data-source-name="primary_ds" replica-data-source-names="replica_ds_0, replica_ds_1" />
-    </primary-replica-replication:rule>
+    <replica-query:rule id="defaultRule">
+        <replica-query:data-source-rule id="default_ds" primary-data-source-name="primary_ds" replica-data-source-names="replica_ds_0, replica_ds_1" />
+    </replica-query:rule>
     
-    <primary-replica-replication:rule id="randomRule">
-        <primary-replica-replication:data-source-rule id="random_ds" primary-data-source-name="primary_ds" replica-data-source-names="replica_ds_0, replica_ds_1" load-balance-algorithm-ref="randomLoadbalancer" />
-    </primary-replica-replication:rule>
+    <replica-query:rule id="randomRule">
+        <replica-query:data-source-rule id="random_ds" primary-data-source-name="primary_ds" replica-data-source-names="replica_ds_0, replica_ds_1" load-balance-algorithm-ref="randomLoadbalancer" />
+    </replica-query:rule>
 </beans>

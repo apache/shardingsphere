@@ -23,12 +23,12 @@ import org.apache.shardingsphere.replication.primaryreplica.yaml.config.YamlPrim
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * YAML Primary-replica replication rule spring boot configuration.
+ * YAML replica query rule spring boot configuration.
  */
 @ConfigurationProperties(prefix = "spring.shardingsphere.rules")
 @Getter
 @Setter
 public final class YamlPrimaryReplicaReplicationRuleSpringBootConfiguration {
     
-    private YamlPrimaryReplicaReplicationRuleConfiguration primaryReplicaReplication;
+    private YamlPrimaryReplicaReplicationRuleConfiguration replicaQuery;
 }

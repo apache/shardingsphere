@@ -209,7 +209,7 @@ public final class ConfigCenter {
     
     private void checkDataSources(final String schemaName, final Collection<PrimaryReplicaReplicationDataSourceRuleConfiguration> dataSources) {
         dataSources.forEach(each -> Preconditions.checkState(
-                !each.getPrimaryDataSourceName().isEmpty(), "No available primary-replica-replication rule configuration in `%s` for governance.", schemaName));
+                !each.getPrimaryDataSourceName().isEmpty(), "No available replica-query rule configuration in `%s` for governance.", schemaName));
     }
     
     private boolean hasAvailableTableConfigurations(final ShardingRuleConfiguration config) {
