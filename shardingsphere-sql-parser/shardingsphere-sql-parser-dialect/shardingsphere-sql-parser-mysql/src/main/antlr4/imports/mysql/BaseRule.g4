@@ -86,7 +86,7 @@ nullValueLiterals
     ;
 
 characterSetName
-    : IDENTIFIER_
+    : STRING_
     ;
 
 collationName_
