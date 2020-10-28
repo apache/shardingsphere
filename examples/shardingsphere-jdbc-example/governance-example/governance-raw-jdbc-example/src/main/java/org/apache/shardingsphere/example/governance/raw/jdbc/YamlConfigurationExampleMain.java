@@ -31,14 +31,14 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 /*
- * 1. Please make sure primary-replica-replication data sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
+ * 1. Please make sure primary replica data replication sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
  * 2. Please make sure sharding-governance-center-zookeeper-curator in your pom if registryCenterType = RegistryCenterType.ZOOKEEPER.
  * 3. Please make sure sharding-governance-center-nacos in your pom if registryCenterType = RegistryCenterType.NACOS.
  */
 public final class YamlConfigurationExampleMain {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
-//    private static ShardingType shardingType = ShardingType.PRIMARY_REPLICA_REPLICATION;
+//    private static ShardingType shardingType = ShardingType.REPLICA_QUERY;
 //    private static ShardingType shardingType = ShardingType.ENCRYPT;
 //    private static ShardingType shardingType = ShardingType.SHADOW;
     
@@ -63,8 +63,8 @@ public final class YamlConfigurationExampleMain {
             case SHARDING_DATABASES_AND_TABLES:
                 yamlFilePath = String.format("/META-INF/%s/%s/sharding-databases-tables.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
                 return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
-            case PRIMARY_REPLICA_REPLICATION:
-                yamlFilePath = String.format("/META-INF/%s/%s/primary-replica-replication.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
+            case REPLICA_QUERY:
+                yamlFilePath = String.format("/META-INF/%s/%s/replica-query.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
                 return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
             case ENCRYPT:
                 yamlFilePath = String.format("/META-INF/%s/%s/encrypt.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");

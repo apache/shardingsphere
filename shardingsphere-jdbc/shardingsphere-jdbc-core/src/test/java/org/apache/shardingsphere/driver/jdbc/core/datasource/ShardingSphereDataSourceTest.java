@@ -84,7 +84,7 @@ public final class ShardingSphereDataSourceTest {
     }
     
     @Test
-    public void assertGetDatabaseProductNameForPrimaryReplicaReplication() throws SQLException {
+    public void assertGetDatabaseProductNameForReplicaQuery() throws SQLException {
         DataSource dataSource1 = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         DataSource primaryDataSource = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         DataSource replicaDataSource = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("H2"));

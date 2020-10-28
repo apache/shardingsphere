@@ -250,7 +250,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 1. [ISSUE #701](https://github.com/apache/shardingsphere/issues/701) Caching parsed results to improve performance
 1. [ISSUE #773](https://github.com/apache/shardingsphere/issues/773) Support sharding and autoincrement key of INSERT without column names
 1. [ISSUE #935](https://github.com/apache/shardingsphere/issues/935) Use `YAML` instead of `JSON` to store configurations in registry center
-1. [ISSUE #1004](https://github.com/apache/shardingsphere/issues/1004) Properties can configure for sharding and primary-replica replication independent
+1. [ISSUE #1004](https://github.com/apache/shardingsphere/issues/1004) Properties can configure for sharding and replica query independent
 1. [ISSUE #1205](https://github.com/apache/shardingsphere/issues/1205) Execute engine enhancement
 
 #### ShardingSphere-JDBC
@@ -266,12 +266,12 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 
 ### API changes
 
-1. [ISSUE #1153](https://github.com/apache/shardingsphere/issues/1153) Adjust the maven artifactId for Orchestration module
-1. [ISSUE #1203](https://github.com/apache/shardingsphere/issues/1203) Adjust Spring namespace xsd for Sharding and primary-replica replication
-1. [ISSUE #1289](https://github.com/apache/shardingsphere/issues/1289) Adjust Hint API
+1. [ISSUE #1153](https://github.com/apache/shardingsphere/issues/1153) Adjust the maven artifactId for orchestration module
+1. [ISSUE #1203](https://github.com/apache/shardingsphere/issues/1203) Adjust Spring namespace xsd for sharding and replica query
+1. [ISSUE #1289](https://github.com/apache/shardingsphere/issues/1289) Adjust hint API
 1. [ISSUE #1302](https://github.com/apache/shardingsphere/issues/1302) Refine package structure
 1. [ISSUE #1305](https://github.com/apache/shardingsphere/issues/1305) Deprecated and remove sharding-jdbc-transaction-parent module
-1. [ISSUE #1382](https://github.com/apache/shardingsphere/issues/1328) Remove type configuration in Orchestration module
+1. [ISSUE #1382](https://github.com/apache/shardingsphere/issues/1328) Remove type configuration in orchestration module
 
 ### Bug Fixes
 
@@ -313,7 +313,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 
 #### ShardingSphere-JDBC
 
-1. [ISSUE #522](https://github.com/apache/shardingsphere/issues/522) Replica database does not need to execute the DDL for primary-replica replication
+1. [ISSUE #522](https://github.com/apache/shardingsphere/issues/522) Replica database does not need to execute the DDL for replica query
 
 
 ## 2.0.2
@@ -367,7 +367,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 1. Support `spring-boot-starter` of `ShardingSphere-JDBC`
 1. Dynamic configuration. `ZooKeeper` and `etcd` can be used as registry to dynamically modify data sources and sharding configurations
 1. Database orchestration. Fusing database access procedures to access databases and disable access to replica databases
-1. ConfigMap support. Predefined metadata can be obtained in the sharding and primary-replica replication strategy
+1. ConfigMap support. Predefined metadata can be obtained in the sharding and replica query strategy
 1. Tracking system support. You can view the invocation chain of `ShardingSphere-JDBC` through `sky-walking` and other `Opentracing` based APM systems
 
 ### Enhancements
@@ -394,7 +394,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 1. [ISSUE #394](https://github.com/apache/shardingsphere/issues/394) Can't only close statement
 1. [ISSUE #398](https://github.com/apache/shardingsphere/issues/398) Use Hint routing to shield case sensitivity 
 1. [ISSUE #404](https://github.com/apache/shardingsphere/issues/404) Sharding-jdbc's spring-boot-starter does not support HikariDataSource
-1. [ISSUE #436](https://github.com/apache/shardingsphere/issues/436) Primary-replica replication, when the RoundRobin algorithm is configured from the database and MyBatis is used, it can only be routed to the same replica database
+1. [ISSUE #436](https://github.com/apache/shardingsphere/issues/436) Replica query, when the RoundRobin algorithm is configured from the database and MyBatis is used, it can only be routed to the same replica database
 1. [ISSUE #452](https://github.com/apache/shardingsphere/issues/452) Sharding of DDL statements to more than one table causes a connection leak
 1. [ISSUE #472](https://github.com/apache/shardingsphere/issues/472) Before Connection executes createStatement, it calls getMetaData first and then setAutoCommit can not take effective connection to the database that was created later
 
@@ -409,7 +409,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 ### Bug Fixes
 
 1. [ISSUE #356](https://github.com/apache/shardingsphere/issues/356) In the Where condition of SQL, the REGEXP operator is compatible with non sharding columns
-1. [ISSUE #362](https://github.com/apache/shardingsphere/issues/362) Primary-replica replication using PreparedStatement does not invoke the setParameter method to cause errors
+1. [ISSUE #362](https://github.com/apache/shardingsphere/issues/362) Replica query using PreparedStatement does not invoke the setParameter method to cause errors
 1. [ISSUE #370](https://github.com/apache/shardingsphere/issues/370) Error in calling getGeneratedKeys using native self increment primary key
 1. [ISSUE #375](https://github.com/apache/shardingsphere/issues/375) Data can not be obtained after paging second pages route to a single node
 1. [ISSUE #379](https://github.com/apache/shardingsphere/issues/379) When Mybatis is used to call Connection.getMetaData (), the connection is not close correct
@@ -418,8 +418,8 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 
 ### Enhancements
 
-1. [ISSUE #98](https://github.com/apache/shardingsphere/issues/98) Primary-replica replication load balancing strategy support configuration
-1. [ISSUE #196](https://github.com/apache/shardingsphere/issues/196) Primary-replica replication and sharding configuration independence
+1. [ISSUE #98](https://github.com/apache/shardingsphere/issues/98) Replica query load balancing strategy support configuration
+1. [ISSUE #196](https://github.com/apache/shardingsphere/issues/196) Replica query and sharding configuration independence
 
 ### Bug Fixes
 
@@ -579,14 +579,14 @@ Automatic generation key implementation, including
 
 ### Bug Fixes
 
-1. [ISSUE #89](https://github.com/apache/shardingsphere/issues/89) Use primary-replica replication with sharding hint leads to conflict
+1. [ISSUE #89](https://github.com/apache/shardingsphere/issues/89) Use replica query with sharding hint leads to conflict
 1. [ISSUE #95](https://github.com/apache/shardingsphere/issues/95) Write operations in the same thread read from the primary database changed to the same thread and within the same connection
 
 ## 1.3.0
 
 ### New Features
 
-1. [ISSUE #85](https://github.com/apache/shardingsphere/issues/85) primary-replica replication separation
+1. [ISSUE #85](https://github.com/apache/shardingsphere/issues/85) New feature for replica query
 
 ### Enhancements
 

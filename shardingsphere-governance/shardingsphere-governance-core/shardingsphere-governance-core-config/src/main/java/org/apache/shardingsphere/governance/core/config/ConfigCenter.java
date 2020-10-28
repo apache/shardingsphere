@@ -44,9 +44,9 @@ import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.replication.primaryreplica.algorithm.config.AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration;
-import org.apache.shardingsphere.replication.primaryreplica.api.config.PrimaryReplicaReplicationRuleConfiguration;
-import org.apache.shardingsphere.replication.primaryreplica.api.config.rule.PrimaryReplicaReplicationDataSourceRuleConfiguration;
+import org.apache.shardingsphere.replicaquery.algorithm.config.AlgorithmProvidedReplicaQueryRuleConfiguration;
+import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
+import org.apache.shardingsphere.replicaquery.api.config.rule.ReplicaQueryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -179,16 +179,16 @@ public final class ConfigCenter {
                 Preconditions.checkState(hasAvailableTableConfigurations(config),
                         "No available rule configs in `%s` for governance.", schemaName);
                 configs.add(each);
-            } else if (each instanceof AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration) {
-                AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration config = (AlgorithmProvidedPrimaryReplicaReplicationRuleConfiguration) each;
+            } else if (each instanceof AlgorithmProvidedReplicaQueryRuleConfiguration) {
+                AlgorithmProvidedReplicaQueryRuleConfiguration config = (AlgorithmProvidedReplicaQueryRuleConfiguration) each;
                 checkDataSources(schemaName, config.getDataSources());
                 configs.add(each);
             } else if (each instanceof AlgorithmProvidedEncryptRuleConfiguration) {
                 AlgorithmProvidedEncryptRuleConfiguration config = (AlgorithmProvidedEncryptRuleConfiguration) each;
                 Preconditions.checkState(!config.getEncryptors().isEmpty(), "No available encrypt rule configuration in `%s` for governance.", schemaName);
                 configs.add(each);
-            } else if (each instanceof PrimaryReplicaReplicationRuleConfiguration) {
-                PrimaryReplicaReplicationRuleConfiguration config = (PrimaryReplicaReplicationRuleConfiguration) each;
+            } else if (each instanceof ReplicaQueryRuleConfiguration) {
+                ReplicaQueryRuleConfiguration config = (ReplicaQueryRuleConfiguration) each;
                 checkDataSources(schemaName, config.getDataSources());
                 configs.add(each);
             } else if (each instanceof EncryptRuleConfiguration) {
@@ -207,9 +207,9 @@ public final class ConfigCenter {
         repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(yamlRuleConfigs));
     }
     
-    private void checkDataSources(final String schemaName, final Collection<PrimaryReplicaReplicationDataSourceRuleConfiguration> dataSources) {
+    private void checkDataSources(final String schemaName, final Collection<ReplicaQueryDataSourceRuleConfiguration> dataSources) {
         dataSources.forEach(each -> Preconditions.checkState(
-                !each.getPrimaryDataSourceName().isEmpty(), "No available primary-replica-replication rule configuration in `%s` for governance.", schemaName));
+                !each.getPrimaryDataSourceName().isEmpty(), "No available replica-query rule configuration in `%s` for governance.", schemaName));
     }
     
     private boolean hasAvailableTableConfigurations(final ShardingRuleConfiguration config) {

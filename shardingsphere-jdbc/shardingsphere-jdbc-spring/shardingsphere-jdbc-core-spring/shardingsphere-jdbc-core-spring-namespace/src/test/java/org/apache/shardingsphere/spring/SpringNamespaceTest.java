@@ -21,7 +21,7 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.replication.primaryreplica.rule.PrimaryReplicaReplicationRule;
+import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spring.transaction.ShardingTransactionTypeScanner;
 import org.junit.Test;
@@ -51,8 +51,8 @@ public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests 
         for (ShardingSphereRule each : rules) {
             if (each instanceof ShardingRule) {
                 assertShardingRule((ShardingRule) each);
-            } else if (each instanceof PrimaryReplicaReplicationRule) {
-                assertPrimaryReplicaReplicationRule((PrimaryReplicaReplicationRule) each);
+            } else if (each instanceof ReplicaQueryRule) {
+                assertReplicaQueryRule((ReplicaQueryRule) each);
             } else if (each instanceof EncryptRule) {
                 assertEncryptRule((EncryptRule) each);
             }
@@ -76,7 +76,7 @@ public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests 
                 new DataNode("ds_1.t_order_0"), new DataNode("ds_1.t_order_1"), new DataNode("ds_1.t_order_2"), new DataNode("ds_1.t_order_3"))));
     }
     
-    private void assertPrimaryReplicaReplicationRule(final PrimaryReplicaReplicationRule rule) {
+    private void assertReplicaQueryRule(final ReplicaQueryRule rule) {
         assertTrue(rule.findDataSourceRule("ds_0").isPresent());
         assertThat(rule.findDataSourceRule("ds_0").get().getPrimaryDataSourceName(), is("ds_0_primary"));
         assertThat(rule.findDataSourceRule("ds_0").get().getReplicaDataSourceNames(), is(Arrays.asList("ds_0_replica_0", "ds_0_replica_1")));

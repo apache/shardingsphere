@@ -40,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-primary-replica-replication-spring-namespace</artifactId>
+            <artifactId>shardingsphere-replica-query-spring-namespace</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

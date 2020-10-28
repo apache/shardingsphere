@@ -21,7 +21,7 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
-       xmlns:primary-replica-replication="http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication"
+       xmlns:replica-query="http://shardingsphere.apache.org/schema/shardingsphere/replica-query"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -31,8 +31,8 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication
-                           http://shardingsphere.apache.org/schema/shardingsphere/primary-replica-replication/primary-replica-replication.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/replica-query
+                           http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt 
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
                            ">
@@ -77,12 +77,12 @@
         </encrypt:table>
     </encrypt:rule>
     
-    <primary-replica-replication:rule id="primaryReplicaReplicationRule">
-        <primary-replica-replication:data-source-rule id="ds_0" primary-data-source-name="ds_0_primary" replica-data-source-names="ds_0_replica_0,ds_0_replica_1" />
-        <primary-replica-replication:data-source-rule id="ds_1" primary-data-source-name="ds_1_primary" replica-data-source-names="ds_1_replica_0,ds_1_replica_1" />
-    </primary-replica-replication:rule>
+    <replica-query:rule id="replicaQueryRule">
+        <replica-query:data-source-rule id="ds_0" primary-data-source-name="ds_0_primary" replica-data-source-names="ds_0_replica_0,ds_0_replica_1" />
+        <replica-query:data-source-rule id="ds_1" primary-data-source-name="ds_1_primary" replica-data-source-names="ds_1_replica_0,ds_1_replica_1" />
+    </replica-query:rule>
     
-    <shardingsphere:data-source id="dataSource" data-source-names="ds_0_primary,ds_0_replica_0,ds_0_replica_1,ds_1_primary,ds_1_replica_0,ds_1_replica_1" rule-refs="shardingRule, primaryReplicaReplicationRule, encryptRule">
+    <shardingsphere:data-source id="dataSource" data-source-names="ds_0_primary,ds_0_replica_0,ds_0_replica_1,ds_1_primary,ds_1_replica_0,ds_1_replica_1" rule-refs="shardingRule, replicaQueryRule, encryptRule">
         <props>
             <prop key="sql-show">false</prop>
             <prop key="executor-size">${executor-size}</prop>

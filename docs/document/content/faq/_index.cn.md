@@ -27,7 +27,7 @@ ShardingSphere使用lombok实现极简代码。关于更多使用和安装细节
 Spring命名空间使用规范并未强制要求将xsd文件部署至公网地址，但考虑到部分用户的需求，我们也将相关xsd文件部署至ShardingSphere官网。
 
 实际上 shardingsphere-jdbc-spring-namespace 的 jar 包中 META-INF\spring.schemas 配置了 xsd 文件的位置：
-META-INF\namespace\sharding.xsd 和 META-INF\namespace\primary-replica-replication.xsd，只需确保 jar 包中该文件存在即可。
+META-INF\namespace\sharding.xsd 和 META-INF\namespace\replica-query.xsd，只需确保 jar 包中该文件存在即可。
 
 ## 4. Cloud not resolve placeholder ... in string value ...异常的解决方法?
 
