@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.rule;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
@@ -125,7 +124,7 @@ public final class TableRule {
         return fillDataSouceNames(shardingAlgorithm.getAutoTablesAmount(), dataSources);
     }
     
-    private List<String> fillDataSouceNames(int amount, List<String> dataSources) {
+    private List<String> fillDataSouceNames(final int amount, final List<String> dataSources) {
         List<String> result = new LinkedList<>();
         Iterator<String> iterator = dataSources.iterator();
         for (int i = 0; i < amount; i++) {

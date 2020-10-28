@@ -118,7 +118,7 @@ public final class ShardingRule implements DataNodeRoutedRule {
         if (tableRuleConfigs.isEmpty()) {
             return dataSourceNames;
         }
-        if(tableRuleConfigs.stream().map(ShardingTableRuleConfiguration::getActualDataNodes).anyMatch(each -> null == each || each.isEmpty())) {
+        if (tableRuleConfigs.stream().map(ShardingTableRuleConfiguration::getActualDataNodes).anyMatch(each -> null == each || each.isEmpty())) {
             return dataSourceNames;
         }
         Collection<String> result = new LinkedHashSet<>();
@@ -138,10 +138,10 @@ public final class ShardingRule implements DataNodeRoutedRule {
     private Collection<TableRule> createAutoTableRules(final Collection<ShardingAutoTableRuleConfiguration> autoTableRuleConfigurations, 
                                                        final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig) {
         return autoTableRuleConfigurations.stream().map(
-            each -> getTableRule(defaultKeyGenerateStrategyConfig, each)).collect(Collectors.toList());
+            each -> createAutoTableRule(defaultKeyGenerateStrategyConfig, each)).collect(Collectors.toList());
     }
     
-    private TableRule getTableRule(KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig, ShardingAutoTableRuleConfiguration each) {
+    private TableRule createAutoTableRule(final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig, final ShardingAutoTableRuleConfiguration each) {
         ShardingAlgorithm shardingAlgorithm = null == each.getShardingStrategy() ? null : shardingAlgorithms.get(each.getShardingStrategy().getShardingAlgorithmName());
         Preconditions.checkState(shardingAlgorithm instanceof ShardingAutoTableAlgorithm, "Sharding auto table rule configuration must match sharding auto table algorithm.");
         return new TableRule(each, dataSourceNames, (ShardingAutoTableAlgorithm) shardingAlgorithm, getDefaultGenerateKeyColumn(defaultKeyGenerateStrategyConfig));
