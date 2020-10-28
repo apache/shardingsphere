@@ -31,9 +31,10 @@ public final class SQLVisitorEngineFactory {
      *
      * @param databaseType database type
      * @param visitorType visitor type
+     * @param <T> type of visitor result
      * @return SQL visitor engine
      */
-    public static SQLVisitorEngine getSQLVisitorEngine(final String databaseType, final String visitorType) {
-        return new SQLVisitorEngine(databaseType, visitorType);
+    public static <T> SQLVisitorEngine<T> getSQLVisitorEngine(final String databaseType, final String visitorType) {
+        return new SQLVisitorEngine<>(databaseType, visitorType);
     }
 }
