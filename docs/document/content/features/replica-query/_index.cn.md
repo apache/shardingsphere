@@ -15,7 +15,7 @@ chapter = true
 
 与将数据根据分片键打散至各个数据节点的水平分片不同，读写分离则是根据SQL语义的分析，将读操作和写操作分别路由至主库与从库。
 
-![读写分离](https://shardingsphere.apache.org/document/current/img/read-write-split/read-write-split.png)
+![读写分离](https://shardingsphere.apache.org/document/current/img/replica-query/replica-query-standalone.png)
 
 读写分离的数据节点中的数据内容是一致的，而水平分片的每个数据节点的数据内容却并不相同。将水平分片和读写分离联合使用，能够更加有效的提升系统性能。
 
@@ -26,7 +26,7 @@ chapter = true
 并且，读写分离也带来了与数据分片同样的问题，它同样会使得应用开发和运维人员对数据库的操作和运维变得更加复杂。
 下图展现了将分库分表与读写分离一同使用时，应用程序与数据库集群之间的复杂拓扑关系。
 
-![数据分片 + 读写分离](https://shardingsphere.apache.org/document/current/img/read-write-split/sharding-read-write-split.png)
+![数据分片 + 读写分离](https://shardingsphere.apache.org/document/current/img/replica-query/sharding-and-replica-query.png)
 
 ## 目标
 
