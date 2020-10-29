@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.rdl.parser.engine;
 
+import org.apache.shardingsphere.infra.parser.SQLStatementParserEngine;
+import org.apache.shardingsphere.infra.parser.standard.StandardSQLStatementParserEngine;
+import org.apache.shardingsphere.infra.parser.standard.StandardSQLStatementParserEngineFactory;
 import org.apache.shardingsphere.rdl.parser.engine.engine.RDLSQLStatementParserEngine;
-import org.apache.shardingsphere.sql.parser.statement.SQLStatementParserEngine;
-import org.apache.shardingsphere.sql.parser.statement.standard.StandardSQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.standard.StandardSQLStatementParserEngineFactory;
 
 /**
  * ShardingSphere SQL statement parser engine.

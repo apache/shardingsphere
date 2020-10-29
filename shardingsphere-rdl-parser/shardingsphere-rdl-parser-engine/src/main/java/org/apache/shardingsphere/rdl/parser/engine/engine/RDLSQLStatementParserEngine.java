@@ -19,9 +19,9 @@ package org.apache.shardingsphere.rdl.parser.engine.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.infra.parser.SQLStatementParserEngine;
 import org.apache.shardingsphere.rdl.parser.engine.executor.RDLSQLParserExecutor;
 import org.apache.shardingsphere.rdl.parser.sql.visitor.ShardingSphereVisitor;
-import org.apache.shardingsphere.sql.parser.statement.SQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
