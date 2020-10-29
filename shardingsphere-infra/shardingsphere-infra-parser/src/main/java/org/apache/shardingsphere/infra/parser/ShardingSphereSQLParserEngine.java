@@ -15,37 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.engine;
+package org.apache.shardingsphere.infra.parser;
 
-import org.apache.shardingsphere.distsql.parser.engine.engine.DistSQLStatementParserEngine;
-import org.apache.shardingsphere.infra.parser.SQLStatementParserEngine;
-import org.apache.shardingsphere.infra.parser.standard.StandardSQLStatementParserEngine;
-import org.apache.shardingsphere.infra.parser.standard.StandardSQLStatementParserEngineFactory;
+import org.apache.shardingsphere.distsql.parser.DistSQLStatementParserEngine;
+import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
+import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * ShardingSphere SQL statement parser engine.
+ * ShardingSphere SQL parser engine.
  */
-public final class ShardingSphereSQLStatementParserEngine implements SQLStatementParserEngine {
+public final class ShardingSphereSQLParserEngine {
     
-    private final StandardSQLStatementParserEngine standardSQLStatementParserEngine;
+    private final SQLStatementParserEngine sqlStatementParserEngine;
     
     private final DistSQLStatementParserEngine distSQLStatementParserEngine;
     
-    public ShardingSphereSQLStatementParserEngine(final String databaseTypeName) {
-        standardSQLStatementParserEngine = StandardSQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseTypeName);
+    public ShardingSphereSQLParserEngine(final String databaseTypeName) {
+        sqlStatementParserEngine = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseTypeName);
         distSQLStatementParserEngine = new DistSQLStatementParserEngine();
     }
     
-    @Override
+    /**
+     * Parse to SQL statement.
+     *
+     * @param sql SQL to be parsed
+     * @param useCache whether use cache
+     * @return SQL statement
+     */
     public SQLStatement parse(final String sql, final boolean useCache) {
         SQLStatement result;
         try {
-            result = standardSQLStatementParserEngine.parse(sql, useCache);
+            result = sqlStatementParserEngine.parse(sql, useCache);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            result = distSQLStatementParserEngine.parse(sql, useCache);
+            result = distSQLStatementParserEngine.parse(sql);
         }
         return result;
     }

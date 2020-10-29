@@ -15,66 +15,52 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.engine.executor;
+package org.apache.shardingsphere.distsql.parser;
 
-import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.CodePointBuffer;
-import org.antlr.v4.runtime.CodePointCharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.DefaultErrorStrategy;
-import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementLexer;
-import org.apache.shardingsphere.distsql.parser.sql.parser.DistSQLParser;
+import org.apache.shardingsphere.distsql.parser.sql.visitor.DistSQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
-
-import java.nio.CharBuffer;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Dist SQL parser executor.
+ * Dist SQL statement parser engine.
  */
-@RequiredArgsConstructor
-public final class DistSQLParserExecutor {
-    
-    private final String sql;
+public final class DistSQLStatementParserEngine {
     
     /**
-     * Execute to parse SQL.
+     * Parse SQL.
      *
+     * @param sql SQL to be parsed
      * @return AST node
      */
-    public ParseASTNode execute() {
-        ParseASTNode result = twoPhaseParse();
-        if (result.getRootNode() instanceof ErrorNode) {
+    public SQLStatement parse(final String sql) {
+        ParseASTNode parseASTNode = twoPhaseParse(sql);
+        if (parseASTNode.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException("Unsupported SQL of `%s`", sql);
         }
-        return result;
+        return (SQLStatement) new DistSQLStatementVisitor().visit(parseASTNode.getRootNode());
     }
     
-    private ParseASTNode twoPhaseParse() {
-        SQLParser sqlParser = createSQLParser();
+    private ParseASTNode twoPhaseParse(final String sql) {
+        SQLParser sqlParser = DistSQLParserFactory.newInstance(sql);
         try {
-            ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
-            ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
+            setPredictionMode((Parser) sqlParser, PredictionMode.SLL);
             return (ParseASTNode) sqlParser.parse();
         } catch (final ParseCancellationException ex) {
             ((Parser) sqlParser).reset();
-            ((Parser) sqlParser).setErrorHandler(new DefaultErrorStrategy());
-            ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.LL);
+            setPredictionMode((Parser) sqlParser, PredictionMode.LL);
             return (ParseASTNode) sqlParser.parse();
         }
     }
     
-    private SQLParser createSQLParser() {
-        CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(sql.toCharArray()));
-        CodePointCharStream codePointCharStream = CodePointCharStream.fromBuffer(buffer);
-        Lexer lexer = new DistSQLStatementLexer(codePointCharStream);
-        return new DistSQLParser(new CommonTokenStream(lexer));
+    private void setPredictionMode(final Parser sqlParser, final PredictionMode mode) {
+        sqlParser.setErrorHandler(new BailErrorStrategy());
+        sqlParser.getInterpreter().setPredictionMode(mode);
     }
 }

@@ -41,7 +41,7 @@ public final class SQLParserExecutor {
     private final SQLParsedResultCache<ParseTree> cache = new SQLParsedResultCache<>();
     
     /**
-     * Parse.
+     * Parse SQL.
      *
      * @param sql SQL to be parsed
      * @param useCache whether use cache
