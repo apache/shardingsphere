@@ -23,7 +23,7 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
 import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorFactory;
 import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorRule;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.SQLStatementParserEngine;
@@ -77,7 +77,7 @@ public final class StandardSQLStatementParserEngine implements SQLStatementParse
     }
     
     private SQLStatement parseSQLStatement(final String sql) {
-        ParseTree parseTree = SQLParserEngineFactory.getSQLParserEngine(databaseTypeName).parse(sql, false);
+        ParseTree parseTree = SQLParserEngine.parse(databaseTypeName, sql, false);
         ParseTreeVisitor<SQLStatement> visitor = SQLVisitorFactory.newInstance(databaseTypeName, "STATEMENT", SQLVisitorRule.valueOf(parseTree.getClass()));
         return parseTree.accept(visitor);
     }

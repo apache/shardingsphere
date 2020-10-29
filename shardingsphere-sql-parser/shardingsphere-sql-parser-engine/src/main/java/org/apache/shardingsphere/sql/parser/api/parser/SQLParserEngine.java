@@ -17,72 +17,45 @@
 
 package org.apache.shardingsphere.sql.parser.api.parser;
 
-import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.atn.PredictionMode;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.antlr.v4.runtime.tree.ErrorNode;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
-import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.core.parser.SQLParserFactory;
-import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
 
-import java.util.Optional;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * SQL parser engine.
  */
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLParserEngine {
     
-    private final String databaseType;
-    
-    private final SQLParsedResultCache<ParseTree> cache = new SQLParsedResultCache<>();
+    private static final Map<String, SQLParserExecutor> ENGINES = new ConcurrentHashMap<>();
     
     /**
-     * Parse.
+     * Parse SQL.
      *
+     * @param databaseType database type
      * @param sql SQL to be parsed
      * @param useCache whether use cache
      * @return parse tree
      */
-    public ParseTree parse(final String sql, final boolean useCache) {
-        if (!useCache) {
-            return parse(sql);
-        }
-        Optional<ParseTree> parseTree = cache.get(sql);
-        if (parseTree.isPresent()) {
-            return parseTree.get();
-        }
-        ParseTree result = parse(sql);
-        cache.put(sql, result);
-        return result;
+    public static ParseTree parse(final String databaseType, final String sql, final boolean useCache) {
+        return getSQLParserExecutor(databaseType).parse(sql, useCache);
     }
     
-    private ParseTree parse(final String sql) {
-        ParseASTNode result = twoPhaseParse(sql);
-        if (result.getRootNode() instanceof ErrorNode) {
-            throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
+    private static SQLParserExecutor getSQLParserExecutor(final String databaseType) {
+        if (ENGINES.containsKey(databaseType)) {
+            return ENGINES.get(databaseType);
         }
-        return result.getRootNode();
-    }
-    
-    private ParseASTNode twoPhaseParse(final String sql) {
-        SQLParser sqlParser = SQLParserFactory.newInstance(databaseType, sql);
-        try {
-            setPredictionMode((Parser) sqlParser, PredictionMode.SLL);
-            return (ParseASTNode) sqlParser.parse();
-        } catch (final ParseCancellationException ex) {
-            ((Parser) sqlParser).reset();
-            setPredictionMode((Parser) sqlParser, PredictionMode.LL);
-            return (ParseASTNode) sqlParser.parse();
+        synchronized (ENGINES) {
+            if (ENGINES.containsKey(databaseType)) {
+                return ENGINES.get(databaseType);
+            }
+            SQLParserExecutor result = new SQLParserExecutor(databaseType);
+            ENGINES.put(databaseType, result);
+            return result;
         }
-    }
-    
-    private void setPredictionMode(final Parser sqlParser, final PredictionMode mode) {
-        sqlParser.setErrorHandler(new BailErrorStrategy());
-        sqlParser.getInterpreter().setPredictionMode(mode);
     }
 }
