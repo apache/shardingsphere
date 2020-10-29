@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.parser;
+package org.apache.shardingsphere.sql.parser.core.parser;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.BailErrorStrategy;
@@ -24,18 +24,17 @@ import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
-import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.core.parser.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 import java.util.Optional;
 
 /**
- * SQL parser engine.
+ * SQL parser executor.
  */
 @RequiredArgsConstructor
-public final class SQLParserEngine {
+public final class SQLParserExecutor {
     
     private final String databaseType;
     
