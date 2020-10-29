@@ -38,6 +38,6 @@ public final class StandardSQLStatementParserEngineFactory {
      * @return standard SQL statement parser engine
      */
     public static StandardSQLStatementParserEngine getSQLStatementParserEngine(final String databaseType) {
-        return ENGINES.containsKey(databaseType) ? ENGINES.get(databaseType) : ENGINES.computeIfAbsent(databaseType, key -> new StandardSQLStatementParserEngine(key));
+        return ENGINES.containsKey(databaseType) ? ENGINES.get(databaseType) : ENGINES.computeIfAbsent(databaseType, StandardSQLStatementParserEngine::new);
     }
 }
