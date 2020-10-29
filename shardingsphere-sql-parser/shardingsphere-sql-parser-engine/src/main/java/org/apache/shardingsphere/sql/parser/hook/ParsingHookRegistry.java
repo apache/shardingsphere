@@ -30,10 +30,9 @@ public final class ParsingHookRegistry {
     
     private static final ParsingHookRegistry INSTANCE = new ParsingHookRegistry();
     
-    private final Collection<ParsingHook> hooks;
+    private final Collection<ParsingHook> hooks = new LinkedList<>();
     
     private ParsingHookRegistry() {
-        hooks = new LinkedList<>();
         for (ParsingHook each : ServiceLoader.load(ParsingHook.class)) {
             hooks.add(each);
         }

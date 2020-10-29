@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.core.visitor;
 
 import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -30,10 +30,9 @@ public final class SQLVisitorFacadeRegistry {
     
     private static final SQLVisitorFacadeRegistry INSTANCE = new SQLVisitorFacadeRegistry();
     
-    private final Map<String, SQLVisitorFacade> facades;
+    private final Map<String, SQLVisitorFacade> facades = new LinkedHashMap<>();
     
     private SQLVisitorFacadeRegistry() {
-        facades = new HashMap<>();
         for (SQLVisitorFacade each : ServiceLoader.load(SQLVisitorFacade.class)) {
             facades.put(getQualifiedType(each.getDatabaseType(), each.getVisitorType()), each);
         }
