@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <select sql-case-id="select_with_expression">
+        <from>
+            <simple-table name="t_order" alias="o" start-index="38" stop-index="49" />
+        </from>
+        <projections start-index="7" stop-index="31">
+            <!-- TODO check expression-projection's stop-index whether include alias -->
+            <expression-projection alias="exp" start-index="7" stop-index="31" />
+        </projections>
+        <order-by>
+            <column-item name="order_id" start-index="60" stop-index="69" >
+                <owner name="o" start-index="60" stop-index="60" />
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_date_function">
+        <from>
+            <simple-table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="69" />
+        </from>
+        <projections start-index="7" stop-index="44">
+            <expression-projection alias="creation_date" start-index="7" stop-index="44" />
+        </projections>
+        <order-by>
+            <expression-item expression="DATE(i.creation_date)" order-direction="DESC" start-index="80" stop-index="100" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_regexp" parameters="'init', 1, 2">
+        <from>
+            <simple-table name="t_order_item" alias="t" start-index="14" stop-index="27" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="29" stop-index="75" literal-stop-index="80">
+            <and-predicate>
+                <!-- FIXME cannot parse REGEXP -->
+                <!--<predicate start-index="35" stop-index="51" literal-stop-index="56">-->
+                    <!--<column-left-value name="status" start-index="35" stop-index="51" literal-stop-index="56">-->
+                        <!--<owner name="t" start-index="35" stop-index="35" />-->
+                    <!--</column-left-value>-->
+                <!--</predicate>-->
+                <predicate start-index="57" stop-index="75"  literal-start-index="62" literal-stop-index="80">
+                    <column-left-value name="item_id" start-index="57" stop-index="65" literal-start-index="62" literal-stop-index="70">
+                        <owner name="t" start-index="57" stop-index="57" literal-start-index="62" literal-stop-index="62" />
+                    </column-left-value>
+                    <in-right-value>
+                        <parameter-marker-expression value="1" start-index="71" stop-index="71" />
+                        <parameter-marker-expression value="2" start-index="74" stop-index="74" />
+                        <literal-expression value="1" start-index="76" stop-index="76" />
+                        <literal-expression value="2" start-index="79" stop-index="79" />
+                    </in-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_case_expression">
+        <projections start-index="7" stop-index="124">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner start-index="7" stop-index="7" name="t"/>
+            </shorthand-projection>
+            <column-projection start-index="11" stop-index="19" name="item_id" alias="item_id">
+                <owner start-index="11" stop-index="11" name="o"/>
+            </column-projection>
+            <expression-projection start-index="33" stop-index="124" alias="stateName" />
+        </projections>
+        <from>
+            <join-table>
+                <left>
+                    <simple-table start-index="135" stop-index="143" name="t_order" alias="t" />
+                </left>
+                <right>
+                    <simple-table start-index="155" stop-index="171" name="t_order_item" alias="o" />
+                </right>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="176" stop-index="197">
+                            <column-left-value name="order_id" start-index="176" stop-index="185">
+                                <owner name="o" start-index="176" stop-index="176" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="188" stop-index="197">
+                                <owner name="t" start-index="188" stop-index="188" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+        </from>
+        <where start-index="198" stop-index="219">
+            <and-predicate>
+                <predicate start-index="205" stop-index="219" >
+                    <operator type="=" />
+                    <column-left-value name="order_id" start-index="205" stop-index="214">
+                        <owner name="t" start-index="205" stop-index="205" />
+                    </column-left-value>
+                    <compare-right-value operator="=">
+                        <literal-expression value="1000" start-index="216" stop-index="219" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <limit start-index="221" stop-index="227">
+            <row-count value="1" start-index="227" stop-index="227" />
+        </limit>
+    </select>
+</sql-parser-test-cases>

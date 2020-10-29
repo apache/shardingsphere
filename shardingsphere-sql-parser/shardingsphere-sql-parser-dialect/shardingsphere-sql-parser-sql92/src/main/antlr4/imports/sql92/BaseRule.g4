@@ -34,7 +34,7 @@ literals
     ;
 
 stringLiterals
-    : characterSetName_? STRING_ collateClause_?
+    : characterSetName? STRING_ collateClause?
     ;
 
 numberLiterals
@@ -47,11 +47,11 @@ dateTimeLiterals
     ;
 
 hexadecimalLiterals
-    : characterSetName_? HEX_DIGIT_ collateClause_?
+    : characterSetName? HEX_DIGIT_ collateClause?
     ;
 
 bitValueLiterals
-    : characterSetName_? BIT_NUM_ collateClause_?
+    : characterSetName? BIT_NUM_ collateClause?
     ;
     
 booleanLiterals
@@ -121,13 +121,13 @@ tableNames
     : LP_? tableName (COMMA_ tableName)* RP_?
     ;
 
-characterSetName_
+characterSetName
     : IDENTIFIER_
     ;
 
 expr
     : expr logicalOperator expr
-    | notOperator_ expr
+    | notOperator expr
     | LP_ expr RP_
     | booleanPrimary
     ;
@@ -136,7 +136,7 @@ logicalOperator
     : OR | AND | AND_
     ;
 
-notOperator_
+notOperator
     : NOT | NOT_
     ;
 
@@ -187,7 +187,7 @@ simpleExpr
     | LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
-    | matchExpression_
+    | matchExpression
     | caseExpression
     | intervalExpression
     ;
@@ -209,7 +209,7 @@ distinct
     ;
 
 specialFunction
-    : castFunction | convertFunction | positionFunction | substringFunction | extractFunction | trimFunction_
+    : castFunction | convertFunction | positionFunction | substringFunction | extractFunction | trimFunction
     ;
 
 castFunction
@@ -232,39 +232,39 @@ extractFunction
     : EXTRACT LP_ identifier FROM expr RP_
     ;
 
-trimFunction_
+trimFunction
     : TRIM LP_ (LEADING | BOTH | TRAILING) STRING_ FROM STRING_ RP_
     ;
 
 regularFunction
-    : regularFunctionName_ LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
-regularFunctionName_
+regularFunctionName
     : identifier | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
-matchExpression_
+matchExpression
     : literals MATCH UNIQUE? (PARTIAL | FULL)  subquery
     ;
 
 caseExpression
-    : CASE simpleExpr? caseWhen_+ caseElse_? END
+    : CASE simpleExpr? caseWhen+ caseElse? END
     ;
 
-caseWhen_
+caseWhen
     : WHEN expr THEN expr
     ;
 
-caseElse_
+caseElse
     : ELSE expr
     ;
 
 intervalExpression
-    : INTERVAL expr intervalUnit_
+    : INTERVAL expr intervalUnit
     ;
 
-intervalUnit_
+intervalUnit
     : MICROSECOND | SECOND | MINUTE | HOUR | DAY | WEEK | MONTH | QUARTER | YEAR
     ;
 
@@ -281,7 +281,7 @@ orderByItem
     ;
 
 dataType
-    : dataTypeName dataTypeLength? characterSet_? collateClause_? | dataTypeName LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
+    : dataTypeName dataTypeLength? characterSet? collateClause? | dataTypeName LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet? collateClause?
     ;
 
 dataTypeName
@@ -295,18 +295,18 @@ dataTypeLength
     : LP_ NUMBER_ (COMMA_ NUMBER_)? RP_
     ;
 
-characterSet_
-    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier_
+characterSet
+    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier
     ;
 
-collateClause_
-    : COLLATE EQ_? (STRING_ | ignoredIdentifier_)
+collateClause
+    : COLLATE EQ_? (STRING_ | ignoredIdentifier)
     ;
 
-ignoredIdentifier_
+ignoredIdentifier
     : identifier (DOT_ identifier)?
     ;
 
-dropBehaviour_
+dropBehaviour
     : (CASCADE | RESTRICT)?
     ;

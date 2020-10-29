@@ -20,34 +20,34 @@ grammar DCLStatement;
 import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
 
 grant
-    : GRANT (proxyClause_ | privilegeClause | roleClause_)
+    : GRANT (proxyClause | privilegeClause | roleClause)
     ;
 
 revoke
-    : REVOKE (proxyClause_ | privilegeClause | allClause_ | roleClause_)
+    : REVOKE (proxyClause | privilegeClause | allClause | roleClause)
     ;
 
-proxyClause_
-    : PROXY ON userOrRole TO userOrRoles_ withGrantOption_?
+proxyClause
+    : PROXY ON userOrRole TO userOrRoles withGrantOption?
     ;
 
 privilegeClause
-    : privileges_ ON onObjectClause (TO | FROM) userOrRoles_ withGrantOption_? grantOption_?
+    : privileges ON onObjectClause (TO | FROM) userOrRoles withGrantOption? grantOption?
     ;
 
-roleClause_
-    : roles_ ( TO| FROM) userOrRoles_ withGrantOption_?
+roleClause
+    : roles ( TO| FROM) userOrRoles withGrantOption?
     ;
 
-allClause_
-    : ALL PRIVILEGES? COMMA_ GRANT OPTION FROM userOrRoles_
+allClause
+    : ALL PRIVILEGES? COMMA_ GRANT OPTION FROM userOrRoles
     ;
 
-privileges_
-    : privilegeType_ columnNames? (COMMA_ privilegeType_ columnNames?)*
+privileges
+    : privilegeType columnNames? (COMMA_ privilegeType columnNames?)*
     ;
 
-privilegeType_
+privilegeType
     : ALL PRIVILEGES?
     | ALTER ROUTINE?
     | CREATE
@@ -58,6 +58,7 @@ privilegeType_
     | CREATE VIEW
     | DELETE
     | DROP
+    | DROP ROLE
     | EVENT
     | EXECUTE
     | FILE
@@ -79,42 +80,50 @@ privilegeType_
     | TRIGGER
     | UPDATE
     | USAGE
-    | AUDIT_ADMIN
-    | BINLOG_ADMIN
-    | CONNECTION_ADMIN
-    | ENCRYPTION_KEY_ADMIN
-    | FIREWALL_ADMIN
-    | FIREWALL_USER
-    | GROUP_REPLICATION_ADMIN
-    | REPLICATION_SLAVE_ADMIN
-    | ROLE_ADMIN
-    | SET_USER_ID
-    | SYSTEM_VARIABLES_ADMIN
-    | VERSION_TOKEN_ADMIN
+    | identifier
     ;
 
 onObjectClause
-    : objectType_? privilegeLevel
+    : objectType? privilegeLevel
     ;
 
-objectType_
+objectType
     : TABLE | FUNCTION | PROCEDURE
     ;
 
 privilegeLevel
-    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | identifier DOT_ASTERISK_ | tableName
+    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | identifier DOT_ASTERISK_ | tableName  | schemaName DOT_ routineName
     ;
 
 createUser
-    : CREATE USER (IF NOT EXISTS)? userName userAuthOption_? (COMMA_ userName userAuthOption_?)*
-    DEFAULT ROLE roleName (COMMA_ roleName)* (REQUIRE (NONE | tlsOption_ (AND? tlsOption_)*))?
-    (WITH resourceOption_ resourceOption_*)? (passwordOption_ | lockOption_)*
+    : CREATE USER (IF NOT EXISTS)? userName userAuthOption? (COMMA_ userName userAuthOption?)*
+    defaultRoleClause? requireClause? connectOption? accountLockPasswordExpireOptions?
+    ;
+
+defaultRoleClause
+    : DEFAULT ROLE roleName (COMMA_ roleName)*
+    ;
+
+requireClause
+    : REQUIRE (NONE | tlsOption (AND? tlsOption)*)
+    ;
+
+connectOption
+    : WITH resourceOption resourceOption*
+    ;
+
+accountLockPasswordExpireOptions
+    : accountLockPasswordExpireOption+
+    ;
+
+accountLockPasswordExpireOption
+    : passwordOption | lockOption
     ;
 
 alterUser
-    : ALTER USER (IF EXISTS)? userName userAuthOption_? (COMMA_ userName userAuthOption_?)*
-    (REQUIRE (NONE | tlsOption_ (AND? tlsOption_)*))? (WITH resourceOption_ resourceOption_*)? (passwordOption_ | lockOption_)*
-    | ALTER USER (IF EXISTS)? USER LP_ RP_ userFuncAuthOption_
+    : ALTER USER (IF EXISTS)? userName userAuthOption? (COMMA_ userName userAuthOption?)*
+    (REQUIRE (NONE | tlsOption (AND? tlsOption)*))? (WITH resourceOption resourceOption*)? (passwordOption | lockOption)*
+    | ALTER USER (IF EXISTS)? USER LP_ RP_ userFuncAuthOption
     | ALTER USER (IF EXISTS)? userName DEFAULT ROLE (NONE | ALL | roleName (COMMA_ roleName)*)
     ;
 
@@ -139,71 +148,73 @@ setDefaultRole
     ;
 
 setRole
-    : SET ROLE (DEFAULT | NONE | ALL | ALL EXCEPT roleName (COMMA_ roleName)* | roleName (COMMA_ roleName)*)
+    : SET ROLE (DEFAULT | NONE | ALL | ALL EXCEPT roles | roles)
     ;
 
 setPassword
-    : SET PASSWORD (FOR userName)? authOption_ (REPLACE STRING_)? (RETAIN CURRENT PASSWORD)?
+    : SET PASSWORD (FOR userName)? authOption (REPLACE STRING_)? (RETAIN CURRENT PASSWORD)?
     ;
 
-authOption_
+authOption
     : EQ_ stringLiterals | TO RANDOM
     ;
 
-withGrantOption_
+withGrantOption
     : WITH GRANT OPTION
     ;
 
-userOrRoles_
+userOrRoles
     : userOrRole (COMMA_ userOrRole)*
     ;
 
-roles_
+roles
     : roleName (COMMA_ roleName)*
     ;
 
-grantOption_
-    : AS userName (WITH ROLE DEFAULT | NONE | ALL | ALL EXCEPT roles_ | roles_ )?
+grantOption
+    : AS userName (WITH ROLE DEFAULT | NONE | ALL | ALL EXCEPT roles | roles )?
     ;
 
-userAuthOption_
-    : identifiedBy_
-    | identifiedWith_
+userAuthOption
+    : identifiedBy
+    | identifiedWith
     | DISCARD OLD PASSWORD
     ;
 
-identifiedBy_
+identifiedBy
     : IDENTIFIED BY (STRING_ | RANDOM PASSWORD) (REPLACE STRING_)? (RETAIN CURRENT PASSWORD)?
     ;
 
-identifiedWith_
+identifiedWith
     : IDENTIFIED WITH pluginName (BY |AS) (STRING_ | RANDOM PASSWORD)
       (REPLACE stringLiterals)? (RETAIN CURRENT PASSWORD)?
     ;
 
-lockOption_
+lockOption
     : ACCOUNT LOCK | ACCOUNT UNLOCK
     ;
 
 
-passwordOption_
+passwordOption
     : PASSWORD EXPIRE (DEFAULT | NEVER | INTERVAL NUMBER_ DAY)?
     | PASSWORD HISTORY (DEFAULT | NUMBER_)
     | PASSWORD REUSE INTERVAL (DEFAULT | NUMBER_ DAY)
-    | PASSWORD REQUIRE CURRENT (DEFAULT | OPTIONAL)
+    | PASSWORD REQUIRE CURRENT (DEFAULT | OPTIONAL)?
+    | FAILED_LOGIN_ATTEMPTS NUMBER_
+    | PASSWORD_LOCK_TIME (NUMBER_ | UNBOUNDED)
     ;
 
-resourceOption_
+resourceOption
     : MAX_QUERIES_PER_HOUR NUMBER_
     | MAX_UPDATES_PER_HOUR NUMBER_
     | MAX_CONNECTIONS_PER_HOUR NUMBER_
     | MAX_USER_CONNECTIONS NUMBER_
     ;
 
-tlsOption_
+tlsOption
     : SSL | X509 | CIPHER STRING_ | ISSUER STRING_ | SUBJECT STRING_
     ;
 
-userFuncAuthOption_
-    : identifiedBy_ | DISCARD OLD PASSWORD
+userFuncAuthOption
+    : identifiedBy | DISCARD OLD PASSWORD
     ;

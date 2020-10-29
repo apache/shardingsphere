@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "配置"
 weight = 3
 +++
@@ -65,13 +64,13 @@ db0.t_order0, db0.t_order1, db1.t_order2, db1.t_order3, db1.t_order4
 
 - 数据源分片策略
 
-对应于DatabaseShardingStrategy。用于配置数据被分配的目标数据源。
+对应于 DatabaseShardingStrategy。用于配置数据被分配的目标数据源。
 
 - 表分片策略
 
-对应于TableShardingStrategy。用于配置数据被分配的目标表，该目标表存在与该数据的目标数据源内。故表分片策略是依赖与数据源分片策略的结果的。
+对应于 TableShardingStrategy。用于配置数据被分配的目标表，该目标表存在与该数据的目标数据源内。故表分片策略是依赖与数据源分片策略的结果的。
 
-两种策略的API完全相同。
+两种策略的 API 完全相同。
 
 ## 自增主键生成策略
 

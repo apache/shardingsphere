@@ -1,0 +1,99 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+######################################################################################################
+# 
+# Here you can configure the rules for the proxy.
+# This example is configuration of encrypt rule.
+# 
+######################################################################################################
+#
+#schemaName: encrypt_db
+#
+#dataSourceCommon:
+#  username: postgresql
+#  password: postgresql
+#  connectionTimeoutMilliseconds: 30000
+#  idleTimeoutMilliseconds: 60000
+#  maxLifetimeMilliseconds: 1800000
+#  maxPoolSize: 50
+#  minPoolSize: 1
+#  maintenanceIntervalMilliseconds: 30000
+#
+#dataSource:
+#  url: jdbc:postgresql://127.0.0.1:5432/demo_ds?serverTimezone=UTC&useSSL=false
+#
+#rules:
+#- !ENCRYPT
+#  encryptors:
+#    aes_encryptor:
+#      type: AES
+#      props:
+#        aes-key-value: 123456abc
+#    md5_encryptor:
+#      type: MD5
+#  tables:
+#    t_encrypt:
+#      columns:
+#        user_id:
+#          plainColumn: user_plain
+#          cipherColumn: user_cipher
+#          encryptorName: aes_encryptor
+#        order_id:
+#          cipherColumn: order_encrypt
+#          encryptorName: md5_encryptor
+
+######################################################################################################
+#
+# If you want to connect to MySQL, you should manually copy MySQL driver to lib directory.
+#
+######################################################################################################
+#
+#schemaName: encrypt_db
+#
+#dataSourceCommon:
+#  username: root
+#  password:
+#  connectionTimeoutMilliseconds: 30000
+#  idleTimeoutMilliseconds: 60000
+#  maxLifetimeMilliseconds: 1800000
+#  maxPoolSize: 50
+#  minPoolSize: 1
+#  maintenanceIntervalMilliseconds: 30000
+#
+#dataSource:
+#  url: jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false
+#
+#rules:
+#- !ENCRYPT
+#  encryptors:
+#    aes_encryptor:
+#      type: AES
+#      props:
+#        aes-key-value: 123456abc
+#    md5_encryptor:
+#      type: MD5
+#  tables:
+#    t_encrypt:
+#      columns:
+#        user_id:
+#          plainColumn: user_plain
+#          cipherColumn: user_cipher
+#          encryptorName: aes_encryptor
+#        order_id:
+#          cipherColumn: order_cipher
+#          encryptorName: md5_encryptor

@@ -1,6 +1,5 @@
 +++
-pre = "<b>3.6.1. </b>"
-toc = true
+pre = "<b>3.10.1. </b>"
 title = "SQL Case"
 weight = 1
 +++
@@ -26,4 +25,4 @@ Developer setup the SQL for assertion and database type during on the configurat
 
 Following is the data handling process in SQL case :
 
-![](https://shardingsphere.apache.org/document/current/img/test-engine/sql-case.jpg)
+![Test Engine](https://shardingsphere.apache.org/document/current/img/test-engine/sql-case.jpg)

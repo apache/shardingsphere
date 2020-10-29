@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<rewrite-assertions yaml-rule="yaml/mix/query-with-cipher.yaml">
+    <rewrite-assertion id="select_for_parameters">
+        <input sql="SELECT account_id, password, amount AS a, status AS s FROM t_account WHERE account_id = ? AND password = ? AND amount = ? AND status = ?" parameters="1, aaa, 1000, OK" />
+        <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS a, status AS s FROM t_account_1 WHERE account_id = ? AND assisted_query_password = ? AND cipher_amount = ? AND status = ?" parameters="1, assisted_query_aaa, encrypt_1000, OK" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_for_literals">
+        <input sql="SELECT account_id, password, amount AS a, status AS s FROM t_account WHERE account_id = 1 AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
+        <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS a, status AS s FROM t_account_1 WHERE account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_plain_for_parameters">
+        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = ? AND a.password = ? AND a.amount = ? AND a.status = ?" parameters="1, aaa, 1000, OK" />
+        <output sql="SELECT a.account_id, a.cipher_password AS password, a.cipher_amount AS a, a.status AS s FROM t_account_bak_1 AS a WHERE a.account_id = ? AND a.assisted_query_password = ? AND a.cipher_amount = ? AND a.status = ?" parameters="1, assisted_query_aaa, encrypt_1000, OK" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_plain_for_literals">
+        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = 1 AND a.password = 'aaa' AND a.amount = 1000 AND a.status = 'OK'" />
+        <output sql="SELECT a.account_id, a.cipher_password AS password, a.cipher_amount AS a, a.status AS s FROM t_account_bak_1 AS a WHERE a.account_id = 1 AND a.assisted_query_password = 'assisted_query_aaa' AND a.cipher_amount = 'encrypt_1000' AND a.status = 'OK'" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_with_table_as_qualified_name">
+        <input sql="SELECT t_account.account_id, t_account.password, t_account.amount AS a, status AS s FROM t_account WHERE t_account.account_id = 1 AND t_account.password = 'aaa' AND t_account.amount = 1000 AND t_account.status = 'OK'" />
+        <output sql="SELECT t_account_1.account_id, t_account_1.cipher_password AS password, t_account_1.cipher_amount AS a, status AS s FROM t_account_1 WHERE t_account_1.account_id = 1 AND t_account_1.assisted_query_password = 'assisted_query_aaa' AND t_account_1.cipher_amount = 'encrypt_1000' AND t_account_1.status = 'OK'" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_with_unqualified_shorthand">
+        <input sql="SELECT * FROM t_account" />
+        <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS amount, status FROM t_account_0" />
+        <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS amount, status FROM t_account_1" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_with_qualified_shorthand">
+        <input sql="SELECT a.* FROM t_account a" />
+        <output sql="SELECT a.account_id, a.cipher_password AS password, a.cipher_amount AS amount, a.status FROM t_account_0 a" />
+        <output sql="SELECT a.account_id, a.cipher_password AS password, a.cipher_amount AS amount, a.status FROM t_account_1 a" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_sharding_qualified_shorthand_join_table">
+        <input sql="SELECT b.* FROM t_account a, t_account_detail b where a.password = b.password" />
+        <output sql="SELECT b.* FROM t_account_0 a, t_account_detail_0 b where a.assisted_query_password = b.password" />
+        <output sql="SELECT b.* FROM t_account_1 a, t_account_detail_1 b where a.assisted_query_password = b.password" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_encrypt_qualified_shorthand_join_table">
+        <input sql="SELECT a.* FROM t_account a, t_account_detail b where a.password = b.password" />
+        <output sql="SELECT a.account_id, a.cipher_password AS password, a.cipher_amount AS amount, a.status FROM t_account_0 a, t_account_detail_0 b where a.assisted_query_password = b.password" />
+        <output sql="SELECT a.account_id, a.cipher_password AS password, a.cipher_amount AS amount, a.status FROM t_account_1 a, t_account_detail_1 b where a.assisted_query_password = b.password" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_with_mix_qualified_shorthand_and_other_projection">
+        <input sql="SELECT a.*, account_id, 1+1 FROM t_account a" />
+        <output sql="SELECT a.account_id, a.cipher_password AS password, a.cipher_amount AS amount, a.status, account_id, 1+1 FROM t_account_0 a" />
+        <output sql="SELECT a.account_id, a.cipher_password AS password, a.cipher_amount AS amount, a.status, account_id, 1+1 FROM t_account_1 a" />
+    </rewrite-assertion>
+    
+    <!-- FIXME -->
+    <!--<rewrite-assertion id="select_with_table_qualified_shorthand">-->
+        <!--<input sql="SELECT t_account.* FROM t_account" />-->
+        <!--<output sql="SELECT t_account_0.account_id, t_account_0.cipher_password AS password, t_account_0.cipher_amount AS amount, t_account_0.status FROM t_account_0" />-->
+        <!--<output sql="SELECT t_account_1.account_id, t_account_1.cipher_password AS password, t_account_1.cipher_amount AS amount, t_account_1.status FROM t_account_1" />-->
+    <!--</rewrite-assertion>-->
+</rewrite-assertions>

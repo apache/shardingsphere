@@ -20,16 +20,11 @@ grammar TCLStatement;
 import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
 
 setTransaction
-    : SET scope_? TRANSACTION
+    : SET scope? TRANSACTION transactionCharacteristic (COMMA_ transactionCharacteristic)*
     ;
 
 setAutoCommit
-    : SET scope_? AUTOCOMMIT EQ_ autoCommitValue
-    ;
-
-scope_
-    : (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)
-    | AT_ AT_ (GLOBAL | PERSIST | PERSIST_ONLY | SESSION) DOT_
+    : SET (AT_? AT_)? scope? DOT_? AUTOCOMMIT EQ_ autoCommitValue
     ;
 
 autoCommitValue
@@ -37,17 +32,78 @@ autoCommitValue
     ;
 
 beginTransaction
-    : BEGIN | START TRANSACTION
+    : BEGIN | START TRANSACTION (transactionCharacteristic (COMMA_ transactionCharacteristic)*)?
     ;
 
 commit
-    : COMMIT
+    : COMMIT optionWork? optionChain? optionRelease?
     ;
 
 rollback
-    : ROLLBACK
+    : ROLLBACK (optionWork? TO SAVEPOINT? identifier | optionWork? optionChain? optionRelease?)
     ;
 
 savepoint
-    : SAVEPOINT
+    : SAVEPOINT identifier
+    ;
+
+begin
+    : BEGIN optionWork?
+    ;
+
+lock
+    : LOCK (INSTANCE FOR BACKUP | (TABLE | TABLES) tableLock (COMMA_ tableLock)* )
+    ;
+
+unlock
+    : UNLOCK (INSTANCE | TABLE | TABLES)
+    ;
+
+releaseSavepoint
+    : RELEASE SAVEPOINT identifier
+    ;
+
+xa
+    : (START | BEGIN) xid (JOIN | RESUME)
+    | END xid (SUSPEND (FOR MIGRATE)?)?
+    | PREPARE xid
+    | COMMIT xid (ONE PHASE)?
+    | ROLLBACK xid
+    | RECOVER (CONVERT xid)?
+    ;
+
+transactionCharacteristic
+   : ISOLATION LEVEL level | accessMode | WITH CONSISTENT SNAPSHOT
+   ;
+
+level
+   : REPEATABLE READ | READ COMMITTED | READ UNCOMMITTED | SERIALIZABLE
+   ;
+
+accessMode
+   : READ (WRITE | ONLY)
+   ;
+
+optionWork
+    : WORK
+    ;
+
+optionChain
+    : AND NO? CHAIN
+    ;
+
+optionRelease
+    : NO? RELEASE
+    ;
+
+tableLock
+    : tableName (AS? alias)? lockOption
+    ;
+
+lockOption
+    : READ LOCAL? | LOW_PRIORITY? WRITE
+    ;
+
+xid
+    : STRING_ (COMMA_ STRING_)* numberLiterals?
     ;

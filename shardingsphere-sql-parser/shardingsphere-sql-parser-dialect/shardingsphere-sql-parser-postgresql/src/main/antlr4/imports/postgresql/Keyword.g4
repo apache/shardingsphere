@@ -423,26 +423,6 @@ MICROSECOND
     : M I C R O S E C O N D
     ;
 
-MAX
-    : M A X
-    ;
-
-MIN
-    : M I N
-    ;
-    
-SUM
-    : S U M
-    ;
-
-COUNT
-    : C O U N T
-    ;
-
-AVG
-    : A V G
-    ;
-
 DEFAULT
     : D E F A U L T
     ;
@@ -550,4 +530,112 @@ NUMERIC
 
 TEXT
     : T E X T
+    ;
+
+REPEATABLE
+    : R E P E A T A B L E
+    ;
+
+CURRENT_DATE
+    : C U R R E N T UL_ D A T E
+    ;
+
+CURRENT_TIME
+    : C U R R E N T UL_ T I M E
+    ;
+
+CURRENT_TIMESTAMP
+    : C U R R E N T UL_ T I M E S T A M P
+    ;
+
+NULLIF
+    : N U L L I F
+    ;
+
+VARYING
+    : V A R Y I N G
+    ;
+
+NATIONAL
+    : N A T I O N A L
+    ;
+
+NCHAR
+    : N C H A R
+    ;
+
+VALUE
+    : V A L U E
+    ;
+
+BOTH
+    : B O T H
+    ;
+
+LEADING
+    : L E A D I N G
+    ;
+
+TRAILING
+    : T R A I L I N G
+    ;
+
+COALESCE
+    : C O A L E S C E
+    ;
+
+INTERSECT
+    : I N T E R S E C T
+    ;
+
+EXCEPT
+    : E X C E P T
+    ;
+
+TIES
+    : T I E S
+    ;
+
+FETCH
+    : F E T C H
+    ;
+
+CUBE
+    : C U B E
+    ;
+
+GROUPING
+    : G R O U P I N G
+    ;
+
+SETS
+    : S E T S
+    ;
+
+WINDOW
+    : W I N D O W
+    ;
+
+OTHERS
+    : O T H E R S
+    ;
+
+OVERLAPS
+    : O V E R L A P S
+    ;
+
+SOME
+    : S O M E
+    ;
+
+AT
+    : A T
+    ;
+
+DEC
+    : D E C
+    ;
+
+END
+    : E N D
     ;

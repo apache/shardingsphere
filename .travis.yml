@@ -1,6 +1,11 @@
 language: java
+
 jdk:
   - openjdk8
+
+services:
+  - mysql
+  - postgresql
 
 install: true
 
@@ -10,9 +15,16 @@ cache:
 
 before_script:
   - echo "MAVEN_OPTS='-Xmx1024m -XX:MaxMetaspaceSize=256m'" > ~/.mavenrc
+  - wget https://repo.mysql.com//mysql-apt-config_0.8.10-1_all.deb
+  - sudo dpkg -i mysql-apt-config_0.8.10-1_all.deb
+  - sudo apt-get update -q
+  - sudo apt-get install -q -y --allow-unauthenticated -o Dpkg::Options::=--force-confnew mysql-server
+  - sudo systemctl restart mysql
+  - sudo mysql_upgrade
+  - mysql --version
 
 script:
-  - travis_wait 30 mvn --batch-mode --no-transfer-progress clean install cobertura:cobertura coveralls:report -DrepoToken="${COVERALLS_REPO_TOKEN}" -Dmaven.javadoc.skip=true
+  - travis_wait 120 ./mvnw --batch-mode --no-transfer-progress clean install cobertura:cobertura -Dmaven.javadoc.skip=true -Pit-jdbc-ci
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

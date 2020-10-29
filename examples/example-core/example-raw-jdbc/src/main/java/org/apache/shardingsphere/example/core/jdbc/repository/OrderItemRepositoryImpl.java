@@ -95,7 +95,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     
     @Override
     public List<OrderItem> selectAll() throws SQLException {
-        // TODO Associated query with encrypt may query and decrypt failed. see https://github.com/apache/incubator-shardingsphere/issues/3352
+        // TODO Associated query with encrypt may query and decrypt failed. see https://github.com/apache/shardingsphere/issues/3352
 //        String sql = "SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id";
         String sql = "SELECT * FROM t_order_item";
         return getOrderItems(sql);

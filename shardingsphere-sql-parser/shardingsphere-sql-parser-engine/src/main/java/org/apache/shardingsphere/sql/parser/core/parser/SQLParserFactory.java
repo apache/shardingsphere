@@ -21,13 +21,16 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CodePointBuffer;
+import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
+
+import java.nio.CharBuffer;
 
 /**
  * SQL parser factory.
@@ -35,29 +38,31 @@ import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLParserFactory {
     
-    static {
-        ShardingSphereServiceLoader.register(SQLParserConfiguration.class);
-    }
-    
-    /** 
+    /**
      * New instance of SQL parser.
      * 
-     * @param databaseTypeName name of database type
+     * @param databaseType database type
      * @param sql SQL
      * @return SQL parser
      */
-    public static SQLParser newInstance(final String databaseTypeName, final String sql) {
-        for (SQLParserConfiguration each : ShardingSphereServiceLoader.newServiceInstances(SQLParserConfiguration.class)) {
-            if (each.getDatabaseTypeName().equals(databaseTypeName)) {
-                return createSQLParser(sql, each);
-            }
-        }
-        throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseTypeName));
+    public static SQLParser newInstance(final String databaseType, final String sql) {
+        SQLParserFacade sqlParserFacade = SQLParserFacadeRegistry.getInstance().getSQLParserFacade(databaseType);
+        return createSQLParser(createTokenStream(sql, sqlParserFacade.getLexerClass()), sqlParserFacade.getParserClass());
     }
     
-    @SneakyThrows
-    private static SQLParser createSQLParser(final String sql, final SQLParserConfiguration configuration) {
-        Lexer lexer = (Lexer) configuration.getLexerClass().getConstructor(CharStream.class).newInstance(CharStreams.fromString(sql));
-        return configuration.getParserClass().getConstructor(TokenStream.class).newInstance(new CommonTokenStream(lexer));
+    @SneakyThrows(ReflectiveOperationException.class)
+    private static SQLParser createSQLParser(final TokenStream tokenStream, final Class<? extends SQLParser> parserClass) {
+        return parserClass.getConstructor(TokenStream.class).newInstance(tokenStream);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private static TokenStream createTokenStream(final String sql, final Class<? extends SQLLexer> lexerClass) {
+        Lexer lexer = (Lexer) lexerClass.getConstructor(CharStream.class).newInstance(getSQLCharStream(sql));
+        return new CommonTokenStream(lexer);
+    }
+    
+    private static CharStream getSQLCharStream(final String sql) {
+        CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(sql.toCharArray()));
+        return CodePointCharStream.fromBuffer(buffer);
     }
 }

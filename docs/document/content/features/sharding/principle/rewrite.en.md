@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Rewrite Engine"
 weight = 3
 +++
@@ -164,7 +163,7 @@ SELECT score FROM t_score ORDER BY score DESC LIMIT 1, 2;
 
 The following picture shows the pagination execution results without SQL rewrite.
 
-![Pagination without rewrite](https://shardingsphere.apache.org/document/current/img/sharding/pagination_without_rewrite.png)
+![Pagination without rewrite](https://shardingsphere.apache.org/document/current/img/sharding/pagination_without_rewrite_en.png)
 
 As shown in the picture, if you want to acquire the second and the third piece of data ordered by score common in both tables, and they are supposed to be `95` and `90`. 
 Since the executed SQL can only acquire the second and the third piece of data from each table, i.e., `90` and `80` from t_score_0, `85` and `75` from t_score_1. 
@@ -173,7 +172,7 @@ When merging results, it can only merge from `90`, `80`, `85` and `75` already a
 The right way is to rewrite pagination conditions as `LIMIT 0, 3`, take out all the data from the first two pages and combine sorting conditions to calculate the right data. 
 The following picture shows the execution of pagination results after SQL rewrite.
 
-![Pagination with rewrite](https://shardingsphere.apache.org/document/current/img/sharding/pagination_with_rewrite.png)
+![Pagination with rewrite](https://shardingsphere.apache.org/document/current/img/sharding/pagination_with_rewrite_en.png)
 
 The latter the offset position is, the lower the efficiency of using LIMIT pagination will be. 
 There are many ways to avoid using LIMIT as pagination method, such as constructing a secondary index to record line record number and line offset amount, 

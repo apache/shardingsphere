@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="create_role" value="CREATE ROLE role1" db-types="MySQL,Oracle,PostgreSQL,SQLServer" />
+    <sql-case id="create_roles" value="CREATE ROLE role1, role2" db-types="MySQL" />
+    <sql-case id="create_role_if_not_exists" value="CREATE ROLE IF NOT EXISTS role1" db-types="MySQL" />
+    <sql-case id="create_no_identified_role" value="CREATE ROLE role1 NOT IDENTIFIED" db-types="Oracle" />
+    <sql-case id="create_external_role" value="CREATE ROLE role1 IDENTIFIED EXTERNALLY" db-types="Oracle" />
+    <sql-case id="create_global_role" value="CREATE ROLE role1 IDENTIFIED GLOBALLY" db-types="Oracle" />
+    <sql-case id="create_role_with_identified_by_password" value="CREATE ROLE role1 IDENTIFIED BY password" db-types="Oracle,PostgreSQL" />
+    <sql-case id="create_role_with_container" value="CREATE ROLE role1 CONTAINER = ALL" db-types="Oracle" />
+    <sql-case id="create_role_with_role" value="CREATE ROLE role1 WITH ROLE role2" db-types="PostgreSQL" />
+    <sql-case id="create_role_with_roles" value="CREATE ROLE role1 WITH ROLE role2, role3" db-types="PostgreSQL" />
+    <sql-case id="create_role_with_option" value="CREATE ROLE role1 WITH SUPERUSER" db-types="PostgreSQL" />
+    <sql-case id="create_role_with_options" value="CREATE ROLE role1 WITH CREATEDB CREATEROLE" db-types="PostgreSQL" />
+    <sql-case id="create_role_with_authorization" value="CREATE ROLE role1 AUTHORIZATION authorization" db-types="SQLServer" />
+    <sql-case id="create_role_identified_by" value="CREATE ROLE role_dev_new identified by dev_passwd" db-types="Oracle" />
+    <sql-case id="create_role_with_password" value="CREATE ROLE role_dev_new PASSWORD 'passwd_dev'" db-types="PostgreSQL" />
+    <sql-case id="create_user_with_role_postgresql" value="CREATE USER user1 WITH ROLE role1" db-types="PostgreSQL" />
+    <sql-case id="create_user_with_roles_postgresql" value="CREATE USER user1 WITH ROLE role1, role2" db-types="PostgreSQL" />
+    <sql-case id="create_role_with_valid_until" value="CREATE ROLE miriam WITH LOGIN PASSWORD 'jw8s0F4' VALID UNTIL '2005-01-01'" db-types="PostgreSQL" />
+    <sql-case id="create_role_with_createdb" value="CREATE ROLE admin WITH CREATEDB CREATEROLE" db-types="PostgreSQL" />
+</sql-cases>

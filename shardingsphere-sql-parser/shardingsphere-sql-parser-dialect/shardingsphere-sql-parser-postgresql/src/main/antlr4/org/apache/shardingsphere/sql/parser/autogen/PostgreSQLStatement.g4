@@ -48,5 +48,21 @@ execute
     | set
     | resetParameter
     | call
+    | alterFunction
+    | alterDatabase
+    | alterProcedure
+    | alterServer
+    | createDatabase
+    | createFunction
+    | createProcedure
+    | createServer
+    | createTrigger
+    | createView
+    | dropDatabase
+    | dropFunction
+    | dropProcedure
+    | dropServer
+    | dropTrigger
+    | dropView
     ) SEMI_?
     ;

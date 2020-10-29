@@ -1,0 +1,57 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+######################################################################################################
+# 
+# If you want to configure governance, authorization and proxy properties, please refer to this file.
+# 
+######################################################################################################
+#
+#governance:
+#  name: governance_ds
+#  registryCenter:
+#    type: ZooKeeper
+#    serverLists: localhost:2181
+#    props:
+#      retryIntervalMilliseconds: 500
+#      timeToLiveSeconds: 60
+#      maxRetries: 3
+#      operationTimeoutMilliseconds: 500
+#  overwrite: false
+
+#authentication:
+#  users:
+#    root:
+#      password: root
+#    sharding:
+#      password: sharding 
+#      authorizedSchemas: sharding_db
+
+#props:
+#  max-connections-size-per-query: 1
+#  acceptor-size: 16  # The default value is available processors count * 2.
+#  executor-size: 16  # Infinite by default.
+#  proxy-frontend-flush-threshold: 128  # The default value is 128.
+#    # LOCAL: Proxy will run with LOCAL transaction.
+#    # XA: Proxy will run with XA transaction.
+#    # BASE: Proxy will run with B.A.S.E transaction.
+#  proxy-transaction-type: LOCAL
+#  proxy-opentracing-enabled: false
+#  proxy-hint-enabled: false
+#  query-with-cipher-column: true
+#  sql-show: false
+#  check-table-metadata-enabled: false

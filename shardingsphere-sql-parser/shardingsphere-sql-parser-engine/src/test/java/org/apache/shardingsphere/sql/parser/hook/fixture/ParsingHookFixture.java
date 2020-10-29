@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.hook.fixture;
 
 import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;

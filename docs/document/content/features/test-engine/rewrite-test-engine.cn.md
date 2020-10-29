@@ -1,6 +1,5 @@
 +++
-pre = "<b>3.6.4. </b>"
-toc = true
+pre = "<b>3.10.4. </b>"
 title = "SQL改写测试引擎"
 weight = 4
 +++
@@ -38,7 +37,7 @@ shardingRule:
         inline:
           shardingColumn: account_id
           algorithmExpression: t_account_${account_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: TEST
         column: account_id
     t_account_detail:

@@ -3,8 +3,8 @@ You can report a bug, submit a new feature enhancement recommendation, or commit
 ## Reporting Bugs
 
  - Before report a bug, please search from google to confirm you cannot find any hint on it.
- - Look [issues List](https://github.com/sharding-sphere/sharding-sphere/issues) to confirm this issue is not a duplicated one.
- - [Create](https://github.com/sharding-sphere/sharding-sphere/issues/new) a new issue.
+ - Look [issues List](https://github.com/apache/shardingsphere/issues) to confirm this issue is not a duplicated one.
+ - [Create](https://github.com/apache/shardingsphere/issues/new) a new issue.
  - Define a clear and descriptive title for the issue.
  - If bug reported, please provide information below:
        - Details for reproduce bug step by step. Include SQL, configuration, expected results, actual results and tracing log.
@@ -24,9 +24,9 @@ You can report a bug, submit a new feature enhancement recommendation, or commit
 
 ## Commit pull request
 
- - Please choose a interested issue, or create a new issue and then settle a correct label.
+ - Please choose an interested issue, or create a new issue and then settle a correct label.
  - Reply a deadline message to pickup this issue. 
- - Find a mentor in [Core developers list](http://incubator.apache.org/projects/shardingsphere.html), he will give you feedback for design and implements.
+ - Find a mentor in [Core developers list](https://shardingsphere.apache.org/community/en/team/), he will give you feedback for design and implements.
  - Fork to your github repo and begin to work.
  - Please follow Sharding's [Development conventions](https://shardingsphere.apache.org/community/en/contribute/code-conduct/), and complete check before pull request submit.
  - Submit a pull request to master branch when finished.

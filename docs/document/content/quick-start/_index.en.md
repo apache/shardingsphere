@@ -5,4 +5,4 @@ weight = 2
 chapter = true
 +++
 
-In shortest time, this chapter provides users with a simplest quick start.
+In shortest time, this chapter provides users with a simplest quick start with Apache ShardingSphere.

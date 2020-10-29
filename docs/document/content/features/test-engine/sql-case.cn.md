@@ -1,6 +1,5 @@
 +++
-pre = "<b>3.6.1. </b>"
-toc = true
+pre = "<b>3.10.1. </b>"
 title = "SQL测试用例"
 weight = 1
 +++
@@ -28,4 +27,4 @@ SQL测试用例的代码位于 `sharding-sql-test` 模块下。该测试用例�
 
 如下图为 SQL 测试用例的数据流程：
 
-![](https://shardingsphere.apache.org/document/current/img/test-engine/sql-case.jpg)
+![测试引擎](https://shardingsphere.apache.org/document/current/img/test-engine/sql-case.jpg)

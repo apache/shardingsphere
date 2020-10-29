@@ -1,10 +1,9 @@
 +++
-toc = true
 title = "SQL"
 weight = 1
 +++
 
-Since the SQL syntax is flexible and complex and distributed databases and stand-alone databases do not have identical query sceanrios, SQLs incompatible with stand-alone databases are hard to avoid.
+Since the SQL syntax is flexible and complex and distributed databases and stand-alone databases do not have identical query scenarios, SQLs incompatible with stand-alone databases are hard to avoid.
 
 This document has listed identified supported SQL types and unsupported SQL types, trying to avoid traps for users.
 
@@ -100,6 +99,8 @@ When shardingColumn in expressions and functions, ShardingSphere will use full r
 | INSERT INTO tbl_name (col1, col2,...) VALUES (?, ?, ....)                                   |                                         |
 | INSERT INTO tbl_name VALUES (?, ?,....)                                                     |                                         |
 | INSERT INTO tbl_name (col1, col2, ...) VALUES (?, ?, ....), (?, ?, ....)                    |                                         |
+| INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?  | The table inserted and the table selected must be the same or bind tables |
+| REPLACE INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ? | The table replaced and the table selected must be the same or bind tables |
 | UPDATE tbl_name SET col1 = ? WHERE col2 = ?                                                 |                                         |
 | DELETE FROM tbl_name WHERE col1 = ?                                                         |                                         |
 | CREATE TABLE tbl_name (col1 int, ...)                                                       |                                         |
@@ -111,19 +112,21 @@ When shardingColumn in expressions and functions, ShardingSphere will use full r
 | DROP INDEX idx_name                                                                         |                                         |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                         |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                         |
+| SELECT subquery_alias.col1 FROM (select tbl_name.col1 from tbl_name where tbl_name.col2=?) subquery_alias                                                   |                                         |
 
 ### Unsupported SQL
 
 | SQL                                                                                        | Reason                                              |
 | ------------------------------------------------------------------------------------------ | --------------------------------------------------- |
 | INSERT INTO tbl_name (col1, col2, ...) VALUES(1+2, ?, ...)                                 | VALUES clause does not support operation expression |
-| INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ? | INSERT .. SELECT                                    |
-| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?       | HAVING                                              |
+| INSERT INTO tbl_name (col1, col2, ...) SELECT * FROM tbl_name WHERE col3 = ?               | SELECT clause does not support *-shorthand and built-in key generators |
+| REPLACE INTO tbl_name (col1, col2, ...) SELECT * FROM tbl_name WHERE col3 = ?              | SELECT clause does not support *-shorthand and built-in key generators |
 | SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                      | UNION                                               |
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                  | UNION ALL                                           |
-| SELECT * FROM ds.tbl_name1                                                                 | Contain schema                                      |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                         | See DISTINCT availability detail                    |
 | SELECT * FROM tbl_name WHERE to_date(create_time, 'yyyy-mm-dd') = ?                        | Lead to full routing                                |
+| (SELECT * FROM tbl_name)                                                                   | Contain brackets                              |
+| SELECT MAX(tbl_name.col1) FROM tbl_name                                                    | The select function item contains TableName. Otherwise, If this query table had an alias, then TableAlias could work well in select function items. |
 
 ## DISTINCT Availability Explanation
 
@@ -150,4 +153,4 @@ When shardingColumn in expressions and functions, ShardingSphere will use full r
 
 | SQL                                                | Reason                                                                             |
 | -------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name | Use normal aggregation function and DISTINCT aggregation function in the same time |
+| SELECT SUM(DISTINCT tbl_name.col1), SUM(tbl_name.col1) FROM tbl_name | The select function item contains TableName. Otherwise, If this query table had an alias, then TableAlias could work well in select function items. |

@@ -19,9 +19,6 @@
 # 
 # Here you can configure the rules for the proxy.
 # This example is configuration of sharding rule.
-#   
-# If you want to use sharding, please refer to this file; 
-# if you want to use master-slave, please refer to the config-master_slave.yaml.
 # 
 ######################################################################################################
 
@@ -45,28 +42,42 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
 
-shardingRule:
+rules:
+- !SHARDING
   tables:
     t_order:
       actualDataNodes: ds_${0..1}.t_order_${0..1}
       tableStrategy:
-        inline:
+        standard:
           shardingColumn: order_id
-          algorithmExpression: t_order_${order_id % 2}
+          shardingAlgorithmName: t_order_inline
       keyGeneratorColumnName: order_id
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       tableStrategy:
-        inline:
+        standard:
           shardingColumn: order_id
-          algorithmExpression: t_order_item_${order_id % 2}
+          shardingAlgorithmName: t_order_item_inline
       keyGeneratorColumnName: order_item_id
   bindingTables:
     - t_order,t_order_item
   defaultDatabaseStrategy:
-    inline:
+    standard:
       shardingColumn: user_id
-      algorithmExpression: ds_${user_id % 2}
+      shardingAlgorithmName: database_inline
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+  
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm-expression: ds_${user_id % 2}
+    t_order_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_${order_id % 2}
+    t_order_item_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_item_${order_id % 2}

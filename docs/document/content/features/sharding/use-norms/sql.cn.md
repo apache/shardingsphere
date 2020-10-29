@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "SQL"
 weight = 1
 +++
@@ -100,6 +99,8 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 | INSERT INTO tbl_name (col1, col2,...) VALUES (?, ?, ....)                                   |                          |
 | INSERT INTO tbl_name VALUES (?, ?,....)                                                     |                          |
 | INSERT INTO tbl_name (col1, col2, ...) VALUES (?, ?, ....), (?, ?, ....)                    |                          |
+| INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?  | INSERT表和SELECT表必须为相同表或绑定表 |
+| REPLACE INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ? | REPLACE表和SELECT表必须为相同表或绑定表 |
 | UPDATE tbl_name SET col1 = ? WHERE col2 = ?                                                 |                          |
 | DELETE FROM tbl_name WHERE col1 = ?                                                         |                          |
 | CREATE TABLE tbl_name (col1 int, ...)                                                       |                          |
@@ -111,19 +112,21 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 | DROP INDEX idx_name                                                                         |                          |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                          |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                          |
+| SELECT subquery_alias.col1 FROM (select tbl_name.col1 from tbl_name where tbl_name.col2=?) subquery_alias                                                   |                                         |
 
 ### 不支持的SQL
 
 | SQL                                                                                        | 不支持原因                  |
 | ------------------------------------------------------------------------------------------ | -------------------------- |
 | INSERT INTO tbl_name (col1, col2, ...) VALUES(1+2, ?, ...)                                 | VALUES语句不支持运算表达式   |
-| INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ? | INSERT .. SELECT           |
-| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?       | HAVING                     |
+| INSERT INTO tbl_name (col1, col2, ...) SELECT * FROM tbl_name WHERE col3 = ?               | SELECT子句暂不支持使用*号简写及内置的分布式主键生成器 |
+| REPLACE INTO tbl_name (col1, col2, ...) SELECT * FROM tbl_name WHERE col3 = ?              | SELECT子句暂不支持使用*号简写及内置的分布式主键生成器 |
 | SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                      | UNION                      |
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                  | UNION ALL                  |
-| SELECT * FROM ds.tbl_name1                                                                 | 包含schema                 |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                         | 详见DISTINCT支持情况详细说明 |
 | SELECT * FROM tbl_name WHERE to_date(create_time, 'yyyy-mm-dd') = ?                        | 会导致全路由                |
+| (SELECT * FROM tbl_name)                                                                   | 暂不支持加括号的查询                              |
+| SELECT MAX(tbl_name.col1) FROM tbl_name                                                    | 查询列是函数表达式时,查询列前不能使用表名;若查询表存在别名,则可使用表的别名|
 
 ## DISTINCT支持情况详细说明
 
@@ -150,5 +153,4 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 
 | SQL                                                                                         | 不支持原因                          |
 | ------------------------------------------------------------------------------------------- |----------------------------------- |
-| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | 同时使用普通聚合函数和DISTINCT聚合函数 |
-
+| SELECT SUM(DISTINCT tbl_name.col1), SUM(tbl_name.col1) FROM tbl_name                        | 查询列是函数表达式时,查询列前不能使用表名;若查询表存在别名,则可使用表的别名 |

@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.4. </b>"
+pre = "<b>3.2. </b>"
 title = "Distributed Transaction"
-weight = 4
+weight = 2
 chapter = true
 +++
 
@@ -77,5 +77,5 @@ With a high access cost, soft transactions require developers to transform the a
 
 ## Goal
 
-**The main design goal of the distributed transaction modular of ShardingSphere is to integrate existing mature transaction cases to provide an unified distributed transaction interface for local transactions, 2PC transactions and soft transactions;
+**The main design goal of the distributed transaction modular of Apache ShardingSphere is to integrate existing mature transaction cases to provide an unified distributed transaction interface for local transactions, 2PC transactions and soft transactions;
  compensate for the deficiencies of current solutions to provide a one-stop distributed transaction solution.**

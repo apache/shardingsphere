@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Parse Engine"
 weight = 1
 +++

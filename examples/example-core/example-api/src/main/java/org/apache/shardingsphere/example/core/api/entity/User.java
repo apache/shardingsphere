@@ -27,11 +27,7 @@ public class User implements Serializable {
     
     private String userName;
     
-    private String userNamePlain;
-    
     private String pwd;
-    
-    private String assistedQueryPwd;
     
     public int getUserId() {
         return userId;
@@ -49,14 +45,6 @@ public class User implements Serializable {
         this.userName = userName;
     }
     
-    public String getUserNamePlain() {
-        return userNamePlain;
-    }
-    
-    public void setUserNamePlain(final String userNamePlain) {
-        this.userNamePlain = userNamePlain;
-    }
-    
     public String getPwd() {
         return pwd;
     }
@@ -65,16 +53,8 @@ public class User implements Serializable {
         this.pwd = pwd;
     }
     
-    public String getAssistedQueryPwd() {
-        return assistedQueryPwd;
-    }
-    
-    public void setAssistedQueryPwd(final String assistedQueryPwd) {
-        this.assistedQueryPwd = assistedQueryPwd;
-    }
-    
     @Override
     public String toString() {
-        return String.format("user_id: %d, user_name: %s, user_name_plain: %s, pwd: %s, assisted_query_pwd: %s", userId, userName, userNamePlain, pwd, assistedQueryPwd);
+        return String.format("user_id: %d, user_name: %s, pwd: %s", userId, userName, pwd);
     }
 }

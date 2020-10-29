@@ -1,6 +1,5 @@
 +++
-pre = "<b>3.6.2. </b>"
-toc = true
+pre = "<b>3.10.2. </b>"
 title = "整合测试引擎"
 weight = 2
 +++
@@ -14,12 +13,12 @@ Junit 中的 `Parameterized` 会聚合起所有的测试数据，并将测试数
 ### 配置
 
   - 环境类文件
-    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties
-    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/`SQL-TYPE`/dataset.xml
-    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/`SQL-TYPE`/schema.xml
+    - /shardingsphere-test-suite/src/test/resources/integrate/env-jdbc-local.properties
+    - /shardingsphere-test-suite/src/test/resources/integrate/env/`SQL-TYPE`/dataset.xml
+    - /shardingsphere-test-suite/src/test/resources/integrate/env/`SQL-TYPE`/schema.xml
   - 测试用例类文件
-    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/`SQL-TYPE`/`SQL-TYPE`-integrate-test-cases.xml
-    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/`SQL-TYPE`/dataset/`SHARDING-TYPE`/*.xml
+    - /shardingsphere-test-suite/src/test/resources/integrate/cases/`SQL-TYPE`/`SQL-TYPE`-integrate-test-cases.xml
+    - /shardingsphere-test-suite/src/test/resources/integrate/cases/`SQL-TYPE`/dataset/`FEATURE-TYPE`/*.xml
   - sql-case 文件
     - /sharding-sql-test/src/main/resources/sql/sharding/`SQL-TYPE`/*.xml
 
@@ -27,14 +26,14 @@ Junit 中的 `Parameterized` 会聚合起所有的测试数据，并将测试数
 
 集成测试需要真实的数据库环境，根据相应的配置文件创建测试环境：
 
-首先，修改配置文件 `/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties` ，例子如下：
+首先，修改配置文件 `/shardingsphere-test-suite/src/test/resources/integrate/env-jdbc-local.properties` ，例子如下：
 
 ```properties
 # 测试主键，并发，column index等的开关
 run.additional.cases=false
 
 # 分片策略，可指定多种策略
-sharding.rule.type=db,tbl,dbtbl_with_masterslave,masterslave
+sharding.rule.type=db,tbl,dbtbl_with_replica_query,replica_query
 
 # 要测试的数据库，可以指定多种数据库(H2,MySQL,Oracle,SQLServer,PostgreSQL)
 databases=MySQL,PostgreSQL
@@ -49,7 +48,7 @@ mysql.password=root
 postgresql.host=db.psql
 postgresql.port=5432
 postgresql.username=postgres
-postgresql.password=
+postgresql.password=postgres
 
 ## SQLServer配置
 sqlserver.host=db.mssql
@@ -64,7 +63,7 @@ oracle.username=jdbc
 oracle.password=jdbc
 ```
 
-其次，修改文件 `/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/SQL-TYPE/dataset.xml` 
+其次，修改文件 `/shardingsphere-test-suite/src/test/resources/integrate/env/SQL-TYPE/dataset.xml` 
 在`dataset.xml`文件中定义元数据和测试数据。例如：
 
 ```xml
@@ -91,9 +90,9 @@ oracle.password=jdbc
 
 ### 断言配置
 
-`env.properties` 与 `dataset.xml ` 确定了什么SQL在什么环境执行，下面是断言数据的配置：
+`env-jdbc-local.properties` 与 `dataset.xml ` 确定了什么SQL在什么环境执行，下面是断言数据的配置：
 
-断言的配置，需要两种文件，第一类文件位于 `/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/SQL-TYPE-integrate-test-cases.xml`
+断言的配置，需要两种文件，第一类文件位于 `/shardingsphere-test-suite/src/test/resources/integrate/cases/SQL-TYPE/SQL-TYPE-integrate-test-cases.xml`
 这个文件类似于一个索引，定义了要执行的SQL，参数以及期待的数据的文件位置。这里的 test-case 引用的就是`sharding-sql-test`中 SQL 对应的`sql-case-id`，例子如下：
 
 ```xml
@@ -104,7 +103,7 @@ oracle.password=jdbc
     </dml-test-case>
 </integrate-test-cases>
 ```
-还有一类文件 -- 断言数据，也就是上面配置中的 expected-data-file 对应的文件，文件在 `/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/dataset/SHARDING-TYPE/*.xml`
+还有一类文件 -- 断言数据，也就是上面配置中的 expected-data-file 对应的文件，文件在 `/shardingsphere-test-suite/src/test/resources/integrate/cases/SQL-TYPE/dataset/FEATURE-TYPE/*.xml`
 这个文件内容跟 dataset.xml 很相似，只不过`expected-data-file`文件中不仅定义了断言的数据，还有相应SQL执行后的返回值等。例如：
 
 ```xml

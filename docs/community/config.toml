@@ -15,9 +15,16 @@ languageName = "English"
 [Languages.cn]
 title = "ShardingSphere"
 weight = 2
-languageName = "Chinese"
+languageName = "简体中文"
+
 [params]
-  # Change default color scheme with a variant one. Can be "red", "blue", "green".
-  themeVariant = "black"
-  # Disable search function. It will hide search bar
-  disableSearch = true
+# Change default color scheme with a variant one. Can be "red", "blue", "green".
+themeVariant = "black"
+# Disable search function. It will hide search bar
+disableSearch = true
+editURL = "https://github.com/apache/shardingsphere/tree/master/docs/community/content/"
+
+[markup]
+[markup.goldmark]
+[markup.goldmark.renderer]
+unsafe = true

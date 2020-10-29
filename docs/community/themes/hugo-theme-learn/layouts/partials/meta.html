@@ -1,2 +1,3 @@
 <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ with .Site.Params.description }}{{ . }}{{ end }}{{ end }}">
+    <meta name="buildDate" content="{{ now.Format "2006-01-02 15:04:05" }}">
 {{ with .Site.Params.author }}<meta name="author" content="{{ . }}">{{ end }}

@@ -17,24 +17,25 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
 
  - Make sure all the test cases are passed, Make sure `./mvnw clean install` can be compiled and tested successfully.
  - Make sure the test coverage rate is not lower than the master branch.
- - Make sure to check codes with Checkstyle. codes that violate check rules should have special reasons. Find checkstyle template from `https://github.com/apache/incubator-shardingsphere/blob/master/src/resources/checkstyle.xml`, please use checkstyle `8.8` to run the rules.
+ - Make sure to check codes with Checkstyle. codes that violate check rules should have special reasons. Find checkstyle template from `https://github.com/apache/shardingsphere/blob/master/src/resources/checkstyle.xml`, please use checkstyle `8.8` to run the rules.
  - Careful consideration for each `pull request`; Small and frequent `pull request` with complete unit function is welcomed.
  - Conform to `Contributor Covenant Code of Conduct` below.
+ - If using IDEA，you can import the recommended [Settings](https://shardingsphere.apache.org/community/data/shardingsphere-settings.jar).
 
 ## Contributor Covenant Code of Conduct
 
  - Use linux line separators.
  - Keep indents (including blank lines) consistent with the previous one.
  - Keep one blank line after class definition.
- - No meaningless blank lines.
+ - No meaningless blank lines. Please extract private methods to instead of blank lines if too long method body or different logic code fragments.
  - Use meaningful class, method and variable names, avoid to use abbreviate. 
  - Return values are named with `result`; Variables in the loop structure are named with `each`; Replace `each` with `entry` in map.
  - Exceptions when catch are named with `ex`; Exceptions when catch but do nothing are named with `ignored`.
- - Name property files with camel-case and lowercase first letters.
+ - Name property files with `Spinal Case`(a variant of `Snake Case` which uses hyphens `-` to separate words). 
  - Split codes that need to add notes with it into small methods, which are explained with method names.
  - Have constants on the left and variable on the right in `=` and `equals` conditional expressions; Have variable on the left and constants on the right in `greater than` and `less than` conditional expressions.
  - Beside using same names as input parameters and global fields in assign statement, avoid using `this` modifier.
- - Design class as `final` class expect abstract class for extend.
+ - Design class as `final` class except abstract class for extend.
  - Make nested loop structures a new method.
  - Order of members definition and parameters should be consistent during classes and methods.
  - Use guard clauses in priority.

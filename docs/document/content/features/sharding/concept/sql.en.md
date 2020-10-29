@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "SQL"
 weight = 1
 +++

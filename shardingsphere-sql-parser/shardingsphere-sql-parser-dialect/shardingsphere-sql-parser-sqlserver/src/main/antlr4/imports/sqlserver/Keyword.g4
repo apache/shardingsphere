@@ -571,3 +571,20 @@ TEXT
 VARCHAR
     : V A R C H A R
     ;
+
+PERCENT
+    : P E R C E N T
+    ;
+
+TIES
+    : T I E S
+    ;
+
+EXCEPT
+    : E X C E P T
+    ;
+   
+INTERSECT
+    : I N T E R S E C T
+    ;
+

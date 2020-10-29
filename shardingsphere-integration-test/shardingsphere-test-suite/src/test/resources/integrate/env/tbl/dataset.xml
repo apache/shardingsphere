@@ -1,0 +1,101 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata data-nodes="tbl.t_order_${0..9}">
+        <column name="order_id" type="numeric" />
+        <column name="user_id" type="numeric" />
+        <column name="status" type="varchar" />
+    </metadata>
+    <metadata data-nodes="tbl.t_order_item_${0..9}">
+        <column name="item_id" type="numeric" />
+        <column name="order_id" type="numeric" />
+        <column name="user_id" type="numeric" />
+        <column name="status" type="varchar" />
+        <column name="creation_date" type="datetime" />
+    </metadata>
+    <metadata data-nodes="tbl.t_broadcast_table">
+        <column name="id" type="numeric" />
+        <column name="status" type="varchar" />
+    </metadata>
+    <metadata data-nodes="tbl.key_word">
+        <column name="id" type="numeric" />
+        <column name="status" type="varchar" />
+    </metadata>
+    <row data-node="tbl.t_order_0" values="1000, 10, init" />
+    <row data-node="tbl.t_order_1" values="1001, 10, init" />
+    <row data-node="tbl.t_order_2" values="1002, 10, init" />
+    <row data-node="tbl.t_order_3" values="1003, 10, init" />
+    <row data-node="tbl.t_order_4" values="1004, 10, init" />
+    <row data-node="tbl.t_order_5" values="1005, 10, init" />
+    <row data-node="tbl.t_order_6" values="1006, 10, init" />
+    <row data-node="tbl.t_order_7" values="1007, 10, init" />
+    <row data-node="tbl.t_order_8" values="1008, 10, init" />
+    <row data-node="tbl.t_order_9" values="1009, 10, init" />
+    <row data-node="tbl.t_order_0" values="1100, 11, init" />
+    <row data-node="tbl.t_order_1" values="1101, 11, init" />
+    <row data-node="tbl.t_order_2" values="1102, 11, init" />
+    <row data-node="tbl.t_order_3" values="1103, 11, init" />
+    <row data-node="tbl.t_order_4" values="1104, 11, init" />
+    <row data-node="tbl.t_order_5" values="1105, 11, init" />
+    <row data-node="tbl.t_order_6" values="1106, 11, init" />
+    <row data-node="tbl.t_order_7" values="1107, 11, init" />
+    <row data-node="tbl.t_order_8" values="1108, 11, init" />
+    <row data-node="tbl.t_order_9" values="1109, 11, init" />
+    <row data-node="tbl.t_order_item_0" values="100000, 1000, 10, init, 2017-08-08" />
+    <row data-node="tbl.t_order_item_0" values="100001, 1000, 10, init, 2017-08-08" />
+    <row data-node="tbl.t_order_item_1" values="100100, 1001, 10, init, 2017-08-08" />
+    <row data-node="tbl.t_order_item_1" values="100101, 1001, 10, init, 2017-08-08" />
+    <row data-node="tbl.t_order_item_2" values="100200, 1002, 10, init, 2017-08-08" />
+    <row data-node="tbl.t_order_item_2" values="100201, 1002, 10, init, 2017-08-08" />
+    <row data-node="tbl.t_order_item_3" values="100300, 1003, 10, init, 2017-08-08" />
+    <row data-node="tbl.t_order_item_3" values="100301, 1003, 10, init, 2017-08-08" />
+    <row data-node="tbl.t_order_item_4" values="100400, 1004, 10, init, 2017-08-08" />
+    <row data-node="tbl.t_order_item_4" values="100401, 1004, 10, init, 2017-08-08" />
+    <row data-node="tbl.t_order_item_5" values="100500, 1005, 10, init, 2017-08-09" />
+    <row data-node="tbl.t_order_item_5" values="100501, 1005, 10, init, 2017-08-09" />
+    <row data-node="tbl.t_order_item_6" values="100600, 1006, 10, init, 2017-08-09" />
+    <row data-node="tbl.t_order_item_6" values="100601, 1006, 10, init, 2017-08-09" />
+    <row data-node="tbl.t_order_item_7" values="100700, 1007, 10, init, 2017-08-09" />
+    <row data-node="tbl.t_order_item_7" values="100701, 1007, 10, init, 2017-08-09" />
+    <row data-node="tbl.t_order_item_8" values="100800, 1008, 10, init, 2017-08-09" />
+    <row data-node="tbl.t_order_item_8" values="100801, 1008, 10, init, 2017-08-09" />
+    <row data-node="tbl.t_order_item_9" values="100900, 1009, 10, init, 2017-08-09" />
+    <row data-node="tbl.t_order_item_9" values="100901, 1009, 10, init, 2017-08-09" />
+    <row data-node="tbl.t_order_item_0" values="110000, 1100, 11, init, 2017-08-18" />
+    <row data-node="tbl.t_order_item_0" values="110001, 1100, 11, init, 2017-08-18" />
+    <row data-node="tbl.t_order_item_1" values="110100, 1101, 11, init, 2017-08-18" />
+    <row data-node="tbl.t_order_item_1" values="110101, 1101, 11, init, 2017-08-18" />
+    <row data-node="tbl.t_order_item_2" values="110200, 1102, 11, init, 2017-08-18" />
+    <row data-node="tbl.t_order_item_2" values="110201, 1102, 11, init, 2017-08-18" />
+    <row data-node="tbl.t_order_item_3" values="110300, 1103, 11, init, 2017-08-18" />
+    <row data-node="tbl.t_order_item_3" values="110301, 1103, 11, init, 2017-08-18" />
+    <row data-node="tbl.t_order_item_4" values="110400, 1104, 11, init, 2017-08-18" />
+    <row data-node="tbl.t_order_item_4" values="110401, 1104, 11, init, 2017-08-18" />
+    <row data-node="tbl.t_order_item_5" values="110500, 1105, 11, init, 2017-08-19" />
+    <row data-node="tbl.t_order_item_5" values="110501, 1105, 11, init, 2017-08-19" />
+    <row data-node="tbl.t_order_item_6" values="110600, 1106, 11, init, 2017-08-19" />
+    <row data-node="tbl.t_order_item_6" values="110601, 1106, 11, init, 2017-08-19" />
+    <row data-node="tbl.t_order_item_7" values="110700, 1107, 11, init, 2017-08-19" />
+    <row data-node="tbl.t_order_item_7" values="110701, 1107, 11, init, 2017-08-19" />
+    <row data-node="tbl.t_order_item_8" values="110800, 1108, 11, init, 2017-08-19" />
+    <row data-node="tbl.t_order_item_8" values="110801, 1108, 11, init, 2017-08-19" />
+    <row data-node="tbl.t_order_item_9" values="110900, 1109, 11, init, 2017-08-19" />
+    <row data-node="tbl.t_order_item_9" values="110901, 1109, 11, init, 2017-08-19" />
+    <row data-node="tbl.t_broadcast_table" values="1, init" />
+    <row data-node="tbl.key_word" values="1, init" />
+</dataset>

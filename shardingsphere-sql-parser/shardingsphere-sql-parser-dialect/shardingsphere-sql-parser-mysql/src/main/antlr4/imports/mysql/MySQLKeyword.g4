@@ -19,308 +19,160 @@ lexer grammar MySQLKeyword;
 
 import Alphabet;
 
-USE
-    : U S E
-    ;
-
-DESCRIBE
-    : D E S C R I B E
-    ;
-
-SHOW
-    : S H O W
-    ;
-
-DATABASES
-    : D A T A B A S E S
-    ;
-
-DATABASE
-    : D A T A B A S E
-    ;
-
-SCHEMAS
-    : S C H E M A S
-    ;
-
-TABLES
-    : T A B L E S
-    ;
-
-TABLESPACE
-    : T A B L E S P A C E
-    ;
-
-COLUMNS
-    : C O L U M N S
-    ;
-
-FIELDS
-    : F I E L D S
-    ;
-
-INDEXES
-    : I N D E X E S
-    ;
-
-STATUS
-    : S T A T U S
-    ;
-
-REPLACE
-    : R E P L A C E
-    ;
-
-MODIFY
-    : M O D I F Y
-    ;
-
-DISTINCTROW
-    : D I S T I N C T R O W
-    ;
-
-VALUE
-    : V A L U E
-    ;
-
-DUPLICATE
-    : D U P L I C A T E
-    ;
-
-FIRST
-    : F I R S T
-    ;
-
-LAST
-    : L A S T
-    ;
-
-AFTER
-    : A F T E R
-    ;
-
-OJ
-    : O J
-    ;
-
-WINDOW
-    : W I N D O W
-    ;
-
-MOD
-    : M O D
-    ;
-
-DIV
-    : D I V
-    ;
-
-XOR
-    : X O R
-    ;
-
-REGEXP
-    : R E G E X P
-    ;
-
-RLIKE
-    : R L I K E
+ACCESSIBLE
+    : A C C E S S I B L E
     ;
 
 ACCOUNT
     : A C C O U N T
     ;
 
-USER
-    : U S E R
-    ;
-
-ROLE
-    : R O L E
-    ;
-
-START
-    : S T A R T
-    ;
-
-TRANSACTION
-    : T R A N S A C T I O N
-    ;
-
-ROW
-    : R O W
-    ;
-
-ROWS
-    : R O W S
-    ;
-
-WITHOUT
-    : W I T H O U T
-    ;
-
-BINARY
-    : B I N A R Y
-    ;
-
-ESCAPE
-    : E S C A P E
-    ;
-
-GENERATED
-    : G E N E R A T E D
-    ;
-
-PARTITION
-    : P A R T I T I O N
-    ;
-
-SUBPARTITION
-    : S U B P A R T I T I O N
-    ;
-
-STORAGE
-    : S T O R A G E
-    ;
-
-STORED
-    : S T O R E D
-    ;
-
-SUPER
-    : S U P E R
-    ;
-
-SUBSTR
-    : S U B S T R
-    ;
-
-TEMPORARY
-    : T E M P O R A R Y
-    ;
-
-THAN
-    : T H A N
-    ;
-
-TRAILING
-    : T R A I L I N G
-    ;
-
-UNBOUNDED
-    : U N B O U N D E D
-    ;
-
-UNLOCK
-    : U N L O C K
-    ;
-
-UNSIGNED
-    : U N S I G N E D
-    ;
-
-SIGNED
-    : S I G N E D
-    ;
-
-UPGRADE
-    : U P G R A D E
-    ;
-
-USAGE
-    : U S A G E
-    ;
- 
-VALIDATION
-    : V A L I D A T I O N
-    ;
-
-VIRTUAL
-    : V I R T U A L
-    ;
-
-ROLLUP
-    : R O L L U P
-    ;
-
-SOUNDS
-    : S O U N D S
-    ;
-
-UNKNOWN
-    : U N K N O W N
-    ;
-
-OFF
-    : O F F
-    ;
-
-ALWAYS
-    : A L W A Y S
-    ;
-
-CASCADE
-    : C A S C A D E
-    ;
-
-CHECK
-    : C H E C K
-    ;
-
-COMMITTED
-    : C O M M I T T E D
-    ;
-
-LEVEL
-    : L E V E L
-    ;
-
-NO
-    : N O
-    ;
-
-OPTION
-    : O P T I O N
-    ;
-
-PASSWORD
-    : P A S S W O R D
-    ;
-
-PRIVILEGES
-    : P R I V I L E G E S
-    ;
-
-READ
-    : R E A D
-    ;
-
-WRITE
-    : W R I T E
-    ;
-
-REFERENCES
-    : R E F E R E N C E S
-    ;
-
 ACTION
     : A C T I O N
+    ;
+
+ACTIVE
+    : A C T I V E
+    ;
+
+ADD
+    : A D D
+    ;
+
+ADMIN
+    : A D M I N
+    ;
+
+AFTER
+    : A F T E R
+    ;
+
+AGAINST
+    : A G A I N S T
+    ;
+
+AGGREGATE
+    : A G G R E G A T E
     ;
 
 ALGORITHM
     : A L G O R I T H M
     ;
 
+ALL
+    : A L L
+    ;
+
+ALTER
+    : A L T E R
+    ;
+
+ALWAYS
+    : A L W A Y S
+    ;
+
 ANALYZE
     : A N A L Y Z E
     ;
 
-AUTOCOMMIT
-    : A U T O C O M M I T
+AND
+    : A N D
     ;
 
-MAXVALUE
-    : M A X V A L U E
+ANY
+    : A N Y
+    ;
+
+ARRAY
+    : A R R A Y
+    ;
+
+AS
+    : A S
+    ;
+
+ASC
+    : A S C
+    ;
+
+ASCII
+    : A S C I I
+    ;
+
+ASENSITIVE
+    : A S E N S I T I V E
+    ;
+
+AT
+    : A T
+    ;
+
+ATTRIBUTE
+    : A T T R I B U T E
+    ;
+
+AUTOEXTEND_SIZE
+    : A U T O E X T E N D UL_ S I Z E
+    ;
+
+AUTO_INCREMENT
+    : A U T O UL_ I N C R E M E N T
+    ;
+
+AVG
+    : A V G
+    ;
+
+AVG_ROW_LENGTH
+    : A V G UL_ R O W UL_ L E N G T H
+    ;
+
+BACKUP
+    : B A C K U P
+    ;
+
+BEFORE
+    : B E F O R E
+    ;
+
+BEGIN
+    : B E G I N
+    ;
+
+BETWEEN
+    : B E T W E E N
+    ;
+
+BIGINT
+    : B I G I N T
+    ;
+
+BINARY
+    : B I N A R Y
+    ;
+
+BINLOG
+    : B I N L O G
+    ;
+
+BIT
+    : B I T
+    ;
+
+BLOB
+    : B L O B
+    ;
+
+BLOCK
+    : B L O C K
+    ;
+
+BOOL
+    : B O O L
+    ;
+
+BOOLEAN
+    : B O O L E A N
     ;
 
 BOTH
@@ -331,6 +183,42 @@ BTREE
     : B T R E E
     ;
 
+BUCKETS
+    : B U C K E T S
+    ;
+
+BY
+    : B Y
+    ;
+
+BYTE
+    : B Y T E
+    ;
+
+CACHE
+    : C A C H E
+    ;
+
+CALL
+    : C A L L
+    ;
+
+CASCADE
+    : C A S C A D E
+    ;
+
+CASCADED
+    : C A S C A D E D
+    ;
+
+CASE
+    : C A S E
+    ;
+
+CATALOG_NAME
+    : C A T A L O G UL_ N A M E
+    ;
+
 CHAIN
     : C H A I N
     ;
@@ -339,8 +227,28 @@ CHANGE
     : C H A N G E
     ;
 
+CHANGED
+    : C H A N G E D
+    ;
+
+CHANNEL
+    : C H A N N E L
+    ;
+
+CHAR
+    : C H A R
+    ;
+
+CHARACTER
+    : C H A R A C T E R
+    ;
+
 CHARSET
     : C H A R S E T
+    ;
+
+CHECK
+    : C H E C K
     ;
 
 CHECKSUM
@@ -351,24 +259,76 @@ CIPHER
     : C I P H E R
     ;
 
+CLASS_ORIGIN
+    : C L A S S UL_ O R I G I N
+    ;
+
 CLIENT
     : C L I E N T
+    ;
+
+CLONE
+    : C L O N E
+    ;
+
+CLOSE
+    : C L O S E
     ;
 
 COALESCE
     : C O A L E S C E
     ;
 
+CODE
+    : C O D E
+    ;
+
 COLLATE
     : C O L L A T E
+    ;
+
+COLLATION
+    : C O L L A T I O N
+    ;
+
+COLUMN
+    : C O L U M N
+    ;
+
+COLUMNS
+    : C O L U M N S
+    ;
+
+COLUMN_FORMAT
+    : C O L U M N UL_ F O R M A T
+    ;
+
+COLUMN_NAME
+    : C O L U M N UL_ N A M E
     ;
 
 COMMENT
     : C O M M E N T
     ;
 
+COMMIT
+    : C O M M I T
+    ;
+
+COMMITTED
+    : C O M M I T T E D
+    ;
+
 COMPACT
     : C O M P A C T
+    ;
+
+COMPLETION
+    : C O M P L E T I O N
+    ;
+
+COMPONENT
+    : C O M P O N E N T
     ;
 
 COMPRESSED
@@ -379,6 +339,14 @@ COMPRESSION
     : C O M P R E S S I O N
     ;
 
+CONCURRENT
+    : C O N C U R R E N T
+    ;
+
+CONDITION
+    : C O N D I T I O N
+    ;
+
 CONNECTION
     : C O N N E C T I O N
     ;
@@ -387,24 +355,204 @@ CONSISTENT
     : C O N S I S T E N T
     ;
 
+CONSTRAINT
+    : C O N S T R A I N T
+    ;
+
+CONSTRAINT_CATALOG
+    : C O N S T R A I N T UL_ C A T A L O G
+    ;
+
+CONSTRAINT_NAME
+    : C O N S T R A I N T UL_ N A M E
+    ;
+
+CONSTRAINT_SCHEMA
+    : C O N S T R A I N T UL_ S C H E M A
+    ;
+
+CONTAINS
+    : C O N T A I N S
+    ;
+
+CONTEXT
+    : C O N T E X T
+    ;
+
+CONTINUE
+    : C O N T I N U E
+    ;
+
 CONVERT
     : C O N V E R T
     ;
 
-COPY
-    : C O P Y
+CPU
+    : C P U
+    ;
+
+CREATE
+    : C R E A T E
+    ;
+
+CROSS
+    : C R O S S
+    ;
+
+CUBE
+    : C U B E
+    ;
+
+CUME_DIST
+    : C U M E UL_ D I S T
+    ;
+
+CURRENT
+    : C U R R E N T
+    ;
+
+CURRENT_DATE
+    : C U R R E N T UL_ D A T E
+    ;
+
+CURRENT_TIME
+    : C U R R E N T UL_ T I M E
+    ;
+
+CURRENT_TIMESTAMP
+    : C U R R E N T UL_ T I M E S T A M P
+    ;
+
+CURRENT_USER
+    : C U R R E N T UL_ U S E R
+    ;
+
+CURSOR
+    : C U R S O R
+    ;
+
+CURSOR_NAME
+    : C U R S O R UL_ N A M E
     ;
 
 DATA
     : D A T A
     ;
 
+DATABASE
+    : D A T A B A S E
+    ;
+
+DATABASES
+    : D A T A B A S E S
+    ;
+
+DATAFILE
+    : D A T A F I L E
+    ;
+
+DATE
+    : D A T E
+    ;
+
+DATETIME
+    : D A T E T I M E
+    ;
+
+DAY
+    : D A Y
+    ;
+
+DAY_HOUR
+    : D A Y UL_ H O U R
+    ;
+
+DAY_MICROSECOND
+    : D A Y UL_ M I C R O S E C O N D
+    ;
+
+DAY_MINUTE
+    : D A Y UL_ M I N U T E
+    ;
+
+DAY_SECOND
+    : D A Y UL_ S E C O N D
+    ;
+
+DEALLOCATE
+    : D E A L L O C A T E
+    ;
+
+DEC
+    : D E C
+    ;
+
+DECIMAL
+    : D E C I M A L
+    ;
+
+DECLARE
+    : D E C L A R E
+    ;
+
+DEFAULT
+    : D E F A U L T
+    ;
+
+DEFAULT_AUTH
+    : D E F A U L T UL_ A U T H
+    ;
+
+DEFINER
+    : D E F I N E R
+    ;
+
+DEFINITION
+    : D E F I N I T I O N
+    ;
+
 DELAYED
     : D E L A Y E D
     ;
 
+DELAY_KEY_WRITE
+    : D E L A Y UL_ K E Y UL_ W R I T E
+    ;
+
+DELETE
+    : D E L E T E
+    ;
+
+DENSE_RANK
+    : D E N S E UL_ R A N K
+    ;
+
+DESC
+    : D E S C
+    ;
+
+DESCRIBE
+    : D E S C R I B E
+    ;
+
+DESCRIPTION
+    : D E S C R I P T I O N
+    ;
+
+DETERMINISTIC
+    : D E T E R M I N I S T I C
+    ;
+
+DIAGNOSTICS
+    : D I A G N O S T I C S
+    ;
+
 DIRECTORY
     : D I R E C T O R Y
+    ;
+
+DISABLE
+    : D I S A B L E
     ;
 
 DISCARD
@@ -415,8 +563,68 @@ DISK
     : D I S K
     ;
 
+DISTINCT
+    : D I S T I N C T
+    ;
+
+DISTINCTROW
+    : D I S T I N C T R O W
+    ;
+
+DIV
+    : D I V
+    ;
+
+DO
+    : D O
+    ;
+
+DOUBLE
+    : D O U B L E
+    ;
+
+DROP
+    : D R O P
+    ;
+
+DUAL
+    : D U A L
+    ;
+
+DUMPFILE
+    : D U M P F I L E
+    ;
+
+DUPLICATE
+    : D U P L I C A T E
+    ;
+
 DYNAMIC
     : D Y N A M I C
+    ;
+
+EACH
+    : E A C H
+    ;
+
+ELSE
+    : E L S E
+    ;
+
+ELSEIF
+    : E L S E I F
+    ;
+
+EMPTY
+    : E M P T Y
+    ;
+
+ENABLE
+    : E N A B L E
+    ;
+
+ENCLOSED
+    : E N C L O S E D
     ;
 
 ENCRYPTION
@@ -427,12 +635,56 @@ END
     : E N D
     ;
 
+ENDS
+    : E N D S
+    ;
+
+ENFORCED
+    : E N F O R C E D
+    ;
+
 ENGINE
     : E N G I N E
     ;
 
+ENGINES
+    : E N G I N E S
+    ;
+
+ENGINE_ATTRIBUTE
+    : E N G I N E UL_ A T T R I B U T E
+    ;
+
+ENUM
+    : E N U M
+    ;
+
+ERROR
+    : E R R O R
+    ;
+
+ERRORS
+    : E R R O R S
+    ;
+
+ESCAPE
+    : E S C A P E
+    ;
+
+ESCAPED
+    : E S C A P E D
+    ;
+
 EVENT
     : E V E N T
+    ;
+
+EVENTS
+    : E V E N T S
+    ;
+
+EVERY
+    : E V E R Y
     ;
 
 EXCEPT
@@ -443,112 +695,1036 @@ EXCHANGE
     : E X C H A N G E
     ;
 
-EXCLUSIVE
-    : E X C L U S I V E
+EXCLUDE
+    : E X C L U D E
     ;
 
 EXECUTE
     : E X E C U T E
     ;
 
-EXTRACT
-    : E X T R A C T
+EXISTS
+    : E X I S T S
+    ;
+
+EXIT
+    : E X I T
+    ;
+
+EXPANSION
+    : E X P A N S I O N
+    ;
+
+EXPIRE
+    : E X P I R E
+    ;
+
+EXPLAIN
+    : E X P L A I N
+    ;
+
+EXPORT
+    : E X P O R T
+    ;
+
+EXTENDED
+    :  E X T E N D E D
+    ;
+
+EXTENT_SIZE
+    : E X T E N T UL_ S I Z E
+    ;
+
+FAILED_LOGIN_ATTEMPTS
+    : F A I L E D UL_ L O G I N UL_ A T T E M P T S
+    ;
+
+FALSE
+    : F A L S E
+    ;
+
+FAST
+    : F A S T
+    ;
+
+FAULTS
+    : F A U L T S
+    ;
+
+FETCH
+    : F E T C H
+    ;
+
+FIELDS
+    : F I E L D S
     ;
 
 FILE
     : F I L E
     ;
 
+FILE_BLOCK_SIZE
+    : F I L E UL_ B L O C K UL_ S I Z E
+    ;
+
+FILTER
+    : F I L T E R
+    ;
+
+FIRST
+    : F I R S T
+    ;
+
+FIRST_VALUE
+    : F I R S T UL_ V A L U E
+    ;
+
 FIXED
     : F I X E D
+    ;
+
+FLOAT
+    : F L O A T
+    ;
+
+FLOAT4
+    : F L O A T '4'
+    ;
+
+FLOAT8
+    : F L O A T '8'
+    ;
+
+FLUSH
+    : F L U S H
     ;
 
 FOLLOWING
     : F O L L O W I N G
     ;
 
+FOLLOWS
+    : F O L L O W S
+    ;
+
+FOR
+    : F O R
+    ;
+
 FORCE
     : F O R C E
+    ;
+
+FOREIGN
+    : F O R E I G N
+    ;
+
+FORMAT
+    : F O R M A T
+    ;
+
+FOUND
+    : F O U N D
+    ;
+
+FROM
+    : F R O M
+    ;
+
+FULL
+    : F U L L
     ;
 
 FULLTEXT
     : F U L L T E X T
     ;
 
+FUNCTION
+    : F U N C T I O N
+    ;
+
+GENERAL
+    : G E N E R A L
+    ;
+
+GENERATED
+    : G E N E R A T E D
+    ;
+
+GEOMCOLLECTION
+    : G E O M C O L L E C T I O N
+    ;
+
+GEOMETRY
+    : G E O M E T R Y
+    ;
+
+GEOMETRYCOLLECTION
+    : G E O M E T R Y C O L L E C T I O N
+    ;
+
+GET
+    : G E T
+    ;
+
+GET_FORMAT
+    : G E T UL_ F O R M A T
+    ;
+
+GET_MASTER_PUBLIC_KEY
+    : G E T UL_ M A S T E R UL_ P U B L I C UL_ K E Y
+    ;
+
 GLOBAL
     : G L O B A L
+    ;
+
+GRANT
+    : G R A N T
+    ;
+
+GRANTS
+    : G R A N T S
+    ;
+
+GROUP
+    : G R O U P
+    ;
+
+GROUPING
+    : G R O U P I N G
+    ;
+
+GROUPS
+    : G R O U P S
+    ;
+
+GROUP_REPLICATION
+    : G R O U P UL_ R E P L I C A T I O N
+    ;
+
+HANDLER
+    : H A N D L E R
     ;
 
 HASH
     : H A S H
     ;
 
+HAVING
+    : H A V I N G
+    ;
+
+HELP
+    : H E L P
+    ;
+
+HIGH_PRIORITY
+    : H I G H UL_ P R I O R I T Y
+    ;
+
+HISTOGRAM
+    : H I S T O G R A M
+    ;
+
+HISTORY
+    : H I S T O R Y
+    ;
+
+HOST
+    : H O S T
+    ;
+
+HOSTS
+    : H O S T S
+    ;
+
+HOUR
+    : H O U R
+    ;
+
+HOUR_MICROSECOND
+    : H O U R UL_ M I C R O S E C O N D
+    ;
+
+HOUR_MINUTE
+    : H O U R UL_ M I N U T E
+    ;
+
+HOUR_SECOND
+    : H O U R UL_ S E C O N D
+    ;
+
 IDENTIFIED
     : I D E N T I F I E D
+    ;
+
+IF
+    : I F
     ;
 
 IGNORE
     : I G N O R E
     ;
 
-IMPORT_
-    : I M P O R T UL_
+IGNORE_SERVER_IDS
+    : I G N O R E UL_ S E R V E R UL_ I D S
     ;
 
-INPLACE
-    : I N P L A C E
+IMPORT
+    : I M P O R T
+    ;
+
+IN
+    : I N
+    ;
+
+INACTIVE
+    : I N A C T I V E
+    ;
+
+INDEX
+    : I N D E X
+    ;
+
+INDEXES
+    : I N D E X E S
+    ;
+
+INFILE
+    : I N F I L E
+    ;
+
+INITIAL_SIZE
+    : I N I T I A L UL_ S I Z E
+    ;
+
+INNER
+    : I N N E R
+    ;
+
+INOUT
+    : I N O U T
+    ;
+
+INSENSITIVE
+    : I N S E N S I T I V E
+    ;
+
+INSERT
+    : I N S E R T
+    ;
+
+INSERT_METHOD
+    : I N S E R T UL_ M E T H O D
+    ;
+
+INSTALL
+    : I N S T A L L
+    ;
+
+INSTANCE
+    : I N S T A N C E
+    ;
+
+INT
+    : I N T
+    ;
+
+INT1
+    : I N T '1'
+    ;
+
+INT2
+    : I N T '2'
+    ;
+
+INT3
+    : I N T '3'
+    ;
+
+INT4
+    : I N T '4'
+    ;
+
+INT8
+    : I N T '8'
+    ;
+
+INTEGER
+    : I N T E G E R
+    ;
+
+INTERVAL
+    : I N T E R V A L
+    ;
+
+INTO
+    : I N T O
+    ;
+
+INVISIBLE
+    : I N V I S I B L E
+    ;
+
+INVOKER
+    : I N V O K E R
+    ;
+
+IO
+    : I O
+    ;
+
+IO_AFTER_GTIDS
+    : I O UL_ A F T E R UL_ G T I D S
+    ;
+
+IO_BEFORE_GTIDS
+    : I O UL_ B E F O R E UL_ G T I D S
+    ;
+
+IO_THREAD
+    : I O UL_ T H R E A D
+    ;
+
+IPC
+    : I P C
+    ;
+
+IS
+    : I S
+    ;
+
+ISOLATION
+    : I S O L A T I O N
+    ;
+
+ISSUER
+    : I S S U E R
+    ;
+
+ITERATE
+    : I T E R A T E
+    ;
+
+JOIN
+    : J O I N
+    ;
+
+JSON
+    : J S O N
+    ;
+
+JSON_TABLE
+    : J S O N UL_ T A B L E
+    ;
+
+JSON_VALUE
+    : J S O N UL_ V A L U E
+    ;
+
+KEY
+    : K E Y
     ;
 
 KEYS
     : K E Y S
     ;
 
+KEY_BLOCK_SIZE
+    : K E Y UL_ B L O C K UL_ S I Z E
+    ;
+
+KILL
+    : K I L L
+    ;
+
+LAG
+    : L A G
+    ;
+
+LANGUAGE
+    : L A N G U A G E
+    ;
+
+LAST
+    : L A S T
+    ;
+
+LAST_VALUE
+    : L A S T UL_ V A L U E
+    ;
+
+LATERAL
+    : L A T E R A L
+    ;
+
+LEAD
+    : L E A D
+    ;
+
 LEADING
     : L E A D I N G
+    ;
+
+LEAVE
+    : L E A V E
+    ;
+
+LEAVES
+    : L E A V E S
+    ;
+
+LEFT
+    : L E F T
     ;
 
 LESS
     : L E S S
     ;
 
+LEVEL
+    : L E V E L
+    ;
+
+LIKE
+    : L I K E
+    ;
+
+LIMIT
+    : L I M I T
+    ;
+
 LINEAR
     : L I N E A R
+    ;
+
+LINES
+    : L I N E S
+    ;
+
+LINESTRING
+    : L I N E S T R I N G
+    ;
+
+LIST
+    : L I S T
+    ;
+
+LOAD
+    : L O A D
+    ;
+
+LOCAL
+    : L O C A L
+    ;
+
+LOCALTIME
+    : L O C A L T I M E
+    ;
+
+LOCALTIMESTAMP
+    : L O C A L T I M E S T A M P
     ;
 
 LOCK
     : L O C K
     ;
 
+LOCKED
+    : L O C K E D
+    ;
+
+LOCKS
+    : L O C K S
+    ;
+
+LOGFILE
+    : L O G F I L E
+    ;
+
+LOGS
+    : L O G S
+    ;
+
+LONG
+    : L O N G
+    ;
+
+LONGBLOB
+    : L O N G B L O B
+    ;
+
+LONGTEXT
+    : L O N G T E X T
+    ;
+
+LOOP
+    : L O O P
+    ;
+
+LOW_PRIORITY
+    : L O W UL_ P R I O R I T Y
+    ;
+
+MANAGED
+    : M A N A G E D
+    ;
+
+MASTER
+    : M A S T E R
+    ;
+
+MASTER_AUTO_POSITION
+    : M A S T E R UL_ A U T O UL_ P O S I T I O N
+    ;
+
+MASTER_BIND
+    : M A S T E R UL_ B I N D
+    ;
+
+MASTER_COMPRESSION_ALGORITHMS
+    : M A S T E R UL_ C O M P R E S S I O N UL_ A L G O R I T H M S
+    ;
+
+MASTER_CONNECT_RETRY
+    : M A S T E R UL_ C O N N E C T UL_ R E T R Y
+    ;
+
+MASTER_DELAY
+    : M A S T E R UL_ D E L A Y
+    ;
+
+MASTER_HEARTBEAT_PERIOD
+    : M A S T E R UL_ H E A R T B E A T UL_ P E R I O D
+    ;
+
+MASTER_HOST
+    : M A S T E R UL_ H O S T
+    ;
+
+MASTER_LOG_FILE
+    : M A S T E R UL_ L O G UL_ F I L E
+    ;
+
+MASTER_LOG_POS
+    : M A S T E R UL_ L O G UL_ P O S
+    ;
+
+MASTER_PASSWORD
+    : M A S T E R UL_ P A S S W O R D
+    ;
+
+MASTER_PORT
+    : M A S T E R UL_ P O R T
+    ;
+
+MASTER_PUBLIC_KEY_PATH
+    : M A S T E R UL_ P  U B L I C UL_ K E Y UL_ P A T H
+    ;
+
+MASTER_RETRY_COUNT
+    : M A S T E R UL_ R E T R Y UL_ C O U N T
+    ;
+
+MASTER_SERVER_ID
+    : M A S T E R UL_ S E R V E R UL_ I D
+    ;
+
+MASTER_SSL
+    : M A S T E R UL_ S S L
+    ;
+
+MASTER_SSL_CA
+    : M A S T E R UL_ S S L UL_ C A
+    ;
+
+MASTER_SSL_CAPATH
+    : M A S T E R UL_ S S L UL_ C A P A T H
+    ;
+
+MASTER_SSL_CERT
+    : M A S T E R UL_ S S L UL_ C E R T
+    ;
+
+MASTER_SSL_CIPHER
+    : M A S T E R UL_ S S L UL_ C I P H E R
+    ;
+
+MASTER_SSL_CRL
+    : M A S T E R UL_ S S L UL_ C R L
+    ;
+
+MASTER_SSL_CRLPATH
+    : M A S T E R UL_ S S L UL_ C R L P A T H
+    ;
+
+MASTER_SSL_KEY
+    : M A S T E R UL_ S S L UL_ K E Y
+    ;
+
+MASTER_SSL_VERIFY_SERVER_CERT
+    : M A S T E R UL_ S S L UL_ V E R I F Y UL_ S E R V E R UL_ C E R T
+    ;
+
+MASTER_TLS_CIPHERSUITES
+    : M A S T E R UL_ T L S UL_ C I P H E R S U I T E S
+    ;
+
+MASTER_TLS_VERSION
+    : M A S T E R UL_ T L S UL_ V E R S I O N
+    ;
+
+MASTER_USER
+    : M A S T E R UL_ U S E R
+    ;
+
+MASTER_ZSTD_COMPRESSION_LEVEL
+    : M A S T E R UL_ Z S T D UL_ C O M P R E S S I O N UL_ L E V E L
+    ;
+
 MATCH
     : M A T C H
+    ;
+
+MAXVALUE
+    : M A X V A L U E
+    ;
+
+MAX_CONNECTIONS_PER_HOUR
+    : M A X UL_ C O N N E C T I O N S UL_ P E R UL_ H O U R
+    ;
+
+MAX_QUERIES_PER_HOUR
+    : M A X UL_ Q U E R I E S UL_ P E R UL_ H O U R
+    ;
+
+MAX_ROWS
+    : M A X UL_ R O W S
+    ;
+
+MAX_SIZE
+    : M A X UL_ S I Z E
+    ;
+
+MAX_UPDATES_PER_HOUR
+    : M A X UL_ U P D A T E S UL_ P E R UL_ H O U R
+    ;
+
+MAX_USER_CONNECTIONS
+    : M A X UL_ U S E R UL_ C O N N E C T I O N S
+    ;
+
+MEDIUM
+    : M E D I U M
+    ;
+
+MEDIUMBLOB
+    : M E D I U M B L O B
+    ;
+
+MEDIUMINT
+    : M E D I U M I N T
+    ;
+
+MEDIUMTEXT
+    : M E D I U M T E X T
+    ;
+
+MEMBER
+    : M E M B E R
     ;
 
 MEMORY
     : M E M O R Y
     ;
 
+MERGE
+    : M E R G E
+    ;
+
+MESSAGE_TEXT
+    : M E S S A G E UL_ T E X T
+    ;
+
+MICROSECOND
+    : M I C R O S E C O N D
+    ;
+
+MIDDLEINT
+    : M I D D L E I N T
+    ;
+
+MIGRATE
+    : M I G R A T E
+    ;
+
+MINUTE
+    : M I N U T E
+    ;
+
+MINUTE_MICROSECOND
+    : M I N U T E UL_ M I C R O S E C O N D
+    ;
+
+MINUTE_SECOND
+    : M I N U T E UL_ S E C O N D
+    ;
+
+MIN_ROWS
+    : M I N UL_ R O W S
+    ;
+
+MOD
+    : M O D
+    ;
+
+MODE
+    : M O D E
+    ;
+
+MODIFIES
+    : M O D I F I E S
+    ;
+
+MODIFY
+    : M O D I F Y
+    ;
+
+MONTH
+    : M O N T H
+    ;
+
+MULTILINESTRING
+    : M U L T I L I N E S T R I N G
+    ;
+
+MULTIPOINT
+    : M U L T I P O I N T
+    ;
+
+MULTIPOLYGON
+    : M U L T I P O L Y G O N
+    ;
+
+MUTEX
+    : M U T E X
+    ;
+
+MYSQL_ERRNO
+    : M Y S Q L UL_ E R R N O
+    ;
+
+NAME
+    : N A M E
+    ;
+
+NAMES
+    : N A M E S
+    ;
+
+NATIONAL
+    : N A T I O N A L
+    ;
+
+NATURAL
+    : N A T U R A L
+    ;
+
+NCHAR
+    : N C H A R
+    ;
+
+NDB
+    : N D B
+    ;
+
+NDBCLUSTER
+    : N D B C L U S T E R
+    ;
+
+NESTED
+    : N E S T E D
+    ;
+
+NETWORK_NAMESPACE
+    : N E T W O R K UL_ N A M E S P A C E
+    ;
+
+NEVER
+    : N E V E R
+    ;
+
+NEW
+    : N E W
+    ;
+
+NEXT
+    : N E X T
+    ;
+
+NO
+    : N O
+    ;
+
+NODEGROUP
+    : N O D E G R O U P
+    ;
+
 NONE
     : N O N E
     ;
 
-NOW
-    : N O W
+NOT
+    : N O T
     ;
 
-OFFLINE
-    : O F F L I N E
+NOWAIT
+    : N O W A I T
     ;
 
-ONLINE
-    : O N L I N E
+NO_WAIT
+    : N O UL_ W A I T
+    ;
+
+NO_WRITE_TO_BINLOG
+    : N O UL_ W R I T E UL_ T O UL_ B I N L O G
+    ;
+
+NTH_VALUE
+    : N T H UL_ V A L U E
+    ;
+
+NTILE
+    : N T I L E
+    ;
+
+NULL
+    : N U L L
+    ;
+
+NULLS
+    : N U L L S
+    ;
+
+NUMBER
+    : N U M B E R
+    ;
+
+NUMERIC
+    : N U M E R I C
+    ;
+
+NVARCHAR
+    : N V A R C H A R
+    ;
+
+OF
+    : O F
+    ;
+
+OFF
+    : O F F
+    ;
+
+OFFSET
+    : O F F S E T
+    ;
+
+OJ
+    : O J
+    ;
+
+OLD
+    : O L D
+    ;
+
+ON
+    : O N
+    ;
+
+ONE
+    : O N E
+    ;
+
+ONLY
+    : O N L Y
+    ;
+
+OPEN
+    : O P E N
     ;
 
 OPTIMIZE
     : O P T I M I Z E
     ;
 
+OPTIMIZER_COSTS
+    : O P T I M I Z E R UL_ C O S T S
+    ;
+
+OPTION
+    : O P T I O N
+    ;
+
+OPTIONAL
+    : O P T I O N A L
+    ;
+
+OPTIONALLY
+    : O P T I O N A L L Y
+    ;
+
+OPTIONS
+    : O P T I O N S
+    ;
+
+OR
+    : O R
+    ;
+
+ORDER
+    : O R D E R
+    ;
+
+ORDINALITY
+    : O R D I N A L I T Y
+    ;
+
+ORGANIZATION
+    : O R G A N I Z A T I O N
+    ;
+
+OTHERS
+    : O T H E R S
+    ;
+
+OUT
+    : O U T
+    ;
+
+OUTER
+    : O U T E R
+    ;
+
+OUTFILE
+    : O U T F I L E
+    ;
+
 OVER
     : O V E R
+    ;
+
+OWNER
+    : O W N E R
+    ;
+
+PACK_KEYS
+    : P A C K UL_ K E Y S
+    ;
+
+PAGE
+    : P A G E
     ;
 
 PARSER
@@ -559,44 +1735,228 @@ PARTIAL
     : P A R T I A L
     ;
 
+PARTITION
+    : P A R T I T I O N
+    ;
+
 PARTITIONING
     : P A R T I T I O N I N G
+    ;
+
+PARTITIONS
+    : P A R T I T I O N S
+    ;
+
+PASSWORD
+    : P A S S W O R D
+    ;
+
+PASSWORD_LOCK_TIME
+    : P A S S W O R D UL_ L O C K UL_ T I M E
+    ;
+
+PATH
+    : P A T H
+    ;
+
+PERCENT_RANK
+    : P E R C E N T UL_ R A N K
     ;
 
 PERSIST
     : P E R S I S T
     ;
 
+PERSIST_ONLY
+    : P E R S I S T UL_ O N L Y
+    ;
+
+PHASE
+    : P H A S E
+    ;
+
+PLUGIN
+    : P L U G I N
+    ;
+
+PLUGINS
+    : P L U G I N S
+    ;
+
+PLUGIN_DIR
+    : P L U G I N UL_ D I R
+    ;
+
+POINT
+    : P O I N T
+    ;
+
+POLYGON
+    : P O L Y G O N
+    ;
+
+PORT
+    : P O R T
+    ;
+
+PRECEDES
+    : P R E C E D E S
+    ;
+
 PRECEDING
     : P R E C E D I N G
+    ;
+
+PRECISION
+    : P R E C I S I O N
+    ;
+
+PREPARE
+    : P R E P A R E
+    ;
+
+PRESERVE
+    : P R E S E R V E
+    ;
+
+PREV
+    : P R E V
+    ;
+
+PRIMARY
+    : P R I M A R Y
+    ;
+
+PRIVILEGES
+    : P R I V I L E G E S
+    ;
+
+PRIVILEGE_CHECKS_USER
+    : P R I V I L E G E UL_ C H E C K S UL_ U S E R
+    ;
+
+PROCEDURE
+    : P R O C E D U R E
     ;
 
 PROCESS
     : P R O C E S S
     ;
 
+PROCESSLIST
+    : P R O C E S S L I S T
+    ;
+
+PROFILE
+    : P R O F I L E
+    ;
+
+PROFILES
+    : P R O F I L E S
+    ;
+
 PROXY
     : P R O X Y
+    ;
+
+PURGE
+    : P U R G E
+    ;
+
+QUARTER
+    : Q U A R T E R
+    ;
+
+QUERY
+    : Q U E R Y
     ;
 
 QUICK
     : Q U I C K
     ;
 
+RANDOM
+    : R A N D O M
+    ;
+
 RANGE
     : R A N G E
+    ;
+
+RANK
+    : R A N K
+    ;
+
+READ
+    : R E A D
+    ;
+
+READS
+    : R E A D S
+    ;
+
+READ_ONLY
+    : R E A D UL_ O N L Y
+    ;
+
+READ_WRITE
+    : R E A D UL_ W R I T E
+    ;
+
+REAL
+    : R E A L
     ;
 
 REBUILD
     : R E B U I L D
     ;
 
+RECOVER
+    : R E C O V E R
+    ;
+
 RECURSIVE
     : R E C U R S I V E
     ;
 
+REDO_BUFFER_SIZE
+    : R E D O UL_ B U F F E R UL_ S I Z E
+    ;
+
 REDUNDANT
     : R E D U N D A N T
+    ;
+
+REFERENCE
+    : R E F E R E N C E
+    ;
+
+REFERENCES
+    : R E F E R E N C E S
+    ;
+
+REGEXP
+    : R E G E X P
+    ;
+
+RELAY
+    : R E L A Y
+    ;
+
+RELAYLOG
+    : R E L A Y L O G
+    ;
+
+RELAY_LOG_FILE
+    : R E L A Y UL_ L O G UL_ F I L E
+    ;
+
+RELAY_LOG_POS
+    : R E L A Y UL_ L O G UL_ P O S
+    ;
+
+RELAY_THREAD
+    : R E L A Y UL_ T H R E A D
     ;
 
 RELEASE
@@ -623,6 +1983,46 @@ REPAIR
     : R E P A I R
     ;
 
+REPEAT
+    : R E P E A T
+    ;
+
+REPEATABLE
+    : R E P E A T A B L E
+    ;
+
+REPLACE
+    : R E P L A C E
+    ;
+
+REPLICATE_DO_DB
+    : R E P L I C A T E UL_ D O UL_ D B
+    ;
+
+REPLICATE_DO_TABLE
+    : R E P L I C A T E UL_ D O UL_ T A B L E
+    ;
+
+REPLICATE_IGNORE_DB
+    : R E P L I C A T E UL_ I G N O R E UL_ D B
+    ;
+
+REPLICATE_IGNORE_TABLE
+    : R E P L I C A T E UL_ I G N O R E UL_ T A B L E
+    ;
+
+REPLICATE_REWRITE_DB
+    : R E P L I C A T E UL_ R E W R I T E UL_ D B
+    ;
+
+REPLICATE_WILD_DO_TABLE
+    : R E P L I C A T E UL_ W I L D UL_ D O UL_ T A B L E
+    ;
+
+REPLICATE_WILD_IGNORE_TABLE
+    : R E P L I C A T E UL_ W I L D UL_ I G N O R E UL_ T A B L E
+    ;
+
 REPLICATION
     : R E P L I C A T I O N
     ;
@@ -631,109 +2031,312 @@ REQUIRE
     : R E Q U I R E
     ;
 
+REQUIRE_ROW_FORMAT
+    : R E Q U I R E UL_ R O W UL_ F O R M A T
+    ;
+
+RESET
+    : R E S E T
+    ;
+
+RESIGNAL
+    : R E S I G N A L
+    ;
+
+RESOURCE
+    : R E S O U R C E
+    ;
+
+RESPECT
+    : R E S P E C T
+    ;
+
+RESTART
+    : R E S T A R T
+    ;
+
+RESTORE
+    : R E S T O R E
+    ;
+
 RESTRICT
     : R E S T R I C T
+    ;
+
+RESUME
+    : R E S U M E
+    ;
+
+RETAIN
+    : R E T A I N
+    ;
+
+RETURN
+    : R E T U R N
+    ;
+
+RETURNED_SQLSTATE
+    : R E T U R N E D UL_ S Q L S T A T E
+    ;
+
+RETURNING
+    : R E T U R N I N G
+    ;
+
+RETURNS
+    : R E T U R N S
+    ;
+
+REUSE
+    : R E U S E
     ;
 
 REVERSE
     : R E V E R S E
     ;
 
+REVOKE
+    : R E V O K E
+    ;
+
+RIGHT
+    : R I G H T
+    ;
+
+RLIKE
+    : R L I K E
+    ;
+
+ROLE
+    : R O L E
+    ;
+
+ROLLBACK
+    : R O L L B A C K
+    ;
+
+ROLLUP
+    : R O L L U P
+    ;
+
+ROTATE
+    : R O T A T E
+    ;
+
 ROUTINE
     : R O U T I N E
+    ;
+
+ROW
+    : R O W
+    ;
+
+ROWS
+    : R O W S
+    ;
+
+ROW_COUNT
+    : R O W UL_ C O U N T
+    ;
+
+ROW_FORMAT
+    : R O W UL_ F O R M A T
+    ;
+
+ROW_NUMBER
+    : R O W UL_ N U M B  E R
+    ;
+
+RTREE
+    : R T R E E
+    ;
+
+SAVEPOINT
+    : S A V E P O I N T
+    ;
+
+SCHEDULE
+    : S C H E D U L E
+    ;
+
+SCHEMA
+    : S C H E M A
+    ;
+
+SCHEMAS
+    : S C H E M A S
+    ;
+
+SCHEMA_NAME
+    : S C H E M A UL_ N A M E
+    ;
+
+SECOND
+    : S E C O N D
+    ;
+
+SECONDARY
+    : S E C O N D A R Y
+    ;
+
+SECONDARY_ENGINE
+    : S E C O N D A R Y UL_ E N G I N E
+    ;
+
+SECONDARY_ENGINE_ATTRIBUTE
+    : S E C O N D A R Y UL_ E N G I N E UL_ A T T R I B U T E
+    ;
+
+SECONDARY_LOAD
+    : S E C O N D A R Y UL_ L O A D
+    ;
+
+SECONDARY_UNLOAD
+    : S E C O N D A R Y UL_ U N L O A D
+    ;
+
+SECOND_MICROSECOND
+    : S E C O N D UL_ M I C R O S E C O N D
+    ;
+
+SECURITY
+    : S E C U R I T Y
+    ;
+
+SELECT
+    : S E L E C T
+    ;
+
+SENSITIVE
+    : S E N S I T I V E
     ;
 
 SEPARATOR
     : S E P A R A T O R
     ;
 
+SERIAL
+    : S E R I A L
+    ;
+
+SERIALIZABLE
+    : S E R I A L I Z A B L E
+    ;
+
+SERVER
+    : S E R V E R
+    ;
+
 SESSION
     : S E S S I O N
     ;
 
-SHARED
-    : S H A R E D
+SET
+    : S E T
+    ;
+
+SHARE
+    : S H A R E
+    ;
+
+SHOW
+    : S H O W
     ;
 
 SHUTDOWN
     : S H U T D O W N
     ;
 
+SIGNAL
+    : S I G N A L
+    ;
+
+SIGNED
+    : S I G N E D
+    ;
+
 SIMPLE
     : S I M P L E
+    ;
+
+SKIP_SYMBOL
+    : S K I P
     ;
 
 SLAVE
     : S L A V E
     ;
 
+SLOW
+    : S L O W
+    ;
+
+SMALLINT
+    : S M A L L I N T
+    ;
+
+SNAPSHOT
+    : S N A P S H O T
+    ;
+
+SOCKET
+    : S O C K E T
+    ;
+
+SOME
+    : S O M E
+    ;
+
+SONAME
+    : S O N A M E
+    ;
+
+SOUNDS
+    : S O U N D S
+    ;
+
+SOURCE
+    : S O U R C E
+    ;
+
 SPATIAL
     : S P A T I A L
     ;
 
-
-ZEROFILL
-    : Z E R O F I L L
+SPECIFIC
+    : S P E C I F I C
     ;
 
-VISIBLE
-    : V I S I B L E
+SQL
+    : S Q L
     ;
 
-INVISIBLE
-    : I N V I S I B L E
+SQL_CACHE
+    : S Q L UL_ C A C H E
     ;
 
-INSTANT
-    : I N S T A N T
+SQLEXCEPTION
+    : S Q L E X C E P T I O N
     ;
 
-ENFORCED
-    : E N F O R C E D
+SQLSTATE
+    : S Q L S T A T E
     ;
 
-AGAINST
-    : A G A I N S T
+SQLWARNING
+    : S Q L W A R N I N G
     ;
 
-LANGUAGE
-    : L A N G U A G E
+SQL_AFTER_GTIDS
+    : S Q L UL_ A F T E R UL_ G T I D S
     ;
 
-MODE
-    : M O D E
+SQL_AFTER_MTS_GAPS
+    : S Q L UL_ A F T E R UL_ M T S UL_ G A P S
     ;
 
-QUERY
-    : Q U E R Y
-    ;
-
-EXTENDED
-    : E X T E N D E D
-    ;
-
-EXPANSION
-    : E X P A N S I O N
-    ;
-
-VARIANCE
-    : V A R I A N C E
-    ;
-
-MAX_ROWS
-    : M A X UL_ R O W S
-    ;
-
-MIN_ROWS
-    : M I N UL_ R O W S
-    ;
-
-HIGH_PRIORITY
-    : H I G H UL_ P R I O R I T Y
-    ;
-
-LOW_PRIORITY
-    : L O W UL_ P R I O R I T Y
+SQL_BEFORE_GTIDS
+    : S Q L UL_ B E F O R E UL_ G T I D S
     ;
 
 SQL_BIG_RESULT
@@ -742,10 +2345,6 @@ SQL_BIG_RESULT
 
 SQL_BUFFER_RESULT
     : S Q L UL_ B U F F E R UL_ R E S U L T
-    ;
-
-SQL_CACHE
-    : S Q L UL_ C A C H E
     ;
 
 SQL_CALC_FOUND_ROWS
@@ -757,7 +2356,67 @@ SQL_NO_CACHE
     ;
 
 SQL_SMALL_RESULT
-    : S Q L UL_ S M A L L UL_ R E S U L T
+    : S Q L UL_  S M A L L UL_ R E S U L T
+    ;
+
+SQL_THREAD
+    : S Q L UL_ T H R E A D
+    ;
+
+SQL_TSI_DAY
+    : S Q L UL_ T S I UL_ D A Y
+    ;
+
+SQL_TSI_HOUR
+    : S Q L UL_ T S I UL_ H O U R
+    ;
+
+SQL_TSI_MINUTE
+    : S Q L UL_ T S I UL_ M I N U T E
+    ;
+
+SQL_TSI_MONTH
+    : S Q L UL_ T S I UL_ M O N T H
+    ;
+
+SQL_TSI_QUARTER
+    : S Q L UL_ T S I UL_ Q U A R T E R
+    ;
+
+SQL_TSI_SECOND
+    : S Q L UL_ T S I UL_ S E C O N D
+    ;
+
+SQL_TSI_WEEK
+    : S Q L UL_ T S I UL_ W E E K
+    ;
+
+SQL_TSI_YEAR
+    : S Q L UL_ T S I UL_ Y E A R
+    ;
+
+SRID
+    : S R I D
+    ;
+
+SSL
+    : S S L
+    ;
+
+STACKED
+    : S T A C K E D
+    ;
+
+START
+    : S T A R T
+    ;
+
+STARTING
+    : S T A R T I N G
+    ;
+
+STARTS
+    : S T A R T S
     ;
 
 STATS_AUTO_RECALC
@@ -772,800 +2431,128 @@ STATS_SAMPLE_PAGES
     : S T A T S UL_ S A M P L E UL_ P A G E S
     ;
 
-ROLE_ADMIN
-    : R O L E UL_ A D M I N
+STATUS
+    : S T A T U S
     ;
 
-ROW_FORMAT
-    : R O W UL_ F O R M A T
+STOP
+    : S T O P
     ;
 
-SET_USER_ID
-    : S E T UL_ U S E R UL_ I D
+STORAGE
+    : S T O R A G E
     ;
 
-REPLICATION_SLAVE_ADMIN
-    : R E P L I C A T I O N UL_ S L A V E UL_ A D M I N
-    ;
-
-GROUP_REPLICATION_ADMIN
-    : G R O U P UL_ R E P L I C A T I O N UL_ A D M I N
+STORED
+    : S T O R E D
     ;
 
 STRAIGHT_JOIN
     : S T R A I G H T UL_ J O I N
     ;
 
-WEIGHT_STRING
-    : W E I G H T UL_ S T R I N G
-    ;
-
-COLUMN_FORMAT
-    : C O L U M N UL_ F O R M A T
-    ;
-
-CONNECTION_ADMIN
-    : C O N N E C T I O N UL_ A D M I N
-    ;
-
-FIREWALL_ADMIN
-    : F I R E W A L L UL_ A D M I N
-    ;
-
-FIREWALL_USER
-    : F I R E W A L L UL_ U S E R
-    ;
-
-INSERT_METHOD
-    : I N S E R T UL_ M E T H O D
-    ;
-
-KEY_BLOCK_SIZE
-    : K E Y UL_ B L O C K UL_ S I Z E
-    ;
-
-PACK_KEYS
-    : P A C K UL_ K E Y S
-    ;
-
-PERSIST_ONLY
-    : P E R S I S T UL_ O N L Y
-    ;
-
-BIT_AND
-    : B I T UL_ A N D
-    ;
-
-BIT_OR
-    : B I T UL_ O R
-    ;
-
-BIT_XOR
-    : B I T UL_ X O R
-    ;
-
-GROUP_CONCAT
-    : G R O U P UL_ C O N C A T
-    ;
-
-JSON_ARRAYAGG
-    : J S O N UL_ A R R A Y A G G
-    ;
-
-JSON_OBJECTAGG
-    : J S O N UL_ O B J E C T A G G
-    ;
-
-STD
-    : S T D
-    ;
-
-STDDEV
-    : S T D D E V
-    ;
-
-STDDEV_POP
-    : S T D D E V UL_ P O P
-    ;
-
-STDDEV_SAMP
-    : S T D D E V UL_ S A M P
-    ;
-
-VAR_POP
-    : V A R UL_ P O P
-    ;
-
-VAR_SAMP
-    : V A R UL_ S A M P
-    ;
-
-AUDIT_ADMIN
-    : A U D I T UL_ A D M I N
-    ;
-
-AUTO_INCREMENT
-    : A U T O UL_ I N C R E M E N T
-    ;
-
-AVG_ROW_LENGTH
-    : A V G UL_ R O W UL_ L E N G T H
-    ;
-
-BINLOG_ADMIN
-    : B I N L O G UL_ A D M I N
-    ;
-    
-DELAY_KEY_WRITE
-    : D E L A Y UL_ K E Y UL_ W R I T E
-    ;
-
-ENCRYPTION_KEY_ADMIN
-    : E N C R Y P T I O N UL_ K E Y UL_ A D M I N
-    ;
-    
-SYSTEM_VARIABLES_ADMIN
-    : S Y S T E M UL_ V A R I A B L E S UL_ A D M I N
-    ;
-
-VERSION_TOKEN_ADMIN
-    : V E R S I O N UL_ T O K E N UL_ A D M I N
-    ;
-
-CURRENT_TIMESTAMP
-    : C U R R E N T UL_ T I M E S T A M P
-    ;
-
-YEAR_MONTH
-    : D A Y UL_ M O N T H
-    ;
-
-DAY_HOUR
-    : D A Y UL_ H O U R
-    ;
-
-DAY_MINUTE
-    : D A Y UL_ M I N U T E
-    ;
-
-DAY_SECOND
-    : D A Y UL_ S E C O N D
-    ;
-
-DAY_MICROSECOND
-    : D A Y UL_ M I C R O S E C O N D
-    ;
-
-HOUR_MINUTE
-    : H O U R UL_ M I N U T E
-    ;
-
-HOUR_SECOND
-    : H O U R UL_ S E C O N D
-    ;
-
-HOUR_MICROSECOND
-    : H O U R UL_ M I C R O S E C O N D
-    ;
-
-MINUTE_SECOND
-    : M I N U T E UL_ S E C O N D
-    ;
-
-MINUTE_MICROSECOND
-    : M I N U T E UL_ M I C R O S E C O N D
-    ;
-
-SECOND_MICROSECOND
-    : S E C O N D UL_ M I C R O S E C O N D
-    ;
-
-UL_BINARY
-    : UL_ B I N A R Y
-    ;
-
-ROTATE
-    : R O T A T E
-    ;
-
-MASTER
-    : M A S T E R 
-    ;
-
-BINLOG
-    : B I N L O G
-    ;
-
-ERROR
-    : E R R O R
-    ;
-
-SCHEDULE
-    : S C H E D U L E
-    ;
-
-COMPLETION
-    : C O M P L E T I O N
-    ;
-
-EVERY
-    : E V E R Y
-    ;
-
-STARTS
-    : S T A R T S
-    ;
-
-ENDS
-    : E N D S
-    ;
-
-HOST
-    : H O S T
-    ;
-
-SOCKET
-    : S O C K E T
-    ;
-
-PORT
-    : P O R T
-    ;
-
-SERVER
-    : S E R V E R
-    ;
-
-WRAPPER
-    : W R A P P E R
-    ;
-
-OPTIONS
-    : O P T I O N S
-    ;
-
-OWNER
-    : O W N E R
-    ;
-
-DETERMINISTIC
-    : D E T E R M I N I S T I C
-    ;
-
-RETURNS
-    : R E T U R N S
-    ;
-
-CONTAINS
-    : C O N T A I N S
-    ;
-
-READS
-    : R E A D S
-    ;
-
-MODIFIES
-    : M O D I F I E S
-    ;
-
-SECURITY
-    : S E C U R I T Y
-    ;
-
-INVOKER
-    : I N V O K E R
-    ;
-
-OUT
-    : O U T
-    ;
-
-INOUT
-    : I N O U T
-    ;
-
-TEMPTABLE
-    : T E M P T A B L E
-    ;
-
-MERGE
-    : M E R G E
-    ;
-
-UNDEFINED
-    : U N D E F I N E D
-    ;
-
-DATAFILE
-    : D A T A F I L E
-    ;
-
-FILE_BLOCK_SIZE
-    : F I L E UL_ B L O C K UL_ S I Z E
-    ; 
-
-EXTENT_SIZE
-    : E X T E N T UL_ S I Z E
-    ;
-
-INITIAL_SIZE
-    : I N I T I A L UL_ S I Z E
-    ;
-
-AUTOEXTEND_SIZE
-    : A U T O E X T E N D UL_ S I Z E
-    ;
-
-MAX_SIZE
-    : M A X UL_ S I Z E
-    ;
-
-NODEGROUP
-    : N O D E G R O U P
-    ;
-
-WAIT
-    : W A I T
-    ;
-
-LOGFILE
-    : L O G F I L E
-    ;
-
-UNDOFILE
-    : U N D O F I L E
-    ;
-
-UNDO_BUFFER_SIZE
-    : U N D O UL_ B U F F E R UL_ S I Z E
-    ;
-
-REDO_BUFFER_SIZE
-    : R E D O UL_ B U F F E R UL_ S I Z E
-    ;
-
-HANDLER
-    : H A N D L E R
-    ;
-
-PREV
-    : P R E V
-    ;
-
-ORGANIZATION
-    : O R G A N I Z A T I O N
-    ;
-
-DEFINITION
-    : D E F I N I T I O N
-    ;
-
-DESCRIPTION
-    : D E S C R I P T I O N
-    ;
-
-REFERENCE
-    : R E F E R E N C E
-    ;
-
-FOLLOWS
-    : F O L L O W S
-    ;
-
-PRECEDES
-    : P R E C E D E S
-    ;
-
-IMPORT
-    : I M P O R T
-    ;
-
-LOAD
-    : L O A D
-    ;
-
-CONCURRENT
-    : C O N C U R R E N T
-    ;
-
-INFILE
-    : I N F I L E
-    ;
-
-LINES
-    : L I N E S
-    ;
-
-STARTING
-    : S T A R T I N G
-    ;
-
-TERMINATED
-    : T E R M I N A T E D
-    ;    
-
-OPTIONALLY
-    : O P T I O N A L L Y
-    ;
-
-ENCLOSED
-    : E N C L O S E D
-    ;
-
-ESCAPED
-    : E S C A P E D
-    ;
-
-XML
-    : X M L
-    ;
-
-UNDO
-    : U N D O
-    ;
-
-DUMPFILE
-    : D U M P F I L E
-    ;
-
-OUTFILE
-    : O U T F I L E
-    ;
-
-SHARE
-    : S H A R E
-    ;
-
-LOGS
-    : L O G S
-    ;
-
-EVENTS
-    : E V E N T S
-    ;
-
-BEFORE
-    : B E F O R E
-    ;
-
-EACH
-    : E A C H
-    ;
-
-MUTEX
-    : M U T E X
-    ;
-
-ENGINES
-    : E N G I N E S
-    ;
-
-ERRORS
-    : E R R O R S
-    ;
-
-CODE
-    : C O D E
-    ;
-
-GRANTS
-    : G R A N T S
-    ;
-
-PLUGINS
-    : P L U G I N S
-    ;
-
-PROCESSLIST
-    : P R O C E S S L I S T
-    ;
-
-BLOCK
-    : B L O C K
-    ;
-
-IO
-    : I O
-    ;
-
-CONTEXT
-    : C O N T E X T
-    ;
-
-SWITCHES
-    : S W I T C H E S
-    ; 
-
-CPU
-    : C P U
-    ;
-
-IPC
-    : I P C
-    ;
-
-PAGE
-    : P A G E
-    ;
-
-FAULTS
-    : F A U L T S
-    ;
-
-SOURCE
-    : S O U R C E
-    ;
-
-SWAPS
-    : S W A P S
-    ;
-
-PROFILE
-    : P R O F I L E
-    ;
-
-PROFILES
-    : P R O F I L E S
-    ;
-
-RELAYLOG
-    : R E L A Y L O G
-    ;
-
-CHANNEL
-    : C H A N N E L
-    ;
-
-VARIABLES
-    : V A R I A B L E S
-    ;
-
-WARNINGS
-    : W A R N I N G S
-    ;
-
-SSL
-    : S S L
-    ;
-
-CLONE
-    : C L O N E
-    ;
-
-AGGREGATE
-    : A G G R E G A T E
+STREAM
+    : S T R E A M
     ;
 
 STRING
     : S T R I N G
     ;
 
-SONAME
-    : S O N A M E
-    ;
-
-INSTALL
-    : I N S T A L L
-    ;
-
-COMPONENT
-    : C O M P O N E N T
-    ;
-
-PLUGIN
-    : P L U G I N
-    ;
-
-UNINSTALL
-    : U N I N S T A L L
-    ;
-
-NO_WRITE_TO_BINLOG
-    : N O UL_ W R I T E UL_ T O UL_ B I N L O G
-    ;
-
-HISTOGRAM
-    : H I S T O G R A M
-    ;
-
-BUCKETS
-    : B U C K E T S
-    ;
-
-FAST 
-    : F A S T
-    ;
-
-MEDIUM
-    : M E D I U M
-    ;
-
-USE_FRM
-    : U S E UL_ F R M
-    ;
-
-RESOURCE
-    : R E S O U R C E
-    ;
-
-VCPU
-    : V C P U
-    ;
-
-THREAD_PRIORITY
-    : T H R E A D UL_ P R I O R I T Y
-    ;
-
-SYSTEM
-    : S Y S T E M
-    ;
-
-EXPIRE
-    : E X P I R E
-    ;
-
-NEVER
-    : N E V E R
-    ;
-
-HISTORY
-    : H I S T O R Y
-    ;
-
-OPTIONAL
-    : O P T I O N A L
-    ;
-
-REUSE
-    : R E U S E
-    ;
-
-MAX_QUERIES_PER_HOUR
-    : M A X UL_ Q U E R I E S UL_ P E R UL_ H O U R
-    ;
-
-MAX_UPDATES_PER_HOUR
-    : M A X UL_ U P D A T E S UL_ P E R UL_ H O U R
-    ;
-
-MAX_CONNECTIONS_PER_HOUR
-    : M A X UL_ C O N N E C T I O N S UL_ P E R UL_ H O U R
-    ;
-
-MAX_USER_CONNECTIONS
-    : M A X UL_ U S E R UL_ C O N N E C T I O N S
-    ; 
-
-RETAIN
-    : R E T A I N
-    ;
-
-RANDOM
-    : R A N D O M
-    ;
-
-OLD
-    : O L D
-    ;
-
-X509
-    : X '509'
-    ;
-
-ISSUER
-    : I S S U E R
+SUBCLASS_ORIGIN
+    : S U B C L A S S UL_ O R I G I N
     ;
 
 SUBJECT
     : S U B J E C T
     ;
 
-CACHE
-    : C A C H E
+SUBPARTITION
+    : S U B P A R T I T I O N
     ;
 
-GENERAL
-    : G E N E R A L
+SUBPARTITIONS
+    : S U B P A R T I T I O N S
     ;
 
-OPTIMIZER_COSTS
-    : O P T I M I Z E R UL_ C O S T S
+SUPER
+    : S U P E R
     ;
 
-SLOW
-    : S L O W
+SUSPEND
+    : S U S P E N D
     ;
 
-USER_RESOURCES
-    : U S E R UL_ R E S O U R C E S
+SWAPS
+    : S W A P S
     ;
 
-EXPORT
-    : E X P O R T
+SWITCHES
+    : S W I T C H E S
     ;
 
-RELAY
-    : R E L A Y
+SYSTEM
+    : S Y S T E M
     ;
 
-HOSTS
-    : H O S T S
+TABLE
+    : T A B L E
     ;
 
-KILL
-    : K I L L
+TABLES
+    : T A B L E S
     ;
 
-FLUSH
-    : F L U S H
+TABLESPACE
+    : T A B L E S P A C E
     ;
 
-RESET
-    : R E S E T
+TABLE_CHECKSUM
+    : T A B L E UL_ C H E C K S U M
     ;
 
-RESTART
-    : R E S T A R T
+TABLE_NAME
+    : T A B L E UL_ N A M E
     ;
 
-UNIX_TIMESTAMP
-    : U N I X UL_ T I M E S T A M P
+TEMPORARY
+    : T E M P O R A R Y
     ;
 
-LOWER
-    : L O W E R
+TEMPTABLE
+    : T E M P T A B L E
     ;
 
-UPPER
-    : U P P E R
+TERMINATED
+    : T E R M I N A T E D
     ;
 
-ADDDATE
-    : A D D D A T E
+TEXT
+    : T E X T
     ;
 
-ADDTIME
-    : A D D T I M E
+THAN
+    : T H A N
     ;
 
-DATE_ADD
-    : D A T E UL_ A D D
+THEN
+    : T H E N
     ;
 
-DATE_SUB
-    : D A T E UL_ S U B
+THREAD_PRIORITY
+    : T H R E A D UL_ P R I O R I T Y
     ;
 
-DATEDIFF
-    : D A T E D I F F
+TIES
+    : T I E S
     ;
 
-DATE_FORMAT
-    : D A T E UL_ F O R M A T
+TIME
+    : T I M E
     ;
 
-DAYNAME
-    : D A Y N A M E
-    ;
-
-DAYOFMONTH
-    : D A Y O F M O N T H
-    ;
-
-DAYOFWEEK
-    : D A Y O F W E E K
-    ;
-
-DAYOFYEAR
-    : D A Y O F Y E A R
-    ;
-
-STR_TO_DATE
-    : S T R UL_ T O UL_ D A T E
-    ;
-
-TIMEDIFF
-    : T I M E D I F F
+TIMESTAMP
+    : T I M E S T A M P
     ;
 
 TIMESTAMPADD
@@ -1576,526 +2563,286 @@ TIMESTAMPDIFF
     : T I M E S T A M P D I F F
     ;
 
-TIME_FORMAT
-     : T I M E UL_ F O R M A T
-     ;
-
-TIME_TO_SEC
-    : T I M E UL_ T O UL_ S E C
-    ;
-
-AES_DECRYPT
-    : A E S UL_ D E C R Y P T
-    ;
-
-AES_ENCRYPT
-    : A E S UL_ E N C R Y P T
-    ;
-
-FROM_BASE64
-    : F R O M UL_ B A S E
-    ;
-
-TO_BASE64
-    : T O UL_ B A S E
-    ;
-
-GEOMCOLLECTION
-    : G E O M C O L L E C T I O N
-    ;
-
-GEOMETRYCOLLECTION
-    : G E O M E T R Y C O L L E C T I O N
-    ;
-
-LINESTRING
-    : L I N E S T R I N G
-    ;
-
-MULTILINESTRING
-    : M U L T I L I N E S T R I N G
-    ;
-
-MULTIPOINT
-    : M U L T I P O I N T
-    ;
-
-MULTIPOLYGON
-    : M U L T I P O L Y G O N
-    ;
-
-POINT
-    : P O I N T
-    ;
-
-POLYGON
-    : P O L Y G O N
-    ;
-
-ST_AREA
-    : S T UL_ A R E A
-    ;
-
-ST_ASBINARY
-    : S T UL_ A S B I N A R Y
-    ;
-
-ST_ASGEOJSON
-    : S T UL_ A S G E O J S O N
-    ;
-
-ST_ASTEXT
-    : S T UL_ A S T E X T
-    ;
-
-ST_ASWKB
-    : S T UL_ A S W K B
-    ;
-
-ST_ASWKT
-    : S T UL_ A S W K T
-    ;
-
-ST_BUFFER
-    : S T UL_ B U F F E R
-    ;
-
-ST_BUFFER_STRATEGY
-    : S T UL_ B U F F E R UL_ S T R A T E G Y
-    ;
-
-ST_CENTROID
-    : S T UL_ C E N T R O I D
-    ;
-
-ST_CONTAINS
-    : S T UL_ C O N T A I N S
-    ;
-
-ST_CONVEXHULL
-    : S T UL_ C O N V E X H U L L
-    ;
-
-ST_CROSSES
-    : S T UL_ C R O S S E S
-    ;
-
-ST_DIFFERENCE
-    : S T UL_ D I F F E R E N C E
-    ;
-
-ST_DIMENSION
-    : S T UL_ D I M E N S I O N
-    ;
-
-ST_DISJOINT
-    : S T UL_ D I S J O I N T
-    ;
-
-ST_DISTANCE
-    : S T UL_ D I S T A N C E
-    ;
-
-ST_DISTANCE_SPHERE
-    : S T UL_ D I S T A N C E UL_ S P H E R E
-    ;
-
-ST_ENDPOINT
-    : S T UL_ E N D P O I N T
-    ;
-
-ST_ENVELOPE
-    : S T UL_ E N V E L O P E
-    ;
-
-ST_EQUALS
-    : S T UL_ E Q U A L S
-    ;
-
-ST_EXTERIORRING
-    : S T UL_ E X T E R I O R R I N G
-    ;
-
-ST_GEOHASH
-    : S T UL_ G E O H A S H
-    ;
-
-ST_GEOMCOLLFROMTEXT
-    : S T UL_ G E O M C O L L F R O M T E X T
-    ;
-
-ST_GEOMCOLLFROMTXT
-    : S T UL_ G E O M C O L L F R O M T X T
-    ;
-
-ST_GEOMCOLLFROMWKB
-    : S T UL_ G E O M C O L L F R O M W K B
-    ;
-
-ST_GEOMETRYCOLLECTIONFROMTEXT
-    : S T UL_ G E O M E T R Y C O L L E C T I O N F R O M T E X T
-    ;
-
-ST_GEOMETRYCOLLECTIONFROMWKB
-    : S T UL_ G E O M E T R Y C O L L E C T I O N F R O M W K B
-    ;
-
-ST_GEOMETRYFROMTEXT
-    : S T UL_ G E O M E T R Y F R O M T E X T
-    ;
-
-ST_GEOMETRYFROMWKB
-    : S T UL_ G E O M E T R Y F R O M W K B
-    ;
-
-ST_GEOMETRYN
-    : S T UL_ G E O M E T R Y N
-    ;
-
-ST_GEOMETRYTYPE
-    : S T UL_ G E O M E T R Y T Y P E
-    ;
-
-ST_GEOMFROMGEOJSON
-    : S T UL_ G E O F R O M G E O J S O N
-    ;
-
-ST_GEOMFROMTEXT
-    : S T UL_ G E O F R O M T E X T
-    ;
-
-ST_GEOMFROMWKB
-    : S T UL_ G E O F R O M W K B
-    ;
-
-ST_INTERIORRINGN
-    : S T UL_ I N T E R I O R R I N G N
-    ;
-
-ST_INTERSECTION
-    : S T UL_ I N T E R S E C T I O N
-    ;
-
-ST_INTERSECTS
-    : S T UL_ I N T E R S E C T S
-    ;
-
-ST_ISCLOSED
-    : S T UL_ I S C L O S E D
-    ;
-
-ST_ISEMPTY
-    : S T UL_ I S E M P T Y
-    ;
-
-ST_ISSIMPLE
-    : S T UL_ I S S I M P L E
-    ;
-
-ST_ISVALID
-    : S T UL_ I S V A L I D
-    ;
-
-ST_LATFROMGEOHASH
-    : S T UL_ L A T F R O M G E O H A S H
-    ;
-
-ST_LATITUDE
-    : S T UL_ L A T I T U D E
-    ;
-
-ST_LENGTH
-    : S T UL_ L E N G T H
-    ;
-
-ST_LINEFROMTEXT
-    : S T UL_ L I N E F R O M T E X T
-    ;
-
-ST_LINEFROMWKB
-    : S T UL_ L I N E F R O M W K B
-    ;
-
-ST_LINESTRINGFROMTEXT
-    : S T UL_ L I N E S T R I N G F R O M T E X T
-    ;
-
-ST_LINESTRINGFROMWKB
-    : S T UL_ L I N E S T R I N G F R O M W K B
-    ;
-
-ST_LONGFROMGEOHASH
-    : S T UL_ L O N G F R O M G E O H A S H
-    ;
-
-ST_LONGITUDE
-    : S T UL_ L O N G I T U D E
-    ;
-
-ST_MAKEENVELOPE
-    : S T UL_ M A K E E N V E L O P E
-    ;
-
-ST_MLINEFROMTEXT
-    : S T UL_ M L I N E F R O M T E X T
-    ;
-
-ST_MLINEFROMWKB
-    : S T UL_ M L I N E F R O M W K B
-    ;
-
-ST_MULTILINESTRINGFROMTEXT
-    : S T UL_ M U L T I L I N E S T R I N G F R O M T E X T
-    ;
-
-ST_MULTILINESTRINGFROMWKB
-    : S T UL_ M U L T I L I N E S T R I N G F R O M W K B
-    ;
-
-ST_MPOINTFROMTEXT
-    : S T UL_ M P O I N T F R O M T E X T
-    ;
-
-ST_MPOINTFROMWKB
-    : S T UL_ M P O I N T F R O M W K B
-    ;
-
-ST_MULTIPOINTFROMTEXT
-    : S T UL_ M U L T I P O I N T F R O M T E X T
-    ;
-
-ST_MULTIPOINTFROMWKB
-    : S T UL_ M U L T I P O I N T F R O M W K B
-    ;
-
-ST_MPOLYFROMTEXT
-    : S T UL_ M P O L Y F R O M T E X T
-    ;
-
-ST_MPOLYFROMWKB
-    : S T UL_ M P O L Y F R O M W K B
-    ;
-
-ST_MULTIPOLYGONFROMTEXT
-    : S T UL_ M U L T I P O L Y G O N F R O M T E X T
-    ;
-
-ST_MULTIPOLYGONFROMWKB
-    : S T UL_ M U L T I P O L Y G O N F R O M W K B
-    ;
-
-ST_NUMGEOMETRIES
-    : S T UL_ N U M G E O M E T R I E S
-    ;
-
-ST_NUMINTERIORRING
-    : S T UL_ N U M I N T E R I O R R I N G
-    ;
-
-ST_NUMINTERIORRINGS
-    : S T UL_ N U M I N T E R I O R R I N G S
-    ;
-
-ST_NUMPOINTS
-    : S T UL_ N U M P O I N T S
-    ;
-
-ST_OVERLAPS
-    : S T UL_ O V E R L A P S
-    ;
-
-ST_POINTFROMGEOHASH
-    : S T UL_ P O I N T F R O M G E O H A S H
-    ;
-
-ST_POINTFROMTEXT
-    : S T UL_ P O I N T F R O M T E X T
-    ;
-
-ST_POINTFROMWKB
-    : S T UL_ P O I N T F R O M W K B
-    ;
-
-ST_POINTN
-    : S T UL_ P O I N T N
-    ;
-
-ST_POLYFROMTEXT
-    : S T UL_ P O L Y F R O M T E X T
-    ;
-
-ST_POLYFROMWKB
-    : S T UL_ P O L Y F R O M W K B
-    ;
-
-ST_POLYGONFROMTEXT
-    : S T UL_ P O L Y G O N F R O M T E X T
-    ;
-
-ST_POLYGONFROMWKB
-    : S T UL_ P O L Y G O N F R O M W K B
-    ;
-
-ST_SIMPLIFY
-    : S T UL_ S I M P L I F Y
-    ;
-
-ST_SRID
-    : S T UL_ S R I D
-    ;
-
-ST_STARTPOINT
-    : S T UL_ S T A R T P O I N T
-    ;
-
-ST_SWAPXY
-    : S T UL_ S W A P X Y
-    ;
-
-ST_SYMDIFFERENCE
-    : S T UL_ S Y M D I F F E R E N C E
-    ;
-
-ST_TOUCHES
-    : S T UL_ T O U C H E S
-    ;
-
-ST_TRANSFORM
-    : S T UL_ T R A N S F O R M
-    ;
-
-ST_UNION
-    : S T UL_ U N I O N
-    ;
-
-ST_VALIDATE
-    : S T UL_ V A L I D A T E
-    ;
-
-ST_WITHIN
-    : S T UL_ W I T H I N
-    ;
-
-ST_X
-    : S T UL_ X
-    ;
-
-ST_Y
-    : S T UL_ Y
-    ;
-
-BIT
-    : B I T
-    ;
-
-BOOL
-    : B O O L
-    ;
-
-DEC
-    : D E C
-    ;
-
-VARCHAR
-    : V A R C H A R
-    ;
-
-VARBINARY
-    : V A R B I N A R Y
-    ;
-
 TINYBLOB
     : T I N Y B L O B
+    ;
+
+TINYINT
+    : T I N Y I N T
     ;
 
 TINYTEXT
     : T I N Y T E X T
     ;
 
-BLOB
-    : B L O B
+TLS
+    : T L S
     ;
 
-TEXT
-    : T E X T
+TO
+    : T O
     ;
 
-MEDIUMBLOB
-    : M E D I U M B L O B
+TRAILING
+    : T R A I L I N G
     ;
 
-MEDIUMTEXT
-    : M E D I U M T E X T
+TRANSACTION
+    : T R A N S A C T I O N
     ;
 
-LONGBLOB
-    : L O N G B L O B
+TRIGGER
+    : T R I G G E R
     ;
 
-LONGTEXT
-    : L O N G T E X T
+TRIGGERS
+    : T R I G G E R S
     ;
 
-ENUM
-    : E N U M
+TRUE
+    : T R U E
     ;
 
-GEOMETRY
-    : G E O M E T R Y
+TRUNCATE
+    : T R U N C A T E
     ;
 
-JSON
-    : J S O N
+TYPE
+    : T Y P E
     ;
 
-IO_THREAD
-    : I O UL_ T H R E A D
+TYPES
+    : T Y P E S
     ;
 
-SQL_THREAD
-    : S Q L UL_ T H R E A D
+UNBOUNDED
+    : U N B O U N D E D
     ;
 
-SQL_BEFORE_GTIDS
-    : S Q L UL_ B E F O R E UL_ G T I D S
+UNCOMMITTED
+    : U N C O M M I T T E D
     ;
 
-SQL_AFTER_GTIDS
-    : S Q L UL_ A F T E R UL_ G T I D S
+UNDEFINED
+    : U N D E F I N E D
     ;
 
-MASTER_LOG_FILE
-    : M A S T E R UL_ L O G UL_ F I L E
+UNDO
+    : U N D O
     ;
 
-MASTER_LOG_POS
-    : M A S T E R UL_ L O G UL_ P O S
+UNDOFILE
+    : U N D O F I L E
     ;
 
-RELAY_LOG_FILE
-    : R E L A Y UL_ L O G UL_ F I L E
+UNDO_BUFFER_SIZE
+    : U N D O UL_ B U F F E R UL_ S I Z E
     ;
 
-RELAY_LOG_POS
-    : R E L A Y UL_ L O G UL_ P O S
+UNICODE
+    : U N I C O D E
     ;
 
-SQL_AFTER_MTS_GAPS
-    : S Q L UL_ A F T E R UL_ M T S UL_ G A P S
+UNINSTALL
+    : U N I N S T A L L
+    ;
+
+UNION
+    : U N I O N
+    ;
+
+UNIQUE
+    : U N I Q U E
+    ;
+
+UNKNOWN
+    : U N K N O W N
+    ;
+
+UNLOCK
+    : U N L O C K
+    ;
+
+UNSIGNED
+    : U N S I G N E D
     ;
 
 UNTIL
     : U N T I L
     ;
 
-DEFAULT_AUTH
-    : D E F A U L T UL_ A U T H
+UPDATE
+    : U P D A T E
     ;
 
-PLUGIN_DIR
-    : P L U G I N UL_ D I R
+UPGRADE
+    : U P G R A D E
     ;
 
-STOP
-    : S T O P
+USAGE
+    : U S A G E
+    ;
+
+USE
+    : U S E
+    ;
+
+USER
+    : U S E R
+    ;
+
+USER_RESOURCES
+    : U S E R UL_ R E S O U R C E S
+    ;
+
+USE_FRM
+    : U S E UL_ F R M
+    ;
+
+USING
+    : U S I N G
+    ;
+
+UTC_DATE
+    : U T C UL_ D A T E
+    ;
+
+UTC_TIME
+    : U T C UL_ T I M E
+    ;
+
+UTC_TIMESTAMP
+    : U T C UL_ T I M E S T A M P
+    ;
+
+VALIDATION
+    : V A L I D A T I O N
+    ;
+
+VALUE
+    : V A L U E
+    ;
+
+VALUES
+    : V A L U E S
+    ;
+
+VARBINARY
+    : V A R B I N A R Y
+    ;
+
+VARCHAR
+    : V A R C H A R
+    ;
+
+VARCHARACTER
+    : V A R C H A R A C T E R
+    ;
+
+VARIABLES
+    : V A R I A B L E S
+    ;
+
+VARYING
+    : V A R Y I N G
+    ;
+
+VCPU
+    : V C P U
+    ;
+
+VIEW
+    : V I E W
+    ;
+
+VIRTUAL
+    : V I R T U A L
+    ;
+
+VISIBLE
+    : V I S I B L E
+    ;
+
+WAIT
+    : W A I T
+    ;
+
+WARNINGS
+    : W A R N I N G S
+    ;
+
+WEEK
+    : W E E K
+    ;
+
+WEIGHT_STRING
+    : W E I G H T UL_ S T R I N G
+    ;
+
+WHEN
+    : W H E N
+    ;
+
+WHERE
+    : W H E R E
+    ;
+
+WHILE
+    : W H I L E
+    ;
+
+WINDOW
+    : W I N D O W
+    ;
+
+WITH
+    : W I T H
+    ;
+
+WITHOUT
+    : W I T H O U T
+    ;
+
+WORK
+    : W O R K
+    ;
+
+WRAPPER
+    : W R A P P E R
+    ;
+
+WRITE
+    : W R I T E
+    ;
+
+X509
+    : X '509'
+    ;
+
+XA
+    : X A
+    ;
+
+XID
+    : X I D
+    ;
+
+XML
+    : X M L
+    ;
+
+XOR
+    : X O R
+    ;
+
+YEAR
+    : Y E A R
+    ;
+
+YEAR_MONTH
+    : Y E A R UL_ M O N T H
+    ;
+
+ZEROFILL
+    : Z E R O F I L L
     ;

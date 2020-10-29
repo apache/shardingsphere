@@ -1,6 +1,6 @@
 +++
 title = "2FA"
-weight = 7
+weight = 10
 chapter = true
 +++
 

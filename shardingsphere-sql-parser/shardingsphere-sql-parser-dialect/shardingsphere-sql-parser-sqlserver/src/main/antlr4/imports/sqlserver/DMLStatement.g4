@@ -20,15 +20,19 @@ grammar DMLStatement;
 import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
 
 insert
-    : INSERT INTO tableName (AS? alias)? (insertValuesClause | insertSelectClause)
+    : withClause? INSERT top? INTO? tableName (AS? alias)? (insertDefaultValue | insertValuesClause | insertSelectClause)
+    ;
+    
+insertDefaultValue
+    : columnNames? outputClause? DEFAULT VALUES
     ;
 
 insertValuesClause
-    : columnNames? VALUES assignmentValues (COMMA_ assignmentValues)*
+    : columnNames? outputClause? VALUES assignmentValues (COMMA_ assignmentValues)*
     ;
 
 insertSelectClause
-    : columnNames? select
+    : columnNames? outputClause? select
     ;
 
 update
@@ -53,7 +57,7 @@ assignmentValue
     ;
 
 delete
-    : DELETE (singleTableClause | multipleTablesClause) whereClause?
+    : DELETE top? (singleTableClause | multipleTablesClause) outputClause? whereClause?
     ;
 
 singleTableClause
@@ -69,11 +73,11 @@ multipleTableNames
     ;
 
 select 
-    : unionClause
+    : aggregationClause
     ;
 
-unionClause
-    : selectClause (UNION (ALL | DISTINCT)? selectClause)*
+aggregationClause
+    : selectClause ((UNION (ALL)? | EXCEPT | INTERSECT) selectClause)*
     ;
 
 selectClause
@@ -93,7 +97,11 @@ projection
     ;
 
 top
-    : TOP LP_? expr RP_? ROW_NUMBER LP_ RP_ OVER LP_ orderByClause RP_ 
+    : TOP LP_? topNum RP_? PERCENT? (WITH TIES)? (ROW_NUMBER LP_ RP_ OVER LP_ orderByClause RP_)?
+    ;
+
+topNum
+    : numberLiterals | parameterMarker
     ;
 
 alias
@@ -146,5 +154,33 @@ havingClause
     ;
 
 subquery
-    : LP_ unionClause RP_
+    : LP_ aggregationClause RP_
+    ;
+
+withClause
+    : WITH cteClause (COMMA_ cteClause)*
+    ;
+
+cteClause
+    : identifier columnNames? AS subquery
+    ;
+
+outputClause
+    : OUTPUT (outputWithColumns | outputWithAaterisk) (INTO outputTableName columnNames?)?
+    ;
+
+outputWithColumns
+    : outputWithColumn (COMMA_ outputWithColumn)*
+    ;
+
+outputWithColumn
+    : (INSERTED | DELETED) DOT_ name (AS? alias)?
+    ;
+
+outputWithAaterisk
+    : (INSERTED | DELETED) DOT_ASTERISK_
+    ;
+
+outputTableName
+    : (AT_ name) | tableName
     ;

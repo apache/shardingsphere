@@ -1,12 +1,11 @@
 +++
-toc = true
 title = "Configuration"
 weight = 3
 +++
 
 ## Sharding Rule
 
-The main entrance for Sharding rules includes the configurations of data source, tables, binding tables and read-write split.
+The main entrance for Sharding rules includes the configurations of data source, tables, binding tables and replica query.
 
 ## Data Sources Configuration
 
@@ -33,7 +32,7 @@ db1
   └── t_order1
 ```
 
-So the data node configurations will be as follow:
+So the data node configurations will be as follows:
 
 ```
 db0.t_order0, db0.t_order1, db1.t_order0, db1.t_order1
@@ -53,7 +52,7 @@ db1
   └── t_order4
 ```
 
-So the data node configurations will be as follow:
+So the data node configurations will be as follows:
 
 ```
 db0.t_order0, db0.t_order1, db1.t_order2, db1.t_order3, db1.t_order4

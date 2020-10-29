@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="alter_user_identified_without_hostname" value="ALTER USER user_dev identified by passwd_dev" db-types="Oracle" />
+    <sql-case id="alter_user_identified_with_hostname" value="ALTER USER 'user_dev'@'localhost' identified by 'passwd_dev'" db-types="MySQL" />
+    <sql-case id="alter_user_account" value="ALTER USER user_dev account lock" db-types="Oracle" />
+    <sql-case id="alter_login_name" value="ALTER LOGIN login_dev WITH NAME = login_dev_new" db-types="SQLServer" />
+    <sql-case id="alter_login_passwd" value="ALTER LOGIN login_dev WITH PASSWORD = 'passwd_dev'" db-types="SQLServer" />
+    <sql-case id="alter_user_name_with_name" value="ALTER USER user_dev WITH NAME = user_dev_new" db-types="SQLServer" />
+    <sql-case id="alter_user_name_rename" value="ALTER USER user_dev RENAME TO user_dev_new" db-types="PostgreSQL" />
+    <sql-case id="alter_user_passwd_with_equality" value="ALTER USER user_dev WITH PASSWORD = 'passwd_dev'" db-types="SQLServer" />
+    <sql-case id="alter_user_passwd_without_equality" value="ALTER USER user_dev WITH PASSWORD 'passwd_dev'" db-types="PostgreSQL" />
+    <sql-case id="alter_user" value="ALTER USER user1" db-types="MySQL" />
+    <sql-case id="alter_users" value="ALTER USER user1, user2" db-types="MySQL" />
+    <sql-case id="alter_user_if_exists" value="ALTER USER IF EXISTS user1" db-types="MySQL" />
+    <sql-case id="alter_local_user" value="ALTER USER 'user1'@'localhost'" db-types="MySQL" />
+    <sql-case id="alter_user_with_password" value="ALTER USER user1 IDENTIFIED BY 'password'" db-types="MySQL,Oracle" />
+    <sql-case id="alter_user_with_resource_option" value="ALTER USER user1 MAX_QUERIES_PER_HOUR 1" db-types="MySQL" />
+    <sql-case id="alter_user_with_resource_options" value="ALTER USER user1 MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1" db-types="MySQL" />
+    <sql-case id="alter_user_with_password_option" value="ALTER USER user1 PASSWORD EXPIRE DEFAULT" db-types="MySQL" />
+    <sql-case id="alter_user_with_password_options" value="ALTER USER user1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT" db-types="MySQL" />
+    <sql-case id="alter_user_with_lock_option" value="ALTER USER user1 ACCOUNT LOCK" db-types="MySQL" />
+    <sql-case id="alter_user_with_options" value="ALTER USER user1 MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT ACCOUNT LOCK" db-types="MySQL" />
+    <sql-case id="alter_external_user" value="ALTER USER user1 IDENTIFIED EXTERNALLY" db-types="Oracle" />
+    <sql-case id="alter_global_user" value="ALTER USER user1 IDENTIFIED GLOBALLY AS 'CN=user1'" db-types="Oracle" />
+    <sql-case id="alter_user_with_tablespace_option" value="ALTER USER user1 DEFAULT TABLESPACE tablespace1" db-types="Oracle" />
+    <sql-case id="alter_user_with_container" value="ALTER USER user1 CONTAINER = ALL" db-types="Oracle" />
+    <sql-case id="alter_user_with_quota_option" value="ALTER USER user1 QUOTA 1M ON tablespace1" db-types="Oracle" />
+    <sql-case id="alter_user_password_with_lock_option" value="ALTER USER user1 IDENTIFIED BY password ACCOUNT LOCK" db-types="Oracle" />
+    <sql-case id="alter_user_expire_with_options" value="ALTER USER user1 PASSWORD EXPIRE ACCOUNT LOCK" db-types="Oracle" />
+    <sql-case id="alter_user_grant_proxy" value="ALTER USER user1 GRANT CONNECT THROUGH user2" db-types="Oracle" />
+    <sql-case id="alter_user_grant_proxy_with_option" value="ALTER USER user1 GRANT CONNECT THROUGH user2 WITH ROLE role1" db-types="Oracle" />
+    <sql-case id="alter_user_revoke_proxy" value="ALTER USER user1 REVOKE CONNECT THROUGH user2" db-types="Oracle" />
+    <sql-case id="alter_user_proxys" value="ALTER USER user1 GRANT CONNECT THROUGH user2 REVOKE CONNECT THROUGH user3" db-types="Oracle" />
+    <sql-case id="alter_user_with_password_postgresql" value="ALTER USER user1 WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL" />
+    <sql-case id="alter_current_user_with_password" value="ALTER USER CURRENT_USER WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL" />
+    <sql-case id="alter_user_with_option" value="ALTER USER user1 WITH SUPERUSER" db-types="PostgreSQL" />
+    <sql-case id="alter_user_with_options_postgresql" value="ALTER USER user1 WITH CREATEDB CREATEROLE" db-types="PostgreSQL" />
+    <sql-case id="alter_user_set_config" value="ALTER USER user1 SET client_min_messages = DEBUG" db-types="PostgreSQL" />
+    <sql-case id="alter_all_users_set_config" value="ALTER USER ALL SET client_min_messages = DEBUG" db-types="PostgreSQL" />
+    <sql-case id="alter_user_set_config_in_database" value="ALTER USER user1 IN DATABASE ds_0 SET client_min_messages = DEBUG" db-types="PostgreSQL" />
+    <sql-case id="alter_user_set_config_from_current_user" value="ALTER USER user1 SET client_min_messages FROM CURRENT" db-types="PostgreSQL" />
+    <sql-case id="alter_user_reset_config" value="ALTER USER user1 RESET client_min_messages" db-types="PostgreSQL" />
+    <sql-case id="alter_all_users_reset_config" value="ALTER USER ALL RESET client_min_messages" db-types="PostgreSQL" />
+    <sql-case id="alter_user_reset_config_in_database" value="ALTER USER user1 IN DATABASE ds_0 RESET client_min_messages" db-types="PostgreSQL" />
+    <sql-case id="alter_user_reset_all_config" value="ALTER USER user1 RESET ALL" db-types="PostgreSQL" />
+    <sql-case id="alter_user_set_password" value="ALTER USER user1 WITH PASSWORD = 'password'" db-types="SQLServer" />
+    <sql-case id="alter_user_set_login" value="ALTER USER user1 WITH LOGIN = login1" db-types="SQLServer" />
+    <sql-case id="alter_user_set_default_schema" value="ALTER USER user1 WITH DEFAULT_SCHEMA = schema" db-types="SQLServer" />
+    <sql-case id="alter_user_rename" value="ALTER USER user1_bak WITH NAME = user1" db-types="SQLServer" />
+    <sql-case id="alter_user_in_database" value="ALTER USER user1 IN DATABASE ds SET arg1='val1'" db-types="PostgreSQL" />
+</sql-cases>
