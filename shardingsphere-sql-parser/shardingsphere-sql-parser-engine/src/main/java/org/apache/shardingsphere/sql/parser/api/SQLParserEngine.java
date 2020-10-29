@@ -68,6 +68,6 @@ public final class SQLParserEngine {
         if (ENGINES.containsKey(databaseType)) {
             return ENGINES.get(databaseType);
         }
-        return ENGINES.computeIfAbsent(databaseType, k -> new SQLParserExecutor(databaseType));
+        return ENGINES.computeIfAbsent(databaseType, key -> new SQLParserExecutor(databaseType));
     }
 }
