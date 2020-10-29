@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLBackendHandl
 import org.apache.shardingsphere.proxy.backend.text.sctl.utils.SCTLUtils;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandlerFactory;
-import org.apache.shardingsphere.distsql.parser.engine.ShardingSphereSQLStatementParserEngine;
+import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
@@ -60,7 +60,7 @@ public final class TextProtocolBackendHandlerFactory {
         if (trimSQL.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
             return ShardingCTLBackendHandlerFactory.newInstance(trimSQL, backendConnection);
         }
-        SQLStatement sqlStatement = new ShardingSphereSQLStatementParserEngine(databaseType.getName()).parse(sql, false);
+        SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(databaseType.getName()).parse(sql, false);
         if (sqlStatement instanceof RDLStatement || sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
             return new RDLBackendHandler(backendConnection, sqlStatement);
         }

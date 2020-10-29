@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.engine.executor;
+package org.apache.shardingsphere.distsql.parser;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.BailErrorStrategy;

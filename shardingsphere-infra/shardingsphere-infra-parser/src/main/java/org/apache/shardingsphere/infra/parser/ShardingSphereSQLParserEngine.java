@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.engine;
+package org.apache.shardingsphere.infra.parser;
 
-import org.apache.shardingsphere.distsql.parser.engine.engine.DistSQLStatementParserEngine;
-import org.apache.shardingsphere.infra.parser.SQLStatementParserEngine;
-import org.apache.shardingsphere.infra.parser.SQLStatementParserEngineFactory;
+import org.apache.shardingsphere.distsql.parser.DistSQLStatementParserEngine;
+import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
+import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * ShardingSphere SQL statement parser engine.
+ * ShardingSphere SQL parser engine.
  */
-public final class ShardingSphereSQLStatementParserEngine {
+public final class ShardingSphereSQLParserEngine {
     
     private final SQLStatementParserEngine sqlStatementParserEngine;
     
     private final DistSQLStatementParserEngine distSQLStatementParserEngine;
     
-    public ShardingSphereSQLStatementParserEngine(final String databaseTypeName) {
+    public ShardingSphereSQLParserEngine(final String databaseTypeName) {
         sqlStatementParserEngine = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseTypeName);
         distSQLStatementParserEngine = new DistSQLStatementParserEngine();
     }

@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.engine.engine;
+package org.apache.shardingsphere.distsql.parser;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.distsql.parser.engine.executor.DistSQLParserExecutor;
 import org.apache.shardingsphere.distsql.parser.sql.visitor.DistSQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
