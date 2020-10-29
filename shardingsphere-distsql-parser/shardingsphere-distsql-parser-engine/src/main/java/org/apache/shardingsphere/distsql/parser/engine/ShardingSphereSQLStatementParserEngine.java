@@ -45,7 +45,7 @@ public final class ShardingSphereSQLStatementParserEngine implements SQLStatemen
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            result = distSQLStatementParserEngine.parse(sql, useCache);
+            result = distSQLStatementParserEngine.parse(sql);
         }
         return result;
     }

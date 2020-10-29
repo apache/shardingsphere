@@ -17,41 +17,24 @@
 
 package org.apache.shardingsphere.distsql.parser.engine.engine;
 
-import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.engine.executor.DistSQLParserExecutor;
-import org.apache.shardingsphere.infra.parser.SQLStatementParserEngine;
 import org.apache.shardingsphere.distsql.parser.sql.visitor.DistSQLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * Dist SQL statement parser engine.
  */
-@RequiredArgsConstructor
-public final class DistSQLStatementParserEngine implements SQLStatementParserEngine {
+public final class DistSQLStatementParserEngine {
     
-    private final ParsingHookRegistry parsingHookRegistry = ParsingHookRegistry.getInstance();
-    
-    /*
-     * To make sure SkyWalking will be available at the next release of ShardingSphere, a new plugin should be provided to SkyWalking project if this API changed.
+    /**
+     * Parse to SQL statement.
      *
-     * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
+     * @param sql SQL to be parsed
+     * @return SQL statement
      */
-    @SuppressWarnings("OverlyBroadCatchBlock")
-    @Override
-    public SQLStatement parse(final String sql, final boolean useCache) {
-        parsingHookRegistry.start(sql);
-        try {
-            ParseTree parseTree = new DistSQLParserExecutor(sql).execute().getRootNode();
-            SQLStatement result = (SQLStatement) new DistSQLStatementVisitor().visit(parseTree);
-            parsingHookRegistry.finishSuccess(result);
-            return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            parsingHookRegistry.finishFailure(ex);
-            throw ex;
-        }
+    public SQLStatement parse(final String sql) {
+        ParseTree parseTree = new DistSQLParserExecutor(sql).execute().getRootNode();
+        return (SQLStatement) new DistSQLStatementVisitor().visit(parseTree);
     }
 }

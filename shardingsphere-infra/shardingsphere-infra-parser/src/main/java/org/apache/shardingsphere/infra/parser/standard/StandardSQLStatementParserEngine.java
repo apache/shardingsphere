@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.infra.parser.SQLStatementParserEngine;
 
 import java.util.Optional;
 
@@ -30,7 +29,7 @@ import java.util.Optional;
  * Standard SQL statement parser engine.
  */
 @RequiredArgsConstructor
-public final class StandardSQLStatementParserEngine implements SQLStatementParserEngine {
+public final class StandardSQLStatementParserEngine {
     
     private final String databaseTypeName;
     
@@ -43,8 +42,14 @@ public final class StandardSQLStatementParserEngine implements SQLStatementParse
      *
      * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
      */
+    /**
+     * Parse to SQL statement.
+     *
+     * @param sql SQL to be parsed
+     * @param useCache whether use cache
+     * @return SQL statement
+     */
     @SuppressWarnings("OverlyBroadCatchBlock")
-    @Override
     public SQLStatement parse(final String sql, final boolean useCache) {
         parsingHookRegistry.start(sql);
         try {
