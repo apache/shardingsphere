@@ -54,7 +54,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-rdl-parser-binder</artifactId>
+            <artifactId>shardingsphere-distsql-parser-binder</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
