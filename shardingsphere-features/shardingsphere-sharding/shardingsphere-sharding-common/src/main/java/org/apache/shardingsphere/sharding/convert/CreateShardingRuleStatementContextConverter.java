@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sharding.convert;
 
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.rdl.parser.binder.context.CreateShardingRuleStatementContext;
-import org.apache.shardingsphere.rdl.parser.binder.generator.SQLStatementContextConverter;
-import org.apache.shardingsphere.rdl.parser.statement.rdl.TableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.binder.context.CreateShardingRuleStatementContext;
+import org.apache.shardingsphere.distsql.parser.binder.generator.SQLStatementContextConverter;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.TableRuleSegment;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
