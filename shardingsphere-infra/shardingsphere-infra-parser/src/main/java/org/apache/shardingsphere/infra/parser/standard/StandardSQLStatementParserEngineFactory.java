@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.parser.standard;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Standard SQL statement parser engine factory.
@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StandardSQLStatementParserEngineFactory {
     
-    private static final Map<String, StandardSQLStatementParserEngine> ENGINES = new ConcurrentHashMap<>();
+    private static final Map<String, StandardSQLStatementParserEngine> ENGINES = new HashMap<>();
     
     /**
      * Get standard SQL statement parser engine.
@@ -38,6 +38,20 @@ public final class StandardSQLStatementParserEngineFactory {
      * @return standard SQL statement parser engine
      */
     public static StandardSQLStatementParserEngine getSQLStatementParserEngine(final String databaseType) {
-        return ENGINES.containsKey(databaseType) ? ENGINES.get(databaseType) : ENGINES.computeIfAbsent(databaseType, key -> new StandardSQLStatementParserEngine(key));
+        if (ENGINES.containsKey(databaseType)) {
+            return ENGINES.get(databaseType);
+        }
+        return createAndCacheSingletonStandardSQLStatementParserEngine(databaseType);
+    }
+    
+    private static StandardSQLStatementParserEngine createAndCacheSingletonStandardSQLStatementParserEngine(final String databaseType) {
+        synchronized (ENGINES) {
+            if (ENGINES.containsKey(databaseType)) {
+                return ENGINES.get(databaseType);
+            }
+            StandardSQLStatementParserEngine result = new StandardSQLStatementParserEngine(databaseType);
+            ENGINES.put(databaseType, result);
+            return result;
+        }
     }
 }
