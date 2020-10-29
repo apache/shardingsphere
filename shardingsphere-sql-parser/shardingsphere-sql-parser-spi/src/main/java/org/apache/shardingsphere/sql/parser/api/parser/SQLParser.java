@@ -22,7 +22,8 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 /**
  * SQL parser.
  */
-public interface SQLParser {
+public interface 
+SQLParser {
     
     /**
      * Parse SQL.

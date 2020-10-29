@@ -17,8 +17,15 @@
 
 package org.apache.shardingsphere.distsql.parser;
 
-import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.Parser;
+import org.antlr.v4.runtime.atn.PredictionMode;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.antlr.v4.runtime.tree.ErrorNode;
 import org.apache.shardingsphere.distsql.parser.sql.visitor.DistSQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
@@ -27,13 +34,33 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 public final class DistSQLStatementParserEngine {
     
     /**
-     * Parse to SQL statement.
+     * Parse SQL.
      *
      * @param sql SQL to be parsed
-     * @return SQL statement
+     * @return AST node
      */
     public SQLStatement parse(final String sql) {
-        ParseTree parseTree = new DistSQLParserExecutor(sql).execute().getRootNode();
-        return (SQLStatement) new DistSQLStatementVisitor().visit(parseTree);
+        ParseASTNode parseASTNode = twoPhaseParse(sql);
+        if (parseASTNode.getRootNode() instanceof ErrorNode) {
+            throw new SQLParsingException("Unsupported SQL of `%s`", sql);
+        }
+        return (SQLStatement) new DistSQLStatementVisitor().visit(parseASTNode.getRootNode());
+    }
+    
+    private ParseASTNode twoPhaseParse(final String sql) {
+        SQLParser sqlParser = DistSQLParserFactory.newInstance(sql);
+        try {
+            setPredictionMode((Parser) sqlParser, PredictionMode.SLL);
+            return (ParseASTNode) sqlParser.parse();
+        } catch (final ParseCancellationException ex) {
+            ((Parser) sqlParser).reset();
+            setPredictionMode((Parser) sqlParser, PredictionMode.LL);
+            return (ParseASTNode) sqlParser.parse();
+        }
+    }
+    
+    private void setPredictionMode(final Parser sqlParser, final PredictionMode mode) {
+        sqlParser.setErrorHandler(new BailErrorStrategy());
+        sqlParser.getInterpreter().setPredictionMode(mode);
     }
 }
