@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.parser;
+package org.apache.shardingsphere.sql.parser.api;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
+import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorFactory;
+import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorRule;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,6 +35,22 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class SQLParserEngine {
     
     private static final Map<String, SQLParserExecutor> ENGINES = new ConcurrentHashMap<>();
+    
+    /**
+     * Parse SQL.
+     *
+     * @param databaseType database type
+     * @param sql SQL to be parsed
+     * @param useCache whether use cache
+     * @param visitorType SQL visitor type
+     * @param <T> type of SQL visitor result
+     * @return SQL visitor result
+     */
+    public static <T> T parse(final String databaseType, final String sql, final boolean useCache, final String visitorType) {
+        ParseTree parseTree = parse(databaseType, sql, useCache);
+        ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseTree.getClass()));
+        return parseTree.accept(visitor);
+    }
     
     /**
      * Parse SQL.
