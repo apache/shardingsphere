@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.core.parser;
 
 import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -30,10 +30,9 @@ public final class SQLParserFacadeRegistry {
     
     private static final SQLParserFacadeRegistry INSTANCE = new SQLParserFacadeRegistry();
     
-    private final Map<String, SQLParserFacade> facades;
+    private final Map<String, SQLParserFacade> facades = new LinkedHashMap<>();
     
     private SQLParserFacadeRegistry() {
-        facades = new HashMap<>();
         for (SQLParserFacade each : ServiceLoader.load(SQLParserFacade.class)) {
             facades.put(each.getDatabaseType(), each);
         }

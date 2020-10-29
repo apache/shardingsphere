@@ -33,21 +33,11 @@ public final class SQLStatementParserEngineFactory {
     
     /**
      * Get standard SQL statement parser engine.
-     *x
+     *
      * @param databaseType name of database type
      * @return standard SQL statement parser engine
      */
     public static SQLStatementParserEngine getSQLStatementParserEngine(final String databaseType) {
-        if (ENGINES.containsKey(databaseType)) {
-            return ENGINES.get(databaseType);
-        }
-        synchronized (ENGINES) {
-            if (ENGINES.containsKey(databaseType)) {
-                return ENGINES.get(databaseType);
-            }
-            SQLStatementParserEngine result = new SQLStatementParserEngine(databaseType);
-            ENGINES.put(databaseType, result);
-            return result;
-        }
+        return ENGINES.containsKey(databaseType) ? ENGINES.get(databaseType) : ENGINES.computeIfAbsent(databaseType, SQLStatementParserEngine::new);
     }
 }
