@@ -119,11 +119,15 @@ public final class TableRule {
         if (null == tableShardingStrategyConfig) {
             return new LinkedList<>();
         }
-        List<String> result = new LinkedList<>();
         List<String> dataSources = Strings.isNullOrEmpty(tableRuleConfig.getActualDataSources()) ? new LinkedList<>(dataSourceNames)
                 : new InlineExpressionParser(tableRuleConfig.getActualDataSources()).splitAndEvaluate();
+        return fillDataSouceNames(shardingAlgorithm.getAutoTablesAmount(), dataSources);
+    }
+    
+    private List<String> fillDataSouceNames(final int amount, final List<String> dataSources) {
+        List<String> result = new LinkedList<>();
         Iterator<String> iterator = dataSources.iterator();
-        for (int i = 0; i < shardingAlgorithm.getAutoTablesAmount(); i++) {
+        for (int i = 0; i < amount; i++) {
             if (!iterator.hasNext()) {
                 iterator = dataSources.iterator();
             }
