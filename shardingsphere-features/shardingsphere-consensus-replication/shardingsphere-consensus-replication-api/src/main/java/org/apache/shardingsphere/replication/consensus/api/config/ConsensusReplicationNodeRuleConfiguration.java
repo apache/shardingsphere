@@ -22,26 +22,20 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
-import java.util.Collection;
-
 /**
- * Consensus replication actual table rule configuration.
+ * Consensus replication node rule configuration.
  */
 @Getter
-public final class ConsensusReplicationActualTableRuleConfiguration implements RuleConfiguration {
+public final class ConsensusReplicationNodeRuleConfiguration implements RuleConfiguration {
     
-    private final String physicsTable;
+    private final String replicaPeer;
     
-    private final String replicaGroupId;
+    private final String dataSourceName;
     
-    private final Collection<ConsensusReplicationNodeRuleConfiguration> replicaNodes;
-    
-    public ConsensusReplicationActualTableRuleConfiguration(final String physicsTable, final String replicaGroupId, final Collection<ConsensusReplicationNodeRuleConfiguration> replicaNodes) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(physicsTable), "physicsTable is required.");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(replicaGroupId), "replicaGroupId is required.");
-        Preconditions.checkArgument(null != replicaNodes, "replicaNodes is required.");
-        this.physicsTable = physicsTable;
-        this.replicaGroupId = replicaGroupId;
-        this.replicaNodes = replicaNodes;
+    public ConsensusReplicationNodeRuleConfiguration(final String replicaPeer, final String dataSourceName) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(replicaPeer), "replicaPeer is required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(dataSourceName), "dataSourceName is required.");
+        this.replicaPeer = replicaPeer;
+        this.dataSourceName = dataSourceName;
     }
 }

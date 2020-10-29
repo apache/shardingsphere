@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.replication.consensus.yaml.config;
+package org.apache.shardingsphere.replication.consensus.route.engine;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-
-import java.util.Collection;
+import org.apache.shardingsphere.replication.consensus.rule.ConsensusReplicationNodeRule;
 
 /**
- * Consensus replication actual table rule configuration for YAML.
+ * Consensus replication group node.
  */
 @Getter
-@Setter
-public final class YamlConsensusReplicationActualTableRuleConfiguration implements YamlConfiguration {
+public final class ConsensusReplicationGroupNode {
     
-    private String physicsTable;
+    private final String replicaPeer;
     
-    private String replicaGroupId;
+    private final String dataSourceName;
     
-    private Collection<YamlConsensusReplicationNodeRuleConfiguration> replicaNodes;
+    public ConsensusReplicationGroupNode(final ConsensusReplicationNodeRule replicaNodeRule) {
+        replicaPeer = replicaNodeRule.getReplicaPeer();
+        dataSourceName = replicaNodeRule.getDataSourceName();
+    }
 }

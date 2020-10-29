@@ -18,10 +18,15 @@
 package org.apache.shardingsphere.replication.consensus.yaml.swapper;
 
 import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationActualTableRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationNodeRuleConfiguration;
 import org.apache.shardingsphere.replication.consensus.yaml.config.YamlConsensusReplicationActualTableRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.yaml.config.YamlConsensusReplicationNodeRuleConfiguration;
 import org.junit.Test;
 
+import java.util.Collections;
+
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class ConsensusReplicationActualTableRuleConfigurationYamlSwapperTest {
@@ -34,26 +39,30 @@ public class ConsensusReplicationActualTableRuleConfigurationYamlSwapperTest {
     
     private final String replicaGroupId = "raftGroupTest1";
     
-    private final String replicaPeers = "127.0.0.1:9090";
+    private final String replicaPeer = "127.0.0.1:9090";
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSwapToYamlConfigurationWithMinProperties() {
-        swapper.swapToYamlConfiguration(new ConsensusReplicationActualTableRuleConfiguration(null, null, null, null));
+        swapper.swapToYamlConfiguration(new ConsensusReplicationActualTableRuleConfiguration(null, null, null));
     }
     
     @Test
     public void assertSwapToYamlConfigurationWithMaxProperties() {
         YamlConsensusReplicationActualTableRuleConfiguration yamlConfig = swapper.swapToYamlConfiguration(
-                new ConsensusReplicationActualTableRuleConfiguration(physicsTable, replicaGroupId, replicaPeers, dataSourceName));
-        assertThat(yamlConfig.getDataSourceName(), is(dataSourceName));
+                new ConsensusReplicationActualTableRuleConfiguration(physicsTable, replicaGroupId,
+                        Collections.singletonList(new ConsensusReplicationNodeRuleConfiguration(replicaPeer, dataSourceName))));
         assertThat(yamlConfig.getPhysicsTable(), is(physicsTable));
         assertThat(yamlConfig.getReplicaGroupId(), is(replicaGroupId));
-        assertThat(yamlConfig.getReplicaPeers(), is(replicaPeers));
+        assertNotNull(yamlConfig.getReplicaNodes());
+        assertThat(yamlConfig.getReplicaNodes().size(), is(1));
+        YamlConsensusReplicationNodeRuleConfiguration resultReplicaNode = yamlConfig.getReplicaNodes().iterator().next();
+        assertThat(resultReplicaNode.getReplicaPeer(), is(replicaPeer));
+        assertThat(resultReplicaNode.getDataSourceName(), is(dataSourceName));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSwapToObjectWithMinProperties() {
-        new ConsensusReplicationActualTableRuleConfiguration(null, null, null, null);
+        new ConsensusReplicationActualTableRuleConfiguration(null, null, null);
     }
     
     @Test
@@ -61,12 +70,17 @@ public class ConsensusReplicationActualTableRuleConfigurationYamlSwapperTest {
         YamlConsensusReplicationActualTableRuleConfiguration yamlConfig = new YamlConsensusReplicationActualTableRuleConfiguration();
         yamlConfig.setPhysicsTable(physicsTable);
         yamlConfig.setReplicaGroupId(replicaGroupId);
-        yamlConfig.setReplicaPeers(replicaPeers);
-        yamlConfig.setDataSourceName(dataSourceName);
+        YamlConsensusReplicationNodeRuleConfiguration replicaNode = new YamlConsensusReplicationNodeRuleConfiguration();
+        replicaNode.setReplicaPeer(replicaPeer);
+        replicaNode.setDataSourceName(dataSourceName);
+        yamlConfig.setReplicaNodes(Collections.singletonList(replicaNode));
         ConsensusReplicationActualTableRuleConfiguration config = swapper.swapToObject(yamlConfig);
-        assertThat(config.getDataSourceName(), is(dataSourceName));
         assertThat(config.getPhysicsTable(), is(physicsTable));
         assertThat(config.getReplicaGroupId(), is(replicaGroupId));
-        assertThat(config.getReplicaPeers(), is(replicaPeers));
+        assertNotNull(config.getReplicaNodes());
+        assertThat(config.getReplicaNodes().size(), is(1));
+        ConsensusReplicationNodeRuleConfiguration resultReplicaNode = config.getReplicaNodes().iterator().next();
+        assertThat(resultReplicaNode.getReplicaPeer(), is(replicaPeer));
+        assertThat(resultReplicaNode.getDataSourceName(), is(dataSourceName));
     }
 }
