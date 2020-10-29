@@ -19,11 +19,13 @@ package org.apache.shardingsphere.replication.consensus.rule;
 
 import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationActualTableRuleConfiguration;
 import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationLogicTableRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationNodeRuleConfiguration;
 import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationRuleConfiguration;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -42,7 +44,7 @@ public final class ConsensusReplicationRuleTest {
     
     private final String replicaGroupId = "raftGroupTest1";
     
-    private final String replicaPeers = "127.0.0.1:9090";
+    private final String replicaPeer = "127.0.0.1:9090";
     
     @Test
     public void assertCannotFindRouting() {
@@ -58,14 +60,21 @@ public final class ConsensusReplicationRuleTest {
         assertTrue(routingRuleOptional.isPresent());
         ConsensusReplicationTableRule routingRule = routingRuleOptional.get();
         assertNotNull(routingRule);
-        assertThat(routingRule.getDataSourceName(), is(dataSourceName));
         assertThat(routingRule.getPhysicsTable(), is(physicsTable));
         assertThat(routingRule.getReplicaGroupId(), is(replicaGroupId));
-        assertThat(routingRule.getReplicaPeers(), is(replicaPeers));
+        Collection<ConsensusReplicationNodeRule> replicaNodeRules = routingRule.getReplicaNodeRules();
+        assertNotNull(replicaNodeRules);
+        assertThat(replicaNodeRules.size(), is(1));
+        ConsensusReplicationNodeRule replicaNodeRule = replicaNodeRules.iterator().next();
+        assertThat(replicaNodeRule.getReplicaPeer(), is(replicaPeer));
+        assertThat(replicaNodeRule.getDataSourceName(), is(dataSourceName));
     }
     
     private ConsensusReplicationRule createConsensusReplicationRule() {
-        ConsensusReplicationActualTableRuleConfiguration replicaGroup = new ConsensusReplicationActualTableRuleConfiguration(physicsTable, replicaGroupId, replicaPeers, dataSourceName);
+        List<ConsensusReplicationNodeRuleConfiguration> replicaNodes = Collections.singletonList(
+            new ConsensusReplicationNodeRuleConfiguration(replicaPeer, dataSourceName)
+        );
+        ConsensusReplicationActualTableRuleConfiguration replicaGroup = new ConsensusReplicationActualTableRuleConfiguration(physicsTable, replicaGroupId, replicaNodes);
         Collection<ConsensusReplicationActualTableRuleConfiguration> replicaGroups = Collections.singleton(replicaGroup);
         ConsensusReplicationLogicTableRuleConfiguration table = new ConsensusReplicationLogicTableRuleConfiguration(logicTableName, replicaGroups);
         ConsensusReplicationRuleConfiguration config = new ConsensusReplicationRuleConfiguration(Collections.singleton(table));

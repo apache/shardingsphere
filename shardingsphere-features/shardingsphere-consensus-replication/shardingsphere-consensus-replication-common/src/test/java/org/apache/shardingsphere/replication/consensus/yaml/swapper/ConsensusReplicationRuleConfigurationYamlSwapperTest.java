@@ -19,9 +19,11 @@ package org.apache.shardingsphere.replication.consensus.yaml.swapper;
 
 import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationActualTableRuleConfiguration;
 import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationLogicTableRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationNodeRuleConfiguration;
 import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationRuleConfiguration;
 import org.apache.shardingsphere.replication.consensus.yaml.config.YamlConsensusReplicationActualTableRuleConfiguration;
 import org.apache.shardingsphere.replication.consensus.yaml.config.YamlConsensusReplicationLogicTableRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.yaml.config.YamlConsensusReplicationNodeRuleConfiguration;
 import org.apache.shardingsphere.replication.consensus.yaml.config.YamlConsensusReplicationRuleConfiguration;
 import org.junit.Test;
 
@@ -45,7 +47,7 @@ public final class ConsensusReplicationRuleConfigurationYamlSwapperTest {
     
     private final String replicaGroupId = "raftGroupTest1";
     
-    private final String replicaPeers = "127.0.0.1:9090";
+    private final String replicaPeer = "127.0.0.1:9090";
     
     @Test
     public void assertSwapToYamlConfigurationWithMinProperties() {
@@ -61,7 +63,8 @@ public final class ConsensusReplicationRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlConfigurationWithMaxProperties() {
-        ConsensusReplicationActualTableRuleConfiguration replicaGroup = new ConsensusReplicationActualTableRuleConfiguration(physicsTable, replicaGroupId, replicaPeers, dataSourceName);
+        ConsensusReplicationActualTableRuleConfiguration replicaGroup = new ConsensusReplicationActualTableRuleConfiguration(physicsTable, replicaGroupId,
+                Collections.singletonList(new ConsensusReplicationNodeRuleConfiguration(replicaPeer, dataSourceName)));
         Collection<ConsensusReplicationActualTableRuleConfiguration> replicaGroups = Collections.singleton(replicaGroup);
         ConsensusReplicationLogicTableRuleConfiguration table = new ConsensusReplicationLogicTableRuleConfiguration(logicTableName, replicaGroups);
         YamlConsensusReplicationRuleConfiguration yamlConfig = swapper.swapToYamlConfiguration(new ConsensusReplicationRuleConfiguration(Collections.singleton(table)));
@@ -72,10 +75,14 @@ public final class ConsensusReplicationRuleConfigurationYamlSwapperTest {
         assertNotNull(resultReplicaGroups);
         assertThat(resultReplicaGroups.size(), is(1));
         YamlConsensusReplicationActualTableRuleConfiguration resultReplicaGroup = resultReplicaGroups.iterator().next();
-        assertThat(resultReplicaGroup.getDataSourceName(), is(dataSourceName));
         assertThat(resultReplicaGroup.getPhysicsTable(), is(physicsTable));
         assertThat(resultReplicaGroup.getReplicaGroupId(), is(replicaGroupId));
-        assertThat(resultReplicaGroup.getReplicaPeers(), is(replicaPeers));
+        Collection<YamlConsensusReplicationNodeRuleConfiguration> resultReplicaNodes = resultReplicaGroup.getReplicaNodes();
+        assertNotNull(resultReplicaNodes);
+        assertThat(resultReplicaNodes.size(), is(1));
+        YamlConsensusReplicationNodeRuleConfiguration resultReplicaNode = resultReplicaNodes.iterator().next();
+        assertThat(resultReplicaNode.getReplicaPeer(), is(replicaPeer));
+        assertThat(resultReplicaNode.getDataSourceName(), is(dataSourceName));
     }
     
     @Test
@@ -98,8 +105,10 @@ public final class ConsensusReplicationRuleConfigurationYamlSwapperTest {
         YamlConsensusReplicationActualTableRuleConfiguration replicaGroup = new YamlConsensusReplicationActualTableRuleConfiguration();
         replicaGroup.setPhysicsTable(physicsTable);
         replicaGroup.setReplicaGroupId(replicaGroupId);
-        replicaGroup.setReplicaPeers(replicaPeers);
-        replicaGroup.setDataSourceName(dataSourceName);
+        YamlConsensusReplicationNodeRuleConfiguration replicaNode = new YamlConsensusReplicationNodeRuleConfiguration();
+        replicaNode.setReplicaPeer(replicaPeer);
+        replicaNode.setDataSourceName(dataSourceName);
+        replicaGroup.setReplicaNodes(Collections.singletonList(replicaNode));
         Collection<YamlConsensusReplicationActualTableRuleConfiguration> replicaGroups = Collections.singleton(replicaGroup);
         YamlConsensusReplicationLogicTableRuleConfiguration table = new YamlConsensusReplicationLogicTableRuleConfiguration();
         table.setLogicTable(logicTableName);
@@ -114,9 +123,13 @@ public final class ConsensusReplicationRuleConfigurationYamlSwapperTest {
         assertNotNull(resultReplicaGroups);
         assertThat(resultReplicaGroups.size(), is(1));
         ConsensusReplicationActualTableRuleConfiguration resultReplicaGroup = resultReplicaGroups.iterator().next();
-        assertThat(resultReplicaGroup.getDataSourceName(), is(dataSourceName));
         assertThat(resultReplicaGroup.getPhysicsTable(), is(physicsTable));
         assertThat(resultReplicaGroup.getReplicaGroupId(), is(replicaGroupId));
-        assertThat(resultReplicaGroup.getReplicaPeers(), is(replicaPeers));
+        Collection<ConsensusReplicationNodeRuleConfiguration> resultReplicaNodes = resultReplicaGroup.getReplicaNodes();
+        assertNotNull(resultReplicaNodes);
+        assertThat(resultReplicaNodes.size(), is(1));
+        ConsensusReplicationNodeRuleConfiguration resultReplicaNode = resultReplicaNodes.iterator().next();
+        assertThat(resultReplicaNode.getReplicaPeer(), is(replicaPeer));
+        assertThat(resultReplicaNode.getDataSourceName(), is(dataSourceName));
     }
 }

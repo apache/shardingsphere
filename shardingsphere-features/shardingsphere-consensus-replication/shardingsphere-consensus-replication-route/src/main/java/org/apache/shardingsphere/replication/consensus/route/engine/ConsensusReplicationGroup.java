@@ -21,6 +21,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.route.context.RawGroup;
 
+import java.util.Collection;
+
 /**
  * Consensus replication group.
  */
@@ -34,7 +36,5 @@ public final class ConsensusReplicationGroup implements RawGroup {
     
     private final String replicaGroupId;
     
-    private final String replicaPeers;
-    
-    private final String dataSourceName;
+    private final Collection<ConsensusReplicationGroupNode> replicaNodeRules;
 }

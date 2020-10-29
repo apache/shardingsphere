@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor;
+package org.apache.shardingsphere.replication.consensus.route.engine;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import org.apache.shardingsphere.replication.consensus.rule.ConsensusReplicationNodeRule;
 
 /**
- * SQL visitor engine factory.
+ * Consensus replication group node.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLVisitorEngineFactory {
+@Getter
+public final class ConsensusReplicationGroupNode {
     
-    /**
-     * Get SQL visitor engine.
-     *
-     * @param databaseType database type
-     * @param visitorType visitor type
-     * @param <T> type of visitor result
-     * @return SQL visitor engine
-     */
-    public static <T> SQLVisitorEngine<T> getSQLVisitorEngine(final String databaseType, final String visitorType) {
-        return new SQLVisitorEngine<>(databaseType, visitorType);
+    private final String replicaPeer;
+    
+    private final String dataSourceName;
+    
+    public ConsensusReplicationGroupNode(final ConsensusReplicationNodeRule replicaNodeRule) {
+        replicaPeer = replicaNodeRule.getReplicaPeer();
+        dataSourceName = replicaNodeRule.getDataSourceName();
     }
 }

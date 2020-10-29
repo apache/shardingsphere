@@ -21,6 +21,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationActualTableRuleConfiguration;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 /**
  * Consensus replication table rule.
  */
@@ -31,14 +34,11 @@ public final class ConsensusReplicationTableRule implements ShardingSphereRule {
     
     private final String replicaGroupId;
     
-    private final String replicaPeers;
-    
-    private final String dataSourceName;
+    private final Collection<ConsensusReplicationNodeRule> replicaNodeRules;
     
     public ConsensusReplicationTableRule(final ConsensusReplicationActualTableRuleConfiguration config) {
         physicsTable = config.getPhysicsTable();
         replicaGroupId = config.getReplicaGroupId();
-        replicaPeers = config.getReplicaPeers();
-        dataSourceName = config.getDataSourceName();
+        replicaNodeRules = config.getReplicaNodes().stream().map(ConsensusReplicationNodeRule::new).collect(Collectors.toList());
     }
 }

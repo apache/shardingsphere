@@ -19,7 +19,12 @@ package org.apache.shardingsphere.replication.consensus.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationActualTableRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.api.config.ConsensusReplicationNodeRuleConfiguration;
 import org.apache.shardingsphere.replication.consensus.yaml.config.YamlConsensusReplicationActualTableRuleConfiguration;
+import org.apache.shardingsphere.replication.consensus.yaml.config.YamlConsensusReplicationNodeRuleConfiguration;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Consensus replication actual table rule configuration YAML swapper.
@@ -27,19 +32,23 @@ import org.apache.shardingsphere.replication.consensus.yaml.config.YamlConsensus
 public final class ConsensusReplicationActualTableRuleConfigurationYamlSwapper
         implements YamlSwapper<YamlConsensusReplicationActualTableRuleConfiguration, ConsensusReplicationActualTableRuleConfiguration> {
     
+    private final ConsensusReplicationNodeRuleConfigurationYamlSwapper nodeRuleConfigurationYamlSwapper = new ConsensusReplicationNodeRuleConfigurationYamlSwapper();
+    
     @Override
     public YamlConsensusReplicationActualTableRuleConfiguration swapToYamlConfiguration(final ConsensusReplicationActualTableRuleConfiguration data) {
+        Collection<YamlConsensusReplicationNodeRuleConfiguration> replicaNodes = data.getReplicaNodes().stream()
+                .map(nodeRuleConfigurationYamlSwapper::swapToYamlConfiguration).collect(Collectors.toList());
         YamlConsensusReplicationActualTableRuleConfiguration result = new YamlConsensusReplicationActualTableRuleConfiguration();
         result.setPhysicsTable(data.getPhysicsTable());
         result.setReplicaGroupId(data.getReplicaGroupId());
-        result.setReplicaPeers(data.getReplicaPeers());
-        result.setDataSourceName(data.getDataSourceName());
+        result.setReplicaNodes(replicaNodes);
         return result;
     }
     
     @Override
     public ConsensusReplicationActualTableRuleConfiguration swapToObject(final YamlConsensusReplicationActualTableRuleConfiguration yamlConfig) {
-        return new ConsensusReplicationActualTableRuleConfiguration(yamlConfig.getPhysicsTable(), yamlConfig.getReplicaGroupId(),
-                yamlConfig.getReplicaPeers(), yamlConfig.getDataSourceName());
+        Collection<ConsensusReplicationNodeRuleConfiguration> replicaNodes = yamlConfig.getReplicaNodes().stream()
+                .map(nodeRuleConfigurationYamlSwapper::swapToObject).collect(Collectors.toList());
+        return new ConsensusReplicationActualTableRuleConfiguration(yamlConfig.getPhysicsTable(), yamlConfig.getReplicaGroupId(), replicaNodes);
     }
 }
