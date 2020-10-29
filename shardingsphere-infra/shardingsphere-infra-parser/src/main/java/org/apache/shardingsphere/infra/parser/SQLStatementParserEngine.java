@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.parser.standard;
+package org.apache.shardingsphere.infra.parser;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
@@ -26,10 +26,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.util.Optional;
 
 /**
- * Standard SQL statement parser engine.
+ * SQL statement parser engine.
  */
 @RequiredArgsConstructor
-public final class StandardSQLStatementParserEngine {
+public final class SQLStatementParserEngine {
     
     private final String databaseTypeName;
     

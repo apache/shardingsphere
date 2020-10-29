@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.distsql.parser.engine;
 
 import org.apache.shardingsphere.distsql.parser.engine.engine.DistSQLStatementParserEngine;
-import org.apache.shardingsphere.infra.parser.standard.StandardSQLStatementParserEngine;
-import org.apache.shardingsphere.infra.parser.standard.StandardSQLStatementParserEngineFactory;
+import org.apache.shardingsphere.infra.parser.SQLStatementParserEngine;
+import org.apache.shardingsphere.infra.parser.SQLStatementParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
@@ -27,12 +27,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
  */
 public final class ShardingSphereSQLStatementParserEngine {
     
-    private final StandardSQLStatementParserEngine standardSQLStatementParserEngine;
+    private final SQLStatementParserEngine sqlStatementParserEngine;
     
     private final DistSQLStatementParserEngine distSQLStatementParserEngine;
     
     public ShardingSphereSQLStatementParserEngine(final String databaseTypeName) {
-        standardSQLStatementParserEngine = StandardSQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseTypeName);
+        sqlStatementParserEngine = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseTypeName);
         distSQLStatementParserEngine = new DistSQLStatementParserEngine();
     }
     
@@ -46,7 +46,7 @@ public final class ShardingSphereSQLStatementParserEngine {
     public SQLStatement parse(final String sql, final boolean useCache) {
         SQLStatement result;
         try {
-            result = standardSQLStatementParserEngine.parse(sql, useCache);
+            result = sqlStatementParserEngine.parse(sql, useCache);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
