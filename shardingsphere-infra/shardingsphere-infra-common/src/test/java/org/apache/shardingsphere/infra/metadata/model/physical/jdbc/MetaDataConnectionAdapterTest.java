@@ -70,7 +70,7 @@ public final class MetaDataConnectionAdapterTest {
     }
     
     @Test
-    public void  assertGetSchemaByOracleSPI() throws SQLException {
+    public void assertGetSchemaByOracleSPI() throws SQLException {
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getUserName()).thenReturn(TEST_SCHEMA);
@@ -79,7 +79,7 @@ public final class MetaDataConnectionAdapterTest {
     }
     
     @Test
-    public void  assertGetSchemaByMySQLSPI() throws SQLException {
+    public void assertGetSchemaByMySQLSPI() throws SQLException {
         when(connection.getSchema()).thenReturn(TEST_SCHEMA);
         MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, connection);
         assertThat(connectionAdapter.getSchema(), is(TEST_SCHEMA));
