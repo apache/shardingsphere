@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.rdl.parser.sql.visitor;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementBaseVisitor;
-import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.CreateShardingRuleContext;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.CreateDataSourcesContext;
+import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.CreateShardingRuleContext;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.DataSourceContext;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.DataSourceDefinitionContext;
 import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.StrategyPropContext;
@@ -40,7 +38,6 @@ import java.util.LinkedList;
 /**
  * ShardingSphere visitor.
  */
-@Getter(AccessLevel.PROTECTED)
 public final class ShardingSphereVisitor extends ShardingSphereStatementBaseVisitor<ASTNode> {
     
     @Override
