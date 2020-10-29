@@ -26,6 +26,6 @@ public final class SQLParsingExceptionTest {
     
     @Test
     public void assertException() {
-        assertThat(new SQLParsingException("Parse error: %s", "unsupported").getMessage(), is("Parse error: unsupported"));
+        assertThat(new SQLParsingException(String.format("Parse error: %s", "unsupported")).getMessage(), is("Parse error: unsupported"));
     }
 }

@@ -51,13 +51,7 @@ public final class SQLParserExecutor {
         if (!useCache) {
             return parse(sql);
         }
-        Optional<ParseTree> parseTree = cache.get(sql);
-        if (parseTree.isPresent()) {
-            return parseTree.get();
-        }
-        ParseTree result = parse(sql);
-        cache.put(sql, result);
-        return result;
+        return parseAndCacheParseTree(sql);
     }
     
     private ParseTree parse(final String sql) {
@@ -66,6 +60,16 @@ public final class SQLParserExecutor {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
         return result.getRootNode();
+    }
+    
+    private ParseTree parseAndCacheParseTree(final String sql) {
+        Optional<ParseTree> parseTree = cache.get(sql);
+        if (parseTree.isPresent()) {
+            return parseTree.get();
+        }
+        ParseTree result = parse(sql);
+        cache.put(sql, result);
+        return result;
     }
     
     private ParseASTNode twoPhaseParse(final String sql) {

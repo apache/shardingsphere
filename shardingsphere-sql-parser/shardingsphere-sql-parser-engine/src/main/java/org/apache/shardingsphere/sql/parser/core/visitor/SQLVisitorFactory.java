@@ -62,7 +62,7 @@ public final class SQLVisitorFactory {
             case RL:
                 return (ParseTreeVisitor) visitorFacade.getRLVisitorClass().getConstructor().newInstance();
             default:
-                throw new SQLParsingException("Can not support SQL statement type: `%s`", type);
+                throw new SQLParsingException(String.format("Can not support SQL statement type: `%s`", type));
         }
     }
 }
