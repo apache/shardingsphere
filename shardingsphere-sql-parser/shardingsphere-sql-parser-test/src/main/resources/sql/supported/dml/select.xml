@@ -18,6 +18,7 @@
 
 <sql-cases>
     <sql-case id="select_constant_without_table" value="SELECT 1 as a" />
+    <sql-case id="select_with_union" value="SELECT * from table1 union select * from table2" db-types="PostgreSQL"/>
     <sql-case id="select_with_function_name" value="SELECT current_timestamp" db-types="MySQL"/>
     <sql-case id="select_with_same_table_name_and_alias" value="SELECT t_order.* FROM t_order t_order WHERE user_id = ? AND order_id = ?" />
     <sql-case id="select_with_same_table_name_and_alias_column_with_owner" value="SELECT t_order.order_id,t_order.user_id,status FROM t_order t_order WHERE t_order.user_id = ? AND order_id = ?" db-types="MySQL,H2"/>
