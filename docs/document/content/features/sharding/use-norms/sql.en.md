@@ -17,7 +17,7 @@ It is inevitably to have some unlisted SQLs, welcome to supplement for that. We 
 
 ### Route to multiple data nodes
 
-Partial support DML, DDL, DCL, TCL and some DAL. Support pagination, DISTINCT, ORDER BY, GROUP BY, aggregation and JOIN (does not support cross-database relevance). Here is an example of a most complex kind of DML:
+Partially support DML, DDL, DCL, TCL and some DAL. Support pagination, DISTINCT, ORDER BY, GROUP BY, aggregation and JOIN (does not support cross-database relevance). Here is an example of a most complex kind of DML:
 
 - Main SELECT
 
