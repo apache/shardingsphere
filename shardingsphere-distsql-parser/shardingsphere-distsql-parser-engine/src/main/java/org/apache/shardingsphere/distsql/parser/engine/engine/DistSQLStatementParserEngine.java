@@ -19,17 +19,17 @@ package org.apache.shardingsphere.distsql.parser.engine.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.distsql.parser.engine.executor.RDLSQLParserExecutor;
+import org.apache.shardingsphere.distsql.parser.engine.executor.DistSQLParserExecutor;
 import org.apache.shardingsphere.infra.parser.SQLStatementParserEngine;
 import org.apache.shardingsphere.distsql.parser.sql.visitor.DistSQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * RDL SQL statement parser engine.
+ * Dist SQL statement parser engine.
  */
 @RequiredArgsConstructor
-public final class RDLSQLStatementParserEngine implements SQLStatementParserEngine {
+public final class DistSQLStatementParserEngine implements SQLStatementParserEngine {
     
     private final ParsingHookRegistry parsingHookRegistry = ParsingHookRegistry.getInstance();
     
@@ -43,7 +43,7 @@ public final class RDLSQLStatementParserEngine implements SQLStatementParserEngi
     public SQLStatement parse(final String sql, final boolean useCache) {
         parsingHookRegistry.start(sql);
         try {
-            ParseTree parseTree = new RDLSQLParserExecutor(sql).execute().getRootNode();
+            ParseTree parseTree = new DistSQLParserExecutor(sql).execute().getRootNode();
             SQLStatement result = (SQLStatement) new DistSQLStatementVisitor().visit(parseTree);
             parsingHookRegistry.finishSuccess(result);
             return result;

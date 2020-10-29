@@ -37,10 +37,10 @@ import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import java.nio.CharBuffer;
 
 /**
- * RDL SQL parser executor.
+ * Dist SQL parser executor.
  */
 @RequiredArgsConstructor
-public final class RDLSQLParserExecutor {
+public final class DistSQLParserExecutor {
     
     private final String sql;
     

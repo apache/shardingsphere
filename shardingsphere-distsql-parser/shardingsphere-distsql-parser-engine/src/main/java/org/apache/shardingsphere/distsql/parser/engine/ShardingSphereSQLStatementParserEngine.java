@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.distsql.parser.engine;
 
-import org.apache.shardingsphere.distsql.parser.engine.engine.RDLSQLStatementParserEngine;
+import org.apache.shardingsphere.distsql.parser.engine.engine.DistSQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.standard.StandardSQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.standard.StandardSQLStatementParserEngineFactory;
@@ -30,11 +30,11 @@ public final class ShardingSphereSQLStatementParserEngine implements SQLStatemen
     
     private final StandardSQLStatementParserEngine standardSQLStatementParserEngine;
     
-    private final RDLSQLStatementParserEngine rdlSQLStatementParserEngine;
+    private final DistSQLStatementParserEngine distSQLStatementParserEngine;
     
     public ShardingSphereSQLStatementParserEngine(final String databaseTypeName) {
         standardSQLStatementParserEngine = StandardSQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseTypeName);
-        rdlSQLStatementParserEngine = new RDLSQLStatementParserEngine();
+        distSQLStatementParserEngine = new DistSQLStatementParserEngine();
     }
     
     @Override
@@ -45,7 +45,7 @@ public final class ShardingSphereSQLStatementParserEngine implements SQLStatemen
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            result = rdlSQLStatementParserEngine.parse(sql, useCache);
+            result = distSQLStatementParserEngine.parse(sql, useCache);
         }
         return result;
     }
