@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement;
+package org.apache.shardingsphere.infra.parser;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 

@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.standard;
+package org.apache.shardingsphere.infra.parser.standard;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.SQLStatementParserEngine;
+import org.apache.shardingsphere.infra.parser.SQLStatementParserEngine;
 
 import java.util.Optional;
 
