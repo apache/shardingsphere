@@ -52,7 +52,7 @@ public final class RDLSQLParserExecutor {
     public ParseASTNode execute() {
         ParseASTNode result = twoPhaseParse();
         if (result.getRootNode() instanceof ErrorNode) {
-            throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql).replaceAll("%", "%%"));
+            throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
         return result;
     }
