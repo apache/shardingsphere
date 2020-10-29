@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.facade;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.facade.StatementSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DALStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DCLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DDLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.RLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDALStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDCLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDDLStatementSQLVisitor;
@@ -33,35 +33,45 @@ import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.Po
 /**
  * Statement SQL Visitor facade for PostgreSQL.
  */
-public final class PostgreSQLStatementSQLVisitorFacade implements StatementSQLVisitorFacade {
+public final class PostgreSQLStatementSQLVisitorFacade implements SQLVisitorFacade {
     
     @Override
-    public Class<? extends DMLStatementSQLVisitor> getDMLVisitorClass() {
+    public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {
         return PostgreSQLDMLStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends DDLStatementSQLVisitor> getDDLVisitorClass() {
+    public Class<? extends DDLSQLVisitor> getDDLVisitorClass() {
         return PostgreSQLDDLStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends TCLStatementSQLVisitor> getTCLVisitorClass() {
+    public Class<? extends TCLSQLVisitor> getTCLVisitorClass() {
         return PostgreSQLTCLStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends DCLStatementSQLVisitor> getDCLVisitorClass() {
+    public Class<? extends DCLSQLVisitor> getDCLVisitorClass() {
         return PostgreSQLDCLStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends DALStatementSQLVisitor> getDALVisitorClass() {
+    public Class<? extends DALSQLVisitor> getDALVisitorClass() {
         return PostgreSQLDALStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends RLStatementSQLVisitor> getRLVisitorClass() {
+    public Class<? extends RLSQLVisitor> getRLVisitorClass() {
         return null;
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "PostgreSQL";
+    }
+    
+    @Override
+    public String getVisitorType() {
+        return "STATEMENT";
     }
 }

@@ -87,7 +87,7 @@ rules:
 - !SHARDING
   xxx
   
-- !PRIMARY_REPLICA_REPLICATION
+- !REPLICA_QUERY
   xxx
   
 - !ENCRYPT

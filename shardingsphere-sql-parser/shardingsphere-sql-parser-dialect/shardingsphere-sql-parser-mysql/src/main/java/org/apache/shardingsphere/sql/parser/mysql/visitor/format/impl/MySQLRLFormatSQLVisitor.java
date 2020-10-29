@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.RLFormatSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLFormatVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
 
 /**
  * RL Format SQL visitor for MySQL.
  */
-public final class MySQLRLFormatSQLVisitor extends MySQLFormatSQLVisitor implements RLFormatSQLVisitor {
+public final class MySQLRLFormatSQLVisitor extends MySQLFormatSQLVisitor implements RLSQLVisitor, SQLFormatVisitor {
 }

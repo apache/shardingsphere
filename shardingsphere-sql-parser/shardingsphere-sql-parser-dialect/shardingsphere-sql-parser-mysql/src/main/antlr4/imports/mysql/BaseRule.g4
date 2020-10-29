@@ -648,3 +648,7 @@ cursorName
 conditionName
     : identifier
     ;
+
+unionOption
+    : ALL | DISTINCT
+    ;

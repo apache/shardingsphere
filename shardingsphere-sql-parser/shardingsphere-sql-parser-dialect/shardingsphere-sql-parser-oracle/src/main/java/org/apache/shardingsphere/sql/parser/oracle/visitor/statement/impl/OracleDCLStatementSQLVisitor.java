@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateRoleContext;
@@ -44,7 +45,7 @@ import java.util.Collections;
 /**
  * DCL Statement SQL visitor for Oracle.
  */
-public final class OracleDCLStatementSQLVisitor extends OracleStatementSQLVisitor implements DCLStatementSQLVisitor {
+public final class OracleDCLStatementSQLVisitor extends OracleStatementSQLVisitor implements DCLSQLVisitor, SQLStatementVisitor {
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {

@@ -23,7 +23,9 @@ import com.google.common.cache.CacheBuilder;
 import java.util.Optional;
 
 /**
- * Standard SQL parsed result cache.
+ * SQL parsed result cache.
+ * 
+ * @param <T> type of parsed result
  */
 public final class SQLParsedResultCache<T> {
     
@@ -52,7 +54,7 @@ public final class SQLParsedResultCache<T> {
     /**
      * Clear cache.
      */
-    public synchronized void clear() {
+    public void clear() {
         cache.invalidateAll();
     }
 }

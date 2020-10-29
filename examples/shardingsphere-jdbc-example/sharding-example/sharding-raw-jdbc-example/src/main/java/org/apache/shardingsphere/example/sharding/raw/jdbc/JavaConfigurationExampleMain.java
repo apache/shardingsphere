@@ -27,15 +27,15 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /*
- * Please make sure primary-replica-replication data sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
+ * Please make sure primary replica data replication sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
  */
 public final class JavaConfigurationExampleMain {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
 //    private static ShardingType shardingType = ShardingType.SHARDING_TABLES;
 //    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
-//    private static ShardingType shardingType = ShardingType.PRIMARY_REPLICA_REPLICATION;
-//    private static ShardingType shardingType = ShardingType.SHARDING_PRIMARY_REPLICA_REPLICATION;
+//    private static ShardingType shardingType = ShardingType.REPLICA_QUERY;
+//    private static ShardingType shardingType = ShardingType.SHARDING_REPLICA_QUERY;
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = DataSourceFactory.newInstance(shardingType);

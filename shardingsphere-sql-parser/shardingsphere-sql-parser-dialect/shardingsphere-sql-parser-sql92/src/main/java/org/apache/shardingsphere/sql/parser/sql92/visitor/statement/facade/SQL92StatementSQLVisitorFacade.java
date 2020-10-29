@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.facade;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.facade.StatementSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DALStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DCLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DDLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.RLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl.SQL92DALStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl.SQL92DCLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl.SQL92DDLStatementSQLVisitor;
@@ -33,35 +33,45 @@ import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl.SQL92TC
 /**
  * Statement SQL Visitor facade for SQL92.
  */
-public final class SQL92StatementSQLVisitorFacade implements StatementSQLVisitorFacade {
+public final class SQL92StatementSQLVisitorFacade implements SQLVisitorFacade {
     
     @Override
-    public Class<? extends DMLStatementSQLVisitor> getDMLVisitorClass() {
+    public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {
         return SQL92DMLStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends DDLStatementSQLVisitor> getDDLVisitorClass() {
+    public Class<? extends DDLSQLVisitor> getDDLVisitorClass() {
         return SQL92DDLStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends TCLStatementSQLVisitor> getTCLVisitorClass() {
+    public Class<? extends TCLSQLVisitor> getTCLVisitorClass() {
         return SQL92TCLStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends DCLStatementSQLVisitor> getDCLVisitorClass() {
+    public Class<? extends DCLSQLVisitor> getDCLVisitorClass() {
         return SQL92DCLStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends DALStatementSQLVisitor> getDALVisitorClass() {
+    public Class<? extends DALSQLVisitor> getDALVisitorClass() {
         return SQL92DALStatementSQLVisitor.class;
     }
     
     @Override
-    public Class<? extends RLStatementSQLVisitor> getRLVisitorClass() {
+    public Class<? extends RLSQLVisitor> getRLVisitorClass() {
         return null;
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "SQL92";
+    }
+    
+    @Override
+    public String getVisitorType() {
+        return "STATEMENT";
     }
 }

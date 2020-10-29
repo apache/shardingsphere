@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DALStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 
 /**
  * DAL Statement SQL visitor for SQLServer.
  */
-public final class SQLServerDALStatementSQLVisitor extends SQLServerStatementSQLVisitor implements DALStatementSQLVisitor {
+public final class SQLServerDALStatementSQLVisitor extends SQLServerStatementSQLVisitor implements DALSQLVisitor, SQLStatementVisitor {
 }

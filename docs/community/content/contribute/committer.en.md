@@ -7,7 +7,7 @@ chapter = true
 ## Committer Promotion
 
 The ShardingSphere community follows the [Apache Community’s process](http://community.apache.org/newcommitter.html) on accepting a new committer.
-After a contributor participate ShardingSphere community actively, PMC and Committers will make decision to invite the contributor join Committers and PMC.
+After a contributor participates ShardingSphere community actively, PMC and Committers will make a decision to invite the contributor to join Committers and PMC.
 
 ## Committer Responsibilities
 
@@ -23,16 +23,33 @@ After a contributor participate ShardingSphere community actively, PMC and Commi
 
 ##  Committer Routine
 
-1. Committer needs to check the list of Pull Requests and issues to be processed in the community every day and assign them to the appropriate committer, namely assignee.
+1. Weekly rotating committers needs to check the list of pull requests and issues to be processed in the community on a daily basis.
 
+ - Including label issue, reply issue, close issue;
+ - Assign issue to the appropriate committer, namely assignee;
+ - The rotation period is one week. 
+ 
 2. After a committer is assigned with an issue, the following work is required:
 
- - Judge whether it is a long-term issue. If it is, please mark it as pending.
- - Add issue labels, such as bug, enhancement, discussion, etc.
- - Add Milestone labels.
+ - Estimate whether it is a long-term issue. If it is, please label it as pending;
+ - Add issue labels, such as bug, enhancement, discussion, etc;
+ - Add milestone.
  
-3. Pull Request that committer submits needs to mark labels and milestone based on the type and time.
+3. Pull request that committer submits needs to add labels and milestone based on the type and release period.
 
-4. When committer reviewed and approved any Pull Request, committer could squash and merge to master. If there is any question you concerned about this Pull Request, contact us and we could disscuss.
+4. When committer reviewed and approved any pull request, committer could squash and merge to master. If there is any question you concerned about this pull request, please reply directly to the related issue.
 
-> To be noticed: At least one committer is expected to be in the assignee list of that issue before it is completed.
+### Committer rota
+
+| Name                | GitHub ID               |
+| :------------------ | :---------------------- |
+| YangWen Ou          | avalon566               |
+| Xiaofeng Jiang      | SteNicholas             |
+| Zhengqiang Duan     | strongduanmu            |
+| Zonglei Dong        | dongzl                  |
+| Liang Zhang         | terrymanu               |
+| Yonglun Zhang       | tuohai666, zhangyonglun |
+| Juan Pan            | tristaZero              |
+| Haoran Meng         | menghaoranss            |
+| Kimm King           | kimmking                |
+| Xiao Yu             | yu199195                |

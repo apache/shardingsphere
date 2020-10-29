@@ -24,11 +24,11 @@ import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.GovernanceRepositoryConfigurationUtil;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudEncryptConfiguration;
-import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudPrimaryReplicaReplicationConfiguration;
+import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudReplicaQueryConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudShadowConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudShardingDatabasesAndTablesConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalEncryptConfiguration;
-import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalPrimaryReplicaReplicationConfiguration;
+import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalReplicaQueryConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalShadowConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalShardingDatabasesAndTablesConfiguration;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
@@ -39,14 +39,14 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /*
- * 1. Please make sure primary-replication-replica data sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
+ * 1. Please make sure primary replica data replication sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
  * 2. Please make sure sharding-governance-center-zookeeper-curator in your pom if registryCenterType = RegistryCenterType.ZOOKEEPER.
  * 3. Please make sure sharding-governance-center-nacos in your pom if registryCenterType = RegistryCenterType.NACOS.
  */
 public final class JavaConfigurationExampleMain {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
-//    private static ShardingType shardingType = ShardingType.PRIMARY_REPLICA_REPLICATION;
+//    private static ShardingType shardingType = ShardingType.REPLICA_QUERY;
 //    private static ShardingType shardingType = ShardingType.ENCRYPT;
 //    private static ShardingType shardingType = ShardingType.SHADOW;
     
@@ -73,8 +73,8 @@ public final class JavaConfigurationExampleMain {
                 config = loadConfigFromRegCenter 
                         ? new CloudShardingDatabasesAndTablesConfiguration(governanceConfig) : new LocalShardingDatabasesAndTablesConfiguration(governanceConfig);
                 break;
-            case PRIMARY_REPLICA_REPLICATION:
-                config = loadConfigFromRegCenter ? new CloudPrimaryReplicaReplicationConfiguration(governanceConfig) : new LocalPrimaryReplicaReplicationConfiguration(governanceConfig);
+            case REPLICA_QUERY:
+                config = loadConfigFromRegCenter ? new CloudReplicaQueryConfiguration(governanceConfig) : new LocalReplicaQueryConfiguration(governanceConfig);
                 break;
             case ENCRYPT:
                 config = loadConfigFromRegCenter ? new CloudEncryptConfiguration(governanceConfig) : new LocalEncryptConfiguration(governanceConfig);

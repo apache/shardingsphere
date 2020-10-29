@@ -17,46 +17,56 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.format.facade;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.format.facade.FormatSQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DALFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DCLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DDLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.DMLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.RLFormatSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.format.impl.TCLFormatSQLVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
 
 /**
- * Format SQL Visitor facade for MySQL.
+ * Format SQL Visitor facade for PostgreSQL.
  */
-public final class PostgreSQLFormatSQLVisitorFacade implements FormatSQLVisitorFacade {
+public final class PostgreSQLFormatSQLVisitorFacade implements SQLVisitorFacade {
     
     @Override
-    public Class<? extends DMLFormatSQLVisitor> getDMLVisitorClass() {
+    public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {
         throw new UnsupportedOperationException();
     }
     
     @Override
-    public Class<? extends DDLFormatSQLVisitor> getDDLVisitorClass() {
+    public Class<? extends DDLSQLVisitor> getDDLVisitorClass() {
         throw new UnsupportedOperationException();
     }
     
     @Override
-    public Class<? extends TCLFormatSQLVisitor> getTCLVisitorClass() {
+    public Class<? extends TCLSQLVisitor> getTCLVisitorClass() {
         throw new UnsupportedOperationException();
     }
     
     @Override
-    public Class<? extends DCLFormatSQLVisitor> getDCLVisitorClass() {
+    public Class<? extends DCLSQLVisitor> getDCLVisitorClass() {
         throw new UnsupportedOperationException();
     }
     
     @Override
-    public Class<? extends DALFormatSQLVisitor> getDALVisitorClass() {
+    public Class<? extends DALSQLVisitor> getDALVisitorClass() {
         throw new UnsupportedOperationException();
     }
     
     @Override
-    public Class<? extends RLFormatSQLVisitor> getRLVisitorClass() {
+    public Class<? extends RLSQLVisitor> getRLVisitorClass() {
         throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "PostgreSQL";
+    }
+    
+    @Override
+    public String getVisitorType() {
+        return "FORMAT";
     }
 }

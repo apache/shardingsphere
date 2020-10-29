@@ -58,8 +58,8 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     @Test
     public void assertExecuteUpdate() throws JAXBException, IOException, SQLException, ParseException {
-        // TODO fix primary-replica-replication
-        if ("primary_replica_replication".equals(getRuleType())) {
+        // TODO fix replica-query
+        if ("replica_query".equals(getRuleType())) {
             return;
         }
         // TODO fix shadow
@@ -96,8 +96,8 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     @Test
     public void assertExecute() throws JAXBException, IOException, SQLException, ParseException {
-        // TODO fix primary_replica_replication
-        if ("primary_replica_replication".equals(getRuleType())) {
+        // TODO fix replica_query
+        if ("replica_query".equals(getRuleType())) {
             return;
         }
         // TODO fix shadow

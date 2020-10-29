@@ -80,14 +80,14 @@ dataSources:
 
 ### /schemas/${schemeName}/rule
 
-Rule configurations, including sharding, primary-replica replication, data encryption, shadow DB, consensus replication configurations.
+Rule configurations, including sharding, replica query, data encryption, shadow DB, consensus replication configurations.
 
 ```yaml
 rules:
 - !SHARDING
   xxx
   
-- !PRIMARY_REPLICA_REPLICATION
+- !REPLICA_QUERY
   xxx
   
 - !ENCRYPT

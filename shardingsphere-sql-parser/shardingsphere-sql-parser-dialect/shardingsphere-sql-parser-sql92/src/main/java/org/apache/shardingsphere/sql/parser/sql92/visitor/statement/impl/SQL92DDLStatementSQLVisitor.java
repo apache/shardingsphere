@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DDLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AlterDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AlterTableContext;
@@ -52,7 +53,7 @@ import java.util.Collections;
 /**
  * DDL Statement SQL visitor for SQL92.
  */
-public final class SQL92DDLStatementSQLVisitor extends SQL92StatementSQLVisitor implements DDLStatementSQLVisitor {
+public final class SQL92DDLStatementSQLVisitor extends SQL92StatementSQLVisitor implements DDLSQLVisitor, SQLStatementVisitor {
     
     @SuppressWarnings("unchecked")
     @Override

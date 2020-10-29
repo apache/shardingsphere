@@ -21,11 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacadeFactory;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorType;
-import org.apache.shardingsphere.sql.parser.core.SQLParserConfigurationRegistry;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementType;
 
 /**
@@ -34,33 +31,23 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementTyp
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLVisitorFactory {
     
-    /** 
-     * New instance of statement SQL visitor.
+    /**
+     * New instance of SQL visitor.
      * 
-     * @param databaseTypeName name of database type
-     * @param type type
-     * @param sqlVisitorRule visitor rule
+     * @param databaseType database type
+     * @param visitorType SQL visitor type
+     * @param visitorRule SQL visitor rule
+     * @param <T> type of visitor result
      * @return parse tree visitor
      */
-    public static ParseTreeVisitor newInstance(final String databaseTypeName, final SQLVisitorType type, final SQLVisitorRule sqlVisitorRule) {
-        return createParseTreeVisitor(getSQLVisitorFacadeEngine(databaseTypeName, type), sqlVisitorRule.getType());
+    public static <T> ParseTreeVisitor<T> newInstance(final String databaseType, final String visitorType, final SQLVisitorRule visitorRule) {
+        SQLVisitorFacade facade = SQLVisitorFacadeRegistry.getInstance().getSQLVisitorFacade(databaseType, visitorType);
+        return createParseTreeVisitor(facade, visitorRule.getType());
     }
     
+    @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private static SQLVisitorFacade getSQLVisitorFacadeEngine(final String databaseTypeName, final SQLVisitorType type) {
-        SQLVisitorFacadeFactory facade = SQLParserConfigurationRegistry.getInstance().getSQLParserConfiguration(databaseTypeName).getVisitorFacadeFactoryClass().getConstructor().newInstance();
-        switch (type) {
-            case STATEMENT:
-                return facade.getStatementSQLVisitorFacadeClass().getConstructor().newInstance();
-            case FORMAT:
-                return facade.getFormatSQLVisitorFacadeClass().getConstructor().newInstance();
-            default:
-                throw new SQLParsingException("Can not support SQL visitor type: `%s`", type);
-        }
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static ParseTreeVisitor createParseTreeVisitor(final SQLVisitorFacade visitorFacade, final SQLStatementType type) {
+    private static <T> ParseTreeVisitor<T> createParseTreeVisitor(final SQLVisitorFacade visitorFacade, final SQLStatementType type) {
         switch (type) {
             case DML:
                 return (ParseTreeVisitor) visitorFacade.getDMLVisitorClass().getConstructor().newInstance();

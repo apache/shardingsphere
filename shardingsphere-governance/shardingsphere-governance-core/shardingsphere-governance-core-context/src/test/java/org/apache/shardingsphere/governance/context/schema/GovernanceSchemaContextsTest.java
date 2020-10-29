@@ -43,7 +43,7 @@ import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.jdbc.test.MockedDataSource;
-import org.apache.shardingsphere.replication.primaryreplica.rule.PrimaryReplicaReplicationRule;
+import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -94,7 +94,7 @@ public final class GovernanceSchemaContextsTest {
     private ShardingSphereSchema schema;
     
     @Mock
-    private PrimaryReplicaReplicationRule primaryReplicaReplicationRule;
+    private ReplicaQueryRule replicaQueryRule;
     
     private GovernanceSchemaContexts governanceSchemaContexts;
     
@@ -111,7 +111,7 @@ public final class GovernanceSchemaContextsTest {
     private Map<String, ShardingSphereSchema> createSchemas() {
         when(schema.getName()).thenReturn("schema");
         when(schema.getMetaData()).thenReturn(mock(ShardingSphereMetaData.class));
-        when(schema.getRules()).thenReturn(Collections.singletonList(primaryReplicaReplicationRule));
+        when(schema.getRules()).thenReturn(Collections.singletonList(replicaQueryRule));
         return Collections.singletonMap("schema", schema);
     }
     
@@ -214,7 +214,7 @@ public final class GovernanceSchemaContextsTest {
     public void assertDisableStateChanged() {
         DisabledStateChangedEvent event = new DisabledStateChangedEvent(new GovernanceSchema("schema.ds_0"), true);
         governanceSchemaContexts.renew(event);
-        verify(primaryReplicaReplicationRule, times(2)).updateRuleStatus(any(RuleChangedEvent.class));
+        verify(replicaQueryRule, times(2)).updateRuleStatus(any(RuleChangedEvent.class));
     }
     
     @Test
