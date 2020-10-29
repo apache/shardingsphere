@@ -36,9 +36,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * ShardingSphere visitor.
+ * RDL visitor.
  */
-public final class ShardingSphereVisitor extends ShardingSphereStatementBaseVisitor<ASTNode> {
+public final class RDLVisitor extends ShardingSphereStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitCreateDataSources(final CreateDataSourcesContext ctx) {
