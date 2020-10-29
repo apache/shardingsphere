@@ -31,7 +31,7 @@
     
     <modules>
         <module>shardingsphere-sql-parser</module>
-        <module>shardingsphere-rdl-parser</module>
+        <module>shardingsphere-distsql-parser</module>
         <module>shardingsphere-db-protocol</module>
         <module>shardingsphere-infra</module>
         
