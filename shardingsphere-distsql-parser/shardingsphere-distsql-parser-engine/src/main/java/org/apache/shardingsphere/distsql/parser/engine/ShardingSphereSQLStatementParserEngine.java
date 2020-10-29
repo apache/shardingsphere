@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.distsql.parser.engine;
 
 import org.apache.shardingsphere.distsql.parser.engine.engine.DistSQLStatementParserEngine;
-import org.apache.shardingsphere.infra.parser.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.standard.StandardSQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.standard.StandardSQLStatementParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -26,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 /**
  * ShardingSphere SQL statement parser engine.
  */
-public final class ShardingSphereSQLStatementParserEngine implements SQLStatementParserEngine {
+public final class ShardingSphereSQLStatementParserEngine {
     
     private final StandardSQLStatementParserEngine standardSQLStatementParserEngine;
     
@@ -37,7 +36,13 @@ public final class ShardingSphereSQLStatementParserEngine implements SQLStatemen
         distSQLStatementParserEngine = new DistSQLStatementParserEngine();
     }
     
-    @Override
+    /**
+     * Parse to SQL statement.
+     *
+     * @param sql SQL to be parsed
+     * @param useCache whether use cache
+     * @return SQL statement
+     */
     public SQLStatement parse(final String sql, final boolean useCache) {
         SQLStatement result;
         try {
