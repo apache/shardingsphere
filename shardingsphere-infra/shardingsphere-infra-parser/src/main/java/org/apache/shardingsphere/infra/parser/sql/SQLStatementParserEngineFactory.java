@@ -32,10 +32,10 @@ public final class SQLStatementParserEngineFactory {
     private static final Map<String, SQLStatementParserEngine> ENGINES = new ConcurrentHashMap<>();
     
     /**
-     * Get standard SQL statement parser engine.
+     * Get SQL statement parser engine.
      *
      * @param databaseType name of database type
-     * @return standard SQL statement parser engine
+     * @return SQL statement parser engine
      */
     public static SQLStatementParserEngine getSQLStatementParserEngine(final String databaseType) {
         return ENGINES.containsKey(databaseType) ? ENGINES.get(databaseType) : ENGINES.computeIfAbsent(databaseType, SQLStatementParserEngine::new);
