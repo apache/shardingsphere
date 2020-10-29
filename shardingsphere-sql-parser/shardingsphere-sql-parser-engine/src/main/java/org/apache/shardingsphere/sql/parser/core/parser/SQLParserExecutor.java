@@ -57,7 +57,7 @@ public final class SQLParserExecutor {
     private ParseTree parse(final String sql) {
         ParseASTNode result = twoPhaseParse(sql);
         if (result.getRootNode() instanceof ErrorNode) {
-            throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
+            throw new SQLParsingException("Unsupported SQL of `%s`", sql);
         }
         return result.getRootNode();
     }
