@@ -156,7 +156,7 @@ setPassword
     ;
 
 authOption
-    : EQ_ stringLiterals | TO RANDOM
+    : EQ_ stringLiterals | TO RANDOM | EQ_ PASSWORD LP_ stringLiterals RP_
     ;
 
 withGrantOption
