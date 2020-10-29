@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.infra.parser.SQLStatementParserEngine;
 import org.apache.shardingsphere.rdl.parser.engine.executor.RDLSQLParserExecutor;
-import org.apache.shardingsphere.rdl.parser.sql.visitor.RDLVisitor;
+import org.apache.shardingsphere.rdl.parser.sql.visitor.DistSQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -44,7 +44,7 @@ public final class RDLSQLStatementParserEngine implements SQLStatementParserEngi
         parsingHookRegistry.start(sql);
         try {
             ParseTree parseTree = new RDLSQLParserExecutor(sql).execute().getRootNode();
-            SQLStatement result = (SQLStatement) new RDLVisitor().visit(parseTree);
+            SQLStatement result = (SQLStatement) new DistSQLStatementVisitor().visit(parseTree);
             parsingHookRegistry.finishSuccess(result);
             return result;
             // CHECKSTYLE:OFF

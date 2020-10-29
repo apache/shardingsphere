@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-grammar ShardingSphereStatement;
+grammar DistSQLStatement;
 
 import Symbol, RDLStatement;
 

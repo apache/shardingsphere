@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.rdl.parser.sql.parser;
 
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.rdl.parser.autogen.DistSQLStatementParser;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
 
 /**
- * SQL parser for RDL.
+ * SQL parser for Dist SQL.
  */
-public final class ShardingSphereParser extends ShardingSphereStatementParser implements SQLParser {
+public final class DistSQLParser extends DistSQLStatementParser implements SQLParser {
     
-    public ShardingSphereParser(final TokenStream input) {
+    public DistSQLParser(final TokenStream input) {
         super(input);
     }
     

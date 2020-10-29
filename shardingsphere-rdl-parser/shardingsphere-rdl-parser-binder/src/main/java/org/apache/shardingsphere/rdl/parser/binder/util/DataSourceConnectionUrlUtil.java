@@ -30,11 +30,11 @@ import org.apache.shardingsphere.rdl.parser.statement.rdl.DataSourceConnectionSe
 public final class DataSourceConnectionUrlUtil {
     
     /**
-     * Get url.
+     * Get URL.
      *
      * @param connectionSegment connection segment
      * @param databaseType database type
-     * @return url
+     * @return URL
      */
     public static String getUrl(final DataSourceConnectionSegment connectionSegment, final DatabaseType databaseType) {
         return getUrl(connectionSegment, databaseType.getJdbcUrlPrefixes().iterator().next());

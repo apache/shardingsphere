@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.rdl.parser.sql.visitor;
 
-import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementBaseVisitor;
-import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.CreateDataSourcesContext;
-import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.CreateShardingRuleContext;
-import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.DataSourceContext;
-import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.DataSourceDefinitionContext;
-import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.StrategyPropContext;
-import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.StrategyPropsContext;
-import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementParser.TableRuleContext;
+import org.apache.shardingsphere.rdl.parser.autogen.DistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.rdl.parser.autogen.DistSQLStatementParser.CreateDataSourcesContext;
+import org.apache.shardingsphere.rdl.parser.autogen.DistSQLStatementParser.CreateShardingRuleContext;
+import org.apache.shardingsphere.rdl.parser.autogen.DistSQLStatementParser.DataSourceContext;
+import org.apache.shardingsphere.rdl.parser.autogen.DistSQLStatementParser.DataSourceDefinitionContext;
+import org.apache.shardingsphere.rdl.parser.autogen.DistSQLStatementParser.StrategyPropContext;
+import org.apache.shardingsphere.rdl.parser.autogen.DistSQLStatementParser.StrategyPropsContext;
+import org.apache.shardingsphere.rdl.parser.autogen.DistSQLStatementParser.TableRuleContext;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.rdl.parser.statement.rdl.DataSourceConnectionSegment;
@@ -36,9 +36,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * RDL visitor.
+ * Dist SQL statement visitor.
  */
-public final class RDLVisitor extends ShardingSphereStatementBaseVisitor<ASTNode> {
+public final class DistSQLStatementVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitCreateDataSources(final CreateDataSourcesContext ctx) {

@@ -28,8 +28,8 @@ import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
-import org.apache.shardingsphere.rdl.parser.autogen.ShardingSphereStatementLexer;
-import org.apache.shardingsphere.rdl.parser.sql.parser.ShardingSphereParser;
+import org.apache.shardingsphere.rdl.parser.autogen.DistSQLStatementLexer;
+import org.apache.shardingsphere.rdl.parser.sql.parser.DistSQLParser;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -74,7 +74,7 @@ public final class RDLSQLParserExecutor {
     private SQLParser createSQLParser() {
         CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(sql.toCharArray()));
         CodePointCharStream codePointCharStream = CodePointCharStream.fromBuffer(buffer);
-        Lexer lexer = new ShardingSphereStatementLexer(codePointCharStream);
-        return new ShardingSphereParser(new CommonTokenStream(lexer));
+        Lexer lexer = new DistSQLStatementLexer(codePointCharStream);
+        return new DistSQLParser(new CommonTokenStream(lexer));
     }
 }

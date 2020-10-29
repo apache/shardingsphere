@@ -38,10 +38,10 @@ public final class CreateDataSourcesStatementContext extends CommonSQLStatementC
     }
     
     /**
-     * Get url.
+     * Get URL.
      *
      * @param segment segment
-     * @return url
+     * @return URL
      */
     public String getUrl(final DataSourceConnectionSegment segment) {
         return DataSourceConnectionUrlUtil.getUrl(segment, databaseType);
