@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.infra.parser.sql;
 
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -43,14 +45,19 @@ public final class SQLStatementParserEngine {
      */
     public SQLStatement parse(final String sql, final boolean useCache) {
         if (!useCache) {
-            return SQLParserEngine.parse(databaseTypeName, sql, false, "STATEMENT");
+            return parse(sql);
         }
         Optional<SQLStatement> statement = cache.get(sql);
         if (statement.isPresent()) {
             return statement.get();
         }
-        SQLStatement result = SQLParserEngine.parse(databaseTypeName, sql, false, "STATEMENT");
+        SQLStatement result = parse(sql);
         cache.put(sql, result);
         return result;
+    }
+    
+    private SQLStatement parse(final String sql) {
+        ParseTree parseTree = SQLParserEngine.parse(databaseTypeName, sql, false);
+        return SQLVisitorEngine.visit(databaseTypeName, "STATEMENT", parseTree);
     }
 }
