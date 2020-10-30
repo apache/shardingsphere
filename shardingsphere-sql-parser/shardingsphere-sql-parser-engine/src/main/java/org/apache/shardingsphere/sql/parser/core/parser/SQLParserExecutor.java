@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.core.parser;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.Parser;
@@ -25,7 +27,6 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 import java.util.Optional;
@@ -38,7 +39,7 @@ public final class SQLParserExecutor {
     
     private final String databaseType;
     
-    private final SQLParsedResultCache<ParseTree> cache = new SQLParsedResultCache<>();
+    private final Cache<String, ParseTree> cache = CacheBuilder.newBuilder().softValues().initialCapacity(2000).maximumSize(65535).build();
     
     /**
      * Parse SQL.
@@ -63,7 +64,7 @@ public final class SQLParserExecutor {
     }
     
     private ParseTree parseAndCacheParseTree(final String sql) {
-        Optional<ParseTree> parseTree = cache.get(sql);
+        Optional<ParseTree> parseTree = Optional.ofNullable(cache.getIfPresent(sql));
         if (parseTree.isPresent()) {
             return parseTree.get();
         }
