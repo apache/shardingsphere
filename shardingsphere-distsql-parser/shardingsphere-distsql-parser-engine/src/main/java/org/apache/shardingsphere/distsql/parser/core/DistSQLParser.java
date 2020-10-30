@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.sql.parser;
+package org.apache.shardingsphere.distsql.parser.core;
 
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser;

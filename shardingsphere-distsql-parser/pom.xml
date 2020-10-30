@@ -30,7 +30,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-distsql-parser-sql</module>
         <module>shardingsphere-distsql-parser-statement</module>
         <module>shardingsphere-distsql-parser-engine</module>
         <module>shardingsphere-distsql-parser-binder</module>

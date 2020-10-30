@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser;
+package org.apache.shardingsphere.distsql.parser.core;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementLexer;
-import org.apache.shardingsphere.distsql.parser.sql.parser.DistSQLParser;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 
 import java.nio.CharBuffer;
