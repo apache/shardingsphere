@@ -39,8 +39,8 @@ jobs:
         java-version: 1.8
     - name: Build with Maven
       run: |
-        mvn -B clean install cobertura:cobertura -Dmaven.javadoc.skip=true
+        ./mvnw -B clean install cobertura:cobertura -Dmaven.javadoc.skip=true
         cd examples
-        mvn -B clean package -DskipTests
+        ../mvnw -B clean package -DskipTests
         cd ..
         bash <(curl -s https://codecov.io/bash)
