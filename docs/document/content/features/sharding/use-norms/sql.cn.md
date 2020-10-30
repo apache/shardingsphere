@@ -50,8 +50,8 @@ tbl_name [AS] alias] [index_hint_list]
 ### 路由至多数据节点
 
 部分支持CASE WHEN
-* CASE WHEN 中包含子查询不支持
-* CASE WHEN 中使用逻辑表名不支持（请使用表别名）
+* `CASE WHEN` 中包含子查询不支持
+* `CASE WHEN` 中使用逻辑表名不支持（请使用表别名）
 不支持 HAVING、UNION (ALL)，部分支持子查询。
 
 除了分页子查询的支持之外(详情请参考[分页](/cn/features/sharding/use-norms/pagination))，也支持同等模式的子查询。无论嵌套多少层，ShardingSphere都可以解析至第一个包含数据表的子查询，一旦在下层嵌套中再次找到包含数据表的子查询将直接抛出解析异常。
