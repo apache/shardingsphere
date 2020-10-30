@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.hook.fixture;
+package org.apache.shardingsphere.infra.parser.hook.fixture;
 
-import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
+import org.apache.shardingsphere.infra.parser.hook.ParsingHook;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;

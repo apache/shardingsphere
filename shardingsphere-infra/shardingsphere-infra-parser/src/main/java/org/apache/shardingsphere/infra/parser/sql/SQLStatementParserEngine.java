@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.parser.sql;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
-import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Optional;
@@ -35,13 +34,6 @@ public final class SQLStatementParserEngine {
     
     private final SQLParsedResultCache<SQLStatement> cache = new SQLParsedResultCache<>();
     
-    private final ParsingHookRegistry parsingHookRegistry = ParsingHookRegistry.getInstance();
-    
-    /*
-     * To make sure SkyWalking will be available at the next release of ShardingSphere, a new plugin should be provided to SkyWalking project if this API changed.
-     *
-     * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
-     */
     /**
      * Parse to SQL statement.
      *
@@ -49,22 +41,7 @@ public final class SQLStatementParserEngine {
      * @param useCache whether use cache
      * @return SQL statement
      */
-    @SuppressWarnings("OverlyBroadCatchBlock")
     public SQLStatement parse(final String sql, final boolean useCache) {
-        parsingHookRegistry.start(sql);
-        try {
-            SQLStatement result = parse0(sql, useCache);
-            parsingHookRegistry.finishSuccess(result);
-            return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            parsingHookRegistry.finishFailure(ex);
-            throw ex;
-        }
-    }
-    
-    private SQLStatement parse0(final String sql, final boolean useCache) {
         if (!useCache) {
             return SQLParserEngine.parse(databaseTypeName, sql, false, "STATEMENT");
         }
