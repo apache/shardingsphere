@@ -20,32 +20,27 @@ package org.apache.shardingsphere.sql.parser.api;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
+import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorFactory;
+import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorRule;
 
 /**
- * SQL parser engine.
+ * SQL visitor engine.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLParserEngine {
-    
-    private static final Map<String, SQLParserExecutor> ENGINES = new ConcurrentHashMap<>();
+public final class SQLVisitorEngine {
     
     /**
-     * Parse SQL.
+     * Visit parse tree.
      *
      * @param databaseType database type
-     * @param sql SQL to be parsed
-     * @param useCache whether use cache
-     * @return parse tree
+     * @param visitorType SQL visitor type
+     * @param parseTree parse tree
+     * @param <T> type of SQL visitor result
+     * @return SQL visitor result
      */
-    public static ParseTree parse(final String databaseType, final String sql, final boolean useCache) {
-        return getSQLParserExecutor(databaseType).parse(sql, useCache);
-    }
-    
-    private static SQLParserExecutor getSQLParserExecutor(final String databaseType) {
-        return ENGINES.containsKey(databaseType) ? ENGINES.get(databaseType) : ENGINES.computeIfAbsent(databaseType, SQLParserExecutor::new);
+    public static <T> T visit(final String databaseType, final String visitorType, final ParseTree parseTree) {
+        ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseTree.getClass()));
+        return parseTree.accept(visitor);
     }
 }
