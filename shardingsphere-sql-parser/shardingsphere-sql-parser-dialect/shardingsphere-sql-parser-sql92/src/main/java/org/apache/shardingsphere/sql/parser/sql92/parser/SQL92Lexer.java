@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql92.lexer;
+package org.apache.shardingsphere.sql.parser.sql92.parser;
 
 import org.antlr.v4.runtime.CharStream;
-import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementLexer;
 
 /**

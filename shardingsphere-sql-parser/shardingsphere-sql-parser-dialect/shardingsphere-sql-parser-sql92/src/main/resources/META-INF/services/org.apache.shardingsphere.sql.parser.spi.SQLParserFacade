@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.sql92.SQL92ParserFacade
+org.apache.shardingsphere.sql.parser.sql92.parser.SQL92ParserFacade
