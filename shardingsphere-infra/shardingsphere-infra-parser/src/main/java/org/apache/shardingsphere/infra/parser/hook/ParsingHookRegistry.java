@@ -15,33 +15,62 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.hook;
+package org.apache.shardingsphere.infra.parser.hook;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.ServiceLoader;
+
 /**
- * Parsing hook.
+ * Parsing hook registry.
  */
-public interface ParsingHook {
+public final class ParsingHookRegistry {
+    
+    private static final ParsingHookRegistry INSTANCE = new ParsingHookRegistry();
+    
+    private final Collection<ParsingHook> hooks = new LinkedList<>();
+    
+    private ParsingHookRegistry() {
+        for (ParsingHook each : ServiceLoader.load(ParsingHook.class)) {
+            hooks.add(each);
+        }
+    }
+    
+    /**
+     * Get instance.
+     * 
+     * @return instance
+     */
+    public static ParsingHookRegistry getInstance() {
+        return INSTANCE;
+    }
     
     /**
      * Handle when parse started.
      *
      * @param sql SQL to be parsed
      */
-    void start(String sql);
+    public void start(final String sql) {
+        hooks.forEach(each -> each.start(sql));
+    }
     
     /**
      * Handle when parse finished success.
      *
      * @param sqlStatement sql statement
      */
-    void finishSuccess(SQLStatement sqlStatement);
+    public void finishSuccess(final SQLStatement sqlStatement) {
+        hooks.forEach(each -> each.finishSuccess(sqlStatement));
+    }
     
     /**
      * Handle when parse finished failure.
-     * 
+     *
      * @param cause failure cause
      */
-    void finishFailure(Exception cause);
+    public void finishFailure(final Exception cause) {
+        hooks.forEach(each -> each.finishFailure(cause));
+    }
 }

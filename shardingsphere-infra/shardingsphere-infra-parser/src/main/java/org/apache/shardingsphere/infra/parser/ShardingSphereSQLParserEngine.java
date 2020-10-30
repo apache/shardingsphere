@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.DistSQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
-import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
+import org.apache.shardingsphere.infra.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
