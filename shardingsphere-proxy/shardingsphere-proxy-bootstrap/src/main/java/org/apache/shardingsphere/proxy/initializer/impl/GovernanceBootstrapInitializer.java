@@ -101,19 +101,14 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {
-        Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>(schemaNames.size(), 1);
-        for (String each : schemaNames) {
-            result.put(each, DataSourceParameterConverter.getDataSourceParameterMap(governanceFacade.getConfigCenter().loadDataSourceConfigurations(each)));
-        }
-        return result;
+        return schemaNames.stream()
+            .collect(Collectors.toMap(each -> each, each -> DataSourceParameterConverter.getDataSourceParameterMap(governanceFacade.getConfigCenter().loadDataSourceConfigurations(each)),
+                (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final Collection<String> schemaNames) {
-        Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>(schemaNames.size(), 1);
-        for (String each : schemaNames) {
-            result.put(each, governanceFacade.getConfigCenter().loadRuleConfigurations(each));
-        }
-        return result;
+        return schemaNames.stream()
+             .collect(Collectors.toMap(each -> each, each -> governanceFacade.getConfigCenter().loadRuleConfigurations(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override
