@@ -61,6 +61,9 @@ public final class SelectStatementAssert {
     }
     
     private static void assertProjection(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        if (null == actual.getProjections() && 0 == expected.getProjections().getSize()) {
+            return;
+        }
         ProjectionAssert.assertIs(assertContext, actual.getProjections(), expected.getProjections());
     }
 
