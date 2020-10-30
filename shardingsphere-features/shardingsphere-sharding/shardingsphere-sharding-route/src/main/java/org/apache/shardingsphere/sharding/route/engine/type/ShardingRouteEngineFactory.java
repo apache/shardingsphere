@@ -41,17 +41,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterProcedureStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropProcedureStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
@@ -92,7 +86,7 @@ public final class ShardingRouteEngineFactory {
             return getDALRoutingEngine(shardingRule, metaData.getSchemaMetaData().getUnconfiguredSchemaMetaDataMap(), sqlStatement, tableNames);
         }
         if (sqlStatement instanceof DCLStatement) {
-            return getDCLRoutingEngine(sqlStatementContext, metaData);
+            return getDCLRoutingEngine(shardingRule, metaData.getSchemaMetaData().getUnconfiguredSchemaMetaDataMap(), sqlStatementContext, metaData);
         }
         if (shardingRule.isAllBroadcastTables(tableNames)) {
             return sqlStatement instanceof SelectStatement ? new ShardingUnicastRoutingEngine(tableNames) : new ShardingDatabaseBroadcastRoutingEngine();
@@ -113,11 +107,8 @@ public final class ShardingRouteEngineFactory {
         if (functionStatement || procedureStatement) {
             return new ShardingDatabaseBroadcastRoutingEngine();
         }
-        boolean viewStatement = sqlStatement instanceof CreateViewStatement || sqlStatement instanceof AlterViewStatement || sqlStatement instanceof DropViewStatement;
-        boolean tableStatement = sqlStatement instanceof CreateTableStatement || sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement;
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-        boolean modifyTableWithoutShardingRule = tableStatement && !tableNames.isEmpty() && !shardingRule.tableRuleExists(tableNames);
-        if (viewStatement || modifyTableWithoutShardingRule) {
+        if (!tableNames.isEmpty() && !shardingRule.tableRuleExists(tableNames)) {
             return new ShardingUnconfiguredTablesRoutingEngine(tableNames, schemaMetaData.getUnconfiguredSchemaMetaDataMap(), sqlStatement);
         }
         return new ShardingTableBroadcastRoutingEngine(schemaMetaData.getConfiguredSchemaMetaData(), sqlStatementContext);
@@ -140,10 +131,16 @@ public final class ShardingRouteEngineFactory {
         return new ShardingDataSourceGroupBroadcastRoutingEngine();
     }
     
-    private static ShardingRouteEngine getDCLRoutingEngine(final SQLStatementContext sqlStatementContext, final ShardingSphereMetaData metaData) {
-        return isDCLForSingleTable(sqlStatementContext) 
-                ? new ShardingTableBroadcastRoutingEngine(metaData.getSchemaMetaData().getConfiguredSchemaMetaData(), sqlStatementContext)
-                : new ShardingInstanceBroadcastRoutingEngine(metaData.getDataSourcesMetaData());
+    private static ShardingRouteEngine getDCLRoutingEngine(final ShardingRule shardingRule, final Map<String, Collection<String>> unconfiguredSchemaMetaDataMap,
+                                                           final SQLStatementContext sqlStatementContext, final ShardingSphereMetaData metaData) {
+        if (isDCLForSingleTable(sqlStatementContext)) {
+            Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+            return !shardingRule.tableRuleExists(tableNames)
+                    ? new ShardingUnconfiguredTablesRoutingEngine(tableNames, unconfiguredSchemaMetaDataMap, sqlStatementContext.getSqlStatement()) 
+                    : new ShardingTableBroadcastRoutingEngine(metaData.getSchemaMetaData().getConfiguredSchemaMetaData(), sqlStatementContext);
+        } else {
+            return new ShardingInstanceBroadcastRoutingEngine(metaData.getDataSourcesMetaData());
+        }
     }
     
     private static boolean isDCLForSingleTable(final SQLStatementContext sqlStatementContext) {
