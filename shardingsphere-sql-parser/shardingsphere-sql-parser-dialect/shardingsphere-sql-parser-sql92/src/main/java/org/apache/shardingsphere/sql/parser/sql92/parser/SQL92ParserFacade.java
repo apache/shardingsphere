@@ -15,18 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.postgresql.lexer;
+package org.apache.shardingsphere.sql.parser.sql92.parser;
 
-import org.antlr.v4.runtime.CharStream;
-import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 
 /**
- * SQL lexer for PostgreSQL.
+ * SQL parser facade for SQL92.
  */
-public final class PostgreSQLLexer extends PostgreSQLStatementLexer implements SQLLexer {
+public final class SQL92ParserFacade implements SQLParserFacade {
     
-    public PostgreSQLLexer(final CharStream input) {
-        super(input);
+    @Override
+    public String getDatabaseType() {
+        return "SQL92";
+    }
+    
+    @Override
+    public Class<? extends SQLLexer> getLexerClass() {
+        return SQL92Lexer.class;
+    }
+    
+    @Override
+    public Class<? extends SQLParser> getParserClass() {
+        return SQL92Parser.class;
     }
 }

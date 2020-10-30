@@ -15,34 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.spi;
+package org.apache.shardingsphere.sql.parser.postgresql.parser;
 
+import org.antlr.v4.runtime.CharStream;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementLexer;
 
 /**
- * SQL parser facade.
+ * SQL lexer for PostgreSQL.
  */
-public interface SQLParserFacade {
+public final class PostgreSQLLexer extends PostgreSQLStatementLexer implements SQLLexer {
     
-    /**
-     * Get database type.
-     *
-     * @return database type
-     */
-    String getDatabaseType();
-    
-    /**
-     * Get SQL lexer class type.
-     *
-     * @return SQL lexer class type
-     */
-    Class<? extends SQLLexer> getLexerClass();
-    
-    /**
-     * Get SQL parser class type.
-     * 
-     * @return SQL parser class type
-     */
-    Class<? extends SQLParser> getParserClass();
+    public PostgreSQLLexer(final CharStream input) {
+        super(input);
+    }
 }
