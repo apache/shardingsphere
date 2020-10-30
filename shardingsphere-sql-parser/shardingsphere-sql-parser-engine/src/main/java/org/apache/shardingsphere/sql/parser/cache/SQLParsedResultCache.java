@@ -50,11 +50,4 @@ public final class SQLParsedResultCache<T> {
     public Optional<T> get(final String sql) {
         return Optional.ofNullable(cache.getIfPresent(sql));
     }
-    
-    /**
-     * Clear cache.
-     */
-    public void clear() {
-        cache.invalidateAll();
-    }
 }

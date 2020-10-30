@@ -44,13 +44,4 @@ public final class SQLParsedResultCacheTest {
         actual.put("SELECT 1", selectStatement);
         assertFalse(actual.get("SELECT 2").isPresent());
     }
-    
-    @Test
-    public void assertClear() {
-        SQLParsedResultCache actual = new SQLParsedResultCache();
-        SQLStatement selectStatement = new MySQLSelectStatement();
-        actual.put("SELECT 1", selectStatement);
-        actual.clear();
-        assertFalse(actual.get("SELECT 1").isPresent());
-    }
 }
