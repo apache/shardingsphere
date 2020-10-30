@@ -39,8 +39,35 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-distsql-parser-sql</artifactId>
+            <artifactId>shardingsphere-distsql-parser-statement</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-parser-engine</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>antlr</id>
+                        <configuration>
+                            <libDirectory>src/main/antlr4/imports/</libDirectory>
+                            <listener>false</listener>
+                            <visitor>true</visitor>
+                        </configuration>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

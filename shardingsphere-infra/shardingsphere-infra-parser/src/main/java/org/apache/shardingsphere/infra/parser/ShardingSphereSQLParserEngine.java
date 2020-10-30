@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.parser;
 
-import org.apache.shardingsphere.distsql.parser.DistSQLStatementParserEngine;
+import org.apache.shardingsphere.distsql.parser.api.DistSQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;

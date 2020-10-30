@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+package org.apache.shardingsphere.distsql.parser.core;
 
-import Alphabet;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
 
-WS
-    : [ \t\r\n] + ->skip
-    ;
+/**
+ * SQL parser for Dist SQL.
+ */
+public final class DistSQLParser extends DistSQLStatementParser implements SQLParser {
     
-CREATE
-    : C R E A T E
-    ;
-
-DATASOURCES
-    : D A T A S O U R C E S
-    ;
+    public DistSQLParser(final TokenStream input) {
+        super(input);
+    }
     
-SHARDINGRULE
-    : S H A R D I N G R U L E
-    ;
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute());
+    }
+}
