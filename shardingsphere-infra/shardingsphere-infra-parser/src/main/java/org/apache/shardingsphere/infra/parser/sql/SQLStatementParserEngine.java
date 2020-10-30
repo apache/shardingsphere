@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.infra.parser.sql;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
-import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Optional;
@@ -34,7 +35,7 @@ public final class SQLStatementParserEngine {
     
     private final String databaseTypeName;
     
-    private final SQLParsedResultCache<SQLStatement> cache = new SQLParsedResultCache<>();
+    private final Cache<String, SQLStatement> cache = CacheBuilder.newBuilder().softValues().initialCapacity(2000).maximumSize(65535).build();
     
     /**
      * Parse to SQL statement.
@@ -47,7 +48,7 @@ public final class SQLStatementParserEngine {
         if (!useCache) {
             return parse(sql);
         }
-        Optional<SQLStatement> statement = cache.get(sql);
+        Optional<SQLStatement> statement = Optional.ofNullable(cache.getIfPresent(sql));
         if (statement.isPresent()) {
             return statement.get();
         }
