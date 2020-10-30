@@ -17,7 +17,7 @@ It is inevitably to have some unlisted SQLs, welcome to supplement for that. We 
 
 ### Route to multiple data nodes
 
-Partially support DML, DDL, DCL, TCL and some DAL. Support pagination, DISTINCT, ORDER BY, GROUP BY, aggregation and JOIN (does not support cross-database relevance). Here is an example of a most complex kind of DML:
+Fully support DML, DDL, DCL, TCL and some DAL. Support pagination, DISTINCT, ORDER BY, GROUP BY, aggregation and JOIN (does not support cross-database relevance). Here is an example of a most complex kind of DML:
 
 - Main SELECT
 
@@ -49,7 +49,11 @@ tbl_name [AS] alias] [index_hint_list]
 
 ### Route to multiple data nodes
 
-Do not support CASE WHEN, HAVING and UNION (ALL) and partly available sub-query.
+Partially support CASE WHEN
+* `CASE WHEN` containing sub-query is not supported
+* `CASE WHEN` containing logical-table is not supported(please use alias of table)
+
+Do not support HAVING and UNION (ALL) and partly available sub-query.
 
 Support not only pagination sub-query (see [pagination](https://shardingsphere.apache.org/document/current/cn/features/sharding/usage-standard/pagination) for more details), but also sub-query with the same mode. No matter how many layers are nested, ShardingSphere can parse to the first sub-query that contains data table. Once it finds another sub-query of this kind in the sub-level nested, it will directly throw a parsing exception.
 
