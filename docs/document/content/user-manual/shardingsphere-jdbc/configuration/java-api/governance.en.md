@@ -1,6 +1,6 @@
 +++
 title = "Governance"
-weight = 6
+weight = 5
 +++
 
 ## Configuration Item Explanation
