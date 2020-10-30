@@ -53,7 +53,9 @@ Partially support CASE WHEN
 * `CASE WHEN` containing sub-query is not supported
 * `CASE WHEN` containing logical-table is not supported(please use alias of table)
 
-Do not support HAVING and UNION (ALL) and partly available sub-query.
+Do not support HAVING and UNION (ALL) 
+Partly available sub-query
+* Subquery is not supported without partition key,please refer to [`sub-query support`](https://github.com/apache/shardingsphere/issues/6497)
 
 Support not only pagination sub-query (see [pagination](https://shardingsphere.apache.org/document/current/cn/features/sharding/usage-standard/pagination) for more details), but also sub-query with the same mode. No matter how many layers are nested, ShardingSphere can parse to the first sub-query that contains data table. Once it finds another sub-query of this kind in the sub-level nested, it will directly throw a parsing exception.
 
