@@ -1,7 +1,7 @@
 +++
 pre = "<b>3.9. </b>"
 title = "可插拔架构"
-weight = 9
+weight = 8
 chapter = true
 +++
 
@@ -16,7 +16,7 @@ SPI 是一种为了被第三方实现或扩展的 API，它可以用于实现框
 设计一套将功能开发完全隔离的架构体系，既可以最大限度的将开源社区的活力激发出来，也能够保障项目的质量。
 
 Apache ShardingSphere 5.x 版本开始致力于可插拔架构，项目的功能组件能够灵活的以可插拔的方式进行扩展。
-目前，数据分片、读写分离、强一致多副本、数据加密、影子库压测等功能，以及对 MySQL、PostgreSQL、SQLServer、Oracle 等 SQL 与协议的支持，均通过插件的方式织入项目。
+目前，数据分片、读写分离、数据加密、影子库压测等功能，以及对 MySQL、PostgreSQL、SQLServer、Oracle 等 SQL 与协议的支持，均通过插件的方式织入项目。
 Apache ShardingSphere 目前已提供数十个 SPI 作为系统的扩展点，而且仍在不断增加中。
 
 ## 目标
