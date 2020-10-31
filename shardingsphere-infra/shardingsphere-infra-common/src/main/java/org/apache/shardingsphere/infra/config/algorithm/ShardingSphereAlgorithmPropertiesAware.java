@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.sharding;
+package org.apache.shardingsphere.infra.config.algorithm;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPropertiesAware;
+import java.util.Collection;
 
 /**
- * Sharding auto table algorithm.
+ * ShardingSphere algorithm  properties aware.
  */
-public interface ShardingAutoTableAlgorithm extends ShardingSphereAlgorithmPropertiesAware {
+public interface ShardingSphereAlgorithmPropertiesAware {
     
     /**
-     * Get auto tables amount.
-     *
-     * @return the auto tables amount
+     * Get all property keys.
+     * 
+     * @return all property keys
      */
-    int getAutoTablesAmount();
+    Collection<String> getAllPropertyKeys();
 }

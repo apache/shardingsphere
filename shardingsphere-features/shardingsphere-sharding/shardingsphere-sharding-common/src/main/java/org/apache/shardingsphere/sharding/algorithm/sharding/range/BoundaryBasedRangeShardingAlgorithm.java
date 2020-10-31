@@ -23,6 +23,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Range;
 import com.google.common.primitives.Longs;
 import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -61,5 +64,10 @@ public final class BoundaryBasedRangeShardingAlgorithm extends AbstractRangeShar
     @Override
     public String getType() {
         return "BOUNDARY_RANGE";
+    }
+    
+    @Override
+    public Collection<String> getAllPropertyKeys() {
+        return Collections.singletonList(SHARDING_RANGES_KEY);
     }
 }
