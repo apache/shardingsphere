@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.config.algorithm;
 import java.util.Collection;
 
 /**
- * ShardingSphere algorithm  properties aware.
+ * ShardingSphere algorithm properties aware.
  */
 public interface ShardingSphereAlgorithmPropertiesAware {
     
