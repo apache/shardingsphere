@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.convert;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.distsql.parser.binder.context.CreateDataSourcesStatementContext;
-import org.apache.shardingsphere.distsql.parser.binder.generator.SQLStatementContextConverter;
+import org.apache.shardingsphere.infra.binder.converter.SQLStatementContextConverter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.DataSourceConnectionSegment;
 
 import java.util.LinkedHashMap;

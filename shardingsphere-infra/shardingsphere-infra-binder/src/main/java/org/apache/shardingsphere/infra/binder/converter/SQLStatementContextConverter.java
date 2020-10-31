@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.binder.generator;
+package org.apache.shardingsphere.infra.binder.converter;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
