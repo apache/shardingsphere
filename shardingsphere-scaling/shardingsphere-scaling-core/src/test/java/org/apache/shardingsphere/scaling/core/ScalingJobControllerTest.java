@@ -52,7 +52,7 @@ public final class ScalingJobControllerTest {
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
-        if (ScalingContext.getInstance().getServerConfig() == null) {
+        if (null == ScalingContext.getInstance().getServerConfig()) {
             ScalingContext.getInstance().init(new ServerConfiguration());
             ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "taskExecuteEngine", mock(ShardingScalingExecuteEngine.class));
         }
