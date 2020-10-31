@@ -19,6 +19,7 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.DataSourceConnectionSegment;
 
 import java.util.Collection;
 
