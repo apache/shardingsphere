@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.converter;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.TableRuleSegment;
-import org.apache.shardingsphere.infra.binder.converter.SQLStatementContextConverter;
 import org.apache.shardingsphere.infra.binder.statement.rdl.CreateShardingRuleStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPropertiesAware;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -40,9 +39,14 @@ import java.util.Properties;
 /**
  * Create sharding rule statement context converter.
  */
-public final class CreateShardingRuleStatementContextConverter implements SQLStatementContextConverter<CreateShardingRuleStatementContext, YamlShardingRuleConfiguration> {
+public final class CreateShardingRuleStatementContextConverter {
     
-    @Override
+    /**
+     * Convert create sharding rule statement context to YAML sharding rule configuration.
+     *
+     * @param sqlStatementContext create sharding rule statement context
+     * @return YAML sharding rule configuration
+     */
     public YamlShardingRuleConfiguration convert(final CreateShardingRuleStatementContext sqlStatementContext) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
         for (TableRuleSegment each : sqlStatementContext.getSqlStatement().getTables()) {

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.converter;
 
 import org.apache.shardingsphere.distsql.parser.segment.rdl.DataSourceConnectionSegment;
-import org.apache.shardingsphere.infra.binder.converter.SQLStatementContextConverter;
 import org.apache.shardingsphere.infra.binder.statement.rdl.CreateDataSourcesStatementContext;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -30,9 +29,14 @@ import java.util.Map;
 /**
  * Create data source statement context converter.
  */
-public final class CreateDataSourcesStatementContextConverter implements SQLStatementContextConverter<CreateDataSourcesStatementContext, Map<String, YamlDataSourceParameter>> {
+public final class CreateDataSourcesStatementContextConverter {
     
-    @Override
+    /**
+     * Convert create data source statement context to YAML data source parameter map.
+     *
+     * @param sqlStatementContext create data source statement context
+     * @return YAML data source parameter map
+     */
     public Map<String, YamlDataSourceParameter> convert(final CreateDataSourcesStatementContext sqlStatementContext) {
         Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>(sqlStatementContext.getSqlStatement().getConnectionInfos().size(), 1);
         for (DataSourceConnectionSegment each : sqlStatementContext.getSqlStatement().getConnectionInfos()) {
