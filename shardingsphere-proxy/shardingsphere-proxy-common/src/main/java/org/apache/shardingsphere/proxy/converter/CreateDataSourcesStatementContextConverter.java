@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.convert;
+package org.apache.shardingsphere.proxy.converter;
 
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.distsql.parser.binder.context.CreateDataSourcesStatementContext;
-import org.apache.shardingsphere.distsql.parser.binder.generator.SQLStatementContextConverter;
+import org.apache.shardingsphere.infra.binder.converter.SQLStatementContextConverter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.DataSourceConnectionSegment;
 
 import java.util.LinkedHashMap;
@@ -32,12 +32,12 @@ import java.util.Map;
 public final class CreateDataSourcesStatementContextConverter implements SQLStatementContextConverter<CreateDataSourcesStatementContext, Map<String, YamlDataSourceParameter>> {
     
     @Override
-    public Map<String, YamlDataSourceParameter> convert(final CreateDataSourcesStatementContext context) {
-        Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>(context.getSqlStatement().getConnectionInfos().size(), 1);
-        for (DataSourceConnectionSegment each : context.getSqlStatement().getConnectionInfos()) {
+    public Map<String, YamlDataSourceParameter> convert(final CreateDataSourcesStatementContext sqlStatementContext) {
+        Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>(sqlStatementContext.getSqlStatement().getConnectionInfos().size(), 1);
+        for (DataSourceConnectionSegment each : sqlStatementContext.getSqlStatement().getConnectionInfos()) {
             DataSourceParameter parameter = new DataSourceParameter();
             YamlDataSourceParameter dataSource = new YamlDataSourceParameter();
-            dataSource.setUrl(context.getUrl(each));
+            dataSource.setUrl(sqlStatementContext.getUrl(each));
             dataSource.setUsername(each.getUser());
             dataSource.setPassword(each.getPassword());
             dataSource.setMinPoolSize(parameter.getMinPoolSize());

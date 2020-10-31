@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.convert;
+package org.apache.shardingsphere.sharding.converter;
 
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.distsql.parser.binder.context.CreateShardingRuleStatementContext;
-import org.apache.shardingsphere.distsql.parser.binder.generator.SQLStatementContextConverter;
+import org.apache.shardingsphere.infra.binder.converter.SQLStatementContextConverter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.TableRuleSegment;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
@@ -35,11 +35,11 @@ import java.util.Properties;
 public final class CreateShardingRuleStatementContextConverter implements SQLStatementContextConverter<CreateShardingRuleStatementContext, YamlShardingRuleConfiguration> {
     
     @Override
-    public YamlShardingRuleConfiguration convert(final CreateShardingRuleStatementContext context) {
+    public YamlShardingRuleConfiguration convert(final CreateShardingRuleStatementContext sqlStatementContext) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
-        for (TableRuleSegment each : context.getSqlStatement().getTables()) {
+        for (TableRuleSegment each : sqlStatementContext.getSqlStatement().getTables()) {
             result.getShardingAlgorithms().put(getAlgorithmName(each.getLogicTable(), each.getAlgorithmType()),
-                    createAlgorithmConfiguration(each, context.getAlgorithmProperties(each)));
+                    createAlgorithmConfiguration(each, sqlStatementContext.getAlgorithmProperties(each)));
             result.getAutoTables().put(each.getLogicTable(), createAutoTableRuleConfiguration(each));
         }
         return result;

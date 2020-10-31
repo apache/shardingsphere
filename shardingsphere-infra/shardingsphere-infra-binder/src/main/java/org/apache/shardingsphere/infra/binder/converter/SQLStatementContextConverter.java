@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.binder.generator;
+package org.apache.shardingsphere.infra.binder.converter;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 /**
  * SQL statement context converter.
+ * 
+ * @param <I> type of SQL statement context
+ * @param <O> type of output object 
  */
 public interface SQLStatementContextConverter<I extends SQLStatementContext<?>, O> {
     
     /**
-     * Convert sql statement.
+     * Convert SQL statement to desired object.
      *
-     * @param sqlStatement sql statement
-     * @return yaml configurations
+     * @param sqlStatementContext SQL statement context
+     * @return output object
      */
-    O convert(I sqlStatement);
+    O convert(I sqlStatementContext);
 }
