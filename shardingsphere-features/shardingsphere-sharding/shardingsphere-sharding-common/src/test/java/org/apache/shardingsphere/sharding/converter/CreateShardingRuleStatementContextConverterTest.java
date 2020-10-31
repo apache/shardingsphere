@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.converter;
 
-import org.apache.shardingsphere.distsql.parser.binder.context.CreateShardingRuleStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.rdl.CreateShardingRuleStatementContext;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.TableRuleSegment;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
