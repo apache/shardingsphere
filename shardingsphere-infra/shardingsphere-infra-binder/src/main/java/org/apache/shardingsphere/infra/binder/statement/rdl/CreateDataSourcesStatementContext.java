@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.infra.binder.statement.rdl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.statement.rdl.util.DataSourceConnectionUrlUtil;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateDataSourcesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.DataSourceConnectionSegment;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 /**
  * Create dataSource statement context.
@@ -35,15 +33,5 @@ public final class CreateDataSourcesStatementContext extends CommonSQLStatementC
     public CreateDataSourcesStatementContext(final CreateDataSourcesStatement sqlStatement, final DatabaseType databaseType) {
         super(sqlStatement);
         this.databaseType = databaseType;
-    }
-    
-    /**
-     * Get URL.
-     *
-     * @param segment segment
-     * @return URL
-     */
-    public String getUrl(final DataSourceConnectionSegment segment) {
-        return DataSourceConnectionUrlUtil.getUrl(segment, databaseType);
     }
 }
