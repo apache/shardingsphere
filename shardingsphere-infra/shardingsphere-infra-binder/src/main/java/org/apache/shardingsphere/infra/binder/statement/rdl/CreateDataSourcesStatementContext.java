@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.binder.context;
+package org.apache.shardingsphere.infra.binder.statement.rdl;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.statement.rdl.util.DataSourceConnectionUrlUtil;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.distsql.parser.binder.util.DataSourceConnectionUrlUtil;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.DataSourceConnectionSegment;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;

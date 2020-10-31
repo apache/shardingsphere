@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.binder.util;
+package org.apache.shardingsphere.infra.binder.statement.rdl.util;
 
+import org.apache.shardingsphere.distsql.parser.statement.rdl.DataSourceConnectionSegment;
 import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.DataSourceConnectionSegment;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DataSourceConnectionUrlUtilTest {
-
+    
     @Test
     public void assertMySQLGetUrl() {
         DataSourceConnectionSegment segment = buildDataSourceConnectionSegment();
@@ -41,7 +41,7 @@ public final class DataSourceConnectionUrlUtilTest {
         String expected = "jdbc:mysql://127.0.0.1:3306/test";
         assertThat(actual, is(expected));
     }
-
+    
     @Test
     public void assertPostgreSQLGetUrl() {
         DataSourceConnectionSegment segment = buildDataSourceConnectionSegment();
@@ -50,7 +50,7 @@ public final class DataSourceConnectionUrlUtilTest {
         String expected = "jdbc:postgresql://127.0.0.1:3306/test";
         assertThat(actual, is(expected));
     }
-
+    
     @Test
     public void assertMariaDBGetUrl() {
         DataSourceConnectionSegment segment = buildDataSourceConnectionSegment();
@@ -59,7 +59,7 @@ public final class DataSourceConnectionUrlUtilTest {
         String expected = "jdbc:mariadb://127.0.0.1:3306/test";
         assertThat(actual, is(expected));
     }
-
+    
     @Test
     public void assertOracleGetUrl() {
         DataSourceConnectionSegment segment = buildDataSourceConnectionSegment();
@@ -68,7 +68,7 @@ public final class DataSourceConnectionUrlUtilTest {
         String expected = "jdbc:oracle://127.0.0.1:3306/test";
         assertThat(actual, is(expected));
     }
-
+    
     @Test
     public void assertSQLServerGetUrl() {
         DataSourceConnectionSegment segment = buildDataSourceConnectionSegment();
@@ -79,11 +79,11 @@ public final class DataSourceConnectionUrlUtilTest {
     }
     
     private DataSourceConnectionSegment buildDataSourceConnectionSegment() {
-        DataSourceConnectionSegment segment = new DataSourceConnectionSegment();
-        segment.setHostName("127.0.0.1");
-        segment.setDb("test");
-        segment.setUser("root");
-        segment.setPort("3306");
-        return segment;
+        DataSourceConnectionSegment result = new DataSourceConnectionSegment();
+        result.setHostName("127.0.0.1");
+        result.setDb("test");
+        result.setUser("root");
+        result.setPort("3306");
+        return result;
     }
 }

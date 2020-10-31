@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.binder.util;
+package org.apache.shardingsphere.infra.binder.statement.rdl.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -41,7 +41,6 @@ public final class DataSourceConnectionUrlUtil {
     }
     
     private static String getUrl(final DataSourceConnectionSegment connectionSegment, final String jdbcUrlPrefix) {
-        return String.format("%s//%s:%s/%s", jdbcUrlPrefix,
-                connectionSegment.getHostName(), connectionSegment.getPort(), connectionSegment.getDb());
+        return String.format("%s//%s:%s/%s", jdbcUrlPrefix, connectionSegment.getHostName(), connectionSegment.getPort(), connectionSegment.getDb());
     }
 }

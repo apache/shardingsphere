@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.binder.util;
+package org.apache.shardingsphere.infra.binder.statement.rdl.util;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.binder.context;
+package org.apache.shardingsphere.infra.binder.statement.rdl;
 
-import org.apache.shardingsphere.distsql.parser.binder.util.ShardingAlgorithmPropertiesUtil;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.TableRuleSegment;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.rdl.util.ShardingAlgorithmPropertiesUtil;
 
 import java.util.Properties;
 
