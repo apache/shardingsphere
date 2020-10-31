@@ -35,14 +35,14 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingAlgorithmPropertiesUtil {
     
-    public static final Map<String, Collection<String>> TYPE_AND_PROPERTIES;
+    private static final Map<String, Collection<String>> TYPE_PROPERTIES_MAP;
     
     static {
-        TYPE_AND_PROPERTIES = new LinkedHashMap<>();
-        TYPE_AND_PROPERTIES.put("MOD", Collections.singleton("sharding-count"));
-        TYPE_AND_PROPERTIES.put("HASH_MOD", Collections.singleton("sharding-count"));
-        TYPE_AND_PROPERTIES.put("VOLUME_RANGE", Arrays.asList("range-lower", "range-upper", "sharding-volume"));
-        TYPE_AND_PROPERTIES.put("BOUNDARY_RANGE", Collections.singleton("sharding-ranges"));
+        TYPE_PROPERTIES_MAP = new LinkedHashMap<>(4, 1);
+        TYPE_PROPERTIES_MAP.put("MOD", Collections.singleton("sharding-count"));
+        TYPE_PROPERTIES_MAP.put("HASH_MOD", Collections.singleton("sharding-count"));
+        TYPE_PROPERTIES_MAP.put("VOLUME_RANGE", Arrays.asList("range-lower", "range-upper", "sharding-volume"));
+        TYPE_PROPERTIES_MAP.put("BOUNDARY_RANGE", Collections.singleton("sharding-ranges"));
     }
     
     /**
@@ -54,11 +54,11 @@ public final class ShardingAlgorithmPropertiesUtil {
      */
     public static Properties getProperties(final String shardingAlgorithmType, final Collection<String> properties) {
         String algorithmType = shardingAlgorithmType.toUpperCase();
-        Preconditions.checkArgument(TYPE_AND_PROPERTIES.containsKey(algorithmType), "Bad sharding algorithm type: %s.", algorithmType);
-        Preconditions.checkArgument(TYPE_AND_PROPERTIES.get(algorithmType).size() == properties.size(),
-                "%s needs %d properties, but %s properties are given.", algorithmType, TYPE_AND_PROPERTIES.get(algorithmType).size(), properties.size());
+        Preconditions.checkArgument(TYPE_PROPERTIES_MAP.containsKey(algorithmType), "Bad sharding algorithm type: %s.", algorithmType);
+        Preconditions.checkArgument(TYPE_PROPERTIES_MAP.get(algorithmType).size() == properties.size(),
+                "%s needs %d properties, but %s properties are given.", algorithmType, TYPE_PROPERTIES_MAP.get(algorithmType).size(), properties.size());
         Properties result = new Properties();
-        Iterator<String> keys = TYPE_AND_PROPERTIES.get(algorithmType).iterator();
+        Iterator<String> keys = TYPE_PROPERTIES_MAP.get(algorithmType).iterator();
         Iterator<String> values = properties.iterator();
         while (keys.hasNext()) {
             result.setProperty(keys.next(), values.next());
