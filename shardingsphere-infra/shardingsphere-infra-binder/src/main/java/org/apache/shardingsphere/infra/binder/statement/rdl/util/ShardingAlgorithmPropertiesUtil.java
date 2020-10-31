@@ -62,7 +62,7 @@ public final class ShardingAlgorithmPropertiesUtil {
         }
         return result;
     }
-
+    
     private static void validate(final String algorithmType, final Collection<String> algorithmProperties) {
         Preconditions.checkArgument(TYPE_PROPERTIES_MAP.containsKey(algorithmType), "Bad sharding algorithm type: %s.", algorithmType);
         Preconditions.checkArgument(TYPE_PROPERTIES_MAP.get(algorithmType).size() == algorithmProperties.size(),
