@@ -32,12 +32,12 @@ import java.util.Map;
 public final class CreateDataSourcesStatementContextConverter implements SQLStatementContextConverter<CreateDataSourcesStatementContext, Map<String, YamlDataSourceParameter>> {
     
     @Override
-    public Map<String, YamlDataSourceParameter> convert(final CreateDataSourcesStatementContext context) {
-        Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>(context.getSqlStatement().getConnectionInfos().size(), 1);
-        for (DataSourceConnectionSegment each : context.getSqlStatement().getConnectionInfos()) {
+    public Map<String, YamlDataSourceParameter> convert(final CreateDataSourcesStatementContext sqlStatementContext) {
+        Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>(sqlStatementContext.getSqlStatement().getConnectionInfos().size(), 1);
+        for (DataSourceConnectionSegment each : sqlStatementContext.getSqlStatement().getConnectionInfos()) {
             DataSourceParameter parameter = new DataSourceParameter();
             YamlDataSourceParameter dataSource = new YamlDataSourceParameter();
-            dataSource.setUrl(context.getUrl(each));
+            dataSource.setUrl(sqlStatementContext.getUrl(each));
             dataSource.setUsername(each.getUser());
             dataSource.setPassword(each.getPassword());
             dataSource.setMinPoolSize(parameter.getMinPoolSize());
