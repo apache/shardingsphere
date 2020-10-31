@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.proxy.converter;
 
-import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
-import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.infra.binder.statement.rdl.CreateDataSourcesStatementContext;
-import org.apache.shardingsphere.infra.binder.converter.SQLStatementContextConverter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.DataSourceConnectionSegment;
+import org.apache.shardingsphere.infra.binder.converter.SQLStatementContextConverter;
+import org.apache.shardingsphere.infra.binder.statement.rdl.CreateDataSourcesStatementContext;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -37,7 +38,7 @@ public final class CreateDataSourcesStatementContextConverter implements SQLStat
         for (DataSourceConnectionSegment each : sqlStatementContext.getSqlStatement().getConnectionInfos()) {
             DataSourceParameter parameter = new DataSourceParameter();
             YamlDataSourceParameter dataSource = new YamlDataSourceParameter();
-            dataSource.setUrl(sqlStatementContext.getUrl(each));
+            dataSource.setUrl(getURL(sqlStatementContext.getDatabaseType(), each));
             dataSource.setUsername(each.getUser());
             dataSource.setPassword(each.getPassword());
             dataSource.setMinPoolSize(parameter.getMinPoolSize());
@@ -48,5 +49,9 @@ public final class CreateDataSourcesStatementContextConverter implements SQLStat
             result.put(each.getName(), dataSource);
         }
         return result;
+    }
+    
+    private String getURL(final DatabaseType databaseType, final DataSourceConnectionSegment connectionSegment) {
+        return String.format("%s//%s:%s/%s", databaseType.getJdbcUrlPrefixes().iterator().next(), connectionSegment.getHostName(), connectionSegment.getPort(), connectionSegment.getDb());
     }
 }
