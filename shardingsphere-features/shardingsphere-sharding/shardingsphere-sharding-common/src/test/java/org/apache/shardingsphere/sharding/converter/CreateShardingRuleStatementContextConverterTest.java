@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sharding.converter;
 import org.apache.shardingsphere.infra.binder.statement.rdl.CreateShardingRuleStatementContext;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.TableRuleSegment;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +41,7 @@ public final class CreateShardingRuleStatementContextConverterTest {
     
     @Before
     public void setUp() {
+        ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
         segment = new TableRuleSegment();
         segment.setLogicTable("t_order");
         segment.setDataSources(Arrays.asList("ds0", "ds1"));
