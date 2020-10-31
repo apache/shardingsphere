@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.converter;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.DataSourceConnectionSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.DataSourceConnectionSegment;
 import org.apache.shardingsphere.infra.binder.converter.SQLStatementContextConverter;
 import org.apache.shardingsphere.infra.binder.statement.rdl.CreateDataSourcesStatementContext;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;

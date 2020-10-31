@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.infra.binder.statement.rdl.CreateDataSourcesStatementContext;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateDataSourcesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.DataSourceConnectionSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.DataSourceConnectionSegment;
 import org.junit.Before;
 import org.junit.Test;
 
