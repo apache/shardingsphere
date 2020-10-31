@@ -18,15 +18,23 @@
 package org.apache.shardingsphere.sharding.converter;
 
 import com.google.common.base.Joiner;
-import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.binder.statement.rdl.CreateShardingRuleStatementContext;
-import org.apache.shardingsphere.infra.binder.converter.SQLStatementContextConverter;
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.TableRuleSegment;
+import org.apache.shardingsphere.infra.binder.converter.SQLStatementContextConverter;
+import org.apache.shardingsphere.infra.binder.statement.rdl.CreateShardingRuleStatementContext;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPropertiesAware;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Properties;
 
 /**
@@ -39,7 +47,7 @@ public final class CreateShardingRuleStatementContextConverter implements SQLSta
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
         for (TableRuleSegment each : sqlStatementContext.getSqlStatement().getTables()) {
             result.getShardingAlgorithms().put(getAlgorithmName(each.getLogicTable(), each.getAlgorithmType()),
-                    createAlgorithmConfiguration(each, sqlStatementContext.getAlgorithmProperties(each)));
+                    createAlgorithmConfiguration(each, getAlgorithmProperties(each.getAlgorithmType(), each.getProperties())));
             result.getAutoTables().put(each.getLogicTable(), createAutoTableRuleConfiguration(each));
         }
         return result;
@@ -50,6 +58,24 @@ public final class CreateShardingRuleStatementContextConverter implements SQLSta
         result.setType(segment.getAlgorithmType());
         result.setProps(properties);
         return result;
+    }
+    
+    private Properties getAlgorithmProperties(final String type, final Collection<String> propertyValues) {
+        Collection<String> propertyKeys = findAlgorithmPropertyKeys(type);
+        Preconditions.checkArgument(propertyKeys.size() == propertyValues.size(), "%s needs %d properties, but %s properties are given.", type, propertyKeys.size(), propertyValues.size());
+        Properties result = new Properties();
+        Iterator<String> keys = propertyKeys.iterator();
+        Iterator<String> values = propertyValues.iterator();
+        while (keys.hasNext()) {
+            result.setProperty(keys.next(), values.next());
+        }
+        return result;
+    }
+    
+    private Collection<String> findAlgorithmPropertyKeys(final String algorithmType) {
+        return ShardingSphereServiceLoader.newServiceInstances(ShardingAlgorithm.class).stream()
+                .filter(each -> each instanceof ShardingAutoTableAlgorithm && each.getType().equals(algorithmType)).findFirst()
+                .map(each -> ((ShardingSphereAlgorithmPropertiesAware) each).getAllPropertyKeys()).orElse(Collections.emptyList());
     }
     
     private YamlShardingAutoTableRuleConfiguration createAutoTableRuleConfiguration(final TableRuleSegment segment) {
