@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.convert;
+package org.apache.shardingsphere.sharding.converter;
 
 import org.apache.shardingsphere.distsql.parser.binder.context.CreateShardingRuleStatementContext;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateShardingRuleStatement;
