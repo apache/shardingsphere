@@ -52,14 +52,14 @@ public final class CreateShardingRuleStatementContextConverterTest {
     }
     
     @Test
-    public void generate() {
-        YamlShardingRuleConfiguration rule = new CreateShardingRuleStatementContextConverter().convert(context);
-        assertTrue(rule.getTables().isEmpty());
-        assertThat(rule.getAutoTables().size(), is(1));
-        assertThat(rule.getAutoTables().get(segment.getLogicTable()).getActualDataSources(), is("ds0,ds1"));
-        assertThat(rule.getAutoTables().get(segment.getLogicTable()).getShardingStrategy().getStandard().getShardingColumn(), is("order_id"));
-        assertThat(rule.getAutoTables().get(segment.getLogicTable()).getShardingStrategy().getStandard().getShardingAlgorithmName(), is("t_order_MOD"));
-        assertTrue(rule.getShardingAlgorithms().containsKey("t_order_MOD"));
-        assertThat(rule.getShardingAlgorithms().get("t_order_MOD").getType(), is("MOD"));
+    public void assertConvert() {
+        YamlShardingRuleConfiguration config = CreateShardingRuleStatementContextConverter.convert(context);
+        assertTrue(config.getTables().isEmpty());
+        assertThat(config.getAutoTables().size(), is(1));
+        assertThat(config.getAutoTables().get(segment.getLogicTable()).getActualDataSources(), is("ds0,ds1"));
+        assertThat(config.getAutoTables().get(segment.getLogicTable()).getShardingStrategy().getStandard().getShardingColumn(), is("order_id"));
+        assertThat(config.getAutoTables().get(segment.getLogicTable()).getShardingStrategy().getStandard().getShardingAlgorithmName(), is("t_order_MOD"));
+        assertTrue(config.getShardingAlgorithms().containsKey("t_order_MOD"));
+        assertThat(config.getShardingAlgorithms().get("t_order_MOD").getType(), is("MOD"));
     }
 }

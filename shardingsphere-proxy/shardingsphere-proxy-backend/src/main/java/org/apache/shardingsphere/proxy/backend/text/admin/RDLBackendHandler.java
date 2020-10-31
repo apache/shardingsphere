@@ -97,7 +97,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     }
     
     private BackendResponse execute(final CreateDataSourcesStatementContext context) {
-        Map<String, YamlDataSourceParameter> parameters = new CreateDataSourcesStatementContextConverter().convert(context);
+        Map<String, YamlDataSourceParameter> parameters = CreateDataSourcesStatementContextConverter.convert(context);
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(parameters));
         // TODO Need to get the executed feedback from registry center for returning.
@@ -108,8 +108,8 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     }
     
     private BackendResponse execute(final CreateShardingRuleStatementContext context) {
-        YamlShardingRuleConfiguration configs = new CreateShardingRuleStatementContextConverter().convert(context);
-        Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(configs));
+        YamlShardingRuleConfiguration config = CreateShardingRuleStatementContextConverter.convert(context);
+        Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(config));
         // TODO Need to get the executed feedback from registry center for returning.
         GovernanceEventBus.getInstance().post(new RulePersistEvent(backendConnection.getSchemaName(), rules));
         UpdateResponse result = new UpdateResponse();

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.converter;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.DataSourceConnectionSegment;
 import org.apache.shardingsphere.infra.binder.statement.rdl.CreateDataSourcesStatementContext;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
@@ -29,6 +31,7 @@ import java.util.Map;
 /**
  * Create data source statement context converter.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CreateDataSourcesStatementContextConverter {
     
     /**
@@ -37,7 +40,7 @@ public final class CreateDataSourcesStatementContextConverter {
      * @param sqlStatementContext create data source statement context
      * @return YAML data source parameter map
      */
-    public Map<String, YamlDataSourceParameter> convert(final CreateDataSourcesStatementContext sqlStatementContext) {
+    public static Map<String, YamlDataSourceParameter> convert(final CreateDataSourcesStatementContext sqlStatementContext) {
         Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>(sqlStatementContext.getSqlStatement().getConnectionInfos().size(), 1);
         for (DataSourceConnectionSegment each : sqlStatementContext.getSqlStatement().getConnectionInfos()) {
             DataSourceParameter parameter = new DataSourceParameter();
@@ -55,7 +58,7 @@ public final class CreateDataSourcesStatementContextConverter {
         return result;
     }
     
-    private String getURL(final DatabaseType databaseType, final DataSourceConnectionSegment connectionSegment) {
+    private static String getURL(final DatabaseType databaseType, final DataSourceConnectionSegment connectionSegment) {
         return String.format("%s//%s:%s/%s", databaseType.getJdbcUrlPrefixes().iterator().next(), connectionSegment.getHostName(), connectionSegment.getPort(), connectionSegment.getDb());
     }
 }
