@@ -48,21 +48,24 @@ public final class ShardingAlgorithmPropertiesUtil {
     /**
      * Get properties.
      *
-     * @param shardingAlgorithmType sharding algorithm type
-     * @param properties properties
+     * @param algorithmType sharding algorithm type
+     * @param algorithmProperties sharding algorithm properties
      * @return properties
      */
-    public static Properties getProperties(final String shardingAlgorithmType, final Collection<String> properties) {
-        String algorithmType = shardingAlgorithmType.toUpperCase();
-        Preconditions.checkArgument(TYPE_PROPERTIES_MAP.containsKey(algorithmType), "Bad sharding algorithm type: %s.", algorithmType);
-        Preconditions.checkArgument(TYPE_PROPERTIES_MAP.get(algorithmType).size() == properties.size(),
-                "%s needs %d properties, but %s properties are given.", algorithmType, TYPE_PROPERTIES_MAP.get(algorithmType).size(), properties.size());
+    public static Properties getProperties(final String algorithmType, final Collection<String> algorithmProperties) {
+        validate(algorithmType, algorithmProperties);
         Properties result = new Properties();
         Iterator<String> keys = TYPE_PROPERTIES_MAP.get(algorithmType).iterator();
-        Iterator<String> values = properties.iterator();
+        Iterator<String> values = algorithmProperties.iterator();
         while (keys.hasNext()) {
             result.setProperty(keys.next(), values.next());
         }
         return result;
+    }
+
+    private static void validate(final String algorithmType, final Collection<String> algorithmProperties) {
+        Preconditions.checkArgument(TYPE_PROPERTIES_MAP.containsKey(algorithmType), "Bad sharding algorithm type: %s.", algorithmType);
+        Preconditions.checkArgument(TYPE_PROPERTIES_MAP.get(algorithmType).size() == algorithmProperties.size(),
+                "%s needs %d properties, but %s properties are given.", algorithmType, TYPE_PROPERTIES_MAP.get(algorithmType).size(), algorithmProperties.size());
     }
 }
