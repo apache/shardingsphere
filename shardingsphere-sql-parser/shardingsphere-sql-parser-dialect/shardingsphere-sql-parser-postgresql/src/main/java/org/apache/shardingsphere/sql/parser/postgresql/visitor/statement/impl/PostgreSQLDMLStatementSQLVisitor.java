@@ -395,8 +395,8 @@ public final class PostgreSQLDMLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitTargetList(final TargetListContext ctx) {
         ProjectionsSegment result = new ProjectionsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         if (null != ctx.targetList()) {
-            ProjectionsSegment projecs = (ProjectionsSegment) visit(ctx.targetList());
-            result.getProjections().addAll(projecs.getProjections());
+            ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.targetList());
+            result.getProjections().addAll(projections.getProjections());
         }
         ProjectionSegment projection = (ProjectionSegment) visit(ctx.targetEl());
         result.getProjections().add(projection);

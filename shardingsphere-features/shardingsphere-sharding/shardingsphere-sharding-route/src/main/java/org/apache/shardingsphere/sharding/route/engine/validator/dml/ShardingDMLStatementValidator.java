@@ -50,6 +50,6 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
         allTableNames.removeAll(shardingRule.getShardingLogicTableNames(tableNames));
         allTableNames.removeAll(shardingRule.getBroadcastTables());
         // TODO validate other single table scenario
-        return 0 == allTableNames.size();
+        return allTableNames.isEmpty();
     }
 }

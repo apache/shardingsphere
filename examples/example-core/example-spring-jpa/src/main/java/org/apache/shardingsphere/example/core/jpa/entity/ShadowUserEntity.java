@@ -49,7 +49,6 @@ public final class ShadowUserEntity extends ShadowUser {
         return super.getPwd();
     }
     
-    
     @Column(name = "shadow")
     @Override
     public boolean isShadow() {

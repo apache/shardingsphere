@@ -134,7 +134,7 @@ public final class JDBCBackendDataSourceTest {
             try {
                 actual.addAll(each.get());
             } catch (final InterruptedException | ExecutionException ex) {
-                assertThat(ex.getMessage(), containsString("Could't get 6 connections one time, partition succeed connection(5) have released!"));
+                assertThat(ex.getMessage(), containsString("Can not get 6 connections one time, partition succeed connection(5) have released!"));
             }
         }
         assertTrue(actual.isEmpty());
