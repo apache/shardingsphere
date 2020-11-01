@@ -207,9 +207,9 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     
     @Test
     public void assertBindingRule() {
-        Collection<ShardingTableRuleConfiguration> actualBindingTableRuleConfigus = bindingRule.getTables();
-        assertThat(actualBindingTableRuleConfigus.size(), is(4));
-        Iterator<ShardingTableRuleConfiguration> actualIterator = actualBindingTableRuleConfigus.iterator();
+        Collection<ShardingTableRuleConfiguration> actualBindingTableRuleConfigs = bindingRule.getTables();
+        assertThat(actualBindingTableRuleConfigs.size(), is(4));
+        Iterator<ShardingTableRuleConfiguration> actualIterator = actualBindingTableRuleConfigs.iterator();
         assertThat(actualIterator.next().getLogicTable(), is("t_order"));
         assertThat(actualIterator.next().getLogicTable(), is("t_order_item"));
         assertThat(actualIterator.next().getLogicTable(), is("t_user"));

@@ -39,8 +39,8 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     private boolean poolable;
     
     private int fetchSize;
-
-    private int fecthDirection;
+    
+    private int fetchDirection;
     
     private final ForceExecuteTemplate<Statement> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
@@ -85,15 +85,15 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         recordMethodInvocation(targetClass, "setFetchSize", new Class[] {int.class}, new Object[] {rows});
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setFetchSize(rows));
     }
-
+    
     @Override
-    public int getFetchDirection() throws SQLException {
-        return fecthDirection;
+    public int getFetchDirection() {
+        return fetchDirection;
     }
-
+    
     @Override
     public void setFetchDirection(final int direction) throws SQLException {
-        this.fecthDirection = direction;
+        fetchDirection = direction;
         recordMethodInvocation(targetClass, "setFetchDirection", new Class[] {int.class}, new Object[] {direction});
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setFetchDirection(direction));
     }
