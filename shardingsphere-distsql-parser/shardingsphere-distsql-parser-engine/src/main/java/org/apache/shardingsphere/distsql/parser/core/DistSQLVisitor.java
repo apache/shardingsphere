@@ -27,8 +27,8 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.S
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.TableRuleContext;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateShardingRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.DataSourceConnectionSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.TableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.DataSourceConnectionSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.TableRuleSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 
@@ -36,9 +36,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Dist SQL statement visitor.
+ * Dist SQL visitor.
  */
-public final class DistSQLStatementVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
+public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitCreateDataSources(final CreateDataSourcesContext ctx) {

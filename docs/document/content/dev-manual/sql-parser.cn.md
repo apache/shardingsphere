@@ -32,11 +32,6 @@ chapter = true
 | SQLServerStatementSQLVisitorFacade  | 基于 SQLServer 的提取 SQL 语句的语法树访问器   |
 | OracleStatementSQLVisitorFacade     | 基于 Oracle 的提取 SQL 语句的语法树访问器      |
 | SQL92StatementSQLVisitorFacade      | 基于 SQL92 的SQL 解析器入口                   |
-| MySQLFormatSQLVisitorFacade         | 基于 MySQL 的 SQL 语句格式化的语法树访问器      |
-| PostgreSQLFormatSQLVisitorFacade    | 基于 PostgreSQL 的 SQL 语句格式化的语法树访问器 |
-| SQLServerFormatSQLVisitorFacade     | 基于 SQLServer 的 SQL 语句格式化的语法树访问器  |
-| OracleFormatSQLVisitorFacade        | 基于 Oracle 的 SQL 语句格式化的语法树访问器     |
-| SQL92FormatSQLVisitorFacade         | 基于 SQL92 的 SQL 语句格式化的语法树访问器      |
 
 ## ParsingHook
 

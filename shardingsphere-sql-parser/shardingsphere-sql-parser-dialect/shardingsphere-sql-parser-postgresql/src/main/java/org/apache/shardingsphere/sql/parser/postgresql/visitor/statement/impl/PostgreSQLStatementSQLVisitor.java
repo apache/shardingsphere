@@ -187,16 +187,14 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
             ExpressionSegment right = (ExpressionSegment) visit(ctx.aExpr(1));
             String operator = ctx.comparisonOperator().getText();
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-            BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
-            return result;
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
         }
         if (null != ctx.logicalOperator()) {
             ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
             ExpressionSegment right = (ExpressionSegment) visit(ctx.aExpr(1));
             String operator = ctx.logicalOperator().getText();
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-            BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
-            return result;
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
         }
         super.visitAExpr(ctx);
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
@@ -257,9 +255,8 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
     private InExpression createInSegment(final AExprContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
         ExpressionSegment right = visitInExpression(ctx.inExpr());
-        boolean not = null != ctx.NOT() ? true : false;
-        InExpression result = new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not);
-        return result;
+        boolean not = null != ctx.NOT();
+        return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not);
     }
     
     private ExpressionSegment visitInExpression(final InExprContext ctx) {
@@ -285,9 +282,8 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
         ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bExpr());
         ExpressionSegment and = (ExpressionSegment) visit(ctx.aExpr(1));
-        boolean not = null != ctx.NOT() ? true : false;
-        BetweenExpression result = new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not);
-        return result;
+        boolean not = null != ctx.NOT();
+        return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not);
     }
     
     @Override
@@ -307,8 +303,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
                 right = (ExpressionSegment) visit(ctx.bExpr(1));
             }
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-            BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
-            return result;
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
         }
         for (BExprContext each : ctx.bExpr()) {
             visit(each);

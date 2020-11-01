@@ -15,28 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+package org.apache.shardingsphere.infra.config.algorithm;
 
 import java.util.Collection;
 
 /**
- * Table rule segment.
+ * ShardingSphere algorithm properties aware.
  */
-@Getter
-@Setter
-public final class TableRuleSegment implements ASTNode {
+public interface ShardingSphereAlgorithmPropertiesAware {
     
-    private String logicTable;
-    
-    private Collection<String> dataSources;
-    
-    private String shardingColumn;
-    
-    private String algorithmType;
-    
-    private Collection<String> properties;
+    /**
+     * Get all property keys.
+     * 
+     * @return all property keys
+     */
+    Collection<String> getAllPropertyKeys();
 }

@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl;
+package org.apache.shardingsphere.infra.binder.statement.rdl;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateDataSourcesStatement;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 /**
- * Data source connection segment.
+ * Create dataSource statement context.
  */
 @Getter
-@Setter
-public final class DataSourceConnectionSegment implements ASTNode {
+public final class CreateDataSourcesStatementContext extends CommonSQLStatementContext<CreateDataSourcesStatement> {
     
-    private String name;
+    private final DatabaseType databaseType;
     
-    private String hostName;
-    
-    private String port;
-    
-    private String db;
-    
-    private String user;
-    
-    private String password;
+    public CreateDataSourcesStatementContext(final CreateDataSourcesStatement sqlStatement, final DatabaseType databaseType) {
+        super(sqlStatement);
+        this.databaseType = databaseType;
+    }
 }

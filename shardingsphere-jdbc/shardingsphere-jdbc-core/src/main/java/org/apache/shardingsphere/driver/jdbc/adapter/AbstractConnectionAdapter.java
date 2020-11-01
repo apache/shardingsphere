@@ -145,7 +145,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 for (Connection each : result) {
                     each.close();
                 }
-                throw new SQLException(String.format("Could't get %d connections one time, partition succeed connection(%d) have released!", connectionSize, result.size()), ex);
+                throw new SQLException(String.format("Can not get %d connections one time, partition succeed connection(%d) have released!", connectionSize, result.size()), ex);
             }
         }
         return result;

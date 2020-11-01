@@ -15,14 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.binder.context;
+package org.apache.shardingsphere.infra.binder.statement.rdl;
 
-import org.apache.shardingsphere.distsql.parser.binder.util.ShardingAlgorithmPropertiesUtil;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateShardingRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.TableRuleSegment;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-
-import java.util.Properties;
 
 /**
  * Create sharding rule statement context.
@@ -31,15 +27,5 @@ public final class CreateShardingRuleStatementContext extends CommonSQLStatement
     
     public CreateShardingRuleStatementContext(final CreateShardingRuleStatement sqlStatement) {
         super(sqlStatement);
-    }
-    
-    /**
-     * Get algorithm properties.
-     *
-     * @param segment segment
-     * @return algorithm properties
-     */
-    public Properties getAlgorithmProperties(final TableRuleSegment segment) {
-        return ShardingAlgorithmPropertiesUtil.getProperties(segment.getAlgorithmType(), segment.getProperties());
     }
 }
