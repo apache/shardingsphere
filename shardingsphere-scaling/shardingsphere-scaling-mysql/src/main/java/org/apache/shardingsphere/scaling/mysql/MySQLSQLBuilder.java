@@ -19,10 +19,17 @@ package org.apache.shardingsphere.scaling.mysql;
 
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
 
+import java.util.Map;
+import java.util.Set;
+
 /**
  * MySQL SQL builder.
  */
 public final class MySQLSQLBuilder extends AbstractSQLBuilder {
+    
+    public MySQLSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
+        super(shardingColumnsMap);
+    }
     
     @Override
     public String getLeftIdentifierQuoteString() {
