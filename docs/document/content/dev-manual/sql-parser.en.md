@@ -32,11 +32,6 @@ chapter = true
 | SQLServerStatementSQLVisitorFacade  | SQL visitor of statement extracted facade for SQLServer  |
 | OracleStatementSQLVisitorFacade     | SQL visitor of statement extracted facade for Oracle     |
 | SQL92StatementSQLVisitorFacade      | SQL visitor of statement extracted facade for SQL92      |
-| MySQLFormatSQLVisitorFacade         | SQL visitor of SQL formatted facade for MySQL            |
-| PostgreSQLFormatSQLVisitorFacade    | SQL visitor of SQL formatted facade for PostgreSQL       |
-| SQLServerFormatSQLVisitorFacade     | SQL visitor of SQL formatted facade for SQLServer        |
-| OracleFormatSQLVisitorFacade        | SQL visitor of SQL formatted for Oracle                  |
-| SQL92FormatSQLVisitorFacade         | SQL visitor of SQL formatted for SQL92                   |
 
 ## ParsingHook
 
