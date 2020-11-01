@@ -82,7 +82,7 @@ public abstract class AbstractSQLBuilder {
         return sqlCacheMap.get(sqlCacheKey);
     }
     
-    private PreparedSQL buildInsertSQLInternal(final DataRecord dataRecord) {
+    protected PreparedSQL buildInsertSQLInternal(final DataRecord dataRecord) {
         StringBuilder columnsLiteral = new StringBuilder();
         StringBuilder holder = new StringBuilder();
         List<Integer> valuesIndex = new ArrayList<>();
