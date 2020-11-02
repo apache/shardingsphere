@@ -76,7 +76,7 @@ partitionNames
     ;
 
 dropTable
-    : DROP dropTableSpecification TABLE existClause? tableNames (RESTRICT | CASCADE)?
+    : DROP TEMPORARY? (TABLE | TABLES) existClause? tableNames (RESTRICT | CASCADE)?
     ;
 
 dropIndex
@@ -110,7 +110,7 @@ alterDatabase
     ;
 
 createDatabaseSpecification_
-    : DEFAULT? (CHARACTER SET | CHARSET) EQ_? characterSetName
+    : DEFAULT? (CHARACTER SET | CHARSET) EQ_? (characterSetName | BINARY)
     | DEFAULT? COLLATE EQ_? collationName_
     | DEFAULT? ENCRYPTION EQ_? y_or_n=STRING_
     ;
@@ -565,10 +565,6 @@ partitionDefinitionOption
 
 subpartitionDefinition
     : SUBPARTITION identifier partitionDefinitionOption*
-    ;
-
-dropTableSpecification
-    : TEMPORARY?
     ;
 
 ownerStatement

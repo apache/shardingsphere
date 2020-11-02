@@ -95,7 +95,7 @@ setVariable
     ;
 
 variableAssign
-    : variable EQ_? setExprOrDefault
+    : variable EQ_ setExprOrDefault
     ;
 
 showBinaryLogs

@@ -90,5 +90,9 @@ execute
     | changeMasterTo
     | startSlave
     | stopSlave
+    | showCreateFunction
+    | showCreateProcedure
+    | showCreateView
+    | showCreateUser
     ) SEMI_?
     ;
