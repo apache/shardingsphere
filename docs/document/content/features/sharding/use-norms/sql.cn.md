@@ -53,8 +53,9 @@ tbl_name [AS] alias] [index_hint_list]
 * `CASE WHEN` 中包含子查询不支持
 * `CASE WHEN` 中使用逻辑表名不支持（请使用表别名）
 不支持 HAVING、UNION (ALL)
+
 部分支持子查询
-* 存在子查询，同时sql中没有分片键条件不支持，如果子查询中有分片键，需要和父查询中分片键条件一致
+* 子查询中必须包含分片键，且分片键必须和父查询中的分片键一致
 
 除了分页子查询的支持之外(详情请参考[分页](/cn/features/sharding/use-norms/pagination))，也支持同等模式的子查询。无论嵌套多少层，ShardingSphere都可以解析至第一个包含数据表的子查询，一旦在下层嵌套中再次找到包含数据表的子查询将直接抛出解析异常。
 
