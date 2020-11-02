@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.api;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorFactory;
@@ -27,19 +26,21 @@ import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorRule;
 /**
  * SQL visitor engine.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public final class SQLVisitorEngine {
+    
+    private final String databaseType;
+    
+    private final String visitorType;
     
     /**
      * Visit parse tree.
      *
-     * @param databaseType database type
-     * @param visitorType SQL visitor type
      * @param parseTree parse tree
      * @param <T> type of SQL visitor result
      * @return SQL visitor result
      */
-    public static <T> T visit(final String databaseType, final String visitorType, final ParseTree parseTree) {
+    public <T> T visit(final ParseTree parseTree) {
         ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseTree.getClass()));
         return parseTree.accept(visitor);
     }
