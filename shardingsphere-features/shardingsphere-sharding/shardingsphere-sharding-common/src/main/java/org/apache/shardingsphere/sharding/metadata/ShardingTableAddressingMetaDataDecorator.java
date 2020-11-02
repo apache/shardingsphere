@@ -38,10 +38,13 @@ public final class ShardingTableAddressingMetaDataDecorator implements TableAddr
     }
     
     private void decorate(final TableRule tableRule, final TableAddressingMetaData metaData) {
+        boolean found = false;
         for (String each : tableRule.getActualDataNodes().stream().map(DataNode::getTableName).collect(Collectors.toSet())) {
-            metaData.getTableDataSourceNamesMapper().remove(each);
+            found = null != metaData.getTableDataSourceNamesMapper().remove(each) || found;
         }
-        metaData.getTableDataSourceNamesMapper().put(tableRule.getLogicTable(), new LinkedList<>(tableRule.getActualDatasourceNames()));
+        if (found) {
+            metaData.getTableDataSourceNamesMapper().put(tableRule.getLogicTable(), new LinkedList<>(tableRule.getActualDatasourceNames()));
+        }
     }
     
     @Override
