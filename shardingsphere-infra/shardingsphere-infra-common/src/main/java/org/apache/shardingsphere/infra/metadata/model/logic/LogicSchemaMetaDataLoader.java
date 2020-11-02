@@ -136,8 +136,8 @@ public final class LogicSchemaMetaDataLoader {
         return load(databaseType, dataSourceMap, tableName, props);
     }
     
-    private Map<String, Collection<String>> loadUnConfiguredSchemaMetaData(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                                       final Collection<String> excludedTableNames) throws SQLException {
+    private Map<String, Collection<String>> loadUnConfiguredSchemaMetaData(final DatabaseType databaseType, 
+                                                                           final Map<String, DataSource> dataSourceMap, final Collection<String> excludedTableNames) throws SQLException {
         Map<String, Collection<String>> result = new HashMap<>(dataSourceMap.size(), 1);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             Collection<String> tableNames = PhysicalSchemaMetaDataLoader.loadTableNames(entry.getValue(), databaseType, excludedTableNames);

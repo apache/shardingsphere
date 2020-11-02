@@ -62,7 +62,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
                 metaData.getSchemaMetaData().getConfiguredSchemaMetaData(), parameters, sqlStatementParserEngine.parse(sql, false));
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, parameters);
         ShardingSphereSchema schema = new ShardingSphereSchema("sharding_db", Collections.emptyList(), Collections.singleton(shardingRule), Collections.emptyMap(), metaData);
-        RouteContext result = new SQLRouteEngine(props, Collections.singletonList(shardingRule)).route(logicSQL, schema);
+        RouteContext result = new SQLRouteEngine(Collections.singletonList(shardingRule), props).route(logicSQL, schema);
         assertThat(result.getRouteUnits().size(), is(1));
         return result;
     }

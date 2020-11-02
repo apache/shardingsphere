@@ -67,7 +67,7 @@ public final class SQLRouteEngineTest {
     public void assertRouteSuccess() {
         LogicSQL logicSQL = new LogicSQL(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(new RouteRuleFixture()), Collections.emptyMap(), metaData);
-        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(props, Collections.singleton(new RouteRuleFixture()));
+        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(Collections.singleton(new RouteRuleFixture()), props);
         setSPIRoutingHook(sqlRouteEngine);
         RouteContext actual = sqlRouteEngine.route(logicSQL, schema);
         assertThat(actual.getRouteUnits().size(), is(1));
@@ -83,7 +83,7 @@ public final class SQLRouteEngineTest {
     public void assertRouteFailure() {
         LogicSQL logicSQL = new LogicSQL(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("logic_schema", Collections.emptyList(), Collections.singleton(new RouteRuleFixture()), Collections.emptyMap(), metaData);
-        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(props, Collections.singleton(new RouteFailureRuleFixture()));
+        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(Collections.singleton(new RouteFailureRuleFixture()), props);
         setSPIRoutingHook(sqlRouteEngine);
         try {
             sqlRouteEngine.route(logicSQL, schema);
