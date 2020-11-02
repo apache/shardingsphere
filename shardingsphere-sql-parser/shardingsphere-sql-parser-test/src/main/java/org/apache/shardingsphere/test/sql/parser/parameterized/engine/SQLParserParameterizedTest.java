@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
