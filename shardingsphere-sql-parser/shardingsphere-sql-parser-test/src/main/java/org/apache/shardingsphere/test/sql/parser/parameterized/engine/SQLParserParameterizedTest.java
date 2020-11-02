@@ -85,7 +85,6 @@ public abstract class SQLParserParameterizedTest {
     }
     
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
-        ParseTree parseTree = SQLParserEngine.parse(databaseType, sql, false);
-        return SQLVisitorEngine.visit(databaseType, "STATEMENT", parseTree);
+        return new SQLVisitorEngine(databaseType, "STATEMENT").visit(new SQLParserEngine(databaseType).parse(sql, false));
     }
 }
