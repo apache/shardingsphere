@@ -90,6 +90,18 @@ public final class GovernanceFacade implements AutoCloseable {
         listenerManager.init();
     }
     
+    /**
+     * Update configurations.
+     *
+     * @param dataSourceConfigMap schema data source configuration map
+     * @param schemaRuleMap schema rule map
+     */
+    public void updateConfigurations(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigMap, final Map<String, Collection<RuleConfiguration>> schemaRuleMap) {
+        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigMap.entrySet()) {
+            configCenter.persistConfigurations(entry.getKey(), dataSourceConfigMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), true);
+        }
+    }
+    
     @Override
     public void close() {
         repositoryFacade.close();
