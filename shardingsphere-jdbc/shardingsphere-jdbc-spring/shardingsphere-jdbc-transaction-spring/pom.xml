@@ -21,7 +21,7 @@
     <parent>
         <artifactId>shardingsphere-jdbc-spring</artifactId>
         <groupId>org.apache.shardingsphere</groupId>
-        <version>5.0.0-alpha</version>
+        <version>5.0.0-beta-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-jdbc-transaction-spring</artifactId>
     <name>${project.artifactId}</name>

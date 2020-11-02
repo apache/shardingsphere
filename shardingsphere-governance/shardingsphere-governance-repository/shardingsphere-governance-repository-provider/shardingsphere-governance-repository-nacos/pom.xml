@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-governance-repository-provider</artifactId>
-        <version>5.0.0-alpha</version>
+        <version>5.0.0-beta-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-governance-repository-nacos</artifactId>
     <name>${project.artifactId}</name>
