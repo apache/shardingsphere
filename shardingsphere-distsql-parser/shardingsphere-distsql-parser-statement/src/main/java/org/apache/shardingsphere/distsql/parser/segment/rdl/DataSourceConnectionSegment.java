@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.sharding.hint;
+package org.apache.shardingsphere.distsql.parser.segment.rdl;
 
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-
-import java.util.Collection;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
- * Sharding algorithm for hint without sharding keys.
- * 
- * @param <T> class type of sharding value
+ * Data source connection segment.
  */
-public interface HintShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {
+@Getter
+@Setter
+public final class DataSourceConnectionSegment implements ASTNode {
     
-    /**
-     * Sharding.
-     * 
-     * <p>sharding value injected by hint, not in SQL.</p>
-     *
-     * @param availableTargetNames available data sources or table names
-     * @param shardingValue sharding value
-     * @return sharding result for data sources or table names
-     */
-    Collection<String> doSharding(Collection<String> availableTargetNames, HintShardingValue<T> shardingValue);
+    private String name;
+    
+    private String hostName;
+    
+    private String port;
+    
+    private String db;
+    
+    private String user;
+    
+    private String password;
 }

@@ -148,9 +148,9 @@ cp -f ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-e
 **4. 生成文件签名**
 
 ```shell
-shasum -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src.zip >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src.zip.sha512
-shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-ui-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-ui-bin.tar.gz.sha512
-shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.gz.sha512
+shasum -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src.zip > apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src.zip.sha512
+shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-ui-bin.tar.gz > apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-ui-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.gz > apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.gz.sha512
 ```
 
 **5. 提交Apache SVN**

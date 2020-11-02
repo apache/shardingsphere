@@ -411,8 +411,8 @@ public final class SelectStatementContextTest {
         when(projectionSegment.getSubquery()).thenReturn(subquery);
         SelectStatement select = mock(SelectStatement.class);
         when(subquery.getSelect()).thenReturn(select);
-        WhereSegment subwhere = mock(WhereSegment.class);
-        when(select.getWhere()).thenReturn(Optional.of(subwhere));
+        WhereSegment subWhere = mock(WhereSegment.class);
+        when(select.getWhere()).thenReturn(Optional.of(subWhere));
         when(projectionSegment.getSubquery().getSelect().getWhere()).thenReturn(Optional.of(mock(WhereSegment.class)));
         WhereSegment whereSegment = new WhereSegment(0, 0, null);
         subSelectStatement.setWhere(whereSegment);

@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.convert;
+package org.apache.shardingsphere.proxy.converter;
 
+import org.apache.shardingsphere.distsql.parser.segment.rdl.DataSourceConnectionSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateDataSourcesStatement;
+import org.apache.shardingsphere.infra.binder.statement.rdl.CreateDataSourcesStatementContext;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.distsql.parser.binder.context.CreateDataSourcesStatementContext;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateDataSourcesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.DataSourceConnectionSegment;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,20 +47,20 @@ public final class CreateDataSourcesStatementContextConverterTest {
         Collection<DataSourceConnectionSegment> result = new LinkedList<>();
         for (int i = 0; i < 2; i++) {
             DataSourceConnectionSegment segment = new DataSourceConnectionSegment();
-            segment.setName("ds" + i);
+            segment.setName(String.format("ds%s", i));
             segment.setHostName("127.0.0.1");
             segment.setPassword("3306");
-            segment.setDb("demo_ds_" + i);
-            segment.setUser("root" + i);
-            segment.setPassword("root" + i);
+            segment.setDb(String.format("demo_ds_%s", i));
+            segment.setUser(String.format("root%s", i));
+            segment.setPassword(String.format("root%s", i));
             result.add(segment);
         }
         return result;
     }
     
     @Test
-    public void assertGenerate() {
-        Map<String, YamlDataSourceParameter> result = new CreateDataSourcesStatementContextConverter().convert(sqlStatement);
+    public void assertConvert() {
+        Map<String, YamlDataSourceParameter> result = CreateDataSourcesStatementContextConverter.convert(sqlStatement);
         assertThat(result.size(), is(2));
         assertTrue(result.keySet().containsAll(Arrays.asList("ds0", "ds1")));
         assertThat(result.values().iterator().next().getUsername(), is("root0"));

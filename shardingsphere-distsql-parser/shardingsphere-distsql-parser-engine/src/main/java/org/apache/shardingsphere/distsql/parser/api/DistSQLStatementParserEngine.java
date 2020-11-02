@@ -23,7 +23,7 @@ import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.apache.shardingsphere.distsql.parser.core.DistSQLParserFactory;
-import org.apache.shardingsphere.distsql.parser.core.DistSQLStatementVisitor;
+import org.apache.shardingsphere.distsql.parser.core.DistSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -45,7 +45,7 @@ public final class DistSQLStatementParserEngine {
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException("Unsupported SQL of `%s`", sql);
         }
-        return (SQLStatement) new DistSQLStatementVisitor().visit(parseASTNode.getRootNode());
+        return (SQLStatement) new DistSQLVisitor().visit(parseASTNode.getRootNode());
     }
     
     private ParseASTNode twoPhaseParse(final String sql) {

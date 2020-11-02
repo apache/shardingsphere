@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.binder.generator;
+package org.apache.shardingsphere.distsql.parser.segment.rdl;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+
+import java.util.Collection;
 
 /**
- * SQL statement context converter.
+ * Table rule segment.
  */
-public interface SQLStatementContextConverter<I extends SQLStatementContext<?>, O> {
+@Getter
+@Setter
+public final class TableRuleSegment implements ASTNode {
     
-    /**
-     * Convert sql statement.
-     *
-     * @param sqlStatement sql statement
-     * @return yaml configurations
-     */
-    O convert(I sqlStatement);
+    private String logicTable;
+    
+    private Collection<String> dataSources;
+    
+    private String shardingColumn;
+    
+    private String algorithmType;
+    
+    private Collection<String> properties;
 }
