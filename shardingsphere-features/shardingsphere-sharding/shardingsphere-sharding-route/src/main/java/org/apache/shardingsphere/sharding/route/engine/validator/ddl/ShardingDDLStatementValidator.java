@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Sharding ddl statement validator.
@@ -57,10 +56,9 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     protected void validateTableExist(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            for (Map.Entry<String, Collection<String>> entry : metaData.getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().entrySet()) {
-                if (!entry.getValue().contains(tableName)) {
-                    throw new NoSuchTableException(entry.getKey(), tableName);
-                }
+            if (!metaData.getTableAddressingMetaData().getTableDataSourceNamesMapper().containsKey(tableName)) {
+                String dataSourceName = metaData.getTableAddressingMetaData().getTableDataSourceNamesMapper().get(tableName).iterator().next();
+                throw new NoSuchTableException(dataSourceName, tableName);
             }
         }
     }
