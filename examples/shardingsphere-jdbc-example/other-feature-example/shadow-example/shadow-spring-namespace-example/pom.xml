@@ -23,7 +23,7 @@
     <parent>
         <artifactId>shadow-example</artifactId>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <version>${revision}</version>
+        <version>${example-revision}</version>
     </parent>
     <artifactId>shadow-spring-namespace-example</artifactId>
     <name>${project.artifactId}</name>

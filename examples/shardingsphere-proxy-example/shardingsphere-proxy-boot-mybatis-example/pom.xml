@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>shardingsphere-proxy-example</artifactId>
-        <version>${revision}</version>
+        <version>${example-revision}</version>
     </parent>
     <artifactId>shardingsphere-proxy-boot-mybatis-example</artifactId>
     <name>${project.artifactId}</name>

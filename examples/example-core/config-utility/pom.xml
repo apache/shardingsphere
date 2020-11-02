@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>example-core</artifactId>
-        <version>${revision}</version>
+        <version>${example-revision}</version>
     </parent>
     <artifactId>config-utility</artifactId>
     <name>${project.artifactId}</name>

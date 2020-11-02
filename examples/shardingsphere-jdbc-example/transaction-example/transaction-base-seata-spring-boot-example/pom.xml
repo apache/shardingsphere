@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>transaction-example</artifactId>
-        <version>${revision}</version>
+        <version>${example-revision}</version>
     </parent>
     <artifactId>transaction-base-seata-spring-boot-example</artifactId>
     <name>Example::transaction::base-seata-spring-boot</name>
