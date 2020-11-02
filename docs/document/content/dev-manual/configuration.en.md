@@ -15,7 +15,6 @@ chapter = true
 | ------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | ShardingRuleBuilder             | Used to convert user sharding configurations to sharding rule objects                                       |
 | ReplicaQueryRuleBuilder         | Used to convert user replica query configurations to replica query rule objects |
-| ConsensusReplicationRuleBuilder | Used to convert user consensus replication configurations to consensus replication rule objects             |
 | EncryptRuleBuilder              | Used to convert user encryption configurations to encryption rule objects                                   |
 | ShadowRuleBuilder               | Used to convert user shadow database configurations to shadow database rule objects                         |
 
@@ -29,7 +28,6 @@ chapter = true
 | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
 | ShardingRuleConfigurationYamlSwapper             | Used to convert YAML sharding configuration to standard sharding configuration                           |
 | ReplicaQueryRuleConfigurationYamlSwapper         | Used to convert YAML replica query configuration to standard replica query configuration                 |
-| ConsensusReplicationRuleConfigurationYamlSwapper | Used to convert YAML consensus replication configuration to standard consensus replication configuration |
 | EncryptRuleConfigurationYamlSwapper              | Used to convert YAML encryption configuration to standard encryption configuration                       |
 | ShadowRuleConfigurationYamlSwapper               | Used to convert YAML shadow database configuration to standard shadow database configuration             |
 

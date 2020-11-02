@@ -244,10 +244,10 @@ cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-scaling-distri
 **4. 生成文件签名**
 
 ```shell
-shasum -a 512 apache-shardingsphere-${RELEASE.VERSION}-src.zip >> apache-shardingsphere-${RELEASE.VERSION}-src.zip.sha512
-shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz.sha512
-shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz.sha512
-shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz.sha512
+shasum -a 512 apache-shardingsphere-${RELEASE.VERSION}-src.zip > apache-shardingsphere-${RELEASE.VERSION}-src.zip.sha512
+shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz > apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz > apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz > apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz.sha512
 ```
 
 **5. 提交Apache SVN**

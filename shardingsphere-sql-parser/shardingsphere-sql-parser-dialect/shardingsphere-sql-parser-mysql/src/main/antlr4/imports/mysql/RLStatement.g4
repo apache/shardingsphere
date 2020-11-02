@@ -65,17 +65,17 @@ threadType
 
 utilOption
     : UNTIL ((SQL_BEFORE_GTIDS | SQL_AFTER_GTIDS) EQ_ identifier
-    | MASTER_LOG_FILE EQ_ identifier COMMA_ MASTER_LOG_POS EQ_ identifier
-    | RELAY_LOG_FILE EQ_ identifier COMMA_ RELAY_LOG_POS  EQ_ identifier
+    | MASTER_LOG_FILE EQ_ STRING_ COMMA_ MASTER_LOG_POS EQ_ NUMBER_
+    | RELAY_LOG_FILE EQ_ STRING_ COMMA_ RELAY_LOG_POS  EQ_ NUMBER_
     | SQL_AFTER_MTS_GAPS)
     ;
 
 connectionOptions
-    : (USER EQ_ identifier)? (PASSWORD EQ_ identifier)? (DEFAULT_AUTH EQ_ identifier)? (PLUGIN_DIR EQ_ identifier)?
+    : (USER EQ_ STRING_)? (PASSWORD EQ_ STRING_)? (DEFAULT_AUTH EQ_ STRING_)? (PLUGIN_DIR EQ_ STRING_)?
     ;
 
 channelOption
-    : FOR CHANNEL identifier
+    : FOR CHANNEL STRING_
     ;
 
 masterDefs

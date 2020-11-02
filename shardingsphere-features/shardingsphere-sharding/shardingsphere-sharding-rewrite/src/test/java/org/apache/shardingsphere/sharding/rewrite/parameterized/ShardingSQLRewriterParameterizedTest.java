@@ -47,7 +47,7 @@ import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.sql.parser.statement.standard.StandardSQLStatementParserEngine;
+import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.io.File;
@@ -82,12 +82,11 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         YamlRootRuleConfigurations yamlRootRuleConfigs = createYamlRootRuleConfigurations();
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(
                 new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlRootRuleConfigs.getRules()), yamlRootRuleConfigs.getDataSources().keySet());
-        StandardSQLStatementParserEngine standardSQLStatementParserEngine =
-                new StandardSQLStatementParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
+        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
         ShardingSphereMetaData metaData = createShardingSphereMetaData();
         ConfigurationProperties props = new ConfigurationProperties(yamlRootRuleConfigs.getProps());
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchemaMetaData().getConfiguredSchemaMetaData(), 
-                getTestParameters().getInputParameters(), standardSQLStatementParserEngine.parse(getTestParameters().getInputSQL(), false));
+                getTestParameters().getInputParameters(), sqlStatementParserEngine.parse(getTestParameters().getInputSQL(), false));
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
         ShardingSphereSchema schema = new ShardingSphereSchema("sharding_db", Collections.emptyList(), rules, Collections.emptyMap(), metaData);
         RouteContext routeContext = new SQLRouteEngine(props, rules).route(logicSQL, schema);

@@ -39,11 +39,4 @@ ShardingSphere 的 SQL 解析器经历了 3 代产品的更新迭代。
 第二代 SQL 解析器从 1.5.x 版本开始，ShardingSphere 采用完全自研的 SQL 解析引擎。
 由于目的不同，ShardingSphere 并不需要将 SQL 转为一颗完全的抽象语法树，也无需通过访问器模式进行二次遍历。它采用对 SQL `半理解`的方式，仅提炼数据分片需要关注的上下文，因此 SQL 解析的性能和兼容性得到了进一步的提高。
 
-第三代 SQL 解析器则从 3.0.x 版本开始，ShardingSphere 尝试使用 ANTLR 作为 SQL 解析的引擎，并计划根据 `DDL -> TCL -> DAL –> DCL -> DML –>DQL` 这个顺序，依次替换原有的解析引擎，目前仍处于替换迭代中。
-使用 ANTLR 的原因是希望 ShardingSphere 的解析引擎能够更好的对 SQL 进行兼容。对于复杂的表达式、递归、子查询等语句，虽然 ShardingSphere 的分片核心并不关注，但是会影响对于 SQL 理解的友好度。
-经过实例测试，ANTLR 解析 SQL 的性能比自研的 SQL 解析引擎慢 3-10 倍左右。为了弥补这一差距，ShardingSphere 将使用 `PreparedStatement` 的 SQL 解析的语法树放入缓存。
-因此建议采用 `PreparedStatement` 这种 SQL 预编译的方式提升性能。
-
-第三代 SQL 解析引擎的整体结构划分如下图所示。
-
-![解析引擎结构](https://shardingsphere.apache.org/document/current/img/sharding/parsing_architecture_cn.png)
+第三代 SQL 解析器从 3.0.x 版本开始，尝试使用 ANTLR 作为 SQL 解析引擎，并采用 Visit 的方式从 AST 中获取 SQL Statement。从5.0.x 版本开始，解析引擎的架构已完成重构调整，同时通过将第一次解析的得到的 AST 放入缓存，方便下次直接获取相同  SQL的解析结果，来提高解析效率。 因此我们建议用户采用 `PreparedStatement` 这种 SQL 预编译的方式来提升性能。当前，用户还可以独立使用 ShardingSphere 的 SQL 解析引擎，获得多款主流关系型数据库的 AST 及 SQL Statement。 未来，SQL 解析引擎将继续提供 SQL 格式化、 SQL 模板化等强大的功能。

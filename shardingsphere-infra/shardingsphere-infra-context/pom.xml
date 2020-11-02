@@ -41,7 +41,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-rdl-parser-engine</artifactId>
+            <artifactId>shardingsphere-distsql-parser-engine</artifactId>
             <version>${project.version}</version>
         </dependency>
         

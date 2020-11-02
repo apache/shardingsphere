@@ -36,12 +36,12 @@ import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.proxy.convert.CreateDataSourcesStatementContextConverter;
-import org.apache.shardingsphere.rdl.parser.binder.context.CreateDataSourcesStatementContext;
-import org.apache.shardingsphere.rdl.parser.binder.context.CreateShardingRuleStatementContext;
-import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateDataSourcesStatement;
-import org.apache.shardingsphere.rdl.parser.statement.rdl.CreateShardingRuleStatement;
-import org.apache.shardingsphere.sharding.convert.CreateShardingRuleStatementContextConverter;
+import org.apache.shardingsphere.proxy.converter.CreateDataSourcesStatementContextConverter;
+import org.apache.shardingsphere.infra.binder.statement.rdl.CreateDataSourcesStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.rdl.CreateShardingRuleStatementContext;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateDataSourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.sharding.converter.CreateShardingRuleStatementContextConverter;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateDatabaseStatementContext;
@@ -97,7 +97,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     }
     
     private BackendResponse execute(final CreateDataSourcesStatementContext context) {
-        Map<String, YamlDataSourceParameter> parameters = new CreateDataSourcesStatementContextConverter().convert(context);
+        Map<String, YamlDataSourceParameter> parameters = CreateDataSourcesStatementContextConverter.convert(context);
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(parameters));
         // TODO Need to get the executed feedback from registry center for returning.
@@ -108,8 +108,8 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     }
     
     private BackendResponse execute(final CreateShardingRuleStatementContext context) {
-        YamlShardingRuleConfiguration configs = new CreateShardingRuleStatementContextConverter().convert(context);
-        Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(configs));
+        YamlShardingRuleConfiguration config = CreateShardingRuleStatementContextConverter.convert(context);
+        Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(config));
         // TODO Need to get the executed feedback from registry center for returning.
         GovernanceEventBus.getInstance().post(new RulePersistEvent(backendConnection.getSchemaName(), rules));
         UpdateResponse result = new UpdateResponse();

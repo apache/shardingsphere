@@ -306,19 +306,14 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             ExpressionSegment right = (ExpressionSegment) visit(ctx.expr(1));
             String operator = "XOR";
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-            BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
-    
-            return result;
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
         }
         if (null != ctx.logicalOperator()) {
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-            BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)),
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)),
                     (ExpressionSegment) visit(ctx.expr(1)), ctx.logicalOperator().getText(), text);
-    
-            return result;
         }
-        NotExpression result = new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)));
-        return result;
+        return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)));
     }
     
     @Override
@@ -329,8 +324,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
                     ctx.stop.getStopIndex()));
             String operator = "IS";
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-            BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
-            return result;
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
         }
         if (null != ctx.comparisonOperator() || null != ctx.SAFE_EQ_()) {
             return createCompareSegment(ctx);
@@ -348,8 +342,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         String operator = null != ctx.SAFE_EQ_() ? ctx.SAFE_EQ_().getText() : ctx.comparisonOperator().getText();
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
-        return result;
+        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
     
     @Override
@@ -370,7 +363,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     }
     
     private InExpression createInSegment(final PredicateContext ctx) {
-        boolean not = null != ctx.NOT() ? true : false;
+        boolean not = null != ctx.NOT();
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment right;
         if (null != ctx.subquery()) {
@@ -381,8 +374,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
                 ((ListExpression) right).getItems().add((ExpressionSegment) visit(each));
             }
         }
-        InExpression result = new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not);
-        return result;
+        return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not);
     }
     
     private BinaryOperationExpression createBinaryOperationExpressionFromLike(final PredicateContext ctx) {
@@ -401,8 +393,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             operator = null != ctx.NOT() ? "NOT LIKE" : "LIKE";
         }
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
-        return result;
+        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
     
     private BinaryOperationExpression createBinaryOperationExpressionFromRegexp(final PredicateContext ctx) {
@@ -410,18 +401,15 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         ExpressionSegment right = (ExpressionSegment) visit(ctx.bitExpr(1));
         String operator = null != ctx.NOT() ? "NOT REGEXP" : "REGEXP";
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
-    
-        return result;
+        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
     
     private BetweenExpression createBetweenSegment(final PredicateContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
         ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
-        boolean not = null != ctx.NOT() ? true : false;
-        BetweenExpression result = new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not);
-        return result;
+        boolean not = null != ctx.NOT();
+        return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not);
     }
     
     @Override
@@ -433,8 +421,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         ExpressionSegment right = (ExpressionSegment) visit(ctx.getChild(2));
         String operator = ctx.getChild(1).getText();
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        BinaryOperationExpression result = new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
-        return result;
+        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
     
     private ExpressionSegment createLiteralExpression(final LiteralsContext context) {

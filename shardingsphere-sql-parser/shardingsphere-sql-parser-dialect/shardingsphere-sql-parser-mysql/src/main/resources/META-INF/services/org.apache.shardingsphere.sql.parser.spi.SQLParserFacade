@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.mysql.MySQLParserFacade
+org.apache.shardingsphere.sql.parser.mysql.parser.MySQLParserFacade

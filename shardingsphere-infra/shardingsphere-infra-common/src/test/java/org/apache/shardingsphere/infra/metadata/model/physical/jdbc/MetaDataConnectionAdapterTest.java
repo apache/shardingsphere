@@ -25,11 +25,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -40,6 +42,8 @@ public final class MetaDataConnectionAdapterTest {
     private static final String TEST_SCHEMA = "schema";
     
     private final DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType("MySQL");
+    
+    private final DatabaseType oracleDatabaseType = DatabaseTypeRegistry.getTrunkDatabaseType("Oracle");
     
     @Mock
     private Connection connection;
@@ -60,6 +64,22 @@ public final class MetaDataConnectionAdapterTest {
     
     @Test
     public void assertGetSchema() throws SQLException {
+        when(connection.getSchema()).thenReturn(TEST_SCHEMA);
+        MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, connection);
+        assertThat(connectionAdapter.getSchema(), is(TEST_SCHEMA));
+    }
+    
+    @Test
+    public void assertGetSchemaByOracleSPI() throws SQLException {
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        when(databaseMetaData.getUserName()).thenReturn(TEST_SCHEMA);
+        MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(oracleDatabaseType, connection);
+        assertThat(connectionAdapter.getSchema(), is(TEST_SCHEMA.toUpperCase()));
+    }
+    
+    @Test
+    public void assertGetSchemaByMySQLSPI() throws SQLException {
         when(connection.getSchema()).thenReturn(TEST_SCHEMA);
         MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, connection);
         assertThat(connectionAdapter.getSchema(), is(TEST_SCHEMA));

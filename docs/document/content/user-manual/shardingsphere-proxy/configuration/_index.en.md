@@ -10,6 +10,6 @@ through which developer can quickly and clearly understand the functions provide
 This chapter is a configuration manual for ShardingSphere-Proxy, which can also be referred to as a dictionary if necessary.
 
 ShardingSphere-Proxy only provided YAML configuration. 
-By configuration, application developers can flexibly use data sharding, replica query, consensus replication, data encryption, shadow database or the combination of them.
+By configuration, application developers can flexibly use data sharding, replica query, data encryption, shadow database or the combination of them.
 
 Rule configuration keeps consist with YAML configuration of ShardingSphere-JDBC.

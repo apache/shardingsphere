@@ -56,7 +56,7 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.rdl.parser.engine.ShardingSphereSQLStatementParserEngine;
+import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 
@@ -306,7 +306,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private LogicSQL createLogicSQL(final String sql) {
         PhysicalSchemaMetaData schemaMetaData = schemaContexts.getDefaultSchema().getMetaData().getSchemaMetaData().getSchemaMetaData();
-        ShardingSphereSQLStatementParserEngine sqlStatementParserEngine = new ShardingSphereSQLStatementParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(schemaContexts.getDatabaseType()));
+        ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(schemaContexts.getDatabaseType()));
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, Collections.emptyList(), sqlStatement);
         return new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
