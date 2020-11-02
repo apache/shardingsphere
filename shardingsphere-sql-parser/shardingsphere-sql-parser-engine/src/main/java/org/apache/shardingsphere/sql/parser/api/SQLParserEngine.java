@@ -17,19 +17,22 @@
 
 package org.apache.shardingsphere.sql.parser.api;
 
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * SQL parser engine.
  */
+@RequiredArgsConstructor
 public final class SQLParserEngine {
     
-    private final SQLParserExecutor executor;
+    private static final Map<String, SQLParserExecutor> EXECUTORS = new ConcurrentHashMap<>();
     
-    public SQLParserEngine(final String databaseType) {
-        executor = new SQLParserExecutor(databaseType);
-    }
+    private final String databaseType;
     
     /**
      * Parse SQL.
@@ -39,6 +42,7 @@ public final class SQLParserEngine {
      * @return parse tree
      */
     public ParseTree parse(final String sql, final boolean useCache) {
+        SQLParserExecutor executor = EXECUTORS.containsKey(databaseType) ? EXECUTORS.get(databaseType) : EXECUTORS.computeIfAbsent(databaseType, SQLParserExecutor::new);
         return executor.parse(sql, useCache);
     }
 }
