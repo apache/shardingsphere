@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-proxy</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>5.0.0-alpha</version>
     </parent>
     <artifactId>shardingsphere-proxy-backend</artifactId>
     <name>${project.artifactId}</name>
