@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.listener;
 
 import org.apache.shardingsphere.governance.core.registry.util.FieldUtil;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -47,7 +47,7 @@ public final class RegistryListenerManagerTest {
         FieldUtil.setField(actual, "instanceStateChangedListener", instanceStateChangedListener);
         FieldUtil.setField(actual, "dataSourceStateChangedListener", dataSourceStateChangedListener);
         actual.initListeners();
-        verify(instanceStateChangedListener).watch(ChangedType.UPDATED);
-        verify(dataSourceStateChangedListener).watch(ChangedType.UPDATED, ChangedType.DELETED, ChangedType.ADDED);
+        verify(instanceStateChangedListener).watch(Type.UPDATED);
+        verify(dataSourceStateChangedListener).watch(Type.UPDATED, Type.DELETED, Type.ADDED);
     }
 }

@@ -34,7 +34,7 @@ import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigur
 import org.apache.shardingsphere.governance.core.yaml.swapper.LogicSchemaMetaDataYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -75,13 +75,13 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         if (Strings.isNullOrEmpty(schemaName) || !isValidNodeChangedEvent(schemaName, event.getKey())) {
             return Optional.empty();
         }
-        if (ChangedType.ADDED == event.getChangedType()) {
+        if (Type.ADDED == event.getType()) {
             return Optional.of(createAddedEvent(schemaName));
         }
-        if (ChangedType.UPDATED == event.getChangedType()) {
+        if (Type.UPDATED == event.getType()) {
             return Optional.of(createUpdatedEvent(schemaName, event));
         }
-        if (ChangedType.DELETED == event.getChangedType()) {
+        if (Type.DELETED == event.getType()) {
             existedSchemaNames.remove(schemaName);
             return Optional.of(new SchemaDeletedEvent(schemaName));
         }

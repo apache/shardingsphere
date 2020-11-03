@@ -23,7 +23,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.repository.apollo.wrapper.ApolloConfigWrapper;
 import org.apache.shardingsphere.governance.repository.apollo.wrapper.ApolloOpenApiWrapper;
 import org.junit.BeforeClass;
@@ -114,7 +114,7 @@ public final class ApolloRepositoryTest {
         DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
         assertThat(changeEvent.getKey(), is(path));
         assertThat(changeEvent.getValue(), is(newValue));
-        assertThat(changeEvent.getChangedType(), is(ChangedType.UPDATED));
+        assertThat(changeEvent.getType(), is(Type.UPDATED));
     }
     
     @Test
@@ -129,7 +129,7 @@ public final class ApolloRepositoryTest {
         DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
         assertThat(changeEvent.getKey(), is(path));
         assertNull(changeEvent.getValue());
-        assertThat(changeEvent.getChangedType(), is(ChangedType.DELETED));
+        assertThat(changeEvent.getType(), is(Type.DELETED));
         assertNull(REPOSITORY.get(path));
     }
     
