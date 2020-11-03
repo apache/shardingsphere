@@ -72,7 +72,7 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     protected void validateTableNotExist(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            if (metaData.getSchemaMetaData().getAllTableNames().contains(tableName)) {
+            if (metaData.getTableAddressingMetaData().getTableDataSourceNamesMapper().containsKey(tableName)) {
                 throw new TableExistsException(tableName);
             }
         }
