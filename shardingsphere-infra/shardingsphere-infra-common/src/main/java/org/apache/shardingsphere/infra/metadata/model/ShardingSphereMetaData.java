@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.sche
 public final class ShardingSphereMetaData {
     
     private final DataSourcesMetaData dataSourcesMetaData;
-
+    
     private final TableAddressingMetaData tableAddressingMetaData;
     
     private final PhysicalSchemaMetaData schemaMetaData;

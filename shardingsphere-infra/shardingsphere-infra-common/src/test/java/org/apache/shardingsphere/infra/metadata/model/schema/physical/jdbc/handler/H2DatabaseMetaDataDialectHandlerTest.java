@@ -28,20 +28,20 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 public final class H2DatabaseMetaDataDialectHandlerTest extends AbstractDatabaseMetaDataDialectHandlerTest {
-
+    
     @Test
     public void assertGetSchema() throws SQLException {
         when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
         String h2Schema = getSchema(new H2DatabaseType());
         assertThat(h2Schema, is(DATABASE_NAME));
     }
-
+    
     @Test
     public void assertFormatTableNamePattern() {
         String h2TableNamePattern = formatTableNamePattern(new H2DatabaseType());
         assertThat(h2TableNamePattern, is(TABLE_NAME_PATTERN));
     }
-
+    
     @Test
     public void assertGetQuoteCharacter() {
         QuoteCharacter h2QuoteCharacter = getQuoteCharacter(new H2DatabaseType());

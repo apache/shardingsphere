@@ -28,20 +28,20 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 public final class PostgreSQLDatabaseMetaDataDialectHandlerTest extends AbstractDatabaseMetaDataDialectHandlerTest {
-
+    
     @Test
     public void assertGetSchema() throws SQLException {
         when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
         String postgresqlSchema = getSchema(new PostgreSQLDatabaseType());
         assertThat(postgresqlSchema, is(DATABASE_NAME));
     }
-
+    
     @Test
     public void assertFormatTableNamePattern() {
         String postgresqlTableNamePattern = formatTableNamePattern(new PostgreSQLDatabaseType());
         assertThat(postgresqlTableNamePattern, is(TABLE_NAME_PATTERN));
     }
-
+    
     @Test
     public void assertGetQuoteCharacter() {
         QuoteCharacter postgresqlQuoteCharacter = getQuoteCharacter(new PostgreSQLDatabaseType());

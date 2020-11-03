@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.infra.metadata.model.schema.physical.jdbc.handler;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 
 @Getter
 @RunWith(MockitoJUnitRunner.class)
@@ -36,7 +37,7 @@ public abstract class AbstractDatabaseMetaDataDialectHandlerTest {
     protected static final String TABLE_NAME_PATTERN = "t_order_0";
     
     protected static final String USER_NAME = "demo_user";
-
+    
     @Mock
     private Connection connection;
     
