@@ -55,14 +55,16 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
     protected final RouteContext assertRoute(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createAllShardingRule();
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildLogicSchemaMetaData(), mock(TableAddressingMetaData.class), mock(CachedDatabaseMetaData.class));
+        TableAddressingMetaData tableAddressingMetaData = new TableAddressingMetaData();
+        tableAddressingMetaData.getTableDataSourceNamesMapper().put("t_category", Collections.singletonList("single_db"));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildLogicSchemaMetaData(), tableAddressingMetaData, mock(CachedDatabaseMetaData.class));
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine("MySQL");
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
                 metaData.getSchemaMetaData().getConfiguredSchemaMetaData(), parameters, sqlStatementParserEngine.parse(sql, false));
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, parameters);
         ShardingSphereSchema schema = new ShardingSphereSchema("sharding_db", Collections.emptyList(), Collections.singleton(shardingRule), Collections.emptyMap(), metaData);
-        RouteContext result = new SQLRouteEngine(props, Collections.singletonList(shardingRule)).route(logicSQL, schema);
+        RouteContext result = new SQLRouteEngine(Collections.singletonList(shardingRule), props).route(logicSQL, schema);
         assertThat(result.getRouteUnits().size(), is(1));
         return result;
     }

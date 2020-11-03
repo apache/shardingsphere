@@ -19,8 +19,6 @@ package org.apache.shardingsphere.infra.parser.sql;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -30,12 +28,18 @@ import java.util.Optional;
 /**
  * SQL statement parser engine.
  */
-@RequiredArgsConstructor
 public final class SQLStatementParserEngine {
     
-    private final String databaseTypeName;
+    private final SQLParserEngine parserEngine;
+    
+    private final SQLVisitorEngine visitorEngine;
     
     private final Cache<String, SQLStatement> cache = CacheBuilder.newBuilder().softValues().initialCapacity(2000).maximumSize(65535).build();
+    
+    public SQLStatementParserEngine(final String databaseTypeName) {
+        parserEngine = new SQLParserEngine(databaseTypeName);
+        visitorEngine = new SQLVisitorEngine(databaseTypeName, "STATEMENT");
+    }
     
     /**
      * Parse to SQL statement.
@@ -58,7 +62,6 @@ public final class SQLStatementParserEngine {
     }
     
     private SQLStatement parse(final String sql) {
-        ParseTree parseTree = SQLParserEngine.parse(databaseTypeName, sql, false);
-        return SQLVisitorEngine.visit(databaseTypeName, "STATEMENT", parseTree);
+        return visitorEngine.visit(parserEngine.parse(sql, false));
     }
 }

@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.model.addressing;
+package org.apache.shardingsphere.infra.route.engine;
 
-import lombok.Getter;
-
-import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 
 /**
- * Table addressing meta data.
+ * SQL route executor.
  */
-@Getter
-public final class TableAddressingMetaData {
+public interface SQLRouteExecutor {
     
-    private final Map<String, Collection<String>> tableDataSourceNamesMapper = new ConcurrentHashMap<>();
+    /**
+     * Route.
+     * 
+     * @param logicSQL logic SQL
+     * @param schema ShardingSphere schema
+     * @return route context
+     */
+    RouteContext route(LogicSQL logicSQL, ShardingSphereSchema schema);
 }
