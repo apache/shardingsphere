@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.Phys
 import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -58,16 +57,5 @@ public final class LogicSchemaMetaData {
      */
     public PhysicalSchemaMetaData getSchemaMetaData() {
         return allSchemaMetaData;
-    }
-    
-    /**
-     * Get all table names.
-     *
-     * @return all table names
-     */
-    public Collection<String> getAllTableNames() {
-        Collection<String> result = new LinkedList<>(configuredSchemaMetaData.getAllTableNames());
-        unconfiguredSchemaMetaDataMap.values().forEach(result::addAll);
-        return result;
     }
 }

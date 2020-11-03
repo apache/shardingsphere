@@ -21,9 +21,6 @@ import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContex
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaData;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateFunctionStatementValidator;
@@ -65,17 +62,9 @@ public final class ShardingCreateFunctionStatementValidatorTest {
         routineBody.getValidStatements().add(selectValidStatementSegment);
         MySQLCreateFunctionStatement sqlStatement = new MySQLCreateFunctionStatement();
         sqlStatement.setRoutineBody(routineBody);
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        LogicSchemaMetaData logicSchemaMetaData = mock(LogicSchemaMetaData.class);
-        PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
-        when(metaData.getSchemaMetaData()).thenReturn(logicSchemaMetaData);
-        when(logicSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
-        when(schemaMetaData.getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        TableAddressingMetaData tableAddressingMetaData = new TableAddressingMetaData();
-        tableAddressingMetaData.getTableDataSourceNamesMapper().put("t_order_item", Collections.singletonList("ds_0"));
-        when(metaData.getTableAddressingMetaData()).thenReturn(tableAddressingMetaData);
-        when(logicSchemaMetaData.getAllTableNames()).thenReturn(Collections.emptyList());
         SQLStatementContext<CreateFunctionStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(metaData.getTableAddressingMetaData().getTableDataSourceNamesMapper().containsKey("t_order_item")).thenReturn(true);
         new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
     
@@ -89,13 +78,8 @@ public final class ShardingCreateFunctionStatementValidatorTest {
         routineBody.getValidStatements().add(validStatementSegment);
         MySQLCreateFunctionStatement sqlStatement = new MySQLCreateFunctionStatement();
         sqlStatement.setRoutineBody(routineBody);
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        LogicSchemaMetaData logicSchemaMetaData = mock(LogicSchemaMetaData.class);
-        PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
-        when(metaData.getSchemaMetaData()).thenReturn(logicSchemaMetaData);
-        when(logicSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
-        when(schemaMetaData.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
         SQLStatementContext<CreateFunctionStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
     
@@ -109,13 +93,8 @@ public final class ShardingCreateFunctionStatementValidatorTest {
         routineBody.getValidStatements().add(validStatementSegment);
         MySQLCreateFunctionStatement sqlStatement = new MySQLCreateFunctionStatement();
         sqlStatement.setRoutineBody(routineBody);
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        LogicSchemaMetaData logicSchemaMetaData = mock(LogicSchemaMetaData.class);
-        PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
-        when(metaData.getSchemaMetaData()).thenReturn(logicSchemaMetaData);
-        when(logicSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
-        when(schemaMetaData.getAllTableNames()).thenReturn(Collections.emptyList());
         SQLStatementContext<CreateFunctionStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
     
@@ -129,11 +108,9 @@ public final class ShardingCreateFunctionStatementValidatorTest {
         routineBody.getValidStatements().add(validStatementSegment);
         MySQLCreateFunctionStatement sqlStatement = new MySQLCreateFunctionStatement();
         sqlStatement.setRoutineBody(routineBody);
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        LogicSchemaMetaData logicSchemaMetaData = mock(LogicSchemaMetaData.class);
-        when(metaData.getSchemaMetaData()).thenReturn(logicSchemaMetaData);
-        when(logicSchemaMetaData.getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
         SQLStatementContext<CreateFunctionStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(metaData.getTableAddressingMetaData().getTableDataSourceNamesMapper().containsKey("t_order")).thenReturn(true);
         new ShardingCreateFunctionStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
 }
