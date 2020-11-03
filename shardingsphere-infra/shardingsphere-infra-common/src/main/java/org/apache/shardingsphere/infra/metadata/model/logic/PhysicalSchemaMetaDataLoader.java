@@ -41,10 +41,10 @@ import java.util.Optional;
 import java.util.TreeSet;
 
 /**
- * Rule schema meta data loader.
+ * Physical schema meta data loader.
  */
 @RequiredArgsConstructor
-public final class LogicSchemaMetaDataLoader {
+public final class PhysicalSchemaMetaDataLoader {
     
     static {
         ShardingSphereServiceLoader.register(LogicMetaDataLoader.class);
@@ -54,42 +54,40 @@ public final class LogicSchemaMetaDataLoader {
     private final Collection<ShardingSphereRule> rules;
     
     /**
-     * Load rule schema meta data.
+     * Load physical schema meta data.
      * 
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @param props configuration properties
-     * @return rule schema meta data
+     * @return physical schema meta data
      * @throws SQLException SQL exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public LogicSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                    final ConfigurationProperties props) throws SQLException {
+    public PhysicalSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final ConfigurationProperties props) throws SQLException {
         Collection<String> excludedTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        PhysicalSchemaMetaData configuredSchemaMetaData = new PhysicalSchemaMetaData();
+        PhysicalSchemaMetaData result = new PhysicalSchemaMetaData();
         for (Entry<ShardingSphereRule, LogicMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, LogicMetaDataLoader.class).entrySet()) {
             PhysicalSchemaMetaData schemaMetaData = entry.getValue().load(databaseType, dataSourceMap, new DataNodes(rules), entry.getKey(), props, excludedTableNames);
             excludedTableNames.addAll(schemaMetaData.getAllTableNames());
             if (entry.getKey() instanceof DataNodeRoutedRule) {
                 excludedTableNames.addAll(((DataNodeRoutedRule) entry.getKey()).getAllActualTables());
             }
-            configuredSchemaMetaData.merge(schemaMetaData);
+            result.merge(schemaMetaData);
         }
-        decorate(configuredSchemaMetaData);
-        return new LogicSchemaMetaData(configuredSchemaMetaData);
+        decorate(result);
+        return result;
     }
     
     /**
-     * Load rule schema meta data.
+     * Load physical schema meta data.
      *
      * @param databaseType database type
      * @param dataSource data source
      * @param props configuration properties
-     * @return rule schema meta data
+     * @return physical schema meta data
      * @throws SQLException SQL exception
      */
-    public LogicSchemaMetaData load(final DatabaseType databaseType, final DataSource dataSource,
-                                    final ConfigurationProperties props) throws SQLException {
+    public PhysicalSchemaMetaData load(final DatabaseType databaseType, final DataSource dataSource, final ConfigurationProperties props) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
         return load(databaseType, dataSourceMap, props);
@@ -127,8 +125,7 @@ public final class LogicSchemaMetaDataLoader {
      * @return schema meta data
      * @throws SQLException SQL exception
      */
-    public Optional<PhysicalTableMetaData> load(final DatabaseType databaseType, final DataSource dataSource,
-                                                final String tableName, final ConfigurationProperties props) throws SQLException {
+    public Optional<PhysicalTableMetaData> load(final DatabaseType databaseType, final DataSource dataSource, final String tableName, final ConfigurationProperties props) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
         return load(databaseType, dataSourceMap, tableName, props);

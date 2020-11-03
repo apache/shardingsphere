@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.fixture.rule.DataNodeRoutedFixtureRule;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -37,7 +38,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class LogicSchemaMetaDataLoaderTest {
+public final class PhysicalSchemaMetaDataLoaderTest {
     
     @Mock
     private DatabaseType databaseType;
@@ -48,26 +49,26 @@ public final class LogicSchemaMetaDataLoaderTest {
     @Mock
     private ConfigurationProperties props;
     
-    private final LogicSchemaMetaDataLoader loader = new LogicSchemaMetaDataLoader(Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()));
+    private final PhysicalSchemaMetaDataLoader loader = new PhysicalSchemaMetaDataLoader(Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()));
     
     @Test
     public void assertSyncLoadFullDatabase() throws SQLException {
-        assertLogicSchemaMetaData(loader.load(databaseType, dataSource, props));
+        assertPhysicalSchemaMetaData(loader.load(databaseType, dataSource, props));
     }
     
     @Test
     public void assertAsyncLoadFullDatabase() throws SQLException {
-        assertLogicSchemaMetaData(loader.load(databaseType, dataSource, props));
+        assertPhysicalSchemaMetaData(loader.load(databaseType, dataSource, props));
     }
     
-    private void assertLogicSchemaMetaData(final LogicSchemaMetaData actual) {
-        assertThat(actual.getConfiguredSchemaMetaData().getAllTableNames().size(), is(4));
-        assertTrue(actual.getConfiguredSchemaMetaData().containsTable("common_table_0"));
-        assertTrue(actual.getConfiguredSchemaMetaData().containsTable("common_table_1"));
-        assertTrue(actual.getConfiguredSchemaMetaData().containsTable("data_node_routed_table_0"));
-        assertTrue(actual.getConfiguredSchemaMetaData().get("data_node_routed_table_0").getColumns().containsKey("id"));
-        assertTrue(actual.getConfiguredSchemaMetaData().containsTable("data_node_routed_table_1"));
-        assertTrue(actual.getConfiguredSchemaMetaData().get("data_node_routed_table_1").getColumns().containsKey("id"));
+    private void assertPhysicalSchemaMetaData(final PhysicalSchemaMetaData actual) {
+        assertThat(actual.getAllTableNames().size(), is(4));
+        assertTrue(actual.containsTable("common_table_0"));
+        assertTrue(actual.containsTable("common_table_1"));
+        assertTrue(actual.containsTable("data_node_routed_table_0"));
+        assertTrue(actual.get("data_node_routed_table_0").getColumns().containsKey("id"));
+        assertTrue(actual.containsTable("data_node_routed_table_1"));
+        assertTrue(actual.get("data_node_routed_table_1").getColumns().containsKey("id"));
     }
     
     @Test

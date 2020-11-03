@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -64,7 +64,6 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -501,9 +500,9 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertPersistMetaData() {
-        LogicSchemaMetaData logicSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlLogicSchemaMetaData.class));
+        PhysicalSchemaMetaData physicalSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlLogicSchemaMetaData.class));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
-        configCenter.persistMetaData("sharding_db", logicSchemaMetaData);
+        configCenter.persistMetaData("sharding_db", physicalSchemaMetaData);
         verify(configurationRepository).persist(eq("/schemas/sharding_db/table"), anyString());
     }
     
@@ -511,18 +510,16 @@ public final class ConfigCenterTest {
     public void assertLoadMetaData() {
         when(configurationRepository.get("/schemas/sharding_db/table")).thenReturn(readYAML(META_DATA_YAML));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
-        Optional<LogicSchemaMetaData> optionalLogicSchemaMetaData = configCenter.loadMetaData("sharding_db");
-        assertTrue(optionalLogicSchemaMetaData.isPresent());
-        Optional<LogicSchemaMetaData> empty = configCenter.loadMetaData("test");
+        Optional<PhysicalSchemaMetaData> physicalSchemaMetaDataOptional = configCenter.loadMetaData("sharding_db");
+        assertTrue(physicalSchemaMetaDataOptional.isPresent());
+        Optional<PhysicalSchemaMetaData> empty = configCenter.loadMetaData("test");
         assertThat(empty, is(Optional.empty()));
-        LogicSchemaMetaData logicSchemaMetaData = optionalLogicSchemaMetaData.get();
+        PhysicalSchemaMetaData physicalSchemaMetaData = physicalSchemaMetaDataOptional.get();
         verify(configurationRepository).get(eq("/schemas/sharding_db/table"));
-        assertNotNull(logicSchemaMetaData);
-        assertNotNull(logicSchemaMetaData.getConfiguredSchemaMetaData());
-        assertThat(logicSchemaMetaData.getConfiguredSchemaMetaData().getAllTableNames(), is(Collections.singleton("t_order")));
-        assertThat(logicSchemaMetaData.getConfiguredSchemaMetaData().get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
-        assertThat(logicSchemaMetaData.getConfiguredSchemaMetaData().getAllColumnNames("t_order").size(), is(1));
-        assertThat(logicSchemaMetaData.getConfiguredSchemaMetaData().get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
+        assertThat(physicalSchemaMetaData.getAllTableNames(), is(Collections.singleton("t_order")));
+        assertThat(physicalSchemaMetaData.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
+        assertThat(physicalSchemaMetaData.getAllColumnNames("t_order").size(), is(1));
+        assertThat(physicalSchemaMetaData.get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
     }
     
     @Test

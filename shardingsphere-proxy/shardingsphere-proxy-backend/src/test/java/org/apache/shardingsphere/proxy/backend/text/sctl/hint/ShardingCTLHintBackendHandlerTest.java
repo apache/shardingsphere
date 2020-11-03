@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaData;
 import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.model.datasource.DataSourcesMetaData;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
@@ -208,7 +207,7 @@ public final class ShardingCTLHintBackendHandlerTest {
     private Map<String, ShardingSphereSchema> getSchemas() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getMetaData()).thenReturn(new ShardingSphereMetaData(mock(DataSourcesMetaData.class), mock(TableAddressingMetaData.class), 
-                new LogicSchemaMetaData(new PhysicalSchemaMetaData(ImmutableMap.of("user", mock(PhysicalTableMetaData.class)))), mock(CachedDatabaseMetaData.class)));
+                new PhysicalSchemaMetaData(ImmutableMap.of("user", mock(PhysicalTableMetaData.class))), mock(CachedDatabaseMetaData.class)));
         when(schema.isComplete()).thenReturn(true);
         return Collections.singletonMap("schema", schema);
     }

@@ -22,12 +22,11 @@ import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlIndexM
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlLogicSchemaMetaData;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchemaMetaData;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlTableMetaData;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.index.PhysicalIndexMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,19 +39,18 @@ import java.util.stream.Collectors;
 /**
  * Logic schema meta data configuration YAML swapper.
  */
-public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlLogicSchemaMetaData, LogicSchemaMetaData> {
+public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlLogicSchemaMetaData, PhysicalSchemaMetaData> {
 
     @Override
-    public YamlLogicSchemaMetaData swapToYamlConfiguration(final LogicSchemaMetaData metaData) {
+    public YamlLogicSchemaMetaData swapToYamlConfiguration(final PhysicalSchemaMetaData metaData) {
         YamlLogicSchemaMetaData result = new YamlLogicSchemaMetaData();
-        result.setConfiguredSchemaMetaData(convertYamlSchema(metaData.getConfiguredSchemaMetaData()));
+        result.setConfiguredSchemaMetaData(convertYamlSchema(metaData));
         return result;
     }
     
     @Override
-    public LogicSchemaMetaData swapToObject(final YamlLogicSchemaMetaData yamlConfig) {
-        PhysicalSchemaMetaData configured = Optional.ofNullable(yamlConfig.getConfiguredSchemaMetaData()).map(this::convertSchema).orElse(new PhysicalSchemaMetaData());
-        return new LogicSchemaMetaData(configured);
+    public PhysicalSchemaMetaData swapToObject(final YamlLogicSchemaMetaData yamlConfig) {
+        return Optional.ofNullable(yamlConfig.getConfiguredSchemaMetaData()).map(this::convertSchema).orElse(new PhysicalSchemaMetaData());
     }
     
     private PhysicalSchemaMetaData convertSchema(final YamlSchemaMetaData schema) {

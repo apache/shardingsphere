@@ -31,8 +31,8 @@ import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressing
 import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.model.datasource.DataSourcesMetaData;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.logic.PhysicalSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
@@ -106,9 +106,9 @@ public final class SchemaContextsBuilder {
         long start = System.currentTimeMillis();
         DataSourcesMetaData dataSourceMetas = new DataSourcesMetaData(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
         TableAddressingMetaData tableAddressingMetaData = TableAddressingMetaDataLoader.load(databaseType, dataSourceMap, rules);
-        LogicSchemaMetaData logicSchemaMetaData = new LogicSchemaMetaDataLoader(rules).load(databaseType, dataSourceMap, props);
+        PhysicalSchemaMetaData physicalSchemaMetaData = new PhysicalSchemaMetaDataLoader(rules).load(databaseType, dataSourceMap, props);
         CachedDatabaseMetaData cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSources.get(schemaName)).orElse(null);
-        ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, tableAddressingMetaData, logicSchemaMetaData, cachedDatabaseMetaData);
+        ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, tableAddressingMetaData, physicalSchemaMetaData, cachedDatabaseMetaData);
         log.info("Load meta data for schema {} finished, cost {} milliseconds.", schemaName, System.currentTimeMillis() - start);
         return result;
     }

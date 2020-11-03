@@ -74,6 +74,6 @@ public final class AlterTableStatementMetaDataRefreshStrategyTest extends Abstra
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyList(), alterTableStatement, tableName -> Optional.of(new PhysicalTableMetaData(
                 Collections.singletonList(new PhysicalColumnMetaData("order_id", 1, "String", true, false, false)),
                 Collections.singletonList(new PhysicalIndexMetaData("index_alter")))));
-        assertTrue(getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("index_alter"));
+        assertTrue(getMetaData().getSchemaMetaData().get("t_order").getIndexes().containsKey("index_alter"));
     }
 }

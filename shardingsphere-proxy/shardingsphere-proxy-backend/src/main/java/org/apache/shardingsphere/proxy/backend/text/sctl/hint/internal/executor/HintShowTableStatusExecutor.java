@@ -66,7 +66,7 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
         if (!schema.isComplete()) {
             throw new RuleNotExistsException();
         }
-        Collection<String> tableNames = schema.getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames();
+        Collection<String> tableNames = schema.getMetaData().getSchemaMetaData().getAllTableNames();
         for (String each : tableNames) {
             if (HintManager.isDatabaseShardingOnly()) {
                 fillShardingValues(results, each, HintManager.getDatabaseShardingValues(), Collections.emptyList());

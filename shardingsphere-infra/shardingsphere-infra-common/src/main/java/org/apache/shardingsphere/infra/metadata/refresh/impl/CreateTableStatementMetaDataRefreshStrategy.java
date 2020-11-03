@@ -41,10 +41,9 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         Optional<PhysicalTableMetaData> tableMetaData = callback.load(tableName);
         if (tableMetaData.isPresent()) {
-            metaData.getSchemaMetaData().getConfiguredSchemaMetaData().put(tableName, tableMetaData.get());
-            metaData.getSchemaMetaData().getSchemaMetaData().put(tableName, tableMetaData.get());
+            metaData.getSchemaMetaData().put(tableName, tableMetaData.get());
         } else {
-            metaData.getSchemaMetaData().getSchemaMetaData().put(tableName, new PhysicalTableMetaData());
+            metaData.getSchemaMetaData().put(tableName, new PhysicalTableMetaData());
         }
         refreshTableAddressingMetaData(metaData.getTableAddressingMetaData(), tableName, routeDataSourceNames);
     }

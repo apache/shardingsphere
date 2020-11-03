@@ -60,7 +60,7 @@ public final class ShardingCreateViewStatementValidatorTest {
         MySQLCreateViewStatement sqlStatement = new MySQLCreateViewStatement();
         sqlStatement.setSelect(selectStatement);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames()).thenReturn(Collections.singleton("t_order"));
+        when(metaData.getSchemaMetaData().getAllTableNames()).thenReturn(Collections.singleton("t_order"));
         SQLStatementContext<CreateViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
         new ShardingCreateViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }

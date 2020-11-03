@@ -37,8 +37,7 @@ public final class DropTableStatementMetaDataRefreshStrategy implements MetaData
     }
     
     private void removeMetaData(final ShardingSphereMetaData metaData, final String tableName, final Collection<String> routeDataSourceNames) {
-        metaData.getSchemaMetaData().getConfiguredSchemaMetaData().remove(tableName);
-        metaData.getSchemaMetaData().getSchemaMetaData().remove(tableName);
+        metaData.getSchemaMetaData().remove(tableName);
         metaData.getTableAddressingMetaData().getTableDataSourceNamesMapper().remove(tableName);
     }
 }

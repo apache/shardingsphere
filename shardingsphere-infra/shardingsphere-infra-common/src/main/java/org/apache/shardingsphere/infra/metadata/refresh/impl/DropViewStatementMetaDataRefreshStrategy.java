@@ -37,7 +37,7 @@ public final class DropViewStatementMetaDataRefreshStrategy implements MetaDataR
     }
     
     private void removeMetaData(final ShardingSphereMetaData metaData, final String viewName) {
-        metaData.getSchemaMetaData().getSchemaMetaData().remove(viewName);
+        metaData.getSchemaMetaData().remove(viewName);
         metaData.getTableAddressingMetaData().getTableDataSourceNamesMapper().remove(viewName);
     }
 }

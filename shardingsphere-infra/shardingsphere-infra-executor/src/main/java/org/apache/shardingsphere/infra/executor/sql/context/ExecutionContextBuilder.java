@@ -120,7 +120,7 @@ public final class ExecutionContextBuilder {
     private static List<PrimaryKeyMetaData> getPrimaryKeyColumns(final ShardingSphereMetaData metaData, final List<String> actualTableNames) {
         List<PrimaryKeyMetaData> result = new LinkedList<>();
         for (String each: actualTableNames) {
-            PhysicalTableMetaData tableMetaData = metaData.getSchemaMetaData().getSchemaMetaData().get(each);
+            PhysicalTableMetaData tableMetaData = metaData.getSchemaMetaData().get(each);
             if (null != tableMetaData) {
                 result.add(new PrimaryKeyMetaData(each, tableMetaData.getPrimaryKeyColumns()));
             }

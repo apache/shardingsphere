@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaData;
 import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.model.datasource.DataSourcesMetaData;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
@@ -56,11 +55,10 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         ShardingRule shardingRule = createAllShardingRule();
         TableAddressingMetaData tableAddressingMetaData = new TableAddressingMetaData();
         tableAddressingMetaData.getTableDataSourceNamesMapper().put("t_category", Collections.singletonList("single_db"));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), tableAddressingMetaData, buildLogicSchemaMetaData(), mock(CachedDatabaseMetaData.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), tableAddressingMetaData, buildPhysicalSchemaMetaData(), mock(CachedDatabaseMetaData.class));
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine("MySQL");
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
-                metaData.getSchemaMetaData().getConfiguredSchemaMetaData(), parameters, sqlStatementParserEngine.parse(sql, false));
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchemaMetaData(), parameters, sqlStatementParserEngine.parse(sql, false));
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, parameters);
         ShardingSphereSchema schema = new ShardingSphereSchema("sharding_db", Collections.emptyList(), Collections.singleton(shardingRule), Collections.emptyMap(), metaData);
         RouteContext result = new SQLRouteEngine(Collections.singletonList(shardingRule), props).route(logicSQL, schema);
@@ -79,7 +77,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         return new DataSourcesMetaData(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), dataSourceInfoMap);
     }
     
-    private LogicSchemaMetaData buildLogicSchemaMetaData() {
+    private PhysicalSchemaMetaData buildPhysicalSchemaMetaData() {
         Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
         tableMetaDataMap.put("t_order", new PhysicalTableMetaData(Arrays.asList(new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", true, false, false),
                 new PhysicalColumnMetaData("user_id", Types.INTEGER, "int", false, false, false),
@@ -90,6 +88,6 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
                 new PhysicalColumnMetaData("status", Types.VARCHAR, "varchar", false, false, false),
                 new PhysicalColumnMetaData("c_date", Types.TIMESTAMP, "timestamp", false, false, false)), Collections.emptySet()));
         tableMetaDataMap.put("t_other", new PhysicalTableMetaData(Collections.singletonList(new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
-        return new LogicSchemaMetaData(new PhysicalSchemaMetaData(tableMetaDataMap));
+        return new PhysicalSchemaMetaData(tableMetaDataMap);
     }
 }

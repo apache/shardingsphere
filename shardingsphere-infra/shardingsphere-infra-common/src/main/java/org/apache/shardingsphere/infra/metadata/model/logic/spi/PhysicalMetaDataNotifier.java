@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.infra.metadata.model.logic.spi;
 
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
 /**
- * Logic meta data notifier.
+ * Physical meta data notifier.
  */
-public interface LogicMetaDataNotifier extends OrderedSPI<LogicSchemaMetaData> {
+public interface PhysicalMetaDataNotifier extends OrderedSPI<PhysicalSchemaMetaData> {
     
     /**
      * Notify rule meta data changed.
@@ -31,5 +31,5 @@ public interface LogicMetaDataNotifier extends OrderedSPI<LogicSchemaMetaData> {
      * @param schemaName schema name
      * @param metaData meta data
      */
-    void notify(String schemaName, LogicSchemaMetaData metaData);
+    void notify(String schemaName, PhysicalSchemaMetaData metaData);
 }
