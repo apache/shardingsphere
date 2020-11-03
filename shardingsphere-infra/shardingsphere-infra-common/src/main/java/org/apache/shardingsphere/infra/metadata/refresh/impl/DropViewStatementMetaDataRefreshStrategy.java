@@ -44,5 +44,6 @@ public final class DropViewStatementMetaDataRefreshStrategy implements MetaDataR
             }
         }
         metaData.getSchemaMetaData().getSchemaMetaData().remove(viewName);
+        metaData.getTableAddressingMetaData().getTableDataSourceNamesMapper().remove(viewName);
     }
 }
