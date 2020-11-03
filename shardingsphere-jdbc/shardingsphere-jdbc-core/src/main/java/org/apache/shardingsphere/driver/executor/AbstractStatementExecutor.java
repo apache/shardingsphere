@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutorCallback;
-import org.apache.shardingsphere.infra.metadata.model.logic.PhysicalSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.model.logic.spi.PhysicalMetaDataNotifier;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
@@ -82,10 +82,10 @@ public abstract class AbstractStatementExecutor {
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatement);
         if (refreshStrategy.isPresent()) {
-            PhysicalSchemaMetaDataLoader metaDataLoader = new PhysicalSchemaMetaDataLoader(schema.getRules());
+            LogicSchemaMetaDataLoader loader = new LogicSchemaMetaDataLoader(schema.getRules());
             Collection<String> routeDataSourceNames = routeUnits.stream().map(RouteUnit::getDataSourceMapper).map(RouteMapper::getLogicName).collect(Collectors.toList());
             refreshStrategy.get().refreshMetaData(schema.getMetaData(), schemaContexts.getDatabaseType(), routeDataSourceNames, 
-                    sqlStatement, tableName -> metaDataLoader.load(schemaContexts.getDatabaseType(), dataSourceMap, tableName, schemaContexts.getProps()));
+                    sqlStatement, tableName -> loader.load(schemaContexts.getDatabaseType(), dataSourceMap, tableName, schemaContexts.getProps()));
             notifyPersistLogicMetaData(DefaultSchema.LOGIC_NAME, schema.getMetaData().getSchemaMetaData());
         }
     }

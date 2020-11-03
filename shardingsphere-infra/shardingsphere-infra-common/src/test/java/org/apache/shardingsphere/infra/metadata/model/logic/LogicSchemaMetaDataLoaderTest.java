@@ -38,7 +38,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PhysicalSchemaMetaDataLoaderTest {
+public final class LogicSchemaMetaDataLoaderTest {
     
     @Mock
     private DatabaseType databaseType;
@@ -49,7 +49,7 @@ public final class PhysicalSchemaMetaDataLoaderTest {
     @Mock
     private ConfigurationProperties props;
     
-    private final PhysicalSchemaMetaDataLoader loader = new PhysicalSchemaMetaDataLoader(Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()));
+    private final LogicSchemaMetaDataLoader loader = new LogicSchemaMetaDataLoader(Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()));
     
     @Test
     public void assertSyncLoadFullDatabase() throws SQLException {

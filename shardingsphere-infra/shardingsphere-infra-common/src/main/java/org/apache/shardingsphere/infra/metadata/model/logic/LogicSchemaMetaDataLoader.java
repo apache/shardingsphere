@@ -41,10 +41,10 @@ import java.util.Optional;
 import java.util.TreeSet;
 
 /**
- * Physical schema meta data loader.
+ * Logic schema meta data loader.
  */
 @RequiredArgsConstructor
-public final class PhysicalSchemaMetaDataLoader {
+public final class LogicSchemaMetaDataLoader {
     
     static {
         ShardingSphereServiceLoader.register(LogicMetaDataLoader.class);
@@ -54,12 +54,12 @@ public final class PhysicalSchemaMetaDataLoader {
     private final Collection<ShardingSphereRule> rules;
     
     /**
-     * Load physical schema meta data.
+     * Load schema meta data.
      * 
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @param props configuration properties
-     * @return physical schema meta data
+     * @return schema meta data
      * @throws SQLException SQL exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -79,12 +79,12 @@ public final class PhysicalSchemaMetaDataLoader {
     }
     
     /**
-     * Load physical schema meta data.
+     * Load schema meta data.
      *
      * @param databaseType database type
      * @param dataSource data source
      * @param props configuration properties
-     * @return physical schema meta data
+     * @return schema meta data
      * @throws SQLException SQL exception
      */
     public PhysicalSchemaMetaData load(final DatabaseType databaseType, final DataSource dataSource, final ConfigurationProperties props) throws SQLException {
