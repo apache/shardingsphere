@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.metadata.model.addressing;
 import lombok.Getter;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Table addressing meta data.
@@ -29,5 +29,5 @@ import java.util.Map;
 @Getter
 public final class TableAddressingMetaData {
     
-    private final Map<String, Collection<String>> tableDataSourceNamesMapper = new HashMap<>();
+    private final Map<String, Collection<String>> tableDataSourceNamesMapper = new ConcurrentHashMap<>();
 }

@@ -45,5 +45,6 @@ public final class DropTableStatementMetaDataRefreshStrategy implements MetaData
             }
         }
         metaData.getSchemaMetaData().getSchemaMetaData().remove(tableName);
+        metaData.getTableAddressingMetaData().getTableDataSourceNamesMapper().remove(tableName);
     }
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.refresh.impl;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaData;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.TableMetaDataLoaderCallback;
@@ -46,6 +47,7 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
             refreshUnconfiguredMetaData(metaData, routeDataSourceNames, tableName);
             metaData.getSchemaMetaData().getSchemaMetaData().put(tableName, new PhysicalTableMetaData());
         }
+        refreshTableAddressingMetaData(metaData.getTableAddressingMetaData(), tableName, routeDataSourceNames);
     }
     
     private void refreshUnconfiguredMetaData(final ShardingSphereMetaData metaData, final Collection<String> routeDataSourceNames, final String tableName) {
@@ -60,6 +62,19 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
             metaData.getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().put(dataSourceName, Lists.newArrayList(tableName));
         } else {
             schemaMetaData.add(tableName);
+        }
+    }
+    
+    private void refreshTableAddressingMetaData(final TableAddressingMetaData tableAddressingMetaData, final String tableName, final Collection<String> routeDataSourceNames) {
+        for (String each : routeDataSourceNames) {
+            refreshTableAddressingMetaData(tableAddressingMetaData, tableName, each);
+        }
+    }
+    
+    private void refreshTableAddressingMetaData(final TableAddressingMetaData tableAddressingMetaData, final String tableName, final String dataSourceName) {
+        Collection<String> previousDataSourceNames = tableAddressingMetaData.getTableDataSourceNamesMapper().putIfAbsent(tableName, Lists.newArrayList(dataSourceName));
+        if (null != previousDataSourceNames) {
+            previousDataSourceNames.add(dataSourceName);
         }
     }
 }
