@@ -57,7 +57,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         ShardingRule shardingRule = createAllShardingRule();
         TableAddressingMetaData tableAddressingMetaData = new TableAddressingMetaData();
         tableAddressingMetaData.getTableDataSourceNamesMapper().put("t_category", Collections.singletonList("single_db"));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildLogicSchemaMetaData(), tableAddressingMetaData, mock(CachedDatabaseMetaData.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), tableAddressingMetaData, buildLogicSchemaMetaData(), mock(CachedDatabaseMetaData.class));
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine("MySQL");
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(

@@ -299,7 +299,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     private ShardingSphereSchema getChangedShardingSphereSchema(final ShardingSphereSchema oldSchema, final LogicSchemaMetaData newLogicSchemaMetaData, final String schemaName) {
         // TODO refresh tableAddressingMetaData
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                oldSchema.getMetaData().getDataSourcesMetaData(), newLogicSchemaMetaData, oldSchema.getMetaData().getTableAddressingMetaData(), oldSchema.getMetaData().getCachedDatabaseMetaData());
+                oldSchema.getMetaData().getDataSourcesMetaData(), oldSchema.getMetaData().getTableAddressingMetaData(), newLogicSchemaMetaData, oldSchema.getMetaData().getCachedDatabaseMetaData());
         return new ShardingSphereSchema(schemaName, oldSchema.getConfigurations(), oldSchema.getRules(), oldSchema.getDataSources(), metaData);
     }
     

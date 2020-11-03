@@ -117,7 +117,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         LogicSchemaMetaData logicSchemaMetaData = mock(LogicSchemaMetaData.class);
         when(logicSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
         when(logicSchemaMetaData.getSchemaMetaData()).thenReturn(schemaMetaData);
-        return new ShardingSphereMetaData(mock(DataSourcesMetaData.class), logicSchemaMetaData, mock(TableAddressingMetaData.class), mock(CachedDatabaseMetaData.class));
+        return new ShardingSphereMetaData(mock(DataSourcesMetaData.class), mock(TableAddressingMetaData.class), logicSchemaMetaData, mock(CachedDatabaseMetaData.class));
     }
     
     private Map<String, PhysicalColumnMetaData> createColumnMetaDataMap() {

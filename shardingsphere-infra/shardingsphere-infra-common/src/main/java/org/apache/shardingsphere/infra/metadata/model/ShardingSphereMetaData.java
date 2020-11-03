@@ -32,10 +32,10 @@ import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
 public final class ShardingSphereMetaData {
     
     private final DataSourcesMetaData dataSourcesMetaData;
+
+    private final TableAddressingMetaData tableAddressingMetaData;
     
     private final LogicSchemaMetaData schemaMetaData;
-    
-    private final TableAddressingMetaData tableAddressingMetaData;
     
     private final CachedDatabaseMetaData cachedDatabaseMetaData;
 }
