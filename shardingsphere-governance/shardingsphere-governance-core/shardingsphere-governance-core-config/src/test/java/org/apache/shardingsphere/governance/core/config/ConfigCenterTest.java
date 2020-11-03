@@ -519,13 +519,10 @@ public final class ConfigCenterTest {
         verify(configurationRepository).get(eq("/schemas/sharding_db/table"));
         assertNotNull(logicSchemaMetaData);
         assertNotNull(logicSchemaMetaData.getConfiguredSchemaMetaData());
-        assertNotNull(logicSchemaMetaData.getUnconfiguredSchemaMetaDataMap());
         assertThat(logicSchemaMetaData.getConfiguredSchemaMetaData().getAllTableNames(), is(Collections.singleton("t_order")));
         assertThat(logicSchemaMetaData.getConfiguredSchemaMetaData().get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
         assertThat(logicSchemaMetaData.getConfiguredSchemaMetaData().getAllColumnNames("t_order").size(), is(1));
         assertThat(logicSchemaMetaData.getConfiguredSchemaMetaData().get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
-        assertThat(logicSchemaMetaData.getUnconfiguredSchemaMetaDataMap().keySet(), is(Collections.singleton("ds_0")));
-        assertThat(logicSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0"), is(Collections.singletonList("t_user")));
     }
     
     @Test

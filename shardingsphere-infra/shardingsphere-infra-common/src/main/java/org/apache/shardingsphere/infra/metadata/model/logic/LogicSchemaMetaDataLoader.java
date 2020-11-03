@@ -24,13 +24,12 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.model.logic.spi.LogicMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.model.logic.spi.LogicMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -77,8 +76,7 @@ public final class LogicSchemaMetaDataLoader {
             configuredSchemaMetaData.merge(schemaMetaData);
         }
         decorate(configuredSchemaMetaData);
-        Map<String, Collection<String>> unConfiguredSchemaMetaDataMap = loadUnConfiguredSchemaMetaData(databaseType, dataSourceMap, excludedTableNames);
-        return new LogicSchemaMetaData(configuredSchemaMetaData, unConfiguredSchemaMetaDataMap);
+        return new LogicSchemaMetaData(configuredSchemaMetaData);
     }
     
     /**
@@ -134,18 +132,6 @@ public final class LogicSchemaMetaDataLoader {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
         return load(databaseType, dataSourceMap, tableName, props);
-    }
-    
-    private Map<String, Collection<String>> loadUnConfiguredSchemaMetaData(final DatabaseType databaseType, 
-                                                                           final Map<String, DataSource> dataSourceMap, final Collection<String> excludedTableNames) throws SQLException {
-        Map<String, Collection<String>> result = new HashMap<>(dataSourceMap.size(), 1);
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            Collection<String> tableNames = PhysicalSchemaMetaDataLoader.loadTableNames(entry.getValue(), databaseType, excludedTableNames);
-            if (!tableNames.isEmpty()) {
-                result.put(entry.getKey(), tableNames);
-            }
-        }
-        return result;
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})

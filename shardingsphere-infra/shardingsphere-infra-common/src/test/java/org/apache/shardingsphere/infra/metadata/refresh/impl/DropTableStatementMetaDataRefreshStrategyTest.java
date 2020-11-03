@@ -101,6 +101,5 @@ public final class DropTableStatementMetaDataRefreshStrategyTest extends Abstrac
         MetaDataRefreshStrategy<DropTableStatement> metaDataRefreshStrategy = new DropTableStatementMetaDataRefreshStrategy();
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.singletonList("t_order_item"), dropTableStatement, tableName -> Optional.empty());
-        assertFalse(getMetaData().getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get("t_order_item").contains("t_order_item"));
     }
 }

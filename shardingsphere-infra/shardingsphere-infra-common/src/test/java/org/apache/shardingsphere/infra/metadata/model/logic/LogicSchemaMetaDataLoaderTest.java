@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.fixture.rule.DataNodeRoutedFixtureRule;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -29,7 +28,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -37,9 +35,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class LogicSchemaMetaDataLoaderTest {
@@ -54,19 +49,6 @@ public final class LogicSchemaMetaDataLoaderTest {
     private ConfigurationProperties props;
     
     private final LogicSchemaMetaDataLoader loader = new LogicSchemaMetaDataLoader(Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()));
-    
-    @Before
-    public void setUp() throws SQLException {
-        ResultSet resultSet = mockResultSet();
-        when(dataSource.getConnection().getMetaData().getTables(any(), any(), any(), any())).thenReturn(resultSet);
-    }
-    
-    private ResultSet mockResultSet() throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, false);
-        when(result.getString("TABLE_NAME")).thenReturn("unconfigured_table_0", "unconfigured_table_1");
-        return result;
-    }
     
     @Test
     public void assertSyncLoadFullDatabase() throws SQLException {
@@ -86,10 +68,6 @@ public final class LogicSchemaMetaDataLoaderTest {
         assertTrue(actual.getConfiguredSchemaMetaData().get("data_node_routed_table_0").getColumns().containsKey("id"));
         assertTrue(actual.getConfiguredSchemaMetaData().containsTable("data_node_routed_table_1"));
         assertTrue(actual.getConfiguredSchemaMetaData().get("data_node_routed_table_1").getColumns().containsKey("id"));
-        assertThat(actual.getUnconfiguredSchemaMetaDataMap().size(), is(1));
-        assertTrue(actual.getUnconfiguredSchemaMetaDataMap().containsKey("logic_db"));
-        assertTrue(actual.getUnconfiguredSchemaMetaDataMap().get("logic_db").contains("unconfigured_table_0"));
-        assertTrue(actual.getUnconfiguredSchemaMetaDataMap().get("logic_db").contains("unconfigured_table_1"));
     }
     
     @Test

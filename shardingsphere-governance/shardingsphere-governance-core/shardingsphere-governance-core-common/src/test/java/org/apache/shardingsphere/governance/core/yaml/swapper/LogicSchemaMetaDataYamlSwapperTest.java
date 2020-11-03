@@ -44,12 +44,9 @@ public final class LogicSchemaMetaDataYamlSwapperTest {
         YamlLogicSchemaMetaData yamlLogicSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToYamlConfiguration(logicSchemaMetaData);
         assertNotNull(yamlLogicSchemaMetaData);
         assertNotNull(yamlLogicSchemaMetaData.getConfiguredSchemaMetaData());
-        assertNotNull(yamlLogicSchemaMetaData.getUnconfiguredSchemaMetaDataMap());
         assertThat(yamlLogicSchemaMetaData.getConfiguredSchemaMetaData().getTables().keySet(), is(Collections.singleton("t_order")));
         assertThat(yamlLogicSchemaMetaData.getConfiguredSchemaMetaData().getTables().get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
         assertThat(yamlLogicSchemaMetaData.getConfiguredSchemaMetaData().getTables().get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
-        assertThat(yamlLogicSchemaMetaData.getUnconfiguredSchemaMetaDataMap().keySet(), is(Collections.singleton("ds_0")));
-        assertThat(yamlLogicSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0"), is(Collections.singletonList("t_user")));
     }
     
     @Test
@@ -63,8 +60,6 @@ public final class LogicSchemaMetaDataYamlSwapperTest {
         assertThat(logicSchemaMetaData.getConfiguredSchemaMetaData().get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
         assertThat(logicSchemaMetaData.getConfiguredSchemaMetaData().getAllColumnNames("t_order").size(), is(1));
         assertThat(logicSchemaMetaData.getConfiguredSchemaMetaData().get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
-        assertThat(logicSchemaMetaData.getUnconfiguredSchemaMetaDataMap().keySet(), is(Collections.singleton("ds_0")));
-        assertThat(logicSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0"), is(Collections.singletonList("t_user")));
     }
     
     @SneakyThrows({URISyntaxException.class, IOException.class})

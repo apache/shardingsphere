@@ -37,24 +37,8 @@ public final class CreateViewStatementMetaDataRefreshStrategy implements MetaDat
     public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final Collection<String> routeDataSourceNames, 
                                 final CreateViewStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
-        refreshUnconfiguredMetaData(metaData, routeDataSourceNames, viewName);
         metaData.getSchemaMetaData().getSchemaMetaData().put(viewName, new PhysicalTableMetaData());
         refreshTableAddressingMetaData(metaData.getTableAddressingMetaData(), viewName, routeDataSourceNames);
-    }
-    
-    private void refreshUnconfiguredMetaData(final ShardingSphereMetaData metaData, final Collection<String> routeDataSourceNames, final String viewName) {
-        for (String each : routeDataSourceNames) {
-            refreshUnconfiguredMetaData(metaData, viewName, each);
-        }
-    }
-    
-    private void refreshUnconfiguredMetaData(final ShardingSphereMetaData metaData, final String viewName, final String dataSourceName) {
-        Collection<String> schemaMetaData = metaData.getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get(dataSourceName);
-        if (null == schemaMetaData) {
-            metaData.getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().put(dataSourceName, Lists.newArrayList(viewName));
-        } else {
-            schemaMetaData.add(viewName);
-        }
     }
     
     private void refreshTableAddressingMetaData(final TableAddressingMetaData tableAddressingMetaData, final String tableName, final Collection<String> routeDataSourceNames) {

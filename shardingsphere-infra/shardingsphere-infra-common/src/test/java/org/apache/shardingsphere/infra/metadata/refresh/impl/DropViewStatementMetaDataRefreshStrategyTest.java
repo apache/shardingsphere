@@ -32,7 +32,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 
 public final class DropViewStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
@@ -51,6 +50,5 @@ public final class DropViewStatementMetaDataRefreshStrategyTest extends Abstract
         MetaDataRefreshStrategy<DropViewStatement> metaDataRefreshStrategy = new DropViewStatementMetaDataRefreshStrategy();
         dropViewStatement.getViews().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.singletonList("t_order_item"), dropViewStatement, tableName -> Optional.empty());
-        assertFalse(getMetaData().getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get("t_order_item").contains("t_order_item"));
     }
 }

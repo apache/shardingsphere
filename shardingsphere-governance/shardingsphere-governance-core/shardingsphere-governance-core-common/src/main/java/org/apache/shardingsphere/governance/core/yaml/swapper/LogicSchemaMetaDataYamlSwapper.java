@@ -46,15 +46,13 @@ public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlLog
     public YamlLogicSchemaMetaData swapToYamlConfiguration(final LogicSchemaMetaData metaData) {
         YamlLogicSchemaMetaData result = new YamlLogicSchemaMetaData();
         result.setConfiguredSchemaMetaData(convertYamlSchema(metaData.getConfiguredSchemaMetaData()));
-        result.setUnconfiguredSchemaMetaDataMap(metaData.getUnconfiguredSchemaMetaDataMap());
         return result;
     }
     
     @Override
     public LogicSchemaMetaData swapToObject(final YamlLogicSchemaMetaData yamlConfig) {
         PhysicalSchemaMetaData configured = Optional.ofNullable(yamlConfig.getConfiguredSchemaMetaData()).map(this::convertSchema).orElse(new PhysicalSchemaMetaData());
-        Map<String, Collection<String>> unconfigured = Optional.ofNullable(yamlConfig.getUnconfiguredSchemaMetaDataMap()).orElse(new LinkedHashMap<>());
-        return new LogicSchemaMetaData(configured, unconfigured);
+        return new LogicSchemaMetaData(configured);
     }
     
     private PhysicalSchemaMetaData convertSchema(final YamlSchemaMetaData schema) {

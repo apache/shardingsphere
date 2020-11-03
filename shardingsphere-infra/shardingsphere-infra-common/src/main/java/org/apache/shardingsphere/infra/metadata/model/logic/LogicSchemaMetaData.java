@@ -19,10 +19,6 @@ package org.apache.shardingsphere.infra.metadata.model.logic;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
-
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * Logic schema meta data.
@@ -32,22 +28,8 @@ public final class LogicSchemaMetaData {
     @Getter
     private final PhysicalSchemaMetaData configuredSchemaMetaData;
     
-    @Getter
-    private final Map<String, Collection<String>> unconfiguredSchemaMetaDataMap;
-    
-    private final PhysicalSchemaMetaData allSchemaMetaData;
-    
-    public LogicSchemaMetaData(final PhysicalSchemaMetaData configuredSchemaMetaData, final Map<String, Collection<String>> unconfiguredSchemaMetaDataMap) {
+    public LogicSchemaMetaData(final PhysicalSchemaMetaData configuredSchemaMetaData) {
         this.configuredSchemaMetaData = configuredSchemaMetaData;
-        this.unconfiguredSchemaMetaDataMap = unconfiguredSchemaMetaDataMap;
-        allSchemaMetaData = createSchemaMetaData();
-    }
-    
-    private PhysicalSchemaMetaData createSchemaMetaData() {
-        PhysicalSchemaMetaData result = new PhysicalSchemaMetaData();
-        unconfiguredSchemaMetaDataMap.values().stream().flatMap(Collection::stream).forEach(tableName -> result.put(tableName, new PhysicalTableMetaData()));
-        result.merge(configuredSchemaMetaData);
-        return result;
     }
     
     /**
@@ -56,6 +38,6 @@ public final class LogicSchemaMetaData {
      * @return schema meta data
      */
     public PhysicalSchemaMetaData getSchemaMetaData() {
-        return allSchemaMetaData;
+        return configuredSchemaMetaData;
     }
 }

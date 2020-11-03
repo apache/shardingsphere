@@ -106,9 +106,7 @@ public final class ExecutionContextBuilderTest {
                 new PhysicalColumnMetaData("user_id", Types.INTEGER, "int", false, false, false),
                 new PhysicalColumnMetaData("status", Types.INTEGER, "int", false, false, false)), Collections.emptySet()));
         tableMetaDataMap.put("t_other", new PhysicalTableMetaData(Collections.singletonList(new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
-        Map<String, Collection<String>> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
-        unconfiguredSchemaMetaDataMap.put("ds_0", Collections.singletonList("t_category"));
-        return new LogicSchemaMetaData(new PhysicalSchemaMetaData(tableMetaDataMap), unconfiguredSchemaMetaDataMap);
+        return new LogicSchemaMetaData(new PhysicalSchemaMetaData(tableMetaDataMap));
     }
     
     private LogicSchemaMetaData buildLogicSchemaMetaData() {
@@ -122,8 +120,6 @@ public final class ExecutionContextBuilderTest {
                 new PhysicalColumnMetaData("status", Types.VARCHAR, "varchar", false, false, false),
                 new PhysicalColumnMetaData("c_date", Types.TIMESTAMP, "timestamp", false, false, false)), Collections.emptySet()));
         tableMetaDataMap.put("t_other", new PhysicalTableMetaData(Collections.singletonList(new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
-        Map<String, Collection<String>> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
-        unconfiguredSchemaMetaDataMap.put("ds_0", Collections.singletonList("t_category"));
-        return new LogicSchemaMetaData(new PhysicalSchemaMetaData(tableMetaDataMap), unconfiguredSchemaMetaDataMap);
+        return new LogicSchemaMetaData(new PhysicalSchemaMetaData(tableMetaDataMap));
     }
 }

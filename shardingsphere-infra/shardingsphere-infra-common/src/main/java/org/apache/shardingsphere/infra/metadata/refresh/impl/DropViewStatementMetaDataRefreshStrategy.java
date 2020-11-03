@@ -33,16 +33,10 @@ public final class DropViewStatementMetaDataRefreshStrategy implements MetaDataR
     @Override
     public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final Collection<String> routeDataSourceNames, 
                                 final DropViewStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
-        sqlStatement.getViews().forEach(each -> removeMetaData(metaData, each.getTableName().getIdentifier().getValue(), routeDataSourceNames));
+        sqlStatement.getViews().forEach(each -> removeMetaData(metaData, each.getTableName().getIdentifier().getValue()));
     }
     
-    private void removeMetaData(final ShardingSphereMetaData metaData, final String viewName, final Collection<String> routeDataSourceNames) {
-        for (String each : routeDataSourceNames) {
-            Collection<String> schemaMetaData = metaData.getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get(each);
-            if (null != schemaMetaData) {
-                schemaMetaData.remove(viewName);
-            }
-        }
+    private void removeMetaData(final ShardingSphereMetaData metaData, final String viewName) {
         metaData.getSchemaMetaData().getSchemaMetaData().remove(viewName);
         metaData.getTableAddressingMetaData().getTableDataSourceNamesMapper().remove(viewName);
     }

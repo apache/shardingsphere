@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.Phys
 import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,8 +31,7 @@ public final class LogicSchemaMetaDataTest {
     @Test
     public void assertGetSchemaMetaData() {
         Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
-        Map<String, Collection<String>> unconfiguredSchemaMetaDataMap = new HashMap<>(1, 1);
-        LogicSchemaMetaData logicSchemaMetaData = new LogicSchemaMetaData(new PhysicalSchemaMetaData(tableMetaDataMap), unconfiguredSchemaMetaDataMap);
+        LogicSchemaMetaData logicSchemaMetaData = new LogicSchemaMetaData(new PhysicalSchemaMetaData(tableMetaDataMap));
         PhysicalSchemaMetaData schemaMetaData = logicSchemaMetaData.getSchemaMetaData();
         assertNotNull("SchemaMetaData is null", schemaMetaData);
     }
