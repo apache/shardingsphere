@@ -41,6 +41,6 @@ jobs:
       run: |
         ./mvnw -B clean install cobertura:cobertura -Dmaven.javadoc.skip=true
         cd examples
-        ../mvnw -B clean package -DskipTests
+        mvn -B clean package -DskipTests
         cd ..
         bash <(curl -s https://codecov.io/bash)

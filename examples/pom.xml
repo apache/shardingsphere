@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.shardingsphere.example</groupId>
     <artifactId>shardingsphere-example</artifactId>
-    <version>${example-revision}</version>
+    <version>5.0.0-alpha</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
@@ -33,12 +33,12 @@
     </modules>
     
     <properties>
-        <example-revision>5.0.0-alpha</example-revision>
-        <revision>5.0.0-RC1-SNAPSHOT</revision>
         <java.version>1.8</java.version>
         <maven.version.range>[3.0.4,)</maven.version.range>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
+        
+        <shardingsphere.version>5.0.0-RC1-SNAPSHOT</shardingsphere.version>
         
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <spring-framework.version>4.3.20.RELEASE</spring-framework.version>
@@ -70,7 +70,6 @@
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
         <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
         <maven-source-plugin.version>2.4</maven-source-plugin.version>
-        <flatten-maven-plugin.version>1.2.5</flatten-maven-plugin.version>
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
     </properties>
@@ -80,87 +79,87 @@
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-sharding-api</artifactId>
-                <version>${revision}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-encrypt-common</artifactId>
-                <version>${revision}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-jdbc-core</artifactId>
-                <version>${revision}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-jdbc-governance</artifactId>
-                <version>${revision}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-transaction-core</artifactId>
-                <version>${revision}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-transaction-xa-core</artifactId>
-                <version>${revision}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-transaction-xa-bitronix</artifactId>
-                <version>${revision}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
-                <version>${revision}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
-                <version>${revision}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
-                <version>${revision}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-jdbc-governance-spring-boot-starter</artifactId>
-                <version>${revision}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
-                <version>${revision}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-jdbc-governance-spring-namespace</artifactId>
-                <version>${revision}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-governance-repository-zookeeper-curator</artifactId>
-                <version>${revision}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-governance-repository-nacos</artifactId>
-                <version>${revision}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-governance-repository-etcd</artifactId>
-                <version>${revision}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-infra-common</artifactId>
-                <version>${revision}</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
             
             <dependency>
@@ -427,31 +426,6 @@
                         <phase>verify</phase>
                         <goals>
                             <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>flatten-maven-plugin</artifactId>
-                <version>${flatten-maven-plugin.version}</version>
-                <configuration>
-                    <updatePomFile>true</updatePomFile>
-                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>flatten</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>flatten</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>flatten.clean</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>clean</goal>
                         </goals>
                     </execution>
                 </executions>

@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>other-feature-example</artifactId>
-        <version>${example-revision}</version>
+        <version>5.0.0-alpha</version>
     </parent>
     <artifactId>shadow-example</artifactId>
     <packaging>pom</packaging>

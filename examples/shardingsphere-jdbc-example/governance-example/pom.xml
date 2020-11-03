@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>shardingsphere-jdbc-example</artifactId>
-        <version>${example-revision}</version>
+        <version>5.0.0-alpha</version>
     </parent>
     <artifactId>governance-example</artifactId>
     <name>${project.artifactId}</name>
