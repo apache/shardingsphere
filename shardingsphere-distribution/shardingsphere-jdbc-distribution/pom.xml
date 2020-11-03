@@ -82,6 +82,7 @@
         <profile>
             <id>release</id>
             <build>
+                <finalName>apache-shardingsphere-${project.version}</finalName>
                 <plugins>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
