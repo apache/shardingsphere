@@ -15,47 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql;
+package org.apache.shardingsphere.scaling.mysql;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.PreparedSQL;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
-import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
+import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.hamcrest.Matchers;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.postgresql.replication.LogSequenceNumber;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class PostgreSQLImporterTest {
-    
-    @Mock
-    private ImporterConfiguration importerConfig;
-    
-    @Mock
-    private DataSourceManager dataSourceManager;
+public final class MySQLSqlBuilderTest {
     
     @Test
-    public void assertCreateSQLBuilder() {
-        PostgreSQLImporter postgreSQLImporter = new PostgreSQLImporter(importerConfig, dataSourceManager);
-        PreparedSQL insertSQL = postgreSQLImporter.createSQLBuilder(Maps.newHashMap()).buildInsertSQL(mockDataRecord());
-        assertThat(insertSQL.getSql(), is("INSERT INTO \"t_order\"(\"id\",\"name\") VALUES(?,?) ON CONFLICT (id) DO NOTHING"));
-        assertThat(insertSQL.getValuesIndex().toArray(), Matchers.arrayContaining(0, 1));
+    public void assertBuildInsertSQL() {
+        PreparedSQL actual = new MySQLSQLBuilder(Maps.newHashMap()).buildInsertSQL(mockDataRecord());
+        assertThat(actual.getSql(), is("INSERT INTO `t_order`(`id`,`name`,`age`) VALUES(?,?,?) ON DUPLICATE KEY UPDATE `name`=?,`age`=?"));
+        assertThat(actual.getValuesIndex().toArray(), Matchers.arrayContaining(0, 1, 2, 1, 2));
     }
     
     private DataRecord mockDataRecord() {
-        DataRecord result = new DataRecord(new WalPosition(LogSequenceNumber.valueOf(100L)), 2);
+        DataRecord result = new DataRecord(new BinlogPosition("", 1), 2);
         result.setTableName("t_order");
         result.addColumn(new Column("id", 1, true, true));
         result.addColumn(new Column("name", "", true, false));
+        result.addColumn(new Column("age", 1, true, false));
         return result;
     }
 }
