@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
-import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
@@ -68,23 +68,23 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
         if (!explainStatement.isPresent()) {
             throw new InvalidShardingCTLFormatException(sql);
         }
-        ShardingSphereSchema schema = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
-        if (null == schema) {
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
+        if (null == metaData) {
             throw new NoDatabaseSelectedException();
         }
-        if (!schema.isComplete()) {
+        if (!metaData.isComplete()) {
             throw new RuleNotExistsException();
         }
-        LogicSQL logicSQL = createLogicSQL(schema, explainStatement.get());
-        executionUnits = kernelProcessor.generateExecutionContext(logicSQL, schema, ProxyContext.getInstance().getSchemaContexts().getProps()).getExecutionUnits().iterator();
+        LogicSQL logicSQL = createLogicSQL(metaData, explainStatement.get());
+        executionUnits = kernelProcessor.generateExecutionContext(logicSQL, metaData, ProxyContext.getInstance().getSchemaContexts().getProps()).getExecutionUnits().iterator();
         queryHeaders = new ArrayList<>(2);
         queryHeaders.add(new QueryHeader("", "", "datasource_name", "", 255, Types.CHAR, 0, false, false, false, false));
         queryHeaders.add(new QueryHeader("", "", "sql", "", 255, Types.CHAR, 0, false, false, false, false));
         return new QueryResponse(queryHeaders);
     }
     
-    private LogicSQL createLogicSQL(final ShardingSphereSchema schema, final ShardingCTLExplainStatement explainStatement) {
-        PhysicalSchemaMetaData schemaMetaData = schema.getMetaData().getSchemaMetaData();
+    private LogicSQL createLogicSQL(final ShardingSphereMetaData metaData, final ShardingCTLExplainStatement explainStatement) {
+        PhysicalSchemaMetaData schemaMetaData = metaData.getSchema().getSchemaMetaData();
         ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(
                 DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getSchemaContexts().getDatabaseType()));
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(explainStatement.getSql(), false);

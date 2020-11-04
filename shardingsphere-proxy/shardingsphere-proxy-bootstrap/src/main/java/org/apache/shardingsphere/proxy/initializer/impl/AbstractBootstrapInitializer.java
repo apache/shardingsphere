@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.context.schema.SchemaContextsBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.factory.JDBCRawBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -97,8 +97,8 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private TransactionContexts createTransactionContexts(final SchemaContexts schemaContexts) {
-        Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(schemaContexts.getSchemas().size(), 1);
-        for (Entry<String, ShardingSphereSchema> entry : schemaContexts.getSchemas().entrySet()) {
+        Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(schemaContexts.getMetaDataMap().size(), 1);
+        for (Entry<String, ShardingSphereMetaData> entry : schemaContexts.getMetaDataMap().entrySet()) {
             ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
             engine.init(schemaContexts.getDatabaseType(), entry.getValue().getDataSources());
             transactionManagerEngines.put(entry.getKey(), engine);

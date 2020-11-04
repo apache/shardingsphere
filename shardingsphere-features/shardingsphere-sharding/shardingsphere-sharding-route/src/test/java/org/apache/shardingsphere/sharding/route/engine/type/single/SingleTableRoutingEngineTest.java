@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.single;
 
-import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaData;
+import org.apache.shardingsphere.infra.schema.model.addressing.TableAddressingMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;

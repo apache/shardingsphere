@@ -26,13 +26,13 @@ import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContext
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.hint.HintManager;
-import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaData;
-import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.model.datasource.DataSourcesMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.table.PhysicalTableMetaData;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.schema.model.addressing.TableAddressingMetaData;
+import org.apache.shardingsphere.infra.schema.model.datasource.CachedDatabaseMetaData;
+import org.apache.shardingsphere.infra.schema.model.datasource.DataSourcesMetaData;
+import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.schema.model.schema.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
@@ -174,7 +174,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey(), Boolean.TRUE.toString());
         schemaContexts.set(ProxyContext.getInstance(), 
-                new StandardSchemaContexts(getSchemas(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(props), new MySQLDatabaseType()));
+                new StandardSchemaContexts(getMetaDataMap(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(props), new MySQLDatabaseType()));
         String sql = "sctl:hint show table status";
         ShardingCTLHintBackendHandler defaultHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         BackendResponse backendResponse = defaultHintBackendHandler.execute();
@@ -204,12 +204,12 @@ public final class ShardingCTLHintBackendHandlerTest {
         assertFalse(updateHintBackendHandler.next());
     }
     
-    private Map<String, ShardingSphereSchema> getSchemas() {
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.getMetaData()).thenReturn(new ShardingSphereMetaData(mock(DataSourcesMetaData.class), mock(TableAddressingMetaData.class), 
+    private Map<String, ShardingSphereMetaData> getMetaDataMap() {
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getSchema()).thenReturn(new ShardingSphereSchema(mock(DataSourcesMetaData.class), mock(TableAddressingMetaData.class), 
                 new PhysicalSchemaMetaData(ImmutableMap.of("user", mock(PhysicalTableMetaData.class))), mock(CachedDatabaseMetaData.class)));
-        when(schema.isComplete()).thenReturn(true);
-        return Collections.singletonMap("schema", schema);
+        when(metaData.isComplete()).thenReturn(true);
+        return Collections.singletonMap("schema", metaData);
     }
     
     @Test(expected = UnsupportedShardingCTLTypeException.class)

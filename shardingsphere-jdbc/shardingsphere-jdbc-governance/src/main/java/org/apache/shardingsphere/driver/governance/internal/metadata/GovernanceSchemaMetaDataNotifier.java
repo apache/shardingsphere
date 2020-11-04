@@ -19,8 +19,8 @@ package org.apache.shardingsphere.driver.governance.internal.metadata;
 
 import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.event.model.persist.MetaDataPersistEvent;
-import org.apache.shardingsphere.infra.metadata.model.schema.spi.SchemaMetaDataNotifier;
-import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.schema.model.schema.spi.SchemaMetaDataNotifier;
+import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 
 /**
  * Governance schema meta data notifier.

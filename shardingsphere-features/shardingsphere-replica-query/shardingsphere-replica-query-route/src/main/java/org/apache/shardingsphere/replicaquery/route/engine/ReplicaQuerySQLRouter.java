@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.replicaquery.route.engine.impl.ReplicaQueryDataSourceRouter;
 import org.apache.shardingsphere.replicaquery.constant.ReplicaQueryOrder;
@@ -41,7 +41,7 @@ import java.util.Optional;
 public final class ReplicaQuerySQLRouter implements SQLRouter<ReplicaQueryRule> {
     
     @Override
-    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereSchema schema, final ReplicaQueryRule rule, final ConfigurationProperties props) {
+    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ReplicaQueryRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
         String dataSourceName = new ReplicaQueryDataSourceRouter(rule.getSingleDataSourceRule()).route(logicSQL.getSqlStatementContext().getSqlStatement());
         result.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
@@ -50,7 +50,7 @@ public final class ReplicaQuerySQLRouter implements SQLRouter<ReplicaQueryRule> 
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext,
-                                     final LogicSQL logicSQL, final ShardingSphereSchema schema, final ReplicaQueryRule rule, final ConfigurationProperties props) {
+                                     final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ReplicaQueryRule rule, final ConfigurationProperties props) {
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteUnits()) {

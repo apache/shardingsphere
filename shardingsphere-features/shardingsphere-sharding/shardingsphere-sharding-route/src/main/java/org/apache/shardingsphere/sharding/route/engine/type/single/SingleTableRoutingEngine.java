@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.single;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaData;
+import org.apache.shardingsphere.infra.schema.model.addressing.TableAddressingMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
