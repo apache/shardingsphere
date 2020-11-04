@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.config.listener;
 
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
 import java.util.Collection;
 
@@ -43,8 +43,8 @@ public final class ConfigurationListenerManager {
      * Initialize all configuration changed listeners.
      */
     public void initListeners() {
-        schemaChangedListener.watch(ChangedType.UPDATED, ChangedType.DELETED, ChangedType.ADDED);
-        propertiesChangedListener.watch(ChangedType.UPDATED);
-        authenticationChangedListener.watch(ChangedType.UPDATED);
+        schemaChangedListener.watch(Type.UPDATED, Type.DELETED, Type.ADDED);
+        propertiesChangedListener.watch(Type.UPDATED);
+        authenticationChangedListener.watch(Type.UPDATED);
     }
 }

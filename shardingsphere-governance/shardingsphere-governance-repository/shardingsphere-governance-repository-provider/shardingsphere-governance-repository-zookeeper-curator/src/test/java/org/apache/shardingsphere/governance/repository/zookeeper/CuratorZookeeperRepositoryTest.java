@@ -21,7 +21,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.exception.GovernanceException;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -86,7 +86,7 @@ public final class CuratorZookeeperRepositoryTest {
         Thread.sleep(50L);
         DataChangedEvent dataChangedEvent = dataChangedEventActual.get();
         assertNotNull(dataChangedEvent);
-        assertThat(dataChangedEvent.getChangedType(), is(ChangedType.UPDATED));
+        assertThat(dataChangedEvent.getType(), is(Type.UPDATED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_updated/1"));
         assertThat(dataChangedEvent.getValue(), is("value2"));
         assertThat(REPOSITORY.get("/test/children_updated/1"), is("value2"));
@@ -104,7 +104,7 @@ public final class CuratorZookeeperRepositoryTest {
         Thread.sleep(50L);
         DataChangedEvent dataChangedEvent = dataChangedEventActual.get();
         assertNotNull(dataChangedEvent);
-        assertThat(dataChangedEvent.getChangedType(), is(ChangedType.DELETED));
+        assertThat(dataChangedEvent.getType(), is(Type.DELETED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_deleted/5"));
         assertThat(dataChangedEvent.getValue(), is("value5"));
     }
@@ -117,7 +117,7 @@ public final class CuratorZookeeperRepositoryTest {
         Thread.sleep(50L);
         DataChangedEvent event = actualDataChangedEvent.get();
         assertNotNull(event);
-        assertThat(event.getChangedType(), is(ChangedType.ADDED));
+        assertThat(event.getType(), is(Type.ADDED));
         assertThat(event.getKey(), is("/test/children_added/4"));
         assertThat(event.getValue(), is("value4"));
     }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStat
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -47,6 +47,6 @@ public final class DataSourceStateChangedListener extends PostGovernanceReposito
     }
     
     private boolean isDataSourceDisabled(final DataChangedEvent event) {
-        return RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue()) && (ChangedType.UPDATED == event.getChangedType() || ChangedType.ADDED == event.getChangedType());
+        return RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue()) && (Type.UPDATED == event.getType() || Type.ADDED == event.getType());
     }
 }
