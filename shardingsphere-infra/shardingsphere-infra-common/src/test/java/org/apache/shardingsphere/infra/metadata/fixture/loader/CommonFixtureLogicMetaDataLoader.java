@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.fixture.rule.CommonFixtureRule;
-import org.apache.shardingsphere.infra.metadata.model.logic.spi.LogicMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.spi.LogicMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.table.PhysicalTableMetaData;
 
 import javax.sql.DataSource;
 import java.util.Collection;

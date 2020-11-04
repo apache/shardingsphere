@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.yaml.swapper;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlLogicSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
 
@@ -40,31 +40,23 @@ public final class LogicSchemaMetaDataYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlLogicSchemaMetaData() {
-        LogicSchemaMetaData logicSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAM), YamlLogicSchemaMetaData.class));
-        YamlLogicSchemaMetaData yamlLogicSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToYamlConfiguration(logicSchemaMetaData);
+        PhysicalSchemaMetaData physicalSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAM), YamlLogicSchemaMetaData.class));
+        YamlLogicSchemaMetaData yamlLogicSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToYamlConfiguration(physicalSchemaMetaData);
         assertNotNull(yamlLogicSchemaMetaData);
         assertNotNull(yamlLogicSchemaMetaData.getConfiguredSchemaMetaData());
-        assertNotNull(yamlLogicSchemaMetaData.getUnconfiguredSchemaMetaDataMap());
         assertThat(yamlLogicSchemaMetaData.getConfiguredSchemaMetaData().getTables().keySet(), is(Collections.singleton("t_order")));
         assertThat(yamlLogicSchemaMetaData.getConfiguredSchemaMetaData().getTables().get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
         assertThat(yamlLogicSchemaMetaData.getConfiguredSchemaMetaData().getTables().get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
-        assertThat(yamlLogicSchemaMetaData.getUnconfiguredSchemaMetaDataMap().keySet(), is(Collections.singleton("ds_0")));
-        assertThat(yamlLogicSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0"), is(Collections.singletonList("t_user")));
     }
     
     @Test
     public void assertSwapToLogicSchemaMetaData() {
         YamlLogicSchemaMetaData yamlLogicSchemaMetaData = YamlEngine.unmarshal(readYAML(META_DATA_YAM), YamlLogicSchemaMetaData.class);
-        LogicSchemaMetaData logicSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToObject(yamlLogicSchemaMetaData);
-        assertNotNull(logicSchemaMetaData);
-        assertNotNull(logicSchemaMetaData.getConfiguredSchemaMetaData());
-        assertNotNull(logicSchemaMetaData.getConfiguredSchemaMetaData());
-        assertThat(logicSchemaMetaData.getConfiguredSchemaMetaData().getAllTableNames(), is(Collections.singleton("t_order")));
-        assertThat(logicSchemaMetaData.getConfiguredSchemaMetaData().get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
-        assertThat(logicSchemaMetaData.getConfiguredSchemaMetaData().getAllColumnNames("t_order").size(), is(1));
-        assertThat(logicSchemaMetaData.getConfiguredSchemaMetaData().get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
-        assertThat(logicSchemaMetaData.getUnconfiguredSchemaMetaDataMap().keySet(), is(Collections.singleton("ds_0")));
-        assertThat(logicSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0"), is(Collections.singletonList("t_user")));
+        PhysicalSchemaMetaData physicalSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToObject(yamlLogicSchemaMetaData);
+        assertThat(physicalSchemaMetaData.getAllTableNames(), is(Collections.singleton("t_order")));
+        assertThat(physicalSchemaMetaData.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
+        assertThat(physicalSchemaMetaData.getAllColumnNames("t_order").size(), is(1));
+        assertThat(physicalSchemaMetaData.get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
     }
     
     @SneakyThrows({URISyntaxException.class, IOException.class})

@@ -44,7 +44,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
@@ -211,7 +211,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         for (Entry<String, ShardingSphereSchema> entry : schemaContexts.getSchemas().entrySet()) {
             String schemaName = entry.getKey();
             ShardingSphereSchema oldSchema = entry.getValue();
-            ShardingSphereSchema newSchema = event.getSchemaName().equals(schemaName) ? getChangedShardingSphereSchema(oldSchema, event.getLogicSchemaMetaData(), schemaName) : oldSchema;
+            ShardingSphereSchema newSchema = event.getSchemaName().equals(schemaName) ? getChangedShardingSphereSchema(oldSchema, event.getMetaData(), schemaName) : oldSchema;
             newSchemas.put(schemaName, newSchema);
         }
         schemaContexts = new StandardSchemaContexts(newSchemas, schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
@@ -296,10 +296,10 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         return result;
     }
     
-    private ShardingSphereSchema getChangedShardingSphereSchema(final ShardingSphereSchema oldSchema, final LogicSchemaMetaData newLogicSchemaMetaData, final String schemaName) {
+    private ShardingSphereSchema getChangedShardingSphereSchema(final ShardingSphereSchema oldSchema, final PhysicalSchemaMetaData newLogicSchemaMetaData, final String schemaName) {
         // TODO refresh tableAddressingMetaData
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                oldSchema.getMetaData().getDataSourcesMetaData(), newLogicSchemaMetaData, oldSchema.getMetaData().getTableAddressingMetaData(), oldSchema.getMetaData().getCachedDatabaseMetaData());
+                oldSchema.getMetaData().getDataSourcesMetaData(), oldSchema.getMetaData().getTableAddressingMetaData(), newLogicSchemaMetaData, oldSchema.getMetaData().getCachedDatabaseMetaData());
         return new ShardingSphereSchema(schemaName, oldSchema.getConfigurations(), oldSchema.getRules(), oldSchema.getDataSources(), metaData);
     }
     

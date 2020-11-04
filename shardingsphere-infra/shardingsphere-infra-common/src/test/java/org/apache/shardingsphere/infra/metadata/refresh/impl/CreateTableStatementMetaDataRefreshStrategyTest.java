@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.metadata.refresh.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.index.PhysicalIndexMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.column.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.index.PhysicalIndexMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.AbstractMetaDataRefreshStrategyTest;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -82,7 +82,7 @@ public final class CreateTableStatementMetaDataRefreshStrategyTest extends Abstr
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyList(), createTableStatement, tableName -> Optional.of(new PhysicalTableMetaData(
                 Collections.singletonList(new PhysicalColumnMetaData("order_id", 1, "String", true, false, false)),
                 Collections.singletonList(new PhysicalIndexMetaData("index")))));
-        assertTrue(getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData().containsTable("t_order_0"));
+        assertTrue(getMetaData().getSchemaMetaData().containsTable("t_order_0"));
     }
     
     @Test
@@ -121,6 +121,5 @@ public final class CreateTableStatementMetaDataRefreshStrategyTest extends Abstr
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item_0"))));
         MetaDataRefreshStrategy<CreateTableStatement> metaDataRefreshStrategy = new CreateTableStatementMetaDataRefreshStrategy();
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), new MySQLDatabaseType(), Collections.singletonList("t_order_item"), createTableStatement, tableName -> Optional.empty());
-        assertTrue(getMetaData().getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get("t_order_item").contains("t_order_item_0"));
     }
 }

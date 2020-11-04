@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
@@ -73,7 +73,7 @@ public final class QueryHeaderBuilder {
         boolean primaryKey;
         if (null != actualTableName && dataNodeRoutedRule.isPresent()) {
             tableName = dataNodeRoutedRule.get().findLogicTableByActualTable(actualTableName).orElse("");
-            PhysicalTableMetaData tableMetaData = schema.getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData().get(tableName);
+            PhysicalTableMetaData tableMetaData = schema.getMetaData().getSchemaMetaData().get(tableName);
             primaryKey = null != tableMetaData && tableMetaData.getColumns().get(columnName.toLowerCase()).isPrimaryKey();
         } else {
             tableName = actualTableName;

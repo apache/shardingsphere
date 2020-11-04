@@ -109,7 +109,7 @@ public final class ShardingRouteEngineFactory {
         if (!tableNames.isEmpty() && !shardingRule.tableRuleExists(tableNames)) {
             return new SingleTableRoutingEngine(tableNames, metaData.getTableAddressingMetaData(), sqlStatement);
         }
-        return new ShardingTableBroadcastRoutingEngine(metaData.getSchemaMetaData().getSchemaMetaData(), sqlStatementContext);
+        return new ShardingTableBroadcastRoutingEngine(metaData.getSchemaMetaData(), sqlStatementContext);
     }
     
     private static ShardingRouteEngine getDALRoutingEngine(final ShardingRule shardingRule, final ShardingSphereMetaData metaData, 
@@ -133,7 +133,7 @@ public final class ShardingRouteEngineFactory {
         if (isDCLForSingleTable(sqlStatementContext)) {
             Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
             return shardingRule.tableRuleExists(tableNames)
-                    ? new ShardingTableBroadcastRoutingEngine(metaData.getSchemaMetaData().getConfiguredSchemaMetaData(), sqlStatementContext)
+                    ? new ShardingTableBroadcastRoutingEngine(metaData.getSchemaMetaData(), sqlStatementContext)
                     : new SingleTableRoutingEngine(tableNames, metaData.getTableAddressingMetaData(), sqlStatementContext.getSqlStatement());
         } else {
             return new ShardingInstanceBroadcastRoutingEngine(metaData.getDataSourcesMetaData());

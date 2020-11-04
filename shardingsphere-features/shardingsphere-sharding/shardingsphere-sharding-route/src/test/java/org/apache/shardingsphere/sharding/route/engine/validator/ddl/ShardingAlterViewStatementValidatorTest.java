@@ -50,7 +50,7 @@ public final class ShardingAlterViewStatementValidatorTest {
         sqlStatement.setSelect(selectStatement);
         SQLStatementContext<AlterViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(metaData.getSchemaMetaData().getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
         new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }
     
@@ -61,7 +61,7 @@ public final class ShardingAlterViewStatementValidatorTest {
         MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();
         sqlStatement.setSelect(selectStatement);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames()).thenReturn(Collections.singleton("t_order"));
+        when(metaData.getSchemaMetaData().getAllTableNames()).thenReturn(Collections.singleton("t_order"));
         SQLStatementContext<AlterViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
         new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }

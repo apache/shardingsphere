@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.TableMetaDataLoaderCallback;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
@@ -41,28 +41,11 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         Optional<PhysicalTableMetaData> tableMetaData = callback.load(tableName);
         if (tableMetaData.isPresent()) {
-            metaData.getSchemaMetaData().getConfiguredSchemaMetaData().put(tableName, tableMetaData.get());
-            metaData.getSchemaMetaData().getSchemaMetaData().put(tableName, tableMetaData.get());
+            metaData.getSchemaMetaData().put(tableName, tableMetaData.get());
         } else {
-            refreshUnconfiguredMetaData(metaData, routeDataSourceNames, tableName);
-            metaData.getSchemaMetaData().getSchemaMetaData().put(tableName, new PhysicalTableMetaData());
+            metaData.getSchemaMetaData().put(tableName, new PhysicalTableMetaData());
         }
         refreshTableAddressingMetaData(metaData.getTableAddressingMetaData(), tableName, routeDataSourceNames);
-    }
-    
-    private void refreshUnconfiguredMetaData(final ShardingSphereMetaData metaData, final Collection<String> routeDataSourceNames, final String tableName) {
-        for (String each : routeDataSourceNames) {
-            refreshUnconfiguredMetaData(metaData, tableName, each);
-        }
-    }
-    
-    private void refreshUnconfiguredMetaData(final ShardingSphereMetaData metaData, final String tableName, final String dataSourceName) {
-        Collection<String> schemaMetaData = metaData.getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get(dataSourceName);
-        if (null == schemaMetaData) {
-            metaData.getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().put(dataSourceName, Lists.newArrayList(tableName));
-        } else {
-            schemaMetaData.add(tableName);
-        }
     }
     
     private void refreshTableAddressingMetaData(final TableAddressingMetaData tableAddressingMetaData, final String tableName, final Collection<String> routeDataSourceNames) {

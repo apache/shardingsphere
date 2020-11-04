@@ -28,7 +28,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.acce
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.impl.StatementAccessor;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -84,7 +84,7 @@ public final class DatabaseCommunicationEngineFactory {
     
     private LogicSQL createLogicSQL(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
         ShardingSphereSchema schema = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
-        PhysicalSchemaMetaData schemaMetaData = schema.getMetaData().getSchemaMetaData().getSchemaMetaData();
+        PhysicalSchemaMetaData schemaMetaData = schema.getMetaData().getSchemaMetaData();
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, parameters, sqlStatement);
         return new LogicSQL(sqlStatementContext, sql, parameters);
     }

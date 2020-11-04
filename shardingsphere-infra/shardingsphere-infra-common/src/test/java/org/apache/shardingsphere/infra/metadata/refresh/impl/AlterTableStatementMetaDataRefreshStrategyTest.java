@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.metadata.refresh.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.index.PhysicalIndexMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.column.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.index.PhysicalIndexMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.AbstractMetaDataRefreshStrategyTest;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -74,6 +74,6 @@ public final class AlterTableStatementMetaDataRefreshStrategyTest extends Abstra
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyList(), alterTableStatement, tableName -> Optional.of(new PhysicalTableMetaData(
                 Collections.singletonList(new PhysicalColumnMetaData("order_id", 1, "String", true, false, false)),
                 Collections.singletonList(new PhysicalIndexMetaData("index_alter")))));
-        assertTrue(getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("index_alter"));
+        assertTrue(getMetaData().getSchemaMetaData().get("t_order").getIndexes().containsKey("index_alter"));
     }
 }

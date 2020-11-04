@@ -55,7 +55,7 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.Stateme
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.StreamQueryResult;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
@@ -271,7 +271,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private LogicSQL createLogicSQL() {
         List<Object> parameters = new ArrayList<>(getParameters());
-        PhysicalSchemaMetaData schemaMetaData = schemaContexts.getDefaultSchema().getMetaData().getSchemaMetaData().getSchemaMetaData();
+        PhysicalSchemaMetaData schemaMetaData = schemaContexts.getDefaultSchema().getMetaData().getSchemaMetaData();
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, parameters, sqlStatement);
         return new LogicSQL(sqlStatementContext, sql, parameters);
     }
@@ -279,7 +279,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
         ShardingSphereSchema schema = schemaContexts.getDefaultSchema();
         MergeEngine mergeEngine = new MergeEngine(schemaContexts.getDatabaseType(),
-                schema.getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData(), schemaContexts.getProps(), schema.getRules());
+                schema.getMetaData().getSchemaMetaData(), schemaContexts.getProps(), schema.getRules());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }
     

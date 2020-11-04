@@ -32,8 +32,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.Assert.assertTrue;
-
 public final class CreateViewStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
     @Test
@@ -50,6 +48,5 @@ public final class CreateViewStatementMetaDataRefreshStrategyTest extends Abstra
         createViewStatement.setView(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item_0"))));
         MetaDataRefreshStrategy<CreateViewStatement> metaDataRefreshStrategy = new CreateViewStatementMetaDataRefreshStrategy();
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), new MySQLDatabaseType(), Collections.singletonList("t_order_item"), createViewStatement, tableName -> Optional.empty());
-        assertTrue(getMetaData().getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().get("t_order_item").contains("t_order_item_0"));
     }
 }

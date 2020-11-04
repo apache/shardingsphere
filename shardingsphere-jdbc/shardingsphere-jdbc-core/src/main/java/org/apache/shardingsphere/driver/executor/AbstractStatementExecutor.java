@@ -27,9 +27,9 @@ import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutorCallback;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.model.logic.spi.LogicMetaDataNotifier;
+import org.apache.shardingsphere.infra.metadata.model.schema.SchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.schema.spi.SchemaMetaDataNotifier;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractStatementExecutor {
     
     static {
-        ShardingSphereServiceLoader.register(LogicMetaDataNotifier.class);
+        ShardingSphereServiceLoader.register(SchemaMetaDataNotifier.class);
     }
     
     private final Map<String, DataSource> dataSourceMap;
@@ -82,10 +82,10 @@ public abstract class AbstractStatementExecutor {
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatement);
         if (refreshStrategy.isPresent()) {
-            LogicSchemaMetaDataLoader metaDataLoader = new LogicSchemaMetaDataLoader(schema.getRules());
+            SchemaMetaDataLoader loader = new SchemaMetaDataLoader(schema.getRules());
             Collection<String> routeDataSourceNames = routeUnits.stream().map(RouteUnit::getDataSourceMapper).map(RouteMapper::getLogicName).collect(Collectors.toList());
             refreshStrategy.get().refreshMetaData(schema.getMetaData(), schemaContexts.getDatabaseType(), routeDataSourceNames, 
-                    sqlStatement, tableName -> metaDataLoader.load(schemaContexts.getDatabaseType(), dataSourceMap, tableName, schemaContexts.getProps()));
+                    sqlStatement, tableName -> loader.load(schemaContexts.getDatabaseType(), dataSourceMap, tableName, schemaContexts.getProps()));
             notifyPersistLogicMetaData(DefaultSchema.LOGIC_NAME, schema.getMetaData().getSchemaMetaData());
         }
     }
@@ -97,8 +97,8 @@ public abstract class AbstractStatementExecutor {
         return null != result && !result.isEmpty() && null != result.get(0) && result.get(0);
     }
     
-    private void notifyPersistLogicMetaData(final String schemaName, final LogicSchemaMetaData metaData) {
-        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(metaData), LogicMetaDataNotifier.class).values().forEach(each -> each.notify(schemaName, metaData));
+    private void notifyPersistLogicMetaData(final String schemaName, final PhysicalSchemaMetaData metaData) {
+        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(metaData), SchemaMetaDataNotifier.class).values().forEach(each -> each.notify(schemaName, metaData));
     }
     
     /**

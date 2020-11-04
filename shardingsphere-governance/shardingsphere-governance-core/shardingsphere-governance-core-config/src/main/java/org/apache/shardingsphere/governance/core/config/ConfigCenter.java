@@ -24,11 +24,11 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.event.model.persist.DataSourcePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.persist.MetaDataPersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.persist.RulePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.persist.SchemaNamePersistEvent;
-import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlLogicSchemaMetaData;
@@ -40,7 +40,7 @@ import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfig
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -342,10 +342,10 @@ public final class ConfigCenter {
      * Persist rule schema meta data.
      *
      * @param schemaName schema name
-     * @param logicSchemaMetaData logic schema meta data
+     * @param physicalSchemaMetaData physical schema meta data
      */
-    public void persistMetaData(final String schemaName, final LogicSchemaMetaData logicSchemaMetaData) {
-        repository.persist(node.getTablePath(schemaName), YamlEngine.marshal(new LogicSchemaMetaDataYamlSwapper().swapToYamlConfiguration(logicSchemaMetaData)));
+    public void persistMetaData(final String schemaName, final PhysicalSchemaMetaData physicalSchemaMetaData) {
+        repository.persist(node.getTablePath(schemaName), YamlEngine.marshal(new LogicSchemaMetaDataYamlSwapper().swapToYamlConfiguration(physicalSchemaMetaData)));
     }
     
     /**
@@ -354,7 +354,7 @@ public final class ConfigCenter {
      * @param schemaName schema name
      * @return rule schema meta data of the schema
      */
-    public Optional<LogicSchemaMetaData> loadMetaData(final String schemaName) {
+    public Optional<PhysicalSchemaMetaData> loadMetaData(final String schemaName) {
         String path = repository.get(node.getTablePath(schemaName));
         if (Strings.isNullOrEmpty(path)) {
             return Optional.empty();

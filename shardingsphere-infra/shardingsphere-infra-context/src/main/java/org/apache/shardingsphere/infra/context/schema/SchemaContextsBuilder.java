@@ -31,8 +31,8 @@ import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressing
 import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.model.datasource.DataSourcesMetaData;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.schema.SchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
@@ -105,10 +105,10 @@ public final class SchemaContextsBuilder {
     private ShardingSphereMetaData createMetaData(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
         long start = System.currentTimeMillis();
         DataSourcesMetaData dataSourceMetas = new DataSourcesMetaData(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
-        LogicSchemaMetaData logicSchemaMetaData = new LogicSchemaMetaDataLoader(rules).load(databaseType, dataSourceMap, props);
         TableAddressingMetaData tableAddressingMetaData = TableAddressingMetaDataLoader.load(databaseType, dataSourceMap, rules);
+        PhysicalSchemaMetaData physicalSchemaMetaData = new SchemaMetaDataLoader(rules).load(databaseType, dataSourceMap, props);
         CachedDatabaseMetaData cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSources.get(schemaName)).orElse(null);
-        ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, logicSchemaMetaData, tableAddressingMetaData, cachedDatabaseMetaData);
+        ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, tableAddressingMetaData, physicalSchemaMetaData, cachedDatabaseMetaData);
         log.info("Load meta data for schema {} finished, cost {} milliseconds.", schemaName, System.currentTimeMillis() - start);
         return result;
     }

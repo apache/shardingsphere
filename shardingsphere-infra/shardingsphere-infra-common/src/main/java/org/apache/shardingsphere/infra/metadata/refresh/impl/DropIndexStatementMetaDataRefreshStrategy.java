@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.metadata.refresh.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.TableMetaDataLoaderCallback;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -43,12 +43,12 @@ public final class DropIndexStatementMetaDataRefreshStrategy implements MetaData
         Collection<String> indexNames = getIndexNames(sqlStatement);
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(sqlStatement);
         String tableName = simpleTableSegment.map(tableSegment -> tableSegment.getTableName().getIdentifier().getValue()).orElse("");
-        PhysicalTableMetaData tableMetaData = metaData.getSchemaMetaData().getConfiguredSchemaMetaData().get(tableName);
+        PhysicalTableMetaData tableMetaData = metaData.getSchemaMetaData().get(tableName);
         if (simpleTableSegment.isPresent()) {
             indexNames.forEach(each -> tableMetaData.getIndexes().remove(each));
         }
         for (String each : indexNames) {
-            if (findLogicTableName(metaData.getSchemaMetaData().getConfiguredSchemaMetaData(), each).isPresent()) {
+            if (findLogicTableName(metaData.getSchemaMetaData(), each).isPresent()) {
                 tableMetaData.getIndexes().remove(each);
             }
         }
