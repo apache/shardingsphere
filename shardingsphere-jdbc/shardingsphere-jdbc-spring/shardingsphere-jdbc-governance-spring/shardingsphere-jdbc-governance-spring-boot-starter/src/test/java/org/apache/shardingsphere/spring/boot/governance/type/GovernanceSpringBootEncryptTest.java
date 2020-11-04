@@ -59,11 +59,11 @@ public class GovernanceSpringBootEncryptTest {
         Field field = GovernanceShardingSphereDataSource.class.getDeclaredField("schemaContexts");
         field.setAccessible(true);
         SchemaContexts schemaContexts = (SchemaContexts) field.get(dataSource);
-        BasicDataSource embedDataSource = (BasicDataSource) schemaContexts.getDefaultSchema().getDataSources().values().iterator().next();
+        BasicDataSource embedDataSource = (BasicDataSource) schemaContexts.getDefaultMetaData().getDataSources().values().iterator().next();
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
         AlgorithmProvidedEncryptRuleConfiguration configuration =
-                (AlgorithmProvidedEncryptRuleConfiguration) schemaContexts.getDefaultSchema().getConfigurations().iterator().next();
+                (AlgorithmProvidedEncryptRuleConfiguration) schemaContexts.getDefaultMetaData().getConfigurations().iterator().next();
         assertThat(configuration.getEncryptors().size(), is(1));
         EncryptAlgorithm encryptAlgorithm = configuration.getEncryptors().get("order_encrypt");
         assertThat(encryptAlgorithm.getType(), is("AES"));

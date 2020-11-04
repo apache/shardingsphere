@@ -70,7 +70,7 @@ public abstract class AbstractBaseExecutorTest {
         when(schemaContexts.getProps()).thenReturn(createConfigurationProperties());
         when(schemaContexts.getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         ShardingRule shardingRule = mockShardingRule();
-        when(schemaContexts.getDefaultSchema().getRules()).thenReturn(Collections.singletonList(shardingRule));
+        when(schemaContexts.getDefaultMetaData().getRules()).thenReturn(Collections.singletonList(shardingRule));
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
         when(transactionContexts.getDefaultTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);

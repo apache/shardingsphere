@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.io.Closeable;
 import java.util.Map;
@@ -39,18 +39,18 @@ public interface SchemaContexts extends Closeable {
     DatabaseType getDatabaseType();
     
     /**
-     * Get schemas.
+     * Get mata data map.
      *
-     * @return schemas
+     * @return mata data map
      */
-    Map<String, ShardingSphereSchema> getSchemas();
+    Map<String, ShardingSphereMetaData> getMetaDataMap();
     
     /**
-     * Get default schema.
+     * Get default mata data.
      *
-     * @return default schema
+     * @return default mata data
      */
-    ShardingSphereSchema getDefaultSchema();
+    ShardingSphereMetaData getDefaultMetaData();
     
     /**
      * Get executor kernel.

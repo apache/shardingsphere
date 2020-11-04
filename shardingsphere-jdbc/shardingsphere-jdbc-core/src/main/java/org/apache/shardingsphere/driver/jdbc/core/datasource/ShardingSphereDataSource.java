@@ -100,7 +100,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
      * @return data sources
      */
     public Map<String, DataSource> getDataSourceMap() {
-        return schemaContexts.getDefaultSchema().getDataSources();
+        return schemaContexts.getDefaultMetaData().getDataSources();
     }
     
     @Override
