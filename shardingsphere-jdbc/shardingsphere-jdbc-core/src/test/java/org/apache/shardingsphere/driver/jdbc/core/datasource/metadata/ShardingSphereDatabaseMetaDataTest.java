@@ -21,8 +21,8 @@ import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
-import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.schema.model.datasource.CachedDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -92,10 +92,10 @@ public final class ShardingSphereDatabaseMetaDataTest {
         when(shardingSphereConnection.getConnection(anyString())).thenReturn(connection);
         when(shardingSphereConnection.getDataSourceMap()).thenReturn(dataSourceMap);
         when(shardingSphereConnection.getSchemaContexts()).thenReturn(schemaContexts);
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
-        when(schemaContexts.getDefaultSchema()).thenReturn(schema);
-        when(schema.getMetaData().getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
-        when(schema.getRules()).thenReturn(Collections.singletonList(mockShardingRule()));
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(schemaContexts.getDefaultMetaData()).thenReturn(metaData);
+        when(metaData.getSchema().getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
+        when(metaData.getRules()).thenReturn(Collections.singletonList(mockShardingRule()));
         shardingSphereDatabaseMetaData = new ShardingSphereDatabaseMetaData(shardingSphereConnection);
     }
     

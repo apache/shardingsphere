@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.route.engine;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 /**
  * SQL route executor.
@@ -30,8 +30,8 @@ public interface SQLRouteExecutor {
      * Route.
      * 
      * @param logicSQL logic SQL
-     * @param schema ShardingSphere schema
+     * @param metaData ShardingSphere meta data
      * @return route context
      */
-    RouteContext route(LogicSQL logicSQL, ShardingSphereSchema schema);
+    RouteContext route(LogicSQL logicSQL, ShardingSphereMetaData metaData);
 }

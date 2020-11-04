@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.binder.statement.dml;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.engine.GeneratedKeyContextEngine;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertSelectContext;

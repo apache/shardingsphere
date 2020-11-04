@@ -58,7 +58,7 @@ public final class GovernanceEncryptNamespaceTest extends AbstractJUnit4SpringCo
     private AlgorithmProvidedEncryptRuleConfiguration getEncryptRuleConfiguration() {
         GovernanceShardingSphereDataSource governanceDataSource = (GovernanceShardingSphereDataSource) applicationContext.getBean("encryptDataSourceGovernance");
         SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(governanceDataSource, "schemaContexts");
-        return (AlgorithmProvidedEncryptRuleConfiguration) schemaContexts.getDefaultSchema().getConfigurations().iterator().next();
+        return (AlgorithmProvidedEncryptRuleConfiguration) schemaContexts.getDefaultMetaData().getConfigurations().iterator().next();
     }
     
     private void assertEncryptRule(final AlgorithmProvidedEncryptRuleConfiguration config) {

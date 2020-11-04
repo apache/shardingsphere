@@ -27,16 +27,16 @@ import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutorCallback;
-import org.apache.shardingsphere.infra.metadata.model.schema.SchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.model.schema.spi.SchemaMetaDataNotifier;
-import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyFactory;
+import org.apache.shardingsphere.infra.schema.model.schema.SchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.schema.model.schema.spi.SchemaMetaDataNotifier;
+import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.schema.refresh.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.schema.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -76,24 +76,24 @@ public abstract class AbstractStatementExecutor {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    protected final void refreshTableMetaData(final ShardingSphereSchema schema, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
+    protected final void refreshTableMetaData(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
         if (null == sqlStatement) {
             return;
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatement);
         if (refreshStrategy.isPresent()) {
-            SchemaMetaDataLoader loader = new SchemaMetaDataLoader(schema.getRules());
+            SchemaMetaDataLoader loader = new SchemaMetaDataLoader(metaData.getRules());
             Collection<String> routeDataSourceNames = routeUnits.stream().map(RouteUnit::getDataSourceMapper).map(RouteMapper::getLogicName).collect(Collectors.toList());
-            refreshStrategy.get().refreshMetaData(schema.getMetaData(), schemaContexts.getDatabaseType(), routeDataSourceNames, 
+            refreshStrategy.get().refreshMetaData(metaData.getSchema(), schemaContexts.getDatabaseType(), routeDataSourceNames, 
                     sqlStatement, tableName -> loader.load(schemaContexts.getDatabaseType(), dataSourceMap, tableName, schemaContexts.getProps()));
-            notifyPersistLogicMetaData(DefaultSchema.LOGIC_NAME, schema.getMetaData().getSchemaMetaData());
+            notifyPersistLogicMetaData(DefaultSchema.LOGIC_NAME, metaData.getSchema().getSchemaMetaData());
         }
     }
     
     protected boolean executeAndRefreshMetaData(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatement sqlStatement,
                                                 final Collection<RouteUnit> routeUnits, final SQLExecutorCallback<Boolean> sqlExecutorCallback) throws SQLException {
         List<Boolean> result = sqlExecutor.execute(inputGroups, sqlExecutorCallback);
-        refreshTableMetaData(schemaContexts.getDefaultSchema(), sqlStatement, routeUnits);
+        refreshTableMetaData(schemaContexts.getDefaultMetaData(), sqlStatement, routeUnits);
         return null != result && !result.isEmpty() && null != result.get(0) && result.get(0);
     }
     

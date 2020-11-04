@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -37,17 +37,17 @@ public final class StandardSchemaContextsTest {
     @Test
     public void assertGetDefaultSchema() {
         StandardSchemaContexts standardSchemaContexts = new StandardSchemaContexts();
-        ShardingSphereSchema expected = mock(ShardingSphereSchema.class);
-        standardSchemaContexts.getSchemas().put("logic_db", expected);
-        assertThat(standardSchemaContexts.getDefaultSchema(), is(expected));
+        ShardingSphereMetaData expected = mock(ShardingSphereMetaData.class);
+        standardSchemaContexts.getMetaDataMap().put("logic_db", expected);
+        assertThat(standardSchemaContexts.getDefaultMetaData(), is(expected));
     }
     
     @Test
     public void assertClose() {
         ExecutorKernel executorKernel = mock(ExecutorKernel.class);
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        StandardSchemaContexts standardSchemaContexts = new StandardSchemaContexts(
-                Collections.singletonMap("logic_db", schema), executorKernel, new Authentication(), new ConfigurationProperties(new Properties()), DatabaseTypeRegistry.getTrunkDatabaseType("SQL92"));
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        StandardSchemaContexts standardSchemaContexts = new StandardSchemaContexts(Collections.singletonMap("logic_db", metaData), 
+                executorKernel, new Authentication(), new ConfigurationProperties(new Properties()), DatabaseTypeRegistry.getTrunkDatabaseType("SQL92"));
         standardSchemaContexts.close();
         verify(executorKernel).close();
     }

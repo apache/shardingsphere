@@ -212,8 +212,8 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         assertNotNull(actualSchemaContexts);
         assertThat(actualSchemaContexts, instanceOf(GovernanceSchemaContexts.class));
         assertThat(actualSchemaContexts.getDatabaseType(), is(schemaContexts.getDatabaseType()));
-        assertThat(actualSchemaContexts.getSchemas(), is(schemaContexts.getSchemas()));
-        assertThat(actualSchemaContexts.getDefaultSchema(), is(schemaContexts.getDefaultSchema()));
+        assertThat(actualSchemaContexts.getMetaDataMap(), is(schemaContexts.getMetaDataMap()));
+        assertThat(actualSchemaContexts.getDefaultMetaData(), is(schemaContexts.getDefaultMetaData()));
         assertThat(actualSchemaContexts.getAuthentication(), is(schemaContexts.getAuthentication()));
         assertThat(actualSchemaContexts.getProps(), is(schemaContexts.getProps()));
         assertThat(actualSchemaContexts.isCircuitBreak(), is(schemaContexts.isCircuitBreak()));

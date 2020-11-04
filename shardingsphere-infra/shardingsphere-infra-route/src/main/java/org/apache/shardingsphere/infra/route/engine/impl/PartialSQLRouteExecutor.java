@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteExecutor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 
@@ -52,13 +52,13 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
     
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public RouteContext route(final LogicSQL logicSQL, final ShardingSphereSchema schema) {
+    public RouteContext route(final LogicSQL logicSQL, final ShardingSphereMetaData metaData) {
         RouteContext result = new RouteContext();
         for (Entry<ShardingSphereRule, SQLRouter> entry : routers.entrySet()) {
             if (result.getRouteUnits().isEmpty()) {
-                result = entry.getValue().createRouteContext(logicSQL, schema, entry.getKey(), props);
+                result = entry.getValue().createRouteContext(logicSQL, metaData, entry.getKey(), props);
             } else {
-                entry.getValue().decorateRouteContext(result, logicSQL, schema, entry.getKey(), props);
+                entry.getValue().decorateRouteContext(result, logicSQL, metaData, entry.getKey(), props);
             }
         }
         return result;
