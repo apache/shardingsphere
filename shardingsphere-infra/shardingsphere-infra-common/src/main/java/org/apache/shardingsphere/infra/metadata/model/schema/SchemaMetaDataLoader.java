@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.model.schema.logic;
+package org.apache.shardingsphere.infra.metadata.model.schema;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.metadata.model.schema.logic.spi.LogicMetaDataDecorator;
-import org.apache.shardingsphere.infra.metadata.model.schema.logic.spi.LogicMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.model.schema.spi.LogicMetaDataDecorator;
+import org.apache.shardingsphere.infra.metadata.model.schema.spi.LogicMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
@@ -41,10 +41,10 @@ import java.util.Optional;
 import java.util.TreeSet;
 
 /**
- * Logic schema meta data loader.
+ * Schema meta data loader.
  */
 @RequiredArgsConstructor
-public final class LogicSchemaMetaDataLoader {
+public final class SchemaMetaDataLoader {
     
     static {
         ShardingSphereServiceLoader.register(LogicMetaDataLoader.class);

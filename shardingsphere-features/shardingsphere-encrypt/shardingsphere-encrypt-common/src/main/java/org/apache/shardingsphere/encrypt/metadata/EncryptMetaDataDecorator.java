@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.column.PhysicalColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.table.PhysicalTableMetaData;
-import org.apache.shardingsphere.infra.metadata.model.schema.logic.spi.LogicMetaDataDecorator;
+import org.apache.shardingsphere.infra.metadata.model.schema.spi.LogicMetaDataDecorator;
 
 import java.util.Collection;
 import java.util.LinkedList;

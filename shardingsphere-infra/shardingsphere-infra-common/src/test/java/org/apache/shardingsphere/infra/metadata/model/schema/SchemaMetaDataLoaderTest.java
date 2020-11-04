@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.model.schema.logic;
+package org.apache.shardingsphere.infra.metadata.model.schema;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -38,7 +38,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class LogicSchemaMetaDataLoaderTest {
+public final class SchemaMetaDataLoaderTest {
     
     @Mock
     private DatabaseType databaseType;
@@ -49,15 +49,15 @@ public final class LogicSchemaMetaDataLoaderTest {
     @Mock
     private ConfigurationProperties props;
     
-    private final LogicSchemaMetaDataLoader loader = new LogicSchemaMetaDataLoader(Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()));
+    private final SchemaMetaDataLoader loader = new SchemaMetaDataLoader(Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()));
     
     @Test
-    public void assertSyncLoadFullDatabase() throws SQLException {
+    public void assertSyncLoadFullDatabases() throws SQLException {
         assertPhysicalSchemaMetaData(loader.load(databaseType, dataSource, props));
     }
     
     @Test
-    public void assertAsyncLoadFullDatabase() throws SQLException {
+    public void assertAsyncLoadFullDatabases() throws SQLException {
         assertPhysicalSchemaMetaData(loader.load(databaseType, dataSource, props));
     }
     
