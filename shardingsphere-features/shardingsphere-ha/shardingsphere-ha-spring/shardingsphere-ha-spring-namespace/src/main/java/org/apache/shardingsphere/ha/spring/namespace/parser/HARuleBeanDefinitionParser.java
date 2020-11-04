@@ -59,7 +59,7 @@ public final class HARuleBeanDefinitionParser extends AbstractBeanDefinitionPars
     
     private BeanDefinition parseHADataSourceRuleConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(HADataSourceRuleConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(HARuleBeanDefinitionTag.REPLICA_QUERY_DATA_SOURCE_ID_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(HARuleBeanDefinitionTag.HA_DATA_SOURCE_ID_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(HARuleBeanDefinitionTag.PRIMARY_DATA_SOURCE_NAME_ATTRIBUTE));
         factory.addConstructorArgValue(parseReplicaDataSourcesRef(element));
         factory.addConstructorArgValue(element.getAttribute(HARuleBeanDefinitionTag.LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE));

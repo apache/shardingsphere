@@ -86,7 +86,7 @@ public final class HARuleConfigurationYamlSwapper
     
     @Override
     public String getRuleTagName() {
-        return "REPLICA_QUERY";
+        return "HA";
     }
     
     @Override

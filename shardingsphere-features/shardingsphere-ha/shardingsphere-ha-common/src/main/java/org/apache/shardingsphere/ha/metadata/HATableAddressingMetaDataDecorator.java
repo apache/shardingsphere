@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.ha.metadata;
 
 import org.apache.shardingsphere.ha.rule.HARule;
-import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaData;
-import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaDataDecorator;
+import org.apache.shardingsphere.infra.schema.model.addressing.TableAddressingMetaData;
+import org.apache.shardingsphere.infra.schema.model.addressing.TableAddressingMetaDataDecorator;
 import org.apache.shardingsphere.ha.constant.HAOrder;
 import org.apache.shardingsphere.ha.rule.HADataSourceRule;
 
