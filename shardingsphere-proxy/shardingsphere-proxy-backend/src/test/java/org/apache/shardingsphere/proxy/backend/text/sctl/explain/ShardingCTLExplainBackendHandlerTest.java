@@ -62,7 +62,8 @@ public final class ShardingCTLExplainBackendHandlerTest {
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("ds0", mock(DataSource.class)), mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class));
+        ShardingSphereResource resource = new ShardingSphereResource(
+                Collections.singletonMap("ds0", mock(DataSource.class)), mock(DataSourcesMetaData.class, RETURNS_DEEP_STUBS), mock(CachedDatabaseMetaData.class));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 "schema", Collections.emptyList(), Collections.singleton(mock(ShardingSphereRule.class)), resource, mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS));
         return Collections.singletonMap("schema", metaData);
