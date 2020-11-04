@@ -59,8 +59,8 @@ public class HARuleSpringbootConfiguration {
      * @return replica query rule configuration
      */
     @Bean
-    public RuleConfiguration replicaQueryRuleConfiguration(final ObjectProvider<Map<String, ReplicaLoadBalanceAlgorithm>> loadBalanceAlgorithms) {
-        AlgorithmProvidedHARuleConfiguration result = swapper.swapToObject(yamlConfig.getReplicaQuery());
+    public RuleConfiguration haRuleConfiguration(final ObjectProvider<Map<String, ReplicaLoadBalanceAlgorithm>> loadBalanceAlgorithms) {
+        AlgorithmProvidedHARuleConfiguration result = swapper.swapToObject(yamlConfig.getHa());
         Map<String, ReplicaLoadBalanceAlgorithm> balanceAlgorithmMap = Optional.ofNullable(loadBalanceAlgorithms.getIfAvailable()).orElse(Collections.emptyMap());
         result.setLoadBalanceAlgorithms(balanceAlgorithmMap);
         return result;
@@ -73,7 +73,7 @@ public class HARuleSpringbootConfiguration {
      * @return replica query algorithm provided bean registry
      */
     @Bean
-    public static HAAlgorithmProvidedBeanRegistry replicaQueryAlgorithmProvidedBeanRegistry(final Environment environment) {
+    public static HAAlgorithmProvidedBeanRegistry haAlgorithmProvidedBeanRegistry(final Environment environment) {
         return new HAAlgorithmProvidedBeanRegistry(environment);
     }
 }

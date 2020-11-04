@@ -41,7 +41,7 @@ public final class YamlRootRuleConfigurationsForYamlHARuleConfigurationTest {
         assertNotNull(url);
         YamlRootRuleConfigurations rootRuleConfigs = YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class);
         assertThat(rootRuleConfigs.getRules().size(), is(1));
-        assertReplicaQueryRule((YamlHARuleConfiguration) rootRuleConfigs.getRules().iterator().next());
+        assertHARule((YamlHARuleConfiguration) rootRuleConfigs.getRules().iterator().next());
     }
     
     @Test
@@ -59,22 +59,22 @@ public final class YamlRootRuleConfigurationsForYamlHARuleConfigurationTest {
         }
         YamlRootRuleConfigurations rootRuleConfigs = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootRuleConfigurations.class);
         assertThat(rootRuleConfigs.getRules().size(), is(1));
-        assertReplicaQueryRule((YamlHARuleConfiguration) rootRuleConfigs.getRules().iterator().next());
+        assertHARule((YamlHARuleConfiguration) rootRuleConfigs.getRules().iterator().next());
     }
     
-    private void assertReplicaQueryRule(final YamlHARuleConfiguration actual) {
+    private void assertHARule(final YamlHARuleConfiguration actual) {
         assertThat(actual.getDataSources().size(), is(2));
-        assertReplicaQueryRuleForDs0(actual);
-        assertReplicaQueryRuleForDs1(actual);
+        assertHARuleForDs0(actual);
+        assertHARuleForDs1(actual);
     }
     
-    private void assertReplicaQueryRuleForDs0(final YamlHARuleConfiguration actual) {
+    private void assertHARuleForDs0(final YamlHARuleConfiguration actual) {
         assertThat(actual.getDataSources().get("ds_0").getPrimaryDataSourceName(), is("primary_ds_0"));
         assertThat(actual.getDataSources().get("ds_0").getReplicaDataSourceNames(), is(Arrays.asList("primary_ds_0_replica_0", "primary_ds_0_replica_1")));
         assertThat(actual.getDataSources().get("ds_0").getLoadBalancerName(), is("roundRobin"));
     }
     
-    private void assertReplicaQueryRuleForDs1(final YamlHARuleConfiguration actual) {
+    private void assertHARuleForDs1(final YamlHARuleConfiguration actual) {
         assertThat(actual.getDataSources().get("ds_1").getPrimaryDataSourceName(), is("primary_ds_1"));
         assertThat(actual.getDataSources().get("ds_1").getReplicaDataSourceNames(), is(Arrays.asList("primary_ds_1_replica_0", "primary_ds_1_replica_1")));
         assertThat(actual.getDataSources().get("ds_1").getLoadBalancerName(), is("random"));

@@ -51,7 +51,7 @@ public final class HARuleConfigurationYamlSwapperTest {
     public void assertSwapToYamlWithLoadBalanceAlgorithm() {
         HADataSourceRuleConfiguration dataSourceConfig =
                 new HADataSourceRuleConfiguration("ds", "primary", Collections.singletonList("replica"), "roundRobin");
-        YamlHARuleConfiguration actual = getReplicaQueryRuleConfigurationYamlSwapper().swapToYamlConfiguration(new HARuleConfiguration(
+        YamlHARuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(new HARuleConfiguration(
                 Collections.singleton(dataSourceConfig), ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties()))));
         assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
         assertThat(actual.getDataSources().get("ds").getPrimaryDataSourceName(), is("primary"));
@@ -62,7 +62,7 @@ public final class HARuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
         HADataSourceRuleConfiguration dataSourceConfig = new HADataSourceRuleConfiguration("ds", "primary", Collections.singletonList("replica"), null);
-        YamlHARuleConfiguration actual = getReplicaQueryRuleConfigurationYamlSwapper().swapToYamlConfiguration(
+        YamlHARuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(
                 new HARuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap()));
         assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
         assertThat(actual.getDataSources().get("ds").getPrimaryDataSourceName(), is("primary"));
@@ -72,22 +72,22 @@ public final class HARuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToObjectWithLoadBalanceAlgorithmType() {
-        YamlHARuleConfiguration yamlConfig = createYamlReplicaQueryRuleConfiguration();
+        YamlHARuleConfiguration yamlConfig = createYamlHARuleConfiguration();
         yamlConfig.getDataSources().get("replica_query_ds").setLoadBalancerName("RANDOM");
-        HARuleConfiguration actual = getReplicaQueryRuleConfigurationYamlSwapper().swapToObject(yamlConfig);
-        assertReplicaQueryRuleConfiguration(actual);
+        HARuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToObject(yamlConfig);
+        assertHARuleConfiguration(actual);
         assertThat(actual.getDataSources().iterator().next().getLoadBalancerName(), is("RANDOM"));
     }
     
     @Test
     public void assertSwapToObjectWithoutLoadBalanceAlgorithm() {
-        YamlHARuleConfiguration yamlConfig = createYamlReplicaQueryRuleConfiguration();
-        HARuleConfiguration actual = getReplicaQueryRuleConfigurationYamlSwapper().swapToObject(yamlConfig);
-        assertReplicaQueryRuleConfiguration(actual);
+        YamlHARuleConfiguration yamlConfig = createYamlHARuleConfiguration();
+        HARuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToObject(yamlConfig);
+        assertHARuleConfiguration(actual);
         assertNull(actual.getDataSources().iterator().next().getLoadBalancerName());
     }
     
-    private YamlHARuleConfiguration createYamlReplicaQueryRuleConfiguration() {
+    private YamlHARuleConfiguration createYamlHARuleConfiguration() {
         YamlHARuleConfiguration result = new YamlHARuleConfiguration();
         result.getDataSources().put("replica_query_ds", new YamlHADataSourceRuleConfiguration());
         result.getDataSources().get("replica_query_ds").setName("replica_query_ds");
@@ -96,7 +96,7 @@ public final class HARuleConfigurationYamlSwapperTest {
         return result;
     }
     
-    private void assertReplicaQueryRuleConfiguration(final HARuleConfiguration actual) {
+    private void assertHARuleConfiguration(final HARuleConfiguration actual) {
         HADataSourceRuleConfiguration group = actual.getDataSources().iterator().next();
         assertThat(group.getName(), is("replica_query_ds"));
         assertThat(group.getPrimaryDataSourceName(), is("primary_ds"));
@@ -105,19 +105,19 @@ public final class HARuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertGetTypeClass() {
-        HARuleConfigurationYamlSwapper swapper = getReplicaQueryRuleConfigurationYamlSwapper();
+        HARuleConfigurationYamlSwapper swapper = getHARuleConfigurationYamlSwapper();
         Class<HARuleConfiguration> actual = swapper.getTypeClass();
         assertTrue(actual.isAssignableFrom(HARuleConfiguration.class));
     }
     
     @Test
     public void assertGetOrder() {
-        HARuleConfigurationYamlSwapper swapper = getReplicaQueryRuleConfigurationYamlSwapper();
+        HARuleConfigurationYamlSwapper swapper = getHARuleConfigurationYamlSwapper();
         int actual = swapper.getOrder();
         assertThat(actual, is(HAOrder.ORDER));
     }
     
-    private HARuleConfigurationYamlSwapper getReplicaQueryRuleConfigurationYamlSwapper() {
+    private HARuleConfigurationYamlSwapper getHARuleConfigurationYamlSwapper() {
         Optional<HARuleConfigurationYamlSwapper> optional = collection.stream()
                 .filter(swapper -> swapper instanceof HARuleConfigurationYamlSwapper)
                 .map(swapper -> (HARuleConfigurationYamlSwapper) swapper)

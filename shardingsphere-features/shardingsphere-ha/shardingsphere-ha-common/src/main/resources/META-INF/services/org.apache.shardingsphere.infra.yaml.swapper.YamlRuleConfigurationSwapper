@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.replicaquery.yaml.swapper.ReplicaQueryRuleAlgorithmProviderConfigurationYamlSwapper
-org.apache.shardingsphere.replicaquery.yaml.swapper.ReplicaQueryRuleConfigurationYamlSwapper
+org.apache.shardingsphere.ha.yaml.swapper.HARuleAlgorithmProviderConfigurationYamlSwapper
+org.apache.shardingsphere.ha.yaml.swapper.HARuleConfigurationYamlSwapper

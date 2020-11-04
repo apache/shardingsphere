@@ -39,7 +39,7 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlConfiguration() {
-        YamlHARuleConfiguration actual = createYamlReplicaQueryRuleConfiguration();
+        YamlHARuleConfiguration actual = createYamlHARuleConfiguration();
         assertNotNull(actual);
         assertNotNull(actual.getDataSources());
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("name")));
@@ -55,7 +55,7 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToObject() {
-        AlgorithmProvidedHARuleConfiguration actual = swapper.swapToObject(createYamlReplicaQueryRuleConfiguration());
+        AlgorithmProvidedHARuleConfiguration actual = swapper.swapToObject(createYamlHARuleConfiguration());
         assertNotNull(actual);
         assertNotNull(actual.getDataSources());
         assertTrue(actual.getDataSources().iterator().hasNext());
@@ -83,7 +83,7 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapperTest {
         assertThat(swapper.getOrder(), is(HAOrder.ALGORITHM_PROVIDER_ORDER));
     }
     
-    private YamlHARuleConfiguration createYamlReplicaQueryRuleConfiguration() {
+    private YamlHARuleConfiguration createYamlHARuleConfiguration() {
         HADataSourceRuleConfiguration ruleConfig = new HADataSourceRuleConfiguration("name", "primaryDataSourceName",
                 Collections.singletonList("replicaDataSourceName"), "loadBalancerName");
         return swapper.swapToYamlConfiguration(

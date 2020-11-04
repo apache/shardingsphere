@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.replicaquery.route.engine.ReplicaQuerySQLRouter
+org.apache.shardingsphere.ha.route.engine.HASQLRouter

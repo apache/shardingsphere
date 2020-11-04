@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.replicaquery.rule.biulder.ReplicaQueryRuleBuilder
-org.apache.shardingsphere.replicaquery.rule.biulder.AlgorithmProvidedReplicaQueryRuleBuilder
+org.apache.shardingsphere.ha.rule.biulder.HARuleBuilder
+org.apache.shardingsphere.ha.rule.biulder.AlgorithmProvidedHARuleBuilder

@@ -43,21 +43,21 @@ public final class HARuleBeanDefinitionParser extends AbstractBeanDefinitionPars
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(AlgorithmProvidedHARuleConfiguration.class);
-        factory.addConstructorArgValue(parseReplicaQueryDataSourceRuleConfigurations(element));
+        factory.addConstructorArgValue(parseHADataSourceRuleConfigurations(element));
         factory.addConstructorArgValue(ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, ReplicaLoadBalanceAlgorithmFactoryBean.class));
         return factory.getBeanDefinition();
     }
     
-    private List<BeanDefinition> parseReplicaQueryDataSourceRuleConfigurations(final Element element) {
+    private List<BeanDefinition> parseHADataSourceRuleConfigurations(final Element element) {
         List<Element> dataSourceElements = DomUtils.getChildElementsByTagName(element, HARuleBeanDefinitionTag.DATA_SOURCE_TAG);
         List<BeanDefinition> result = new ManagedList<>(dataSourceElements.size());
         for (Element each : dataSourceElements) {
-            result.add(parseReplicaQueryDataSourceRuleConfiguration(each));
+            result.add(parseHADataSourceRuleConfiguration(each));
         }
         return result;
     }
     
-    private BeanDefinition parseReplicaQueryDataSourceRuleConfiguration(final Element element) {
+    private BeanDefinition parseHADataSourceRuleConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(HADataSourceRuleConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(HARuleBeanDefinitionTag.REPLICA_QUERY_DATA_SOURCE_ID_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(HARuleBeanDefinitionTag.PRIMARY_DATA_SOURCE_NAME_ATTRIBUTE));

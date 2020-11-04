@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.replicaquery.metadata.ReplicaQueryTableAddressingMetaDataDecorator
+org.apache.shardingsphere.ha.metadata.HATableAddressingMetaDataDecorator

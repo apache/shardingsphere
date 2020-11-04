@@ -30,5 +30,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 public final class YamlHARuleSpringBootConfiguration {
     
-    private YamlHARuleConfiguration replicaQuery;
+    private YamlHARuleConfiguration ha;
 }

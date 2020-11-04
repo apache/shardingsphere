@@ -44,17 +44,17 @@ public final class HARuleTest {
     
     @Test
     public void assertFindDataSourceRule() {
-        Optional<HADataSourceRule> actual = createReplicaQueryRule().findDataSourceRule("test_pr");
+        Optional<HADataSourceRule> actual = createHARule().findDataSourceRule("test_pr");
         assertTrue(actual.isPresent());
         assertDataSourceRule(actual.get());
     }
     
     @Test
     public void assertGetSingleDataSourceRule() {
-        assertDataSourceRule(createReplicaQueryRule().getSingleDataSourceRule());
+        assertDataSourceRule(createHARule().getSingleDataSourceRule());
     }
     
-    private HARule createReplicaQueryRule() {
+    private HARule createHARule() {
         HADataSourceRuleConfiguration config =
                 new HADataSourceRuleConfiguration("test_pr", "primary_ds", Arrays.asList("replica_ds_0", "replica_ds_1"), "random");
         return new HARule(new HARuleConfiguration(
@@ -70,21 +70,21 @@ public final class HARuleTest {
     
     @Test
     public void assertUpdateRuleStatusWithNotExistDataSource() {
-        HARule haRule = createReplicaQueryRule();
+        HARule haRule = createHARule();
         haRule.updateRuleStatus(new DataSourceNameDisabledEvent("replica_db", true));
         assertThat(haRule.getSingleDataSourceRule().getReplicaDataSourceNames(), is(Arrays.asList("replica_ds_0", "replica_ds_1")));
     }
     
     @Test
     public void assertUpdateRuleStatus() {
-        HARule haRule = createReplicaQueryRule();
+        HARule haRule = createHARule();
         haRule.updateRuleStatus(new DataSourceNameDisabledEvent("replica_ds_0", true));
         assertThat(haRule.getSingleDataSourceRule().getReplicaDataSourceNames(), is(Collections.singletonList("replica_ds_1")));
     }
     
     @Test
     public void assertUpdateRuleStatusWithEnable() {
-        HARule haRule = createReplicaQueryRule();
+        HARule haRule = createHARule();
         haRule.updateRuleStatus(new DataSourceNameDisabledEvent("replica_ds_0", true));
         assertThat(haRule.getSingleDataSourceRule().getReplicaDataSourceNames(), is(Collections.singletonList("replica_ds_1")));
         haRule.updateRuleStatus(new DataSourceNameDisabledEvent("replica_ds_0", false));
@@ -93,7 +93,7 @@ public final class HARuleTest {
     
     @Test
     public void assertGetDataSourceMapper() {
-        HARule haRule = createReplicaQueryRule();
+        HARule haRule = createHARule();
         Map<String, Collection<String>> actual = haRule.getDataSourceMapper();
         Map<String, Collection<String>> expected = ImmutableMap.of("test_pr", Arrays.asList("primary_ds", "replica_ds_0", "replica_ds_1"));
         assertThat(actual, is(expected));

@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.replicaquery.algorithm.RoundRobinReplicaLoadBalanceAlgorithm
-org.apache.shardingsphere.replicaquery.algorithm.RandomReplicaLoadBalanceAlgorithm
+org.apache.shardingsphere.ha.algorithm.RoundRobinReplicaLoadBalanceAlgorithm
+org.apache.shardingsphere.ha.algorithm.RandomReplicaLoadBalanceAlgorithm

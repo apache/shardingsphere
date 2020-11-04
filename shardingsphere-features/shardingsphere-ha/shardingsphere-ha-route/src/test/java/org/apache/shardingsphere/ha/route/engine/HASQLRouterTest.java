@@ -58,7 +58,7 @@ public final class HASQLRouterTest {
     
     private static final String DATASOURCE_NAME = "ds";
     
-    private static final String NONE_REPLICA_QUERY_DATASOURCE_NAME = "noneReplicaQueryDatasource";
+    private static final String NONE_REPLICA_QUERY_DATASOURCE_NAME = "noneHADatasource";
     
     private static final String PRIMARY_DATASOURCE = "primary";
     

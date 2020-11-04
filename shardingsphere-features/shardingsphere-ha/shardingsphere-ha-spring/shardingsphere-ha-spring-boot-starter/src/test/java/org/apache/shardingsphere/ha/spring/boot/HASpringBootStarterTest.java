@@ -51,7 +51,7 @@ public class HASpringBootStarterTest {
     }
     
     @Test
-    public void assertReplicaQueryRuleConfiguration() {
+    public void assertHARuleConfiguration() {
         assertThat(config.getDataSources().size(), is(1));
         HADataSourceRuleConfiguration dataSourceRuleConfig = config.getDataSources().stream().findFirst().get();
         assertThat(dataSourceRuleConfig.getName(), is("pr_ds"));
