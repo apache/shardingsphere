@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.driver.governance.internal.metadata.PhysicalSchemaMetaDataNotifier
+org.apache.shardingsphere.driver.governance.internal.metadata.GovernanceSchemaMetaDataNotifier

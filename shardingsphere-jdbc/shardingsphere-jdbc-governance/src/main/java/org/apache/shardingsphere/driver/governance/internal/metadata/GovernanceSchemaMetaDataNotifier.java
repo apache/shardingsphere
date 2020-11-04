@@ -15,21 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.model.schema.spi;
+package org.apache.shardingsphere.driver.governance.internal.metadata;
 
+import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
+import org.apache.shardingsphere.governance.core.event.model.persist.MetaDataPersistEvent;
+import org.apache.shardingsphere.infra.metadata.model.schema.spi.SchemaMetaDataNotifier;
 import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
 /**
- * Physical meta data notifier.
+ * Governance schema meta data notifier.
  */
-public interface PhysicalMetaDataNotifier extends OrderedSPI<PhysicalSchemaMetaData> {
+public final class GovernanceSchemaMetaDataNotifier implements SchemaMetaDataNotifier {
     
-    /**
-     * Notify rule meta data changed.
-     * 
-     * @param schemaName schema name
-     * @param metaData meta data
-     */
-    void notify(String schemaName, PhysicalSchemaMetaData metaData);
+    @Override
+    public void notify(final String name, final PhysicalSchemaMetaData metaData) {
+        GovernanceEventBus.getInstance().post(new MetaDataPersistEvent(name, metaData));
+    }
+    
+    @Override
+    public int getOrder() {
+        return 0;
+    }
+    
+    @Override
+    public Class<PhysicalSchemaMetaData> getTypeClass() {
+        return PhysicalSchemaMetaData.class;
+    }
 }

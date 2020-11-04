@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExec
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutorCallback;
 import org.apache.shardingsphere.infra.metadata.model.schema.SchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.model.schema.spi.PhysicalMetaDataNotifier;
+import org.apache.shardingsphere.infra.metadata.model.schema.spi.SchemaMetaDataNotifier;
 import org.apache.shardingsphere.infra.metadata.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyFactory;
@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractStatementExecutor {
     
     static {
-        ShardingSphereServiceLoader.register(PhysicalMetaDataNotifier.class);
+        ShardingSphereServiceLoader.register(SchemaMetaDataNotifier.class);
     }
     
     private final Map<String, DataSource> dataSourceMap;
@@ -98,7 +98,7 @@ public abstract class AbstractStatementExecutor {
     }
     
     private void notifyPersistLogicMetaData(final String schemaName, final PhysicalSchemaMetaData metaData) {
-        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(metaData), PhysicalMetaDataNotifier.class).values().forEach(each -> each.notify(schemaName, metaData));
+        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(metaData), SchemaMetaDataNotifier.class).values().forEach(each -> each.notify(schemaName, metaData));
     }
     
     /**
