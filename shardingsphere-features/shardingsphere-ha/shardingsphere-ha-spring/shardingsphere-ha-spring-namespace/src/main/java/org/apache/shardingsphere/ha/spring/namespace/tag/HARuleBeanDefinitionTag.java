@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Replica query rule bean definition tag.
+ * HA rule bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HARuleBeanDefinitionTag {

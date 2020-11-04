@@ -23,14 +23,14 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.env.Environment;
 
 /**
- * Replica query algorithm provided bean registry.
+ * HA algorithm provided bean registry.
  */
 public final class HAAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry<ReplicaLoadBalanceAlgorithm> {
     
     private static final String ALGORITHMS = "spring.shardingsphere.rules.ha.load-balancers.";
     
     /**
-     * Instantiates a new replica query algorithm provided bean registry.
+     * Instantiates a new HA algorithm provided bean registry.
      *
      * @param environment environment
      */

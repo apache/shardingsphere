@@ -36,7 +36,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Replica query rule bean definition parser.
+ * HA rule bean definition parser.
  */
 public final class HARuleBeanDefinitionParser extends AbstractBeanDefinitionParser {
     

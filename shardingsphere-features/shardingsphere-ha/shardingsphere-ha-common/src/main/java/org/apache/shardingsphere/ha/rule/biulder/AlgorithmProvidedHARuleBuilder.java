@@ -25,7 +25,7 @@ import org.apache.shardingsphere.ha.constant.HAOrder;
 import java.util.Collection;
 
 /**
- * Algorithm provided replica query rule builder.
+ * Algorithm provided HA rule builder.
  */
 public final class AlgorithmProvidedHARuleBuilder implements ShardingSphereRuleBuilder<HARule, AlgorithmProvidedHARuleConfiguration> {
     

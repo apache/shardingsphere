@@ -28,7 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Replica query rule configuration for YAML.
+ * HA rule configuration for YAML.
  */
 @Getter
 @Setter

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.spring.namespace.parser.ShardingSphereAlgorithm
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Spring namespace handler for replica query.
+ * Spring namespace handler for HA.
  */
 public final class HANamespaceHandler extends NamespaceHandlerSupport {
     

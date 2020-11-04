@@ -25,7 +25,7 @@ import org.apache.shardingsphere.ha.rule.HARule;
 import java.util.Collection;
 
 /**
- * Replica query rule builder.
+ * HA rule builder.
  */
 public final class HARuleBuilder implements ShardingSphereRuleBuilder<HARule, HARuleConfiguration> {
     

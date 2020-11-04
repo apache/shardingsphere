@@ -24,7 +24,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Spring boot condition for replica query.
+ * Spring boot condition for HA.
  */
 public final class HASpringBootCondition extends SpringBootCondition {
     

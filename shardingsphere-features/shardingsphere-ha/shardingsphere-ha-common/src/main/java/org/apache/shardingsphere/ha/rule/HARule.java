@@ -39,7 +39,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Replica query rule.
+ * HA rule.
  */
 public final class HARule implements DataSourceRoutedRule, StatusContainedRule {
     
@@ -52,7 +52,7 @@ public final class HARule implements DataSourceRoutedRule, StatusContainedRule {
     private final Map<String, HADataSourceRule> dataSourceRules;
     
     public HARule(final HARuleConfiguration config) {
-        Preconditions.checkArgument(!config.getDataSources().isEmpty(), "Replica query data source rules can not be empty.");
+        Preconditions.checkArgument(!config.getDataSources().isEmpty(), "HA data source rules can not be empty.");
         config.getLoadBalancers().forEach((key, value) -> loadBalancers.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ReplicaLoadBalanceAlgorithm.class)));
         dataSourceRules = new HashMap<>(config.getDataSources().size(), 1);
         for (HADataSourceRuleConfiguration each : config.getDataSources()) {
@@ -64,7 +64,7 @@ public final class HARule implements DataSourceRoutedRule, StatusContainedRule {
     }
     
     public HARule(final AlgorithmProvidedHARuleConfiguration config) {
-        Preconditions.checkArgument(!config.getDataSources().isEmpty(), "Replica query data source rules can not be empty.");
+        Preconditions.checkArgument(!config.getDataSources().isEmpty(), "HA data source rules can not be empty.");
         loadBalancers.putAll(config.getLoadBalanceAlgorithms());
         dataSourceRules = new HashMap<>(config.getDataSources().size(), 1);
         for (HADataSourceRuleConfiguration each : config.getDataSources()) {
@@ -87,7 +87,7 @@ public final class HARule implements DataSourceRoutedRule, StatusContainedRule {
     /**
      * Get single data source rule.
      *
-     * @return replica query data source rule
+     * @return HA data source rule
      */
     public HADataSourceRule getSingleDataSourceRule() {
         return dataSourceRules.values().iterator().next();
@@ -97,7 +97,7 @@ public final class HARule implements DataSourceRoutedRule, StatusContainedRule {
      * Find data source rule.
      * 
      * @param dataSourceName data source name
-     * @return replica query data source rule
+     * @return HA data source rule
      */
     public Optional<HADataSourceRule> findDataSourceRule(final String dataSourceName) {
         return Optional.ofNullable(dataSourceRules.get(dataSourceName));

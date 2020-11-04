@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Replica query data source rule.
+ * HA data source rule.
  */
 @Getter
 public final class HADataSourceRule {

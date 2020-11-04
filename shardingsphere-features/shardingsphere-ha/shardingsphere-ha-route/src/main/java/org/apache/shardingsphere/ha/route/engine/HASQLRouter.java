@@ -36,7 +36,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Replica query SQL router.
+ * HA SQL router.
  */
 public final class HASQLRouter implements SQLRouter<HARule> {
     

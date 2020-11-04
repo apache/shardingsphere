@@ -32,7 +32,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Replica query rule configuration YAML swapper.
+ * HA rule configuration YAML swapper.
  */
 public final class HARuleAlgorithmProviderConfigurationYamlSwapper
         implements YamlRuleConfigurationSwapper<YamlHARuleConfiguration, AlgorithmProvidedHARuleConfiguration> {

@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 /**
- * Replica query data source rule configuration.
+ * HA data source rule configuration.
  */
 @RequiredArgsConstructor
 @Getter

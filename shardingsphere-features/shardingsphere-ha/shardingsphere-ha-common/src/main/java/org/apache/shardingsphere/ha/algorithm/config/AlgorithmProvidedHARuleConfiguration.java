@@ -31,7 +31,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Algorithm provided replica query rule configuration.
+ * Algorithm provided HA rule configuration.
  */
 @NoArgsConstructor
 @AllArgsConstructor

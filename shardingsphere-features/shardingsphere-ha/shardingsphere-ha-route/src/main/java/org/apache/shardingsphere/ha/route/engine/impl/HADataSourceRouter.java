@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 /**
- * Data source router for replica query.
+ * Data source router for HA.
  */
 @RequiredArgsConstructor
 public final class HADataSourceRouter {

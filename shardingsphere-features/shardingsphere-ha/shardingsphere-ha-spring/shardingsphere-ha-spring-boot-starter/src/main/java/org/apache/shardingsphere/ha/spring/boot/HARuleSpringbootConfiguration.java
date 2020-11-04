@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Rule spring boot configuration for replica query.
+ * Rule spring boot configuration for HA.
  */
 @Configuration
 @EnableConfigurationProperties(YamlHARuleSpringBootConfiguration.class)
@@ -53,10 +53,10 @@ public class HARuleSpringbootConfiguration {
     private final YamlHARuleSpringBootConfiguration yamlConfig;
     
     /**
-     * Replica query rule configuration for spring boot.
+     * HA rule configuration for spring boot.
      *
      * @param loadBalanceAlgorithms load balance algorithms
-     * @return replica query rule configuration
+     * @return HA rule configuration
      */
     @Bean
     public RuleConfiguration haRuleConfiguration(final ObjectProvider<Map<String, ReplicaLoadBalanceAlgorithm>> loadBalanceAlgorithms) {
@@ -67,10 +67,10 @@ public class HARuleSpringbootConfiguration {
     }
     
     /**
-     * Replica query algorithm provided bean registry.
+     * HA algorithm provided bean registry.
      *
      * @param environment environment
-     * @return replica query algorithm provided bean registry
+     * @return HA algorithm provided bean registry
      */
     @Bean
     public static HAAlgorithmProvidedBeanRegistry haAlgorithmProvidedBeanRegistry(final Environment environment) {

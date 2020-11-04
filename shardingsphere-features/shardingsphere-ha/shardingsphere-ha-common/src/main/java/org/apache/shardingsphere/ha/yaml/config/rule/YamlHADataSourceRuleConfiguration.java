@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Replica query data source rule configuration for YAML.
+ * HA data source rule configuration for YAML.
  */
 @Getter
 @Setter

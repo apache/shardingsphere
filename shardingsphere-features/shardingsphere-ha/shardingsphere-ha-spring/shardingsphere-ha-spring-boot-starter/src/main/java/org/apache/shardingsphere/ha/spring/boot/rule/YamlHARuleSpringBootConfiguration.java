@@ -23,7 +23,7 @@ import org.apache.shardingsphere.ha.yaml.config.YamlHARuleConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * YAML replica query rule spring boot configuration.
+ * YAML HA rule spring boot configuration.
  */
 @ConfigurationProperties(prefix = "spring.shardingsphere.rules")
 @Getter

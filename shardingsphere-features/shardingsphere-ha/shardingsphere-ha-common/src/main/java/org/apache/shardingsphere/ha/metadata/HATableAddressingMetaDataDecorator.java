@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Map.Entry;
 
 /**
- * Table addressing meta data decorator of replica query.
+ * Table addressing meta data decorator of HA.
  */
 public final class HATableAddressingMetaDataDecorator implements TableAddressingMetaDataDecorator<HARule> {
     
