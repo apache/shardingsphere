@@ -16,14 +16,14 @@
 #
 dataSources:
   ds_0:
-   dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+   dataSourceClassName: org.apache.shardingsphere.governance.core.config.DataSourceFixture
    props:
      driverClassName: com.mysql.jdbc.Driver
      url: jdbc:mysql://localhost:3306/ds_0
      username: root
      password: root
   ds_1:
-   dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+   dataSourceClassName: org.apache.shardingsphere.governance.core.config.DataSourceFixture
    props:
      driverClassName: com.mysql.jdbc.Driver
      url: jdbc:mysql://localhost:3306/ds_1
