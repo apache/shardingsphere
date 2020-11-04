@@ -170,7 +170,7 @@ public class GovernanceShardingNamespaceTest extends AbstractJUnit4SpringContext
     private Map<String, DataSource> getDataSourceMap(final String dataSourceName) {
         GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
         SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "schemaContexts");
-        return schemaContexts.getDefaultMetaData().getDataSources();
+        return schemaContexts.getDefaultMetaData().getResource().getDataSources();
     }
     
     private ShardingRule getShardingRule(final String dataSourceName) {

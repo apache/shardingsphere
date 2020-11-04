@@ -20,13 +20,13 @@ package org.apache.shardingsphere.infra.metadata;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * ShardingSphere meta data.
@@ -41,7 +41,7 @@ public final class ShardingSphereMetaData {
     
     private final Collection<ShardingSphereRule> rules;
     
-    private final Map<String, DataSource> dataSources;
+    private final ShardingSphereResource resource;
     
     private final ShardingSphereSchema schema;
     
@@ -51,7 +51,7 @@ public final class ShardingSphereMetaData {
      * @return is complete schema context or not
      */
     public boolean isComplete() {
-        return !rules.isEmpty() && !dataSources.isEmpty();
+        return !rules.isEmpty() && !resource.getDataSources().isEmpty();
     }
     
     /**
@@ -61,7 +61,7 @@ public final class ShardingSphereMetaData {
      */
     public void closeDataSources(final Collection<String> dataSources) throws SQLException {
         for (String each :dataSources) {
-            close(this.dataSources.get(each));
+            close(resource.getDataSources().get(each));
         }
     }
     

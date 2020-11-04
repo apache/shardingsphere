@@ -77,7 +77,7 @@ public class GovernanceSpringBootRegistryShardingTest {
     public void assertWithShardingSphereDataSource() {
         assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
         SchemaContexts schemaContexts = getFieldValue("schemaContexts", GovernanceShardingSphereDataSource.class, dataSource);
-        for (DataSource each : schemaContexts.getDefaultMetaData().getDataSources().values()) {
+        for (DataSource each : schemaContexts.getDefaultMetaData().getResource().getDataSources().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
         }
         assertTrue(schemaContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
