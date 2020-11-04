@@ -73,7 +73,7 @@ public final class HARuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToObjectWithLoadBalanceAlgorithmType() {
         YamlHARuleConfiguration yamlConfig = createYamlHARuleConfiguration();
-        yamlConfig.getDataSources().get("replica_query_ds").setLoadBalancerName("RANDOM");
+        yamlConfig.getDataSources().get("ha_ds").setLoadBalancerName("RANDOM");
         HARuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToObject(yamlConfig);
         assertHARuleConfiguration(actual);
         assertThat(actual.getDataSources().iterator().next().getLoadBalancerName(), is("RANDOM"));
@@ -89,16 +89,16 @@ public final class HARuleConfigurationYamlSwapperTest {
     
     private YamlHARuleConfiguration createYamlHARuleConfiguration() {
         YamlHARuleConfiguration result = new YamlHARuleConfiguration();
-        result.getDataSources().put("replica_query_ds", new YamlHADataSourceRuleConfiguration());
-        result.getDataSources().get("replica_query_ds").setName("replica_query_ds");
-        result.getDataSources().get("replica_query_ds").setPrimaryDataSourceName("primary_ds");
-        result.getDataSources().get("replica_query_ds").setReplicaDataSourceNames(Arrays.asList("replica_ds_0", "replica_ds_1"));
+        result.getDataSources().put("ha_ds", new YamlHADataSourceRuleConfiguration());
+        result.getDataSources().get("ha_ds").setName("ha_ds");
+        result.getDataSources().get("ha_ds").setPrimaryDataSourceName("primary_ds");
+        result.getDataSources().get("ha_ds").setReplicaDataSourceNames(Arrays.asList("replica_ds_0", "replica_ds_1"));
         return result;
     }
     
     private void assertHARuleConfiguration(final HARuleConfiguration actual) {
         HADataSourceRuleConfiguration group = actual.getDataSources().iterator().next();
-        assertThat(group.getName(), is("replica_query_ds"));
+        assertThat(group.getName(), is("ha_ds"));
         assertThat(group.getPrimaryDataSourceName(), is("primary_ds"));
         assertThat(group.getReplicaDataSourceNames(), is(Arrays.asList("replica_ds_0", "replica_ds_1")));
     }

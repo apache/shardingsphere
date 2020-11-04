@@ -48,7 +48,7 @@ dataSources:
       password: 
 
 rules:
-- !REPLICA_QUERY
+- !HA
   dataSources:
     ds_0:
       primaryDataSourceName: primary_ds_0

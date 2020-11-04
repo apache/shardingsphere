@@ -58,7 +58,7 @@ public final class HASQLRouterTest {
     
     private static final String DATASOURCE_NAME = "ds";
     
-    private static final String NONE_REPLICA_QUERY_DATASOURCE_NAME = "noneHADatasource";
+    private static final String NONE_HA_DATASOURCE_NAME = "noneHADatasource";
     
     private static final String PRIMARY_DATASOURCE = "primary";
     
@@ -103,7 +103,7 @@ public final class HASQLRouterTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereSchema.class));
         sqlRouter.decorateRouteContext(actual, logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
-        assertThat(routedDataSourceNames.next(), is(NONE_REPLICA_QUERY_DATASOURCE_NAME));
+        assertThat(routedDataSourceNames.next(), is(NONE_HA_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
     }
     
@@ -129,7 +129,7 @@ public final class HASQLRouterTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereSchema.class));
         sqlRouter.decorateRouteContext(actual, logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
-        assertThat(routedDataSourceNames.next(), is(NONE_REPLICA_QUERY_DATASOURCE_NAME));
+        assertThat(routedDataSourceNames.next(), is(NONE_HA_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(REPLICA_DATASOURCE));
     }
     
@@ -155,7 +155,7 @@ public final class HASQLRouterTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData("logic_schema", Collections.emptyList(), Collections.singleton(rule), Collections.emptyMap(), mock(ShardingSphereSchema.class));
         sqlRouter.decorateRouteContext(actual, logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
-        assertThat(routedDataSourceNames.next(), is(NONE_REPLICA_QUERY_DATASOURCE_NAME));
+        assertThat(routedDataSourceNames.next(), is(NONE_HA_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
     }
     
@@ -173,7 +173,7 @@ public final class HASQLRouterTest {
         RouteContext result = new RouteContext();
         RouteUnit routeUnit = new RouteUnit(new RouteMapper(DATASOURCE_NAME, DATASOURCE_NAME), Collections.singletonList(new RouteMapper("table", "table_0")));
         result.getRouteUnits().add(routeUnit);
-        result.getRouteUnits().add(new RouteUnit(new RouteMapper(NONE_REPLICA_QUERY_DATASOURCE_NAME, NONE_REPLICA_QUERY_DATASOURCE_NAME), Collections.emptyList()));
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(NONE_HA_DATASOURCE_NAME, NONE_HA_DATASOURCE_NAME), Collections.emptyList()));
         return result;
     }
 }

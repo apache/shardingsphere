@@ -75,7 +75,7 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapperTest {
     
     @Test
     public void assertGetRuleTagName() {
-        assertThat(swapper.getRuleTagName(), is("REPLICA_QUERY"));
+        assertThat(swapper.getRuleTagName(), is("HA"));
     }
     
     @Test
