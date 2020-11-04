@@ -33,7 +33,7 @@
 1. The enhancement for PostgreSQL syntax definition and parsing process.
 1. The enhancement for sub-queries in different database dialects.
 1. Support MySQL view operations for non-sharding tables
-1. Support MySQL stored functions and procedure operations for non-sharding tables.
+1. Support MySQL stored function and procedure operations for non-sharding tables.
 1. Support SQLServer Top syntax.
 1. Optimize the metadata loading to improve the startup speed.
 1. Optimize batch insert performance.
