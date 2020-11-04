@@ -13,7 +13,7 @@
 1. New sharding algorithm and strategy API.
 1. New API for ShardingSphere Scaling to create task.
 1. Remove DefaultDataSourceName setting item.
-1. The separator of the parameter configuration item is changed from - the dot ‘.’ to minus sign ‘-’.
+1. The separator of the parameter configuration item is changed from the dot ‘.’ to minus sign ‘-’.
 1. Change parameter allow.range.query.with.inline.sharding from global parameter to sharding algorithm parameter.
 
 ### Refactor
