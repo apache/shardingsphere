@@ -43,7 +43,7 @@ public final class AlgorithmProvidedHARuleBuilderTest {
     public void assertBuild() {
         AlgorithmProvidedHARuleConfiguration algorithmProvidedRuleConfig = mock(AlgorithmProvidedHARuleConfiguration.class);
         HADataSourceRuleConfiguration ruleConfig = new HADataSourceRuleConfiguration(
-                "name", "primaryDataSourceName", Collections.singletonList("name"), "loadBalancerName");
+                "name", "primaryDataSourceName", Collections.singletonList("name"), "loadBalancerName", true);
         when(algorithmProvidedRuleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfig));
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(
                 Collections.singletonList(algorithmProvidedRuleConfig), ShardingSphereRuleBuilder.class).get(algorithmProvidedRuleConfig);

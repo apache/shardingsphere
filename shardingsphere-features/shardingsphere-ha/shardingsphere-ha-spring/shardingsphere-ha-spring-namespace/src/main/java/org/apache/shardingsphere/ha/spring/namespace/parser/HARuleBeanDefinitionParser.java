@@ -63,6 +63,7 @@ public final class HARuleBeanDefinitionParser extends AbstractBeanDefinitionPars
         factory.addConstructorArgValue(element.getAttribute(HARuleBeanDefinitionTag.PRIMARY_DATA_SOURCE_NAME_ATTRIBUTE));
         factory.addConstructorArgValue(parseReplicaDataSourcesRef(element));
         factory.addConstructorArgValue(element.getAttribute(HARuleBeanDefinitionTag.LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(HARuleBeanDefinitionTag.READ_WRITE_SPLIT_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
     

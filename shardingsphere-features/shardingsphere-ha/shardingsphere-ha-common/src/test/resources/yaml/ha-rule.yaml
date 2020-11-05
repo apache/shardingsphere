@@ -56,12 +56,14 @@ rules:
         - primary_ds_0_replica_0
         - primary_ds_0_replica_1
       loadBalancerName: roundRobin
+      readWriteSplit: true
     ds_1:
       primaryDataSourceName: primary_ds_1
       replicaDataSourceNames: 
         - primary_ds_1_replica_0
         - primary_ds_1_replica_1
       loadBalancerName: random
+      readWriteSplit: false
   loadBalancers:
     roundRobin:
       type: ROUND_ROBIN

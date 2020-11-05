@@ -87,3 +87,4 @@
 #      replicaDataSourceNames:
 #        - replica_ds_0
 #        - replica_ds_1
+#      readWriteSplit: false

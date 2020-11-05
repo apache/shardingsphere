@@ -38,6 +38,7 @@
             <xsd:attribute name="primary-data-source-name" type="xsd:string" use="required" />
             <xsd:attribute name="replica-data-source-names" type="xsd:string" use="required" />
             <xsd:attribute name="load-balance-algorithm-ref" type="xsd:string" />
+            <xsd:attribute name="read-write-split" type="xsd:boolean" />
         </xsd:complexType>
     </xsd:element>
     

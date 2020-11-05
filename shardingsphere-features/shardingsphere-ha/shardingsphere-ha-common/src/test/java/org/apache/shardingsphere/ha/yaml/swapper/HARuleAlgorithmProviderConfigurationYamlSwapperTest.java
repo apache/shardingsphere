@@ -85,7 +85,7 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapperTest {
     
     private YamlHARuleConfiguration createYamlHARuleConfiguration() {
         HADataSourceRuleConfiguration ruleConfig = new HADataSourceRuleConfiguration("name", "primaryDataSourceName",
-                Collections.singletonList("replicaDataSourceName"), "loadBalancerName");
+                Collections.singletonList("replicaDataSourceName"), "loadBalancerName", true);
         return swapper.swapToYamlConfiguration(
                 new AlgorithmProvidedHARuleConfiguration(Collections.singletonList(ruleConfig), ImmutableMap.of("name", new RandomReplicaLoadBalanceAlgorithm())));
     }

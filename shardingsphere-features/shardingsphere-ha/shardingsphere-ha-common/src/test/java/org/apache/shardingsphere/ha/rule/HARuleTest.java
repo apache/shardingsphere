@@ -56,7 +56,7 @@ public final class HARuleTest {
     
     private HARule createHARule() {
         HADataSourceRuleConfiguration config =
-                new HADataSourceRuleConfiguration("test_pr", "primary_ds", Arrays.asList("replica_ds_0", "replica_ds_1"), "random");
+                new HADataSourceRuleConfiguration("test_pr", "primary_ds", Arrays.asList("replica_ds_0", "replica_ds_1"), "random", true);
         return new HARule(new HARuleConfiguration(
                 Collections.singleton(config), ImmutableMap.of("random", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()))));
     }
