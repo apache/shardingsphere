@@ -85,6 +85,6 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapper
     
     @Override
     public int getOrder() {
-        return HAOrder.ALGORITHM_PROVIDER_ORDER;
+        return HAOrder.ALGORITHM_PROVIDER_HA_ORDER;
     }
 }

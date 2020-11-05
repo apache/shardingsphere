@@ -80,7 +80,7 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapperTest {
     
     @Test
     public void assertGetOrder() {
-        assertThat(swapper.getOrder(), is(HAOrder.ALGORITHM_PROVIDER_ORDER));
+        assertThat(swapper.getOrder(), is(HAOrder.ALGORITHM_PROVIDER_HA_ORDER));
     }
     
     private YamlHARuleConfiguration createYamlHARuleConfiguration() {

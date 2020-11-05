@@ -17,12 +17,6 @@
 
 package org.apache.shardingsphere.ha.route.engine;
 
-import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
-import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
-import org.apache.shardingsphere.ha.route.engine.impl.PrimaryVisitedManager;
-import org.apache.shardingsphere.ha.rule.HARule;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -33,6 +27,12 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
+import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
+import org.apache.shardingsphere.ha.route.engine.impl.PrimaryVisitedManager;
+import org.apache.shardingsphere.ha.rule.HARule;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -51,6 +51,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -91,8 +92,8 @@ public final class HASQLRouterTest {
     @Test
     public void assertCreateRouteContextToPrimaryWithoutRouteUnits() {
         LogicSQL logicSQL = new LogicSQL(mock(SQLStatementContext.class), "", Collections.emptyList());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                "logic_schema", Collections.emptyList(), Collections.singleton(rule), mock(ShardingSphereResource.class), mock(ShardingSphereSchema.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("logic_schema", Collections.emptyList(), Collections.singleton(rule),
+                mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), mock(ShardingSphereSchema.class));
         RouteContext actual = sqlRouter.createRouteContext(logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
@@ -102,8 +103,8 @@ public final class HASQLRouterTest {
     public void assertDecorateRouteContextToPrimaryDataSource() {
         RouteContext actual = mockRouteContext();
         LogicSQL logicSQL = new LogicSQL(mock(SQLStatementContext.class), "", Collections.emptyList());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                "logic_schema", Collections.emptyList(), Collections.singleton(rule), mock(ShardingSphereResource.class), mock(ShardingSphereSchema.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("logic_schema", Collections.emptyList(), Collections.singleton(rule),
+                mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), mock(ShardingSphereSchema.class));
         sqlRouter.decorateRouteContext(actual, logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NONE_HA_DATASOURCE_NAME));
@@ -116,8 +117,8 @@ public final class HASQLRouterTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.empty());
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "", Collections.emptyList());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                "logic_schema", Collections.emptyList(), Collections.singleton(rule), mock(ShardingSphereResource.class), mock(ShardingSphereSchema.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("logic_schema", Collections.emptyList(), Collections.singleton(rule),
+                mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), mock(ShardingSphereSchema.class));
         RouteContext actual = sqlRouter.createRouteContext(logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(REPLICA_DATASOURCE));
@@ -130,8 +131,8 @@ public final class HASQLRouterTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.empty());
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "", Collections.emptyList());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                "logic_schema", Collections.emptyList(), Collections.singleton(rule), mock(ShardingSphereResource.class), mock(ShardingSphereSchema.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("logic_schema", Collections.emptyList(), Collections.singleton(rule),
+                mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), mock(ShardingSphereSchema.class));
         sqlRouter.decorateRouteContext(actual, logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NONE_HA_DATASOURCE_NAME));
@@ -144,8 +145,8 @@ public final class HASQLRouterTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "", Collections.emptyList());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                "logic_schema", Collections.emptyList(), Collections.singleton(rule), mock(ShardingSphereResource.class), mock(ShardingSphereSchema.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("logic_schema", Collections.emptyList(), Collections.singleton(rule),
+                mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), mock(ShardingSphereSchema.class));
         RouteContext actual = sqlRouter.createRouteContext(logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
@@ -158,8 +159,8 @@ public final class HASQLRouterTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "", Collections.emptyList());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                "logic_schema", Collections.emptyList(), Collections.singleton(rule), mock(ShardingSphereResource.class), mock(ShardingSphereSchema.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("logic_schema", Collections.emptyList(), Collections.singleton(rule),
+                mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), mock(ShardingSphereSchema.class));
         sqlRouter.decorateRouteContext(actual, logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NONE_HA_DATASOURCE_NAME));
@@ -170,8 +171,8 @@ public final class HASQLRouterTest {
     public void assertCreateRouteContextToPrimaryDataSource() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(InsertStatement.class));
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "", Collections.emptyList());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                "logic_schema", Collections.emptyList(), Collections.singleton(rule), mock(ShardingSphereResource.class), mock(ShardingSphereSchema.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("logic_schema", Collections.emptyList(), Collections.singleton(rule),
+                mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), mock(ShardingSphereSchema.class));
         RouteContext actual = sqlRouter.createRouteContext(logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATASOURCE));
