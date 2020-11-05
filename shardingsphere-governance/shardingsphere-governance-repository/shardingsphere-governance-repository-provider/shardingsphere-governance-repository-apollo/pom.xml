@@ -42,6 +42,7 @@
             <groupId>com.ctrip.framework.apollo</groupId>
             <artifactId>apollo-mockserver</artifactId>
             <version>${apollo.client.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.ctrip.framework.apollo</groupId>
