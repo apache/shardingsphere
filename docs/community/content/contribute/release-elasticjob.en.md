@@ -453,7 +453,7 @@ Release Notes: https://github.com/apache/shardingsphere-elasticjob/blob/master/R
 
 Website: http://shardingsphere.apache.org/elasticjob/
 
-ShardingSphere Resources:
+ShardingSphere-ElasticJob Resources:
 - Issue: https://github.com/apache/shardingsphere-elasticjob/issues/
 - Mailing list: dev@shardingsphere.apache.org
 - Documents: https://shardingsphere.apache.org/elasticjob/current/en/overview/

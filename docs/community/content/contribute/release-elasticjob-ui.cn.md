@@ -469,7 +469,7 @@ Release Notes: https://github.com/apache/shardingsphere-elasticjob-ui/blob/maste
 
 Website: http://shardingsphere.apache.org/elasticjob/
 
-ShardingSphere Resources:
+ShardingSphere-ElasticJob Resources:
 - Issue: https://github.com/apache/shardingsphere-elasticjob-ui/issues/
 - Mailing list: dev@shardingsphere.apache.org
 - Documents: https://shardingsphere.apache.org/elasticjob/current/en/overview/
