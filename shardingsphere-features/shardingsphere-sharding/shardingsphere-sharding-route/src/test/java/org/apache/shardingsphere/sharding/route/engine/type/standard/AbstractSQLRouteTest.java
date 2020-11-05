@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.schema.model.addressing.TableAddressingMetaData;
-import org.apache.shardingsphere.infra.schema.model.datasource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.schema.model.datasource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.schema.model.schema.physical.model.column.PhysicalColumnMetaData;
 import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
@@ -57,7 +56,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         ShardingRule shardingRule = createAllShardingRule();
         TableAddressingMetaData tableAddressingMetaData = new TableAddressingMetaData();
         tableAddressingMetaData.getTableDataSourceNamesMapper().put("t_category", Collections.singletonList("single_db"));
-        ShardingSphereSchema schema = new ShardingSphereSchema(buildDataSourceMetas(), tableAddressingMetaData, buildPhysicalSchemaMetaData(), mock(CachedDatabaseMetaData.class));
+        ShardingSphereSchema schema = new ShardingSphereSchema(buildDataSourceMetas(), tableAddressingMetaData, buildPhysicalSchemaMetaData());
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine("MySQL");
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schema.getSchemaMetaData(), parameters, sqlStatementParserEngine.parse(sql, false));

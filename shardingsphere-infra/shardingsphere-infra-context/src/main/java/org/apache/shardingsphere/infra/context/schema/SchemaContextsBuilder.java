@@ -135,8 +135,7 @@ public final class SchemaContextsBuilder {
         DataSourcesMetaData dataSourceMetas = new DataSourcesMetaData(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
         TableAddressingMetaData tableAddressingMetaData = TableAddressingMetaDataLoader.load(databaseType, dataSourceMap, rules);
         PhysicalSchemaMetaData physicalSchemaMetaData = new SchemaMetaDataLoader(rules).load(databaseType, dataSourceMap, props);
-        CachedDatabaseMetaData cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap).orElse(null);
-        ShardingSphereSchema result = new ShardingSphereSchema(dataSourceMetas, tableAddressingMetaData, physicalSchemaMetaData, cachedDatabaseMetaData);
+        ShardingSphereSchema result = new ShardingSphereSchema(dataSourceMetas, tableAddressingMetaData, physicalSchemaMetaData);
         log.info("Load meta data for schema {} finished, cost {} milliseconds.", schemaName, System.currentTimeMillis() - start);
         return result;
     }

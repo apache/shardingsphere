@@ -39,7 +39,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.schema.model.addressing.TableAddressingMetaData;
-import org.apache.shardingsphere.infra.schema.model.datasource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.schema.model.datasource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.schema.model.schema.physical.model.column.PhysicalColumnMetaData;
 import org.apache.shardingsphere.infra.schema.model.schema.physical.model.index.PhysicalIndexMetaData;
@@ -119,7 +118,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         when(schemaMetaData.get("t_account_detail")).thenReturn(mock(PhysicalTableMetaData.class));
         when(schemaMetaData.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         when(schemaMetaData.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
-        return new ShardingSphereSchema(mock(DataSourcesMetaData.class), mock(TableAddressingMetaData.class), schemaMetaData, mock(CachedDatabaseMetaData.class));
+        return new ShardingSphereSchema(mock(DataSourcesMetaData.class), mock(TableAddressingMetaData.class), schemaMetaData);
     }
     
     private Map<String, PhysicalColumnMetaData> createColumnMetaDataMap() {
