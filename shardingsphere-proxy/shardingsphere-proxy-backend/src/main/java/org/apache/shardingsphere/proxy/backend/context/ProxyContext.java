@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
@@ -80,17 +80,17 @@ public final class ProxyContext {
      * @return schema exists or not
      */
     public boolean schemaExists(final String schemaName) {
-        return schemaContexts.getSchemas().containsKey(schemaName);
+        return schemaContexts.getMetaDataMap().containsKey(schemaName);
     }
     
     /**
-     * Get schema.
+     * Get meta data.
      *
      * @param schemaName schema name
-     * @return schema
+     * @return meta data
      */
-    public ShardingSphereSchema getSchema(final String schemaName) {
-        return Strings.isNullOrEmpty(schemaName) ? null : schemaContexts.getSchemas().get(schemaName);
+    public ShardingSphereMetaData getMetaData(final String schemaName) {
+        return Strings.isNullOrEmpty(schemaName) ? null : schemaContexts.getMetaDataMap().get(schemaName);
     }
     
     /**
@@ -99,7 +99,7 @@ public final class ProxyContext {
      * @return all schema names
      */
     public List<String> getAllSchemaNames() {
-        return new ArrayList<>(schemaContexts.getSchemas().keySet());
+        return new ArrayList<>(schemaContexts.getMetaDataMap().keySet());
     }
     
     /**
@@ -112,7 +112,7 @@ public final class ProxyContext {
         if (schemaNames.isEmpty()) {
             return Optional.empty();
         }
-        Map<String, DataSource> dataSources = Objects.requireNonNull(getSchema(schemaNames.get(0))).getDataSources();
+        Map<String, DataSource> dataSources = Objects.requireNonNull(getMetaData(schemaNames.get(0))).getResource().getDataSources();
         return dataSources.values().stream().findFirst();
     }
 }

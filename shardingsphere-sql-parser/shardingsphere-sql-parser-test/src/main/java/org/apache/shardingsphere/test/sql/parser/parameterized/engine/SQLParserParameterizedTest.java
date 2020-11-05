@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -85,7 +84,6 @@ public abstract class SQLParserParameterizedTest {
     }
     
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
-        ParseTree parseTree = SQLParserEngine.parse(databaseType, sql, false);
-        return SQLVisitorEngine.visit(databaseType, "STATEMENT", parseTree);
+        return new SQLVisitorEngine(databaseType, "STATEMENT").visit(new SQLParserEngine(databaseType).parse(sql, false));
     }
 }

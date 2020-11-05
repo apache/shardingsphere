@@ -59,14 +59,14 @@ import static org.junit.Assert.assertThat;
 
 public final class GovernanceShardingSphereDataSourceTest {
     
-    private static GovernanceSchemaContexts governanceSchemaContexts;
+    private static GovernanceSchemaContexts schemaContexts;
     
     @BeforeClass
     public static void setUp() throws SQLException, IOException, URISyntaxException {
         SchemaContexts schemaContexts = getShardingSphereDataSource().getSchemaContexts();
-        GovernanceShardingSphereDataSource governanceDataSource = new GovernanceShardingSphereDataSource(schemaContexts.getDefaultSchema().getDataSources(),
-                schemaContexts.getDefaultSchema().getConfigurations(), schemaContexts.getProps().getProps(), getGovernanceConfiguration());
-        governanceSchemaContexts = (GovernanceSchemaContexts) governanceDataSource.getSchemaContexts();
+        GovernanceShardingSphereDataSource governanceDataSource = new GovernanceShardingSphereDataSource(schemaContexts.getDefaultMetaData().getResource().getDataSources(),
+                schemaContexts.getDefaultMetaData().getConfigurations(), schemaContexts.getProps().getProps(), getGovernanceConfiguration());
+        GovernanceShardingSphereDataSourceTest.schemaContexts = (GovernanceSchemaContexts) governanceDataSource.getSchemaContexts();
     }
     
     private static ShardingSphereDataSource getShardingSphereDataSource() throws IOException, SQLException, URISyntaxException {
@@ -97,8 +97,8 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @Test
     public void assertRenewRules() throws SQLException {
-        governanceSchemaContexts.renew(new RuleConfigurationsChangedEvent(DefaultSchema.LOGIC_NAME, Arrays.asList(getShardingRuleConfiguration(), getReplicaQueryRuleConfiguration())));
-        assertThat(((ShardingRule) governanceSchemaContexts.getDefaultSchema().getRules().iterator().next()).getTableRules().size(), is(1));
+        schemaContexts.renew(new RuleConfigurationsChangedEvent(DefaultSchema.LOGIC_NAME, Arrays.asList(getShardingRuleConfiguration(), getReplicaQueryRuleConfiguration())));
+        assertThat(((ShardingRule) schemaContexts.getDefaultMetaData().getRules().iterator().next()).getTableRules().size(), is(1));
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
@@ -116,8 +116,8 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @Test
     public void assertRenewDataSource() throws SQLException {
-        governanceSchemaContexts.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
-        assertThat(governanceSchemaContexts.getDefaultSchema().getDataSources().size(), is(3));
+        schemaContexts.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
+        assertThat(schemaContexts.getDefaultMetaData().getResource().getDataSources().size(), is(3));
     }
     
     private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
@@ -135,8 +135,8 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @Test
     public void assertRenewProperties() {
-        governanceSchemaContexts.renew(getPropertiesChangedEvent());
-        assertThat(governanceSchemaContexts.getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is("true"));
+        schemaContexts.renew(getPropertiesChangedEvent());
+        assertThat(schemaContexts.getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is("true"));
     }
     
     private PropertiesChangedEvent getPropertiesChangedEvent() {
@@ -147,6 +147,6 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @Test
     public void assertRenewDisabledState() {
-        governanceSchemaContexts.renew(new DisabledStateChangedEvent(new GovernanceSchema("logic_db.replica_ds"), true));
+        schemaContexts.renew(new DisabledStateChangedEvent(new GovernanceSchema("logic_db.replica_ds"), true));
     }
 }

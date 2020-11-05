@@ -374,7 +374,47 @@ git push --delete origin ${RELEASE.VERSION}-release
 git branch -d ${RELEASE.VERSION}-release
 ```
 
-**4. Update the download page**
+**4. Docker Release**
+
+4.1 Preparation
+
+Install and start docker service
+
+4.2 Compile Docker Image
+
+```shell
+git checkout ${RELEASE.VERSION}
+cd ~/elasticjob/elasticjob-distribution/elasticjob-cloud-scheduler-distribution/
+mvn clean package -Prelease,docker
+```
+
+4.3 Tag the local Docker Image
+
+Check the image ID through `docker images`, for example: e9ea51023687
+
+```shell
+docker tag e9ea51023687 apache/shardingsphere-elasticjob-cloud-scheduler:latest
+docker tag e9ea51023687 apache/shardingsphere-elasticjob-cloud-scheduler:${RELEASE.VERSION}
+```
+
+4.4 Publish Docker Image
+
+```shell
+docker push apache/shardingsphere-elasticjob-cloud-scheduler:latest
+docker push apache/shardingsphere-elasticjob-cloud-scheduler:${RELEASE_VERSION}
+```
+
+4.5 Confirm the successful release
+
+Login [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-elasticjob-cloud-scheduler/) to check whether there are published images
+
+**5. Publish release in GitHub**
+
+Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere-elasticjob/releases)'s `${RELEASE_VERSION}` version
+
+Edit version number and release notes, click `Publish release`
+
+**6. Update the download page**
 
 https://shardingsphere.apache.org/elasticjob/current/en/downloads/
 
@@ -384,47 +424,9 @@ GPG signatures and hashes (SHA* etc) should use URL start with `https://download
 
 Keep one latest versions in `Latest releases`.
 
-## Docker Release
+**7. Announce release completed by email**
 
-**1. Preparation**
-
-Install docker locally and start the docker service
-
-**2. Compile Docker Image**
-
-```shell
-git checkout ${RELEASE.VERSION}
-cd ~/elasticjob/elasticjob-distribution/elasticjob-cloud-scheduler-distribution/
-mvn clean package -Prelease,docker
-```
-
-**3. Tag the local Docker Image**
-
-Check the image ID through `docker images`, for example: e9ea51023687
-
-```shell
-docker tag e9ea51023687 apache/shardingsphere-elasticjob-cloud-scheduler:latest
-docker tag e9ea51023687 apache/shardingsphere-elasticjob-cloud-scheduler:${RELEASE.VERSION}
-```
-
-**4. Publish Docker Image**
-
-```shell
-docker push apache/shardingsphere-elasticjob-cloud-scheduler:latest
-docker push apache/shardingsphere-elasticjob-cloud-scheduler:${RELEASE_VERSION}
-```
-
-**5. Confirm the successful release**
-
-Login [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-elasticjob-cloud-scheduler/) to check whether there are published images
-
-## Publish release in GitHub
-
-Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere-elasticjob/releases)'s `${RELEASE_VERSION}` version
-
-Edit version number and release notes, click `Publish release`
-
-## Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
+Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
 
 Announcement e-mail template:
 
@@ -451,7 +453,7 @@ Release Notes: https://github.com/apache/shardingsphere-elasticjob/blob/master/R
 
 Website: http://shardingsphere.apache.org/elasticjob/
 
-ShardingSphere Resources:
+ShardingSphere-ElasticJob Resources:
 - Issue: https://github.com/apache/shardingsphere-elasticjob/issues/
 - Mailing list: dev@shardingsphere.apache.org
 - Documents: https://shardingsphere.apache.org/elasticjob/current/en/overview/

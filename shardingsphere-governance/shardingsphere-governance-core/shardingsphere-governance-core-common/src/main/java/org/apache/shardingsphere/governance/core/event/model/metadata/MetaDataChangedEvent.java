@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.event.model.metadata;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
+import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 
 /**
  * Meta data changed event.
@@ -31,5 +31,5 @@ public final class MetaDataChangedEvent implements GovernanceEvent {
 
     private final String schemaName;
 
-    private final LogicSchemaMetaData logicSchemaMetaData;
+    private final PhysicalSchemaMetaData metaData;
 }

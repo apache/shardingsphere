@@ -17,15 +17,22 @@
 
 package org.apache.shardingsphere.scaling.postgresql;
 
-import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
+import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.importer.PreparedSQL;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * PostgreSQL SQL builder.
  */
 public final class PostgreSQLSQLBuilder extends AbstractSQLBuilder {
+    
+    public PostgreSQLSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
+        super(shardingColumnsMap);
+    }
     
     @Override
     public String getLeftIdentifierQuoteString() {
@@ -38,14 +45,15 @@ public final class PostgreSQLSQLBuilder extends AbstractSQLBuilder {
     }
     
     @Override
-    public String buildInsertSQL(final DataRecord dataRecord) {
-        return super.buildInsertSQL(dataRecord) + buildConflictSQL(dataRecord);
+    public PreparedSQL buildInsertSQL(final DataRecord dataRecord) {
+        PreparedSQL preparedSQL = super.buildInsertSQL(dataRecord);
+        return new PreparedSQL(preparedSQL.getSql() + buildConflictSQL(dataRecord), preparedSQL.getValuesIndex());
     }
     
     private String buildConflictSQL(final DataRecord dataRecord) {
         StringBuilder result = new StringBuilder(" ON CONFLICT (");
-        for (Column each : RecordUtil.extractPrimaryColumns(dataRecord)) {
-            result.append(each.getName()).append(",");
+        for (Integer each : RecordUtil.extractPrimaryColumns(dataRecord)) {
+            result.append(dataRecord.getColumn(each).getName()).append(",");
         }
         result.setLength(result.length() - 1);
         result.append(") DO NOTHING");

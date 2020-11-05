@@ -19,10 +19,10 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.InsertClauseShardingConditionEngine;
@@ -43,12 +43,12 @@ public final class ShardingConditionEngineFactory {
      * Create new instance of sharding condition engine.
      *
      * @param logicSQL logic SQL
-     * @param schema ShardingSphere schema
+     * @param metaData ShardingSphere meta data
      * @param rule sharding rule 
      * @return sharding condition engine
      */
-    public static ShardingConditionEngine<?> createShardingConditionEngine(final LogicSQL logicSQL, final ShardingSphereSchema schema, final ShardingRule rule) {
-        PhysicalSchemaMetaData schemaMetaData = schema.getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData();
+    public static ShardingConditionEngine<?> createShardingConditionEngine(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShardingRule rule) {
+        PhysicalSchemaMetaData schemaMetaData = metaData.getSchema().getSchemaMetaData();
         return logicSQL.getSqlStatementContext() instanceof InsertStatementContext
                 ? new InsertClauseShardingConditionEngine(rule, schemaMetaData) : new WhereClauseShardingConditionEngine(rule, schemaMetaData);
     }

@@ -21,17 +21,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
-import java.util.Collection;
-import java.util.Map;
-
 /**
  * Logic schema meta data configuration for YAML.
  */
 @Getter
 @Setter
 public final class YamlLogicSchemaMetaData implements YamlConfiguration {
-
+    
     private YamlSchemaMetaData configuredSchemaMetaData;
-
-    private Map<String, Collection<String>> unconfiguredSchemaMetaDataMap;
 }

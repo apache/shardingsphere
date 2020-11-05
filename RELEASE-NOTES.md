@@ -13,7 +13,7 @@
 1. New sharding algorithm and strategy API.
 1. New API for ShardingSphere Scaling to create task.
 1. Remove DefaultDataSourceName setting item.
-1. The separator of the parameter configuration item is changed from - the dot ‘.’ to minus sign ‘-’.
+1. The separator of the parameter configuration item is changed from the dot ‘.’ to minus sign ‘-’.
 1. Change parameter allow.range.query.with.inline.sharding from global parameter to sharding algorithm parameter.
 
 ### Refactor
@@ -33,7 +33,7 @@
 1. The enhancement for PostgreSQL syntax definition and parsing process.
 1. The enhancement for sub-queries in different database dialects.
 1. Support MySQL view operations for non-sharding tables
-1. Support MySQL stored functions and procedure operations for non-sharding tables.
+1. Support MySQL stored function and procedure operations for non-sharding tables.
 1. Support SQLServer Top syntax.
 1. Optimize the metadata loading to improve the startup speed.
 1. Optimize batch insert performance.

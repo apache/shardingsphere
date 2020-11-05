@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.schema.model.schema.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
@@ -41,13 +41,13 @@ public final class QueryHeaderBuilder {
      * Build query header builder.
      * 
      * @param resultSetMetaData result set meta data
-     * @param schema schema name
+     * @param metaData meta data name
      * @param columnIndex column index 
      * @return query header
      * @throws SQLException SQL exception
      */
-    public static QueryHeader build(final ResultSetMetaData resultSetMetaData, final ShardingSphereSchema schema, final int columnIndex) throws SQLException {
-        return build(resultSetMetaData, schema, resultSetMetaData.getColumnName(columnIndex), columnIndex);
+    public static QueryHeader build(final ResultSetMetaData resultSetMetaData, final ShardingSphereMetaData metaData, final int columnIndex) throws SQLException {
+        return build(resultSetMetaData, metaData, resultSetMetaData.getColumnName(columnIndex), columnIndex);
     }
     
     /**
@@ -55,25 +55,25 @@ public final class QueryHeaderBuilder {
      * 
      * @param projectionsContext projections context
      * @param resultSetMetaData result set meta data
-     * @param schema schema name
+     * @param metaData meta data name
      * @param columnIndex column index
      * @return query header
      * @throws SQLException SQL exception
      */
     public static QueryHeader build(final ProjectionsContext projectionsContext,
-                                    final ResultSetMetaData resultSetMetaData, final ShardingSphereSchema schema, final int columnIndex) throws SQLException {
-        return build(resultSetMetaData, schema, getColumnName(projectionsContext, resultSetMetaData, columnIndex), columnIndex);
+                                    final ResultSetMetaData resultSetMetaData, final ShardingSphereMetaData metaData, final int columnIndex) throws SQLException {
+        return build(resultSetMetaData, metaData, getColumnName(projectionsContext, resultSetMetaData, columnIndex), columnIndex);
     }
     
-    private static QueryHeader build(final ResultSetMetaData resultSetMetaData, final ShardingSphereSchema schema, final String columnName, final int columnIndex) throws SQLException {
-        String schemaName = schema.getName();
+    private static QueryHeader build(final ResultSetMetaData resultSetMetaData, final ShardingSphereMetaData metaData, final String columnName, final int columnIndex) throws SQLException {
+        String schemaName = metaData.getName();
         String actualTableName = resultSetMetaData.getTableName(columnIndex);
-        Optional<DataNodeRoutedRule> dataNodeRoutedRule = schema.getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
+        Optional<DataNodeRoutedRule> dataNodeRoutedRule = metaData.getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
         String tableName;
         boolean primaryKey;
         if (null != actualTableName && dataNodeRoutedRule.isPresent()) {
             tableName = dataNodeRoutedRule.get().findLogicTableByActualTable(actualTableName).orElse("");
-            PhysicalTableMetaData tableMetaData = schema.getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData().get(tableName);
+            PhysicalTableMetaData tableMetaData = metaData.getSchema().getSchemaMetaData().get(tableName);
             primaryKey = null != tableMetaData && tableMetaData.getColumns().get(columnName.toLowerCase()).isPrimaryKey();
         } else {
             tableName = actualTableName;
