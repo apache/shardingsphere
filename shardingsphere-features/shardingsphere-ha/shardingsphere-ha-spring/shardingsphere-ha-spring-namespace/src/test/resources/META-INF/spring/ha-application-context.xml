@@ -31,6 +31,6 @@
     </ha:rule>
     
     <ha:rule id="randomRule">
-        <ha:data-source-rule id="random_ds" primary-data-source-name="primary_ds" replica-data-source-names="replica_ds_0, replica_ds_1" load-balance-algorithm-ref="randomLoadbalancer" />
+        <ha:data-source-rule id="random_ds" primary-data-source-name="primary_ds" replica-data-source-names="replica_ds_0, replica_ds_1" load-balance-algorithm-ref="randomLoadbalancer" read-write-split="true"/>
     </ha:rule>
 </beans>

@@ -37,4 +37,6 @@ public final class HARuleBeanDefinitionTag {
     public static final String REPLICA_DATA_SOURCE_NAMES_ATTRIBUTE = "replica-data-source-names";
     
     public static final String LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE = "load-balance-algorithm-ref";
+    
+    public static final String READ_WRITE_SPLIT_ATTRIBUTE = "read-write-split";
 }
