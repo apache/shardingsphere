@@ -67,7 +67,7 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
             checkSubqueryShardingValues(logicSQL.getSqlStatementContext(), rule, shardingConditions);
             mergeShardingConditions(shardingConditions);
         }
-        ShardingRouteEngineFactory.newInstance(rule, metaData.getSchema(), logicSQL.getSqlStatementContext(), shardingConditions, props).route(result, rule);
+        ShardingRouteEngineFactory.newInstance(rule, metaData, logicSQL.getSqlStatementContext(), shardingConditions, props).route(result, rule);
         validator.ifPresent(v -> v.postValidate(sqlStatement, result));
         return result;
     }

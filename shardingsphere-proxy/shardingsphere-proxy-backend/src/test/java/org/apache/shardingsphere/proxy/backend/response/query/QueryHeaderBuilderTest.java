@@ -42,6 +42,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -126,7 +127,7 @@ public final class QueryHeaderBuilderTest {
     }
     
     private ShardingSphereMetaData createMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         PhysicalColumnMetaData columnMetaData = new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", true, false, false);
         PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
         when(schemaMetaData.get("t_logic_order")).thenReturn(new PhysicalTableMetaData(Collections.singletonList(columnMetaData), Collections.singletonList(new PhysicalIndexMetaData("order_id"))));
@@ -134,7 +135,7 @@ public final class QueryHeaderBuilderTest {
         when(schema.getSchemaMetaData()).thenReturn(schemaMetaData);
         DataSourcesMetaData dataSourcesMetaData = mock(DataSourcesMetaData.class);
         when(dataSourcesMetaData.getDataSourceMetaData("ds_0")).thenReturn(mock(DataSourceMetaData.class));
-        when(schema.getDataSourcesMetaData()).thenReturn(dataSourcesMetaData);
+        when(result.getResource().getDataSourcesMetaData()).thenReturn(dataSourcesMetaData);
         when(result.getSchema()).thenReturn(schema);
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));
