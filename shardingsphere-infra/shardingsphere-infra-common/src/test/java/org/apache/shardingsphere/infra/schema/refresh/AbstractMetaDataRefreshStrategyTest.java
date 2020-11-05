@@ -44,7 +44,7 @@ public abstract class AbstractMetaDataRefreshStrategyTest {
     private ShardingSphereSchema buildSchema() {
         PhysicalSchemaMetaData schemaMetaData = new PhysicalSchemaMetaData(ImmutableMap.of("t_order", new PhysicalTableMetaData(
                 Collections.singletonList(new PhysicalColumnMetaData("order_id", 1, "String", false, false, false)), Collections.singletonList(new PhysicalIndexMetaData("index")))));
-        return new ShardingSphereSchema(null, mock(TableAddressingMetaData.class), schemaMetaData);
+        return new ShardingSphereSchema(mock(TableAddressingMetaData.class), schemaMetaData);
     }
 }
 
