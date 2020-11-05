@@ -112,7 +112,7 @@ public final class ProxyContext {
         if (schemaNames.isEmpty()) {
             return Optional.empty();
         }
-        Map<String, DataSource> dataSources = Objects.requireNonNull(getMetaData(schemaNames.get(0))).getDataSources();
+        Map<String, DataSource> dataSources = Objects.requireNonNull(getMetaData(schemaNames.get(0))).getResource().getDataSources();
         return dataSources.values().stream().findFirst();
     }
 }

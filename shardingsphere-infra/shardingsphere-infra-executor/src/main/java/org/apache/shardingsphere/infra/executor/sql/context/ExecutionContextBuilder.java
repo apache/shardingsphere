@@ -19,16 +19,17 @@ package org.apache.shardingsphere.infra.executor.sql.context;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.schema.model.schema.physical.model.table.PhysicalTableMetaData;
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,20 +49,20 @@ public final class ExecutionContextBuilder {
     /**
      * Build execution contexts.
      * 
-     * @param schema schema
+     * @param metaData meta data
      * @param sqlRewriteResult SQL rewrite result
      * @param sqlStatementContext SQL statement context
      * @return execution contexts
      */
-    public static Collection<ExecutionUnit> build(final ShardingSphereSchema schema, final SQLRewriteResult sqlRewriteResult, final SQLStatementContext<?> sqlStatementContext) {
+    public static Collection<ExecutionUnit> build(final ShardingSphereMetaData metaData, final SQLRewriteResult sqlRewriteResult, final SQLStatementContext<?> sqlStatementContext) {
         return sqlRewriteResult instanceof GenericSQLRewriteResult
-                ? build(schema, (GenericSQLRewriteResult) sqlRewriteResult, sqlStatementContext) : build(schema, (RouteSQLRewriteResult) sqlRewriteResult);
+                ? build(metaData, (GenericSQLRewriteResult) sqlRewriteResult, sqlStatementContext) : build(metaData.getSchema(), (RouteSQLRewriteResult) sqlRewriteResult);
     }
     
-    private static Collection<ExecutionUnit> build(final ShardingSphereSchema schema, final GenericSQLRewriteResult sqlRewriteResult, final SQLStatementContext<?> sqlStatementContext) {
-        String dataSourceName = schema.getDataSourcesMetaData().getAllInstanceDataSourceNames().iterator().next();
+    private static Collection<ExecutionUnit> build(final ShardingSphereMetaData metaData, final GenericSQLRewriteResult sqlRewriteResult, final SQLStatementContext<?> sqlStatementContext) {
+        String dataSourceName = metaData.getResource().getDataSourcesMetaData().getAllInstanceDataSourceNames().iterator().next();
         return Collections.singletonList(new ExecutionUnit(dataSourceName,
-                new SQLUnit(sqlRewriteResult.getSqlRewriteUnit().getSql(), sqlRewriteResult.getSqlRewriteUnit().getParameters(), getSQLRuntimeContext(schema, sqlStatementContext))));
+                new SQLUnit(sqlRewriteResult.getSqlRewriteUnit().getSql(), sqlRewriteResult.getSqlRewriteUnit().getParameters(), getSQLRuntimeContext(metaData.getSchema(), sqlStatementContext))));
     }
     
     private static Collection<ExecutionUnit> build(final ShardingSphereSchema schema, final RouteSQLRewriteResult sqlRewriteResult) {

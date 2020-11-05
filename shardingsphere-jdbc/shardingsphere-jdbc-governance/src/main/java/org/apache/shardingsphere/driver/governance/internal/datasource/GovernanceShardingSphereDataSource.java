@@ -62,14 +62,14 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     public GovernanceShardingSphereDataSource(final GovernanceConfiguration governanceConfig) throws SQLException {
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
         schemaContexts = new GovernanceSchemaContexts(createSchemaContexts(governanceFacade), governanceFacade);
-        transactionContexts = createTransactionContexts(schemaContexts.getDatabaseType(), schemaContexts.getDefaultMetaData().getDataSources());
+        transactionContexts = createTransactionContexts(schemaContexts.getDatabaseType(), schemaContexts.getDefaultMetaData().getResource().getDataSources());
     }
     
     public GovernanceShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, 
                                               final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
         schemaContexts = new GovernanceSchemaContexts(createSchemaContexts(dataSourceMap, ruleConfigs, props), governanceFacade);
-        transactionContexts = createTransactionContexts(schemaContexts.getDatabaseType(), schemaContexts.getDefaultMetaData().getDataSources());
+        transactionContexts = createTransactionContexts(schemaContexts.getDatabaseType(), schemaContexts.getDefaultMetaData().getResource().getDataSources());
         uploadLocalConfiguration(governanceFacade);
     }
     
@@ -119,7 +119,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     }
     
     private void uploadLocalConfiguration(final GovernanceFacade governanceFacade) {
-        Map<String, DataSourceConfiguration> dataSourceConfigs = DataSourceConverter.getDataSourceConfigurationMap(schemaContexts.getDefaultMetaData().getDataSources());
+        Map<String, DataSourceConfiguration> dataSourceConfigs = DataSourceConverter.getDataSourceConfigurationMap(schemaContexts.getDefaultMetaData().getResource().getDataSources());
         Collection<RuleConfiguration> ruleConfigurations = schemaContexts.getDefaultMetaData().getConfigurations();
         governanceFacade.onlineInstance(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigs),
                 Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), null, schemaContexts.getProps().getProps());
@@ -152,6 +152,6 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     }
     
     private Map<String, DataSource> getDataSourceMap() {
-        return schemaContexts.getDefaultMetaData().getDataSources();
+        return schemaContexts.getDefaultMetaData().getResource().getDataSources();
     }
 }

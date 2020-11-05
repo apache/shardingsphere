@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.route.engine;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -42,6 +43,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -66,7 +68,8 @@ public final class SQLRouteEngineTest {
     @Test
     public void assertRouteSuccess() {
         LogicSQL logicSQL = new LogicSQL(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("logic_schema", Collections.emptyList(), Collections.singleton(new RouteRuleFixture()), Collections.emptyMap(), this.schema);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                "logic_schema", Collections.emptyList(), Collections.singleton(new RouteRuleFixture()), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), schema);
         SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(Collections.singleton(new RouteRuleFixture()), props);
         setSPIRoutingHook(sqlRouteEngine);
         RouteContext actual = sqlRouteEngine.route(logicSQL, metaData);
@@ -76,13 +79,14 @@ public final class SQLRouteEngineTest {
         assertThat(routeUnit.getDataSourceMapper().getActualName(), is("ds_0"));
         assertTrue(routeUnit.getTableMappers().isEmpty());
         verify(routingHook).start("SELECT 1");
-        verify(routingHook).finishSuccess(actual, this.schema.getSchemaMetaData());
+        verify(routingHook).finishSuccess(actual, schema.getSchemaMetaData());
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertRouteFailure() {
         LogicSQL logicSQL = new LogicSQL(mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("logic_schema", Collections.emptyList(), Collections.singleton(new RouteRuleFixture()), Collections.emptyMap(), this.schema);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                "logic_schema", Collections.emptyList(), Collections.singleton(new RouteRuleFixture()), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), schema);
         SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(Collections.singleton(new RouteFailureRuleFixture()), props);
         setSPIRoutingHook(sqlRouteEngine);
         try {
