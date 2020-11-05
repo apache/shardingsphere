@@ -44,6 +44,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -117,9 +118,9 @@ public final class ProxyContextTest {
     }
     
     private Map<String, ShardingSphereMetaData> mockMetaDataMap(final Map<String, DataSource> mockDataSourceMap) {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getName()).thenReturn("schema");
-        when(metaData.getDataSources()).thenReturn(mockDataSourceMap);
+        when(metaData.getResource().getDataSources()).thenReturn(mockDataSourceMap);
         return Collections.singletonMap("schema", metaData);
     }
 }

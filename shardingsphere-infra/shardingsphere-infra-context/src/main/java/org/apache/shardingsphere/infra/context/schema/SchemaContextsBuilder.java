@@ -26,6 +26,10 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.schema.model.addressing.TableAddressingMetaData;
 import org.apache.shardingsphere.infra.schema.model.addressing.TableAddressingMetaDataLoader;
@@ -33,9 +37,6 @@ import org.apache.shardingsphere.infra.schema.model.datasource.CachedDatabaseMet
 import org.apache.shardingsphere.infra.schema.model.datasource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.schema.model.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -90,27 +91,22 @@ public final class SchemaContextsBuilder {
     public SchemaContexts build() throws SQLException {
         Map<String, ShardingSphereMetaData> mataDataMap = new LinkedHashMap<>(ruleConfigs.size(), 1);
         for (String each : ruleConfigs.keySet()) {
-            mataDataMap.put(each, createMetaData(each));
+            mataDataMap.put(each, buildMetaData(each));
         }
         return new StandardSchemaContexts(mataDataMap, executorKernel, authentication, props, databaseType);
     }
     
-    private ShardingSphereMetaData createMetaData(final String schemaName) throws SQLException {
-        Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
+    private ShardingSphereMetaData buildMetaData(final String schemaName) throws SQLException {
+        Map<String, DataSource> dataSourceMap = dataSources.get(schemaName);
         Collection<RuleConfiguration> ruleConfigs = this.ruleConfigs.get(schemaName);
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(ruleConfigs, dataSources.keySet());
-        return new ShardingSphereMetaData(schemaName, ruleConfigs, rules, dataSources, createMetaData(schemaName, dataSources, rules));
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(ruleConfigs, dataSourceMap.keySet());
+        return new ShardingSphereMetaData(schemaName, ruleConfigs, rules, buildResource(dataSourceMap), buildSchema(schemaName, dataSourceMap, rules));
     }
     
-    private ShardingSphereSchema createMetaData(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
-        long start = System.currentTimeMillis();
+    private ShardingSphereResource buildResource(final Map<String, DataSource> dataSourceMap) throws SQLException {
         DataSourcesMetaData dataSourceMetas = new DataSourcesMetaData(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
-        TableAddressingMetaData tableAddressingMetaData = TableAddressingMetaDataLoader.load(databaseType, dataSourceMap, rules);
-        PhysicalSchemaMetaData physicalSchemaMetaData = new SchemaMetaDataLoader(rules).load(databaseType, dataSourceMap, props);
-        CachedDatabaseMetaData cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSources.get(schemaName)).orElse(null);
-        ShardingSphereSchema result = new ShardingSphereSchema(dataSourceMetas, tableAddressingMetaData, physicalSchemaMetaData, cachedDatabaseMetaData);
-        log.info("Load meta data for schema {} finished, cost {} milliseconds.", schemaName, System.currentTimeMillis() - start);
-        return result;
+        CachedDatabaseMetaData cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap).orElse(null);
+        return new ShardingSphereResource(dataSourceMap, dataSourceMetas, cachedDatabaseMetaData);
     }
     
     private Map<String, DatabaseAccessConfiguration> getDatabaseAccessConfigurationMap(final Map<String, DataSource> dataSourceMap) throws SQLException {
@@ -132,5 +128,16 @@ public final class SchemaContextsBuilder {
         try (Connection connection = dataSources.values().iterator().next().getConnection()) {
             return Optional.of(new CachedDatabaseMetaData(connection.getMetaData()));
         }
+    }
+    
+    private ShardingSphereSchema buildSchema(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
+        long start = System.currentTimeMillis();
+        DataSourcesMetaData dataSourceMetas = new DataSourcesMetaData(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
+        TableAddressingMetaData tableAddressingMetaData = TableAddressingMetaDataLoader.load(databaseType, dataSourceMap, rules);
+        PhysicalSchemaMetaData physicalSchemaMetaData = new SchemaMetaDataLoader(rules).load(databaseType, dataSourceMap, props);
+        CachedDatabaseMetaData cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap).orElse(null);
+        ShardingSphereSchema result = new ShardingSphereSchema(dataSourceMetas, tableAddressingMetaData, physicalSchemaMetaData, cachedDatabaseMetaData);
+        log.info("Load meta data for schema {} finished, cost {} milliseconds.", schemaName, System.currentTimeMillis() - start);
+        return result;
     }
 }

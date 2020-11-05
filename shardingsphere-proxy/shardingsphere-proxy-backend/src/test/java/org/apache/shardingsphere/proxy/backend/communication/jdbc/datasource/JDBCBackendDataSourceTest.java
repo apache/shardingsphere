@@ -80,7 +80,7 @@ public final class JDBCBackendDataSourceTest {
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getName()).thenReturn("schema");
-        when(metaData.getDataSources()).thenReturn(mockDataSources(2));
+        when(metaData.getResource().getDataSources()).thenReturn(mockDataSources(2));
         return Collections.singletonMap("schema", metaData);
     }
     

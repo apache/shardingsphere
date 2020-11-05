@@ -100,7 +100,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(schemaContexts.getMetaDataMap().size(), 1);
         for (Entry<String, ShardingSphereMetaData> entry : schemaContexts.getMetaDataMap().entrySet()) {
             ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
-            engine.init(schemaContexts.getDatabaseType(), entry.getValue().getDataSources());
+            engine.init(schemaContexts.getDatabaseType(), entry.getValue().getResource().getDataSources());
             transactionManagerEngines.put(entry.getKey(), engine);
         }
         return new StandardTransactionContexts(transactionManagerEngines);
