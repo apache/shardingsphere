@@ -19,8 +19,6 @@ package org.apache.shardingsphere.infra.metadata.resource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.schema.model.datasource.CachedDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.datasource.DataSourcesMetaData;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -42,6 +40,7 @@ public final class ShardingSphereResource {
     
     /**
      * Close data sources.
+     * 
      * @param dataSources data sources to be closed
      * @throws SQLException exception
      */

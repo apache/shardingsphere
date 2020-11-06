@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.resource;
 
 import org.apache.shardingsphere.infra.metadata.resource.fixture.CloseableDataSource;
-import org.apache.shardingsphere.infra.metadata.schema.model.datasource.CachedDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.datasource.DataSourcesMetaData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
