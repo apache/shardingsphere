@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
@@ -31,6 +32,7 @@ import java.util.List;
  */
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 public final class MySQLCallStatement extends CallStatement implements MySQLStatement {
 
