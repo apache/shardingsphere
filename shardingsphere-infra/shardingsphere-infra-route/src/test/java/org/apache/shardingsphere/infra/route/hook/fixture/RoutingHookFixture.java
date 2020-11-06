@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.route.hook.fixture;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.hook.RoutingHook;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 
 @Getter
 public final class RoutingHookFixture implements RoutingHook {
