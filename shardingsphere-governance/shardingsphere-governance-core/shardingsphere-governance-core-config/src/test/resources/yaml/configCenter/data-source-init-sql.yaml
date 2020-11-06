@@ -16,7 +16,7 @@
 #
 dataSources:
   ds_0:
-   dataSourceClassName: org.apache.shardingsphere.governance.core.config.DataSourceFixture
+   dataSourceClassName: org.apache.shardingsphere.governance.core.config.MockDataSource
    props:
      driverClassName: com.mysql.jdbc.Driver
      url: jdbc:mysql://localhost:3306/ds_0
@@ -26,7 +26,7 @@ dataSources:
         - set names utf8mb4;
         - set names utf8;
   ds_1:
-   dataSourceClassName: org.apache.shardingsphere.governance.core.config.DataSourceFixture
+   dataSourceClassName: org.apache.shardingsphere.governance.core.config.MockDataSource
    props:
      driverClassName: com.mysql.jdbc.Driver
      url: jdbc:mysql://localhost:3306/ds_1

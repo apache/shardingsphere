@@ -255,7 +255,7 @@ public final class ConfigCenterTest {
     }
     
     private DataSource createDataSource(final String name) {
-        DataSourceFixture result = new DataSourceFixture();
+        MockDataSource result = new MockDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");
         result.setUrl("jdbc:mysql://localhost:3306/" + name);
         result.setUsername("root");
@@ -416,7 +416,7 @@ public final class ConfigCenterTest {
     }
     
     private DataSource createDataSourceWithConnectionInitSqls(final String name) {
-        DataSourceFixture result = new DataSourceFixture();
+        MockDataSource result = new MockDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");
         result.setUrl("jdbc:mysql://localhost:3306/" + name);
         result.setUsername("root");

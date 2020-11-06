@@ -31,7 +31,7 @@ import java.util.logging.Logger;
  * Mock a data source.
  */
 @Data
-public final class DataSourceFixture implements DataSource {
+public final class MockDataSource implements DataSource {
     
     private String driverClassName;
     
