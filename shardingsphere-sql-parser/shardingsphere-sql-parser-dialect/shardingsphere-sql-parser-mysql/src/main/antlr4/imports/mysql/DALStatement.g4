@@ -143,7 +143,7 @@ showCreateView
     ;
 
 showEngine
-    : SHOW ENGINE engineName (STATUS | MUTEX)
+    : SHOW ENGINE engineRef (STATUS | MUTEX)
     ;
 
 showEngines
@@ -235,11 +235,11 @@ showWarnings
     ;
 
 setCharacter
-    : SET (CHARACTER SET | CHARSET) (characterSetName | DEFAULT)
+    : SET (CHARACTER SET | CHARSET) (charsetName | DEFAULT)
     ;
 
 setName
-    : SET NAMES (characterSetName (COLLATE collationName_)? | DEFAULT)
+    : SET NAMES (charsetName (COLLATE collationName)? | DEFAULT)
     ;
 
 clone

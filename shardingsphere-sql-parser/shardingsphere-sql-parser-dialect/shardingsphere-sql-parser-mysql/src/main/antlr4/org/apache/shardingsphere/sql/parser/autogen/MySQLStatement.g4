@@ -26,34 +26,25 @@ execute
     | delete
     | replace
     | createTable
-    | alterTable
+    | alterStatement
     | repairTable
-    | renameTableSpecification
     | dropTable
     | truncateTable
     | createIndex
     | dropIndex
     | createProcedure
-    | alterProcedure
     | dropProcedure
     | createFunction
-    | alterFunction
     | dropFunction
     | createDatabase
-    | alterDatabase
     | dropDatabase
     | createEvent
-    | alterEvent
     | dropEvent
-    | alterInstance
     | createLogfileGroup
-    | alterLogfileGroup
     | dropLogfileGroup
     | createServer
-    | alterServer
     | dropServer
     | createView
-    | alterView
     | dropView
     | createTrigger
     | dropTrigger
