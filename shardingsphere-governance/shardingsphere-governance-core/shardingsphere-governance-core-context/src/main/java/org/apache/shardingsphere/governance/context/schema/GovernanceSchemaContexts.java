@@ -313,8 +313,8 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     private ShardingSphereMetaData getChangedMetaData(final ShardingSphereMetaData oldMetaData, final Map<String, DataSourceConfiguration> newDataSourceConfigs) throws SQLException {
         Collection<String> deletedDataSources = getDeletedDataSources(oldMetaData, newDataSourceConfigs);
         Map<String, DataSource> modifiedDataSources = getModifiedDataSources(oldMetaData, newDataSourceConfigs);
-        oldMetaData.closeDataSources(deletedDataSources);
-        oldMetaData.closeDataSources(modifiedDataSources.keySet());
+        oldMetaData.getResource().close(deletedDataSources);
+        oldMetaData.getResource().close(modifiedDataSources.keySet());
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(oldMetaData.getName(), 
                 getNewDataSources(oldMetaData.getResource().getDataSources(), getAddedDataSources(oldMetaData, newDataSourceConfigs), modifiedDataSources, deletedDataSources));
         return new SchemaContextsBuilder(schemaContexts.getDatabaseType(), dataSourcesMap,

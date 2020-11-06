@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.schema.model.datasource.CachedDatabaseMet
 import org.apache.shardingsphere.infra.schema.model.datasource.DataSourcesMetaData;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -37,4 +39,27 @@ public final class ShardingSphereResource {
     private final DataSourcesMetaData dataSourcesMetaData;
     
     private final CachedDatabaseMetaData cachedDatabaseMetaData;
+    
+    /**
+     * Close data sources.
+     * @param dataSources data sources to be closed
+     * @throws SQLException exception
+     */
+    public void close(final Collection<String> dataSources) throws SQLException {
+        for (String each :dataSources) {
+            close(this.dataSources.get(each));
+        }
+    }
+    
+    private void close(final DataSource dataSource) throws SQLException {
+        if (dataSource instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) dataSource).close();
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                throw new SQLException(ex);
+            }
+        }
+    }
 }

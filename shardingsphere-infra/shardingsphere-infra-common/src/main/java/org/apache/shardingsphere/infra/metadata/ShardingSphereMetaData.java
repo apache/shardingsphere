@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 
 /**
@@ -52,28 +50,5 @@ public final class ShardingSphereMetaData {
      */
     public boolean isComplete() {
         return !rules.isEmpty() && !resource.getDataSources().isEmpty();
-    }
-    
-    /**
-     * Close data sources.
-     * @param dataSources data sources
-     * @throws SQLException exception
-     */
-    public void closeDataSources(final Collection<String> dataSources) throws SQLException {
-        for (String each :dataSources) {
-            close(resource.getDataSources().get(each));
-        }
-    }
-    
-    private void close(final DataSource dataSource) throws SQLException {
-        if (dataSource instanceof AutoCloseable) {
-            try {
-                ((AutoCloseable) dataSource).close();
-            // CHECKSTYLE:OFF
-            } catch (final Exception e) {
-            // CHECKSTYLE:ON
-                throw new SQLException(e);
-            }
-        }
     }
 }
