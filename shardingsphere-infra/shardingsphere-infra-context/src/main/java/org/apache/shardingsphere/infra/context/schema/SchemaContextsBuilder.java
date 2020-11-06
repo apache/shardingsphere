@@ -33,11 +33,11 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.addressing.TableAddressingMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.addressing.TableAddressingMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.loader.addressing.TableAddressingMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.schema.SchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
