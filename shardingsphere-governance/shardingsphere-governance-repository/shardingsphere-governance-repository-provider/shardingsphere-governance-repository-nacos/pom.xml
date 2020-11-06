@@ -36,6 +36,7 @@
             <groupId>com.alibaba.nacos</groupId>
             <artifactId>nacos-client</artifactId>
             <version>${nacos.client.verison}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

@@ -37,6 +37,7 @@
             <groupId>com.ctrip.framework.apollo</groupId>
             <artifactId>apollo-client</artifactId>
             <version>${apollo.client.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.ctrip.framework.apollo</groupId>
@@ -48,6 +49,7 @@
             <groupId>com.ctrip.framework.apollo</groupId>
             <artifactId>apollo-openapi</artifactId>
             <version>${apollo.client.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
