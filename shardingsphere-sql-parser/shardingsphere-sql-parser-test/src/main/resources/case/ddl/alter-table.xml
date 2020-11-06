@@ -569,30 +569,69 @@
 
     <alter-table sql-case-id="alter_table_not_null">
         <table name="t1" start-index="12" stop-index="13" />
+        <add-column>
+            <column-definition type="real" start-index="19" stop-index="35">
+                <column name="c2" />
+            </column-definition>
+        </add-column>
     </alter-table>
 
     <alter-table sql-case-id="alter_table_not_null_first">
         <table name="t1" start-index="12" stop-index="13" />
+        <add-column>
+            <column-definition type="real" start-index="19" stop-index="35">
+                <column name="c2" />
+            </column-definition>
+            <column-position start-index="37" stop-index="41"/>
+        </add-column>
     </alter-table>
 
     <alter-table sql-case-id="alter_table_not_null_after">
         <table name="t1" start-index="12" stop-index="13" />
+        <add-column>
+            <column-definition type="real" start-index="19" stop-index="35">
+                <column name="c4" />
+            </column-definition>
+            <column-position start-index="37" stop-index="44">
+                <column name="c2"/>
+            </column-position>
+        </add-column>
     </alter-table>
 
     <alter-table sql-case-id="alter_table_change_unsigned_not_null">
         <table name="t1" start-index="12" stop-index="13" />
+        <modify-column>
+            <column-definition type="real" start-index="25" stop-index="49">
+                <column name="c2" />
+            </column-definition>
+        </modify-column>
     </alter-table>
 
     <alter-table sql-case-id="alter_table_modify_unsigned_not_null">
         <table name="t1" start-index="12" stop-index="13" />
+        <modify-column>
+            <column-definition type="real" start-index="22" stop-index="37">
+                <column name="c1" />
+            </column-definition>
+        </modify-column>
     </alter-table>
 
     <alter-table sql-case-id="alter_table_modify_unsigned_zerofill_not_null">
         <table name="t1" start-index="12" stop-index="13" />
+        <modify-column>
+            <column-definition type="real" start-index="22" stop-index="46">
+                <column name="c1" />
+            </column-definition>
+        </modify-column>
     </alter-table>
 
     <alter-table sql-case-id="alter_table_change_unsigned_zerofill_not_null">
         <table name="t1" start-index="12" stop-index="13" />
+        <modify-column>
+            <column-definition type="real" start-index="25" stop-index="58">
+                <column name="c2" />
+            </column-definition>
+        </modify-column>
     </alter-table>
 
     <alter-table sql-case-id="alter_table_add_partition">
