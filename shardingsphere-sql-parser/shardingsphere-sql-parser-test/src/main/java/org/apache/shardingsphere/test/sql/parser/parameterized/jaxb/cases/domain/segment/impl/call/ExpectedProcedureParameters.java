@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.call;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
- * MySQL call statement.
+ * Expected procedure parameters.
  */
-@ToString
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
-public final class MySQLCallStatement extends CallStatement implements MySQLStatement {
+@Setter
+public final class ExpectedProcedureParameters extends AbstractExpectedSQLSegment {
 
-    private String procedureName;
-
-    private List<ExpressionSegment> parameters;
+    @XmlElement(name = "parameter")
+    private List<ExpectedCallParameter> parameters = new LinkedList<>();
 }
