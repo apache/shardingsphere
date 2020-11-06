@@ -42,6 +42,7 @@ public final class ShardingSphereResource {
     
     /**
      * Close data sources.
+     * 
      * @param dataSources data sources to be closed
      * @throws SQLException exception
      */
