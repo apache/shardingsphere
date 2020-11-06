@@ -65,7 +65,7 @@ public class GovernanceSpringBootReplicaQueryTest {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
             assertThat(((BasicDataSource) each).getUsername(), is("sa"));
         }
-        Collection<ShardingSphereRule> rules = schemaContexts.getDefaultMetaData().getRules();
+        Collection<ShardingSphereRule> rules = schemaContexts.getDefaultMetaData().getRuleMetaData().getRules();
         assertThat(rules.size(), is(1));
         assertReplicaQueryRule((ReplicaQueryRule) rules.iterator().next());
     }

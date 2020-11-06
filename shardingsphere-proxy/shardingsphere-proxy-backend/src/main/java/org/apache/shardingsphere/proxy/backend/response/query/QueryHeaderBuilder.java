@@ -68,7 +68,8 @@ public final class QueryHeaderBuilder {
     private static QueryHeader build(final ResultSetMetaData resultSetMetaData, final ShardingSphereMetaData metaData, final String columnName, final int columnIndex) throws SQLException {
         String schemaName = metaData.getName();
         String actualTableName = resultSetMetaData.getTableName(columnIndex);
-        Optional<DataNodeRoutedRule> dataNodeRoutedRule = metaData.getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
+        Optional<DataNodeRoutedRule> dataNodeRoutedRule = 
+                metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
         String tableName;
         boolean primaryKey;
         if (null != actualTableName && dataNodeRoutedRule.isPresent()) {

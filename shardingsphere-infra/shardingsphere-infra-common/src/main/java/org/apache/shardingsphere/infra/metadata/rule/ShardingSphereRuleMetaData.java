@@ -15,35 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata;
+package org.apache.shardingsphere.infra.metadata.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+
+import java.util.Collection;
 
 /**
- * ShardingSphere meta data.
+ * ShardingSphere rule meta data.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingSphereMetaData {
+public final class ShardingSphereRuleMetaData {
     
-    private final String name;
+    private final Collection<RuleConfiguration> configurations;
     
-    private final ShardingSphereResource resource;
-    
-    private final ShardingSphereRuleMetaData ruleMetaData;
-    
-    private final ShardingSphereSchema schema;
-    
-    /**
-     * Is complete schema context.
-     *
-     * @return is complete schema context or not
-     */
-    public boolean isComplete() {
-        return !ruleMetaData.getRules().isEmpty() && !resource.getDataSources().isEmpty();
-    }
+    private final Collection<ShardingSphereRule> rules;
 }

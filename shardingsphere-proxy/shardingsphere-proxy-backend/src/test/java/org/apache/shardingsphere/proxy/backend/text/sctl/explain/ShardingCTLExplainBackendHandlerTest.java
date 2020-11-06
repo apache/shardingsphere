@@ -6,6 +6,7 @@ import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContext
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -64,8 +65,8 @@ public final class ShardingCTLExplainBackendHandlerTest {
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
         ShardingSphereResource resource = new ShardingSphereResource(
                 Collections.singletonMap("ds0", mock(DataSource.class)), mock(DataSourcesMetaData.class, RETURNS_DEEP_STUBS), mock(CachedDatabaseMetaData.class));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                "schema", Collections.emptyList(), Collections.singleton(mock(ShardingSphereRule.class)), resource, mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("schema", 
+                resource, new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(mock(ShardingSphereRule.class))), mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS));
         return Collections.singletonMap("schema", metaData);
     }
     

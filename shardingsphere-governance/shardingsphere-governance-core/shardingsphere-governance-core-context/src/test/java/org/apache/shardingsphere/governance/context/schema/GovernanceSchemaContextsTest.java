@@ -113,7 +113,7 @@ public final class GovernanceSchemaContextsTest {
         when(metaData.getName()).thenReturn("schema");
         when(metaData.getResource()).thenReturn(mock(ShardingSphereResource.class));
         when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
-        when(metaData.getRules()).thenReturn(Collections.singletonList(replicaQueryRule));
+        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(replicaQueryRule));
         return Collections.singletonMap("schema", metaData);
     }
     

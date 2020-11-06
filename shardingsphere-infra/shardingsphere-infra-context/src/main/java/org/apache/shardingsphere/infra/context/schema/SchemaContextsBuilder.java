@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
@@ -100,7 +101,8 @@ public final class SchemaContextsBuilder {
         Map<String, DataSource> dataSourceMap = dataSources.get(schemaName);
         Collection<RuleConfiguration> ruleConfigs = this.ruleConfigs.get(schemaName);
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(ruleConfigs, dataSourceMap.keySet());
-        return new ShardingSphereMetaData(schemaName, ruleConfigs, rules, buildResource(dataSourceMap), buildSchema(schemaName, dataSourceMap, rules));
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
+        return new ShardingSphereMetaData(schemaName, buildResource(dataSourceMap), ruleMetaData, buildSchema(schemaName, dataSourceMap, rules));
     }
     
     private ShardingSphereResource buildResource(final Map<String, DataSource> dataSourceMap) throws SQLException {

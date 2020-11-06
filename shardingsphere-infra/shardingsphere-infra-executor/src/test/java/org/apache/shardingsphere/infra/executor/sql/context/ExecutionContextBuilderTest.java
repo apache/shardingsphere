@@ -20,6 +20,12 @@ package org.apache.shardingsphere.infra.executor.sql.context;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
+import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
+import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.schema.model.addressing.TableAddressingMetaData;
 import org.apache.shardingsphere.infra.schema.model.datasource.CachedDatabaseMetaData;
@@ -27,11 +33,6 @@ import org.apache.shardingsphere.infra.schema.model.datasource.DataSourcesMetaDa
 import org.apache.shardingsphere.infra.schema.model.schema.physical.model.column.PhysicalColumnMetaData;
 import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.schema.model.schema.physical.model.table.PhysicalTableMetaData;
-import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
-import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
-import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
-import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -59,8 +60,9 @@ public final class ExecutionContextBuilderTest {
         String firstDataSourceName = "firstDataSourceName";
         when(dataSourcesMetaData.getAllInstanceDataSourceNames()).thenReturn(Arrays.asList(firstDataSourceName, "lastDataSourceName"));
         ShardingSphereResource resource = new ShardingSphereResource(Collections.emptyMap(), dataSourcesMetaData, mock(CachedDatabaseMetaData.class));
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema(mock(TableAddressingMetaData.class), buildPhysicalSchemaMetaData());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("name", Collections.emptyList(), Collections.emptyList(), resource, schema);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("name", resource, ruleMetaData, schema);
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(metaData, genericSQLRewriteResult, mock(SQLStatementContext.class));
         Collection<ExecutionUnit> expected = Collections.singletonList(new ExecutionUnit(firstDataSourceName, new SQLUnit(sql, parameters)));
         assertThat(actual, is(expected));
@@ -76,8 +78,9 @@ public final class ExecutionContextBuilderTest {
         sqlRewriteUnits.put(routeUnit1, sqlRewriteUnit1);
         sqlRewriteUnits.put(routeUnit2, sqlRewriteUnit2);
         ShardingSphereResource resource = new ShardingSphereResource(Collections.emptyMap(), mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class));
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema(mock(TableAddressingMetaData.class), buildPhysicalSchemaMetaData());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("name", Collections.emptyList(), Collections.emptyList(), resource, schema);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("name", resource, ruleMetaData, schema);
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(metaData, new RouteSQLRewriteResult(sqlRewriteUnits), mock(SQLStatementContext.class));
         ExecutionUnit expectedUnit1 = new ExecutionUnit("actualName1", new SQLUnit("sql1", Collections.singletonList("parameter1")));
         ExecutionUnit expectedUnit2 = new ExecutionUnit("actualName2", new SQLUnit("sql2", Collections.singletonList("parameter2")));
@@ -95,8 +98,9 @@ public final class ExecutionContextBuilderTest {
         Map<RouteUnit, SQLRewriteUnit> sqlRewriteUnits = new HashMap<>(2, 1);
         sqlRewriteUnits.put(routeUnit2, sqlRewriteUnit2);
         ShardingSphereResource resource = new ShardingSphereResource(Collections.emptyMap(), mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class));
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema(mock(TableAddressingMetaData.class), buildPhysicalSchemaMetaDataWithoutPrimaryKey());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("name", Collections.emptyList(), Collections.emptyList(), resource, schema);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("name", resource, ruleMetaData, schema);
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(metaData, new RouteSQLRewriteResult(sqlRewriteUnits), mock(SQLStatementContext.class));
         ExecutionUnit expectedUnit2 = new ExecutionUnit("actualName2", new SQLUnit("sql2", Collections.singletonList("parameter2")));
         Collection<ExecutionUnit> expected = new LinkedHashSet<>(1, 1);

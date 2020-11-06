@@ -111,7 +111,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private Optional<PhysicalTableMetaData> loadTableMetaData(final String tableName) throws SQLException {
-        SchemaMetaDataLoader loader = new SchemaMetaDataLoader(metaData.getRules());
+        SchemaMetaDataLoader loader = new SchemaMetaDataLoader(metaData.getRuleMetaData().getRules());
         return loader.load(
                 ProxyContext.getInstance().getSchemaContexts().getDatabaseType(), metaData.getResource().getDataSources(), tableName, ProxyContext.getInstance().getSchemaContexts().getProps());
     }
@@ -132,13 +132,13 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext<?> sqlStatementContext) {
-        Optional<DataNodeRoutedRule> dataNodeRoutedRule = metaData.getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
+        Optional<DataNodeRoutedRule> dataNodeRoutedRule = metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
         return dataNodeRoutedRule.isPresent() && dataNodeRoutedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(ProxyContext.getInstance().getSchemaContexts().getDatabaseType(), 
-                metaData.getSchema().getSchemaMetaData(), ProxyContext.getInstance().getSchemaContexts().getProps(), metaData.getRules());
+                metaData.getSchema().getSchemaMetaData(), ProxyContext.getInstance().getSchemaContexts().getProps(), metaData.getRuleMetaData().getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
