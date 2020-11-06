@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.infra.parser.sql;
 
-import lombok.RequiredArgsConstructor;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.cache.SQLParsedResultCache;
+import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Optional;
@@ -27,12 +28,18 @@ import java.util.Optional;
 /**
  * SQL statement parser engine.
  */
-@RequiredArgsConstructor
 public final class SQLStatementParserEngine {
     
-    private final String databaseTypeName;
+    private final SQLParserEngine parserEngine;
     
-    private final SQLParsedResultCache<SQLStatement> cache = new SQLParsedResultCache<>();
+    private final SQLVisitorEngine visitorEngine;
+    
+    private final Cache<String, SQLStatement> cache = CacheBuilder.newBuilder().softValues().initialCapacity(2000).maximumSize(65535).build();
+    
+    public SQLStatementParserEngine(final String databaseTypeName) {
+        parserEngine = new SQLParserEngine(databaseTypeName);
+        visitorEngine = new SQLVisitorEngine(databaseTypeName, "STATEMENT");
+    }
     
     /**
      * Parse to SQL statement.
@@ -43,14 +50,18 @@ public final class SQLStatementParserEngine {
      */
     public SQLStatement parse(final String sql, final boolean useCache) {
         if (!useCache) {
-            return SQLParserEngine.parse(databaseTypeName, sql, false, "STATEMENT");
+            return parse(sql);
         }
-        Optional<SQLStatement> statement = cache.get(sql);
+        Optional<SQLStatement> statement = Optional.ofNullable(cache.getIfPresent(sql));
         if (statement.isPresent()) {
             return statement.get();
         }
-        SQLStatement result = SQLParserEngine.parse(databaseTypeName, sql, false, "STATEMENT");
+        SQLStatement result = parse(sql);
         cache.put(sql, result);
         return result;
+    }
+    
+    private SQLStatement parse(final String sql) {
+        return visitorEngine.visit(parserEngine.parse(sql, false));
     }
 }

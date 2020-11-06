@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationResultBuilder;
 import org.junit.Before;
@@ -140,7 +140,7 @@ public final class MySQLAuthenticationEngineTest {
     private void setSchemas() throws NoSuchFieldException, IllegalAccessException {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), new StandardSchemaContexts(Collections.singletonMap("sharding_db", mock(ShardingSphereSchema.class)),
+        field.set(ProxyContext.getInstance(), new StandardSchemaContexts(Collections.singletonMap("sharding_db", mock(ShardingSphereMetaData.class)),
                 mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     

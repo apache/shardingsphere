@@ -22,9 +22,9 @@ import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.driver.jdbc.adapter.AdaptedDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.schema.model.datasource.DataSourcesMetaData;
 
 import java.security.SecureRandom;
 import java.sql.Connection;
@@ -48,7 +48,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     private final Collection<String> datasourceNames;
     
-    private final ShardingSphereMetaData shardingSphereMetaData;
+    private final DataSourcesMetaData dataSourcesMetaData;
     
     private final Random random = new SecureRandom();
     
@@ -57,11 +57,11 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     private DatabaseMetaData currentDatabaseMetaData;
     
     public ShardingSphereDatabaseMetaData(final AbstractConnectionAdapter connection) {
-        super(connection.getSchemaContexts().getDefaultSchema().getMetaData().getCachedDatabaseMetaData());
+        super(connection.getSchemaContexts().getDefaultMetaData().getResource().getCachedDatabaseMetaData());
         this.connection = connection;
-        rules = connection.getSchemaContexts().getDefaultSchema().getRules();
+        rules = connection.getSchemaContexts().getDefaultMetaData().getRules();
         datasourceNames = connection.getDataSourceMap().keySet();
-        shardingSphereMetaData = connection.getSchemaContexts().getDefaultSchema().getMetaData();
+        dataSourcesMetaData = connection.getSchemaContexts().getDefaultMetaData().getResource().getDataSourcesMetaData();
     }
     
     @Override
@@ -232,11 +232,11 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     }
     
     private String getActualCatalog(final String catalog) {
-        return null != catalog && catalog.contains(DefaultSchema.LOGIC_NAME) ? shardingSphereMetaData.getDataSourcesMetaData().getDataSourceMetaData(getDataSourceName()).getCatalog() : catalog;
+        return null != catalog && catalog.contains(DefaultSchema.LOGIC_NAME) ? dataSourcesMetaData.getDataSourceMetaData(getDataSourceName()).getCatalog() : catalog;
     }
     
     private String getActualSchema(final String schema) {
-        return null != schema && schema.contains(DefaultSchema.LOGIC_NAME) ? shardingSphereMetaData.getDataSourcesMetaData().getDataSourceMetaData(getDataSourceName()).getSchema() : schema;
+        return null != schema && schema.contains(DefaultSchema.LOGIC_NAME) ? dataSourcesMetaData.getDataSourceMetaData(getDataSourceName()).getSchema() : schema;
     }
     
     private String getDataSourceName() {

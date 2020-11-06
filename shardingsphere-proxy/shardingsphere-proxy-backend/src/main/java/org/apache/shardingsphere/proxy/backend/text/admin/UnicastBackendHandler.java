@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -52,15 +52,15 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     @Override
     public BackendResponse execute() throws SQLException {
         if (null == backendConnection.getSchemaName()) {
-            Map<String, ShardingSphereSchema> schemas = ProxyContext.getInstance().getSchemaContexts().getSchemas();
-            if (schemas.isEmpty()) {
+            Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getSchemaContexts().getMetaDataMap();
+            if (metaDataMap.isEmpty()) {
                 throw new NoDatabaseSelectedException();
             }
-            if (!schemas.values().iterator().next().isComplete()) {
+            if (!metaDataMap.values().iterator().next().isComplete()) {
                 throw new RuleNotExistsException();
             }
             // TODO we should remove set default ShardingSphere schema after parser can recognize all DAL broadcast SQL.
-            backendConnection.setCurrentSchema(schemas.keySet().iterator().next());
+            backendConnection.setCurrentSchema(metaDataMap.keySet().iterator().next());
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);
         return databaseCommunicationEngine.execute();

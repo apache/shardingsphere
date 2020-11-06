@@ -152,10 +152,10 @@ cp -f ~/elasticjob/elasticjob-distribution/elasticjob-cloud-scheduler-distributi
 **4. 生成文件签名**
 
 ```shell
-shasum -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip.sha512
-shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz.sha512
-shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-executor-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-executor-bin.tar.gz.sha512
-shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz >> apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz.sha512
+shasum -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip > apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src.zip.sha512
+shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz > apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-executor-bin.tar.gz > apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-executor-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz > apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler-bin.tar.gz.sha512
 ```
 
 **5. 提交Apache SVN**
@@ -371,23 +371,13 @@ git push --delete origin ${RELEASE.VERSION}-release
 git branch -d ${RELEASE.VERSION}-release
 ```
 
-**4. 更新下载页面**
+**4. 发布 Docker**
 
-https://shardingsphere.apache.org/elasticjob/current/en/downloads/
+4.1 准备工作
 
-https://shardingsphere.apache.org/elasticjob/current/cn/downloads/
+本地安装 Docker，并启动服务。
 
-GPG签名文件和哈希校验文件的下载连接应该使用这个前缀： `https://downloads.apache.org/shardingsphere/`
-
-`最新版本`中保留一个最新的版本。
-
-## 发布Docker
-
-**1. 准备工作**
-
-本地安装Docker，并将Docker服务启动起来
-
-**2. 编译Docker镜像**
+4.2 编译 Docker 镜像
 
 ```shell
 git checkout ${RELEASE.VERSION}
@@ -395,7 +385,7 @@ cd ~/elasticjob/elasticjob-distribution/elasticjob-cloud-scheduler-distribution/
 mvn clean package -Prelease,docker
 ```
 
-**3. 给本地Docker镜像打标记**
+4.3 给本地 Docker 镜像打标记
 
 通过`docker images`查看到IMAGE ID，例如为：e9ea51023687
 
@@ -404,24 +394,38 @@ docker tag e9ea51023687 apache/shardingsphere-elasticjob-cloud-scheduler:latest
 docker tag e9ea51023687 apache/shardingsphere-elasticjob-cloud-scheduler:${RELEASE.VERSION}
 ```
 
-**4. 发布Docker镜像**
+4.4 发布 Docker 镜像
 
 ```shell
 docker push apache/shardingsphere-elasticjob-cloud-scheduler:latest
 docker push apache/shardingsphere-elasticjob-cloud-scheduler:${RELEASE_VERSION}
 ```
 
-**5. 确认发布成功**
+4.5 确认发布成功
 
-登录[Docker Hub](https://hub.docker.com/r/apache/shardingsphere-elasticjob-cloud-scheduler/)查看是否有发布的镜像
+登录 [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-elasticjob-cloud-scheduler/) 查看是否有发布的镜像
 
-## GitHub版本发布
+**5. GitHub版本发布**
 
-在[GitHub Releases](https://github.com/apache/shardingsphere-elasticjob/releases)页面的`${RELEASE_VERSION}`版本上点击`Edit`
+在 [GitHub Releases](https://github.com/apache/shardingsphere-elasticjob/releases) 页面的 `${RELEASE_VERSION}` 版本上点击 `Edit`
 
 编辑版本号及版本说明，并点击`Publish release`
 
-## 发送邮件到`dev@shardingsphere.apache.org`和`announce@apache.org`通知完成版本发布
+**6. 更新下载页面**
+
+等待并确认新的发布版本同步至 Apache 镜像后，更新如下页面：
+
+https://shardingsphere.apache.org/elasticjob/current/en/downloads/
+
+https://shardingsphere.apache.org/elasticjob/current/cn/downloads/
+
+GPG签名文件和哈希校验文件的下载连接应该使用这个前缀：`https://downloads.apache.org/shardingsphere/`
+
+`最新版本`中保留一个最新的版本。
+
+**7. 邮件通知版本发布完成**
+
+发送邮件到`dev@shardingsphere.apache.org`和`announce@apache.org`通知完成版本发布
 
 通知邮件模板：
 
@@ -448,7 +452,7 @@ Release Notes: https://github.com/apache/shardingsphere-elasticjob/blob/master/R
 
 Website: http://shardingsphere.apache.org/elasticjob/
 
-ShardingSphere Resources:
+ShardingSphere-ElasticJob Resources:
 - Issue: https://github.com/apache/shardingsphere-elasticjob/issues/
 - Mailing list: dev@shardingsphere.apache.org
 - Documents: https://shardingsphere.apache.org/elasticjob/current/en/overview/

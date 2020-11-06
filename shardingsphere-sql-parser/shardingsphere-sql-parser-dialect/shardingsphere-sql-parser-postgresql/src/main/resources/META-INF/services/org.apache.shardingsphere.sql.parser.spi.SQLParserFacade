@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.postgresql.PostgreSQLParserFacade
+org.apache.shardingsphere.sql.parser.postgresql.parser.PostgreSQLParserFacade

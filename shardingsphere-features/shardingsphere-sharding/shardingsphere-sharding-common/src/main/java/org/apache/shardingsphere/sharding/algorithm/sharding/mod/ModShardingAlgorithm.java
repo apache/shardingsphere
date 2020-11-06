@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 
@@ -96,5 +97,10 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     @Override
     public String getType() {
         return "MOD";
+    }
+    
+    @Override
+    public Collection<String> getAllPropertyKeys() {
+        return Collections.singletonList(SHARDING_COUNT_KEY);
     }
 }

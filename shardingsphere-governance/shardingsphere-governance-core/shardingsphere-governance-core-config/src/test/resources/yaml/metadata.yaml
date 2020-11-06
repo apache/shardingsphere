@@ -27,7 +27,4 @@ configuredSchemaMetaData:
           primaryKey: true
       indexes:
          primary:
-            name: PRIMARY          
-unconfiguredSchemaMetaDataMap:
-  ds_0:
-    - t_user
+            name: PRIMARY

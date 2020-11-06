@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteRe
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;

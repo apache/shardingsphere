@@ -90,7 +90,7 @@ public class GovernanceReplicaQueryNamespaceTest extends AbstractJUnit4SpringCon
     private ReplicaQueryRule getReplicaQueryRule(final String dataSourceName) {
         GovernanceShardingSphereDataSource dataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
         SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(dataSource, "schemaContexts");
-        return (ReplicaQueryRule) schemaContexts.getDefaultSchema().getRules().iterator().next();
+        return (ReplicaQueryRule) schemaContexts.getDefaultMetaData().getRules().iterator().next();
     }
     
     @Test

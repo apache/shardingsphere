@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.event.model.persist;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
+import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 
 /**
  * Meta data event.
@@ -31,5 +31,5 @@ public final class MetaDataPersistEvent implements GovernanceEvent {
     
     private final String schemaName;
     
-    private final LogicSchemaMetaData metaData;
+    private final PhysicalSchemaMetaData metaData;
 }

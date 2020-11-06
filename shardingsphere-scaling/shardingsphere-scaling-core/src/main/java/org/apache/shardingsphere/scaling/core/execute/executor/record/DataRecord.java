@@ -31,8 +31,6 @@ import java.util.List;
 /**
  * Data record.
  */
-@Setter
-@Getter
 @EqualsAndHashCode(of = {"tableName", "primaryKeyValue"}, callSuper = false)
 @ToString
 public final class DataRecord extends Record {
@@ -41,8 +39,12 @@ public final class DataRecord extends Record {
     
     private final List<Object> primaryKeyValue = new LinkedList<>();
     
+    @Setter
+    @Getter
     private String type;
     
+    @Setter
+    @Getter
     private String tableName;
     
     public DataRecord(final Position position, final int columnCount) {

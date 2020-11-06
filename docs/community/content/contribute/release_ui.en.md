@@ -147,8 +147,8 @@ cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-d
 **4. Generate sign files**
 
 ```shell
-shasum -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip >> apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip.sha512
-shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz.sha512
+shasum -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip > apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip.sha512
+shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz > apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz.sha512
 ```
 **5. Commit to Apache SVN**
 
@@ -356,7 +356,13 @@ git push --delete origin ${RELEASE.VERSION}-release
 git branch -d ${RELEASE.VERSION}-release
 ```
 
-**3. Update the download page**
+**3. Publish release in GitHub**
+
+Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere-ui/releases)'s `shardingsphere-ui-${RELEASE_VERSION}` version
+
+Edit version number and release notes, click `Publish release`
+
+**4. Update the download page**
 
 https://shardingsphere.apache.org/document/current/en/downloads/
 
@@ -366,13 +372,9 @@ GPG signatures and hashes (SHA* etc) should use URL start with `https://download
 
 Keep one latest versions in `Latest releases`. Incubating stage versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
 
-## Publish release in GitHub
+**5. Announce release completed by email**
 
-Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere-ui/releases)'s `shardingsphere-ui-${RELEASE_VERSION}` version
-
-Edit version number and release notes, click `Publish release`
-
-## Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
+Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
 
 Announcement e-mail template:
 

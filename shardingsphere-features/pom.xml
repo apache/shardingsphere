@@ -34,6 +34,6 @@
         <module>shardingsphere-replica-query</module>
         <module>shardingsphere-encrypt</module>
         <module>shardingsphere-shadow</module>
-        <module>shardingsphere-consensus-replication</module>
+        <module>shardingsphere-ha</module>
     </modules>
 </project>

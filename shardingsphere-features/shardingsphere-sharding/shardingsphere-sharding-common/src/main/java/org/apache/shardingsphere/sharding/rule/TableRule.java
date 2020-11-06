@@ -121,10 +121,10 @@ public final class TableRule {
         }
         List<String> dataSources = Strings.isNullOrEmpty(tableRuleConfig.getActualDataSources()) ? new LinkedList<>(dataSourceNames)
                 : new InlineExpressionParser(tableRuleConfig.getActualDataSources()).splitAndEvaluate();
-        return fillDataSouceNames(shardingAlgorithm.getAutoTablesAmount(), dataSources);
+        return fillDataSourceNames(shardingAlgorithm.getAutoTablesAmount(), dataSources);
     }
     
-    private List<String> fillDataSouceNames(final int amount, final List<String> dataSources) {
+    private List<String> fillDataSourceNames(final int amount, final List<String> dataSources) {
         List<String> result = new LinkedList<>();
         Iterator<String> iterator = dataSources.iterator();
         for (int i = 0; i < amount; i++) {

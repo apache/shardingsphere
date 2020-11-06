@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Sharding ddl statement validator.
@@ -36,13 +35,13 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     /**
      * Validate sharding table.
      *
-     * @param metaData meta data
+     * @param schema ShardingSphere schema
      * @param tables tables
      */
-    protected void validateShardingTable(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables) {
+    protected void validateShardingTable(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            if (metaData.getSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames().contains(tableName)) {
+            if (schema.getSchemaMetaData().getAllTableNames().contains(tableName)) {
                 throw new ShardingSphereException("Can not support sharding table '%s'.", tableName);
             }
         }
@@ -51,16 +50,15 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     /**
      * Validate table exist.
      *
-     * @param metaData meta data
+     * @param schema ShardingSphere schema
      * @param tables tables
      */
-    protected void validateTableExist(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables) {
+    protected void validateTableExist(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            for (Map.Entry<String, Collection<String>> entry : metaData.getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().entrySet()) {
-                if (!entry.getValue().contains(tableName)) {
-                    throw new NoSuchTableException(entry.getKey(), tableName);
-                }
+            if (!schema.getTableAddressingMetaData().getTableDataSourceNamesMapper().containsKey(tableName)) {
+                String dataSourceName = schema.getTableAddressingMetaData().getTableDataSourceNamesMapper().get(tableName).iterator().next();
+                throw new NoSuchTableException(dataSourceName, tableName);
             }
         }
     }
@@ -68,13 +66,13 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     /**
      * Validate table not exist.
      *
-     * @param metaData meta data
+     * @param schema ShardingSphere schema
      * @param tables tables
      */
-    protected void validateTableNotExist(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables) {
+    protected void validateTableNotExist(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            if (metaData.getSchemaMetaData().getAllTableNames().contains(tableName)) {
+            if (schema.getTableAddressingMetaData().getTableDataSourceNamesMapper().containsKey(tableName)) {
                 throw new TableExistsException(tableName);
             }
         }

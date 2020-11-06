@@ -22,6 +22,9 @@
             <expression-projection alias="a" start-index="7" stop-index="12" />
         </projections>
     </select>
+
+    <select sql-case-id="select_with_union">
+    </select>
     
     <select sql-case-id="select_with_function_name" >
         <projections start-index="7" stop-index="23">
