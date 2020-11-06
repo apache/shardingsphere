@@ -34,8 +34,8 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.addressing.TableAddressingMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.addressing.TableAddressingMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.model.datasource.CachedDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.datasource.DataSourcesMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 

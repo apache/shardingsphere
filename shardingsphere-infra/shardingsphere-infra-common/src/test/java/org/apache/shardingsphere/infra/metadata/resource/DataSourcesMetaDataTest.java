@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.model.datasource;
+package org.apache.shardingsphere.infra.metadata.resource;
 
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;

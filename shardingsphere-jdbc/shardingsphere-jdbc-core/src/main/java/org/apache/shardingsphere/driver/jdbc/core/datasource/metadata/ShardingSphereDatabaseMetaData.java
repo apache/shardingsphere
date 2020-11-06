@@ -24,7 +24,7 @@ import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResu
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.metadata.schema.model.datasource.DataSourcesMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 
 import java.security.SecureRandom;
 import java.sql.Connection;

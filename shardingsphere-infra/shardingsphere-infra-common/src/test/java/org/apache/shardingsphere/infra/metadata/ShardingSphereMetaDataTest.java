@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.metadata.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.datasource.CachedDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.datasource.DataSourcesMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.junit.Test;
 
 import javax.sql.DataSource;
