@@ -39,7 +39,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.schema.model.addressing.TableAddressingMetaData;
-import org.apache.shardingsphere.infra.schema.model.datasource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -98,6 +97,6 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
         PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         when(schemaMetaData.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
-        return new ShardingSphereSchema(mock(DataSourcesMetaData.class), mock(TableAddressingMetaData.class), schemaMetaData);
+        return new ShardingSphereSchema(mock(TableAddressingMetaData.class), schemaMetaData);
     }
 }

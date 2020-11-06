@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.schema.model;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.schema.model.addressing.TableAddressingMetaData;
-import org.apache.shardingsphere.infra.schema.model.datasource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 
 /**
@@ -29,8 +28,6 @@ import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema
 @RequiredArgsConstructor
 @Getter
 public final class ShardingSphereSchema {
-    
-    private final DataSourcesMetaData dataSourcesMetaData;
     
     private final TableAddressingMetaData tableAddressingMetaData;
     
