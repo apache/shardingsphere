@@ -289,12 +289,6 @@ indexHint
     : (USE | IGNORE | FORCE) (INDEX | KEY) (FOR (JOIN | ORDER BY | GROUP BY))? LP_ indexName (COMMA_ indexName)* RP_
     ;
 
-//joinedTable
-//    : ((INNER | CROSS)? JOIN | STRAIGHT_JOIN) tableFactor joinSpecification?
-//    | (LEFT | RIGHT) OUTER? JOIN tableFactor joinSpecification
-//    | NATURAL (INNER | (LEFT | RIGHT) (OUTER))? JOIN tableFactor
-//    ;
-
 joinedTable
     : innerJoinType tableReference joinSpecification?
     | outerJoinType tableReference joinSpecification
