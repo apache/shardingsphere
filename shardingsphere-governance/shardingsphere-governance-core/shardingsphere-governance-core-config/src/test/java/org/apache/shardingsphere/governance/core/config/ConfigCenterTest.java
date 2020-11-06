@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.core.config;
 
 import lombok.SneakyThrows;
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.governance.core.event.model.persist.DataSourcePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.persist.MetaDataPersistEvent;
@@ -255,7 +254,7 @@ public final class ConfigCenterTest {
     }
     
     private DataSource createDataSource(final String name) {
-        BasicDataSource result = new BasicDataSource();
+        MockDataSource result = new MockDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");
         result.setUrl("jdbc:mysql://localhost:3306/" + name);
         result.setUsername("root");
@@ -416,7 +415,7 @@ public final class ConfigCenterTest {
     }
     
     private DataSource createDataSourceWithConnectionInitSqls(final String name) {
-        BasicDataSource result = new BasicDataSource();
+        MockDataSource result = new MockDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");
         result.setUrl("jdbc:mysql://localhost:3306/" + name);
         result.setUsername("root");
