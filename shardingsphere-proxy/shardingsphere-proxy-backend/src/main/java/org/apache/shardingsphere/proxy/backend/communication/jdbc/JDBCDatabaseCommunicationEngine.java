@@ -132,7 +132,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext<?> sqlStatementContext) {
-        Optional<DataNodeRoutedRule> dataNodeRoutedRule = metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
+        Optional<DataNodeRoutedRule> dataNodeRoutedRule = 
+                metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
         return dataNodeRoutedRule.isPresent() && dataNodeRoutedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }
     

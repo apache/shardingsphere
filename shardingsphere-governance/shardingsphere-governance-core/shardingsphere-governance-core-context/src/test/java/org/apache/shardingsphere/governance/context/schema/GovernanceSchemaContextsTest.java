@@ -48,6 +48,7 @@ import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -91,7 +92,7 @@ public final class GovernanceSchemaContextsTest {
     @Mock
     private ConfigCenter configCenter;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData metaData;
     
     @Mock
