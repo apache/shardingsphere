@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.call.ExpectedProcedureName;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.call.ExpectedProcedureParameters;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.util.List;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * MySQL call statement.
+ * Call statement test case.
  */
-@ToString
-@AllArgsConstructor
 @Getter
-public final class MySQLCallStatement extends CallStatement implements MySQLStatement {
+@Setter
+public final class CallStatementTestCase extends SQLParserTestCase {
 
-    private String procedureName;
+    @XmlElement(name = "procedure-name")
+    private ExpectedProcedureName procedureName;
 
-    private List<ExpressionSegment> parameters;
+    @XmlElement(name = "parameters")
+    private ExpectedProcedureParameters procedureParameters;
 }
