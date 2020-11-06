@@ -83,7 +83,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         List<Integer> results = getSqlExecutor().execute(inputGroups, sqlExecutorCallback);
         refreshTableMetaData(getSchemaContexts().getDefaultMetaData(), sqlStatementContext.getSqlStatement(), routeUnits);
         return isNeedAccumulate(
-                getSchemaContexts().getDefaultMetaData().getRules().stream().filter(rule -> rule instanceof DataNodeRoutedRule).collect(Collectors.toList()), sqlStatementContext)
+                getSchemaContexts().getDefaultMetaData().getRuleMetaData().getRules().stream().filter(rule -> rule instanceof DataNodeRoutedRule).collect(Collectors.toList()), sqlStatementContext)
                 ? accumulate(results) : results.get(0);
     }
     

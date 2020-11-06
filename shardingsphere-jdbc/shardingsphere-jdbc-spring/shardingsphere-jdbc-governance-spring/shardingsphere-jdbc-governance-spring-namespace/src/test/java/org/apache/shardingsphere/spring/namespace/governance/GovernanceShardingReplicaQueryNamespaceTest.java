@@ -65,6 +65,6 @@ public class GovernanceShardingReplicaQueryNamespaceTest extends AbstractJUnit4S
     private ShardingRule getShardingRule(final String dataSourceName) {
         GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
         SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "schemaContexts");
-        return (ShardingRule) schemaContexts.getDefaultMetaData().getRules().iterator().next();
+        return (ShardingRule) schemaContexts.getDefaultMetaData().getRuleMetaData().getRules().iterator().next();
     }
 }

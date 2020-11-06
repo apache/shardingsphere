@@ -46,7 +46,7 @@ public final class KernelProcessor {
      * @return execution context
      */
     public ExecutionContext generateExecutionContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ConfigurationProperties props) {
-        Collection<ShardingSphereRule> rules = metaData.getRules();
+        Collection<ShardingSphereRule> rules = metaData.getRuleMetaData().getRules();
         SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(rules, props);
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
         RouteContext routeContext = sqlRouteEngine.route(logicSQL, metaData);

@@ -63,7 +63,7 @@ public class GovernanceSpringBootEncryptTest {
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
         AlgorithmProvidedEncryptRuleConfiguration configuration =
-                (AlgorithmProvidedEncryptRuleConfiguration) schemaContexts.getDefaultMetaData().getConfigurations().iterator().next();
+                (AlgorithmProvidedEncryptRuleConfiguration) schemaContexts.getDefaultMetaData().getRuleMetaData().getConfigurations().iterator().next();
         assertThat(configuration.getEncryptors().size(), is(1));
         EncryptAlgorithm encryptAlgorithm = configuration.getEncryptors().get("order_encrypt");
         assertThat(encryptAlgorithm.getType(), is("AES"));

@@ -83,8 +83,8 @@ public final class SchemaContextsBuilderTest {
     }
     
     private void assertRules(final SchemaContexts actual) {
-        assertThat(actual.getMetaDataMap().get("logic_db").getRules().size(), CoreMatchers.is(1));
-        assertThat(actual.getMetaDataMap().get("logic_db").getRules().iterator().next(), CoreMatchers.instanceOf(FixtureRule.class));
+        assertThat(actual.getMetaDataMap().get("logic_db").getRuleMetaData().getRules().size(), CoreMatchers.is(1));
+        assertThat(actual.getMetaDataMap().get("logic_db").getRuleMetaData().getRules().iterator().next(), CoreMatchers.instanceOf(FixtureRule.class));
     }
     
     private void assertDataSources(final SchemaContexts actual) {

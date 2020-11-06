@@ -82,7 +82,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     
     private void disableDataSources() {
         schemaContexts.getMetaDataMap().forEach((key, value)
-            -> value.getRules().stream().filter(each -> each instanceof StatusContainedRule).forEach(each -> disableDataSources(key, (StatusContainedRule) each)));
+            -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof StatusContainedRule).forEach(each -> disableDataSources(key, (StatusContainedRule) each)));
     }
     
     private void disableDataSources(final String schemaName, final StatusContainedRule rule) {
@@ -261,7 +261,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     @Subscribe
     public synchronized void renew(final DisabledStateChangedEvent event) {
         GovernanceSchema governanceSchema = event.getGovernanceSchema();
-        Collection<ShardingSphereRule> rules = schemaContexts.getMetaDataMap().get(governanceSchema.getSchemaName()).getRules();
+        Collection<ShardingSphereRule> rules = schemaContexts.getMetaDataMap().get(governanceSchema.getSchemaName()).getRuleMetaData().getRules();
         for (ShardingSphereRule each : rules) {
             if (each instanceof StatusContainedRule) {
                 ((StatusContainedRule) each).updateRuleStatus(new DataSourceNameDisabledEvent(governanceSchema.getDataSourceName(), event.isDisabled()));
@@ -301,7 +301,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     private ShardingSphereMetaData getChangedMetaData(final ShardingSphereMetaData oldMetaData, final PhysicalSchemaMetaData newSchemaMetaData, final String schemaName) {
         // TODO refresh tableAddressingMetaData
         ShardingSphereSchema schema = new ShardingSphereSchema(oldMetaData.getSchema().getTableAddressingMetaData(), newSchemaMetaData);
-        return new ShardingSphereMetaData(schemaName, oldMetaData.getConfigurations(), oldMetaData.getRules(), oldMetaData.getResource(), schema);
+        return new ShardingSphereMetaData(schemaName, oldMetaData.getResource(), oldMetaData.getRuleMetaData(), schema);
     }
     
     private ShardingSphereMetaData getChangedMetaData(final ShardingSphereMetaData oldMetaData, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
@@ -318,7 +318,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(oldMetaData.getName(), 
                 getNewDataSources(oldMetaData.getResource().getDataSources(), getAddedDataSources(oldMetaData, newDataSourceConfigs), modifiedDataSources, deletedDataSources));
         return new SchemaContextsBuilder(schemaContexts.getDatabaseType(), dataSourcesMap,
-                Collections.singletonMap(oldMetaData.getName(), oldMetaData.getConfigurations()), schemaContexts.getAuthentication(), 
+                Collections.singletonMap(oldMetaData.getName(), oldMetaData.getRuleMetaData().getConfigurations()), schemaContexts.getAuthentication(), 
                 schemaContexts.getProps().getProps()).build().getMetaDataMap().get(oldMetaData.getName());
     }
     

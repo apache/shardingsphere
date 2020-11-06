@@ -58,7 +58,7 @@ public final class DatabaseCommunicationEngineFactoryTest {
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(result.getRules()).thenReturn(Collections.emptyList());
+        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("schema", result);
     }
     

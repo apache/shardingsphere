@@ -82,7 +82,7 @@ public class GovernanceSpringBootRegistryEncryptTest {
         BasicDataSource embedDataSource = (BasicDataSource) schemaContexts.getDefaultMetaData().getResource().getDataSources().values().iterator().next();
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
-        EncryptRuleConfiguration config = (EncryptRuleConfiguration) schemaContexts.getDefaultMetaData().getConfigurations().iterator().next();
+        EncryptRuleConfiguration config = (EncryptRuleConfiguration) schemaContexts.getDefaultMetaData().getRuleMetaData().getConfigurations().iterator().next();
         assertThat(config.getEncryptors().size(), is(1));
         ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig = config.getEncryptors().get("order_encrypt");
         assertThat(encryptAlgorithmConfig, instanceOf(ShardingSphereAlgorithmConfiguration.class));
