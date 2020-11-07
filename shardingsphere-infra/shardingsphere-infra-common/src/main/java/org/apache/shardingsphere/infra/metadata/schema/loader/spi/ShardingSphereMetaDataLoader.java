@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
 import javax.sql.DataSource;
@@ -36,7 +36,7 @@ import java.util.Optional;
  * 
  * @param <T> type of base rule
  */
-public interface ShardingSphereMetaDataLoader<T extends ShardingSphereRule> extends OrderedSPI<T> {
+public interface ShardingSphereMetaDataLoader<T extends TableContainedRule> extends OrderedSPI<T> {
     
     /**
      * Load schema meta data.

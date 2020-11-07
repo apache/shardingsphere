@@ -19,13 +19,15 @@ package org.apache.shardingsphere.infra.metadata.schema.fixture.rule;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
-public final class DataNodeContainedFixtureRule implements DataNodeContainedRule {
+public final class DataNodeContainedFixtureRule implements DataNodeContainedRule, TableContainedRule {
     
     @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
@@ -50,5 +52,10 @@ public final class DataNodeContainedFixtureRule implements DataNodeContainedRule
     @Override
     public Optional<String> findLogicTableByActualTable(final String actualTable) {
         return Optional.empty();
+    }
+    
+    @Override
+    public Collection<String> getTables() {
+        return Collections.singleton("data_node_routed_table");
     }
 }
