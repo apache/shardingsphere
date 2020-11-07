@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule;
+package org.apache.shardingsphere.infra.rule.type;
 
-import java.util.Collection;
-import java.util.Map;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 
 /**
- * Data source routed rule.
+ * ShardingSphere rule contains status.
  */
-public interface DataSourceRoutedRule extends ShardingSphereRule {
+public interface StatusContainedRule extends ShardingSphereRule {
     
     /**
-     * Get data source mapper.
+     * Update rule status.
      *
-     * @return data source mapper
+     * @param event rule changed event
      */
-    Map<String, Collection<String>> getDataSourceMapper();
+    void updateRuleStatus(RuleChangedEvent event);
 }

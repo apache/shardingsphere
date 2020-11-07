@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.fixture.decorator;
 
-import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeRoutedFixtureRule;
+import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 
 import java.util.Collections;
 
-public final class DataNodeRoutedLogicMetaDataDecoratorFixture implements ShardingSphereMetaDataDecorator<DataNodeRoutedFixtureRule> {
+public final class DataNodeRoutedLogicMetaDataDecoratorFixture implements ShardingSphereMetaDataDecorator<DataNodeContainedFixtureRule> {
     
     @Override
-    public PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final DataNodeRoutedFixtureRule rule) {
+    public PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final DataNodeContainedFixtureRule rule) {
         PhysicalColumnMetaData columnMetaData = new PhysicalColumnMetaData("id", 1, "INT", true, true, false);
         return new PhysicalTableMetaData(Collections.singletonList(columnMetaData), Collections.emptyList());
     }
@@ -38,7 +38,7 @@ public final class DataNodeRoutedLogicMetaDataDecoratorFixture implements Shardi
     }
     
     @Override
-    public Class<DataNodeRoutedFixtureRule> getTypeClass() {
-        return DataNodeRoutedFixtureRule.class;
+    public Class<DataNodeContainedFixtureRule> getTypeClass() {
+        return DataNodeContainedFixtureRule.class;
     }
 }

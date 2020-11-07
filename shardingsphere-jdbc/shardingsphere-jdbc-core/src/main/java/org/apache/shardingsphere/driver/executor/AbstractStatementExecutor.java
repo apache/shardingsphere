@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshSt
 import org.apache.shardingsphere.infra.metadata.schema.refresh.spi.SchemaMetaDataNotifier;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
@@ -68,7 +68,7 @@ public abstract class AbstractStatementExecutor {
     private final SQLExecutor sqlExecutor;
     
     protected final boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext<?> sqlStatementContext) {
-        return rules.stream().anyMatch(each -> ((DataNodeRoutedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
+        return rules.stream().anyMatch(each -> ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
     }
     
     protected final int accumulate(final List<Integer> results) {
