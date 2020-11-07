@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.model.physical;
 
-import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,7 +27,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Physical schema meta data.
  */
-@Getter
 public final class PhysicalSchemaMetaData {
     
     private final Map<String, PhysicalTableMetaData> tables;
@@ -61,15 +58,6 @@ public final class PhysicalSchemaMetaData {
      */
     public PhysicalTableMetaData get(final String tableName) {
         return tables.get(tableName.toLowerCase());
-    }
-    
-    /**
-     * Merge schema meta data.
-     * 
-     * @param schemaMetaData schema meta data
-     */
-    public void merge(final PhysicalSchemaMetaData schemaMetaData) {
-        tables.putAll(schemaMetaData.tables);
     }
     
     /**

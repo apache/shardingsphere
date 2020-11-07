@@ -57,14 +57,23 @@ public final class TableMetaDataLoader {
      * @return table meta data
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public static Optional<PhysicalTableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
                                                        final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
+        Optional<PhysicalTableMetaData> tableMetaData = loadTableMetaData(tableName, databaseType, dataSourceMap, rules, props);
+        return tableMetaData.map(optional -> decorateTableMetaData(tableName, optional, rules));
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static Optional<PhysicalTableMetaData> loadTableMetaData(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
+                                                                     final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
+        DataNodes dataNodes = new DataNodes(rules);
         for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
-                Optional<PhysicalTableMetaData> result = entry.getValue().load(tableName, databaseType, dataSourceMap, new DataNodes(rules), (TableContainedRule) entry.getKey(), props);
-                if (result.isPresent()) {
-                    return Optional.of(decorate(tableName, result.get(), rules));
+                TableContainedRule rule = (TableContainedRule) entry.getKey();
+                ShardingSphereMetaDataLoader loader = entry.getValue();
+                Optional<PhysicalTableMetaData> tableMetaData = loader.load(tableName, databaseType, dataSourceMap, dataNodes, rule, props);
+                if (tableMetaData.isPresent()) {
+                    return tableMetaData;
                 }
             }
         }
@@ -72,10 +81,9 @@ public final class TableMetaDataLoader {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
-        Map<ShardingSphereRule, ShardingSphereMetaDataLoader> decorators = OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class);
+    private static PhysicalTableMetaData decorateTableMetaData(final String tableName, final PhysicalTableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
         PhysicalTableMetaData result = null;
-        for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : decorators.entrySet()) {
+        for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
                 result = entry.getValue().decorate(tableName, null == result ? tableMetaData : result, (TableContainedRule) entry.getKey());
             }
