@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -56,6 +55,6 @@ public final class DataNodeContainedFixtureRule implements DataNodeContainedRule
     
     @Override
     public Collection<String> getTables() {
-        return Collections.singleton("data_node_routed_table");
+        return Arrays.asList("data_node_routed_table_0", "data_node_routed_table_1");
     }
 }

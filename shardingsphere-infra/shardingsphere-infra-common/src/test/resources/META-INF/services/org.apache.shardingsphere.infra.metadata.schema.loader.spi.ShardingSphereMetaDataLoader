@@ -16,4 +16,4 @@
 #
 
 org.apache.shardingsphere.infra.metadata.schema.fixture.loader.CommonFixtureLogicMetaDataLoader
-org.apache.shardingsphere.infra.metadata.schema.fixture.loader.DataNodeRoutedFixtureLogicMetaDataLoader
+org.apache.shardingsphere.infra.metadata.schema.fixture.loader.DataNodeContainedFixtureLogicMetaDataLoader

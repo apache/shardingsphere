@@ -57,9 +57,7 @@ public final class SchemaMetaDataLoaderTest {
     }
     
     private void assertPhysicalSchemaMetaData(final PhysicalSchemaMetaData actual) {
-        assertThat(actual.getAllTableNames().size(), is(4));
-        assertTrue(actual.containsTable("common_table_0"));
-        assertTrue(actual.containsTable("common_table_1"));
+        assertThat(actual.getAllTableNames().size(), is(2));
         assertTrue(actual.containsTable("data_node_routed_table_0"));
         assertTrue(actual.get("data_node_routed_table_0").getColumns().containsKey("id"));
         assertTrue(actual.containsTable("data_node_routed_table_1"));
