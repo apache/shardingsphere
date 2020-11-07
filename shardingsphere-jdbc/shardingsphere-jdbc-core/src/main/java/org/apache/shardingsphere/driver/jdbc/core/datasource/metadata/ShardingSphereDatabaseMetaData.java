@@ -208,9 +208,9 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
         if (null == tableNamePattern) {
             return null;
         }
-        Optional<DataNodeContainedRule> dataNodeRoutedRule = findDataNodeRoutedRule();
-        if (dataNodeRoutedRule.isPresent()) {
-            return dataNodeRoutedRule.get().findFirstActualTable(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern;
+        Optional<DataNodeContainedRule> dataNodeContainedRule = findDataNodeContainedRule();
+        if (dataNodeContainedRule.isPresent()) {
+            return dataNodeContainedRule.get().findFirstActualTable(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern;
         }
         return tableNamePattern;
     }
@@ -219,11 +219,10 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
         if (null == table) {
             return null;
         }
-        Optional<DataNodeContainedRule> dataNodeRoutedRule = findDataNodeRoutedRule();
-        return dataNodeRoutedRule.map(nodeRoutedRule -> nodeRoutedRule.findFirstActualTable(table).orElse(table)).orElse(table);
+        return findDataNodeContainedRule().map(each -> each.findFirstActualTable(table).orElse(table)).orElse(table);
     }
     
-    private Optional<DataNodeContainedRule> findDataNodeRoutedRule() {
+    private Optional<DataNodeContainedRule> findDataNodeContainedRule() {
         return rules.stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
     }
     

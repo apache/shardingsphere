@@ -22,12 +22,11 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
-import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 
@@ -37,7 +36,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeSet;
+import java.util.Optional;
 
 /**
  * Schema meta data loader.
@@ -47,7 +46,6 @@ public final class SchemaMetaDataLoader {
     
     static {
         ShardingSphereServiceLoader.register(ShardingSphereMetaDataLoader.class);
-        ShardingSphereServiceLoader.register(ShardingSphereMetaDataDecorator.class);
     }
     
     /**
@@ -60,30 +58,50 @@ public final class SchemaMetaDataLoader {
      * @return schema meta data
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public static PhysicalSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
                                               final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
-        Collection<String> excludedTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        PhysicalSchemaMetaData result = loadSchemaMetaData(databaseType, dataSourceMap, rules, props);
+        decorateSchemaMetaData(rules, result);
+        return result;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private static PhysicalSchemaMetaData loadSchemaMetaData(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                                             final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
         PhysicalSchemaMetaData result = new PhysicalSchemaMetaData();
+        DataNodes dataNodes = new DataNodes(rules);
         for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class).entrySet()) {
-            PhysicalSchemaMetaData schemaMetaData = entry.getValue().load(databaseType, dataSourceMap, new DataNodes(rules), entry.getKey(), props, excludedTableNames);
-            excludedTableNames.addAll(schemaMetaData.getAllTableNames());
-            if (entry.getKey() instanceof DataNodeContainedRule) {
-                excludedTableNames.addAll(((DataNodeContainedRule) entry.getKey()).getAllActualTables());
+            if (entry.getKey() instanceof TableContainedRule) {
+                result.getTables().putAll(loadSchemaMetaDataByRule(databaseType, dataSourceMap, (TableContainedRule) entry.getKey(), entry.getValue(), props, dataNodes, result.getAllTableNames()));
             }
-            result.merge(schemaMetaData);
         }
-        decorate(rules, result);
+        return result;
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static Map<String, PhysicalTableMetaData> loadSchemaMetaDataByRule(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                                                               final TableContainedRule rule, final ShardingSphereMetaDataLoader loader, final ConfigurationProperties props, 
+                                                                               final DataNodes dataNodes, final Collection<String> existedTables) throws SQLException {
+        Collection<String> tables = rule.getTables();
+        Map<String, PhysicalTableMetaData> result = new HashMap<>(tables.size(), 1);
+        for (String each : tables) {
+            if (!existedTables.contains(each)) {
+                Optional<PhysicalTableMetaData> tableMetaData = loader.load(each, databaseType, dataSourceMap, dataNodes, rule, props);
+                tableMetaData.ifPresent(optional -> result.put(each, optional));
+            }
+        }
         return result;
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static void decorate(final Collection<ShardingSphereRule> rules, final PhysicalSchemaMetaData schemaMetaData) {
+    private static void decorateSchemaMetaData(final Collection<ShardingSphereRule> rules, final PhysicalSchemaMetaData schemaMetaData) {
         Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
-        Map<ShardingSphereRule, ShardingSphereMetaDataDecorator> decorators = OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataDecorator.class);
+        Map<ShardingSphereRule, ShardingSphereMetaDataLoader> loaders = OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class);
         for (String each : schemaMetaData.getAllTableNames()) {
-            for (Entry<ShardingSphereRule, ShardingSphereMetaDataDecorator> entry : decorators.entrySet()) {
-                tableMetaDataMap.put(each, entry.getValue().decorate(each, tableMetaDataMap.getOrDefault(each, schemaMetaData.get(each)), entry.getKey()));
+            for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : loaders.entrySet()) {
+                if (entry.getKey() instanceof TableContainedRule) {
+                    tableMetaDataMap.put(each, entry.getValue().decorate(each, tableMetaDataMap.getOrDefault(each, schemaMetaData.get(each)), (TableContainedRule) entry.getKey()));
+                }
             }
         }
         schemaMetaData.merge(new PhysicalSchemaMetaData(tableMetaDataMap));

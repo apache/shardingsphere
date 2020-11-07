@@ -20,14 +20,12 @@ package org.apache.shardingsphere.infra.metadata.schema.loader.spi;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -36,22 +34,7 @@ import java.util.Optional;
  * 
  * @param <T> type of base rule
  */
-public interface ShardingSphereMetaDataLoader<T extends ShardingSphereRule> extends OrderedSPI<T> {
-    
-    /**
-     * Load schema meta data.
-     * 
-     * @param databaseType database type
-     * @param dataSourceMap data source map
-     * @param dataNodes data nodes
-     * @param rule rule
-     * @param props configuration properties
-     * @param excludedTableNames excluded table names
-     * @return table name and meta data map
-     * @throws SQLException SQL exception
-     */
-    PhysicalSchemaMetaData load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap,
-                                DataNodes dataNodes, T rule, ConfigurationProperties props, Collection<String> excludedTableNames) throws SQLException;
+public interface ShardingSphereMetaDataLoader<T extends TableContainedRule> extends OrderedSPI<T> {
     
     /**
      * Load table meta data.
@@ -67,4 +50,14 @@ public interface ShardingSphereMetaDataLoader<T extends ShardingSphereRule> exte
      */
     Optional<PhysicalTableMetaData> load(String tableName, 
                                          DatabaseType databaseType, Map<String, DataSource> dataSourceMap, DataNodes dataNodes, T rule, ConfigurationProperties props) throws SQLException;
+    
+    /**
+     * Decorate table meta data.
+     *
+     * @param tableName table name
+     * @param tableMetaData table meta data
+     * @param rule rule
+     * @return decorated table meta data
+     */
+    PhysicalTableMetaData decorate(String tableName, PhysicalTableMetaData tableMetaData, T rule);
 }

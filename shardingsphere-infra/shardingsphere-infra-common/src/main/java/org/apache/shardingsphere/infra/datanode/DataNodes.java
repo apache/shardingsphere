@@ -47,11 +47,11 @@ public final class DataNodes {
      * @return data nodes
      */
     public Collection<DataNode> getDataNodes(final String tableName) {
-        Optional<DataNodeContainedRule> dataNodeRoutedRule = rules.stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
-        if (!dataNodeRoutedRule.isPresent()) {
+        Optional<DataNodeContainedRule> dataNodeContainedRule = rules.stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
+        if (!dataNodeContainedRule.isPresent()) {
             return Collections.emptyList();
         }
-        Collection<DataNode> result = new LinkedList<>(dataNodeRoutedRule.get().getAllDataNodes().get(tableName));
+        Collection<DataNode> result = new LinkedList<>(dataNodeContainedRule.get().getAllDataNodes().get(tableName));
         for (ShardingSphereRule each : rules) {
             if (each instanceof DataSourceContainedRule) {
                 for (Entry<String, Collection<String>> entry : ((DataSourceContainedRule) each).getDataSourceMapper().entrySet()) {

@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.spi;
+package org.apache.shardingsphere.infra.rule.type;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
+
+import java.util.Collection;
 
 /**
- * ShardingSphere meta data decorator.
+ * ShardingSphere rule contains table.
  */
-public interface ShardingSphereMetaDataDecorator<T extends ShardingSphereRule> extends OrderedSPI<T> {
+public interface TableContainedRule extends ShardingSphereRule {
     
     /**
-     * Decorate table meta data.
+     * Get tables.
      *
-     * @param tableName table name
-     * @param tableMetaData table meta data
-     * @param rule rule
-     * @return decorated table meta data
+     * @return tables
      */
-    PhysicalTableMetaData decorate(String tableName, PhysicalTableMetaData tableMetaData, T rule);
+    Collection<String> getTables();
 }

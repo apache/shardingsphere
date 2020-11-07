@@ -25,18 +25,21 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.metadata.schema.loader.physical.PhysicalTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalIndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.loader.physical.PhysicalTableMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -57,18 +60,6 @@ public final class ShardingMetaDataLoader implements ShardingSphereMetaDataLoade
     private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
     
     private static final int FUTURE_GET_TIME_OUT_SECOND = 5;
-    
-    @Override
-    public PhysicalSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
-                                       final ShardingRule rule, final ConfigurationProperties props, final Collection<String> excludedTableNames) throws SQLException {
-        PhysicalSchemaMetaData result = new PhysicalSchemaMetaData(new HashMap<>(rule.getTableRules().size(), 1));
-        for (TableRule each : rule.getTableRules()) {
-            if (!excludedTableNames.contains(each.getLogicTable())) {
-                load(each.getLogicTable(), databaseType, dataSourceMap, dataNodes, rule, props).ifPresent(tableMetaData -> result.put(each.getLogicTable(), tableMetaData));
-            }
-        }
-        return result;
-    }
     
     @Override
     public Optional<PhysicalTableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
@@ -127,10 +118,9 @@ public final class ShardingMetaDataLoader implements ShardingSphereMetaDataLoade
     }
     
     private void checkUniformed(final String logicTableName, final Map<String, PhysicalTableMetaData> actualTableMetaDataMap, final ShardingRule shardingRule) {
-        ShardingMetaDataDecorator decorator = new ShardingMetaDataDecorator();
-        PhysicalTableMetaData sample = decorator.decorate(logicTableName, actualTableMetaDataMap.values().iterator().next(), shardingRule);
+        PhysicalTableMetaData sample = decorate(logicTableName, actualTableMetaDataMap.values().iterator().next(), shardingRule);
         Collection<TableMetaDataViolation> violations = actualTableMetaDataMap.entrySet().stream()
-                .filter(entry -> !sample.equals(decorator.decorate(logicTableName, entry.getValue(), shardingRule)))
+                .filter(entry -> !sample.equals(decorate(logicTableName, entry.getValue(), shardingRule)))
                 .map(entry -> new TableMetaDataViolation(entry.getKey(), entry.getValue())).collect(Collectors.toList());
         throwExceptionIfNecessary(violations, logicTableName);
     }
@@ -144,6 +134,44 @@ public final class ShardingMetaDataLoader implements ShardingSphereMetaDataLoade
             }
             throw new ShardingSphereException(errorMessage.toString(), logicTableName);
         }
+    }
+
+    @Override
+    public PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final ShardingRule shardingRule) {
+        return shardingRule.findTableRule(tableName).map(
+            tableRule -> new PhysicalTableMetaData(getColumnMetaDataList(tableMetaData, tableRule), getIndexMetaDataList(tableMetaData, tableRule))).orElse(tableMetaData);
+    }
+    
+    private Collection<PhysicalColumnMetaData> getColumnMetaDataList(final PhysicalTableMetaData tableMetaData, final TableRule tableRule) {
+        Optional<String> generateKeyColumn = tableRule.getGenerateKeyColumn();
+        if (!generateKeyColumn.isPresent()) {
+            return tableMetaData.getColumns().values();
+        }
+        Collection<PhysicalColumnMetaData> result = new LinkedList<>();
+        for (Entry<String, PhysicalColumnMetaData> entry : tableMetaData.getColumns().entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(generateKeyColumn.get())) {
+                result.add(new PhysicalColumnMetaData(
+                        entry.getValue().getName(), entry.getValue().getDataType(), entry.getValue().getDataTypeName(), entry.getValue().isPrimaryKey(), true, entry.getValue().isCaseSensitive()));
+            } else {
+                result.add(entry.getValue());
+            }
+        }
+        return result;
+    }
+    
+    private Collection<PhysicalIndexMetaData> getIndexMetaDataList(final PhysicalTableMetaData tableMetaData, final TableRule tableRule) {
+        Collection<PhysicalIndexMetaData> result = new HashSet<>();
+        for (Entry<String, PhysicalIndexMetaData> entry : tableMetaData.getIndexes().entrySet()) {
+            for (DataNode each : tableRule.getActualDataNodes()) {
+                getLogicIndex(entry.getKey(), each.getTableName()).ifPresent(logicIndex -> result.add(new PhysicalIndexMetaData(logicIndex)));
+            }
+        }
+        return result;
+    }
+    
+    private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
+        String indexNameSuffix = "_" + actualTableName;
+        return actualIndexName.endsWith(indexNameSuffix) ? Optional.of(actualIndexName.replace(indexNameSuffix, "")) : Optional.empty();
     }
     
     @Override

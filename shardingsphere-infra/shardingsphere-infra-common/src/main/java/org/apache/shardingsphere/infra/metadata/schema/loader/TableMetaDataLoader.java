@@ -22,10 +22,10 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 
@@ -44,7 +44,6 @@ public final class TableMetaDataLoader {
     
     static {
         ShardingSphereServiceLoader.register(ShardingSphereMetaDataLoader.class);
-        ShardingSphereServiceLoader.register(ShardingSphereMetaDataDecorator.class);
     }
     
     /**
@@ -62,9 +61,11 @@ public final class TableMetaDataLoader {
     public static Optional<PhysicalTableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
                                                        final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
         for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class).entrySet()) {
-            Optional<PhysicalTableMetaData> result = entry.getValue().load(tableName, databaseType, dataSourceMap, new DataNodes(rules), entry.getKey(), props);
-            if (result.isPresent()) {
-                return Optional.of(decorate(tableName, result.get(), rules));
+            if (entry.getKey() instanceof TableContainedRule) {
+                Optional<PhysicalTableMetaData> result = entry.getValue().load(tableName, databaseType, dataSourceMap, new DataNodes(rules), (TableContainedRule) entry.getKey(), props);
+                if (result.isPresent()) {
+                    return Optional.of(decorate(tableName, result.get(), rules));
+                }
             }
         }
         return Optional.empty();
@@ -72,10 +73,12 @@ public final class TableMetaDataLoader {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
-        Map<ShardingSphereRule, ShardingSphereMetaDataDecorator> decorators = OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataDecorator.class);
+        Map<ShardingSphereRule, ShardingSphereMetaDataLoader> decorators = OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class);
         PhysicalTableMetaData result = null;
-        for (Entry<ShardingSphereRule, ShardingSphereMetaDataDecorator> entry : decorators.entrySet()) {
-            result = entry.getValue().decorate(tableName, null == result ? tableMetaData : result, entry.getKey());
+        for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : decorators.entrySet()) {
+            if (entry.getKey() instanceof TableContainedRule) {
+                result = entry.getValue().decorate(tableName, null == result ? tableMetaData : result, (TableContainedRule) entry.getKey());
+            }
         }
         return Optional.ofNullable(result).orElse(tableMetaData);
     }

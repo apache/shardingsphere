@@ -15,16 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.fixture.decorator;
+package org.apache.shardingsphere.infra.metadata.schema.fixture.loader;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
-import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataDecorator;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 
+import javax.sql.DataSource;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 
-public final class DataNodeRoutedLogicMetaDataDecoratorFixture implements ShardingSphereMetaDataDecorator<DataNodeContainedFixtureRule> {
+public final class DataNodeContainedFixtureLogicMetaDataLoader implements ShardingSphereMetaDataLoader<DataNodeContainedFixtureRule> {
+    
+    @Override
+    public Optional<PhysicalTableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                                final DataNodes dataNodes, final DataNodeContainedFixtureRule rule, final ConfigurationProperties props) {
+        return ("data_node_routed_table_0".equals(tableName) || "data_node_routed_table_1".equals(tableName))
+                ? Optional.of(new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList())) : Optional.empty();
+    }
     
     @Override
     public PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final DataNodeContainedFixtureRule rule) {
