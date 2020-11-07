@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSc
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 
@@ -66,12 +67,14 @@ public final class SchemaMetaDataLoader {
         Collection<String> excludedTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         PhysicalSchemaMetaData result = new PhysicalSchemaMetaData();
         for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class).entrySet()) {
-            PhysicalSchemaMetaData schemaMetaData = entry.getValue().load(databaseType, dataSourceMap, new DataNodes(rules), entry.getKey(), props, excludedTableNames);
-            excludedTableNames.addAll(schemaMetaData.getAllTableNames());
-            if (entry.getKey() instanceof DataNodeContainedRule) {
-                excludedTableNames.addAll(((DataNodeContainedRule) entry.getKey()).getAllActualTables());
+            if (entry.getKey() instanceof TableContainedRule) {
+                PhysicalSchemaMetaData schemaMetaData = entry.getValue().load(databaseType, dataSourceMap, new DataNodes(rules), (TableContainedRule) entry.getKey(), props, excludedTableNames);
+                excludedTableNames.addAll(schemaMetaData.getAllTableNames());
+                if (entry.getKey() instanceof DataNodeContainedRule) {
+                    excludedTableNames.addAll(((DataNodeContainedRule) entry.getKey()).getAllActualTables());
+                }
+                result.merge(schemaMetaData);
             }
-            result.merge(schemaMetaData);
         }
         decorate(rules, result);
         return result;
