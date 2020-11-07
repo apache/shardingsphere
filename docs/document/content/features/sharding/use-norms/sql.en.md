@@ -55,20 +55,23 @@ Partially support CASE WHEN
 
 Do not support HAVING and UNION (ALL) 
 Partly available sub-query
-* If there is a subquery, it needs sharding key condition and be consistent with the parent query.
+* If subquery contains `WHERE` condition, the sharding key must be included. If the outer query also contains the sharding key, the sharding key in subquery and outer query must be consistent.
 
 Support not only pagination sub-query (see [pagination](https://shardingsphere.apache.org/document/current/cn/features/sharding/usage-standard/pagination) for more details), but also sub-query with the same mode. No matter how many layers are nested, ShardingSphere can parse to the first sub-query that contains data table. Once it finds another sub-query of this kind in the sub-level nested, it will directly throw a parsing exception.
 
 For example, the following sub-query is available:
 
 ```sql
-SELECT COUNT(*) FROM (SELECT * FROM t_order o where id>10) where id>10;
+SELECT COUNT(*) FROM (SELECT * FROM t_order) o;
+SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o;
+SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 1;
 ```
 
 The following sub-query is unavailable:
 
 ```sql
-SELECT COUNT(*) FROM (SELECT * FROM t_order o)
+SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE product_id = 1) o;
+SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 2;
 ```
 
 To be simple, through sub-query, non-functional requirements are available in most cases, such as pagination, sum count and so on; but functional requirements are unavailable for now.

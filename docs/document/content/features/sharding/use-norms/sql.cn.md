@@ -55,20 +55,23 @@ tbl_name [AS] alias] [index_hint_list]
 不支持 HAVING、UNION (ALL)
 
 部分支持子查询
-* 子查询中必须包含分片键，且分片键必须和父查询中的分片键一致
+* 子查询中使用WHERE条件时，必须包含分片键，当外层查询中也包含分片键时，子查询和外层查询中的分片键必须保持一致
 
 除了分页子查询的支持之外(详情请参考[分页](/cn/features/sharding/use-norms/pagination))，也支持同等模式的子查询。无论嵌套多少层，ShardingSphere都可以解析至第一个包含数据表的子查询，一旦在下层嵌套中再次找到包含数据表的子查询将直接抛出解析异常。
 
 例如，以下子查询可以支持：
 
 ```sql
-SELECT COUNT(*) FROM (SELECT * FROM t_order o where id>10) where id>10;
+SELECT COUNT(*) FROM (SELECT * FROM t_order) o;
+SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o;
+SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 1;
 ```
 
 以下子查询不支持：
 
 ```sql
-SELECT COUNT(*) FROM (SELECT * FROM t_order o)
+SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE product_id = 1) o;
+SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 2;
 ```
 
 简单来说，通过子查询进行非功能需求，在大部分情况下是可以支持的。比如分页、统计总数等；而通过子查询实现业务查询当前并不能支持。
