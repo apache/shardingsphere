@@ -25,13 +25,12 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.metadata.schema.loader.physical.PhysicalTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.loader.physical.PhysicalTableMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -57,18 +56,6 @@ public final class ShardingMetaDataLoader implements ShardingSphereMetaDataLoade
     private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
     
     private static final int FUTURE_GET_TIME_OUT_SECOND = 5;
-    
-    @Override
-    public PhysicalSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
-                                       final ShardingRule rule, final ConfigurationProperties props, final Collection<String> excludedTableNames) throws SQLException {
-        PhysicalSchemaMetaData result = new PhysicalSchemaMetaData(new HashMap<>(rule.getTableRules().size(), 1));
-        for (TableRule each : rule.getTableRules()) {
-            if (!excludedTableNames.contains(each.getLogicTable())) {
-                load(each.getLogicTable(), databaseType, dataSourceMap, dataNodes, rule, props).ifPresent(tableMetaData -> result.put(each.getLogicTable(), tableMetaData));
-            }
-        }
-        return result;
-    }
     
     @Override
     public Optional<PhysicalTableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,

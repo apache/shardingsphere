@@ -22,26 +22,14 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 
 import javax.sql.DataSource;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public final class DataNodeContainedFixtureLogicMetaDataLoader implements ShardingSphereMetaDataLoader<DataNodeContainedFixtureRule> {
-    
-    @Override
-    public PhysicalSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                       final DataNodes dataNodes, final DataNodeContainedFixtureRule rule, final ConfigurationProperties props, final Collection<String> excludedTableNames) {
-        Map<String, PhysicalTableMetaData> tables = new HashMap<>(2, 1);
-        tables.put("data_node_routed_table_0", new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList()));
-        tables.put("data_node_routed_table_1", new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList()));
-        return new PhysicalSchemaMetaData(tables);
-    }
     
     @Override
     public Optional<PhysicalTableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,

@@ -23,10 +23,9 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -93,17 +92,6 @@ public final class EncryptMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoad() throws SQLException {
-        EncryptRule rule = createEncryptRule();
-        EncryptMetaDataLoader loader = (EncryptMetaDataLoader) OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(rule), ShardingSphereMetaDataLoader.class).get(rule);
-        PhysicalSchemaMetaData actual = loader.load(
-                databaseType, Collections.singletonMap("logic_db", dataSource), new DataNodes(Collections.singletonList(rule)), rule, props, Collections.emptyList());
-        assertThat(actual.get(TABLE_NAME).getColumnMetaData(0).getName(), is("id"));
-        assertThat(actual.get(TABLE_NAME).getColumnMetaData(1).getName(), is("pwd_cipher"));
-        assertThat(actual.get(TABLE_NAME).getColumnMetaData(2).getName(), is("pwd_plain"));
-    }
-    
-    @Test
     public void assertLoadByExistedTable() throws SQLException {
         EncryptRule rule = createEncryptRule();
         EncryptMetaDataLoader loader = (EncryptMetaDataLoader) OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(rule), ShardingSphereMetaDataLoader.class).get(rule);
@@ -125,7 +113,6 @@ public final class EncryptMetaDataLoaderTest {
     
     private EncryptRule createEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
-        when(result.getEncryptTableNames()).thenReturn(Collections.singletonList(TABLE_NAME));
         when(result.findEncryptTable(TABLE_NAME)).thenReturn(Optional.of(mock(EncryptTable.class)));
         return result;
     }
