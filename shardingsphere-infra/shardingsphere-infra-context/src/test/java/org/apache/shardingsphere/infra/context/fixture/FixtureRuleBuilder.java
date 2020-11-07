@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.context.fixture;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 
 import java.util.Collection;
 

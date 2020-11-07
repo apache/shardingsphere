@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.addressing.TableAddressingMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.loader.addressing.TableAddressingMetaDataLoader;

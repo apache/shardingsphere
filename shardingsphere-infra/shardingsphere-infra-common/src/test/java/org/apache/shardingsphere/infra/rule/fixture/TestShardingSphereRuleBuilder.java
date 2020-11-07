@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.rule.fixture;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 
 import java.util.Collection;
 

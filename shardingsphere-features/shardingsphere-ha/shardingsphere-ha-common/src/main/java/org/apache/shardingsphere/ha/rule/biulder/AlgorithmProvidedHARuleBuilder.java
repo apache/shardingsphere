@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.ha.rule.biulder;
 
 import org.apache.shardingsphere.ha.rule.HARule;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.ha.algorithm.config.AlgorithmProvidedHARuleConfiguration;
 import org.apache.shardingsphere.ha.constant.HAOrder;
 
