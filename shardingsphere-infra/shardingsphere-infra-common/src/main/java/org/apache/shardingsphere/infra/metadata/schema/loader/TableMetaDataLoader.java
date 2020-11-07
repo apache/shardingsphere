@@ -73,9 +73,8 @@ public final class TableMetaDataLoader {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
-        Map<ShardingSphereRule, ShardingSphereMetaDataLoader> decorators = OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class);
         PhysicalTableMetaData result = null;
-        for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : decorators.entrySet()) {
+        for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
                 result = entry.getValue().decorate(tableName, null == result ? tableMetaData : result, (TableContainedRule) entry.getKey());
             }
