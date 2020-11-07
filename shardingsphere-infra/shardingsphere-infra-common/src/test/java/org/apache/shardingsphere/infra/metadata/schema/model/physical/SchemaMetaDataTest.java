@@ -43,14 +43,6 @@ public final class SchemaMetaDataTest {
     }
     
     @Test
-    public void assertMerge() {
-        PhysicalSchemaMetaData actual = new PhysicalSchemaMetaData(Collections.emptyMap());
-        PhysicalTableMetaData tableMetaData = mock(PhysicalTableMetaData.class);
-        actual.merge(new PhysicalSchemaMetaData(ImmutableMap.of("tbl", tableMetaData)));
-        assertThat(actual.get("tbl"), is(tableMetaData));
-    }
-    
-    @Test
     public void assertPut() {
         PhysicalSchemaMetaData actual = new PhysicalSchemaMetaData(Collections.emptyMap());
         PhysicalTableMetaData tableMetaData = mock(PhysicalTableMetaData.class);
