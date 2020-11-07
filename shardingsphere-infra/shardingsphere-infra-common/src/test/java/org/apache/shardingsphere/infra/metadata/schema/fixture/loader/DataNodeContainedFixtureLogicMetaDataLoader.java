@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 
 import javax.sql.DataSource;
@@ -36,6 +37,12 @@ public final class DataNodeContainedFixtureLogicMetaDataLoader implements Shardi
                                                 final DataNodes dataNodes, final DataNodeContainedFixtureRule rule, final ConfigurationProperties props) {
         return ("data_node_routed_table_0".equals(tableName) || "data_node_routed_table_1".equals(tableName))
                 ? Optional.of(new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList())) : Optional.empty();
+    }
+    
+    @Override
+    public PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final DataNodeContainedFixtureRule rule) {
+        PhysicalColumnMetaData columnMetaData = new PhysicalColumnMetaData("id", 1, "INT", true, true, false);
+        return new PhysicalTableMetaData(Collections.singletonList(columnMetaData), Collections.emptyList());
     }
     
     @Override

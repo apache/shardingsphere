@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
@@ -47,7 +46,6 @@ public final class SchemaMetaDataLoader {
     
     static {
         ShardingSphereServiceLoader.register(ShardingSphereMetaDataLoader.class);
-        ShardingSphereServiceLoader.register(ShardingSphereMetaDataDecorator.class);
     }
     
     /**
@@ -98,10 +96,12 @@ public final class SchemaMetaDataLoader {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static void decorateSchemaMetaData(final Collection<ShardingSphereRule> rules, final PhysicalSchemaMetaData schemaMetaData) {
         Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
-        Map<ShardingSphereRule, ShardingSphereMetaDataDecorator> decorators = OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataDecorator.class);
+        Map<ShardingSphereRule, ShardingSphereMetaDataLoader> decorators = OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class);
         for (String each : schemaMetaData.getAllTableNames()) {
-            for (Entry<ShardingSphereRule, ShardingSphereMetaDataDecorator> entry : decorators.entrySet()) {
-                tableMetaDataMap.put(each, entry.getValue().decorate(each, tableMetaDataMap.getOrDefault(each, schemaMetaData.get(each)), entry.getKey()));
+            for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : decorators.entrySet()) {
+                if (entry.getKey() instanceof TableContainedRule) {
+                    tableMetaDataMap.put(each, entry.getValue().decorate(each, tableMetaDataMap.getOrDefault(each, schemaMetaData.get(each)), (TableContainedRule) entry.getKey()));
+                }
             }
         }
         schemaMetaData.merge(new PhysicalSchemaMetaData(tableMetaDataMap));

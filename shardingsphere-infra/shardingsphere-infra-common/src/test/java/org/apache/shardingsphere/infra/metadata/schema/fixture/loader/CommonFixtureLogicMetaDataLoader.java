@@ -37,6 +37,11 @@ public final class CommonFixtureLogicMetaDataLoader implements ShardingSphereMet
     }
     
     @Override
+    public PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final CommonFixtureRule rule) {
+        return tableMetaData;
+    }
+    
+    @Override
     public int getOrder() {
         return 0;
     }

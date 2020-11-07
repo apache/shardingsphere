@@ -24,10 +24,13 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.loader.physical.PhysicalTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -40,6 +43,35 @@ public final class EncryptMetaDataLoader implements ShardingSphereMetaDataLoader
     public Optional<PhysicalTableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
                                                 final EncryptRule encryptRule, final ConfigurationProperties props) throws SQLException {
         return encryptRule.findEncryptTable(tableName).isPresent() ? PhysicalTableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType) : Optional.empty();
+    }
+    
+    @Override
+    public PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final EncryptRule encryptRule) {
+        return new PhysicalTableMetaData(getEncryptColumnMetaDataList(tableName, tableMetaData.getColumns().values(), encryptRule), tableMetaData.getIndexes().values());
+    }
+    
+    private Collection<PhysicalColumnMetaData> getEncryptColumnMetaDataList(final String tableName,
+                                                                            final Collection<PhysicalColumnMetaData> originalColumnMetaDataList, final EncryptRule encryptRule) {
+        Collection<PhysicalColumnMetaData> result = new LinkedList<>();
+        Collection<String> derivedColumns = encryptRule.getAssistedQueryAndPlainColumns(tableName);
+        for (PhysicalColumnMetaData each : originalColumnMetaDataList) {
+            if (!derivedColumns.contains(each.getName())) {
+                result.add(getEncryptColumnMetaData(tableName, each, encryptRule));
+            }
+        }
+        return result;
+    }
+    
+    private PhysicalColumnMetaData getEncryptColumnMetaData(final String tableName, final PhysicalColumnMetaData originalColumnMetaData, final EncryptRule encryptRule) {
+        if (!encryptRule.isCipherColumn(tableName, originalColumnMetaData.getName())) {
+            return originalColumnMetaData;
+        }
+        String logicColumnName = encryptRule.getLogicColumnOfCipher(tableName, originalColumnMetaData.getName());
+        String plainColumnName = encryptRule.findPlainColumn(tableName, logicColumnName).orElse(null);
+        String assistedQueryColumnName = encryptRule.findAssistedQueryColumn(tableName, logicColumnName).orElse(null);
+        return new EncryptColumnMetaData(
+                logicColumnName, originalColumnMetaData.getDataType(), originalColumnMetaData.getDataTypeName(), originalColumnMetaData.isPrimaryKey(), originalColumnMetaData.getName(),
+                plainColumnName, assistedQueryColumnName);
     }
     
     @Override
