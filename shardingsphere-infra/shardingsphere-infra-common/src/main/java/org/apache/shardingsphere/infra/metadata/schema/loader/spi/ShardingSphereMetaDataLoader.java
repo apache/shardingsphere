@@ -32,11 +32,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Logic meta data loader.
+ * ShardingSphere meta data loader.
  * 
  * @param <T> type of base rule
  */
-public interface LogicMetaDataLoader<T extends ShardingSphereRule> extends OrderedSPI<T> {
+public interface ShardingSphereMetaDataLoader<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
      * Load schema meta data.

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeRoutedFixtureRule;
-import org.apache.shardingsphere.infra.metadata.schema.loader.spi.LogicMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 
@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public final class DataNodeRoutedFixtureLogicMetaDataLoader implements LogicMetaDataLoader<DataNodeRoutedFixtureRule> {
+public final class DataNodeRoutedFixtureLogicMetaDataLoader implements ShardingSphereMetaDataLoader<DataNodeRoutedFixtureRule> {
     
     @Override
     public PhysicalSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
