@@ -19,14 +19,11 @@ package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
 
 /**
  * MySQL Format SQL visitor for MySQL.
  */
 @Getter(AccessLevel.PROTECTED)
-@Setter
-public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<Boolean> {
-
+public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<String> {
 }
