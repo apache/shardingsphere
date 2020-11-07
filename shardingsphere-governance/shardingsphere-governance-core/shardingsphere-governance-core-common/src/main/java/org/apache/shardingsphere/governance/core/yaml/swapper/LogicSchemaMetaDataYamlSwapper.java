@@ -54,8 +54,8 @@ public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlLog
     }
     
     private PhysicalSchemaMetaData convertSchema(final YamlSchemaMetaData schema) {
-        return new PhysicalSchemaMetaData(schema.getTables().entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-            entry -> convertTable(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+        return new PhysicalSchemaMetaData(schema.getTables().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> convertTable(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
     
     private PhysicalTableMetaData convertTable(final YamlTableMetaData table) {
