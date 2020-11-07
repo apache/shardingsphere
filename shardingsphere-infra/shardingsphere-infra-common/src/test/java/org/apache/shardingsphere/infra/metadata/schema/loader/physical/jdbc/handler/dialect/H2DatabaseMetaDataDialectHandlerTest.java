@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler;
+package org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.dialect;
 
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.AbstractDatabaseMetaDataDialectHandlerTest;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
@@ -27,25 +28,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLDatabaseMetaDataDialectHandlerTest extends AbstractDatabaseMetaDataDialectHandlerTest {
+public final class H2DatabaseMetaDataDialectHandlerTest extends AbstractDatabaseMetaDataDialectHandlerTest {
     
     @Test
     public void assertGetSchema() throws SQLException {
         when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
-        String postgresqlSchema = getSchema(new PostgreSQLDatabaseType());
-        assertThat(postgresqlSchema, is(DATABASE_NAME));
+        String h2Schema = getSchema(new H2DatabaseType());
+        assertThat(h2Schema, is(DATABASE_NAME));
     }
     
     @Test
     public void assertFormatTableNamePattern() {
-        String postgresqlTableNamePattern = formatTableNamePattern(new PostgreSQLDatabaseType());
-        assertThat(postgresqlTableNamePattern, is(TABLE_NAME_PATTERN));
+        String h2TableNamePattern = formatTableNamePattern(new H2DatabaseType());
+        assertThat(h2TableNamePattern, is(TABLE_NAME_PATTERN));
     }
     
     @Test
     public void assertGetQuoteCharacter() {
-        QuoteCharacter postgresqlQuoteCharacter = getQuoteCharacter(new PostgreSQLDatabaseType());
-        assertThat(postgresqlQuoteCharacter.getStartDelimiter(), is("\""));
-        assertThat(postgresqlQuoteCharacter.getEndDelimiter(), is("\""));
+        QuoteCharacter h2QuoteCharacter = getQuoteCharacter(new H2DatabaseType());
+        assertThat(h2QuoteCharacter.getStartDelimiter(), is("\""));
+        assertThat(h2QuoteCharacter.getEndDelimiter(), is("\""));
     }
 }

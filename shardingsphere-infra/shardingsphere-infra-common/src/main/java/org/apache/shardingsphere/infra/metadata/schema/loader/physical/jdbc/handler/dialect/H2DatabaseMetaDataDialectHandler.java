@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.impl;
+package org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.dialect;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -25,11 +25,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import java.util.Properties;
 
 /**
- * Database meta data dialect handler of SQL92.
+ * Database meta data dialect handler of H2.
  */
 @Getter
 @Setter
-public final class SQL92DatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
+public final class H2DatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
     
     private Properties props;
     
@@ -40,6 +40,6 @@ public final class SQL92DatabaseMetaDataDialectHandler implements DatabaseMetaDa
     
     @Override
     public String getType() {
-        return "SQL92";
+        return "H2";
     }
 }

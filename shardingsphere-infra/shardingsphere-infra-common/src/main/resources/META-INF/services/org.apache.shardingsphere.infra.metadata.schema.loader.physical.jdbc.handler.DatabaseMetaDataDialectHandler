@@ -15,10 +15,10 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.impl.H2DatabaseMetaDataDialectHandler
-org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.impl.MariaDBDatabaseMetaDataDialectHandler
-org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.impl.MySQLDatabaseMetaDataDialectHandler
-org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.impl.OracleDatabaseMetaDataDialectHandler
-org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.impl.PostgreSQLDatabaseMetaDataDialectHandler
-org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.impl.SQL92DatabaseMetaDataDialectHandler
-org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.impl.SQLServerDatabaseMetaDataDialectHandler
+org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.dialect.H2DatabaseMetaDataDialectHandler
+org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.dialect.MariaDBDatabaseMetaDataDialectHandler
+org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.dialect.MySQLDatabaseMetaDataDialectHandler
+org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.dialect.OracleDatabaseMetaDataDialectHandler
+org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.dialect.PostgreSQLDatabaseMetaDataDialectHandler
+org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.dialect.SQL92DatabaseMetaDataDialectHandler
+org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.dialect.SQLServerDatabaseMetaDataDialectHandler

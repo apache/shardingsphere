@@ -15,10 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler;
+package org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.dialect;
 
-import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
+import org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.AbstractDatabaseMetaDataDialectHandlerTest;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -27,25 +30,31 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
-public final class H2DatabaseMetaDataDialectHandlerTest extends AbstractDatabaseMetaDataDialectHandlerTest {
+public final class SQLServerDatabaseMetaDataDialectHandlerTest extends AbstractDatabaseMetaDataDialectHandlerTest {
+    
+    private DatabaseType sqlServerDatabaseType;
+    
+    @Before
+    public void setUp() {
+        sqlServerDatabaseType = new SQLServerDatabaseType();
+    }
     
     @Test
     public void assertGetSchema() throws SQLException {
         when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
-        String h2Schema = getSchema(new H2DatabaseType());
-        assertThat(h2Schema, is(DATABASE_NAME));
+        String actualSQLServerSchema = getSchema(sqlServerDatabaseType);
+        assertThat(actualSQLServerSchema, is(DATABASE_NAME));
     }
     
     @Test
     public void assertFormatTableNamePattern() {
-        String h2TableNamePattern = formatTableNamePattern(new H2DatabaseType());
-        assertThat(h2TableNamePattern, is(TABLE_NAME_PATTERN));
+        assertThat(formatTableNamePattern(sqlServerDatabaseType), is(TABLE_NAME_PATTERN));
     }
     
     @Test
     public void assertGetQuoteCharacter() {
-        QuoteCharacter h2QuoteCharacter = getQuoteCharacter(new H2DatabaseType());
-        assertThat(h2QuoteCharacter.getStartDelimiter(), is("\""));
-        assertThat(h2QuoteCharacter.getEndDelimiter(), is("\""));
+        QuoteCharacter actualSQLServerQuoteCharacter = getQuoteCharacter(sqlServerDatabaseType);
+        assertThat(actualSQLServerQuoteCharacter.getStartDelimiter(), is("["));
+        assertThat(actualSQLServerQuoteCharacter.getEndDelimiter(), is("]"));
     }
 }
