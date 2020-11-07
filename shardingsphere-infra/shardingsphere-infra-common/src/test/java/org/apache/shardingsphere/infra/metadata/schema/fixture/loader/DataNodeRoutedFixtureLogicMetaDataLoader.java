@@ -44,8 +44,8 @@ public final class DataNodeRoutedFixtureLogicMetaDataLoader implements ShardingS
     }
     
     @Override
-    public Optional<PhysicalTableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                final DataNodes dataNodes, final String tableName, final DataNodeRoutedFixtureRule rule, final ConfigurationProperties props) {
+    public Optional<PhysicalTableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                                final DataNodes dataNodes, final DataNodeRoutedFixtureRule rule, final ConfigurationProperties props) {
         return ("data_node_routed_table_0".equals(tableName) || "data_node_routed_table_1".equals(tableName))
                 ? Optional.of(new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList())) : Optional.empty();
     }

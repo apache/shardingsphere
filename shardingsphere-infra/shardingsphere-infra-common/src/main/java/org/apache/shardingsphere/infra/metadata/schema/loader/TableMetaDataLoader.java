@@ -62,7 +62,7 @@ public final class TableMetaDataLoader {
     public static Optional<PhysicalTableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
                                                        final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
         for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class).entrySet()) {
-            Optional<PhysicalTableMetaData> result = entry.getValue().load(databaseType, dataSourceMap, new DataNodes(rules), tableName, entry.getKey(), props);
+            Optional<PhysicalTableMetaData> result = entry.getValue().load(tableName, databaseType, dataSourceMap, new DataNodes(rules), entry.getKey(), props);
             if (result.isPresent()) {
                 return Optional.of(decorate(tableName, result.get(), rules));
             }

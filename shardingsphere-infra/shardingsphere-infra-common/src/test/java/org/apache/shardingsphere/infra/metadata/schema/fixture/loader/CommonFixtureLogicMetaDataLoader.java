@@ -44,8 +44,8 @@ public final class CommonFixtureLogicMetaDataLoader implements ShardingSphereMet
     }
     
     @Override
-    public Optional<PhysicalTableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                final DataNodes dataNodes, final String tableName, final CommonFixtureRule rule, final ConfigurationProperties props) {
+    public Optional<PhysicalTableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                                final DataNodes dataNodes, final CommonFixtureRule rule, final ConfigurationProperties props) {
         return Optional.empty();
     }
     

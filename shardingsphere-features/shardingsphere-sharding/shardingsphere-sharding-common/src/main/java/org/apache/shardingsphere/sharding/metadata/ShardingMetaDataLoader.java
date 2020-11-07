@@ -64,15 +64,15 @@ public final class ShardingMetaDataLoader implements ShardingSphereMetaDataLoade
         PhysicalSchemaMetaData result = new PhysicalSchemaMetaData(new HashMap<>(rule.getTableRules().size(), 1));
         for (TableRule each : rule.getTableRules()) {
             if (!excludedTableNames.contains(each.getLogicTable())) {
-                load(databaseType, dataSourceMap, dataNodes, each.getLogicTable(), rule, props).ifPresent(tableMetaData -> result.put(each.getLogicTable(), tableMetaData));
+                load(each.getLogicTable(), databaseType, dataSourceMap, dataNodes, rule, props).ifPresent(tableMetaData -> result.put(each.getLogicTable(), tableMetaData));
             }
         }
         return result;
     }
     
     @Override
-    public Optional<PhysicalTableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
-                                                final String tableName, final ShardingRule rule, final ConfigurationProperties props) throws SQLException {
+    public Optional<PhysicalTableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
+                                                final ShardingRule rule, final ConfigurationProperties props) throws SQLException {
         if (!rule.findTableRule(tableName).isPresent()) {
             return Optional.empty();
         }
