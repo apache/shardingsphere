@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTa
 
 import java.util.Collections;
 
-public final class DataNodeRoutedLogicMetaDataDecoratorFixture implements ShardingSphereMetaDataDecorator<DataNodeContainedFixtureRule> {
+public final class DataNodeContainedLogicMetaDataDecoratorFixture implements ShardingSphereMetaDataDecorator<DataNodeContainedFixtureRule> {
     
     @Override
     public PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final DataNodeContainedFixtureRule rule) {
