@@ -96,9 +96,9 @@ public final class SchemaMetaDataLoader {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static void decorateSchemaMetaData(final Collection<ShardingSphereRule> rules, final PhysicalSchemaMetaData schemaMetaData) {
         Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
-        Map<ShardingSphereRule, ShardingSphereMetaDataLoader> decorators = OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class);
+        Map<ShardingSphereRule, ShardingSphereMetaDataLoader> loaders = OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class);
         for (String each : schemaMetaData.getAllTableNames()) {
-            for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : decorators.entrySet()) {
+            for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : loaders.entrySet()) {
                 if (entry.getKey() instanceof TableContainedRule) {
                     tableMetaDataMap.put(each, entry.getValue().decorate(each, tableMetaDataMap.getOrDefault(each, schemaMetaData.get(each)), (TableContainedRule) entry.getKey()));
                 }
