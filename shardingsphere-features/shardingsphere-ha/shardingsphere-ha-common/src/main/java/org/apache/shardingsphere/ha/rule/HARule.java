@@ -20,7 +20,7 @@ package org.apache.shardingsphere.ha.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.rule.DataSourceRoutedRule;
+import org.apache.shardingsphere.infra.rule.DataSourceBasedRule;
 import org.apache.shardingsphere.infra.rule.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
@@ -41,7 +41,7 @@ import java.util.Optional;
 /**
  * HA rule.
  */
-public final class HARule implements DataSourceRoutedRule, StatusContainedRule {
+public final class HARule implements DataSourceBasedRule, StatusContainedRule {
     
     static {
         ShardingSphereServiceLoader.register(ReplicaLoadBalanceAlgorithm.class);

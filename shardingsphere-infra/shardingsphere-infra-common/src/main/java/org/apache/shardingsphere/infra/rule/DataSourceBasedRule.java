@@ -21,9 +21,9 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Data source routed rule.
+ * ShardingSphere rule based on data source.
  */
-public interface DataSourceRoutedRule extends ShardingSphereRule {
+public interface DataSourceBasedRule extends ShardingSphereRule {
     
     /**
      * Get data source mapper.

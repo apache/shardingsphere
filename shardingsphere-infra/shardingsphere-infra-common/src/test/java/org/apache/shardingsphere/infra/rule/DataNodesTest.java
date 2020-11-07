@@ -83,7 +83,7 @@ public final class DataNodesTest {
         List<TestTableRule> tableRules = Arrays.asList(tableRule1, tableRule2);
         ShardingSphereRule rule1 = new TestShardingRule(tableRules);
         Map<String, Collection<String>> dataSourceMapper = Collections.singletonMap(logicDataSourceName, replicaDataSourceNames);
-        DataSourceRoutedRule rule2 = mock(DataSourceRoutedRule.class);
+        DataSourceBasedRule rule2 = mock(DataSourceBasedRule.class);
         when(rule2.getDataSourceMapper()).thenReturn(dataSourceMapper);
         return new DataNodes(Arrays.asList(rule1, rule2));
     }

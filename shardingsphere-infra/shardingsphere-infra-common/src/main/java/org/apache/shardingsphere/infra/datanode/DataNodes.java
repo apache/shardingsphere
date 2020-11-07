@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.datanode;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.DataNodeBasedRule;
-import org.apache.shardingsphere.infra.rule.DataSourceRoutedRule;
+import org.apache.shardingsphere.infra.rule.DataSourceBasedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
@@ -53,8 +53,8 @@ public final class DataNodes {
         }
         Collection<DataNode> result = new LinkedList<>(dataNodeRoutedRule.get().getAllDataNodes().get(tableName));
         for (ShardingSphereRule each : rules) {
-            if (each instanceof DataSourceRoutedRule) {
-                for (Entry<String, Collection<String>> entry : ((DataSourceRoutedRule) each).getDataSourceMapper().entrySet()) {
+            if (each instanceof DataSourceBasedRule) {
+                for (Entry<String, Collection<String>> entry : ((DataSourceBasedRule) each).getDataSourceMapper().entrySet()) {
                     Collection<DataNode> dataNodes = find(result, entry.getKey());
                     result.removeAll(dataNodes);
                     result.addAll(regenerate(dataNodes, entry.getValue()));
