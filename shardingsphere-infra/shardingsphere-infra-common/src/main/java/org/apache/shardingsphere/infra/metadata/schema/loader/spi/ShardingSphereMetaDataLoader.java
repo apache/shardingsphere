@@ -56,15 +56,15 @@ public interface ShardingSphereMetaDataLoader<T extends ShardingSphereRule> exte
     /**
      * Load table meta data.
      *
+     * @param tableName table name
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @param dataNodes data nodes
-     * @param tableName table name
      * @param rule rule
      * @param props configuration properties
      * @return meta data
      * @throws SQLException SQL exception
      */
-    Optional<PhysicalTableMetaData> load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap, 
-                                         DataNodes dataNodes, String tableName, T rule, ConfigurationProperties props) throws SQLException;
+    Optional<PhysicalTableMetaData> load(String tableName, DatabaseType databaseType, Map<String, DataSource> dataSourceMap, 
+                                         DataNodes dataNodes, T rule, ConfigurationProperties props) throws SQLException;
 }

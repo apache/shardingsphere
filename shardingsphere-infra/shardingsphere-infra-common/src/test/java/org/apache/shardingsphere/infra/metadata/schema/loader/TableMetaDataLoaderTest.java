@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeRoutedFixtureRule;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -33,12 +32,11 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SchemaMetaDataLoaderTest {
+public final class TableMetaDataLoaderTest {
     
     @Mock
     private DatabaseType databaseType;
@@ -50,19 +48,14 @@ public final class SchemaMetaDataLoaderTest {
     private ConfigurationProperties props;
     
     @Test
-    public void assertLoadFullDatabases() throws SQLException {
-        PhysicalSchemaMetaData actual = SchemaMetaDataLoader.load(
-                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()), props);
-        assertPhysicalSchemaMetaData(actual);
+    public void assertLoadWithExistedTableName() throws SQLException {
+        assertTrue(TableMetaDataLoader.load("data_node_routed_table_0", 
+                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()), props).isPresent());
     }
     
-    private void assertPhysicalSchemaMetaData(final PhysicalSchemaMetaData actual) {
-        assertThat(actual.getAllTableNames().size(), is(4));
-        assertTrue(actual.containsTable("common_table_0"));
-        assertTrue(actual.containsTable("common_table_1"));
-        assertTrue(actual.containsTable("data_node_routed_table_0"));
-        assertTrue(actual.get("data_node_routed_table_0").getColumns().containsKey("id"));
-        assertTrue(actual.containsTable("data_node_routed_table_1"));
-        assertTrue(actual.get("data_node_routed_table_1").getColumns().containsKey("id"));
+    @Test
+    public void assertLoadWithNotExistedTableName() throws SQLException {
+        assertFalse(TableMetaDataLoader.load("invalid_table", 
+                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()), props).isPresent());
     }
 }

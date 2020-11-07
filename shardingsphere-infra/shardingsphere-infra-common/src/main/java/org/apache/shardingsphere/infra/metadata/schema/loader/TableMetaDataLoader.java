@@ -24,9 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
-import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
@@ -34,16 +32,15 @@ import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeSet;
+import java.util.Optional;
 
 /**
- * Schema meta data loader.
+ * Table meta data loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaMetaDataLoader {
+public final class TableMetaDataLoader {
     
     static {
         ShardingSphereServiceLoader.register(ShardingSphereMetaDataLoader.class);
@@ -51,41 +48,35 @@ public final class SchemaMetaDataLoader {
     }
     
     /**
-     * Load schema meta data.
-     * 
+     * Load table meta data.
+     *
+     * @param tableName table name
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @param rules ShardingSphere rules
      * @param props configuration properties
-     * @return schema meta data
+     * @return table meta data
      * @throws SQLException SQL exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static PhysicalSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
-                                              final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
-        Collection<String> excludedTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        PhysicalSchemaMetaData result = new PhysicalSchemaMetaData();
+    public static Optional<PhysicalTableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
+                                                       final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
         for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class).entrySet()) {
-            PhysicalSchemaMetaData schemaMetaData = entry.getValue().load(databaseType, dataSourceMap, new DataNodes(rules), entry.getKey(), props, excludedTableNames);
-            excludedTableNames.addAll(schemaMetaData.getAllTableNames());
-            if (entry.getKey() instanceof DataNodeRoutedRule) {
-                excludedTableNames.addAll(((DataNodeRoutedRule) entry.getKey()).getAllActualTables());
+            Optional<PhysicalTableMetaData> result = entry.getValue().load(tableName, databaseType, dataSourceMap, new DataNodes(rules), entry.getKey(), props);
+            if (result.isPresent()) {
+                return Optional.of(decorate(tableName, result.get(), rules));
             }
-            result.merge(schemaMetaData);
         }
-        decorate(rules, result);
-        return result;
+        return Optional.empty();
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static void decorate(final Collection<ShardingSphereRule> rules, final PhysicalSchemaMetaData schemaMetaData) {
-        Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
+    private static PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
         Map<ShardingSphereRule, ShardingSphereMetaDataDecorator> decorators = OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataDecorator.class);
-        for (String each : schemaMetaData.getAllTableNames()) {
-            for (Entry<ShardingSphereRule, ShardingSphereMetaDataDecorator> entry : decorators.entrySet()) {
-                tableMetaDataMap.put(each, entry.getValue().decorate(each, tableMetaDataMap.getOrDefault(each, schemaMetaData.get(each)), entry.getKey()));
-            }
+        PhysicalTableMetaData result = null;
+        for (Entry<ShardingSphereRule, ShardingSphereMetaDataDecorator> entry : decorators.entrySet()) {
+            result = entry.getValue().decorate(tableName, null == result ? tableMetaData : result, entry.getKey());
         }
-        schemaMetaData.merge(new PhysicalSchemaMetaData(tableMetaDataMap));
+        return Optional.ofNullable(result).orElse(tableMetaData);
     }
 }

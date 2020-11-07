@@ -54,8 +54,8 @@ public final class EncryptMetaDataLoader implements ShardingSphereMetaDataLoader
     }
     
     @Override
-    public Optional<PhysicalTableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
-                                                final String tableName, final EncryptRule encryptRule, final ConfigurationProperties props) throws SQLException {
+    public Optional<PhysicalTableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
+                                                final EncryptRule encryptRule, final ConfigurationProperties props) throws SQLException {
         return encryptRule.findEncryptTable(tableName).isPresent() ? PhysicalTableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType) : Optional.empty();
     }
     
