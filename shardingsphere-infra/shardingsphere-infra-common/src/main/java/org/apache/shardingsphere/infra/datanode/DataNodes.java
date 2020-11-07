@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.datanode;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.type.DataNodeBasedRule;
-import org.apache.shardingsphere.infra.rule.type.DataSourceBasedRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
@@ -47,14 +47,14 @@ public final class DataNodes {
      * @return data nodes
      */
     public Collection<DataNode> getDataNodes(final String tableName) {
-        Optional<DataNodeBasedRule> dataNodeRoutedRule = rules.stream().filter(each -> each instanceof DataNodeBasedRule).findFirst().map(rule -> (DataNodeBasedRule) rule);
+        Optional<DataNodeContainedRule> dataNodeRoutedRule = rules.stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
         if (!dataNodeRoutedRule.isPresent()) {
             return Collections.emptyList();
         }
         Collection<DataNode> result = new LinkedList<>(dataNodeRoutedRule.get().getAllDataNodes().get(tableName));
         for (ShardingSphereRule each : rules) {
-            if (each instanceof DataSourceBasedRule) {
-                for (Entry<String, Collection<String>> entry : ((DataSourceBasedRule) each).getDataSourceMapper().entrySet()) {
+            if (each instanceof DataSourceContainedRule) {
+                for (Entry<String, Collection<String>> entry : ((DataSourceContainedRule) each).getDataSourceMapper().entrySet()) {
                     Collection<DataNode> dataNodes = find(result, entry.getKey());
                     result.removeAll(dataNodes);
                     result.addAll(regenerate(dataNodes, entry.getValue()));

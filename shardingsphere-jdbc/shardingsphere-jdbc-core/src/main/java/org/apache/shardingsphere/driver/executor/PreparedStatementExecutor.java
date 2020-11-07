@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.impl
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.MemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.StreamQueryResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.rule.type.DataNodeBasedRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import javax.sql.DataSource;
@@ -83,7 +83,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         List<Integer> results = getSqlExecutor().execute(inputGroups, sqlExecutorCallback);
         refreshTableMetaData(getSchemaContexts().getDefaultMetaData(), sqlStatementContext.getSqlStatement(), routeUnits);
         return isNeedAccumulate(
-                getSchemaContexts().getDefaultMetaData().getRuleMetaData().getRules().stream().filter(rule -> rule instanceof DataNodeBasedRule).collect(Collectors.toList()), sqlStatementContext)
+                getSchemaContexts().getDefaultMetaData().getRuleMetaData().getRules().stream().filter(rule -> rule instanceof DataNodeContainedRule).collect(Collectors.toList()), sqlStatementContext)
                 ? accumulate(results) : results.get(0);
     }
     

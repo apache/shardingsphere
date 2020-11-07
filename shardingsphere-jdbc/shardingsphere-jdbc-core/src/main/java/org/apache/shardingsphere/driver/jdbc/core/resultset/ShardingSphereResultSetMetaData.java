@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.type.DataNodeBasedRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -136,8 +136,8 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     @Override
     public String getTableName(final int column) throws SQLException {
         String actualTableName = resultSetMetaData.getTableName(column);
-        Optional<ShardingSphereRule> rule = rules.stream().filter(each -> each instanceof DataNodeBasedRule).findFirst();
-        return rule.isPresent() ? ((DataNodeBasedRule) rule.get()).findLogicTableByActualTable(actualTableName).orElse(actualTableName) : actualTableName;
+        Optional<ShardingSphereRule> rule = rules.stream().filter(each -> each instanceof DataNodeContainedRule).findFirst();
+        return rule.isPresent() ? ((DataNodeContainedRule) rule.get()).findLogicTableByActualTable(actualTableName).orElse(actualTableName) : actualTableName;
     }
     
     @Override

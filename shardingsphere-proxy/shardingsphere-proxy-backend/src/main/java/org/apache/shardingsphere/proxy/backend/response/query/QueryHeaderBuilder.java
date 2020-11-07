@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.response.query;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
-import org.apache.shardingsphere.infra.rule.type.DataNodeBasedRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
@@ -68,8 +68,8 @@ public final class QueryHeaderBuilder {
     private static QueryHeader build(final ResultSetMetaData resultSetMetaData, final ShardingSphereMetaData metaData, final String columnName, final int columnIndex) throws SQLException {
         String schemaName = metaData.getName();
         String actualTableName = resultSetMetaData.getTableName(columnIndex);
-        Optional<DataNodeBasedRule> dataNodeRoutedRule = 
-                metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeBasedRule).findFirst().map(rule -> (DataNodeBasedRule) rule);
+        Optional<DataNodeContainedRule> dataNodeRoutedRule = 
+                metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
         String tableName;
         boolean primaryKey;
         if (null != actualTableName && dataNodeRoutedRule.isPresent()) {

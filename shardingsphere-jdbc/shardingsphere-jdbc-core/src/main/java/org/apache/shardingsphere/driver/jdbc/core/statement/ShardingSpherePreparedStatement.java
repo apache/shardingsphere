@@ -56,7 +56,7 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.S
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.rule.type.DataNodeBasedRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -400,7 +400,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     @Override
     public boolean isAccumulate() {
         return schemaContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().anyMatch(
-            each -> each instanceof DataNodeBasedRule && ((DataNodeBasedRule) each).isNeedAccumulate(executionContext.getSqlStatementContext().getTablesContext().getTableNames()));
+            each -> each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).isNeedAccumulate(executionContext.getSqlStatementContext().getTablesContext().getTableNames()));
     }
     
     @Override

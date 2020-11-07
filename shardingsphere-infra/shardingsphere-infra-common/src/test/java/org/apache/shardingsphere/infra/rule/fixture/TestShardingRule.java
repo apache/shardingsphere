@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.rule.fixture;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.rule.type.DataNodeBasedRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Getter
-public final class TestShardingRule implements DataNodeBasedRule {
+public final class TestShardingRule implements DataNodeContainedRule {
     
     private final Collection<TestTableRule> tableRules;
     

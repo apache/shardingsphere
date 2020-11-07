@@ -18,19 +18,17 @@
 package org.apache.shardingsphere.infra.rule.type;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-
-import java.util.Collection;
-import java.util.Map;
+import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 
 /**
- * ShardingSphere rule based on data source.
+ * ShardingSphere rule contains status.
  */
-public interface DataSourceBasedRule extends ShardingSphereRule {
+public interface StatusContainedRule extends ShardingSphereRule {
     
     /**
-     * Get data source mapper.
+     * Update rule status.
      *
-     * @return data source mapper
+     * @param event rule changed event
      */
-    Map<String, Collection<String>> getDataSourceMapper();
+    void updateRuleStatus(RuleChangedEvent event);
 }

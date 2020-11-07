@@ -25,9 +25,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * ShardingSphere rule based on data node.
+ * ShardingSphere rule contains data node.
  */
-public interface DataNodeBasedRule extends ShardingSphereRule {
+public interface DataNodeContainedRule extends ShardingSphereRule {
     
     /**
      * Get all data nodes.

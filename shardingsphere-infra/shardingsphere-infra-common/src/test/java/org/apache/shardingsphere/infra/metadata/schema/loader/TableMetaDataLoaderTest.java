@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.loader;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
-import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeBasedFixtureRule;
+import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -50,12 +50,12 @@ public final class TableMetaDataLoaderTest {
     @Test
     public void assertLoadWithExistedTableName() throws SQLException {
         assertTrue(TableMetaDataLoader.load("data_node_routed_table_0", 
-                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeBasedFixtureRule()), props).isPresent());
+                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props).isPresent());
     }
     
     @Test
     public void assertLoadWithNotExistedTableName() throws SQLException {
         assertFalse(TableMetaDataLoader.load("invalid_table", 
-                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeBasedFixtureRule()), props).isPresent());
+                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props).isPresent());
     }
 }

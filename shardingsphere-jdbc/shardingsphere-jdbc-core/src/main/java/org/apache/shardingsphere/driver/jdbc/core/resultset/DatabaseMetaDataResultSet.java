@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
-import org.apache.shardingsphere.infra.rule.type.DataNodeBasedRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.math.BigDecimal;
@@ -102,7 +102,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private DatabaseMetaDataObject generateDatabaseMetaDataObject(final int tableNameColumnIndex, final int indexNameColumnIndex, final ResultSet resultSet) throws SQLException {
         DatabaseMetaDataObject result = new DatabaseMetaDataObject(resultSetMetaData.getColumnCount());
-        Optional<DataNodeBasedRule> dataNodeRoutedRule = findDataNodeRoutedRule();
+        Optional<DataNodeContainedRule> dataNodeRoutedRule = findDataNodeRoutedRule();
         for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
             if (tableNameColumnIndex == i) {
                 String tableName = resultSet.getString(i);
@@ -119,8 +119,8 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
         return result;
     }
     
-    private Optional<DataNodeBasedRule> findDataNodeRoutedRule() {
-        return rules.stream().filter(each -> each instanceof DataNodeBasedRule).findFirst().map(rule -> (DataNodeBasedRule) rule);
+    private Optional<DataNodeContainedRule> findDataNodeRoutedRule() {
+        return rules.stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
     }
     
     @Override

@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.infra.metadata.schema.fixture.rule;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.rule.type.DataNodeBasedRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
-public final class DataNodeBasedFixtureRule implements DataNodeBasedRule {
+public final class DataNodeContainedFixtureRule implements DataNodeContainedRule {
     
     @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.fixture.loader;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeBasedFixtureRule;
+import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
@@ -32,11 +32,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public final class DataNodeRoutedFixtureLogicMetaDataLoader implements ShardingSphereMetaDataLoader<DataNodeBasedFixtureRule> {
+public final class DataNodeRoutedFixtureLogicMetaDataLoader implements ShardingSphereMetaDataLoader<DataNodeContainedFixtureRule> {
     
     @Override
     public PhysicalSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                       final DataNodes dataNodes, final DataNodeBasedFixtureRule rule, final ConfigurationProperties props, final Collection<String> excludedTableNames) {
+                                       final DataNodes dataNodes, final DataNodeContainedFixtureRule rule, final ConfigurationProperties props, final Collection<String> excludedTableNames) {
         Map<String, PhysicalTableMetaData> tables = new HashMap<>(2, 1);
         tables.put("data_node_routed_table_0", new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList()));
         tables.put("data_node_routed_table_1", new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList()));
@@ -45,7 +45,7 @@ public final class DataNodeRoutedFixtureLogicMetaDataLoader implements ShardingS
     
     @Override
     public Optional<PhysicalTableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                final DataNodes dataNodes, final DataNodeBasedFixtureRule rule, final ConfigurationProperties props) {
+                                                final DataNodes dataNodes, final DataNodeContainedFixtureRule rule, final ConfigurationProperties props) {
         return ("data_node_routed_table_0".equals(tableName) || "data_node_routed_table_1".equals(tableName))
                 ? Optional.of(new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList())) : Optional.empty();
     }
@@ -56,7 +56,7 @@ public final class DataNodeRoutedFixtureLogicMetaDataLoader implements ShardingS
     }
     
     @Override
-    public Class<DataNodeBasedFixtureRule> getTypeClass() {
-        return DataNodeBasedFixtureRule.class;
+    public Class<DataNodeContainedFixtureRule> getTypeClass() {
+        return DataNodeContainedFixtureRule.class;
     }
 }

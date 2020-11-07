@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshSt
 import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.rule.type.DataNodeBasedRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -131,8 +131,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext<?> sqlStatementContext) {
-        Optional<DataNodeBasedRule> dataNodeRoutedRule = 
-                metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeBasedRule).findFirst().map(rule -> (DataNodeBasedRule) rule);
+        Optional<DataNodeContainedRule> dataNodeRoutedRule = 
+                metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
         return dataNodeRoutedRule.isPresent() && dataNodeRoutedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }
     

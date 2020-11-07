@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.rule.fixture.TestShardingRule;
 import org.apache.shardingsphere.infra.rule.fixture.TestShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.fixture.TestTableRule;
-import org.apache.shardingsphere.infra.rule.type.DataSourceBasedRule;
+import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -84,7 +84,7 @@ public final class DataNodesTest {
         List<TestTableRule> tableRules = Arrays.asList(tableRule1, tableRule2);
         ShardingSphereRule rule1 = new TestShardingRule(tableRules);
         Map<String, Collection<String>> dataSourceMapper = Collections.singletonMap(logicDataSourceName, replicaDataSourceNames);
-        DataSourceBasedRule rule2 = mock(DataSourceBasedRule.class);
+        DataSourceContainedRule rule2 = mock(DataSourceContainedRule.class);
         when(rule2.getDataSourceMapper()).thenReturn(dataSourceMapper);
         return new DataNodes(Arrays.asList(rule1, rule2));
     }

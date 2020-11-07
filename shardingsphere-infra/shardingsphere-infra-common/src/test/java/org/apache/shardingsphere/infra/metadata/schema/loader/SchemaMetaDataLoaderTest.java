@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.loader;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
-import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeBasedFixtureRule;
+import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +52,7 @@ public final class SchemaMetaDataLoaderTest {
     @Test
     public void assertLoadFullDatabases() throws SQLException {
         PhysicalSchemaMetaData actual = SchemaMetaDataLoader.load(
-                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeBasedFixtureRule()), props);
+                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props);
         assertPhysicalSchemaMetaData(actual);
     }
     
