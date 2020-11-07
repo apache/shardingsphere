@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 
 /**
- * Logic meta data decorator.
+ * ShardingSphere meta data decorator.
  */
-public interface LogicMetaDataDecorator<T extends ShardingSphereRule> extends OrderedSPI<T> {
+public interface ShardingSphereMetaDataDecorator<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
      * Decorate table meta data.

@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.infra.metadata.schema.fixture.decorator;
 
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeRoutedFixtureRule;
-import org.apache.shardingsphere.infra.metadata.schema.loader.spi.LogicMetaDataDecorator;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 
 import java.util.Collections;
 
-public final class DataNodeRoutedLogicMetaDataDecoratorFixture implements LogicMetaDataDecorator<DataNodeRoutedFixtureRule> {
+public final class DataNodeRoutedLogicMetaDataDecoratorFixture implements ShardingSphereMetaDataDecorator<DataNodeRoutedFixtureRule> {
     
     @Override
     public PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final DataNodeRoutedFixtureRule rule) {

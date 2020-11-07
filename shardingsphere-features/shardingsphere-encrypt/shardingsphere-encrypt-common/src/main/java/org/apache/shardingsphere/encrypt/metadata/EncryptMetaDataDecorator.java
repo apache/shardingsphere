@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.loader.spi.LogicMetaDataDecorator;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataDecorator;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -29,7 +29,7 @@ import java.util.LinkedList;
 /**
  * Table meta data decorator for encrypt.
  */
-public final class EncryptMetaDataDecorator implements LogicMetaDataDecorator<EncryptRule> {
+public final class EncryptMetaDataDecorator implements ShardingSphereMetaDataDecorator<EncryptRule> {
     
     @Override
     public PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final EncryptRule encryptRule) {
