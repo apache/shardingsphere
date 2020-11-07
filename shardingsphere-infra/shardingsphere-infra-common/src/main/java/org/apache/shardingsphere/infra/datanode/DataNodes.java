@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.datanode;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.DataNodeBasedRule;
-import org.apache.shardingsphere.infra.rule.DataSourceBasedRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeBasedRule;
+import org.apache.shardingsphere.infra.rule.type.DataSourceBasedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;

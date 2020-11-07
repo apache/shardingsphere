@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphere
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
-import org.apache.shardingsphere.infra.rule.DataNodeBasedRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeBasedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;

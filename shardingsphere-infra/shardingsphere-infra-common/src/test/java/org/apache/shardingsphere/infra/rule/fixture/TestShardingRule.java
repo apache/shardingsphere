@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.rule.fixture;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.rule.DataNodeBasedRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeBasedRule;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

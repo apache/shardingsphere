@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
-import org.apache.shardingsphere.infra.rule.DataNodeBasedRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeBasedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.math.BigDecimal;

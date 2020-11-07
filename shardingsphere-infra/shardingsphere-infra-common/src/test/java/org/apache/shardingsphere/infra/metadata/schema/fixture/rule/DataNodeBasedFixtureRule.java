@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.schema.fixture.rule;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.rule.DataNodeBasedRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeBasedRule;
 
 import java.util.Arrays;
 import java.util.Collection;

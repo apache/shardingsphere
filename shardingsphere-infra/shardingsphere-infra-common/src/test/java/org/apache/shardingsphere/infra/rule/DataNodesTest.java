@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.rule.fixture.TestShardingRule;
 import org.apache.shardingsphere.infra.rule.fixture.TestShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.fixture.TestTableRule;
+import org.apache.shardingsphere.infra.rule.type.DataSourceBasedRule;
 import org.junit.Test;
 
 import java.util.Arrays;
