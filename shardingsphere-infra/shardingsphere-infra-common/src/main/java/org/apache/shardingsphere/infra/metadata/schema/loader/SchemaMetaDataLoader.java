@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphere
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
-import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.infra.rule.DataNodeBasedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
@@ -68,8 +68,8 @@ public final class SchemaMetaDataLoader {
         for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class).entrySet()) {
             PhysicalSchemaMetaData schemaMetaData = entry.getValue().load(databaseType, dataSourceMap, new DataNodes(rules), entry.getKey(), props, excludedTableNames);
             excludedTableNames.addAll(schemaMetaData.getAllTableNames());
-            if (entry.getKey() instanceof DataNodeRoutedRule) {
-                excludedTableNames.addAll(((DataNodeRoutedRule) entry.getKey()).getAllActualTables());
+            if (entry.getKey() instanceof DataNodeBasedRule) {
+                excludedTableNames.addAll(((DataNodeBasedRule) entry.getKey()).getAllActualTables());
             }
             result.merge(schemaMetaData);
         }

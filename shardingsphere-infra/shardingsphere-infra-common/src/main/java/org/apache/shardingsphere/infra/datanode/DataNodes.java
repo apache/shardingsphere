@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.datanode;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.infra.rule.DataNodeBasedRule;
 import org.apache.shardingsphere.infra.rule.DataSourceRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
@@ -47,7 +47,7 @@ public final class DataNodes {
      * @return data nodes
      */
     public Collection<DataNode> getDataNodes(final String tableName) {
-        Optional<DataNodeRoutedRule> dataNodeRoutedRule = rules.stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
+        Optional<DataNodeBasedRule> dataNodeRoutedRule = rules.stream().filter(each -> each instanceof DataNodeBasedRule).findFirst().map(rule -> (DataNodeBasedRule) rule);
         if (!dataNodeRoutedRule.isPresent()) {
             return Collections.emptyList();
         }

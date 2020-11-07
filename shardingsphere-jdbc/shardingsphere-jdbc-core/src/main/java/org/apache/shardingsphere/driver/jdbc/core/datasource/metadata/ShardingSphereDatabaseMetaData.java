@@ -22,7 +22,7 @@ import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.driver.jdbc.adapter.AdaptedDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.infra.rule.DataNodeBasedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 
@@ -208,7 +208,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
         if (null == tableNamePattern) {
             return null;
         }
-        Optional<DataNodeRoutedRule> dataNodeRoutedRule = findDataNodeRoutedRule();
+        Optional<DataNodeBasedRule> dataNodeRoutedRule = findDataNodeRoutedRule();
         if (dataNodeRoutedRule.isPresent()) {
             return dataNodeRoutedRule.get().findFirstActualTable(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern;
         }
@@ -219,12 +219,12 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
         if (null == table) {
             return null;
         }
-        Optional<DataNodeRoutedRule> dataNodeRoutedRule = findDataNodeRoutedRule();
+        Optional<DataNodeBasedRule> dataNodeRoutedRule = findDataNodeRoutedRule();
         return dataNodeRoutedRule.map(nodeRoutedRule -> nodeRoutedRule.findFirstActualTable(table).orElse(table)).orElse(table);
     }
     
-    private Optional<DataNodeRoutedRule> findDataNodeRoutedRule() {
-        return rules.stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
+    private Optional<DataNodeBasedRule> findDataNodeRoutedRule() {
+        return rules.stream().filter(each -> each instanceof DataNodeBasedRule).findFirst().map(rule -> (DataNodeBasedRule) rule);
     }
     
     private ResultSet createDatabaseMetaDataResultSet(final ResultSet resultSet) throws SQLException {

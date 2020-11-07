@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.rule.fixture;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.infra.rule.DataNodeBasedRule;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Getter
-public final class TestShardingRule implements DataNodeRoutedRule {
+public final class TestShardingRule implements DataNodeBasedRule {
     
     private final Collection<TestTableRule> tableRules;
     
@@ -48,6 +48,10 @@ public final class TestShardingRule implements DataNodeRoutedRule {
     public Optional<String> findFirstActualTable(final String logicTable) {
         return findTableRule(logicTable).map(tableRule -> tableRule.getActualDataNodes().get(0).getTableName());
     }
+
+    private Optional<TestTableRule> findTableRule(final String logicTableName) {
+        return tableRules.stream().filter(each -> each.getLogicTable().equalsIgnoreCase(logicTableName)).findFirst();
+    }
     
     @Override
     public boolean isNeedAccumulate(final Collection<String> tables) {
@@ -57,15 +61,5 @@ public final class TestShardingRule implements DataNodeRoutedRule {
     @Override
     public Optional<String> findLogicTableByActualTable(final String actualTable) {
         return Optional.empty();
-    }
-    
-    /**
-     * Find table rule.
-     *
-     * @param logicTableName logic table name
-     * @return table rule
-     */
-    public Optional<TestTableRule> findTableRule(final String logicTableName) {
-        return tableRules.stream().filter(each -> each.getLogicTable().equalsIgnoreCase(logicTableName)).findFirst();
     }
 }
