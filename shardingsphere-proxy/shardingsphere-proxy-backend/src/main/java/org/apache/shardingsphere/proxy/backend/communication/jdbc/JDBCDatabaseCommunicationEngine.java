@@ -111,9 +111,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private Optional<PhysicalTableMetaData> loadTableMetaData(final String tableName) throws SQLException {
-        SchemaMetaDataLoader loader = new SchemaMetaDataLoader(metaData.getRuleMetaData().getRules());
-        return loader.load(
-                ProxyContext.getInstance().getSchemaContexts().getDatabaseType(), metaData.getResource().getDataSources(), tableName, ProxyContext.getInstance().getSchemaContexts().getProps());
+        return SchemaMetaDataLoader.load(ProxyContext.getInstance().getSchemaContexts().getDatabaseType(), 
+                metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), tableName, ProxyContext.getInstance().getSchemaContexts().getProps());
     }
     
     private BackendResponse merge(final SQLStatementContext<?> sqlStatementContext) throws SQLException {

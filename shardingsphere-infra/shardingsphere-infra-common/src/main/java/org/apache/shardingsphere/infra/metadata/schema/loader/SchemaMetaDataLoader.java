@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -43,7 +45,7 @@ import java.util.TreeSet;
 /**
  * Schema meta data loader.
  */
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SchemaMetaDataLoader {
     
     static {
@@ -51,19 +53,19 @@ public final class SchemaMetaDataLoader {
         ShardingSphereServiceLoader.register(ShardingSphereMetaDataDecorator.class);
     }
     
-    private final Collection<ShardingSphereRule> rules;
-    
     /**
      * Load schema meta data.
      * 
      * @param databaseType database type
      * @param dataSourceMap data source map
+     * @param rules ShardingSphere rules
      * @param props configuration properties
      * @return schema meta data
      * @throws SQLException SQL exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public PhysicalSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final ConfigurationProperties props) throws SQLException {
+    public static PhysicalSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
+                                       final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
         Collection<String> excludedTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         PhysicalSchemaMetaData result = new PhysicalSchemaMetaData();
         for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class).entrySet()) {
@@ -74,7 +76,7 @@ public final class SchemaMetaDataLoader {
             }
             result.merge(schemaMetaData);
         }
-        decorate(result);
+        decorate(rules, result);
         return result;
     }
     
@@ -83,14 +85,14 @@ public final class SchemaMetaDataLoader {
      *
      * @param databaseType database type
      * @param dataSource data source
+     * @param rules ShardingSphere rules
      * @param props configuration properties
      * @return schema meta data
      * @throws SQLException SQL exception
      */
-    public PhysicalSchemaMetaData load(final DatabaseType databaseType, final DataSource dataSource, final ConfigurationProperties props) throws SQLException {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
-        return load(databaseType, dataSourceMap, props);
+    public static PhysicalSchemaMetaData load(final DatabaseType databaseType, final DataSource dataSource, 
+                                       final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
+        return load(databaseType, Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSource), rules, props);
     }
     
     /**
@@ -98,18 +100,19 @@ public final class SchemaMetaDataLoader {
      *
      * @param databaseType database type
      * @param dataSourceMap data source map
+     * @param rules ShardingSphere rules
      * @param tableName table name
      * @param props configuration properties
      * @return schema meta data
      * @throws SQLException SQL exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public Optional<PhysicalTableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                final String tableName, final ConfigurationProperties props) throws SQLException {
+    public static Optional<PhysicalTableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                                final Collection<ShardingSphereRule> rules, final String tableName, final ConfigurationProperties props) throws SQLException {
         for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class).entrySet()) {
             Optional<PhysicalTableMetaData> result = entry.getValue().load(databaseType, dataSourceMap, new DataNodes(rules), tableName, entry.getKey(), props);
             if (result.isPresent()) {
-                return Optional.of(decorate(tableName, result.get()));
+                return Optional.of(decorate(rules, tableName, result.get()));
             }
         }
         return Optional.empty();
@@ -120,19 +123,19 @@ public final class SchemaMetaDataLoader {
      *
      * @param databaseType database type
      * @param dataSource data source
+     * @param rules ShardingSphere rules
      * @param tableName table name
      * @param props configuration properties
      * @return schema meta data
      * @throws SQLException SQL exception
      */
-    public Optional<PhysicalTableMetaData> load(final DatabaseType databaseType, final DataSource dataSource, final String tableName, final ConfigurationProperties props) throws SQLException {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
-        return load(databaseType, dataSourceMap, tableName, props);
+    public static Optional<PhysicalTableMetaData> load(final DatabaseType databaseType, final DataSource dataSource,
+                                                final Collection<ShardingSphereRule> rules, final String tableName, final ConfigurationProperties props) throws SQLException {
+        return load(databaseType, Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSource), rules, tableName, props);
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void decorate(final PhysicalSchemaMetaData schemaMetaData) {
+    private static void decorate(final Collection<ShardingSphereRule> rules, final PhysicalSchemaMetaData schemaMetaData) {
         Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
         Map<ShardingSphereRule, ShardingSphereMetaDataDecorator> decorators = OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataDecorator.class);
         for (String each : schemaMetaData.getAllTableNames()) {
@@ -144,7 +147,7 @@ public final class SchemaMetaDataLoader {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData) {
+    private static PhysicalTableMetaData decorate(final Collection<ShardingSphereRule> rules, final String tableName, final PhysicalTableMetaData tableMetaData) {
         Map<ShardingSphereRule, ShardingSphereMetaDataDecorator> decorators = OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataDecorator.class);
         PhysicalTableMetaData result = null;
         for (Entry<ShardingSphereRule, ShardingSphereMetaDataDecorator> entry : decorators.entrySet()) {
