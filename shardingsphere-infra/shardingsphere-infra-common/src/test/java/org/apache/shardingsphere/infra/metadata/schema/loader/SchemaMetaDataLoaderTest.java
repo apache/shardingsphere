@@ -49,16 +49,14 @@ public final class SchemaMetaDataLoaderTest {
     @Mock
     private ConfigurationProperties props;
     
-    private final SchemaMetaDataLoader loader = new SchemaMetaDataLoader(Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()));
-    
     @Test
     public void assertSyncLoadFullDatabases() throws SQLException {
-        assertPhysicalSchemaMetaData(loader.load(databaseType, dataSource, props));
+        assertPhysicalSchemaMetaData(SchemaMetaDataLoader.load(databaseType, dataSource, Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()), props));
     }
     
     @Test
     public void assertAsyncLoadFullDatabases() throws SQLException {
-        assertPhysicalSchemaMetaData(loader.load(databaseType, dataSource, props));
+        assertPhysicalSchemaMetaData(SchemaMetaDataLoader.load(databaseType, dataSource, Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()), props));
     }
     
     private void assertPhysicalSchemaMetaData(final PhysicalSchemaMetaData actual) {
@@ -73,11 +71,11 @@ public final class SchemaMetaDataLoaderTest {
     
     @Test
     public void assertLoadWithExistedTableName() throws SQLException {
-        assertTrue(loader.load(databaseType, dataSource, "data_node_routed_table_0", props).isPresent());
+        assertTrue(SchemaMetaDataLoader.load(databaseType, dataSource, Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()), "data_node_routed_table_0", props).isPresent());
     }
     
     @Test
     public void assertLoadWithNotExistedTableName() throws SQLException {
-        assertFalse(loader.load(databaseType, dataSource, "invalid_table", props).isPresent());
+        assertFalse(SchemaMetaDataLoader.load(databaseType, dataSource, Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()), "invalid_table", props).isPresent());
     }
 }
