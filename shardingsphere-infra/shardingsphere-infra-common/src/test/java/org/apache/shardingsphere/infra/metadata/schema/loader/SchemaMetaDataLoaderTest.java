@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -50,13 +51,9 @@ public final class SchemaMetaDataLoaderTest {
     private ConfigurationProperties props;
     
     @Test
-    public void assertSyncLoadFullDatabases() throws SQLException {
-        assertPhysicalSchemaMetaData(SchemaMetaDataLoader.load(databaseType, dataSource, Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()), props));
-    }
-    
-    @Test
-    public void assertAsyncLoadFullDatabases() throws SQLException {
-        assertPhysicalSchemaMetaData(SchemaMetaDataLoader.load(databaseType, dataSource, Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()), props));
+    public void assertLoadFullDatabases() throws SQLException {
+        assertPhysicalSchemaMetaData(
+                SchemaMetaDataLoader.load(databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()), props));
     }
     
     private void assertPhysicalSchemaMetaData(final PhysicalSchemaMetaData actual) {
@@ -71,11 +68,13 @@ public final class SchemaMetaDataLoaderTest {
     
     @Test
     public void assertLoadWithExistedTableName() throws SQLException {
-        assertTrue(SchemaMetaDataLoader.load(databaseType, dataSource, Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()), "data_node_routed_table_0", props).isPresent());
+        assertTrue(SchemaMetaDataLoader.load(databaseType, 
+                Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()), "data_node_routed_table_0", props).isPresent());
     }
     
     @Test
     public void assertLoadWithNotExistedTableName() throws SQLException {
-        assertFalse(SchemaMetaDataLoader.load(databaseType, dataSource, Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()), "invalid_table", props).isPresent());
+        assertFalse(SchemaMetaDataLoader.load(databaseType, 
+                Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeRoutedFixtureRule()), "invalid_table", props).isPresent());
     }
 }
