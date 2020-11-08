@@ -56,8 +56,8 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     protected void validateTableExist(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            if (!schema.getTableAddressingMetaData().getTableDataSourceNamesMapper().containsKey(tableName)) {
-                String dataSourceName = schema.getTableAddressingMetaData().getTableDataSourceNamesMapper().get(tableName).iterator().next();
+            if (!schema.getSchemaMetaData().containsTable(tableName)) {
+                String dataSourceName = schema.getSchemaMetaData().get(tableName).getAddressingDataSources().iterator().next();
                 throw new NoSuchTableException(dataSourceName, tableName);
             }
         }
@@ -72,7 +72,7 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     protected void validateTableNotExist(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            if (schema.getTableAddressingMetaData().getTableDataSourceNamesMapper().containsKey(tableName)) {
+            if (schema.getSchemaMetaData().containsTable(tableName)) {
                 throw new TableExistsException(tableName);
             }
         }

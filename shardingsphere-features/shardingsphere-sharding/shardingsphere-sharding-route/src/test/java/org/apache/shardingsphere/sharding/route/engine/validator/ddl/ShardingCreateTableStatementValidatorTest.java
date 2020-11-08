@@ -85,7 +85,7 @@ public final class ShardingCreateTableStatementValidatorTest {
     private void assertValidateCreateTable(final CreateTableStatement sqlStatement) {
         SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
-        when(schema.getTableAddressingMetaData().getTableDataSourceNamesMapper().containsKey("t_order")).thenReturn(true);
+        when(schema.getSchemaMetaData().containsTable("t_order")).thenReturn(true);
         new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
     }
     
@@ -108,7 +108,7 @@ public final class ShardingCreateTableStatementValidatorTest {
     private void assertValidateCreateTableIfNotExists(final CreateTableStatement sqlStatement) {
         SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
-        when(schema.getTableAddressingMetaData().getTableDataSourceNamesMapper().containsKey("t_order")).thenReturn(true);
+        when(schema.getSchemaMetaData().containsTable("t_order")).thenReturn(true);
         new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
     }
 }

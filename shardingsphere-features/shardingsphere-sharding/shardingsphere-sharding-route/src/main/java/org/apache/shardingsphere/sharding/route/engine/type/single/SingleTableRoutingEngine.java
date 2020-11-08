@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.single;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.model.addressing.TableAddressingMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -43,7 +43,7 @@ public final class SingleTableRoutingEngine implements ShardingRouteEngine {
     
     private final Collection<String> logicTables;
     
-    private final TableAddressingMetaData tableAddressingMetaData;
+    private final ShardingSphereSchema schema;
     
     private final SQLStatement sqlStatement;
     
@@ -60,8 +60,8 @@ public final class SingleTableRoutingEngine implements ShardingRouteEngine {
     // TODO maybe enhance here, only return one data source for multiple tables for now
     private Optional<String> findDataSourceName() {
         for (String each : logicTables) {
-            if (tableAddressingMetaData.getTableDataSourceNamesMapper().containsKey(each)) {
-                return Optional.of(tableAddressingMetaData.getTableDataSourceNamesMapper().get(each).iterator().next());
+            if (schema.getSchemaMetaData().containsTable(each)) {
+                return Optional.of(schema.getSchemaMetaData().get(each).getAddressingDataSources().iterator().next());
             }
         }
         return Optional.empty();
