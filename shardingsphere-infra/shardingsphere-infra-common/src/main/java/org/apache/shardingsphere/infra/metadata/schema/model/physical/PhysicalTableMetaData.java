@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +47,7 @@ public final class PhysicalTableMetaData {
     
     private final List<String> primaryKeyColumns = new ArrayList<>();
     
-    private final Collection<String> addressingDataSources = new LinkedList<>();
+    private final Collection<String> addressingDataSources = new LinkedHashSet<>();
     
     public PhysicalTableMetaData() {
         this(Collections.emptyList(), Collections.emptyList());

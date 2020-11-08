@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresh.impl;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.addressing.TableAddressingMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.TableMetaDataLoaderCallback;
@@ -45,19 +43,6 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
         } else {
             schema.getSchemaMetaData().put(tableName, new PhysicalTableMetaData());
         }
-        refreshTableAddressingMetaData(schema.getTableAddressingMetaData(), tableName, routeDataSourceNames);
-    }
-    
-    private void refreshTableAddressingMetaData(final TableAddressingMetaData tableAddressingMetaData, final String tableName, final Collection<String> routeDataSourceNames) {
-        for (String each : routeDataSourceNames) {
-            refreshTableAddressingMetaData(tableAddressingMetaData, tableName, each);
-        }
-    }
-    
-    private void refreshTableAddressingMetaData(final TableAddressingMetaData tableAddressingMetaData, final String tableName, final String dataSourceName) {
-        Collection<String> previousDataSourceNames = tableAddressingMetaData.getTableDataSourceNamesMapper().putIfAbsent(tableName, Lists.newArrayList(dataSourceName));
-        if (null != previousDataSourceNames) {
-            previousDataSourceNames.add(dataSourceName);
-        }
+        schema.getSchemaMetaData().get(tableName).getAddressingDataSources().addAll(routeDataSourceNames);
     }
 }
