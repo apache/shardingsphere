@@ -105,11 +105,11 @@ singleTableClause
     ;
 
 multipleTablesClause
-    : tableAliasRefList FROM tableReferences | FROM tableAliasRefList USING tableReferences
+    : multipleTableNames FROM tableReferences | FROM multipleTableNames USING tableReferences
     ;
 
 multipleTableNames
-    : tableName DOT_ASTERISK_? (COMMA_ tableName DOT_ASTERISK_?)*
+    : tableIdentOptWild (COMMA_ tableIdentOptWild)*
     ;
 
 select

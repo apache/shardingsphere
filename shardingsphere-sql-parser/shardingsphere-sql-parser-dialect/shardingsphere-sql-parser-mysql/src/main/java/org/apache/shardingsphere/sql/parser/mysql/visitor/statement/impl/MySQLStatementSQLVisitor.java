@@ -524,6 +524,18 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     }
 
     @Override
+    public ASTNode visitSelectWithInto(final MySQLStatementParser.SelectWithIntoContext ctx) {
+        if (null != ctx.selectWithInto()) {
+            return visit(ctx.selectWithInto());
+        }
+        MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.queryExpression());
+        if (null != ctx.lockClauseList()) {
+            result.setLock((LockSegment) visit(ctx.lockClauseList()));
+        }
+        return result;
+    }
+
+    @Override
     public ASTNode visitQueryExpressionBody(final MySQLStatementParser.QueryExpressionBodyContext ctx) {
         if (1 == ctx.getChildCount() && ctx.getChild(0) instanceof MySQLStatementParser.QueryPrimaryContext) {
             return visit(ctx.queryPrimary());
@@ -1000,11 +1012,11 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         DeleteMultiTableSegment result = new DeleteMultiTableSegment();
         TableSegment relateTableSource = (TableSegment) visit(ctx.tableReferences());
         result.setRelationTable(relateTableSource);
-        result.setActualDeleteTables(generateTablesFromTableMultipleTableNames(ctx.tableAliasRefList()));
+        result.setActualDeleteTables(generateTablesFromTableMultipleTableNames(ctx.multipleTableNames()));
         return result;
     }
     
-    private List<SimpleTableSegment> generateTablesFromTableMultipleTableNames(final MySQLStatementParser.TableAliasRefListContext ctx) {
+    private List<SimpleTableSegment> generateTablesFromTableMultipleTableNames(final MySQLStatementParser.MultipleTableNamesContext ctx) {
         List<SimpleTableSegment> result = new LinkedList<>();
         for (MySQLStatementParser.TableIdentOptWildContext each : ctx.tableIdentOptWild()) {
             result.add((SimpleTableSegment) visit(each.tableName()));
@@ -1021,6 +1033,8 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             if (null != ctx.lockClauseList()) {
                 result.setLock((LockSegment) visit(ctx.lockClauseList()));
             }
+        } else if (null != ctx.selectWithInto()) {
+            result = (MySQLSelectStatement) visit(ctx.selectWithInto());
         } else {
             result = (MySQLSelectStatement) visit(ctx.getChild(0));
         }

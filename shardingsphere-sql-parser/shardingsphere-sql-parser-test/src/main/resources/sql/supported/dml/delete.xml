@@ -30,4 +30,6 @@
     <sql-case id="delete_with_output_clause_column_shorthand" value="DELETE FROM t_order OUTPUT DELETED.* WHERE order_id = ?" db-types="SQLServer" />
     <sql-case id="delete_with_top" value="DELETE TOP(10) FROM t_order WHERE order_id = ?" db-types="SQLServer" />
     <sql-case id="delete_with_top_percent" value="DELETE TOP(10) PERCENT FROM t_order WHERE order_id = ?" db-types="SQLServer" />
+    <sql-case id="delete_multi_tables" value="DELETE t_order, t_order_item from t_order, t_order_item where t_order.order_id = t_order_item.order_id and t_order.status = ?" db-types="MySQL"/>
+    <sql-case id="delete_multi_tables_with_using" value="DELETE from t_order, t_order_item using t_order left join t_order_item on t_order.order_id = t_order_item.order_id where t_order.status = ?" db-types="MySQL"/>
 </sql-cases>
