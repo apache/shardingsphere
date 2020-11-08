@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.single;
 
-import org.apache.shardingsphere.infra.metadata.schema.model.addressing.TableAddressingMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -28,9 +30,10 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -39,7 +42,7 @@ public final class SingleTableRoutingEngineTest {
     
     @Test
     public void assertRoute() {
-        SingleTableRoutingEngine singleTableRoutingEngine = new SingleTableRoutingEngine(Arrays.asList("t_order", "t_order_item"), createTableAddressingMetaData(), null);
+        SingleTableRoutingEngine singleTableRoutingEngine = new SingleTableRoutingEngine(Arrays.asList("t_order", "t_order_item"), createShardingSphereSchema(), null);
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
         RouteContext routeContext = new RouteContext();
@@ -59,7 +62,7 @@ public final class SingleTableRoutingEngineTest {
     
     @Test
     public void assertRouteWithoutShardingRule() {
-        SingleTableRoutingEngine singleTableRoutingEngine = new SingleTableRoutingEngine(Arrays.asList("t_order", "t_order_item"), createTableAddressingMetaData(), new MySQLCreateTableStatement());
+        SingleTableRoutingEngine singleTableRoutingEngine = new SingleTableRoutingEngine(Arrays.asList("t_order", "t_order_item"), createShardingSphereSchema(), new MySQLCreateTableStatement());
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
         RouteContext routeContext = new RouteContext();
@@ -76,10 +79,16 @@ public final class SingleTableRoutingEngineTest {
         assertThat(tableMapper1.getLogicName(), is("t_order_item"));
     }
     
-    private TableAddressingMetaData createTableAddressingMetaData() {
-        TableAddressingMetaData result = new TableAddressingMetaData();
-        result.getTableDataSourceNamesMapper().put("t_order", Collections.singletonList("ds_0"));
-        result.getTableDataSourceNamesMapper().put("t_order_item", Collections.singletonList("ds_0"));
+    private ShardingSphereSchema createShardingSphereSchema() {
+        Map<String, PhysicalTableMetaData> tables = new HashMap<>(2, 1);
+        tables.put("t_order", createTableMetaData());
+        tables.put("t_order_item", createTableMetaData());
+        return new ShardingSphereSchema(null, new PhysicalSchemaMetaData(tables));
+    }
+    
+    private PhysicalTableMetaData createTableMetaData() {
+        PhysicalTableMetaData result = new PhysicalTableMetaData();
+        result.getAddressingDataSources().add("ds_0");
         return result;
     }
 }
