@@ -83,7 +83,7 @@ public final class SingleTableRoutingEngineTest {
         Map<String, PhysicalTableMetaData> tables = new HashMap<>(2, 1);
         tables.put("t_order", createTableMetaData());
         tables.put("t_order_item", createTableMetaData());
-        return new ShardingSphereSchema(null, new PhysicalSchemaMetaData(tables));
+        return new ShardingSphereSchema(new PhysicalSchemaMetaData(tables));
     }
     
     private PhysicalTableMetaData createTableMetaData() {
