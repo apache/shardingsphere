@@ -272,7 +272,6 @@ The following components are provided under a BSD license. See project link for 
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
     antlr4-runtime 4.7.2: https://github.com/antlr/antlr4, BSD-3-Clause
-    jline 0.9.94: https://github.com/jline/jline1, BSD-3-Clause
     postgresql 42.2.5: https://github.com/pgjdbc/pgjdbc, BSD 2-Clause
     protobuf-java 3.11.0: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
     protobuf-java-util 3.11.0: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause 
