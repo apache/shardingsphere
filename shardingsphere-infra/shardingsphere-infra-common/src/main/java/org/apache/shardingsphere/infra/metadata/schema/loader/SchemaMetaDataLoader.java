@@ -73,7 +73,7 @@ public final class SchemaMetaDataLoader {
     
     private static void setAddressingDataSources(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
                                                  final Collection<ShardingSphereRule> rules, final ShardingSphereSchema schema) throws SQLException {
-        for (Entry<String, Collection<String>> entry : TableAddressingMetaDataLoader.load(databaseType, dataSourceMap, rules).getTableDataSourceNamesMapper().entrySet()) {
+        for (Entry<String, Collection<String>> entry : TableAddressingMetaDataLoader.load(databaseType, dataSourceMap, rules).entrySet()) {
             String tableName = entry.getKey();
             if (!schema.containsTable(tableName)) {
                 schema.put(tableName, new PhysicalTableMetaData());

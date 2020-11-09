@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.sharding.metadata;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.schema.model.addressing.TableAddressingMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.TableAddressingMetaDataDecorator;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
+import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -33,17 +34,17 @@ import java.util.stream.Collectors;
 public final class ShardingTableAddressingMetaDataDecorator implements TableAddressingMetaDataDecorator<ShardingRule> {
     
     @Override
-    public void decorate(final ShardingRule rule, final TableAddressingMetaData metaData) {
-        rule.getTableRules().forEach(each -> decorate(each, metaData));
+    public void decorate(final ShardingRule rule, final Map<String, Collection<String>> tableDataSourceNamesMapper) {
+        rule.getTableRules().forEach(each -> decorate(each, tableDataSourceNamesMapper));
     }
     
-    private void decorate(final TableRule tableRule, final TableAddressingMetaData metaData) {
+    private void decorate(final TableRule tableRule, final Map<String, Collection<String>> tableDataSourceNamesMapper) {
         boolean found = false;
         for (String each : tableRule.getActualDataNodes().stream().map(DataNode::getTableName).collect(Collectors.toSet())) {
-            found = null != metaData.getTableDataSourceNamesMapper().remove(each) || found;
+            found = null != tableDataSourceNamesMapper.remove(each) || found;
         }
         if (found) {
-            metaData.getTableDataSourceNamesMapper().put(tableRule.getLogicTable(), new LinkedList<>(tableRule.getActualDatasourceNames()));
+            tableDataSourceNamesMapper.put(tableRule.getLogicTable(), new LinkedList<>(tableRule.getActualDatasourceNames()));
         }
     }
     
