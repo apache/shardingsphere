@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.dialect;
+package org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.dialect;
 
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.AbstractDatabaseMetaDataDialectHandlerTest;
+import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
+import org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.AbstractDatabaseMetaDataDialectHandlerTest;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
@@ -28,25 +28,26 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
-public final class MySQLDatabaseMetaDataDialectHandlerTest extends AbstractDatabaseMetaDataDialectHandlerTest {
+public final class OracleDatabaseMetaDataDialectHandlerTest extends AbstractDatabaseMetaDataDialectHandlerTest {
     
     @Test
     public void assertGetSchema() throws SQLException {
-        when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
-        String mysqlSchema = getSchema(new MySQLDatabaseType());
-        assertThat(mysqlSchema, is(DATABASE_NAME));
+        when(getConnection().getSchema()).thenReturn(USER_NAME);
+        when(getConnection().getMetaData()).thenReturn(getDatabaseMetaData());
+        String oracleSchema = getSchema(new OracleDatabaseType());
+        assertThat(oracleSchema, is(USER_NAME));
     }
     
     @Test
     public void assertFormatTableNamePattern() {
-        String mysqlTableNamePattern = formatTableNamePattern(new MySQLDatabaseType());
-        assertThat(mysqlTableNamePattern, is(TABLE_NAME_PATTERN));
+        String oracleTableNamePattern = formatTableNamePattern(new OracleDatabaseType());
+        assertThat(oracleTableNamePattern, is(TABLE_NAME_PATTERN.toUpperCase()));
     }
     
     @Test
     public void assertGetQuoteCharacter() {
-        QuoteCharacter mysqlQuoteCharacter = getQuoteCharacter(new MySQLDatabaseType());
-        assertThat(mysqlQuoteCharacter.getStartDelimiter(), is("`"));
-        assertThat(mysqlQuoteCharacter.getEndDelimiter(), is("`"));
+        QuoteCharacter oracleQuoteCharacter = getQuoteCharacter(new OracleDatabaseType());
+        assertThat(oracleQuoteCharacter.getStartDelimiter(), is("\""));
+        assertThat(oracleQuoteCharacter.getEndDelimiter(), is("\""));
     }
 }

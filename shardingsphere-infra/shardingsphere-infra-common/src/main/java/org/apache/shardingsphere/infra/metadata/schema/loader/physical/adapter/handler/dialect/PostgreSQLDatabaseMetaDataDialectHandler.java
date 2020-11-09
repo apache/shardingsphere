@@ -15,21 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler;
+package org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.dialect;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.DatabaseMetaDataDialectHandler;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
-import static org.junit.Assert.assertTrue;
+import java.util.Properties;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class DatabaseMetaDataDialectHandlerFactoryTest {
+/**
+ * Database meta data dialect handler of PostgreSQL.
+ */
+@Getter
+@Setter
+public final class PostgreSQLDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
     
-    @Test
-    public void assertFindHandler() {
-        assertTrue(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypeRegistry.getTrunkDatabaseType("Oracle")).isPresent());
-        assertTrue(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypeRegistry.getTrunkDatabaseType("MySQL")).isPresent());
+    private Properties props;
+    
+    @Override
+    public QuoteCharacter getQuoteCharacter() {
+        return QuoteCharacter.QUOTE;
+    }
+    
+    @Override
+    public String getType() {
+        return "PostgreSQL";
     }
 }

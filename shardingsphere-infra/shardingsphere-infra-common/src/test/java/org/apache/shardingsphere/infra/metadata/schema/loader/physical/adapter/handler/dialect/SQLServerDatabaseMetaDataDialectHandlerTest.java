@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.dialect;
+package org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.dialect;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.AbstractDatabaseMetaDataDialectHandlerTest;
+import org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.AbstractDatabaseMetaDataDialectHandlerTest;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Before;
 import org.junit.Test;

@@ -15,31 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.dialect;
+package org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.DatabaseMetaDataDialectHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Properties;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Database meta data dialect handler of SQL92.
- */
-@Getter
-@Setter
-public final class SQL92DatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
+@RunWith(MockitoJUnitRunner.class)
+public final class DatabaseMetaDataDialectHandlerFactoryTest {
     
-    private Properties props;
-    
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.QUOTE;
-    }
-    
-    @Override
-    public String getType() {
-        return "SQL92";
+    @Test
+    public void assertFindHandler() {
+        assertTrue(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypeRegistry.getTrunkDatabaseType("Oracle")).isPresent());
+        assertTrue(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypeRegistry.getTrunkDatabaseType("MySQL")).isPresent());
     }
 }

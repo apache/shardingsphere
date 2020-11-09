@@ -15,48 +15,49 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.dialect;
+package org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.DatabaseMetaDataDialectHandler;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Optional;
-import java.util.Properties;
 
 /**
- * Database meta data dialect handler of Oracle.
+ * Database meta data dialect handler.
  */
-@Getter
-@Setter
-public final class OracleDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
+public interface DatabaseMetaDataDialectHandler extends TypedSPI {
     
-    private Properties props;
-    
-    @Override
-    public String getSchema(final Connection connection) {
+    /**
+     * Get schema.
+     *
+     * @param connection connection
+     * @return schema
+     */
+    default String getSchema(final Connection connection) {
         try {
-            return Optional.ofNullable(connection.getMetaData().getUserName()).map(String::toUpperCase).orElse(null);
+            return connection.getSchema();
         } catch (final SQLException ignored) {
             return null;
         }
     }
     
-    @Override
-    public String formatTableNamePattern(final String tableNamePattern) {
-        return tableNamePattern.toUpperCase();
+    /**
+     * Format table name pattern.
+     *
+     * @param tableNamePattern table name pattern
+     * @return formatted table name pattern
+     */
+    default String formatTableNamePattern(final String tableNamePattern) {
+        return tableNamePattern;
     }
     
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.QUOTE;
-    }
-    
-    @Override
-    public String getType() {
-        return "Oracle";
+    /**
+     * Get quote character.
+     *
+     * @return quote character
+     */
+    default QuoteCharacter getQuoteCharacter() {
+        return QuoteCharacter.NONE;
     }
 }

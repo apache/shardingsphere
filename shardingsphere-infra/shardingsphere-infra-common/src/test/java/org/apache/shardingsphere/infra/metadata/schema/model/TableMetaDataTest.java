@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.model.physical;
+package org.apache.shardingsphere.infra.metadata.schema.model;
 
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.junit.Before;
 import org.junit.Test;
 

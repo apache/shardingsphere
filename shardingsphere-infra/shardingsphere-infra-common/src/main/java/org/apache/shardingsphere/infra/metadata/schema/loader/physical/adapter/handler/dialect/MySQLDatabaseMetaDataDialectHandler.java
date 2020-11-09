@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.dialect;
+package org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.dialect;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.DatabaseMetaDataDialectHandler;
+import org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.DatabaseMetaDataDialectHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Properties;
 
 /**
- * Database meta data dialect handler of SQLServer.
+ * Database meta data dialect handler of MySQL.
  */
 @Getter
 @Setter
-public final class SQLServerDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
+public final class MySQLDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
     
     private Properties props;
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.BRACKETS;
+        return QuoteCharacter.BACK_QUOTE;
     }
     
     @Override
     public String getType() {
-        return "SQLServer";
+        return "MySQL";
     }
 }
