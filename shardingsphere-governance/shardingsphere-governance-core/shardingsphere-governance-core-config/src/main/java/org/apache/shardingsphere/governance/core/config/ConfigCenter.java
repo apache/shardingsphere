@@ -26,7 +26,7 @@ import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncry
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.event.model.persist.DataSourcePersistEvent;
-import org.apache.shardingsphere.governance.core.event.model.persist.MetaDataPersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.persist.SchemaPersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.persist.RulePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.persist.SchemaNamePersistEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
@@ -148,7 +148,7 @@ public final class ConfigCenter {
      * @param event Meta data event.
      */
     @Subscribe
-    public synchronized void renew(final MetaDataPersistEvent event) {
+    public synchronized void renew(final SchemaPersistEvent event) {
         persistSchema(event.getSchemaName(), event.getSchema());
     }
     

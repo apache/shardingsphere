@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import java.util.Map;
 
 /**
- * Data source event.
+ * Data source persist event.
  */
 @RequiredArgsConstructor
 @Getter

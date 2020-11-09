@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.config;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.governance.core.event.model.persist.DataSourcePersistEvent;
-import org.apache.shardingsphere.governance.core.event.model.persist.MetaDataPersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.persist.SchemaPersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.persist.RulePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.persist.SchemaNamePersistEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlLogicSchemaMetaData;
@@ -522,9 +522,9 @@ public final class ConfigCenterTest {
     }
     
     @Test
-    public void assertRenewMetaDataPersistEvent() {
-        MetaDataPersistEvent event = new MetaDataPersistEvent("sharding_db", 
-                new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlLogicSchemaMetaData.class)));
+    public void assertRenewSchemaPersistEvent() {
+        SchemaPersistEvent event = new SchemaPersistEvent(
+                "sharding_db", new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlLogicSchemaMetaData.class)));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
         verify(configurationRepository).persist(eq("/schemas/sharding_db/table"), anyString());

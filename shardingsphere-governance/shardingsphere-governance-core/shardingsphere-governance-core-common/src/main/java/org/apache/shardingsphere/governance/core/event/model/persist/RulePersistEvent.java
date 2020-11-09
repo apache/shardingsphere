@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import java.util.Collection;
 
 /**
- * Rule event.
+ * Rule persist event.
  */
 @RequiredArgsConstructor
 @Getter
