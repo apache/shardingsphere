@@ -34,7 +34,6 @@ import java.util.List;
 
 /**
  * Physical schema meta data loader.
- * Note: this is only load table name, skip index and column info
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j(topic = "ShardingSphere-metadata")
@@ -51,15 +50,13 @@ public final class PhysicalSchemaMetaDataLoader {
      *
      * @param dataSource data source
      * @param databaseType database type
-     * @param excludedTableNames excluded table names
      * @return all table names
      * @throws SQLException SQL exception
      */
-    public static Collection<String> loadTableNames(final DataSource dataSource, final DatabaseType databaseType, final Collection<String> excludedTableNames) throws SQLException {
+    public static Collection<String> loadAllTableNames(final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
         List<String> result;
         try (MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, dataSource.getConnection())) {
             result = loadAllTableNames(connectionAdapter);
-            result.removeAll(excludedTableNames);
         }
         log.info("Loading {} tables' meta data for unconfigured tables.", result.size());
         if (result.isEmpty()) {

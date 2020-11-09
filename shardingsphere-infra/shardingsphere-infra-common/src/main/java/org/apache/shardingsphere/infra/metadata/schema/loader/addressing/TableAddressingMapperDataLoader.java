@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -73,7 +72,7 @@ public final class TableAddressingMapperDataLoader {
     
     private static void append(final Map<String, Collection<String>> tableAddressingMapper, 
                                final DatabaseType databaseType, final String dataSourceName, final DataSource dataSource) throws SQLException {
-        for (String each : PhysicalSchemaMetaDataLoader.loadTableNames(dataSource, databaseType, Collections.emptyList())) {
+        for (String each : PhysicalSchemaMetaDataLoader.loadAllTableNames(dataSource, databaseType)) {
             if (!tableAddressingMapper.containsKey(each)) {
                 tableAddressingMapper.put(each, new LinkedHashSet<>());
             }
