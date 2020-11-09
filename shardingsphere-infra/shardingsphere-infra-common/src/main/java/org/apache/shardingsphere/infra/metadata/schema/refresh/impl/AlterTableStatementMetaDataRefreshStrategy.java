@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.schema.refresh.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.TableMetaDataLoaderCallback;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
@@ -34,16 +32,12 @@ import java.util.Collection;
 public final class AlterTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<AlterTableStatement> {
     
     @Override
-    public void refreshMetaData(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
+    public void refreshMetaData(final PhysicalSchemaMetaData schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
                                 final AlterTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        PhysicalSchemaMetaData schemaMetaData = schema.getSchemaMetaData();
-        if (null != schemaMetaData && schemaMetaData.containsTable(tableName)) {
-            callback.load(tableName).ifPresent(tableMetaData -> alterMetaData(schema, tableName, tableMetaData));
+        if (null != schema && schema.containsTable(tableName)) {
+            callback.load(tableName).ifPresent(tableMetaData -> schema.put(tableName, tableMetaData));
         }
     }
-    
-    private void alterMetaData(final ShardingSphereSchema schema, final String tableName, final PhysicalTableMetaData tableMetaData) {
-        schema.getSchemaMetaData().put(tableName, tableMetaData);
-    }
+
 }

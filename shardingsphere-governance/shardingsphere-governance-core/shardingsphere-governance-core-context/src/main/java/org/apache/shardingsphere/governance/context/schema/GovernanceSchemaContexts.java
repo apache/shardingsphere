@@ -44,11 +44,10 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.type.StatusContainedRule;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
-import org.apache.shardingsphere.infra.metadata.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
+import org.apache.shardingsphere.infra.rule.type.StatusContainedRule;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -95,7 +94,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     }
     
     private void persistMetaData() {
-        schemaContexts.getMetaDataMap().forEach((key, value) -> governanceFacade.getConfigCenter().persistMetaData(key, value.getSchema().getSchemaMetaData()));
+        schemaContexts.getMetaDataMap().forEach((key, value) -> governanceFacade.getConfigCenter().persistMetaData(key, value.getSchema()));
     }
     
     @Override
@@ -160,7 +159,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(schemaContexts.getMetaDataMap());
         metaDataMap.put(event.getSchemaName(), createAddedMetaData(event));
         schemaContexts = new StandardSchemaContexts(metaDataMap, schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
-        governanceFacade.getConfigCenter().persistMetaData(event.getSchemaName(), schemaContexts.getMetaDataMap().get(event.getSchemaName()).getSchema().getSchemaMetaData());
+        governanceFacade.getConfigCenter().persistMetaData(event.getSchemaName(), schemaContexts.getMetaDataMap().get(event.getSchemaName()).getSchema());
         GovernanceEventBus.getInstance().post(
                 new DataSourceChangeCompletedEvent(event.getSchemaName(), schemaContexts.getDatabaseType(), metaDataMap.get(event.getSchemaName()).getResource().getDataSources()));
     }
@@ -232,7 +231,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
         newMetaDataMap.put(schemaName, getChangedMetaData(schemaContexts.getMetaDataMap().get(schemaName), event.getRuleConfigurations()));
         schemaContexts = new StandardSchemaContexts(
                 newMetaDataMap, schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
-        governanceFacade.getConfigCenter().persistMetaData(schemaName, newMetaDataMap.get(schemaName).getSchema().getSchemaMetaData());
+        governanceFacade.getConfigCenter().persistMetaData(schemaName, newMetaDataMap.get(schemaName).getSchema());
     }
     
     /**
@@ -300,8 +299,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
     
     private ShardingSphereMetaData getChangedMetaData(final ShardingSphereMetaData oldMetaData, final PhysicalSchemaMetaData newSchemaMetaData, final String schemaName) {
         // TODO refresh tableAddressingMetaData
-        ShardingSphereSchema schema = new ShardingSphereSchema(newSchemaMetaData);
-        return new ShardingSphereMetaData(schemaName, oldMetaData.getResource(), oldMetaData.getRuleMetaData(), schema);
+        return new ShardingSphereMetaData(schemaName, oldMetaData.getResource(), oldMetaData.getRuleMetaData(), newSchemaMetaData);
     }
     
     private ShardingSphereMetaData getChangedMetaData(final ShardingSphereMetaData oldMetaData, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {

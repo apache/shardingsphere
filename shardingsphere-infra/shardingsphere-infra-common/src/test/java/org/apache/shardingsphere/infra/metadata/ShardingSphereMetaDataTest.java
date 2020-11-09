@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.infra.metadata;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.metadata.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -39,7 +39,7 @@ public final class ShardingSphereMetaDataTest {
     public void assertIsComplete() {
         ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("ds", mock(DataSource.class)), mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class));
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(mock(RuleConfiguration.class)), Collections.singleton(mock(ShardingSphereRule.class)));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("name", resource, ruleMetaData, mock(ShardingSphereSchema.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("name", resource, ruleMetaData, mock(PhysicalSchemaMetaData.class));
         assertTrue(metaData.isComplete());
     }
     
@@ -47,7 +47,7 @@ public final class ShardingSphereMetaDataTest {
     public void assertIsNotCompleteWithoutRule() {
         ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("ds", mock(DataSource.class)), mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class));
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("name", resource, ruleMetaData, mock(ShardingSphereSchema.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("name", resource, ruleMetaData, mock(PhysicalSchemaMetaData.class));
         assertFalse(metaData.isComplete());
     }
     
@@ -55,7 +55,7 @@ public final class ShardingSphereMetaDataTest {
     public void assertIsNotCompleteWithoutDataSource() {
         ShardingSphereResource resource = new ShardingSphereResource(Collections.emptyMap(), mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class));
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(mock(RuleConfiguration.class)), Collections.singleton(mock(ShardingSphereRule.class)));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("name", resource, ruleMetaData, mock(ShardingSphereSchema.class));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("name", resource, ruleMetaData, mock(PhysicalSchemaMetaData.class));
         assertFalse(metaData.isComplete());
     }
 }

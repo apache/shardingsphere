@@ -50,7 +50,7 @@ public final class ShardingConditionEngineFactoryTest {
     
     @Before
     public void setUp() {
-        when(metaData.getSchema().getSchemaMetaData()).thenReturn(mock(PhysicalSchemaMetaData.class));
+        when(metaData.getSchema()).thenReturn(mock(PhysicalSchemaMetaData.class));
     }
     
     @Test

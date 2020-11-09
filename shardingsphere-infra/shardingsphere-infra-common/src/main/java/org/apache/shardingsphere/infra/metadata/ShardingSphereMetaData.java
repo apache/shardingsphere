@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 
 /**
  * ShardingSphere meta data.
@@ -36,7 +36,7 @@ public final class ShardingSphereMetaData {
     
     private final ShardingSphereRuleMetaData ruleMetaData;
     
-    private final ShardingSphereSchema schema;
+    private final PhysicalSchemaMetaData schema;
     
     /**
      * Is complete schema context.

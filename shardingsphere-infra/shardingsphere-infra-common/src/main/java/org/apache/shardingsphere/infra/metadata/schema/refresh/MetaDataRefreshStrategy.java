@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.schema.refresh;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -41,5 +41,5 @@ public interface MetaDataRefreshStrategy<T extends SQLStatement> {
      * @param callback callback
      * @throws SQLException SQL exception
      */
-    void refreshMetaData(ShardingSphereSchema schema, DatabaseType databaseType, Collection<String> routeDataSourceNames, T sqlStatement, TableMetaDataLoaderCallback callback) throws SQLException;
+    void refreshMetaData(PhysicalSchemaMetaData schema, DatabaseType databaseType, Collection<String> routeDataSourceNames, T sqlStatement, TableMetaDataLoaderCallback callback) throws SQLException;
 }
