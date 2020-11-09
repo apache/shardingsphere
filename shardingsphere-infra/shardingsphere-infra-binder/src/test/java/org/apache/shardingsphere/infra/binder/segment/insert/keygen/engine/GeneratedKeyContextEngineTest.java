@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.insert.keygen.engine;
 
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -58,14 +58,14 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class GeneratedKeyContextEngineTest {
     
-    private PhysicalSchemaMetaData schemaMetaData;
+    private ShardingSphereSchema schema;
     
     @Before
     public void setUp() {
         PhysicalTableMetaData tableMetaData = new PhysicalTableMetaData(Collections.singletonList(new PhysicalColumnMetaData("id", Types.INTEGER, "INT", true, true, false)), Collections.emptyList());
         Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
         tableMetaDataMap.put("tbl", tableMetaData);
-        schemaMetaData = new PhysicalSchemaMetaData(tableMetaDataMap);
+        schema = new ShardingSphereSchema(tableMetaDataMap);
     }
     
     @Test
@@ -96,7 +96,7 @@ public final class GeneratedKeyContextEngineTest {
     private void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(final InsertStatement insertStatement) {
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl1")));
         insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
-        assertFalse(new GeneratedKeyContextEngine(insertStatement, schemaMetaData).createGenerateKeyContext(Collections.emptyList(), 
+        assertFalse(new GeneratedKeyContextEngine(insertStatement, schema).createGenerateKeyContext(Collections.emptyList(), 
                 Collections.emptyList(), Collections.singletonList(1)).isPresent());
     }
     
@@ -130,7 +130,7 @@ public final class GeneratedKeyContextEngineTest {
         insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
         List<ExpressionSegment> expressionSegments = Collections.singletonList(new LiteralExpressionSegment(0, 0, 1));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, expressionSegments));
-        Optional<GeneratedKeyContext> actual = new GeneratedKeyContextEngine(insertStatement, schemaMetaData)
+        Optional<GeneratedKeyContext> actual = new GeneratedKeyContextEngine(insertStatement, schema)
                 .createGenerateKeyContext(Collections.singletonList("id"), Collections.singletonList(expressionSegments), Collections.singletonList(1));
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(1));
@@ -169,7 +169,7 @@ public final class GeneratedKeyContextEngineTest {
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(1, 2, "value"))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new CommonExpressionSegment(1, 2, "ignored value"))));
         List<List<ExpressionSegment>> valueExpressions = insertStatement.getValues().stream().map(InsertValuesSegment::getValues).collect(Collectors.toList());
-        Optional<GeneratedKeyContext> actual = new GeneratedKeyContextEngine(insertStatement, schemaMetaData)
+        Optional<GeneratedKeyContext> actual = new GeneratedKeyContextEngine(insertStatement, schema)
                 .createGenerateKeyContext(Collections.singletonList("id"), valueExpressions, Collections.singletonList(1));
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(3));
@@ -177,7 +177,6 @@ public final class GeneratedKeyContextEngineTest {
         assertThat(generatedValuesIterator.next(), is((Comparable) 1));
         assertThat(generatedValuesIterator.next(), is((Comparable) 100));
         assertThat(generatedValuesIterator.next(), is((Comparable) "value"));
-        assertTrue(new GeneratedKeyContextEngine(insertStatement, schemaMetaData).createGenerateKeyContext(Collections.emptyList(), 
-                Collections.emptyList(), Collections.singletonList(1)).isPresent());
+        assertTrue(new GeneratedKeyContextEngine(insertStatement, schema).createGenerateKeyContext(Collections.emptyList(), Collections.emptyList(), Collections.singletonList(1)).isPresent());
     }
 }

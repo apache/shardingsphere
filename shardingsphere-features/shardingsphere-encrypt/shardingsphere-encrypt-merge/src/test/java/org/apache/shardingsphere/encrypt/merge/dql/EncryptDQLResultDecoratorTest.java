@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.merge.dql;
 
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.junit.Test;
 
@@ -40,7 +40,7 @@ public final class EncryptDQLResultDecoratorTest {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.next()).thenReturn(true);
         EncryptDQLResultDecorator decorator = new EncryptDQLResultDecorator(metaData, queryWithCipherColumn);
-        MergedResult actual = decorator.decorate(queryResult, mock(SQLStatementContext.class), mock(PhysicalSchemaMetaData.class));
+        MergedResult actual = decorator.decorate(queryResult, mock(SQLStatementContext.class), mock(ShardingSphereSchema.class));
         assertTrue(actual.next());
     }
 
@@ -49,7 +49,7 @@ public final class EncryptDQLResultDecoratorTest {
         MergedResult mergedResult = mock(MergedResult.class);
         when(mergedResult.next()).thenReturn(true);
         EncryptDQLResultDecorator decorator = new EncryptDQLResultDecorator(metaData, queryWithCipherColumn);
-        MergedResult actual = decorator.decorate(mergedResult, mock(SQLStatementContext.class), mock(PhysicalSchemaMetaData.class));
+        MergedResult actual = decorator.decorate(mergedResult, mock(SQLStatementContext.class), mock(ShardingSphereSchema.class));
         assertTrue(actual.next());
     }
 }

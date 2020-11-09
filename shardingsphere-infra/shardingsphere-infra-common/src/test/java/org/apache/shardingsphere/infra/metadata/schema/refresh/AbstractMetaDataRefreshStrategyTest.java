@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalIndexMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 import org.junit.Before;
 
@@ -30,15 +30,15 @@ import java.util.Collections;
 @Getter
 public abstract class AbstractMetaDataRefreshStrategyTest {
     
-    private PhysicalSchemaMetaData schema;
+    private ShardingSphereSchema schema;
     
     @Before
     public void setUp() {
         schema = buildSchema();
     }
     
-    private PhysicalSchemaMetaData buildSchema() {
-        return new PhysicalSchemaMetaData(ImmutableMap.of("t_order", new PhysicalTableMetaData(
+    private ShardingSphereSchema buildSchema() {
+        return new ShardingSphereSchema(ImmutableMap.of("t_order", new PhysicalTableMetaData(
                 Collections.singletonList(new PhysicalColumnMetaData("order_id", 1, "String", false, false, false)), Collections.singletonList(new PhysicalIndexMetaData("index")))));
     }
 }

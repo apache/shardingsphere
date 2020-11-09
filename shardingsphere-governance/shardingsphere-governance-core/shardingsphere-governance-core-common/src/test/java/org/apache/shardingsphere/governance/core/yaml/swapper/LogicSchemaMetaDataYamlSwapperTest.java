@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.yaml.swapper;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlLogicSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
 
@@ -40,8 +40,8 @@ public final class LogicSchemaMetaDataYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlLogicSchemaMetaData() {
-        PhysicalSchemaMetaData physicalSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAM), YamlLogicSchemaMetaData.class));
-        YamlLogicSchemaMetaData yamlLogicSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToYamlConfiguration(physicalSchemaMetaData);
+        ShardingSphereSchema schema = new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAM), YamlLogicSchemaMetaData.class));
+        YamlLogicSchemaMetaData yamlLogicSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToYamlConfiguration(schema);
         assertNotNull(yamlLogicSchemaMetaData);
         assertNotNull(yamlLogicSchemaMetaData.getConfiguredSchemaMetaData());
         assertThat(yamlLogicSchemaMetaData.getConfiguredSchemaMetaData().getTables().keySet(), is(Collections.singleton("t_order")));
@@ -52,11 +52,11 @@ public final class LogicSchemaMetaDataYamlSwapperTest {
     @Test
     public void assertSwapToLogicSchemaMetaData() {
         YamlLogicSchemaMetaData yamlLogicSchemaMetaData = YamlEngine.unmarshal(readYAML(META_DATA_YAM), YamlLogicSchemaMetaData.class);
-        PhysicalSchemaMetaData physicalSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToObject(yamlLogicSchemaMetaData);
-        assertThat(physicalSchemaMetaData.getAllTableNames(), is(Collections.singleton("t_order")));
-        assertThat(physicalSchemaMetaData.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
-        assertThat(physicalSchemaMetaData.getAllColumnNames("t_order").size(), is(1));
-        assertThat(physicalSchemaMetaData.get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
+        ShardingSphereSchema schema = new LogicSchemaMetaDataYamlSwapper().swapToObject(yamlLogicSchemaMetaData);
+        assertThat(schema.getAllTableNames(), is(Collections.singleton("t_order")));
+        assertThat(schema.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
+        assertThat(schema.getAllColumnNames("t_order").size(), is(1));
+        assertThat(schema.get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
     }
     
     @SneakyThrows({URISyntaxException.class, IOException.class})

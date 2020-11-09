@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -51,12 +51,12 @@ public final class SchemaMetaDataLoaderTest {
     
     @Test
     public void assertLoadFullDatabases() throws SQLException {
-        PhysicalSchemaMetaData actual = SchemaMetaDataLoader.load(
+        ShardingSphereSchema actual = SchemaMetaDataLoader.load(
                 databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props);
-        assertPhysicalSchemaMetaData(actual);
+        assertSchema(actual);
     }
     
-    private void assertPhysicalSchemaMetaData(final PhysicalSchemaMetaData actual) {
+    private void assertSchema(final ShardingSphereSchema actual) {
         assertThat(actual.getAllTableNames().size(), is(2));
         assertTrue(actual.containsTable("data_node_routed_table_0"));
         assertTrue(actual.get("data_node_routed_table_0").getColumns().containsKey("id"));

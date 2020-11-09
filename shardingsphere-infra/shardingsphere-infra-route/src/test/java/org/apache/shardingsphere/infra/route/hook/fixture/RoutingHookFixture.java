@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.route.hook.fixture;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.hook.RoutingHook;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 
 @Getter
 public final class RoutingHookFixture implements RoutingHook {
@@ -29,7 +29,7 @@ public final class RoutingHookFixture implements RoutingHook {
     
     private RouteContext routeContext;
     
-    private PhysicalSchemaMetaData schemaMetaData;
+    private ShardingSphereSchema schema;
     
     private Exception cause;
     
@@ -39,9 +39,9 @@ public final class RoutingHookFixture implements RoutingHook {
     }
     
     @Override
-    public void finishSuccess(final RouteContext routeContext, final PhysicalSchemaMetaData schemaMetaData) {
+    public void finishSuccess(final RouteContext routeContext, final ShardingSphereSchema schema) {
         this.routeContext = routeContext;
-        this.schemaMetaData = schemaMetaData;
+        this.schema = schema;
     }
     
     @Override

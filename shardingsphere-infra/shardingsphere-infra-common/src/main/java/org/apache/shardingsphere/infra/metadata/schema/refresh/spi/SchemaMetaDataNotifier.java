@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresh.spi;
 
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
 /**
  * Schema meta data notifier.
  */
-public interface SchemaMetaDataNotifier extends OrderedSPI<PhysicalSchemaMetaData> {
+public interface SchemaMetaDataNotifier extends OrderedSPI<ShardingSphereSchema> {
     
     /**
      * Notify when schema meta data changed.
      * 
      * @param name schema name
-     * @param metaData schema meta data
+     * @param schema ShardingSphere schema
      */
-    void notify(String name, PhysicalSchemaMetaData metaData);
+    void notify(String name, ShardingSphereSchema schema);
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.single;
 
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -41,7 +41,7 @@ public final class SingleTableRoutingEngineTest {
     
     @Test
     public void assertRoute() {
-        SingleTableRoutingEngine singleTableRoutingEngine = new SingleTableRoutingEngine(Arrays.asList("t_order", "t_order_item"), createShardingSphereSchema(), null);
+        SingleTableRoutingEngine singleTableRoutingEngine = new SingleTableRoutingEngine(Arrays.asList("t_order", "t_order_item"), buildSchema(), null);
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
         RouteContext routeContext = new RouteContext();
@@ -61,7 +61,7 @@ public final class SingleTableRoutingEngineTest {
     
     @Test
     public void assertRouteWithoutShardingRule() {
-        SingleTableRoutingEngine singleTableRoutingEngine = new SingleTableRoutingEngine(Arrays.asList("t_order", "t_order_item"), createShardingSphereSchema(), new MySQLCreateTableStatement());
+        SingleTableRoutingEngine singleTableRoutingEngine = new SingleTableRoutingEngine(Arrays.asList("t_order", "t_order_item"), buildSchema(), new MySQLCreateTableStatement());
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
         RouteContext routeContext = new RouteContext();
@@ -78,14 +78,14 @@ public final class SingleTableRoutingEngineTest {
         assertThat(tableMapper1.getLogicName(), is("t_order_item"));
     }
     
-    private PhysicalSchemaMetaData createShardingSphereSchema() {
+    private ShardingSphereSchema buildSchema() {
         Map<String, PhysicalTableMetaData> tables = new HashMap<>(2, 1);
-        tables.put("t_order", createTableMetaData());
-        tables.put("t_order_item", createTableMetaData());
-        return new PhysicalSchemaMetaData(tables);
+        tables.put("t_order", buildTableMetaData());
+        tables.put("t_order_item", buildTableMetaData());
+        return new ShardingSphereSchema(tables);
     }
     
-    private PhysicalTableMetaData createTableMetaData() {
+    private PhysicalTableMetaData buildTableMetaData() {
         PhysicalTableMetaData result = new PhysicalTableMetaData();
         result.getAddressingDataSources().add("ds_0");
         return result;

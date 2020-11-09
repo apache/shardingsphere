@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.route.engine.judge.impl;
 
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
@@ -57,14 +57,14 @@ import static org.mockito.Mockito.when;
 
 public final class SimpleShadowDataSourceRouterTest {
     
-    private PhysicalSchemaMetaData schemaMetaData;
+    private ShardingSphereSchema schema;
     
     private ShadowRule shadowRule;
     
     @Before
     public void setUp() {
-        schemaMetaData = mock(PhysicalSchemaMetaData.class);
-        when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
+        schema = mock(ShardingSphereSchema.class);
+        when(schema.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
         shadowRule = new ShadowRule(new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("shadow_ds")));
     }
     
@@ -100,13 +100,13 @@ public final class SimpleShadowDataSourceRouterTest {
         insertStatement.setInsertColumns(insertColumnsSegment);
         insertStatement.getValues().addAll(Collections.singletonList(new InsertValuesSegment(
                 0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "name"), new LiteralExpressionSegment(0, 0, true)))));
-        InsertStatementContext insertStatementContext = new InsertStatementContext(schemaMetaData, Collections.emptyList(), insertStatement);
+        InsertStatementContext insertStatementContext = new InsertStatementContext(schema, Collections.emptyList(), insertStatement);
         SimpleShadowDataSourceJudgeEngine simpleShadowDataSourceRouter = new SimpleShadowDataSourceJudgeEngine(shadowRule, insertStatementContext);
         assertTrue("should be shadow", simpleShadowDataSourceRouter.isShadow());
         insertStatement.getValues().clear();
         insertStatement.getValues().addAll(Collections.singletonList(
                 new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "name"), new LiteralExpressionSegment(0, 0, false)))));
-        insertStatementContext = new InsertStatementContext(schemaMetaData, Collections.emptyList(), insertStatement);
+        insertStatementContext = new InsertStatementContext(schema, Collections.emptyList(), insertStatement);
         simpleShadowDataSourceRouter = new SimpleShadowDataSourceJudgeEngine(shadowRule, insertStatementContext);
         assertFalse("should not be shadow", simpleShadowDataSourceRouter.isShadow());
     }
@@ -146,7 +146,7 @@ public final class SimpleShadowDataSourceRouterTest {
         projectionsSegment.setDistinctRow(true);
         projectionsSegment.getProjections().addAll(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "true")));
         selectStatement.setProjections(projectionsSegment);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(schemaMetaData, Collections.emptyList(), selectStatement);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(schema, Collections.emptyList(), selectStatement);
         SimpleShadowDataSourceJudgeEngine simpleShadowDataSourceRouter = new SimpleShadowDataSourceJudgeEngine(shadowRule, selectStatementContext);
         assertTrue("should be shadow", simpleShadowDataSourceRouter.isShadow());
         expression = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("shadow")), new LiteralExpressionSegment(0, 0, false), "=", null);

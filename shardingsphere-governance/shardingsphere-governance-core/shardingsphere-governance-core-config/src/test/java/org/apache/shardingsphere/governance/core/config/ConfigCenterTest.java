@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -498,27 +498,27 @@ public final class ConfigCenterTest {
     }
     
     @Test
-    public void assertPersistMetaData() {
-        PhysicalSchemaMetaData physicalSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlLogicSchemaMetaData.class));
+    public void assertPersistSchema() {
+        ShardingSphereSchema schema = new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlLogicSchemaMetaData.class));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
-        configCenter.persistMetaData("sharding_db", physicalSchemaMetaData);
+        configCenter.persistSchema("sharding_db", schema);
         verify(configurationRepository).persist(eq("/schemas/sharding_db/table"), anyString());
     }
     
     @Test
-    public void assertLoadMetaData() {
+    public void assertLoadSchema() {
         when(configurationRepository.get("/schemas/sharding_db/table")).thenReturn(readYAML(META_DATA_YAML));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
-        Optional<PhysicalSchemaMetaData> physicalSchemaMetaDataOptional = configCenter.loadMetaData("sharding_db");
-        assertTrue(physicalSchemaMetaDataOptional.isPresent());
-        Optional<PhysicalSchemaMetaData> empty = configCenter.loadMetaData("test");
+        Optional<ShardingSphereSchema> schemaOptional = configCenter.loadSchema("sharding_db");
+        assertTrue(schemaOptional.isPresent());
+        Optional<ShardingSphereSchema> empty = configCenter.loadSchema("test");
         assertThat(empty, is(Optional.empty()));
-        PhysicalSchemaMetaData physicalSchemaMetaData = physicalSchemaMetaDataOptional.get();
+        ShardingSphereSchema schema = schemaOptional.get();
         verify(configurationRepository).get(eq("/schemas/sharding_db/table"));
-        assertThat(physicalSchemaMetaData.getAllTableNames(), is(Collections.singleton("t_order")));
-        assertThat(physicalSchemaMetaData.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
-        assertThat(physicalSchemaMetaData.getAllColumnNames("t_order").size(), is(1));
-        assertThat(physicalSchemaMetaData.get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
+        assertThat(schema.getAllTableNames(), is(Collections.singleton("t_order")));
+        assertThat(schema.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
+        assertThat(schema.getAllColumnNames("t_order").size(), is(1));
+        assertThat(schema.get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
     }
     
     @Test
