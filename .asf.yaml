@@ -35,6 +35,5 @@ github:
     - postgresql
     - middleware
   features:
-    wiki: true
     issues: true
     projects: true
