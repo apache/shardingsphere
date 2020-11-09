@@ -39,9 +39,9 @@ public final class ShardingSphereMetaData {
     private final ShardingSphereSchema schema;
     
     /**
-     * Is complete schema context.
+     * Judge whether is completed.
      *
-     * @return is complete schema context or not
+     * @return is completed or not
      */
     public boolean isComplete() {
         return !ruleMetaData.getRules().isEmpty() && !resource.getDataSources().isEmpty();

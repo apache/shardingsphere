@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
+import org.apache.shardingsphere.infra.context.schema.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -48,10 +48,10 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Schema contexts builder.
+ * Meta data contexts builder.
  */
 @Slf4j
-public final class SchemaContextsBuilder {
+public final class MetaDataContextsBuilder {
     
     private final DatabaseType databaseType;
     
@@ -65,13 +65,13 @@ public final class SchemaContextsBuilder {
     
     private final ExecutorKernel executorKernel;
     
-    public SchemaContextsBuilder(final DatabaseType databaseType, final Map<String, Map<String, DataSource>> dataSources,
-                                 final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Properties props) {
+    public MetaDataContextsBuilder(final DatabaseType databaseType, final Map<String, Map<String, DataSource>> dataSources,
+                                   final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Properties props) {
         this(databaseType, dataSources, ruleConfigs, new Authentication(), props);
     }
     
-    public SchemaContextsBuilder(final DatabaseType databaseType, final Map<String, Map<String, DataSource>> dataSources,
-                                 final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Authentication authentication, final Properties props) {
+    public MetaDataContextsBuilder(final DatabaseType databaseType, final Map<String, Map<String, DataSource>> dataSources,
+                                   final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Authentication authentication, final Properties props) {
         this.databaseType = databaseType;
         this.dataSources = dataSources;
         this.ruleConfigs = ruleConfigs;
@@ -81,17 +81,17 @@ public final class SchemaContextsBuilder {
     }
     
     /**
-     * Build schema contexts.
+     * Build meta data contexts.
      * 
      * @exception SQLException SQL exception
-     * @return schema contexts
+     * @return meta data contexts
      */
-    public SchemaContexts build() throws SQLException {
+    public MetaDataContexts build() throws SQLException {
         Map<String, ShardingSphereMetaData> mataDataMap = new LinkedHashMap<>(ruleConfigs.size(), 1);
         for (String each : ruleConfigs.keySet()) {
             mataDataMap.put(each, buildMetaData(each));
         }
-        return new StandardSchemaContexts(mataDataMap, executorKernel, authentication, props, databaseType);
+        return new StandardMetaDataContexts(mataDataMap, executorKernel, authentication, props, databaseType);
     }
     
     private ShardingSphereMetaData buildMetaData(final String schemaName) throws SQLException {

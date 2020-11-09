@@ -47,7 +47,7 @@ public final class ShardingSphereDataSourceFactoryTest {
         Properties props = new Properties();
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource(
                 getDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), props);
-        assertThat(dataSource.getSchemaContexts().getProps().getProps(), is(props));
+        assertThat(dataSource.getMetaDataContexts().getProps().getProps(), is(props));
     }
     
     private Map<String, DataSource> getDataSourceMap() throws SQLException {

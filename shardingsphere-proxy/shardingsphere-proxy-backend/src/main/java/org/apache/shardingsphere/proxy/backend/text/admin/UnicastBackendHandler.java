@@ -52,7 +52,7 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     @Override
     public BackendResponse execute() throws SQLException {
         if (null == backendConnection.getSchemaName()) {
-            Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getSchemaContexts().getMetaDataMap();
+            Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap();
             if (metaDataMap.isEmpty()) {
                 throw new NoDatabaseSelectedException();
             }

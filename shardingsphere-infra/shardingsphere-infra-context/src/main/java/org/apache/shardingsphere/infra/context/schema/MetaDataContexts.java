@@ -27,9 +27,9 @@ import java.io.Closeable;
 import java.util.Map;
 
 /**
- * Schema contexts.
+ * Meta data contexts.
  */
-public interface SchemaContexts extends Closeable {
+public interface MetaDataContexts extends Closeable {
     
     /**
      * Get database type.

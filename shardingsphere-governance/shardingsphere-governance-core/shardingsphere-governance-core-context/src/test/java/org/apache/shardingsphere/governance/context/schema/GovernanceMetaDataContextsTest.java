@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
+import org.apache.shardingsphere.infra.context.schema.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
@@ -73,7 +73,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class GovernanceSchemaContextsTest {
+public final class GovernanceMetaDataContextsTest {
     
     private final Authentication authentication = new Authentication();
     
@@ -97,7 +97,7 @@ public final class GovernanceSchemaContextsTest {
     @Mock
     private ReplicaQueryRule replicaQueryRule;
     
-    private GovernanceSchemaContexts governanceSchemaContexts;
+    private GovernanceMetaDataContexts governanceMetaDataContexts;
     
     @Before
     public void setUp() {
@@ -106,7 +106,7 @@ public final class GovernanceSchemaContextsTest {
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
         when(governanceFacade.getConfigCenter()).thenReturn(configCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
-        governanceSchemaContexts = new GovernanceSchemaContexts(new StandardSchemaContexts(createMetaDataMap(), mock(ExecutorKernel.class), authentication, props, databaseType), governanceFacade);
+        governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorKernel.class), authentication, props, databaseType), governanceFacade);
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
@@ -119,41 +119,41 @@ public final class GovernanceSchemaContextsTest {
     
     @Test
     public void assertGetDatabaseType() {
-        assertThat(governanceSchemaContexts.getDatabaseType().getName(), is("H2"));
+        assertThat(governanceMetaDataContexts.getDatabaseType().getName(), is("H2"));
     }
     
     @Test
-    public void assertGetSchemas() {
-        assertThat(governanceSchemaContexts.getMetaDataMap().get("schema"), is(metaData));
+    public void assertGetMetaDataMap() {
+        assertThat(governanceMetaDataContexts.getMetaDataMap().get("schema"), is(metaData));
     }
     
     @Test
-    public void assertGetDefaultSchema() {
-        assertNull(governanceSchemaContexts.getDefaultMetaData());
+    public void assertGetDefaultMetaData() {
+        assertNull(governanceMetaDataContexts.getDefaultMetaData());
     }
     
     @Test
     public void assertGetAuthentication() {
-        assertThat(governanceSchemaContexts.getAuthentication(), is(authentication));
+        assertThat(governanceMetaDataContexts.getAuthentication(), is(authentication));
     }
     
     @Test
     public void assertGetProps() {
-        assertThat(governanceSchemaContexts.getProps(), is(props));
+        assertThat(governanceMetaDataContexts.getProps(), is(props));
     }
     
     @Test
     public void assertIsCircuitBreak() {
-        assertFalse(governanceSchemaContexts.isCircuitBreak());
+        assertFalse(governanceMetaDataContexts.isCircuitBreak());
     }
     
     @Test
     public void assertSchemaAdd() throws SQLException {
         MetaDataAddedEvent event = new MetaDataAddedEvent("schema_add", new HashMap<>(), new LinkedList<>());
         when(configCenter.loadDataSourceConfigurations("schema_add")).thenReturn(getDataSourceConfigurations());
-        governanceSchemaContexts.renew(event);
-        assertNotNull(governanceSchemaContexts.getMetaDataMap().get("schema_add"));
-        assertNotNull(governanceSchemaContexts.getMetaDataMap().get("schema_add").getResource().getDataSources());
+        governanceMetaDataContexts.renew(event);
+        assertNotNull(governanceMetaDataContexts.getMetaDataMap().get("schema_add"));
+        assertNotNull(governanceMetaDataContexts.getMetaDataMap().get("schema_add").getResource().getDataSources());
     }
     
     private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
@@ -168,8 +168,8 @@ public final class GovernanceSchemaContextsTest {
     @Test
     public void assertSchemaDelete() {
         MetaDataDeletedEvent event = new MetaDataDeletedEvent("schema");
-        governanceSchemaContexts.renew(event);
-        assertNull(governanceSchemaContexts.getMetaDataMap().get("schema"));
+        governanceMetaDataContexts.renew(event);
+        assertNull(governanceMetaDataContexts.getMetaDataMap().get("schema"));
     }
     
     @Test
@@ -177,53 +177,53 @@ public final class GovernanceSchemaContextsTest {
         Properties properties = new Properties();
         properties.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
         PropertiesChangedEvent event = new PropertiesChangedEvent(properties);
-        governanceSchemaContexts.renew(event);
-        assertThat(governanceSchemaContexts.getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is("true"));
+        governanceMetaDataContexts.renew(event);
+        assertThat(governanceMetaDataContexts.getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is("true"));
     }
     
     @Test
     public void assertAuthenticationChanged() {
         Authentication authentication = new Authentication();
         AuthenticationChangedEvent event = new AuthenticationChangedEvent(authentication);
-        governanceSchemaContexts.renew(event);
-        assertThat(governanceSchemaContexts.getAuthentication(), is(authentication));
+        governanceMetaDataContexts.renew(event);
+        assertThat(governanceMetaDataContexts.getAuthentication(), is(authentication));
     }
     
     @Test
     public void assertSchemaChanged() {
         SchemaChangedEvent event = new SchemaChangedEvent("schema_changed", mock(ShardingSphereSchema.class));
-        governanceSchemaContexts.renew(event);
-        assertTrue(governanceSchemaContexts.getMetaDataMap().containsKey("schema"));
-        assertFalse(governanceSchemaContexts.getMetaDataMap().containsKey("schema_changed"));
+        governanceMetaDataContexts.renew(event);
+        assertTrue(governanceMetaDataContexts.getMetaDataMap().containsKey("schema"));
+        assertFalse(governanceMetaDataContexts.getMetaDataMap().containsKey("schema_changed"));
     }
     
     @Test
     public void assertSchemaChangedWithExistSchema() {
         SchemaChangedEvent event = new SchemaChangedEvent("schema", mock(ShardingSphereSchema.class));
-        governanceSchemaContexts.renew(event);
-        assertThat(governanceSchemaContexts.getMetaDataMap().get("schema"), not(metaData));
+        governanceMetaDataContexts.renew(event);
+        assertThat(governanceMetaDataContexts.getMetaDataMap().get("schema"), not(metaData));
     }
     
     @Test
     public void assertRuleConfigurationsChanged() throws SQLException {
-        assertThat(governanceSchemaContexts.getMetaDataMap().get("schema"), is(metaData));
+        assertThat(governanceMetaDataContexts.getMetaDataMap().get("schema"), is(metaData));
         RuleConfigurationsChangedEvent event = new RuleConfigurationsChangedEvent("schema", new LinkedList<>());
-        governanceSchemaContexts.renew(event);
-        assertThat(governanceSchemaContexts.getMetaDataMap().get("schema"), not(metaData));
+        governanceMetaDataContexts.renew(event);
+        assertThat(governanceMetaDataContexts.getMetaDataMap().get("schema"), not(metaData));
     }
     
     @Test
     public void assertDisableStateChanged() {
         DisabledStateChangedEvent event = new DisabledStateChangedEvent(new GovernanceSchema("schema.ds_0"), true);
-        governanceSchemaContexts.renew(event);
+        governanceMetaDataContexts.renew(event);
         verify(replicaQueryRule, times(2)).updateRuleStatus(any(RuleChangedEvent.class));
     }
     
     @Test
     public void assertDataSourceChanged() throws SQLException {
         DataSourceChangedEvent event = new DataSourceChangedEvent("schema", getChangedDataSourceConfigurations());
-        governanceSchemaContexts.renew(event);
-        assertTrue(governanceSchemaContexts.getMetaDataMap().get("schema").getResource().getDataSources().containsKey("ds_2"));
+        governanceMetaDataContexts.renew(event);
+        assertTrue(governanceMetaDataContexts.getMetaDataMap().get("schema").getResource().getDataSources().containsKey("ds_2"));
     }
     
     private Map<String, DataSourceConfiguration> getChangedDataSourceConfigurations() {
@@ -238,7 +238,7 @@ public final class GovernanceSchemaContextsTest {
     @Test
     public void assertCircuitStateChanged() {
         CircuitStateChangedEvent event = new CircuitStateChangedEvent(true);
-        governanceSchemaContexts.renew(event);
-        assertTrue(governanceSchemaContexts.isCircuitBreak());
+        governanceMetaDataContexts.renew(event);
+        assertTrue(governanceMetaDataContexts.isCircuitBreak());
     }
 }

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfig
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlProxyUserConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.schema.MetaDataContexts;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
@@ -185,9 +185,9 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     }
     
     @Test
-    public void assertDecorateSchemaContexts() {
-        SchemaContexts schemaContexts = mock(SchemaContexts.class);
-        assertThat(getInitializer().decorateSchemaContexts(schemaContexts), is(schemaContexts));
+    public void assertDecorateMetaDataContexts() {
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
+        assertThat(getInitializer().decorateMetaDataContexts(metaDataContexts), is(metaDataContexts));
     }
     
     @Test

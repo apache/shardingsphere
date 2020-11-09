@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.schema.MetaDataContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
@@ -34,8 +34,8 @@ public final class StandardBootstrapInitializer extends AbstractBootstrapInitial
     }
     
     @Override
-    protected SchemaContexts decorateSchemaContexts(final SchemaContexts schemaContexts) {
-        return schemaContexts;
+    protected MetaDataContexts decorateMetaDataContexts(final MetaDataContexts metaDataContexts) {
+        return metaDataContexts;
     }
     
     @Override

@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.proxy.initializer.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.context.schema.GovernanceSchemaContexts;
+import org.apache.shardingsphere.governance.context.schema.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.schema.MetaDataContexts;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
@@ -206,17 +206,17 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     }
     
     @Test
-    public void assertDecorateSchemaContexts() {
-        SchemaContexts schemaContexts = mock(SchemaContexts.class);
-        SchemaContexts actualSchemaContexts = getInitializer().decorateSchemaContexts(schemaContexts);
-        assertNotNull(actualSchemaContexts);
-        assertThat(actualSchemaContexts, instanceOf(GovernanceSchemaContexts.class));
-        assertThat(actualSchemaContexts.getDatabaseType(), is(schemaContexts.getDatabaseType()));
-        assertThat(actualSchemaContexts.getMetaDataMap(), is(schemaContexts.getMetaDataMap()));
-        assertThat(actualSchemaContexts.getDefaultMetaData(), is(schemaContexts.getDefaultMetaData()));
-        assertThat(actualSchemaContexts.getAuthentication(), is(schemaContexts.getAuthentication()));
-        assertThat(actualSchemaContexts.getProps(), is(schemaContexts.getProps()));
-        assertThat(actualSchemaContexts.isCircuitBreak(), is(schemaContexts.isCircuitBreak()));
+    public void assertDecorateMetaDataContexts() {
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
+        MetaDataContexts actualMetaDataContexts = getInitializer().decorateMetaDataContexts(metaDataContexts);
+        assertNotNull(actualMetaDataContexts);
+        assertThat(actualMetaDataContexts, instanceOf(GovernanceMetaDataContexts.class));
+        assertThat(actualMetaDataContexts.getDatabaseType(), is(metaDataContexts.getDatabaseType()));
+        assertThat(actualMetaDataContexts.getMetaDataMap(), is(metaDataContexts.getMetaDataMap()));
+        assertThat(actualMetaDataContexts.getDefaultMetaData(), is(metaDataContexts.getDefaultMetaData()));
+        assertThat(actualMetaDataContexts.getAuthentication(), is(metaDataContexts.getAuthentication()));
+        assertThat(actualMetaDataContexts.getProps(), is(metaDataContexts.getProps()));
+        assertThat(actualMetaDataContexts.isCircuitBreak(), is(metaDataContexts.isCircuitBreak()));
     }
     
     @Test
