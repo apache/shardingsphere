@@ -1,6 +1,13 @@
 ## 5.0.0-alpha
 
+### Build & Dependencies
+
+1. Upgrade the minimum supported version of JDK to Java8.
+1. Update Zookeeper to version 3.6.x and curator to version 5.1.0.
+1. Update Google Guava to version 29.0-jre.
+
 ### New Feature
+
 1. The pluggable architecture is available and support function extension through the SPI.
 1. Independent SQL parsing engine is available to get SQL parsed AST for the different database dialects.
 1. New RDL feature for ShardingSphere Proxy supports creating sharding rules and sharding tables.
@@ -9,6 +16,7 @@
 1. ShardingSphere shadow database is available.
 
 ### API Changes
+
 1. New sharding/encryption/shadow/queryReplica API.
 1. New sharding algorithm and strategy API.
 1. New API for ShardingSphere Scaling to create task.
@@ -17,6 +25,7 @@
 1. Change parameter allow.range.query.with.inline.sharding from global parameter to sharding algorithm parameter.
 
 ### Refactor
+
 1. Refactor the architecture of SQL parsing module base on the database dialects.
 1. Use SPI mechanism to reconstruct online metadata change processing.
 1. Rename Orchestration module to Governance module.
@@ -26,9 +35,7 @@
 1. ShardingSphere UI merges configuration center and registration center display layout.
 
 ### Enhancement
-1. Upgrade the minimum supported version of JDK to Java8.
-1. Update Zookeeper curator to version 5.1.0.
-1. Update Google Guava to version 29.0-jre.
+
 1. The enhancement for MySQL SQL syntax definition and parsing process.
 1. The enhancement for PostgreSQL syntax definition and parsing process.
 1. The enhancement for sub-queries in different database dialects.
@@ -42,7 +49,8 @@
 1. ShardingSphere Proxy supports the use of p6sy driver.
 1. Add help information to the ShardingSphere Proxy startup script.
 
-### Bug fixes
+### Bug Fixes
+
 1. Fix alias rewriting error when processing OrderBy condition.
 1. Fix SQL rewriting error when MYSQL Insert statement contains expression.
 1. Fix parameter calculation error in update on duplicate SQL.
