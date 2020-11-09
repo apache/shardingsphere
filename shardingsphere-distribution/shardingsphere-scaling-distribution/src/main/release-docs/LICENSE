@@ -213,15 +213,6 @@ Apache 2.0 licenses
 ========================================================================
 
 The following components are provided under the Apache License. See project link for details.
-The text of each license is also included at licenses/LICENSE-[project].txt.
-
-    groovy 2.4.5-indy: https://github.com/apache/groovy, Apache 2.0
-
-========================================================================
-Apache 2.0 licenses
-========================================================================
-
-The following components are provided under the Apache License. See project link for details.
 The text of each license is the standard Apache 2.0 license.
 
     audience-annotations-0.5.0: https://github.com/apache/yetus, Apache 2.0
@@ -242,6 +233,15 @@ The text of each license is the standard Apache 2.0 license.
     netty-all 4.1.42.FINAL: https://github.com/netty, Apache 2.0
     SnakeYAML 1.16: http://www.snakeyaml.org , Apache 2.0
     gson 2.8.6: https://github.com/google/gson, Apache 2.0
+
+========================================================================
+Apache 2.0 licenses
+========================================================================
+
+The following components are provided under the Apache License. See project link for details.
+The text of each license is also included at licenses/LICENSE-[project].txt.
+
+    groovy 2.4.5-indy: https://github.com/apache/groovy, Apache 2.0
 
 ========================================================================
 BSD licenses
