@@ -132,7 +132,14 @@ public final class ConfigCenter {
      */
     @Subscribe
     public synchronized void renew(final SchemaNamePersistEvent event) {
-        persistSchema(event.getSchemaName(), event.isDrop());
+        String schemaNames = repository.get(node.getSchemasPath());
+        Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
+        if (event.isDrop()) {
+            schemas.remove(event.getSchemaName());
+        } else if (!schemas.contains(event.getSchemaName())) {
+            schemas.add(event.getSchemaName());
+        }
+        repository.persist(node.getSchemasPath(), Joiner.on(",").join(schemas));
     }
     
     /**
@@ -249,17 +256,6 @@ public final class ConfigCenter {
         List<String> newArrayList = new ArrayList<>(schemaNameList);
         newArrayList.add(schemaName);
         repository.persist(node.getSchemasPath(), Joiner.on(",").join(newArrayList));
-    }
-    
-    private void persistSchema(final String schemaName, final boolean isDrop) {
-        String schemaNames = repository.get(node.getSchemasPath());
-        Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
-        if (isDrop) {
-            schemas.remove(schemaName);
-        } else if (!schemas.contains(schemaName)) {
-            schemas.add(schemaName);
-        }
-        repository.persist(node.getSchemasPath(), Joiner.on(",").join(schemas));
     }
     
     /**
