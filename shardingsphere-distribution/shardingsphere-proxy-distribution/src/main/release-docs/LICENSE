@@ -229,13 +229,19 @@ Apache 2.0 licenses
 The following components are provided under the Apache License. See project link for details.
 The text of each license is the standard Apache 2.0 license.
 
+    audience-annotations-0.5.0: https://github.com/apache/yetus, Apache 2.0
     commons-codec 1.10: https://github.com/apache/commons-codec, Apache 2.0
     commons-collections4 4.2: https://github.com/apache/commons-collections, Apache 2.0
-    curator-client 2.10.0:  https://github.com/apache/curator,  Apache 2.0
-    curator-framework 2.10.0:  https://github.com/apache/curator,  Apache 2.0
-    curator-recipes 2.10.0:  https://github.com/apache/curator,  Apache 2.0
-    guava 18.0: https://github.com/google/guava , Apache 2.0
+    curator-client-5.1.0: https://github.com/apache/curator,  Apache 2.0
+    curator-framework-5.1.0: https://github.com/apache/curator,  Apache 2.0
+    curator-recipes-5.1.0: https://github.com/apache/curator,  Apache 2.0
+    error_prone_annotations-2.3.4: https://mvnrepository.com/artifact/com.google.errorprone/error_prone_annotations/2.3.4,  Apache 2.0
+    failureaccess-1.0.1: https://mvnrepository.com/artifact/com.google.guava/failureaccess/1.0.1,  Apache 2.0
+    guava-29.0-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 3.4.2: https://github.com/brettwooldridge/HikariCP, Apache 2.0
+    j2objc-annotations-1.3: https://github.com/google/j2objc, Apache 2.0
+    jsr305-3.0.2: https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305, Apache 2.0
+    listenablefuture-9999.0-empty-to-avoid-conflict-with-guava: https://mvnrepository.com/artifact/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava, Apache 2.0
     log4j 1.2.16: http://logging.apache.org/log4j/1.2/, Apache 2.0
     netty-all 4.1.42: https://github.com/netty, Apache 2.0
     opentracing-api 0.30.0: https://opentracing.io, Apache 2.0
@@ -283,5 +289,6 @@ MIT licenses
 The following components are provided under the MIT License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
+    checker-qual-2.11.1: https://github.com/typetools/checker-framework, MIT
     jcl-over-slf4j 1.7.7: https://www.slf4j.org, MIT
     slf4j 1.7.7: https://www.slf4j.org , MIT
