@@ -23,11 +23,11 @@ import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 
 /**
- * Meta data event.
+ * Schema persist event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MetaDataPersistEvent implements GovernanceEvent {
+public final class SchemaPersistEvent implements GovernanceEvent {
     
     private final String schemaName;
     

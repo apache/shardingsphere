@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
-import org.apache.shardingsphere.governance.core.event.model.persist.MetaDataPersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.persist.SchemaPersistEvent;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
@@ -106,7 +106,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (refreshStrategy.isPresent()) {
             refreshStrategy.get().refreshMetaData(
                     metaData.getSchema(), ProxyContext.getInstance().getSchemaContexts().getDatabaseType(), routeDataSourceNames, sqlStatement, this::loadTableMetaData);
-            GovernanceEventBus.getInstance().post(new MetaDataPersistEvent(metaData.getName(), metaData.getSchema()));
+            GovernanceEventBus.getInstance().post(new SchemaPersistEvent(metaData.getName(), metaData.getSchema()));
         }
     }
     

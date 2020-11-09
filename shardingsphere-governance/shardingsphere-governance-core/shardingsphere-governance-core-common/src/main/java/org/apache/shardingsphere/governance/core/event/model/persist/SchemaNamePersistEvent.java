@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 
 /**
- * Schema name event.
+ * Schema name persist event.
  */
 @RequiredArgsConstructor
 @Getter
