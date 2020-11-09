@@ -352,13 +352,47 @@ git push --delete origin ${RELEASE.VERSION}-release
 git branch -d ${RELEASE.VERSION}-release
 ```
 
-**3. GitHub 版本发布**
+**3. 发布 Docker**
+
+3.1 准备工作
+
+本地安装 Docker，并启动服务。
+
+3.2 编译 Docker 镜像
+
+```shell
+git checkout ${RELEASE.VERSION}
+cd ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/
+mvn clean package -Prelease,docker
+```
+
+3.3 给本地 Docker 镜像打标记
+
+通过`docker images`查看到IMAGE ID，例如为：e9ea51023687
+
+```shell
+docker tag e9ea51023687 apache/shardingsphere-ui:latest
+docker tag e9ea51023687 apache/shardingsphere-ui:${RELEASE.VERSION}
+```
+
+3.4 发布Docker镜像
+
+```shell
+docker push apache/shardingsphere-ui:latest
+docker push apache/shardingsphere-ui:${RELEASE_VERSION}
+```
+
+3.5 确认发布成功
+
+登录 [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-ui/) 查看是否有发布的镜像
+
+**4. GitHub 版本发布**
 
 在 [GitHub Releases](https://github.com/apache/shardingsphere-ui/releases) 页面的 `shardingsphere-ui-${RELEASE_VERSION}` 版本上点击 `Edit`
 
 编辑版本号及版本说明，并点击 `Publish release`
 
-**4. 更新下载页面**
+**5. 更新下载页面**
 
 等待并确认新的发布版本同步至 Apache 镜像后，更新如下页面：
 
@@ -370,7 +404,7 @@ GPG签名文件和哈希校验文件的下载连接应该使用这个前缀： `
 
 `最新版本`中保留一个最新的版本。Incubator阶段历史版本会自动归档到[Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
 
-**5. 邮件通知版本发布完成**
+**6. 邮件通知版本发布完成**
 
 ## 发送邮件到`dev@shardingsphere.apache.org`和`announce@apache.org`通知完成版本发布
 
