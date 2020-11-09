@@ -2,66 +2,65 @@
 
 ### Build & Dependencies
 
-1. Upgrade the minimum supported version of JDK to Java8.
-1. Update Zookeeper to version 3.6.x and curator to version 5.1.0.
-1. Update Google Guava to version 29.0-jre.
+1. Upgrade the minimum supported version of JDK to Java8
+1. Update Zookeeper to version 3.6.x and curator to version 5.1.0
+1. Update Google Guava to version 29.0-jre
 
 ### New Feature
 
-1. The pluggable architecture is available and support function extension through the SPI.
-1. Independent SQL parsing engine is available to get SQL parsed AST for the different database dialects.
-1. New RDL feature for ShardingSphere Proxy supports creating sharding rules and sharding tables.
-1. ShardingSphere-Scaling supports resuming data migration from break-point.
-1. ShardingSphere-Scaling supports using ShardingSphere JDBC to migrate data to new cluster.
-1. ShardingSphere shadow database is available.
+1. The pluggable architecture is available and support function extension through the SPI
+1. Independent SQL parsing engine is available to get SQL parsed AST for the different database dialects
+1. New RDL feature for ShardingSphere Proxy supports creating sharding rules and sharding tables
+1. ShardingSphere-Scaling supports resuming data migration from break-point
+1. ShardingSphere-Scaling supports using ShardingSphere JDBC to migrate data to new cluster
+1. ShardingSphere shadow database is available
 
 ### API Changes
 
-1. New sharding/encryption/shadow/queryReplica API.
-1. New sharding algorithm and strategy API.
-1. New API for ShardingSphere Scaling to create task.
-1. Remove DefaultDataSourceName setting item.
-1. The separator of the parameter configuration item is changed from the dot ‘.’ to minus sign ‘-’.
-1. Change parameter allow.range.query.with.inline.sharding from global parameter to sharding algorithm parameter.
+1. New sharding/encryption/shadow/queryReplica API
+1. New sharding algorithm and strategy API
+1. New API for ShardingSphere Scaling to create task
+1. Remove DefaultDataSourceName setting item
+1. The separator of the parameter configuration item is changed from the dot ‘.’ to minus sign ‘-’
+1. Change parameter allow.range.query.with.inline.sharding from global parameter to sharding algorithm parameter
 
 ### Refactor
 
-1. Refactor the architecture of SQL parsing module base on the database dialects.
-1. Use SPI mechanism to reconstruct online metadata change processing.
-1. Rename Orchestration module to Governance module.
-1. Rename MasterSlave module to QueryReplica module.
-1. Refactor the metadata structure in the governance registration center.
-1. Refactor GovernmentShardingSphereDataSource.
-1. ShardingSphere UI merges configuration center and registration center display layout.
+1. Refactor the architecture of SQL parsing module base on the database dialects
+1. Use SPI mechanism to reconstruct online metadata change processing
+1. Rename Orchestration module to Governance module
+1. Rename MasterSlave module to QueryReplica module
+1. Refactor the metadata structure in the governance registration center
+1. Refactor GovernmentShardingSphereDataSource
+1. ShardingSphere UI merges configuration center and registration center display layout
 
 ### Enhancement
 
-1. The enhancement for MySQL SQL syntax definition and parsing process.
-1. The enhancement for PostgreSQL syntax definition and parsing process.
-1. The enhancement for sub-queries in different database dialects.
+1. The enhancement for MySQL and PostgreSQL SQL syntax definition and parsing process
+1. The enhancement for sub-queries in different database dialects
 1. Support MySQL view operations for non-sharding tables
-1. Support MySQL stored function and procedure operations for non-sharding tables.
-1. Support SQLServer Top syntax.
-1. Optimize the metadata loading to improve the startup speed.
-1. Optimize batch insert performance.
-1. Supports the use of Oracle RAC JDBC URL.
-1. XA transaction manager adds support for Oracle database.
-1. ShardingSphere Proxy supports the use of p6sy driver.
-1. Add help information to the ShardingSphere Proxy startup script.
+1. Support MySQL stored function and procedure operations for non-sharding tables
+1. Support SQLServer Top syntax
+1. Optimize the metadata loading to improve the startup speed
+1. Optimize batch insert performance
+1. Supports the use of Oracle RAC JDBC URL
+1. XA transaction manager adds support for Oracle database
+1. ShardingSphere Proxy supports the use of p6sy driver
+1. Add help information to the ShardingSphere Proxy startup script
 
 ### Bug Fixes
 
-1. Fix alias rewriting error when processing OrderBy condition.
-1. Fix SQL rewriting error when MYSQL Insert statement contains expression.
-1. Fix parameter calculation error in update on duplicate SQL.
-1. Fix generatedKeys gets wrong when batch inserting.
-1. Fix the abnormal issue of multi-table verification in DML statement update operation.
-1. Fix the NPE problem caused by executing SQL when the table does not exist.
-1. Fix the exception when using the Show table command for an unconfigured table.
-1. Fix metadata loading error when Oracle database has multiple qualified users.
-1. Fix the issue that replica node cannot be enabled online.
-1. Fix the problem that ShardingSphere-JDBC does not support PostgreSQL array type.
-1. Fix the problem that ShardingSphere-Proxy does not respond when querying long blob data.
+1. Fix alias rewriting error when processing OrderBy condition
+1. Fix SQL rewriting error when MYSQL Insert statement contains expression
+1. Fix parameter calculation error in update on duplicate SQL
+1. Fix generatedKeys gets wrong when batch inserting
+1. Fix the abnormal issue of multi-table verification in DML statement update operation
+1. Fix the NPE problem caused by executing SQL when the table does not exist
+1. Fix the exception when using the Show table command for an unconfigured table
+1. Fix metadata loading error when Oracle database has multiple qualified users
+1. Fix the issue that replica node cannot be enabled online
+1. Fix the problem that ShardingSphere-JDBC does not support PostgreSQL array type
+1. Fix the problem that ShardingSphere-Proxy does not respond when querying long blob data
 
 ###  Change Logs
 
