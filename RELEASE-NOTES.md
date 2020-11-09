@@ -10,7 +10,7 @@
 
 1. The pluggable architecture is available and support function extension through the SPI
 1. Independent SQL parsing engine is available to get SQL parsed AST for the different database dialects
-1. New RDL feature for ShardingSphere Proxy supports creating sharding rules and sharding tables
+1. New RDL(Rule Definition Language) feature for ShardingSphere Proxy supports creating sharding rules and sharding tables
 1. ShardingSphere-Scaling supports resuming data migration from break-point
 1. ShardingSphere-Scaling supports using ShardingSphere JDBC to migrate data to new cluster
 1. ShardingSphere shadow database is available
