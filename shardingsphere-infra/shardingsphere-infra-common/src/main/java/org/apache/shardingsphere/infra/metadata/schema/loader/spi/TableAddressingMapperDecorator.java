@@ -17,22 +17,24 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.spi;
 
-import org.apache.shardingsphere.infra.metadata.schema.model.addressing.TableAddressingMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
+import java.util.Collection;
+import java.util.Map;
+
 /**
- * Table addressing meta data decorator.
+ * Table addressing mapper decorator.
  * 
  * @param <T> type of ShardingSphere rule
  */
-public interface TableAddressingMetaDataDecorator<T extends ShardingSphereRule> extends OrderedSPI<T> {
+public interface TableAddressingMapperDecorator<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
-     * Build ShardingSphere rule.
+     * Decorate table addressing mapper with data source names.
      *
      * @param rule ShardingSphere rule
-     * @param metaData table addressing meta data
+     * @param tableAddressingMapper decorated table addressing mapper
      */
-    void decorate(T rule, TableAddressingMetaData metaData);
+    void decorate(T rule, Map<String, Collection<String>> tableAddressingMapper);
 }
