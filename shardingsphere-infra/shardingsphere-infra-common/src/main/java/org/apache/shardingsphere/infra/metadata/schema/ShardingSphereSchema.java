@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.schema;
 
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,14 +31,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class ShardingSphereSchema {
     
-    private final Map<String, PhysicalTableMetaData> tables;
+    private final Map<String, TableMetaData> tables;
     
     @SuppressWarnings("CollectionWithoutInitialCapacity")
     public ShardingSphereSchema() {
         tables = new ConcurrentHashMap<>();
     }
     
-    public ShardingSphereSchema(final Map<String, PhysicalTableMetaData> tables) {
+    public ShardingSphereSchema(final Map<String, TableMetaData> tables) {
         this.tables = new ConcurrentHashMap<>(tables.size(), 1);
         tables.forEach((key, value) -> this.tables.put(key.toLowerCase(), value));
     }
@@ -58,7 +58,7 @@ public final class ShardingSphereSchema {
      * @param tableName tableName table name
      * @return table mata data
      */
-    public PhysicalTableMetaData get(final String tableName) {
+    public TableMetaData get(final String tableName) {
         return tables.get(tableName.toLowerCase());
     }
     
@@ -68,7 +68,7 @@ public final class ShardingSphereSchema {
      * @param tableName table name
      * @param tableMetaData table meta data
      */
-    public void put(final String tableName, final PhysicalTableMetaData tableMetaData) {
+    public void put(final String tableName, final TableMetaData tableMetaData) {
         tables.put(tableName.toLowerCase(), tableMetaData);
     }
     

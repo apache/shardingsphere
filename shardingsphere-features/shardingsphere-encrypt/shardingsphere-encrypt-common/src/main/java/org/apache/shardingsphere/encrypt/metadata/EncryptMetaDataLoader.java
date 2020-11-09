@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.loader.physical.PhysicalTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -40,21 +40,21 @@ import java.util.Optional;
 public final class EncryptMetaDataLoader implements ShardingSphereMetaDataLoader<EncryptRule> {
     
     @Override
-    public Optional<PhysicalTableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
-                                                final EncryptRule encryptRule, final ConfigurationProperties props) throws SQLException {
+    public Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
+                                        final EncryptRule encryptRule, final ConfigurationProperties props) throws SQLException {
         return encryptRule.findEncryptTable(tableName).isPresent() ? PhysicalTableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType) : Optional.empty();
     }
     
     @Override
-    public PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final EncryptRule encryptRule) {
-        return new PhysicalTableMetaData(getEncryptColumnMetaDataList(tableName, tableMetaData.getColumns().values(), encryptRule), tableMetaData.getIndexes().values());
+    public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final EncryptRule encryptRule) {
+        return new TableMetaData(getEncryptColumnMetaDataList(tableName, tableMetaData.getColumns().values(), encryptRule), tableMetaData.getIndexes().values());
     }
     
-    private Collection<PhysicalColumnMetaData> getEncryptColumnMetaDataList(final String tableName,
-                                                                            final Collection<PhysicalColumnMetaData> originalColumnMetaDataList, final EncryptRule encryptRule) {
-        Collection<PhysicalColumnMetaData> result = new LinkedList<>();
+    private Collection<ColumnMetaData> getEncryptColumnMetaDataList(final String tableName,
+                                                                    final Collection<ColumnMetaData> originalColumnMetaDataList, final EncryptRule encryptRule) {
+        Collection<ColumnMetaData> result = new LinkedList<>();
         Collection<String> derivedColumns = encryptRule.getAssistedQueryAndPlainColumns(tableName);
-        for (PhysicalColumnMetaData each : originalColumnMetaDataList) {
+        for (ColumnMetaData each : originalColumnMetaDataList) {
             if (!derivedColumns.contains(each.getName())) {
                 result.add(getEncryptColumnMetaData(tableName, each, encryptRule));
             }
@@ -62,7 +62,7 @@ public final class EncryptMetaDataLoader implements ShardingSphereMetaDataLoader
         return result;
     }
     
-    private PhysicalColumnMetaData getEncryptColumnMetaData(final String tableName, final PhysicalColumnMetaData originalColumnMetaData, final EncryptRule encryptRule) {
+    private ColumnMetaData getEncryptColumnMetaData(final String tableName, final ColumnMetaData originalColumnMetaData, final EncryptRule encryptRule) {
         if (!encryptRule.isCipherColumn(tableName, originalColumnMetaData.getName())) {
             return originalColumnMetaData;
         }

@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.junit.Before;
@@ -98,7 +98,7 @@ public final class EncryptMetaDataLoaderTest {
     public void assertLoadByExistedTable() throws SQLException {
         EncryptRule rule = createEncryptRule();
         EncryptMetaDataLoader loader = (EncryptMetaDataLoader) OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(rule), ShardingSphereMetaDataLoader.class).get(rule);
-        Optional<PhysicalTableMetaData> actual = loader.load(TABLE_NAME, databaseType, Collections.singletonMap("logic_db", dataSource), new DataNodes(Collections.singletonList(rule)), rule, props);
+        Optional<TableMetaData> actual = loader.load(TABLE_NAME, databaseType, Collections.singletonMap("logic_db", dataSource), new DataNodes(Collections.singletonList(rule)), rule, props);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getColumnMetaData(0).getName(), is("id"));
         assertThat(actual.get().getColumnMetaData(1).getName(), is("pwd_cipher"));
@@ -109,7 +109,7 @@ public final class EncryptMetaDataLoaderTest {
     public void assertLoadByNotExistedTable() throws SQLException {
         EncryptRule rule = createEncryptRule();
         EncryptMetaDataLoader loader = new EncryptMetaDataLoader();
-        Optional<PhysicalTableMetaData> actual = loader.load(
+        Optional<TableMetaData> actual = loader.load(
                 "not_existed_table", databaseType, Collections.singletonMap("logic_db", dataSource), new DataNodes(Collections.singletonList(rule)), rule, props);
         assertFalse(actual.isPresent());
     }
@@ -118,7 +118,7 @@ public final class EncryptMetaDataLoaderTest {
     public void assertDecorate() {
         EncryptRule rule = createEncryptRule();
         EncryptMetaDataLoader loader = (EncryptMetaDataLoader) OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(rule), ShardingSphereMetaDataLoader.class).get(rule);
-        PhysicalTableMetaData actual = loader.decorate("t_encrypt", createTableMetaData(), rule);
+        TableMetaData actual = loader.decorate("t_encrypt", createTableMetaData(), rule);
         assertThat(actual.getColumns().size(), is(2));
         assertTrue(actual.getColumns().containsKey("id"));
         assertTrue(actual.getColumns().containsKey("pwd"));
@@ -133,9 +133,9 @@ public final class EncryptMetaDataLoaderTest {
         return result;
     }
     
-    private PhysicalTableMetaData createTableMetaData() {
-        Collection<PhysicalColumnMetaData> columns = Arrays.asList(new PhysicalColumnMetaData("id", 1, "int", true, true, true),
-                new PhysicalColumnMetaData("pwd_cipher", 2, "varchar", false, false, true), new PhysicalColumnMetaData("pwd_plain", 2, "varchar", false, false, true));
-        return new PhysicalTableMetaData(columns, Collections.emptyList());
+    private TableMetaData createTableMetaData() {
+        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", 1, "int", true, true, true),
+                new ColumnMetaData("pwd_cipher", 2, "varchar", false, false, true), new ColumnMetaData("pwd_plain", 2, "varchar", false, false, true));
+        return new TableMetaData(columns, Collections.emptyList());
     }
 }

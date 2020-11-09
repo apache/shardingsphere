@@ -33,7 +33,7 @@ import org.apache.shardingsphere.scaling.postgresql.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.WriteRowEvent;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import java.util.List;
 
@@ -122,7 +122,7 @@ public final class WalEventConverter {
         return result;
     }
     
-    private void putColumnsIntoDataRecord(final DataRecord dataRecord, final PhysicalTableMetaData tableMetaData, final List<Object> values) {
+    private void putColumnsIntoDataRecord(final DataRecord dataRecord, final TableMetaData tableMetaData, final List<Object> values) {
         for (int i = 0; i < values.size(); i++) {
             dataRecord.addColumn(new Column(tableMetaData.getColumnMetaData(i).getName(), values.get(i), true, tableMetaData.isPrimaryKey(i)));
         }

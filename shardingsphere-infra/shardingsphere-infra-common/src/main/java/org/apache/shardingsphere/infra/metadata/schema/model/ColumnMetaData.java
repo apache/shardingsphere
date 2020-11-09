@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.model.physical;
+package org.apache.shardingsphere.infra.metadata.schema.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,13 +23,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Physical index meta data.
+ * Column meta data.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class PhysicalIndexMetaData {
+public class ColumnMetaData {
     
     private final String name;
+    
+    private final int dataType;
+    
+    private final String dataTypeName;
+    
+    private final boolean primaryKey;
+    
+    private final boolean generated;
+    
+    private final boolean caseSensitive;
 }

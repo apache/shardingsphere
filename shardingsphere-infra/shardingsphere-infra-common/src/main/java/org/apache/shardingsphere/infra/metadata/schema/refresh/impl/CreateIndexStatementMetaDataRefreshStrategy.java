@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.schema.refresh.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalIndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.TableMetaDataLoaderCallback;
@@ -39,6 +39,6 @@ public final class CreateIndexStatementMetaDataRefreshStrategy implements MetaDa
         }
         String indexName = sqlStatement.getIndex().getIdentifier().getValue();
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        schema.get(tableName).getIndexes().put(indexName, new PhysicalIndexMetaData(indexName));
+        schema.get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
     }
 }

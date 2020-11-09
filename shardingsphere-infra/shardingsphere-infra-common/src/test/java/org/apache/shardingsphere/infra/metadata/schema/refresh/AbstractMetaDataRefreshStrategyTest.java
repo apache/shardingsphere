@@ -19,10 +19,10 @@ package org.apache.shardingsphere.infra.metadata.schema.refresh;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalIndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.junit.Before;
 
 import java.util.Collections;
@@ -38,8 +38,8 @@ public abstract class AbstractMetaDataRefreshStrategyTest {
     }
     
     private ShardingSphereSchema buildSchema() {
-        return new ShardingSphereSchema(ImmutableMap.of("t_order", new PhysicalTableMetaData(
-                Collections.singletonList(new PhysicalColumnMetaData("order_id", 1, "String", false, false, false)), Collections.singletonList(new PhysicalIndexMetaData("index")))));
+        return new ShardingSphereSchema(ImmutableMap.of("t_order", new TableMetaData(
+                Collections.singletonList(new ColumnMetaData("order_id", 1, "String", false, false, false)), Collections.singletonList(new IndexMetaData("index")))));
     }
 }
 

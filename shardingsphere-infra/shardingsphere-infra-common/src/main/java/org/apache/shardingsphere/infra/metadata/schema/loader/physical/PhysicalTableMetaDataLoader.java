@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.MetaDataConnectionAdapter;
 import org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.DatabaseMetaDataDialectHandlerFactory;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -45,11 +45,11 @@ public final class PhysicalTableMetaDataLoader {
      * @return table meta data
      * @throws SQLException SQL exception
      */
-    public static Optional<PhysicalTableMetaData> load(final DataSource dataSource, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
+    public static Optional<TableMetaData> load(final DataSource dataSource, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
         try (MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, dataSource.getConnection())) {
             String formattedTableNamePattern = formatTableNamePattern(tableNamePattern, databaseType);
             return isTableExist(connectionAdapter, formattedTableNamePattern)
-                    ? Optional.of(new PhysicalTableMetaData(PhysicalColumnMetaDataLoader.load(
+                    ? Optional.of(new TableMetaData(PhysicalColumnMetaDataLoader.load(
                             connectionAdapter, formattedTableNamePattern, databaseType), PhysicalIndexMetaDataLoader.load(connectionAdapter, formattedTableNamePattern)))
                     : Optional.empty();
         }

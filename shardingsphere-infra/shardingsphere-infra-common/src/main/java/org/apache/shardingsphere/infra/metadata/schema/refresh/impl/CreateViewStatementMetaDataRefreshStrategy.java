@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.schema.refresh.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.TableMetaDataLoaderCallback;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
@@ -35,7 +35,7 @@ public final class CreateViewStatementMetaDataRefreshStrategy implements MetaDat
     public void refreshMetaData(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
                                 final CreateViewStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
-        schema.put(viewName, new PhysicalTableMetaData());
+        schema.put(viewName, new TableMetaData());
         schema.get(viewName).getAddressingDataSources().addAll(routeDataSourceNames);
     }
 }

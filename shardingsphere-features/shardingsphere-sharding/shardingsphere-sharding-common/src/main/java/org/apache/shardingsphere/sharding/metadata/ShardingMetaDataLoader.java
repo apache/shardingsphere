@@ -27,9 +27,9 @@ import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.loader.physical.PhysicalTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalIndexMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -62,8 +62,8 @@ public final class ShardingMetaDataLoader implements ShardingSphereMetaDataLoade
     private static final int FUTURE_GET_TIME_OUT_SECOND = 5;
     
     @Override
-    public Optional<PhysicalTableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
-                                                final ShardingRule rule, final ConfigurationProperties props) throws SQLException {
+    public Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
+                                        final ShardingRule rule, final ConfigurationProperties props) throws SQLException {
         if (!rule.findTableRule(tableName).isPresent()) {
             return Optional.empty();
         }
@@ -74,7 +74,7 @@ public final class ShardingMetaDataLoader implements ShardingSphereMetaDataLoade
             DataNode dataNode = dataNodes.getDataNodes(tableName).iterator().next();
             return PhysicalTableMetaDataLoader.load(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType);
         }
-        Map<String, PhysicalTableMetaData> actualTableMetaDataMap = parallelLoadTables(databaseType, dataSourceMap, dataNodes, tableName, maxConnectionsSizePerQuery);
+        Map<String, TableMetaData> actualTableMetaDataMap = parallelLoadTables(databaseType, dataSourceMap, dataNodes, tableName, maxConnectionsSizePerQuery);
         if (actualTableMetaDataMap.isEmpty()) {
             return Optional.empty();
         }
@@ -82,15 +82,15 @@ public final class ShardingMetaDataLoader implements ShardingSphereMetaDataLoade
         return Optional.of(actualTableMetaDataMap.values().iterator().next());
     }
     
-    private Map<String, PhysicalTableMetaData> parallelLoadTables(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
-                                                                  final String tableName, final int maxConnectionsSizePerQuery) {
+    private Map<String, TableMetaData> parallelLoadTables(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
+                                                          final String tableName, final int maxConnectionsSizePerQuery) {
         Map<String, List<DataNode>> dataNodeGroups = dataNodes.getDataNodeGroups(tableName);
-        Map<String, PhysicalTableMetaData> result = new HashMap<>(dataNodeGroups.size(), 1);
-        Map<String, Future<Optional<PhysicalTableMetaData>>> tableFutureMap = new HashMap<>(dataNodeGroups.size(), 1);
+        Map<String, TableMetaData> result = new HashMap<>(dataNodeGroups.size(), 1);
+        Map<String, Future<Optional<TableMetaData>>> tableFutureMap = new HashMap<>(dataNodeGroups.size(), 1);
         ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CPU_CORES * 2, dataNodeGroups.size() * maxConnectionsSizePerQuery));
         for (Entry<String, List<DataNode>> entry : dataNodeGroups.entrySet()) {
             for (DataNode each : entry.getValue()) {
-                Future<Optional<PhysicalTableMetaData>> futures = executorService.submit(() -> loadTableByDataNode(each, databaseType, dataSourceMap));
+                Future<Optional<TableMetaData>> futures = executorService.submit(() -> loadTableByDataNode(each, databaseType, dataSourceMap));
                 tableFutureMap.put(each.getTableName(), futures);
             }
         }
@@ -105,11 +105,11 @@ public final class ShardingMetaDataLoader implements ShardingSphereMetaDataLoade
         return result;
     }
     
-    private Optional<PhysicalTableMetaData> getTableMetaData(final Future<Optional<PhysicalTableMetaData>> value) throws InterruptedException, ExecutionException, TimeoutException {
+    private Optional<TableMetaData> getTableMetaData(final Future<Optional<TableMetaData>> value) throws InterruptedException, ExecutionException, TimeoutException {
         return value.get(FUTURE_GET_TIME_OUT_SECOND, TimeUnit.SECONDS);
     }
     
-    private Optional<PhysicalTableMetaData> loadTableByDataNode(final DataNode dataNode, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    private Optional<TableMetaData> loadTableByDataNode(final DataNode dataNode, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         try {
             return PhysicalTableMetaDataLoader.load(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType);
         } catch (final SQLException ex) {
@@ -117,8 +117,8 @@ public final class ShardingMetaDataLoader implements ShardingSphereMetaDataLoade
         }
     }
     
-    private void checkUniformed(final String logicTableName, final Map<String, PhysicalTableMetaData> actualTableMetaDataMap, final ShardingRule shardingRule) {
-        PhysicalTableMetaData sample = decorate(logicTableName, actualTableMetaDataMap.values().iterator().next(), shardingRule);
+    private void checkUniformed(final String logicTableName, final Map<String, TableMetaData> actualTableMetaDataMap, final ShardingRule shardingRule) {
+        TableMetaData sample = decorate(logicTableName, actualTableMetaDataMap.values().iterator().next(), shardingRule);
         Collection<TableMetaDataViolation> violations = actualTableMetaDataMap.entrySet().stream()
                 .filter(entry -> !sample.equals(decorate(logicTableName, entry.getValue(), shardingRule)))
                 .map(entry -> new TableMetaDataViolation(entry.getKey(), entry.getValue())).collect(Collectors.toList());
@@ -137,20 +137,20 @@ public final class ShardingMetaDataLoader implements ShardingSphereMetaDataLoade
     }
 
     @Override
-    public PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final ShardingRule shardingRule) {
+    public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final ShardingRule shardingRule) {
         return shardingRule.findTableRule(tableName).map(
-            tableRule -> new PhysicalTableMetaData(getColumnMetaDataList(tableMetaData, tableRule), getIndexMetaDataList(tableMetaData, tableRule))).orElse(tableMetaData);
+            tableRule -> new TableMetaData(getColumnMetaDataList(tableMetaData, tableRule), getIndexMetaDataList(tableMetaData, tableRule))).orElse(tableMetaData);
     }
     
-    private Collection<PhysicalColumnMetaData> getColumnMetaDataList(final PhysicalTableMetaData tableMetaData, final TableRule tableRule) {
+    private Collection<ColumnMetaData> getColumnMetaDataList(final TableMetaData tableMetaData, final TableRule tableRule) {
         Optional<String> generateKeyColumn = tableRule.getGenerateKeyColumn();
         if (!generateKeyColumn.isPresent()) {
             return tableMetaData.getColumns().values();
         }
-        Collection<PhysicalColumnMetaData> result = new LinkedList<>();
-        for (Entry<String, PhysicalColumnMetaData> entry : tableMetaData.getColumns().entrySet()) {
+        Collection<ColumnMetaData> result = new LinkedList<>();
+        for (Entry<String, ColumnMetaData> entry : tableMetaData.getColumns().entrySet()) {
             if (entry.getKey().equalsIgnoreCase(generateKeyColumn.get())) {
-                result.add(new PhysicalColumnMetaData(
+                result.add(new ColumnMetaData(
                         entry.getValue().getName(), entry.getValue().getDataType(), entry.getValue().getDataTypeName(), entry.getValue().isPrimaryKey(), true, entry.getValue().isCaseSensitive()));
             } else {
                 result.add(entry.getValue());
@@ -159,11 +159,11 @@ public final class ShardingMetaDataLoader implements ShardingSphereMetaDataLoade
         return result;
     }
     
-    private Collection<PhysicalIndexMetaData> getIndexMetaDataList(final PhysicalTableMetaData tableMetaData, final TableRule tableRule) {
-        Collection<PhysicalIndexMetaData> result = new HashSet<>();
-        for (Entry<String, PhysicalIndexMetaData> entry : tableMetaData.getIndexes().entrySet()) {
+    private Collection<IndexMetaData> getIndexMetaDataList(final TableMetaData tableMetaData, final TableRule tableRule) {
+        Collection<IndexMetaData> result = new HashSet<>();
+        for (Entry<String, IndexMetaData> entry : tableMetaData.getIndexes().entrySet()) {
             for (DataNode each : tableRule.getActualDataNodes()) {
-                getLogicIndex(entry.getKey(), each.getTableName()).ifPresent(logicIndex -> result.add(new PhysicalIndexMetaData(logicIndex)));
+                getLogicIndex(entry.getKey(), each.getTableName()).ifPresent(logicIndex -> result.add(new IndexMetaData(logicIndex)));
             }
         }
         return result;
@@ -190,6 +190,6 @@ public final class ShardingMetaDataLoader implements ShardingSphereMetaDataLoade
         
         private final String actualTableName;
         
-        private final PhysicalTableMetaData tableMetaData;
+        private final TableMetaData tableMetaData;
     }
 }

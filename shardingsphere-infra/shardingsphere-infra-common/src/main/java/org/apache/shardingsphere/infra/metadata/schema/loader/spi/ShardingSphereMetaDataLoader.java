@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.loader.spi;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
@@ -48,8 +48,8 @@ public interface ShardingSphereMetaDataLoader<T extends TableContainedRule> exte
      * @return meta data
      * @throws SQLException SQL exception
      */
-    Optional<PhysicalTableMetaData> load(String tableName, 
-                                         DatabaseType databaseType, Map<String, DataSource> dataSourceMap, DataNodes dataNodes, T rule, ConfigurationProperties props) throws SQLException;
+    Optional<TableMetaData> load(String tableName,
+                                 DatabaseType databaseType, Map<String, DataSource> dataSourceMap, DataNodes dataNodes, T rule, ConfigurationProperties props) throws SQLException;
     
     /**
      * Decorate table meta data.
@@ -59,5 +59,5 @@ public interface ShardingSphereMetaDataLoader<T extends TableContainedRule> exte
      * @param rule rule
      * @return decorated table meta data
      */
-    PhysicalTableMetaData decorate(String tableName, PhysicalTableMetaData tableMetaData, T rule);
+    TableMetaData decorate(String tableName, TableMetaData tableMetaData, T rule);
 }

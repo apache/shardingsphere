@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.type.single;
 
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -79,14 +79,14 @@ public final class SingleTableRoutingEngineTest {
     }
     
     private ShardingSphereSchema buildSchema() {
-        Map<String, PhysicalTableMetaData> tables = new HashMap<>(2, 1);
+        Map<String, TableMetaData> tables = new HashMap<>(2, 1);
         tables.put("t_order", buildTableMetaData());
         tables.put("t_order_item", buildTableMetaData());
         return new ShardingSphereSchema(tables);
     }
     
-    private PhysicalTableMetaData buildTableMetaData() {
-        PhysicalTableMetaData result = new PhysicalTableMetaData();
+    private TableMetaData buildTableMetaData() {
+        TableMetaData result = new TableMetaData();
         result.getAddressingDataSources().add("ds_0");
         return result;
     }

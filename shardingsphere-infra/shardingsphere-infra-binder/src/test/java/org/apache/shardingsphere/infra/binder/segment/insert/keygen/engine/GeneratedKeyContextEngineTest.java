@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.binder.segment.insert.keygen.engine;
 
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
@@ -62,8 +62,8 @@ public final class GeneratedKeyContextEngineTest {
     
     @Before
     public void setUp() {
-        PhysicalTableMetaData tableMetaData = new PhysicalTableMetaData(Collections.singletonList(new PhysicalColumnMetaData("id", Types.INTEGER, "INT", true, true, false)), Collections.emptyList());
-        Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("id", Types.INTEGER, "INT", true, true, false)), Collections.emptyList());
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
         tableMetaDataMap.put("tbl", tableMetaData);
         schema = new ShardingSphereSchema(tableMetaDataMap);
     }

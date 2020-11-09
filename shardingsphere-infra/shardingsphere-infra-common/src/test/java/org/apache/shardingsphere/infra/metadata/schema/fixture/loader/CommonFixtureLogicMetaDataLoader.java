@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -31,13 +31,13 @@ import java.util.Optional;
 public final class CommonFixtureLogicMetaDataLoader implements ShardingSphereMetaDataLoader<CommonFixtureRule> {
     
     @Override
-    public Optional<PhysicalTableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                final DataNodes dataNodes, final CommonFixtureRule rule, final ConfigurationProperties props) {
+    public Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                        final DataNodes dataNodes, final CommonFixtureRule rule, final ConfigurationProperties props) {
         return Optional.empty();
     }
     
     @Override
-    public PhysicalTableMetaData decorate(final String tableName, final PhysicalTableMetaData tableMetaData, final CommonFixtureRule rule) {
+    public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final CommonFixtureRule rule) {
         return tableMetaData;
     }
     

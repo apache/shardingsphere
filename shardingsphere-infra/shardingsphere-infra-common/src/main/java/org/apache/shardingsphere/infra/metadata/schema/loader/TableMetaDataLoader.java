@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.ShardingSphereMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -57,21 +57,21 @@ public final class TableMetaDataLoader {
      * @return table meta data
      * @throws SQLException SQL exception
      */
-    public static Optional<PhysicalTableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
-                                                       final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
-        Optional<PhysicalTableMetaData> tableMetaData = loadTableMetaData(tableName, databaseType, dataSourceMap, rules, props);
+    public static Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                               final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
+        Optional<TableMetaData> tableMetaData = loadTableMetaData(tableName, databaseType, dataSourceMap, rules, props);
         return tableMetaData.map(optional -> decorateTableMetaData(tableName, optional, rules));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static Optional<PhysicalTableMetaData> loadTableMetaData(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
-                                                                     final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
+    private static Optional<TableMetaData> loadTableMetaData(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                                             final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
         DataNodes dataNodes = new DataNodes(rules);
         for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
                 TableContainedRule rule = (TableContainedRule) entry.getKey();
                 ShardingSphereMetaDataLoader loader = entry.getValue();
-                Optional<PhysicalTableMetaData> tableMetaData = loader.load(tableName, databaseType, dataSourceMap, dataNodes, rule, props);
+                Optional<TableMetaData> tableMetaData = loader.load(tableName, databaseType, dataSourceMap, dataNodes, rule, props);
                 if (tableMetaData.isPresent()) {
                     return tableMetaData;
                 }
@@ -81,8 +81,8 @@ public final class TableMetaDataLoader {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static PhysicalTableMetaData decorateTableMetaData(final String tableName, final PhysicalTableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
-        PhysicalTableMetaData result = null;
+    private static TableMetaData decorateTableMetaData(final String tableName, final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
+        TableMetaData result = null;
         for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
                 result = entry.getValue().decorate(tableName, null == result ? tableMetaData : result, (TableContainedRule) entry.getKey());

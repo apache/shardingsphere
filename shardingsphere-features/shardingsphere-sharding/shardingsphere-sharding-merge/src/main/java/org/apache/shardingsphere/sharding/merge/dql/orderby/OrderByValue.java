@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -70,8 +70,8 @@ public final class OrderByValue implements Comparable<OrderByValue> {
                                                           final ShardingSphereSchema schema, final OrderByItem eachOrderByItem) throws SQLException {
         for (SimpleTableSegment eachSimpleTableSegment : selectStatementContext.getAllTables()) {
             String tableName = eachSimpleTableSegment.getTableName().getIdentifier().getValue();
-            PhysicalTableMetaData tableMetaData = schema.get(tableName);
-            Map<String, PhysicalColumnMetaData> columns = tableMetaData.getColumns();
+            TableMetaData tableMetaData = schema.get(tableName);
+            Map<String, ColumnMetaData> columns = tableMetaData.getColumns();
             OrderByItemSegment orderByItemSegment = eachOrderByItem.getSegment();
             if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
                 String columnName = ((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getIdentifier().getValue();

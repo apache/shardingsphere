@@ -22,10 +22,10 @@ import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlIndexM
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlLogicSchemaMetaData;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchemaMetaData;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlTableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalIndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 import java.util.Collection;
@@ -58,24 +58,24 @@ public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlLog
                 .collect(Collectors.toMap(Entry::getKey, entry -> convertTable(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
     
-    private PhysicalTableMetaData convertTable(final YamlTableMetaData table) {
-        return new PhysicalTableMetaData(convertColumns(table.getColumns()), convertIndexes(table.getIndexes()));
+    private TableMetaData convertTable(final YamlTableMetaData table) {
+        return new TableMetaData(convertColumns(table.getColumns()), convertIndexes(table.getIndexes()));
     }
 
-    private Collection<PhysicalIndexMetaData> convertIndexes(final Map<String, YamlIndexMetaData> indexes) {
+    private Collection<IndexMetaData> convertIndexes(final Map<String, YamlIndexMetaData> indexes) {
         return null == indexes ? Collections.emptyList() : indexes.values().stream().map(this::convertIndex).collect(Collectors.toList());
     }
 
-    private PhysicalIndexMetaData convertIndex(final YamlIndexMetaData index) {
-        return new PhysicalIndexMetaData(index.getName());
+    private IndexMetaData convertIndex(final YamlIndexMetaData index) {
+        return new IndexMetaData(index.getName());
     }
 
-    private Collection<PhysicalColumnMetaData> convertColumns(final Map<String, YamlColumnMetaData> indexes) {
+    private Collection<ColumnMetaData> convertColumns(final Map<String, YamlColumnMetaData> indexes) {
         return null == indexes ? Collections.emptyList() : indexes.values().stream().map(this::convertColumn).collect(Collectors.toList());
     }
 
-    private PhysicalColumnMetaData convertColumn(final YamlColumnMetaData column) {
-        return new PhysicalColumnMetaData(column.getName(), column.getDataType(), column.getDataTypeName(), column.isPrimaryKey(), column.isGenerated(), column.isCaseSensitive());
+    private ColumnMetaData convertColumn(final YamlColumnMetaData column) {
+        return new ColumnMetaData(column.getName(), column.getDataType(), column.getDataTypeName(), column.isPrimaryKey(), column.isGenerated(), column.isCaseSensitive());
     }
     
     private YamlSchemaMetaData convertYamlSchema(final ShardingSphereSchema schema) {
@@ -86,28 +86,28 @@ public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlLog
         return result;
     }
     
-    private YamlTableMetaData convertYamlTable(final PhysicalTableMetaData table) {
+    private YamlTableMetaData convertYamlTable(final TableMetaData table) {
         YamlTableMetaData result = new YamlTableMetaData();
         result.setColumns(convertYamlColumns(table.getColumns()));
         result.setIndexes(convertYamlIndexes(table.getIndexes()));
         return result;
     }
 
-    private Map<String, YamlIndexMetaData> convertYamlIndexes(final Map<String, PhysicalIndexMetaData> indexes) {
+    private Map<String, YamlIndexMetaData> convertYamlIndexes(final Map<String, IndexMetaData> indexes) {
         return indexes.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertYamlIndex(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private YamlIndexMetaData convertYamlIndex(final PhysicalIndexMetaData index) {
+    private YamlIndexMetaData convertYamlIndex(final IndexMetaData index) {
         YamlIndexMetaData result = new YamlIndexMetaData();
         result.setName(index.getName());
         return result;
     }
     
-    private Map<String, YamlColumnMetaData> convertYamlColumns(final Map<String, PhysicalColumnMetaData> columns) {
+    private Map<String, YamlColumnMetaData> convertYamlColumns(final Map<String, ColumnMetaData> columns) {
         return columns.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertYamlColumn(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private YamlColumnMetaData convertYamlColumn(final PhysicalColumnMetaData column) {
+    private YamlColumnMetaData convertYamlColumn(final ColumnMetaData column) {
         YamlColumnMetaData result = new YamlColumnMetaData();
         result.setName(column.getName());
         result.setCaseSensitive(column.isCaseSensitive());

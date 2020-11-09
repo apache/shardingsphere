@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.schema.loader.physical;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -94,14 +94,14 @@ public final class ColumnMetaDataLoaderTest {
     
     @Test
     public void assertLoad() throws SQLException {
-        Collection<PhysicalColumnMetaData> actual = PhysicalColumnMetaDataLoader.load(connection, TEST_TABLE, databaseType);
+        Collection<ColumnMetaData> actual = PhysicalColumnMetaDataLoader.load(connection, TEST_TABLE, databaseType);
         assertThat(actual.size(), is(2));
-        Iterator<PhysicalColumnMetaData> columnMetaDataIterator = actual.iterator();
+        Iterator<ColumnMetaData> columnMetaDataIterator = actual.iterator();
         assertColumnMetaData(columnMetaDataIterator.next(), "pk_col", Types.INTEGER, "INT", true, true);
         assertColumnMetaData(columnMetaDataIterator.next(), "col", Types.VARCHAR, "VARCHAR", false, false);
     }
     
-    private void assertColumnMetaData(final PhysicalColumnMetaData actual, final String name, final int dataType, final String typeName, final boolean primaryKey, final boolean caseSensitive) {
+    private void assertColumnMetaData(final ColumnMetaData actual, final String name, final int dataType, final String typeName, final boolean primaryKey, final boolean caseSensitive) {
         assertThat(actual.getName(), is(name));
         assertThat(actual.getDataType(), is(dataType));
         assertThat(actual.getDataTypeName(), is(typeName));
