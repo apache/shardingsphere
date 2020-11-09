@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.MetaDataConnectionAdapter;
+import org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.MetaDataLoaderConnectionAdapter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -55,7 +55,7 @@ public final class PhysicalSchemaMetaDataLoader {
      */
     public static Collection<String> loadAllTableNames(final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
         Collection<String> result;
-        try (MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, dataSource.getConnection())) {
+        try (MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
             result = loadAllTableNames(connectionAdapter);
         }
         log.info("Loading {} tables' meta data for unconfigured tables.", result.size());

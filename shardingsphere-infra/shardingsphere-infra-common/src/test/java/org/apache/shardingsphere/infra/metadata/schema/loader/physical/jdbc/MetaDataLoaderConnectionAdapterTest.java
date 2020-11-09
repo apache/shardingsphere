@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MetaDataConnectionAdapterTest {
+public final class MetaDataLoaderConnectionAdapterTest {
     
     private static final String TEST_CATALOG = "catalog";
     
@@ -51,21 +51,21 @@ public final class MetaDataConnectionAdapterTest {
     @Test
     public void assertGetCatalog() throws SQLException {
         when(connection.getCatalog()).thenReturn(TEST_CATALOG);
-        MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, connection);
+        MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, connection);
         assertThat(connectionAdapter.getCatalog(), is(TEST_CATALOG));
     }
     
     @Test
     public void assertGetCatalogReturnNullWhenThrowsSQLException() throws SQLException {
         when(connection.getCatalog()).thenThrow(SQLException.class);
-        MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, connection);
+        MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, connection);
         assertNull(connectionAdapter.getCatalog());
     }
     
     @Test
     public void assertGetSchema() throws SQLException {
         when(connection.getSchema()).thenReturn(TEST_SCHEMA);
-        MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, connection);
+        MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, connection);
         assertThat(connectionAdapter.getSchema(), is(TEST_SCHEMA));
     }
     
@@ -74,21 +74,21 @@ public final class MetaDataConnectionAdapterTest {
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getUserName()).thenReturn(TEST_SCHEMA);
-        MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(oracleDatabaseType, connection);
+        MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(oracleDatabaseType, connection);
         assertThat(connectionAdapter.getSchema(), is(TEST_SCHEMA.toUpperCase()));
     }
     
     @Test
     public void assertGetSchemaByMySQLSPI() throws SQLException {
         when(connection.getSchema()).thenReturn(TEST_SCHEMA);
-        MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, connection);
+        MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, connection);
         assertThat(connectionAdapter.getSchema(), is(TEST_SCHEMA));
     }
     
     @Test
     public void assertGetSchemaReturnNullWhenThrowsSQLException() throws SQLException {
         when(connection.getSchema()).thenThrow(SQLException.class);
-        MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, connection);
+        MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, connection);
         assertNull(connectionAdapter.getSchema());
     }
 }

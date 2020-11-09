@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.loader.physical;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.MetaDataConnectionAdapter;
+import org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.MetaDataLoaderConnectionAdapter;
 import org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.handler.DatabaseMetaDataDialectHandlerFactory;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
@@ -46,7 +46,7 @@ public final class PhysicalTableMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public static Optional<TableMetaData> load(final DataSource dataSource, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
-        try (MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, dataSource.getConnection())) {
+        try (MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
             String formattedTableNamePattern = formatTableNamePattern(tableNamePattern, databaseType);
             return isTableExist(connectionAdapter, formattedTableNamePattern)
                     ? Optional.of(new TableMetaData(PhysicalColumnMetaDataLoader.load(
