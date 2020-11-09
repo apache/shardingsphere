@@ -18,23 +18,20 @@
 package org.apache.shardingsphere.infra.metadata.schema.loader.physical;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Types;
 import java.util.Map;
 import java.util.Optional;
@@ -44,6 +41,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -53,16 +51,8 @@ public final class PhysicalTableMetaDataLoaderTest {
     
     private static final String TEST_TABLE = "table";
     
-    private final DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("MySQL");
-    
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
-    
-    @Mock
-    private Connection connection;
-    
-    @Mock
-    private DatabaseMetaData databaseMetaData;
     
     @Mock
     private ResultSet primaryResultSet;
@@ -77,9 +67,6 @@ public final class PhysicalTableMetaDataLoaderTest {
     private ResultSet columnResultSet;
     
     @Mock
-    private Statement statement;
-    
-    @Mock
     private ResultSet caseSensitivesResultSet;
     
     @Mock
@@ -90,34 +77,31 @@ public final class PhysicalTableMetaDataLoaderTest {
     
     @Before
     public void setUp() throws SQLException {
-        when(dataSource.getConnection()).thenReturn(connection);
-        when(connection.getCatalog()).thenReturn(TEST_CATALOG);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(databaseMetaData.getTables(TEST_CATALOG, null, TEST_TABLE, null)).thenReturn(tableExistResultSet);
+        when(dataSource.getConnection().getCatalog()).thenReturn(TEST_CATALOG);
+        when(dataSource.getConnection().getMetaData().getTables(TEST_CATALOG, null, TEST_TABLE, null)).thenReturn(tableExistResultSet);
         when(tableExistResultSet.next()).thenReturn(true);
-        when(databaseMetaData.getColumns(TEST_CATALOG, null, TEST_TABLE, "%")).thenReturn(columnResultSet);
+        when(dataSource.getConnection().getMetaData().getColumns(TEST_CATALOG, null, TEST_TABLE, "%")).thenReturn(columnResultSet);
         when(columnResultSet.next()).thenReturn(true, true, false);
         when(columnResultSet.getString("TABLE_NAME")).thenReturn(TEST_TABLE);
         when(columnResultSet.getString("COLUMN_NAME")).thenReturn("pk_col", "col");
         when(columnResultSet.getInt("DATA_TYPE")).thenReturn(Types.INTEGER, Types.VARCHAR);
         when(columnResultSet.getString("TYPE_NAME")).thenReturn("INT", "VARCHAR");
-        when(databaseMetaData.getPrimaryKeys(TEST_CATALOG, null, TEST_TABLE)).thenReturn(primaryResultSet);
+        when(dataSource.getConnection().getMetaData().getPrimaryKeys(TEST_CATALOG, null, TEST_TABLE)).thenReturn(primaryResultSet);
         when(primaryResultSet.next()).thenReturn(true, false);
         when(primaryResultSet.getString("COLUMN_NAME")).thenReturn("pk_col");
-        when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery(anyString())).thenReturn(caseSensitivesResultSet);
+        when(dataSource.getConnection().createStatement().executeQuery(anyString())).thenReturn(caseSensitivesResultSet);
         when(caseSensitivesResultSet.findColumn("pk_col")).thenReturn(1);
         when(caseSensitivesResultSet.findColumn("col")).thenReturn(2);
         when(caseSensitivesResultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSetMetaData.isCaseSensitive(1)).thenReturn(true);
-        when(databaseMetaData.getIndexInfo(TEST_CATALOG, null, TEST_TABLE, false, false)).thenReturn(indexResultSet);
+        when(dataSource.getConnection().getMetaData().getIndexInfo(TEST_CATALOG, null, TEST_TABLE, false, false)).thenReturn(indexResultSet);
         when(indexResultSet.next()).thenReturn(true, false);
         when(indexResultSet.getString("INDEX_NAME")).thenReturn("my_index");
     }
     
     @Test
-    public void assertLoad() throws SQLException {
-        Optional<TableMetaData> actual = PhysicalTableMetaDataLoader.load(dataSource, TEST_TABLE, databaseType);
+    public void assertLoadWithExistedTable() throws SQLException {
+        Optional<TableMetaData> actual = PhysicalTableMetaDataLoader.load(dataSource, TEST_TABLE, mock(DatabaseType.class));
         assertTrue(actual.isPresent());
         Map<String, ColumnMetaData> columnMetaDataMap = actual.get().getColumns();
         assertThat(columnMetaDataMap.size(), is(2));
@@ -128,19 +112,18 @@ public final class PhysicalTableMetaDataLoaderTest {
         assertTrue(indexMetaDataMap.containsKey("my_index"));
     }
     
-    @Test
-    public void assertTableNotExist() throws SQLException {
-        when(databaseMetaData.getTables(TEST_CATALOG, null, TEST_TABLE, null)).thenReturn(tableNotExistResultSet);
-        when(tableNotExistResultSet.next()).thenReturn(false);
-        Optional<TableMetaData> actual = PhysicalTableMetaDataLoader.load(dataSource, TEST_TABLE, databaseType);
-        assertFalse(actual.isPresent());
-    }
-    
     private void assertColumnMetaData(final ColumnMetaData actual, final String name, final int dataType, final String typeName, final boolean primaryKey, final boolean caseSensitive) {
         assertThat(actual.getName(), is(name));
         assertThat(actual.getDataType(), is(dataType));
         assertThat(actual.getDataTypeName(), is(typeName));
         assertThat(actual.isPrimaryKey(), is(primaryKey));
         assertThat(actual.isCaseSensitive(), is(caseSensitive));
+    }
+    
+    @Test
+    public void assertLoadWithNotExistedTable() throws SQLException {
+        when(dataSource.getConnection().getMetaData().getTables(TEST_CATALOG, null, TEST_TABLE, null)).thenReturn(tableNotExistResultSet);
+        when(tableNotExistResultSet.next()).thenReturn(false);
+        assertFalse(PhysicalTableMetaDataLoader.load(dataSource, TEST_TABLE, mock(DatabaseType.class)).isPresent());
     }
 }
