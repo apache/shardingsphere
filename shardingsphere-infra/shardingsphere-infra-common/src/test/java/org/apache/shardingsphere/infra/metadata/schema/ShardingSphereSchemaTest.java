@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.metadata.schema;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -35,50 +35,50 @@ public final class ShardingSphereSchemaTest {
     
     @Test
     public void assertGetAllTableNames() {
-        assertThat(new ShardingSphereSchema(ImmutableMap.of("tbl", mock(PhysicalTableMetaData.class))).getAllTableNames(), is(Sets.newHashSet("tbl")));
+        assertThat(new ShardingSphereSchema(ImmutableMap.of("tbl", mock(TableMetaData.class))).getAllTableNames(), is(Sets.newHashSet("tbl")));
     }
     
     @Test
     public void assertGet() {
-        PhysicalTableMetaData tableMetaData = mock(PhysicalTableMetaData.class);
+        TableMetaData tableMetaData = mock(TableMetaData.class);
         assertThat(new ShardingSphereSchema(ImmutableMap.of("tbl", tableMetaData)).get("tbl"), is(tableMetaData));
     }
     
     @Test
     public void assertPut() {
         ShardingSphereSchema actual = new ShardingSphereSchema(Collections.emptyMap());
-        PhysicalTableMetaData tableMetaData = mock(PhysicalTableMetaData.class);
+        TableMetaData tableMetaData = mock(TableMetaData.class);
         actual.put("tbl", tableMetaData);
         assertThat(actual.get("tbl"), is(tableMetaData));
     }
     
     @Test
     public void assertRemove() {
-        ShardingSphereSchema actual = new ShardingSphereSchema(ImmutableMap.of("tbl", mock(PhysicalTableMetaData.class)));
+        ShardingSphereSchema actual = new ShardingSphereSchema(ImmutableMap.of("tbl", mock(TableMetaData.class)));
         actual.remove("tbl");
         assertNull(actual.get("tbl"));
     }
     
     @Test
     public void assertContainsTable() {
-        assertTrue(new ShardingSphereSchema(ImmutableMap.of("tbl", mock(PhysicalTableMetaData.class))).containsTable("tbl"));
+        assertTrue(new ShardingSphereSchema(ImmutableMap.of("tbl", mock(TableMetaData.class))).containsTable("tbl"));
     }
     
     @Test
     public void assertContainsColumn() {
-        PhysicalTableMetaData tableMetaData = new PhysicalTableMetaData(Collections.singletonList(new PhysicalColumnMetaData("col", 0, "dataType", false, false, false)), Collections.emptyList());
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", 0, "dataType", false, false, false)), Collections.emptyList());
         assertTrue(new ShardingSphereSchema(ImmutableMap.of("tbl", tableMetaData)).containsColumn("tbl", "col"));
     }
     
     @Test
     public void assertGetAllColumnNamesWhenContainsKey() {
-        PhysicalTableMetaData tableMetaData = new PhysicalTableMetaData(Collections.singletonList(new PhysicalColumnMetaData("col", 0, "dataType", false, false, false)), Collections.emptyList());
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", 0, "dataType", false, false, false)), Collections.emptyList());
         assertThat(new ShardingSphereSchema(ImmutableMap.of("tbl", tableMetaData)).getAllColumnNames("tbl"), is(Collections.singletonList("col")));
     }
     
     @Test
     public void assertGetAllColumnNamesWhenNotContainsKey() {
-        PhysicalTableMetaData tableMetaData = new PhysicalTableMetaData(Collections.singletonList(new PhysicalColumnMetaData("col", 0, "dataType", false, false, false)), Collections.emptyList());
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", 0, "dataType", false, false, false)), Collections.emptyList());
         assertThat(new ShardingSphereSchema(ImmutableMap.of("tbl1", tableMetaData)).getAllColumnNames("tbl2"), is(Collections.<String>emptyList()));
     }
 }

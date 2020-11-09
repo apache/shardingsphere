@@ -25,10 +25,10 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalIndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
@@ -102,29 +102,29 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     private ShardingSphereSchema mockSchema() {
         ShardingSphereSchema result = mock(ShardingSphereSchema.class);
         when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_bak", "t_account_detail"));
-        PhysicalTableMetaData accountTableMetaData = mock(PhysicalTableMetaData.class);
+        TableMetaData accountTableMetaData = mock(TableMetaData.class);
         when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
-        Map<String, PhysicalIndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
-        indexMetaDataMap.put("index_name", new PhysicalIndexMetaData("index_name"));
+        Map<String, IndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
+        indexMetaDataMap.put("index_name", new IndexMetaData("index_name"));
         when(accountTableMetaData.getIndexes()).thenReturn(indexMetaDataMap);
         when(result.containsTable("t_account")).thenReturn(true);
         when(result.get("t_account")).thenReturn(accountTableMetaData);
-        PhysicalTableMetaData accountBakTableMetaData = mock(PhysicalTableMetaData.class);
+        TableMetaData accountBakTableMetaData = mock(TableMetaData.class);
         when(accountBakTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
         when(result.containsTable("t_account_bak")).thenReturn(true);
         when(result.get("t_account_bak")).thenReturn(accountBakTableMetaData);
-        when(result.get("t_account_detail")).thenReturn(mock(PhysicalTableMetaData.class));
+        when(result.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         return result;
     }
     
-    private Map<String, PhysicalColumnMetaData> createColumnMetaDataMap() {
-        Map<String, PhysicalColumnMetaData> result = new LinkedHashMap<>(4, 1);
-        result.put("account_id", new PhysicalColumnMetaData("account_id", Types.INTEGER, "INT", true, true, false));
-        result.put("password", mock(PhysicalColumnMetaData.class));
-        result.put("amount", mock(PhysicalColumnMetaData.class));
-        result.put("status", mock(PhysicalColumnMetaData.class));
+    private Map<String, ColumnMetaData> createColumnMetaDataMap() {
+        Map<String, ColumnMetaData> result = new LinkedHashMap<>(4, 1);
+        result.put("account_id", new ColumnMetaData("account_id", Types.INTEGER, "INT", true, true, false));
+        result.put("password", mock(ColumnMetaData.class));
+        result.put("amount", mock(ColumnMetaData.class));
+        result.put("status", mock(ColumnMetaData.class));
         return result;
     }
 }

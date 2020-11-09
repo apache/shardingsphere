@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.schema.refresh.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalIndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.AbstractMetaDataRefreshStrategyTest;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -79,9 +79,9 @@ public final class DropIndexStatementMetaDataRefreshStrategyTest extends Abstrac
         dropIndexStatement.getIndexes().add(new IndexSegment(1, 2, new IdentifierValue("index")));
         dropIndexStatement.getIndexes().add(new IndexSegment(2, 3, new IdentifierValue("t_order_index")));
         dropIndexStatement.getIndexes().add(new IndexSegment(3, 4, new IdentifierValue("order_id_index")));
-        Map<String, PhysicalIndexMetaData> actualIndex = getSchema().get("t_order").getIndexes();
-        actualIndex.put("t_order_index", new PhysicalIndexMetaData("t_order_index"));
-        actualIndex.put("order_id_index", new PhysicalIndexMetaData("order_id_index"));
+        Map<String, IndexMetaData> actualIndex = getSchema().get("t_order").getIndexes();
+        actualIndex.put("t_order_index", new IndexMetaData("t_order_index"));
+        actualIndex.put("order_id_index", new IndexMetaData("order_id_index"));
         MetaDataRefreshStrategy<DropIndexStatement> metaDataRefreshStrategy = new DropIndexStatementMetaDataRefreshStrategy();
         metaDataRefreshStrategy.refreshMetaData(getSchema(), mock(DatabaseType.class), Collections.emptyList(), dropIndexStatement, tableName -> Optional.empty());
         assertFalse(getSchema().get("t_order").getIndexes().containsKey("index"));

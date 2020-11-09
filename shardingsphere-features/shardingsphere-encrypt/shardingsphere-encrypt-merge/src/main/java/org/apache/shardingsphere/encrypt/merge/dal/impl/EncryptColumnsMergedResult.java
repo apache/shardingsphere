@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.merge.dal.impl;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.metadata.EncryptColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
@@ -82,7 +82,7 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
     
     private Collection<EncryptColumnMetaData> getTableEncryptColumnMetaDataList() {
         Collection<EncryptColumnMetaData> result = new LinkedList<>();
-        for (Entry<String, PhysicalColumnMetaData> entry : schema.get(tableName).getColumns().entrySet()) {
+        for (Entry<String, ColumnMetaData> entry : schema.get(tableName).getColumns().entrySet()) {
             if (entry.getValue() instanceof EncryptColumnMetaData) {
                 result.add((EncryptColumnMetaData) entry.getValue());
             }
@@ -101,7 +101,7 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
     }
     
     private Optional<String> getLogicColumnOfCipher(final String cipherColumn) {
-        for (Entry<String, PhysicalColumnMetaData> entry : schema.get(tableName).getColumns().entrySet()) {
+        for (Entry<String, ColumnMetaData> entry : schema.get(tableName).getColumns().entrySet()) {
             if (entry.getValue() instanceof EncryptColumnMetaData) {
                 EncryptColumnMetaData encryptColumnMetaData = (EncryptColumnMetaData) entry.getValue();
                 if (encryptColumnMetaData.getCipherColumnName().equalsIgnoreCase(cipherColumn)) {

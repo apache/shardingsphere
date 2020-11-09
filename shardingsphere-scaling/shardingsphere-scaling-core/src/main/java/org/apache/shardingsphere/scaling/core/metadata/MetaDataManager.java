@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.metadata;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.loader.physical.PhysicalTableMetaDataLoader;
 
 import javax.sql.DataSource;
@@ -35,7 +35,7 @@ public final class MetaDataManager {
     
     private final DataSource dataSource;
     
-    private final Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>();
+    private final Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
     
     /**
      * Get table meta data by table name.
@@ -43,7 +43,7 @@ public final class MetaDataManager {
      * @param tableName table name
      * @return table meta data
      */
-    public PhysicalTableMetaData getTableMetaData(final String tableName) {
+    public TableMetaData getTableMetaData(final String tableName) {
         if (!tableMetaDataMap.containsKey(tableName)) {
             try {
                 PhysicalTableMetaDataLoader.load(dataSource, tableName, DatabaseTypeRegistry.getActualDatabaseType("MySQL")).ifPresent(tableMetaData -> tableMetaDataMap.put(tableName, tableMetaData));

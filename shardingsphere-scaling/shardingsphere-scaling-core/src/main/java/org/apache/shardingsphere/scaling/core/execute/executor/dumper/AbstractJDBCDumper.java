@@ -39,7 +39,7 @@ import org.apache.shardingsphere.scaling.core.job.position.PlaceholderInventoryP
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
 import org.apache.shardingsphere.scaling.core.utils.RdbmsConfigurationUtil;
-import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -58,7 +58,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     
     private final DataSourceManager dataSourceManager;
     
-    private final PhysicalTableMetaData tableMetaData;
+    private final TableMetaData tableMetaData;
     
     @Setter
     private Channel channel;
@@ -72,7 +72,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
         tableMetaData = createTableMetaData();
     }
     
-    private PhysicalTableMetaData createTableMetaData() {
+    private TableMetaData createTableMetaData() {
         MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(inventoryDumperConfiguration.getDataSourceConfiguration()));
         return metaDataManager.getTableMetaData(inventoryDumperConfiguration.getTableName());
     }

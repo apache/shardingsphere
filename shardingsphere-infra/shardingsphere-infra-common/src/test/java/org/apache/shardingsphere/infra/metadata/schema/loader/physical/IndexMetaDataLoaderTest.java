@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.physical;
 
-import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalIndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,9 +61,9 @@ public final class IndexMetaDataLoaderTest {
         when(databaseMetaData.getIndexInfo(TEST_CATALOG, null, TEST_TABLE, false, false)).thenReturn(indexResultSet);
         when(indexResultSet.next()).thenReturn(true, true, false);
         when(indexResultSet.getString("INDEX_NAME")).thenReturn("my_index");
-        Collection<PhysicalIndexMetaData> actual = PhysicalIndexMetaDataLoader.load(connection, TEST_TABLE);
+        Collection<IndexMetaData> actual = PhysicalIndexMetaDataLoader.load(connection, TEST_TABLE);
         assertThat(actual.size(), is(1));
-        PhysicalIndexMetaData indexMetaData = actual.iterator().next();
+        IndexMetaData indexMetaData = actual.iterator().next();
         assertThat(indexMetaData.getName(), is("my_index"));
     }
 }

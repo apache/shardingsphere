@@ -23,13 +23,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Physical index meta data.
+ * Index meta data.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class PhysicalIndexMetaData {
+public final class IndexMetaData {
     
     private final String name;
 }

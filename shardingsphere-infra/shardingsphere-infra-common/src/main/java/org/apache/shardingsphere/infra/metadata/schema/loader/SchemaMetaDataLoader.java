@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.loader.addressing.TableAddressingMapperDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 
@@ -76,7 +76,7 @@ public final class SchemaMetaDataLoader {
         for (Entry<String, Collection<String>> entry : TableAddressingMapperDataLoader.load(databaseType, dataSourceMap, rules).entrySet()) {
             String tableName = entry.getKey();
             if (!schema.containsTable(tableName)) {
-                schema.put(tableName, new PhysicalTableMetaData());
+                schema.put(tableName, new TableMetaData());
             }
             schema.get(tableName).getAddressingDataSources().addAll(entry.getValue());
         }

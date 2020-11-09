@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.schema.loader.physical;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalIndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -44,13 +44,13 @@ public final class PhysicalIndexMetaDataLoader {
      * @return index meta data list
      * @throws SQLException SQL exception
      */
-    public static Collection<PhysicalIndexMetaData> load(final Connection connection, final String table) throws SQLException {
-        Collection<PhysicalIndexMetaData> result = new HashSet<>();
+    public static Collection<IndexMetaData> load(final Connection connection, final String table) throws SQLException {
+        Collection<IndexMetaData> result = new HashSet<>();
         try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), connection.getSchema(), table, false, false)) {
             while (resultSet.next()) {
                 String indexName = resultSet.getString(INDEX_NAME);
                 if (null != indexName) {
-                    result.add(new PhysicalIndexMetaData(indexName));
+                    result.add(new IndexMetaData(indexName));
                 }
             }
         }

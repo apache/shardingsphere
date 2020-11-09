@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.schema.refresh.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.TableMetaDataLoaderCallback;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
@@ -37,11 +37,11 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
     public void refreshMetaData(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
                                 final CreateTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        Optional<PhysicalTableMetaData> tableMetaData = callback.load(tableName);
+        Optional<TableMetaData> tableMetaData = callback.load(tableName);
         if (tableMetaData.isPresent()) {
             schema.put(tableName, tableMetaData.get());
         } else {
-            schema.put(tableName, new PhysicalTableMetaData());
+            schema.put(tableName, new TableMetaData());
         }
         schema.get(tableName).getAddressingDataSources().addAll(routeDataSourceNames);
     }

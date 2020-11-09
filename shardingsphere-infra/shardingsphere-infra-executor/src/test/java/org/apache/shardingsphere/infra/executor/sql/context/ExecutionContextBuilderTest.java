@@ -23,9 +23,9 @@ import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
@@ -105,25 +105,25 @@ public final class ExecutionContextBuilderTest {
     }
     
     private ShardingSphereSchema buildSchemaWithoutPrimaryKey() {
-        Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("logicName1", new PhysicalTableMetaData(Arrays.asList(new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", true, false, false),
-                new PhysicalColumnMetaData("user_id", Types.INTEGER, "int", false, false, false),
-                new PhysicalColumnMetaData("status", Types.INTEGER, "int", false, false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_other", new PhysicalTableMetaData(Collections.singletonList(new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
+        tableMetaDataMap.put("logicName1", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false),
+                new ColumnMetaData("user_id", Types.INTEGER, "int", false, false, false),
+                new ColumnMetaData("status", Types.INTEGER, "int", false, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
         return new ShardingSphereSchema(tableMetaDataMap);
     }
     
     private ShardingSphereSchema buildSchema() {
-        Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("logicName1", new PhysicalTableMetaData(Arrays.asList(new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", true, false, false),
-                new PhysicalColumnMetaData("user_id", Types.INTEGER, "int", false, false, false),
-                new PhysicalColumnMetaData("status", Types.INTEGER, "int", false, false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("logicName2", new PhysicalTableMetaData(Arrays.asList(new PhysicalColumnMetaData("item_id", Types.INTEGER, "int", true, false, false),
-                new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", false, false, false),
-                new PhysicalColumnMetaData("user_id", Types.INTEGER, "int", false, false, false),
-                new PhysicalColumnMetaData("status", Types.VARCHAR, "varchar", false, false, false),
-                new PhysicalColumnMetaData("c_date", Types.TIMESTAMP, "timestamp", false, false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_other", new PhysicalTableMetaData(Collections.singletonList(new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
+        tableMetaDataMap.put("logicName1", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false),
+                new ColumnMetaData("user_id", Types.INTEGER, "int", false, false, false),
+                new ColumnMetaData("status", Types.INTEGER, "int", false, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("logicName2", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", Types.INTEGER, "int", true, false, false),
+                new ColumnMetaData("order_id", Types.INTEGER, "int", false, false, false),
+                new ColumnMetaData("user_id", Types.INTEGER, "int", false, false, false),
+                new ColumnMetaData("status", Types.VARCHAR, "varchar", false, false, false),
+                new ColumnMetaData("c_date", Types.TIMESTAMP, "timestamp", false, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
         return new ShardingSphereSchema(tableMetaDataMap);
     }
 }

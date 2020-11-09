@@ -23,13 +23,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Physical column meta data.
+ * Column meta data.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public class PhysicalColumnMetaData {
+public class ColumnMetaData {
     
     private final String name;
     

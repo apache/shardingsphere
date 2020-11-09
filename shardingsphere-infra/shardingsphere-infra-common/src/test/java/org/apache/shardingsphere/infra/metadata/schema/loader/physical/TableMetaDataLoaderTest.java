@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.metadata.schema.loader.physical;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalIndexMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -117,13 +117,13 @@ public final class TableMetaDataLoaderTest {
     
     @Test
     public void assertLoad() throws SQLException {
-        Optional<PhysicalTableMetaData> actual = PhysicalTableMetaDataLoader.load(dataSource, TEST_TABLE, databaseType);
+        Optional<TableMetaData> actual = PhysicalTableMetaDataLoader.load(dataSource, TEST_TABLE, databaseType);
         assertTrue(actual.isPresent());
-        Map<String, PhysicalColumnMetaData> columnMetaDataMap = actual.get().getColumns();
+        Map<String, ColumnMetaData> columnMetaDataMap = actual.get().getColumns();
         assertThat(columnMetaDataMap.size(), is(2));
         assertColumnMetaData(columnMetaDataMap.get("pk_col"), "pk_col", Types.INTEGER, "INT", true, true);
         assertColumnMetaData(columnMetaDataMap.get("col"), "col", Types.VARCHAR, "VARCHAR", false, false);
-        Map<String, PhysicalIndexMetaData> indexMetaDataMap = actual.get().getIndexes();
+        Map<String, IndexMetaData> indexMetaDataMap = actual.get().getIndexes();
         assertThat(indexMetaDataMap.size(), is(1));
         assertTrue(indexMetaDataMap.containsKey("my_index"));
     }
@@ -132,11 +132,11 @@ public final class TableMetaDataLoaderTest {
     public void assertTableNotExist() throws SQLException {
         when(databaseMetaData.getTables(TEST_CATALOG, null, TEST_TABLE, null)).thenReturn(tableNotExistResultSet);
         when(tableNotExistResultSet.next()).thenReturn(false);
-        Optional<PhysicalTableMetaData> actual = PhysicalTableMetaDataLoader.load(dataSource, TEST_TABLE, databaseType);
+        Optional<TableMetaData> actual = PhysicalTableMetaDataLoader.load(dataSource, TEST_TABLE, databaseType);
         assertFalse(actual.isPresent());
     }
     
-    private void assertColumnMetaData(final PhysicalColumnMetaData actual, final String name, final int dataType, final String typeName, final boolean primaryKey, final boolean caseSensitive) {
+    private void assertColumnMetaData(final ColumnMetaData actual, final String name, final int dataType, final String typeName, final boolean primaryKey, final boolean caseSensitive) {
         assertThat(actual.getName(), is(name));
         assertThat(actual.getDataType(), is(dataType));
         assertThat(actual.getDataTypeName(), is(typeName));
