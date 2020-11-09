@@ -39,7 +39,7 @@ import java.util.Map.Entry;
  * Table addressing mapper loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TableAddressingMetaDataLoader {
+public final class TableAddressingMapperDataLoader {
     
     static {
         ShardingSphereServiceLoader.register(TableAddressingMetaDataDecorator.class);
