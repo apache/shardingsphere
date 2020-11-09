@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.governance.internal.metadata;
 import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.event.model.persist.MetaDataPersistEvent;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.spi.SchemaMetaDataNotifier;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 
 /**
  * Governance schema meta data notifier.
@@ -28,8 +28,8 @@ import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSc
 public final class GovernanceSchemaMetaDataNotifier implements SchemaMetaDataNotifier {
     
     @Override
-    public void notify(final String name, final PhysicalSchemaMetaData metaData) {
-        GovernanceEventBus.getInstance().post(new MetaDataPersistEvent(name, metaData));
+    public void notify(final String name, final ShardingSphereSchema schema) {
+        GovernanceEventBus.getInstance().post(new MetaDataPersistEvent(name, schema));
     }
     
     @Override
@@ -38,7 +38,7 @@ public final class GovernanceSchemaMetaDataNotifier implements SchemaMetaDataNot
     }
     
     @Override
-    public Class<PhysicalSchemaMetaData> getTypeClass() {
-        return PhysicalSchemaMetaData.class;
+    public Class<ShardingSphereSchema> getTypeClass() {
+        return ShardingSphereSchema.class;
     }
 }

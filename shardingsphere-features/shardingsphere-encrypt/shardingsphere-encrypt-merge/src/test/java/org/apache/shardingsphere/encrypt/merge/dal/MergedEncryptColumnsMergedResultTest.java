@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.merge.dal;
 import org.apache.shardingsphere.encrypt.merge.dal.impl.MergedEncryptColumnsMergedResult;
 import org.apache.shardingsphere.encrypt.metadata.EncryptColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -56,12 +56,12 @@ public final class MergedEncryptColumnsMergedResultTest {
         PhysicalTableMetaData tableMetaData = new PhysicalTableMetaData(Collections.emptyList(), Collections.emptyList());
         Map<String, PhysicalTableMetaData> tables = new HashMap<>(1, 1);
         tables.put("test", tableMetaData);
-        assertTrue(createMergedEncryptColumnsMergedResult(queryResult, new PhysicalSchemaMetaData(tables)).next());
+        assertTrue(createMergedEncryptColumnsMergedResult(queryResult, new ShardingSphereSchema(tables)).next());
     }
     
     @Test
     public void assertNextWithHasNext() throws SQLException {
-        assertFalse(createMergedEncryptColumnsMergedResult(queryResult, mock(PhysicalSchemaMetaData.class)).next());
+        assertFalse(createMergedEncryptColumnsMergedResult(queryResult, mock(ShardingSphereSchema.class)).next());
     }
     
     @Test
@@ -72,7 +72,7 @@ public final class MergedEncryptColumnsMergedResultTest {
         PhysicalTableMetaData tableMetaData = new PhysicalTableMetaData(Collections.singletonList(encryptColumnMetaData), Collections.emptyList());
         Map<String, PhysicalTableMetaData> tables = new HashMap<>(1, 1);
         tables.put("test", tableMetaData);
-        assertFalse(createMergedEncryptColumnsMergedResult(queryResult, new PhysicalSchemaMetaData(tables)).next());
+        assertFalse(createMergedEncryptColumnsMergedResult(queryResult, new ShardingSphereSchema(tables)).next());
     }
     
     @Test
@@ -82,7 +82,7 @@ public final class MergedEncryptColumnsMergedResultTest {
         PhysicalTableMetaData tableMetaData = new PhysicalTableMetaData(Collections.singletonList(encryptColumnMetaData), Collections.emptyList());
         Map<String, PhysicalTableMetaData> tables = new HashMap<>(1);
         tables.put("test", tableMetaData);
-        assertThat(createMergedEncryptColumnsMergedResult(queryResult, new PhysicalSchemaMetaData(tables)).getValue(1, String.class), is("id"));
+        assertThat(createMergedEncryptColumnsMergedResult(queryResult, new ShardingSphereSchema(tables)).getValue(1, String.class), is("id"));
     }
     
     @Test
@@ -92,7 +92,7 @@ public final class MergedEncryptColumnsMergedResultTest {
         PhysicalTableMetaData tableMetaData = new PhysicalTableMetaData(Collections.singletonList(encryptColumnMetaData), Collections.emptyList());
         Map<String, PhysicalTableMetaData> tables = new HashMap<>(1, 1);
         tables.put("test", tableMetaData);
-        assertThat(createMergedEncryptColumnsMergedResult(queryResult, new PhysicalSchemaMetaData(tables)).getValue(1, String.class), is("assistedQuery"));
+        assertThat(createMergedEncryptColumnsMergedResult(queryResult, new ShardingSphereSchema(tables)).getValue(1, String.class), is("assistedQuery"));
     }
     
     @Test
@@ -102,20 +102,20 @@ public final class MergedEncryptColumnsMergedResultTest {
         PhysicalTableMetaData tableMetaData = new PhysicalTableMetaData(Collections.singletonList(encryptColumnMetaData), Collections.emptyList());
         Map<String, PhysicalTableMetaData> tables = new HashMap<>(1, 1);
         tables.put("test", tableMetaData);
-        assertThat(createMergedEncryptColumnsMergedResult(queryResult, new PhysicalSchemaMetaData(tables)).getValue(2, String.class), is("id"));
+        assertThat(createMergedEncryptColumnsMergedResult(queryResult, new ShardingSphereSchema(tables)).getValue(2, String.class), is("id"));
     }
     
     @Test
     public void assertWasNull() throws SQLException {
-        assertFalse(createMergedEncryptColumnsMergedResult(queryResult, mock(PhysicalSchemaMetaData.class)).wasNull());
+        assertFalse(createMergedEncryptColumnsMergedResult(queryResult, mock(ShardingSphereSchema.class)).wasNull());
     }
     
-    private MergedEncryptColumnsMergedResult createMergedEncryptColumnsMergedResult(final QueryResult queryResult, final PhysicalSchemaMetaData schemaMetaData) {
+    private MergedEncryptColumnsMergedResult createMergedEncryptColumnsMergedResult(final QueryResult queryResult, final ShardingSphereSchema schema) {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         IdentifierValue identifierValue = new IdentifierValue("test");
         TableNameSegment tableNameSegment = new TableNameSegment(1, 4, identifierValue);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(tableNameSegment);
         when(sqlStatementContext.getAllTables()).thenReturn(Collections.singletonList(simpleTableSegment));
-        return new MergedEncryptColumnsMergedResult(queryResult, sqlStatementContext, schemaMetaData);
+        return new MergedEncryptColumnsMergedResult(queryResult, sqlStatementContext, schema);
     }
 }

@@ -40,7 +40,7 @@ import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfig
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -142,7 +142,7 @@ public final class ConfigCenter {
      */
     @Subscribe
     public synchronized void renew(final MetaDataPersistEvent event) {
-        persistMetaData(event.getSchemaName(), event.getMetaData());
+        persistSchema(event.getSchemaName(), event.getSchema());
     }
     
     private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
@@ -339,22 +339,22 @@ public final class ConfigCenter {
     }
     
     /**
-     * Persist rule schema meta data.
+     * Persist ShardingSphere schema.
      *
      * @param schemaName schema name
-     * @param physicalSchemaMetaData physical schema meta data
+     * @param schema ShardingSphere schema
      */
-    public void persistMetaData(final String schemaName, final PhysicalSchemaMetaData physicalSchemaMetaData) {
-        repository.persist(node.getTablePath(schemaName), YamlEngine.marshal(new LogicSchemaMetaDataYamlSwapper().swapToYamlConfiguration(physicalSchemaMetaData)));
+    public void persistSchema(final String schemaName, final ShardingSphereSchema schema) {
+        repository.persist(node.getTablePath(schemaName), YamlEngine.marshal(new LogicSchemaMetaDataYamlSwapper().swapToYamlConfiguration(schema)));
     }
     
     /**
-     * Load rule schema meta data.
+     * Load ShardingSphere schema.
      *
      * @param schemaName schema name
-     * @return rule schema meta data of the schema
+     * @return ShardingSphere schema
      */
-    public Optional<PhysicalSchemaMetaData> loadMetaData(final String schemaName) {
+    public Optional<ShardingSphereSchema> loadSchema(final String schemaName) {
         String path = repository.get(node.getTablePath(schemaName));
         if (Strings.isNullOrEmpty(path)) {
             return Optional.empty();

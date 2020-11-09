@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.model.physical;
+package org.apache.shardingsphere.infra.metadata.schema;
+
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,18 +27,18 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Physical schema meta data.
+ * ShardingSphere schema.
  */
-public final class PhysicalSchemaMetaData {
+public final class ShardingSphereSchema {
     
     private final Map<String, PhysicalTableMetaData> tables;
     
     @SuppressWarnings("CollectionWithoutInitialCapacity")
-    public PhysicalSchemaMetaData() {
+    public ShardingSphereSchema() {
         tables = new ConcurrentHashMap<>();
     }
     
-    public PhysicalSchemaMetaData(final Map<String, PhysicalTableMetaData> tables) {
+    public ShardingSphereSchema(final Map<String, PhysicalTableMetaData> tables) {
         this.tables = new ConcurrentHashMap<>(tables.size(), 1);
         tables.forEach((key, value) -> this.tables.put(key.toLowerCase(), value));
     }

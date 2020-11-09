@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -50,7 +50,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
     protected final RouteContext assertRoute(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createAllShardingRule();
-        PhysicalSchemaMetaData schema = buildPhysicalSchemaMetaData();
+        ShardingSphereSchema schema = buildSchema();
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine("MySQL");
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schema, parameters, sqlStatementParserEngine.parse(sql, false));
@@ -62,7 +62,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         return result;
     }
     
-    private PhysicalSchemaMetaData buildPhysicalSchemaMetaData() {
+    private ShardingSphereSchema buildSchema() {
         Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
         tableMetaDataMap.put("t_order", new PhysicalTableMetaData(Arrays.asList(new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", true, false, false),
                 new PhysicalColumnMetaData("user_id", Types.INTEGER, "int", false, false, false),
@@ -75,6 +75,6 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         tableMetaDataMap.put("t_other", new PhysicalTableMetaData(Collections.singletonList(new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
         tableMetaDataMap.put("t_category", new PhysicalTableMetaData());
         tableMetaDataMap.get("t_category").getAddressingDataSources().add("single_db");
-        return new PhysicalSchemaMetaData(tableMetaDataMap);
+        return new ShardingSphereSchema(tableMetaDataMap);
     }
 }

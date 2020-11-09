@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.single;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -43,7 +43,7 @@ public final class SingleTableRoutingEngine implements ShardingRouteEngine {
     
     private final Collection<String> logicTables;
     
-    private final PhysicalSchemaMetaData schema;
+    private final ShardingSphereSchema schema;
     
     private final SQLStatement sqlStatement;
     

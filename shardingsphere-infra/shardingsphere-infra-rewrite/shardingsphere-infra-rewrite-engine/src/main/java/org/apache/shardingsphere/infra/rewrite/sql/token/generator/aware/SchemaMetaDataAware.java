@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware;
 
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 
 /**
  * Schema meta data aware.
@@ -27,7 +27,7 @@ public interface SchemaMetaDataAware {
     /**
      * Set schema meta data.
      * 
-     * @param schemaMetaData schema meta data
+     * @param schema schema meta data
      */
-    void setSchemaMetaData(PhysicalSchemaMetaData schemaMetaData);
+    void setSchema(ShardingSphereSchema schema);
 }

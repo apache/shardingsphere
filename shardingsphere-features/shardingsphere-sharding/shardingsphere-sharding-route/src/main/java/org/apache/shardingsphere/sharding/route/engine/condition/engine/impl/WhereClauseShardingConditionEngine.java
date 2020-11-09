@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -61,7 +61,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
     
     private final ShardingRule shardingRule;
     
-    private final PhysicalSchemaMetaData schemaMetaData;
+    private final ShardingSphereSchema schema;
     
     @Override
     public List<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
@@ -101,7 +101,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
             if (!columnSegment.isPresent()) {
                 continue;
             }
-            Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(columnSegment.get(), schemaMetaData);
+            Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(columnSegment.get(), schema);
             if (!(tableName.isPresent() && shardingRule.isShardingColumn(columnSegment.get().getIdentifier().getValue(), tableName.get()))) {
                 continue;
             }

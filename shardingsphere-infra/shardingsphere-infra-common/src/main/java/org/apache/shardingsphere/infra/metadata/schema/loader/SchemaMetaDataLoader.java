@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.loader.addressing.TableAddressingMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
@@ -49,16 +49,16 @@ public final class SchemaMetaDataLoader {
      * @return schema meta data
      * @throws SQLException SQL exception
      */
-    public static PhysicalSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
-                                              final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
-        PhysicalSchemaMetaData result = loadSchemaMetaData(databaseType, dataSourceMap, rules, props);
+    public static ShardingSphereSchema load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                            final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
+        ShardingSphereSchema result = loadSchemaMetaData(databaseType, dataSourceMap, rules, props);
         setAddressingDataSources(databaseType, dataSourceMap, rules, result);
         return result;
     }
     
-    private static PhysicalSchemaMetaData loadSchemaMetaData(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
-                                                             final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
-        PhysicalSchemaMetaData result = new PhysicalSchemaMetaData();
+    private static ShardingSphereSchema loadSchemaMetaData(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                                           final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
+        ShardingSphereSchema result = new ShardingSphereSchema();
         for (ShardingSphereRule rule : rules) {
             if (rule instanceof TableContainedRule) {
                 for (String table : ((TableContainedRule) rule).getTables()) {
@@ -72,13 +72,13 @@ public final class SchemaMetaDataLoader {
     }
     
     private static void setAddressingDataSources(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
-                                                 final Collection<ShardingSphereRule> rules, final PhysicalSchemaMetaData schemaMetaData) throws SQLException {
+                                                 final Collection<ShardingSphereRule> rules, final ShardingSphereSchema schema) throws SQLException {
         for (Entry<String, Collection<String>> entry : TableAddressingMetaDataLoader.load(databaseType, dataSourceMap, rules).getTableDataSourceNamesMapper().entrySet()) {
             String tableName = entry.getKey();
-            if (!schemaMetaData.containsTable(tableName)) {
-                schemaMetaData.put(tableName, new PhysicalTableMetaData());
+            if (!schema.containsTable(tableName)) {
+                schema.put(tableName, new PhysicalTableMetaData());
             }
-            schemaMetaData.get(tableName).getAddressingDataSources().addAll(entry.getValue());
+            schema.get(tableName).getAddressingDataSources().addAll(entry.getValue());
         }
     }
 }

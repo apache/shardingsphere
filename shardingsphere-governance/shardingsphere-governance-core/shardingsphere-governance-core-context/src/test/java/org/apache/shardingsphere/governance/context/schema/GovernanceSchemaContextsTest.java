@@ -40,7 +40,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 import org.apache.shardingsphere.jdbc.test.MockedDataSource;
 import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryRule;
@@ -112,7 +112,7 @@ public final class GovernanceSchemaContextsTest {
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
         when(metaData.getName()).thenReturn("schema");
         when(metaData.getResource()).thenReturn(mock(ShardingSphereResource.class));
-        when(metaData.getSchema()).thenReturn(mock(PhysicalSchemaMetaData.class));
+        when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(replicaQueryRule));
         return Collections.singletonMap("schema", metaData);
     }
@@ -191,7 +191,7 @@ public final class GovernanceSchemaContextsTest {
     
     @Test
     public void assertMetaDataChanged() {
-        MetaDataChangedEvent event = new MetaDataChangedEvent("schema_changed", mock(PhysicalSchemaMetaData.class));
+        MetaDataChangedEvent event = new MetaDataChangedEvent("schema_changed", mock(ShardingSphereSchema.class));
         governanceSchemaContexts.renew(event);
         assertTrue(governanceSchemaContexts.getMetaDataMap().containsKey("schema"));
         assertFalse(governanceSchemaContexts.getMetaDataMap().containsKey("schema_changed"));
@@ -199,7 +199,7 @@ public final class GovernanceSchemaContextsTest {
     
     @Test
     public void assertMetaDataChangedWithExistSchema() {
-        MetaDataChangedEvent event = new MetaDataChangedEvent("schema", mock(PhysicalSchemaMetaData.class));
+        MetaDataChangedEvent event = new MetaDataChangedEvent("schema", mock(ShardingSphereSchema.class));
         governanceSchemaContexts.renew(event);
         assertThat(governanceSchemaContexts.getMetaDataMap().get("schema"), not(metaData));
     }
