@@ -19,13 +19,13 @@ package org.apache.shardingsphere.driver.governance.internal.metadata;
 
 import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.event.model.persist.MetaDataPersistEvent;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.spi.SchemaMetaDataNotifier;
+import org.apache.shardingsphere.infra.metadata.schema.refresh.spi.SchemaChangedNotifier;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 
 /**
- * Governance schema meta data notifier.
+ * ShardingSphere schema changed notifier for governance.
  */
-public final class GovernanceSchemaMetaDataNotifier implements SchemaMetaDataNotifier {
+public final class GovernanceSchemaChangedNotifier implements SchemaChangedNotifier {
     
     @Override
     public void notify(final String name, final ShardingSphereSchema schema) {

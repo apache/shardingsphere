@@ -21,12 +21,12 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
 /**
- * Schema meta data notifier.
+ * ShardingSphere schema changed notifier.
  */
-public interface SchemaMetaDataNotifier extends OrderedSPI<ShardingSphereSchema> {
+public interface SchemaChangedNotifier extends OrderedSPI<ShardingSphereSchema> {
     
     /**
-     * Notify when schema meta data changed.
+     * Notify when ShardingSphere schema changed.
      * 
      * @param name schema name
      * @param schema ShardingSphere schema

@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.metadata.schema.loader.TableMetaDataLoade
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategyFactory;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.spi.SchemaMetaDataNotifier;
+import org.apache.shardingsphere.infra.metadata.schema.refresh.spi.SchemaChangedNotifier;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractStatementExecutor {
     
     static {
-        ShardingSphereServiceLoader.register(SchemaMetaDataNotifier.class);
+        ShardingSphereServiceLoader.register(SchemaChangedNotifier.class);
     }
     
     private final Map<String, DataSource> dataSourceMap;
@@ -85,7 +85,7 @@ public abstract class AbstractStatementExecutor {
             Collection<String> routeDataSourceNames = routeUnits.stream().map(RouteUnit::getDataSourceMapper).map(RouteMapper::getLogicName).collect(Collectors.toList());
             refreshStrategy.get().refreshMetaData(metaData.getSchema(), schemaContexts.getDatabaseType(), routeDataSourceNames, 
                     sqlStatement, tableName -> TableMetaDataLoader.load(tableName, schemaContexts.getDatabaseType(), dataSourceMap, metaData.getRuleMetaData().getRules(), schemaContexts.getProps()));
-            notifyPersistLogicMetaData(DefaultSchema.LOGIC_NAME, metaData.getSchema());
+            notifyPersistSchema(DefaultSchema.LOGIC_NAME, metaData.getSchema());
         }
     }
     
@@ -96,8 +96,8 @@ public abstract class AbstractStatementExecutor {
         return null != result && !result.isEmpty() && null != result.get(0) && result.get(0);
     }
     
-    private void notifyPersistLogicMetaData(final String schemaName, final ShardingSphereSchema schema) {
-        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaMetaDataNotifier.class).values().forEach(each -> each.notify(schemaName, schema));
+    private void notifyPersistSchema(final String schemaName, final ShardingSphereSchema schema) {
+        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(schemaName, schema));
     }
     
     /**
