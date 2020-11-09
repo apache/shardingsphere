@@ -24,9 +24,9 @@ import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementConte
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintManager;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngineFactory;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngineFactory;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
@@ -99,7 +100,6 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
                 return;
             }
         }
-        Preconditions.checkState(!shardingConditions.getConditions().isEmpty(), "Must have sharding column with subquery.");
         if (shardingConditions.getConditions().size() > 1) {
             Preconditions.checkState(isSameShardingCondition(shardingRule, shardingConditions), "Sharding value must same with subquery.");
         }
@@ -127,25 +127,37 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
         for (int i = 0; i < shardingCondition1.getValues().size(); i++) {
             ShardingConditionValue shardingConditionValue1 = shardingCondition1.getValues().get(i);
             ShardingConditionValue shardingConditionValue2 = shardingCondition2.getValues().get(i);
-            if (!isSameShardingConditionValue(shardingRule, (ListShardingConditionValue) shardingConditionValue1, (ListShardingConditionValue) shardingConditionValue2)) {
+            if (!isSameShardingConditionValue(shardingRule, shardingConditionValue1, shardingConditionValue2)) {
                 return false;
             }
         }
         return true;
     }
     
-    private boolean isSameShardingConditionValue(final ShardingRule shardingRule, final ListShardingConditionValue shardingConditionValue1, final ListShardingConditionValue shardingConditionValue2) {
+    private boolean isSameShardingConditionValue(final ShardingRule shardingRule, final ShardingConditionValue shardingConditionValue1, final ShardingConditionValue shardingConditionValue2) {
         return isSameLogicTable(shardingRule, shardingConditionValue1, shardingConditionValue2) && shardingConditionValue1.getColumnName().equals(shardingConditionValue2.getColumnName()) 
-                && SafeNumberOperationUtils.safeEquals(shardingConditionValue1.getValues(), shardingConditionValue2.getValues());
+                && isSameValue(shardingConditionValue1, shardingConditionValue2);
     }
     
-    private boolean isSameLogicTable(final ShardingRule shardingRule, final ListShardingConditionValue shardingValue1, final ListShardingConditionValue shardingValue2) {
+    private boolean isSameLogicTable(final ShardingRule shardingRule, final ShardingConditionValue shardingValue1, final ShardingConditionValue shardingValue2) {
         return shardingValue1.getTableName().equals(shardingValue2.getTableName()) || isBindingTable(shardingRule, shardingValue1, shardingValue2);
     }
     
-    private boolean isBindingTable(final ShardingRule shardingRule, final ListShardingConditionValue shardingValue1, final ListShardingConditionValue shardingValue2) {
+    private boolean isBindingTable(final ShardingRule shardingRule, final ShardingConditionValue shardingValue1, final ShardingConditionValue shardingValue2) {
         Optional<BindingTableRule> bindingRule = shardingRule.findBindingTableRule(shardingValue1.getTableName());
         return bindingRule.isPresent() && bindingRule.get().hasLogicTable(shardingValue2.getTableName());
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private boolean isSameValue(final ShardingConditionValue shardingConditionValue1, final ShardingConditionValue shardingConditionValue2) {
+        if (shardingConditionValue1 instanceof ListShardingConditionValue && shardingConditionValue2 instanceof ListShardingConditionValue) {
+            return SafeNumberOperationUtils.safeCollectionEquals(
+                    ((ListShardingConditionValue) shardingConditionValue1).getValues(), ((ListShardingConditionValue) shardingConditionValue2).getValues());
+        } else if (shardingConditionValue1 instanceof RangeShardingConditionValue && shardingConditionValue2 instanceof RangeShardingConditionValue) {
+            return SafeNumberOperationUtils.safeRangeEquals(
+                    ((RangeShardingConditionValue) shardingConditionValue1).getValueRange(), ((RangeShardingConditionValue) shardingConditionValue2).getValueRange());
+        }
+        return false;
     }
     
     private void mergeShardingConditions(final ShardingConditions shardingConditions) {
