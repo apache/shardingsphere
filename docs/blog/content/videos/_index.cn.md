@@ -15,3 +15,5 @@ chapter = true
 4. [开源推动下的Apache ShardingSphere架构演进](/cn/videos/evolution/)  
 
 5. [海量数据下的NewSQL数据库生态构建](/cn/videos/ecosystem/)  
+
+6. [Apache ShardingSphere 5.x 的新功能](/cn/videos/Newfeature/)  
