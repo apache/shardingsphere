@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.metadata.schema.loader.physical;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.DatabaseMetaDataDialectHandler;
-import org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.DatabaseMetaDataDialectHandlerFactory;
+import org.apache.shardingsphere.infra.metadata.schema.loader.physical.dialect.DatabaseMetaDataDialectHandler;
+import org.apache.shardingsphere.infra.metadata.schema.loader.physical.dialect.DatabaseMetaDataDialectHandlerFactory;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 

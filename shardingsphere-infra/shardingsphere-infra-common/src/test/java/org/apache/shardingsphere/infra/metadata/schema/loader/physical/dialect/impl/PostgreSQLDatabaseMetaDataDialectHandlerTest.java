@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.dialect;
+package org.apache.shardingsphere.infra.metadata.schema.loader.physical.dialect.impl;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.AbstractDatabaseMetaDataDialectHandlerTest;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.metadata.schema.loader.physical.dialect.AbstractDatabaseMetaDataDialectHandlerTest;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -30,31 +28,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
-public final class SQLServerDatabaseMetaDataDialectHandlerTest extends AbstractDatabaseMetaDataDialectHandlerTest {
-    
-    private DatabaseType sqlServerDatabaseType;
-    
-    @Before
-    public void setUp() {
-        sqlServerDatabaseType = new SQLServerDatabaseType();
-    }
+public final class PostgreSQLDatabaseMetaDataDialectHandlerTest extends AbstractDatabaseMetaDataDialectHandlerTest {
     
     @Test
     public void assertGetSchema() throws SQLException {
         when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
-        String actualSQLServerSchema = getSchema(sqlServerDatabaseType);
-        assertThat(actualSQLServerSchema, is(DATABASE_NAME));
+        String postgresqlSchema = getSchema(new PostgreSQLDatabaseType());
+        assertThat(postgresqlSchema, is(DATABASE_NAME));
     }
     
     @Test
     public void assertFormatTableNamePattern() {
-        assertThat(formatTableNamePattern(sqlServerDatabaseType), is(TABLE_NAME_PATTERN));
+        String postgresqlTableNamePattern = formatTableNamePattern(new PostgreSQLDatabaseType());
+        assertThat(postgresqlTableNamePattern, is(TABLE_NAME_PATTERN));
     }
     
     @Test
     public void assertGetQuoteCharacter() {
-        QuoteCharacter actualSQLServerQuoteCharacter = getQuoteCharacter(sqlServerDatabaseType);
-        assertThat(actualSQLServerQuoteCharacter.getStartDelimiter(), is("["));
-        assertThat(actualSQLServerQuoteCharacter.getEndDelimiter(), is("]"));
+        QuoteCharacter postgresqlQuoteCharacter = getQuoteCharacter(new PostgreSQLDatabaseType());
+        assertThat(postgresqlQuoteCharacter.getStartDelimiter(), is("\""));
+        assertThat(postgresqlQuoteCharacter.getEndDelimiter(), is("\""));
     }
 }

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.dialect;
+package org.apache.shardingsphere.infra.metadata.schema.loader.physical.dialect.impl;
 
-import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.AbstractDatabaseMetaDataDialectHandlerTest;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.metadata.schema.loader.physical.dialect.AbstractDatabaseMetaDataDialectHandlerTest;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
@@ -28,25 +28,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
-public final class H2DatabaseMetaDataDialectHandlerTest extends AbstractDatabaseMetaDataDialectHandlerTest {
+public final class MySQLDatabaseMetaDataDialectHandlerTest extends AbstractDatabaseMetaDataDialectHandlerTest {
     
     @Test
     public void assertGetSchema() throws SQLException {
         when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
-        String h2Schema = getSchema(new H2DatabaseType());
-        assertThat(h2Schema, is(DATABASE_NAME));
+        String mysqlSchema = getSchema(new MySQLDatabaseType());
+        assertThat(mysqlSchema, is(DATABASE_NAME));
     }
     
     @Test
     public void assertFormatTableNamePattern() {
-        String h2TableNamePattern = formatTableNamePattern(new H2DatabaseType());
-        assertThat(h2TableNamePattern, is(TABLE_NAME_PATTERN));
+        String mysqlTableNamePattern = formatTableNamePattern(new MySQLDatabaseType());
+        assertThat(mysqlTableNamePattern, is(TABLE_NAME_PATTERN));
     }
     
     @Test
     public void assertGetQuoteCharacter() {
-        QuoteCharacter h2QuoteCharacter = getQuoteCharacter(new H2DatabaseType());
-        assertThat(h2QuoteCharacter.getStartDelimiter(), is("\""));
-        assertThat(h2QuoteCharacter.getEndDelimiter(), is("\""));
+        QuoteCharacter mysqlQuoteCharacter = getQuoteCharacter(new MySQLDatabaseType());
+        assertThat(mysqlQuoteCharacter.getStartDelimiter(), is("`"));
+        assertThat(mysqlQuoteCharacter.getEndDelimiter(), is("`"));
     }
 }

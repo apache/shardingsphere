@@ -15,40 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.dialect;
+package org.apache.shardingsphere.infra.metadata.schema.loader.physical.dialect.impl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.DatabaseMetaDataDialectHandler;
+import org.apache.shardingsphere.infra.metadata.schema.loader.physical.dialect.DatabaseMetaDataDialectHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Database meta data dialect handler of Oracle.
+ * Database meta data dialect handler of PostgreSQL.
  */
 @Getter
 @Setter
-public final class OracleDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
+public final class PostgreSQLDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
     
     private Properties props;
-    
-    @Override
-    public String getSchema(final Connection connection) {
-        try {
-            return Optional.ofNullable(connection.getMetaData().getUserName()).map(String::toUpperCase).orElse(null);
-        } catch (final SQLException ignored) {
-            return null;
-        }
-    }
-    
-    @Override
-    public String formatTableNamePattern(final String tableNamePattern) {
-        return tableNamePattern.toUpperCase();
-    }
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -57,6 +40,6 @@ public final class OracleDatabaseMetaDataDialectHandler implements DatabaseMetaD
     
     @Override
     public String getType() {
-        return "Oracle";
+        return "PostgreSQL";
     }
 }

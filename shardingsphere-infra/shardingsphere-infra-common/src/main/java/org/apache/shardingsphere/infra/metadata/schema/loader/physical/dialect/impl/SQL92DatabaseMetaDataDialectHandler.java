@@ -15,21 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler;
+package org.apache.shardingsphere.infra.metadata.schema.loader.physical.dialect.impl;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.metadata.schema.loader.physical.dialect.DatabaseMetaDataDialectHandler;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
-import static org.junit.Assert.assertTrue;
+import java.util.Properties;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class DatabaseMetaDataDialectHandlerFactoryTest {
+/**
+ * Database meta data dialect handler of SQL92.
+ */
+@Getter
+@Setter
+public final class SQL92DatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
     
-    @Test
-    public void assertFindHandler() {
-        assertTrue(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypeRegistry.getTrunkDatabaseType("Oracle")).isPresent());
-        assertTrue(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypeRegistry.getTrunkDatabaseType("MySQL")).isPresent());
+    private Properties props;
+    
+    @Override
+    public QuoteCharacter getQuoteCharacter() {
+        return QuoteCharacter.QUOTE;
+    }
+    
+    @Override
+    public String getType() {
+        return "SQL92";
     }
 }

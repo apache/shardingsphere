@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.dialect;
+package org.apache.shardingsphere.infra.metadata.schema.loader.physical.dialect.impl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.DatabaseMetaDataDialectHandler;
+import org.apache.shardingsphere.infra.metadata.schema.loader.physical.dialect.DatabaseMetaDataDialectHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Properties;
 
 /**
- * Database meta data dialect handler of SQL92.
+ * Database meta data dialect handler of SQLServer.
  */
 @Getter
 @Setter
-public final class SQL92DatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
+public final class SQLServerDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
     
     private Properties props;
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.QUOTE;
+        return QuoteCharacter.BRACKETS;
     }
     
     @Override
     public String getType() {
-        return "SQL92";
+        return "SQLServer";
     }
 }

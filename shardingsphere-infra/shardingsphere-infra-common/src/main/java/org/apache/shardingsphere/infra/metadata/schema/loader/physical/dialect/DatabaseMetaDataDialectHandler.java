@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler;
+package org.apache.shardingsphere.infra.metadata.schema.loader.physical.dialect;
 
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
@@ -34,6 +34,7 @@ public interface DatabaseMetaDataDialectHandler extends TypedSPI {
      * @param connection connection
      * @return schema
      */
+    @SuppressWarnings("ReturnOfNull")
     default String getSchema(final Connection connection) {
         try {
             return connection.getSchema();

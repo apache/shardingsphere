@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler;
+package org.apache.shardingsphere.infra.metadata.schema.loader.physical.dialect;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;

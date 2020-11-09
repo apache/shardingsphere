@@ -15,31 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.dialect;
+package org.apache.shardingsphere.infra.metadata.schema.loader.physical.dialect;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.handler.DatabaseMetaDataDialectHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Properties;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Database meta data dialect handler of MySQL.
- */
-@Getter
-@Setter
-public final class MySQLDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
+@RunWith(MockitoJUnitRunner.class)
+public final class DatabaseMetaDataDialectHandlerFactoryTest {
     
-    private Properties props;
-    
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.BACK_QUOTE;
-    }
-    
-    @Override
-    public String getType() {
-        return "MySQL";
+    @Test
+    public void assertFindHandler() {
+        assertTrue(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypeRegistry.getTrunkDatabaseType("Oracle")).isPresent());
+        assertTrue(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypeRegistry.getTrunkDatabaseType("MySQL")).isPresent());
     }
 }
