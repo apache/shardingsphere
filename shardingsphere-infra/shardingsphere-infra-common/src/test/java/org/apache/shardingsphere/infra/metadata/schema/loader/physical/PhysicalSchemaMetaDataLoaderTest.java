@@ -17,53 +17,46 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.physical;
 
-import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
+import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class IndexMetaDataLoaderTest {
+public final class PhysicalSchemaMetaDataLoaderTest {
     
-    private static final String TEST_CATALOG = "catalog";
-    
-    private static final String TEST_TABLE = "table";
-    
-    @Mock
-    private Connection connection;
-    
-    @Mock
-    private DatabaseMetaData databaseMetaData;
-    
-    @Mock
-    private ResultSet indexResultSet;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private DataSource dataSource;
     
     @Before
     public void setUp() throws SQLException {
-        when(connection.getCatalog()).thenReturn(TEST_CATALOG);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        ResultSet resultSet = mockResultSet();
+        when(dataSource.getConnection().getMetaData().getTables("catalog", null, null, new String[]{"TABLE", "VIEW"})).thenReturn(resultSet);
+        when(dataSource.getConnection().getCatalog()).thenReturn("catalog");
+    }
+    
+    private ResultSet mockResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, true, false);
+        when(result.getString("TABLE_NAME")).thenReturn("tbl", "$tbl", "/tbl");
+        return result;
     }
     
     @Test
-    public void assertLoad() throws SQLException {
-        when(databaseMetaData.getIndexInfo(TEST_CATALOG, null, TEST_TABLE, false, false)).thenReturn(indexResultSet);
-        when(indexResultSet.next()).thenReturn(true, true, false);
-        when(indexResultSet.getString("INDEX_NAME")).thenReturn("my_index");
-        Collection<IndexMetaData> actual = PhysicalIndexMetaDataLoader.load(connection, TEST_TABLE);
-        assertThat(actual.size(), is(1));
-        IndexMetaData indexMetaData = actual.iterator().next();
-        assertThat(indexMetaData.getName(), is("my_index"));
+    public void assertLoadAllTableNames() throws SQLException {
+        assertThat(PhysicalSchemaMetaDataLoader.loadAllTableNames(dataSource, mock(DatabaseType.class)), is(Collections.singletonList("tbl")));
     }
 }

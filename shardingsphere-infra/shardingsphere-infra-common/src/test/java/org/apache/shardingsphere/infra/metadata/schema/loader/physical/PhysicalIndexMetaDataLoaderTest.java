@@ -17,15 +17,13 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.physical;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -37,18 +35,11 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SchemaMetaDataLoaderTest {
+public final class PhysicalIndexMetaDataLoaderTest {
     
     private static final String TEST_CATALOG = "catalog";
     
-    private static final String TABLE_TYPE = "TABLE";
-    
-    private static final String VIEW_TYPE = "VIEW";
-    
-    private final DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType("Oracle");
-    
-    @Mock
-    private DataSource dataSource;
+    private static final String TEST_TABLE = "table";
     
     @Mock
     private Connection connection;
@@ -57,19 +48,22 @@ public final class SchemaMetaDataLoaderTest {
     private DatabaseMetaData databaseMetaData;
     
     @Mock
-    private ResultSet tableExistResultSet;
+    private ResultSet indexResultSet;
     
     @Before
     public void setUp() throws SQLException {
-        when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getCatalog()).thenReturn(TEST_CATALOG);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(databaseMetaData.getTables(TEST_CATALOG, null, null, new String[]{TABLE_TYPE, VIEW_TYPE})).thenReturn(tableExistResultSet);
     }
     
     @Test
-    public void assertLoadAllTableNames() throws SQLException {
-        Collection<String> tableNames = PhysicalSchemaMetaDataLoader.loadAllTableNames(dataSource, databaseType);
-        assertThat(tableNames.size(), is(0));
+    public void assertLoad() throws SQLException {
+        when(databaseMetaData.getIndexInfo(TEST_CATALOG, null, TEST_TABLE, false, false)).thenReturn(indexResultSet);
+        when(indexResultSet.next()).thenReturn(true, true, false);
+        when(indexResultSet.getString("INDEX_NAME")).thenReturn("my_index");
+        Collection<IndexMetaData> actual = PhysicalIndexMetaDataLoader.load(connection, TEST_TABLE);
+        assertThat(actual.size(), is(1));
+        IndexMetaData indexMetaData = actual.iterator().next();
+        assertThat(indexMetaData.getName(), is("my_index"));
     }
 }

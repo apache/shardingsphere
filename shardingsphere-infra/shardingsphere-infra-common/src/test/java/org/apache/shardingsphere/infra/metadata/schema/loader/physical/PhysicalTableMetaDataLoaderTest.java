@@ -47,7 +47,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class TableMetaDataLoaderTest {
+public final class PhysicalTableMetaDataLoaderTest {
     
     private static final String TEST_CATALOG = "catalog";
     

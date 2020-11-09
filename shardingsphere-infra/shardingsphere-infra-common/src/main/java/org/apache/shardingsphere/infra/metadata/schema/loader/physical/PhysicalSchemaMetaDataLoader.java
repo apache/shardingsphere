@@ -50,11 +50,11 @@ public final class PhysicalSchemaMetaDataLoader {
      *
      * @param dataSource data source
      * @param databaseType database type
-     * @return all table names
+     * @return loaded all table names
      * @throws SQLException SQL exception
      */
     public static Collection<String> loadAllTableNames(final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
-        List<String> result;
+        Collection<String> result;
         try (MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, dataSource.getConnection())) {
             result = loadAllTableNames(connectionAdapter);
         }
@@ -65,7 +65,7 @@ public final class PhysicalSchemaMetaDataLoader {
         return result;
     }
     
-    private static List<String> loadAllTableNames(final Connection connection) throws SQLException {
+    private static Collection<String> loadAllTableNames(final Connection connection) throws SQLException {
         List<String> result = new LinkedList<>();
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), null, new String[]{TABLE_TYPE, VIEW_TYPE})) {
             while (resultSet.next()) {
