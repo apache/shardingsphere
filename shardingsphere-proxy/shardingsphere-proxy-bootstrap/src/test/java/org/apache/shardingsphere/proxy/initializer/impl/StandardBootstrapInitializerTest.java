@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfig
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlProxyUserConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
-import org.apache.shardingsphere.infra.context.schema.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
@@ -53,16 +53,16 @@ import static org.mockito.Mockito.mock;
 
 public final class StandardBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
-    protected YamlProxyConfiguration makeProxyConfiguration() {
-        return new YamlProxyConfiguration(createYamlProxyServerConfiguration(), createYamlProxyRuleConfigurationMap());
-    }
-    
     @Test
     public void assertGetProxyConfiguration() {
         YamlProxyConfiguration yamlConfig = makeProxyConfiguration();
         ProxyConfiguration actual = getInitializer().getProxyConfiguration(yamlConfig);
         assertNotNull(actual);
         assertProxyConfiguration(actual);
+    }
+    
+    private YamlProxyConfiguration makeProxyConfiguration() {
+        return new YamlProxyConfiguration(createYamlProxyServerConfiguration(), createYamlProxyRuleConfigurationMap());
     }
     
     private Map<String, YamlProxyRuleConfiguration> createYamlProxyRuleConfigurationMap() {

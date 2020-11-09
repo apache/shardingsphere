@@ -19,7 +19,7 @@ package org.apache.shardingsphere.spring.boot.governance.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
-import org.apache.shardingsphere.infra.context.schema.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryDataSourceRule;
 import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryRule;
