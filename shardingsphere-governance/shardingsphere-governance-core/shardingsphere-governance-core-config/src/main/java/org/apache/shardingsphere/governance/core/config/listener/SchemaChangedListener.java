@@ -24,10 +24,10 @@ import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
 import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.SchemaChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAddedEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaDeletedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataAddedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlLogicSchemaMetaData;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
@@ -82,7 +82,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         }
         if (Type.DELETED == event.getType()) {
             existedSchemaNames.remove(schemaName);
-            return Optional.of(new SchemaDeletedEvent(schemaName));
+            return Optional.of(new MetaDataDeletedEvent(schemaName));
         }
         return Optional.empty();
     }
@@ -97,7 +97,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         if (!deletedSchemaNames.isEmpty()) {
             String schemaName = deletedSchemaNames.iterator().next();
             existedSchemaNames.remove(schemaName);
-            return Optional.of(new SchemaDeletedEvent(schemaName));
+            return Optional.of(new MetaDataDeletedEvent(schemaName));
         }
         return Optional.empty();
     }
@@ -110,7 +110,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     
     private GovernanceEvent createAddedEvent(final String schemaName) {
         existedSchemaNames.add(schemaName);
-        return new SchemaAddedEvent(schemaName, Collections.emptyMap(), Collections.emptyList());
+        return new MetaDataAddedEvent(schemaName, Collections.emptyMap(), Collections.emptyList());
     }
     
     private GovernanceEvent createUpdatedEvent(final String schemaName, final DataChangedEvent event) {

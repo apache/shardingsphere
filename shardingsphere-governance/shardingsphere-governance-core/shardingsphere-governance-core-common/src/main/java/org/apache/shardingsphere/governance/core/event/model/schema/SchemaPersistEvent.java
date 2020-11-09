@@ -19,24 +19,17 @@ package org.apache.shardingsphere.governance.core.event.model.schema;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-
-import java.util.Collection;
-import java.util.Map;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 
 /**
- * Schema added event.
+ * Schema persist event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaAddedEvent implements GovernanceEvent {
+public final class SchemaPersistEvent implements GovernanceEvent {
     
     private final String schemaName;
     
-    private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
-    
-    private final Collection<RuleConfiguration> ruleConfigurations;
+    private final ShardingSphereSchema schema;
 }

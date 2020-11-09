@@ -21,10 +21,10 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.SchemaChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAddedEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaDeletedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataAddedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
@@ -138,7 +138,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db/rule", "rule", Type.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(SchemaAddedEvent.class));
+        assertThat(actual.get(), instanceOf(MetaDataAddedEvent.class));
     }
     
     @Test
@@ -147,7 +147,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db/datasource", dataSource, Type.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
-        assertThat(((SchemaAddedEvent) actual.get()).getSchemaName(), is("logic_db"));
+        assertThat(((MetaDataAddedEvent) actual.get()).getSchemaName(), is("logic_db"));
     }
     
     @Test
@@ -156,7 +156,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db/datasource", dataSource, Type.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
-        assertThat(((SchemaAddedEvent) actual.get()).getSchemaName(), is("logic_db"));
+        assertThat(((MetaDataAddedEvent) actual.get()).getSchemaName(), is("logic_db"));
     }
     
     @Test
@@ -165,7 +165,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db/datasource", dataSource, Type.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
-        assertThat(((SchemaAddedEvent) actual.get()).getSchemaName(), is("logic_db"));
+        assertThat(((MetaDataAddedEvent) actual.get()).getSchemaName(), is("logic_db"));
     }
     
     @Test
@@ -174,7 +174,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db/datasource", dataSource, Type.DELETED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
-        assertThat(((SchemaDeletedEvent) actual.get()).getSchemaName(), is("logic_db"));
+        assertThat(((MetaDataDeletedEvent) actual.get()).getSchemaName(), is("logic_db"));
     }
     
     @Test
@@ -183,7 +183,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db", dataSource, Type.DELETED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(SchemaDeletedEvent.class));
+        assertThat(actual.get(), instanceOf(MetaDataDeletedEvent.class));
     }
     
     @Test
@@ -192,7 +192,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/datasource", dataSource, Type.DELETED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(SchemaDeletedEvent.class));
+        assertThat(actual.get(), instanceOf(MetaDataDeletedEvent.class));
     }
     
     @Test
@@ -201,7 +201,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db/rule", encryptRule, Type.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
-        assertThat(((SchemaAddedEvent) actual.get()).getSchemaName(), is("logic_db"));
+        assertThat(((MetaDataAddedEvent) actual.get()).getSchemaName(), is("logic_db"));
     }
     
     @Test
@@ -210,7 +210,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db/rule", shardingRule, Type.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
-        assertThat(((SchemaAddedEvent) actual.get()).getSchemaName(), is("logic_db"));
+        assertThat(((MetaDataAddedEvent) actual.get()).getSchemaName(), is("logic_db"));
     }
     
     @Test
@@ -219,7 +219,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/logic_db/rule", rule, Type.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
-        assertThat(((SchemaAddedEvent) actual.get()).getSchemaName(), is("logic_db"));
+        assertThat(((MetaDataAddedEvent) actual.get()).getSchemaName(), is("logic_db"));
     }
     
     @Test
@@ -227,7 +227,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas", "sharding_db,replica_query_db,encrypt_db,shadow_db", Type.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
-        assertThat(((SchemaAddedEvent) actual.get()).getSchemaName(), is("shadow_db"));
+        assertThat(((MetaDataAddedEvent) actual.get()).getSchemaName(), is("shadow_db"));
     }
     
     @Test
@@ -235,7 +235,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas", "sharding_db,replica_query_db", Type.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
-        assertThat(((SchemaDeletedEvent) actual.get()).getSchemaName(), is("encrypt_db"));
+        assertThat(((MetaDataDeletedEvent) actual.get()).getSchemaName(), is("encrypt_db"));
     }
     
     @Test
@@ -249,7 +249,7 @@ public final class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/shadow_db", "", Type.ADDED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
-        assertThat(((SchemaAddedEvent) actual.get()).getSchemaName(), is("shadow_db"));
+        assertThat(((MetaDataAddedEvent) actual.get()).getSchemaName(), is("shadow_db"));
     }
     
     @Test
