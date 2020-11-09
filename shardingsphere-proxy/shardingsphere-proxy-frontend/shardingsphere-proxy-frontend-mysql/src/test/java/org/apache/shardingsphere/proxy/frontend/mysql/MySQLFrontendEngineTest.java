@@ -28,8 +28,8 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
-import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -158,13 +158,13 @@ public final class MySQLFrontendEngineTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void initProxyContext(final Authentication authentication) {
-        Field field = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
+        Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), getSchemaContexts(authentication));
+        field.set(ProxyContext.getInstance(), getMetaDataContexts(authentication));
     }
     
-    private SchemaContexts getSchemaContexts(final Authentication authentication) {
-        return new StandardSchemaContexts(getMetaDataMap(), mock(ExecutorKernel.class), authentication, new ConfigurationProperties(new Properties()), new MySQLDatabaseType());
+    private MetaDataContexts getMetaDataContexts(final Authentication authentication) {
+        return new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorKernel.class), authentication, new ConfigurationProperties(new Properties()), new MySQLDatabaseType());
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {

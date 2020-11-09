@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.schema;
+package org.apache.shardingsphere.infra.context.metadata;
 
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -27,9 +27,9 @@ import java.io.Closeable;
 import java.util.Map;
 
 /**
- * Schema contexts.
+ * Meta data contexts.
  */
-public interface SchemaContexts extends Closeable {
+public interface MetaDataContexts extends Closeable {
     
     /**
      * Get database type.

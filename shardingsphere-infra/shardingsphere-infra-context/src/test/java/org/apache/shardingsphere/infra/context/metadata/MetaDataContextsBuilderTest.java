@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.schema;
+package org.apache.shardingsphere.infra.context.metadata;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.fixture.FixtureRule;
@@ -37,12 +37,12 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SchemaContextsBuilderTest {
+public final class MetaDataContextsBuilderTest {
     
     @Test
     public void assertBuildWithoutConfiguration() throws SQLException {
         DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("FixtureDB");
-        SchemaContexts actual = new SchemaContextsBuilder(databaseType, Collections.emptyMap(), Collections.emptyMap(), null).build();
+        MetaDataContexts actual = new MetaDataContextsBuilder(databaseType, Collections.emptyMap(), Collections.emptyMap(), null).build();
         assertThat(actual.getDatabaseType(), CoreMatchers.is(databaseType));
         assertTrue(actual.getMetaDataMap().isEmpty());
         assertTrue(actual.getAuthentication().getUsers().isEmpty());
@@ -55,7 +55,7 @@ public final class SchemaContextsBuilderTest {
         DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("FixtureDB");
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "1");
-        SchemaContexts actual = new SchemaContextsBuilder(databaseType, Collections.singletonMap("logic_db", Collections.emptyMap()), 
+        MetaDataContexts actual = new MetaDataContextsBuilder(databaseType, Collections.singletonMap("logic_db", Collections.emptyMap()), 
                 Collections.singletonMap("logic_db", Collections.singleton(new FixtureRuleConfiguration())), props).build();
         assertThat(actual.getDatabaseType(), CoreMatchers.is(databaseType));
         assertRules(actual);
@@ -71,7 +71,7 @@ public final class SchemaContextsBuilderTest {
         DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("FixtureDB");
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "1");
-        SchemaContexts actual = new SchemaContextsBuilder(databaseType, Collections.singletonMap("logic_db", Collections.singletonMap("ds", new MockedDataSource())),
+        MetaDataContexts actual = new MetaDataContextsBuilder(databaseType, Collections.singletonMap("logic_db", Collections.singletonMap("ds", new MockedDataSource())),
                 Collections.singletonMap("logic_db", Collections.singleton(new FixtureRuleConfiguration())), props).build();
         assertThat(actual.getDatabaseType(), CoreMatchers.is(databaseType));
         assertRules(actual);
@@ -82,12 +82,12 @@ public final class SchemaContextsBuilderTest {
         assertFalse(actual.isCircuitBreak());
     }
     
-    private void assertRules(final SchemaContexts actual) {
+    private void assertRules(final MetaDataContexts actual) {
         assertThat(actual.getMetaDataMap().get("logic_db").getRuleMetaData().getRules().size(), CoreMatchers.is(1));
         assertThat(actual.getMetaDataMap().get("logic_db").getRuleMetaData().getRules().iterator().next(), CoreMatchers.instanceOf(FixtureRule.class));
     }
     
-    private void assertDataSources(final SchemaContexts actual) {
+    private void assertDataSources(final MetaDataContexts actual) {
         assertThat(actual.getMetaDataMap().get("logic_db").getResource().getDataSources().size(), CoreMatchers.is(1));
         assertThat(actual.getMetaDataMap().get("logic_db").getResource().getDataSources().get("ds"), CoreMatchers.instanceOf(MockedDataSource.class));
     }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.spring.namespace.governance.util.EmbedTestingServer;
 import org.apache.shardingsphere.spring.namespace.governance.util.FieldValueUtil;
 import org.junit.BeforeClass;
@@ -57,8 +57,8 @@ public final class GovernanceEncryptNamespaceTest extends AbstractJUnit4SpringCo
     
     private AlgorithmProvidedEncryptRuleConfiguration getEncryptRuleConfiguration() {
         GovernanceShardingSphereDataSource governanceDataSource = (GovernanceShardingSphereDataSource) applicationContext.getBean("encryptDataSourceGovernance");
-        SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(governanceDataSource, "schemaContexts");
-        return (AlgorithmProvidedEncryptRuleConfiguration) schemaContexts.getDefaultMetaData().getRuleMetaData().getConfigurations().iterator().next();
+        MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(governanceDataSource, "metaDataContexts");
+        return (AlgorithmProvidedEncryptRuleConfiguration) metaDataContexts.getDefaultMetaData().getRuleMetaData().getConfigurations().iterator().next();
     }
     
     private void assertEncryptRule(final AlgorithmProvidedEncryptRuleConfiguration config) {
@@ -87,7 +87,7 @@ public final class GovernanceEncryptNamespaceTest extends AbstractJUnit4SpringCo
     
     private ConfigurationProperties getProperties(final String encryptDatasourceName) {
         GovernanceShardingSphereDataSource governanceDataSource = applicationContext.getBean(encryptDatasourceName, GovernanceShardingSphereDataSource.class);
-        SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(governanceDataSource, "schemaContexts");
-        return schemaContexts.getProps();
+        MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(governanceDataSource, "metaDataContexts");
+        return metaDataContexts.getProps();
     }
 }

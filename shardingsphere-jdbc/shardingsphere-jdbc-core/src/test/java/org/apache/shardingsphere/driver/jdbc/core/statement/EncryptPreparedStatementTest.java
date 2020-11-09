@@ -56,7 +56,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     
     @Test
     public void assertSQLShow() {
-        assertTrue(getEncryptConnectionWithProps().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertTrue(getEncryptConnectionWithProps().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
     }
     
     @Test

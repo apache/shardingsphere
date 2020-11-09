@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.spring.namespace.governance;
 
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spring.namespace.governance.util.EmbedTestingServer;
 import org.apache.shardingsphere.spring.namespace.governance.util.FieldValueUtil;
@@ -58,13 +58,13 @@ public class GovernanceShardingReplicaQueryNamespaceTest extends AbstractJUnit4S
     
     private Map<String, DataSource> getDataSourceMap(final String dataSourceName) {
         GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
-        SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "schemaContexts");
-        return schemaContexts.getDefaultMetaData().getResource().getDataSources();
+        MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "metaDataContexts");
+        return metaDataContexts.getDefaultMetaData().getResource().getDataSources();
     }
     
     private ShardingRule getShardingRule(final String dataSourceName) {
         GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
-        SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "schemaContexts");
-        return (ShardingRule) schemaContexts.getDefaultMetaData().getRuleMetaData().getRules().iterator().next();
+        MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "metaDataContexts");
+        return (ShardingRule) metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().iterator().next();
     }
 }

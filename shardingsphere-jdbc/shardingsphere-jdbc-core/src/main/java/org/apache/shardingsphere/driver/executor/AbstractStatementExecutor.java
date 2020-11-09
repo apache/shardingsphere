@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.executor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
@@ -63,7 +63,7 @@ public abstract class AbstractStatementExecutor {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final SchemaContexts schemaContexts;
+    private final MetaDataContexts metaDataContexts;
     
     private final SQLExecutor sqlExecutor;
     
@@ -83,8 +83,8 @@ public abstract class AbstractStatementExecutor {
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatement);
         if (refreshStrategy.isPresent()) {
             Collection<String> routeDataSourceNames = routeUnits.stream().map(RouteUnit::getDataSourceMapper).map(RouteMapper::getLogicName).collect(Collectors.toList());
-            refreshStrategy.get().refreshMetaData(metaData.getSchema(), schemaContexts.getDatabaseType(), routeDataSourceNames, 
-                    sqlStatement, tableName -> TableMetaDataLoader.load(tableName, schemaContexts.getDatabaseType(), dataSourceMap, metaData.getRuleMetaData().getRules(), schemaContexts.getProps()));
+            refreshStrategy.get().refreshMetaData(metaData.getSchema(), metaDataContexts.getDatabaseType(), routeDataSourceNames, sqlStatement, 
+                tableName -> TableMetaDataLoader.load(tableName, metaDataContexts.getDatabaseType(), dataSourceMap, metaData.getRuleMetaData().getRules(), metaDataContexts.getProps()));
             notifyPersistSchema(DefaultSchema.LOGIC_NAME, metaData.getSchema());
         }
     }
@@ -92,7 +92,7 @@ public abstract class AbstractStatementExecutor {
     protected boolean executeAndRefreshMetaData(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatement sqlStatement,
                                                 final Collection<RouteUnit> routeUnits, final SQLExecutorCallback<Boolean> sqlExecutorCallback) throws SQLException {
         List<Boolean> result = sqlExecutor.execute(inputGroups, sqlExecutorCallback);
-        refreshTableMetaData(schemaContexts.getDefaultMetaData(), sqlStatement, routeUnits);
+        refreshTableMetaData(metaDataContexts.getDefaultMetaData(), sqlStatement, routeUnits);
         return null != result && !result.isEmpty() && null != result.get(0) && result.get(0);
     }
     

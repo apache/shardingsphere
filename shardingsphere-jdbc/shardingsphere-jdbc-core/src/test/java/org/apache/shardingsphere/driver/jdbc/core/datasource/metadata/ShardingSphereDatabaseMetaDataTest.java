@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.datasource.metadata;
 import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -75,7 +75,7 @@ public final class ShardingSphereDatabaseMetaDataTest {
     private ShardingSphereConnection shardingSphereConnection;
     
     @Mock
-    private SchemaContexts schemaContexts;
+    private MetaDataContexts metaDataContexts;
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
     
@@ -91,9 +91,9 @@ public final class ShardingSphereDatabaseMetaDataTest {
         when(shardingSphereConnection.getCachedConnections()).thenReturn(LinkedHashMultimap.create());
         when(shardingSphereConnection.getConnection(anyString())).thenReturn(connection);
         when(shardingSphereConnection.getDataSourceMap()).thenReturn(dataSourceMap);
-        when(shardingSphereConnection.getSchemaContexts()).thenReturn(schemaContexts);
+        when(shardingSphereConnection.getMetaDataContexts()).thenReturn(metaDataContexts);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(schemaContexts.getDefaultMetaData()).thenReturn(metaData);
+        when(metaDataContexts.getDefaultMetaData()).thenReturn(metaData);
         when(metaData.getResource().getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(mockShardingRule()));
         shardingSphereDatabaseMetaData = new ShardingSphereDatabaseMetaData(shardingSphereConnection);

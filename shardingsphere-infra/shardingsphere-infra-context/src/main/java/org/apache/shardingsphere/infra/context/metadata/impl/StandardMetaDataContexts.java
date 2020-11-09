@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.schema.impl;
+package org.apache.shardingsphere.infra.context.metadata.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -33,11 +33,11 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Standard schema contexts.
+ * Standard meta data contexts.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StandardSchemaContexts implements SchemaContexts {
+public final class StandardMetaDataContexts implements MetaDataContexts {
     
     private final Map<String, ShardingSphereMetaData> metaDataMap;
     
@@ -51,13 +51,13 @@ public final class StandardSchemaContexts implements SchemaContexts {
     
     private final boolean isCircuitBreak;
     
-    public StandardSchemaContexts() {
+    public StandardMetaDataContexts() {
         // TODO MySQLDatabaseType is invalid because it can not update again
         this(new HashMap<>(), null, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType(), false);
     }
     
-    public StandardSchemaContexts(final Map<String, ShardingSphereMetaData> metaDataMap, final ExecutorKernel executorKernel,
-                                  final Authentication authentication, final ConfigurationProperties props, final DatabaseType databaseType) {
+    public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap, final ExecutorKernel executorKernel,
+                                    final Authentication authentication, final ConfigurationProperties props, final DatabaseType databaseType) {
         this(metaDataMap, executorKernel, authentication, props, databaseType, false);
     }
     

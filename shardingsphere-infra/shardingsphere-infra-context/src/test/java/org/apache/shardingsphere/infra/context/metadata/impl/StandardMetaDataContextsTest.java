@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.schema.impl;
+package org.apache.shardingsphere.infra.context.metadata.impl;
 
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -32,23 +32,23 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public final class StandardSchemaContextsTest {
+public final class StandardMetaDataContextsTest {
     
     @Test
-    public void assertGetDefaultSchema() {
-        StandardSchemaContexts standardSchemaContexts = new StandardSchemaContexts();
+    public void assertGetDefaultMetaData() {
+        StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts();
         ShardingSphereMetaData expected = mock(ShardingSphereMetaData.class);
-        standardSchemaContexts.getMetaDataMap().put("logic_db", expected);
-        assertThat(standardSchemaContexts.getDefaultMetaData(), is(expected));
+        standardMetaDataContexts.getMetaDataMap().put("logic_db", expected);
+        assertThat(standardMetaDataContexts.getDefaultMetaData(), is(expected));
     }
     
     @Test
     public void assertClose() {
         ExecutorKernel executorKernel = mock(ExecutorKernel.class);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        StandardSchemaContexts standardSchemaContexts = new StandardSchemaContexts(Collections.singletonMap("logic_db", metaData), 
+        StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(Collections.singletonMap("logic_db", metaData), 
                 executorKernel, new Authentication(), new ConfigurationProperties(new Properties()), DatabaseTypeRegistry.getTrunkDatabaseType("SQL92"));
-        standardSchemaContexts.close();
+        standardMetaDataContexts.close();
         verify(executorKernel).close();
     }
 }
