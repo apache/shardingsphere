@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.context.schema;
 import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.event.model.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAddedEvent;
@@ -190,16 +190,16 @@ public final class GovernanceSchemaContextsTest {
     }
     
     @Test
-    public void assertMetaDataChanged() {
-        MetaDataChangedEvent event = new MetaDataChangedEvent("schema_changed", mock(ShardingSphereSchema.class));
+    public void assertSchemaChanged() {
+        SchemaChangedEvent event = new SchemaChangedEvent("schema_changed", mock(ShardingSphereSchema.class));
         governanceSchemaContexts.renew(event);
         assertTrue(governanceSchemaContexts.getMetaDataMap().containsKey("schema"));
         assertFalse(governanceSchemaContexts.getMetaDataMap().containsKey("schema_changed"));
     }
     
     @Test
-    public void assertMetaDataChangedWithExistSchema() {
-        MetaDataChangedEvent event = new MetaDataChangedEvent("schema", mock(ShardingSphereSchema.class));
+    public void assertSchemaChangedWithExistSchema() {
+        SchemaChangedEvent event = new SchemaChangedEvent("schema", mock(ShardingSphereSchema.class));
         governanceSchemaContexts.renew(event);
         assertThat(governanceSchemaContexts.getMetaDataMap().get("schema"), not(metaData));
     }

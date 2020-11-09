@@ -23,7 +23,7 @@ import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.event.model.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAddedEvent;
@@ -205,7 +205,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
      * @param event meta data changed event
      */
     @Subscribe
-    public synchronized void renew(final MetaDataChangedEvent event) {
+    public synchronized void renew(final SchemaChangedEvent event) {
         Map<String, ShardingSphereMetaData> newMetaDataMap = new HashMap<>(schemaContexts.getMetaDataMap().size(), 1);
         for (Entry<String, ShardingSphereMetaData> entry : schemaContexts.getMetaDataMap().entrySet()) {
             String schemaName = entry.getKey();

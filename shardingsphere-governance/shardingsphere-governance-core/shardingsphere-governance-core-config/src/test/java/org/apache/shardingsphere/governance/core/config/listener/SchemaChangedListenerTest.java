@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaDeletedEvent;
@@ -253,11 +253,11 @@ public final class SchemaChangedListenerTest {
     }
     
     @Test
-    public void assertCreateMetaDataChangedEvent() {
+    public void assertCreateSchemaChangedEvent() {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas/sharding_db/table", readYAML(META_DATA_FILE), Type.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createGovernanceEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
-        assertTrue(((MetaDataChangedEvent) actual.get()).getSchema().getAllTableNames().contains("t_order"));
+        assertTrue(((SchemaChangedEvent) actual.get()).getSchema().getAllTableNames().contains("t_order"));
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})

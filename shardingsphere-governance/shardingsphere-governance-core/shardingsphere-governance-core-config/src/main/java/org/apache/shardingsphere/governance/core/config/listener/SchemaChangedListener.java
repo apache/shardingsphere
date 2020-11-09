@@ -24,7 +24,7 @@ import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
 import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaDeletedEvent;
@@ -124,7 +124,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         } else if (event.getKey().equals(configurationNode.getRulePath(schemaName))) {
             return createRuleChangedEvent(schemaName, event);
         }
-        return createMetaDataChangedEvent(schemaName, event);
+        return createSchemaChangedEvent(schemaName, event);
     }
     
     private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
@@ -140,7 +140,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         return new RuleConfigurationsChangedEvent(schemaName, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()));
     }
     
-    private GovernanceEvent createMetaDataChangedEvent(final String schemaName, final DataChangedEvent event) {
-        return new MetaDataChangedEvent(schemaName, new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlLogicSchemaMetaData.class)));
+    private GovernanceEvent createSchemaChangedEvent(final String schemaName, final DataChangedEvent event) {
+        return new SchemaChangedEvent(schemaName, new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlLogicSchemaMetaData.class)));
     }
 }

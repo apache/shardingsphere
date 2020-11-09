@@ -23,11 +23,11 @@ import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 
 /**
- * Meta data changed event.
+ * Schema changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MetaDataChangedEvent implements GovernanceEvent {
+public final class SchemaChangedEvent implements GovernanceEvent {
 
     private final String schemaName;
 
