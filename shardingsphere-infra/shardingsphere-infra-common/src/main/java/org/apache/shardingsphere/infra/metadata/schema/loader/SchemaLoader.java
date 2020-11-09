@@ -34,10 +34,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Schema meta data loader.
+ * Schema loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaMetaDataLoader {
+public final class SchemaLoader {
     
     /**
      * Load schema meta data.

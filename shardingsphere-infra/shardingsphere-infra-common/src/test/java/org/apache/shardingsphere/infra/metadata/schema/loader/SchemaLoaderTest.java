@@ -38,7 +38,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SchemaMetaDataLoaderTest {
+public final class SchemaLoaderTest {
     
     @Mock
     private DatabaseType databaseType;
@@ -51,7 +51,7 @@ public final class SchemaMetaDataLoaderTest {
     
     @Test
     public void assertLoadFullDatabases() throws SQLException {
-        ShardingSphereSchema actual = SchemaMetaDataLoader.load(
+        ShardingSphereSchema actual = SchemaLoader.load(
                 databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props);
         assertSchema(actual);
     }
