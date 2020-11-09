@@ -84,7 +84,7 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
     }
     
     private LogicSQL createLogicSQL(final ShardingSphereMetaData metaData, final ShardingCTLExplainStatement explainStatement) {
-        PhysicalSchemaMetaData schemaMetaData = metaData.getSchema().getSchemaMetaData();
+        PhysicalSchemaMetaData schemaMetaData = metaData.getSchema();
         ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(
                 DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getSchemaContexts().getDatabaseType()));
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(explainStatement.getSql(), false);

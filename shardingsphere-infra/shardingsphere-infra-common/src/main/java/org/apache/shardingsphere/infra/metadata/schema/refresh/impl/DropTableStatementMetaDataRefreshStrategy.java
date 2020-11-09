@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.schema.refresh.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.TableMetaDataLoaderCallback;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
@@ -31,12 +31,9 @@ import java.util.Collection;
 public final class DropTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<DropTableStatement> {
     
     @Override
-    public void refreshMetaData(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
+    public void refreshMetaData(final PhysicalSchemaMetaData schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
                                 final DropTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
-        sqlStatement.getTables().forEach(each -> removeMetaData(schema, each.getTableName().getIdentifier().getValue()));
+        sqlStatement.getTables().forEach(each -> schema.remove(each.getTableName().getIdentifier().getValue()));
     }
-    
-    private void removeMetaData(final ShardingSphereSchema schema, final String tableName) {
-        schema.getSchemaMetaData().remove(tableName);
-    }
+
 }

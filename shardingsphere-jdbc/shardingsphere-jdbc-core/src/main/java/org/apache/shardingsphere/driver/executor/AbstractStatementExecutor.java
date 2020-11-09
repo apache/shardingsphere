@@ -85,7 +85,7 @@ public abstract class AbstractStatementExecutor {
             Collection<String> routeDataSourceNames = routeUnits.stream().map(RouteUnit::getDataSourceMapper).map(RouteMapper::getLogicName).collect(Collectors.toList());
             refreshStrategy.get().refreshMetaData(metaData.getSchema(), schemaContexts.getDatabaseType(), routeDataSourceNames, 
                     sqlStatement, tableName -> TableMetaDataLoader.load(tableName, schemaContexts.getDatabaseType(), dataSourceMap, metaData.getRuleMetaData().getRules(), schemaContexts.getProps()));
-            notifyPersistLogicMetaData(DefaultSchema.LOGIC_NAME, metaData.getSchema().getSchemaMetaData());
+            notifyPersistLogicMetaData(DefaultSchema.LOGIC_NAME, metaData.getSchema());
         }
     }
     

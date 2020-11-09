@@ -22,14 +22,14 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.metadata.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,7 +65,7 @@ public final class ExecutionContextBuilder {
                 new SQLUnit(sqlRewriteResult.getSqlRewriteUnit().getSql(), sqlRewriteResult.getSqlRewriteUnit().getParameters(), getSQLRuntimeContext(metaData.getSchema(), sqlStatementContext))));
     }
     
-    private static Collection<ExecutionUnit> build(final ShardingSphereSchema schema, final RouteSQLRewriteResult sqlRewriteResult) {
+    private static Collection<ExecutionUnit> build(final PhysicalSchemaMetaData schema, final RouteSQLRewriteResult sqlRewriteResult) {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
         for (Entry<RouteUnit, SQLRewriteUnit> entry : sqlRewriteResult.getSqlRewriteUnits().entrySet()) {
             Collection<RouteMapper> tableMappers = entry.getKey().getTableMappers();
@@ -75,11 +75,11 @@ public final class ExecutionContextBuilder {
         return result;
     }
     
-    private static SQLRuntimeContext getSQLRuntimeContext(final ShardingSphereSchema schema, final SQLStatementContext<?> sqlStatementContext) {
+    private static SQLRuntimeContext getSQLRuntimeContext(final PhysicalSchemaMetaData schema, final SQLStatementContext<?> sqlStatementContext) {
         return new SQLRuntimeContext(getLogicTableNames(sqlStatementContext), getActualTableNames(sqlStatementContext), getPrimaryKeyColumns(schema, sqlStatementContext));
     }
     
-    private static SQLRuntimeContext getSQLRuntimeContext(final ShardingSphereSchema schema, final Collection<RouteMapper> tableMappers) {
+    private static SQLRuntimeContext getSQLRuntimeContext(final PhysicalSchemaMetaData schema, final Collection<RouteMapper> tableMappers) {
         return new SQLRuntimeContext(getLogicTableNames(tableMappers), getActualTableNames(tableMappers), getPrimaryKeyColumns(schema, tableMappers));
     }
     
@@ -110,18 +110,18 @@ public final class ExecutionContextBuilder {
         return null == tablesContext ? Collections.emptyList() : new ArrayList<>(tablesContext.getTableNames());
     }
     
-    private static List<PrimaryKeyMetaData> getPrimaryKeyColumns(final ShardingSphereSchema schema, final SQLStatementContext<?> sqlStatementContext) {
+    private static List<PrimaryKeyMetaData> getPrimaryKeyColumns(final PhysicalSchemaMetaData schema, final SQLStatementContext<?> sqlStatementContext) {
         return getPrimaryKeyColumns(schema, getActualTableNames(sqlStatementContext));
     }
     
-    private static List<PrimaryKeyMetaData> getPrimaryKeyColumns(final ShardingSphereSchema schema, final Collection<RouteMapper> tableMappers) {
+    private static List<PrimaryKeyMetaData> getPrimaryKeyColumns(final PhysicalSchemaMetaData schema, final Collection<RouteMapper> tableMappers) {
         return getPrimaryKeyColumns(schema, getLogicTableNames(tableMappers));
     }
     
-    private static List<PrimaryKeyMetaData> getPrimaryKeyColumns(final ShardingSphereSchema schema, final List<String> actualTableNames) {
+    private static List<PrimaryKeyMetaData> getPrimaryKeyColumns(final PhysicalSchemaMetaData schema, final List<String> actualTableNames) {
         List<PrimaryKeyMetaData> result = new LinkedList<>();
         for (String each: actualTableNames) {
-            PhysicalTableMetaData tableMetaData = schema.getSchemaMetaData().get(each);
+            PhysicalTableMetaData tableMetaData = schema.get(each);
             if (null != tableMetaData) {
                 result.add(new PrimaryKeyMetaData(each, tableMetaData.getPrimaryKeyColumns()));
             }

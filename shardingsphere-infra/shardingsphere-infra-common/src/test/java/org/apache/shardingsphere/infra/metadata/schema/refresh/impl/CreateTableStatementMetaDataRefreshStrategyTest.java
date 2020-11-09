@@ -82,7 +82,7 @@ public final class CreateTableStatementMetaDataRefreshStrategyTest extends Abstr
         metaDataRefreshStrategy.refreshMetaData(getSchema(), mock(DatabaseType.class), Collections.emptyList(), createTableStatement, tableName -> Optional.of(new PhysicalTableMetaData(
                 Collections.singletonList(new PhysicalColumnMetaData("order_id", 1, "String", true, false, false)),
                 Collections.singletonList(new PhysicalIndexMetaData("index")))));
-        assertTrue(getSchema().getSchemaMetaData().containsTable("t_order_0"));
+        assertTrue(getSchema().containsTable("t_order_0"));
     }
     
     @Test

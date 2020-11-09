@@ -106,7 +106,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (refreshStrategy.isPresent()) {
             refreshStrategy.get().refreshMetaData(
                     metaData.getSchema(), ProxyContext.getInstance().getSchemaContexts().getDatabaseType(), routeDataSourceNames, sqlStatement, this::loadTableMetaData);
-            GovernanceEventBus.getInstance().post(new MetaDataPersistEvent(metaData.getName(), metaData.getSchema().getSchemaMetaData()));
+            GovernanceEventBus.getInstance().post(new MetaDataPersistEvent(metaData.getName(), metaData.getSchema()));
         }
     }
     
@@ -138,7 +138,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(ProxyContext.getInstance().getSchemaContexts().getDatabaseType(), 
-                metaData.getSchema().getSchemaMetaData(), ProxyContext.getInstance().getSchemaContexts().getProps(), metaData.getRuleMetaData().getRules());
+                metaData.getSchema(), ProxyContext.getInstance().getSchemaContexts().getProps(), metaData.getRuleMetaData().getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     

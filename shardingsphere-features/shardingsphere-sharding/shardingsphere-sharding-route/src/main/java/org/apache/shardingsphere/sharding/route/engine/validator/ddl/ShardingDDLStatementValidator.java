@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
@@ -38,10 +38,10 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
      * @param schema ShardingSphere schema
      * @param tables tables
      */
-    protected void validateShardingTable(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
+    protected void validateShardingTable(final PhysicalSchemaMetaData schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            if (schema.getSchemaMetaData().getAllTableNames().contains(tableName)) {
+            if (schema.getAllTableNames().contains(tableName)) {
                 throw new ShardingSphereException("Can not support sharding table '%s'.", tableName);
             }
         }
@@ -53,11 +53,11 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
      * @param schema ShardingSphere schema
      * @param tables tables
      */
-    protected void validateTableExist(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
+    protected void validateTableExist(final PhysicalSchemaMetaData schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            if (!schema.getSchemaMetaData().containsTable(tableName)) {
-                String dataSourceName = schema.getSchemaMetaData().get(tableName).getAddressingDataSources().iterator().next();
+            if (!schema.containsTable(tableName)) {
+                String dataSourceName = schema.get(tableName).getAddressingDataSources().iterator().next();
                 throw new NoSuchTableException(dataSourceName, tableName);
             }
         }
@@ -69,10 +69,10 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
      * @param schema ShardingSphere schema
      * @param tables tables
      */
-    protected void validateTableNotExist(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
+    protected void validateTableNotExist(final PhysicalSchemaMetaData schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            if (schema.getSchemaMetaData().containsTable(tableName)) {
+            if (schema.containsTable(tableName)) {
                 throw new TableExistsException(tableName);
             }
         }

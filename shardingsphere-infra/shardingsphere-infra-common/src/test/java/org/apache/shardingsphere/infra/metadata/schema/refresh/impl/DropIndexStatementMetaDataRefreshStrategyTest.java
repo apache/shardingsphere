@@ -58,7 +58,7 @@ public final class DropIndexStatementMetaDataRefreshStrategyTest extends Abstrac
         dropIndexStatement.getIndexes().add(new IndexSegment(1, 2, new IdentifierValue("index")));
         MetaDataRefreshStrategy<DropIndexStatement> metaDataRefreshStrategy = new DropIndexStatementMetaDataRefreshStrategy();
         metaDataRefreshStrategy.refreshMetaData(getSchema(), mock(DatabaseType.class), Collections.emptyList(), dropIndexStatement, tableName -> Optional.empty());
-        assertFalse(getSchema().getSchemaMetaData().get("t_order").getIndexes().containsKey("index"));
+        assertFalse(getSchema().get("t_order").getIndexes().containsKey("index"));
     }
     
     @Test
@@ -79,13 +79,13 @@ public final class DropIndexStatementMetaDataRefreshStrategyTest extends Abstrac
         dropIndexStatement.getIndexes().add(new IndexSegment(1, 2, new IdentifierValue("index")));
         dropIndexStatement.getIndexes().add(new IndexSegment(2, 3, new IdentifierValue("t_order_index")));
         dropIndexStatement.getIndexes().add(new IndexSegment(3, 4, new IdentifierValue("order_id_index")));
-        Map<String, PhysicalIndexMetaData> actualIndex = getSchema().getSchemaMetaData().get("t_order").getIndexes();
+        Map<String, PhysicalIndexMetaData> actualIndex = getSchema().get("t_order").getIndexes();
         actualIndex.put("t_order_index", new PhysicalIndexMetaData("t_order_index"));
         actualIndex.put("order_id_index", new PhysicalIndexMetaData("order_id_index"));
         MetaDataRefreshStrategy<DropIndexStatement> metaDataRefreshStrategy = new DropIndexStatementMetaDataRefreshStrategy();
         metaDataRefreshStrategy.refreshMetaData(getSchema(), mock(DatabaseType.class), Collections.emptyList(), dropIndexStatement, tableName -> Optional.empty());
-        assertFalse(getSchema().getSchemaMetaData().get("t_order").getIndexes().containsKey("index"));
-        assertFalse(getSchema().getSchemaMetaData().get("t_order").getIndexes().containsKey("t_order_index"));
-        assertFalse(getSchema().getSchemaMetaData().get("t_order").getIndexes().containsKey("order_id_index"));
+        assertFalse(getSchema().get("t_order").getIndexes().containsKey("index"));
+        assertFalse(getSchema().get("t_order").getIndexes().containsKey("t_order_index"));
+        assertFalse(getSchema().get("t_order").getIndexes().containsKey("order_id_index"));
     }
 }

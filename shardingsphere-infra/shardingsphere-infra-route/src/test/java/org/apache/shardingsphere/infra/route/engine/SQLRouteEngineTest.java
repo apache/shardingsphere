@@ -24,17 +24,14 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.fixture.rule.RouteFailureRuleFixture;
 import org.apache.shardingsphere.infra.route.fixture.rule.RouteRuleFixture;
 import org.apache.shardingsphere.infra.route.hook.SPIRoutingHook;
-import org.apache.shardingsphere.infra.metadata.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -47,24 +44,18 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SQLRouteEngineTest {
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereSchema schema;
+    @Mock
+    private PhysicalSchemaMetaData schema;
     
     @Mock
     private ConfigurationProperties props;
     
     @Mock
     private SPIRoutingHook routingHook;
-    
-    @Before
-    public void setUp() {
-        when(schema.getSchemaMetaData()).thenReturn(mock(PhysicalSchemaMetaData.class));
-    }
     
     @Test
     public void assertRouteSuccess() {
@@ -80,7 +71,7 @@ public final class SQLRouteEngineTest {
         assertThat(routeUnit.getDataSourceMapper().getActualName(), is("ds_0"));
         assertTrue(routeUnit.getTableMappers().isEmpty());
         verify(routingHook).start("SELECT 1");
-        verify(routingHook).finishSuccess(actual, schema.getSchemaMetaData());
+        verify(routingHook).finishSuccess(actual, schema);
     }
     
     @Test(expected = UnsupportedOperationException.class)

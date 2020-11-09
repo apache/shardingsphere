@@ -50,7 +50,7 @@ public final class KernelProcessor {
         SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(rules, props);
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
         RouteContext routeContext = sqlRouteEngine.route(logicSQL, metaData);
-        SQLRewriteEntry rewriteEntry = new SQLRewriteEntry(metaData.getSchema().getSchemaMetaData(), props, rules);
+        SQLRewriteEntry rewriteEntry = new SQLRewriteEntry(metaData.getSchema(), props, rules);
         SQLRewriteResult rewriteResult = rewriteEntry.rewrite(logicSQL.getSql(), logicSQL.getParameters(), sqlStatementContext, routeContext);
         Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(metaData, rewriteResult, sqlStatementContext);
         return new ExecutionContext(sqlStatementContext, executionUnits, routeContext);

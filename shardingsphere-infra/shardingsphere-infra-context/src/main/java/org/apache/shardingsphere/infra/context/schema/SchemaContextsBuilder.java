@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
@@ -130,10 +129,9 @@ public final class SchemaContextsBuilder {
         }
     }
     
-    private ShardingSphereSchema buildSchema(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
+    private PhysicalSchemaMetaData buildSchema(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
         long start = System.currentTimeMillis();
-        PhysicalSchemaMetaData physicalSchemaMetaData = SchemaMetaDataLoader.load(databaseType, dataSourceMap, rules, props);
-        ShardingSphereSchema result = new ShardingSphereSchema(physicalSchemaMetaData);
+        PhysicalSchemaMetaData result = SchemaMetaDataLoader.load(databaseType, dataSourceMap, rules, props);
         log.info("Load meta data for schema {} finished, cost {} milliseconds.", schemaName, System.currentTimeMillis() - start);
         return result;
     }
