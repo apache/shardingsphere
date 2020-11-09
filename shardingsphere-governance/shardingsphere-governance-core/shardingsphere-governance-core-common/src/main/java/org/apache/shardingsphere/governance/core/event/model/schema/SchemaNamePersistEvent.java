@@ -22,11 +22,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 
 /**
- * Schema deleted event.
+ * Schema name persist event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaDeletedEvent implements GovernanceEvent {
+public final class SchemaNamePersistEvent implements GovernanceEvent {
     
     private final String schemaName;
+    
+    private final boolean isDrop; 
 }

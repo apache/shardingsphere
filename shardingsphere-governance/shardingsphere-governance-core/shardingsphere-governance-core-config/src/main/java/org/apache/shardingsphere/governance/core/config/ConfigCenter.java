@@ -25,10 +25,10 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
-import org.apache.shardingsphere.governance.core.event.model.persist.DataSourcePersistEvent;
-import org.apache.shardingsphere.governance.core.event.model.persist.SchemaPersistEvent;
-import org.apache.shardingsphere.governance.core.event.model.persist.RulePersistEvent;
-import org.apache.shardingsphere.governance.core.event.model.persist.SchemaNamePersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaPersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePersistEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlLogicSchemaMetaData;
@@ -121,7 +121,7 @@ public final class ConfigCenter {
      * @param event Rule event.
      */
     @Subscribe
-    public synchronized void renew(final RulePersistEvent event) {
+    public synchronized void renew(final RuleConfigurationsPersistEvent event) {
         persistRuleConfigurations(event.getSchemaName(), event.getRuleConfigurations());
     }
     

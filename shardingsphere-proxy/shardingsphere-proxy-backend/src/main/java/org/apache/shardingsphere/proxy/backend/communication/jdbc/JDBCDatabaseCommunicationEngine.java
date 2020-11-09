@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
-import org.apache.shardingsphere.governance.core.event.model.persist.SchemaPersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaPersistEvent;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;

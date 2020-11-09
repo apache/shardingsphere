@@ -23,11 +23,11 @@ import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.event.model.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.SchemaChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAddedEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaDeletedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataAddedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
@@ -155,7 +155,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
      * @throws SQLException SQL exception
      */
     @Subscribe
-    public synchronized void renew(final SchemaAddedEvent event) throws SQLException {
+    public synchronized void renew(final MetaDataAddedEvent event) throws SQLException {
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(schemaContexts.getMetaDataMap());
         metaDataMap.put(event.getSchemaName(), createAddedMetaData(event));
         schemaContexts = new StandardSchemaContexts(metaDataMap, schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
@@ -170,7 +170,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
      * @param event schema delete event
      */
     @Subscribe
-    public synchronized void renew(final SchemaDeletedEvent event) {
+    public synchronized void renew(final MetaDataDeletedEvent event) {
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(schemaContexts.getMetaDataMap());
         metaDataMap.remove(event.getSchemaName());
         schemaContexts = new StandardSchemaContexts(metaDataMap, schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType());
@@ -279,7 +279,7 @@ public final class GovernanceSchemaContexts implements SchemaContexts {
                 schemaContexts.getExecutorKernel(), schemaContexts.getAuthentication(), schemaContexts.getProps(), schemaContexts.getDatabaseType(), event.isCircuitBreak());
     }
     
-    private ShardingSphereMetaData createAddedMetaData(final SchemaAddedEvent event) throws SQLException {
+    private ShardingSphereMetaData createAddedMetaData(final MetaDataAddedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, 
                 governanceFacade.getConfigCenter().loadDataSourceConfigurations(schemaName)));

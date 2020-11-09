@@ -20,11 +20,11 @@ package org.apache.shardingsphere.governance.context.schema;
 import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.event.model.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.SchemaChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAddedEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaDeletedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataAddedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
@@ -149,7 +149,7 @@ public final class GovernanceSchemaContextsTest {
     
     @Test
     public void assertSchemaAdd() throws SQLException {
-        SchemaAddedEvent event = new SchemaAddedEvent("schema_add", new HashMap<>(), new LinkedList<>());
+        MetaDataAddedEvent event = new MetaDataAddedEvent("schema_add", new HashMap<>(), new LinkedList<>());
         when(configCenter.loadDataSourceConfigurations("schema_add")).thenReturn(getDataSourceConfigurations());
         governanceSchemaContexts.renew(event);
         assertNotNull(governanceSchemaContexts.getMetaDataMap().get("schema_add"));
@@ -167,7 +167,7 @@ public final class GovernanceSchemaContextsTest {
     
     @Test
     public void assertSchemaDelete() {
-        SchemaDeletedEvent event = new SchemaDeletedEvent("schema");
+        MetaDataDeletedEvent event = new MetaDataDeletedEvent("schema");
         governanceSchemaContexts.renew(event);
         assertNull(governanceSchemaContexts.getMetaDataMap().get("schema"));
     }
