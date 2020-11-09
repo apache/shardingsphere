@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.model.physical;
+package org.apache.shardingsphere.infra.metadata.schema.model;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;

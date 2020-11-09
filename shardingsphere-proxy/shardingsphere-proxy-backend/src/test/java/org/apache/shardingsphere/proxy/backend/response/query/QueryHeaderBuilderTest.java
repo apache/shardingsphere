@@ -24,10 +24,10 @@ import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalIndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalIndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalTableMetaData;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 

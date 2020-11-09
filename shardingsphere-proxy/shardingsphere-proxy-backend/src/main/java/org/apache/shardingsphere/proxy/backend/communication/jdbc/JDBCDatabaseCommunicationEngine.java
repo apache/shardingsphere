@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.loader.TableMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;

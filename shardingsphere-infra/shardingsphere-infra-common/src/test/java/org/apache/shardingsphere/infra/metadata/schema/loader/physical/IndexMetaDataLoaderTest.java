@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.physical;
 
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalIndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalIndexMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.metadata;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalColumnMetaData;
 
 /**
  * Column meta data for encrypt.

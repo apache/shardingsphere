@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.schema.loader.physical;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.schema.model.physical.PhysicalIndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalIndexMetaData;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

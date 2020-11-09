@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.model.physical;
 
+import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.PhysicalTableMetaData;
 import org.junit.Before;
 import org.junit.Test;
 
