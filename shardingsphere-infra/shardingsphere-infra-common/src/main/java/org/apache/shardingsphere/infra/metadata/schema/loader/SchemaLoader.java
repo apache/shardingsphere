@@ -40,13 +40,13 @@ import java.util.Map.Entry;
 public final class SchemaLoader {
     
     /**
-     * Load schema meta data.
+     * Load schema.
      * 
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @param rules ShardingSphere rules
      * @param props configuration properties
-     * @return schema meta data
+     * @return ShardingSphere schema
      * @throws SQLException SQL exception
      */
     public static ShardingSphereSchema load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
