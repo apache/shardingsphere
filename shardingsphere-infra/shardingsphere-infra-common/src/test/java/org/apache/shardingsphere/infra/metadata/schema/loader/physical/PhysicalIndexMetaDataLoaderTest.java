@@ -18,52 +18,44 @@
 package org.apache.shardingsphere.infra.metadata.schema.loader.physical;
 
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PhysicalIndexMetaDataLoaderTest {
     
-    private static final String TEST_CATALOG = "catalog";
-    
-    private static final String TEST_TABLE = "table";
-    
-    @Mock
-    private Connection connection;
-    
-    @Mock
-    private DatabaseMetaData databaseMetaData;
-    
-    @Mock
-    private ResultSet indexResultSet;
-    
-    @Before
-    public void setUp() throws SQLException {
-        when(connection.getCatalog()).thenReturn(TEST_CATALOG);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-    }
-    
     @Test
     public void assertLoad() throws SQLException {
-        when(databaseMetaData.getIndexInfo(TEST_CATALOG, null, TEST_TABLE, false, false)).thenReturn(indexResultSet);
-        when(indexResultSet.next()).thenReturn(true, true, false);
-        when(indexResultSet.getString("INDEX_NAME")).thenReturn("my_index");
-        Collection<IndexMetaData> actual = PhysicalIndexMetaDataLoader.load(connection, TEST_TABLE);
+        Collection<IndexMetaData> actual = PhysicalIndexMetaDataLoader.load(mockConnection(), "tbl");
         assertThat(actual.size(), is(1));
         IndexMetaData indexMetaData = actual.iterator().next();
         assertThat(indexMetaData.getName(), is("my_index"));
+    }
+    
+    private Connection mockConnection() throws SQLException {
+        Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
+        ResultSet resultSet = mockResultSet();
+        when(result.getMetaData().getIndexInfo("catalog", null, "tbl", false, false)).thenReturn(resultSet);
+        when(result.getCatalog()).thenReturn("catalog");
+        return result;
+    }
+    
+    private ResultSet mockResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, false);
+        when(result.getString("INDEX_NAME")).thenReturn("my_index");
+        return result;
     }
 }
