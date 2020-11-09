@@ -48,8 +48,7 @@ public interface ShardingSphereMetaDataLoader<T extends TableContainedRule> exte
      * @return meta data
      * @throws SQLException SQL exception
      */
-    Optional<TableMetaData> load(String tableName,
-                                 DatabaseType databaseType, Map<String, DataSource> dataSourceMap, DataNodes dataNodes, T rule, ConfigurationProperties props) throws SQLException;
+    Optional<TableMetaData> load(String tableName, DatabaseType databaseType, Map<String, DataSource> dataSourceMap, DataNodes dataNodes, T rule, ConfigurationProperties props) throws SQLException;
     
     /**
      * Decorate table meta data.

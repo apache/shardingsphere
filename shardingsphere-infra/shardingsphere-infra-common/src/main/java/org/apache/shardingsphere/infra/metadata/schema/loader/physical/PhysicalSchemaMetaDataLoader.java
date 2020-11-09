@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.loader.physical.jdbc.MetaDataConnectionAdapter;
+import org.apache.shardingsphere.infra.metadata.schema.loader.physical.adapter.MetaDataLoaderConnectionAdapter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -34,7 +34,6 @@ import java.util.List;
 
 /**
  * Physical schema meta data loader.
- * Note: this is only load table name, skip index and column info
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j(topic = "ShardingSphere-metadata")
@@ -51,15 +50,13 @@ public final class PhysicalSchemaMetaDataLoader {
      *
      * @param dataSource data source
      * @param databaseType database type
-     * @param excludedTableNames excluded table names
-     * @return all table names
+     * @return loaded all table names
      * @throws SQLException SQL exception
      */
-    public static Collection<String> loadTableNames(final DataSource dataSource, final DatabaseType databaseType, final Collection<String> excludedTableNames) throws SQLException {
-        List<String> result;
-        try (MetaDataConnectionAdapter connectionAdapter = new MetaDataConnectionAdapter(databaseType, dataSource.getConnection())) {
+    public static Collection<String> loadAllTableNames(final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
+        Collection<String> result;
+        try (MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
             result = loadAllTableNames(connectionAdapter);
-            result.removeAll(excludedTableNames);
         }
         log.info("Loading {} tables' meta data for unconfigured tables.", result.size());
         if (result.isEmpty()) {
@@ -68,7 +65,7 @@ public final class PhysicalSchemaMetaDataLoader {
         return result;
     }
     
-    private static List<String> loadAllTableNames(final Connection connection) throws SQLException {
+    private static Collection<String> loadAllTableNames(final Connection connection) throws SQLException {
         List<String> result = new LinkedList<>();
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), null, new String[]{TABLE_TYPE, VIEW_TYPE})) {
             while (resultSet.next()) {

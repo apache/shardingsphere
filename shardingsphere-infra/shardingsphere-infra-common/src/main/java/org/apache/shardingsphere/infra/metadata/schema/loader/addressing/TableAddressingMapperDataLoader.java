@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -56,24 +55,24 @@ public final class TableAddressingMapperDataLoader {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Map<String, Collection<String>> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
-        Map<String, Collection<String>> result = initializeTableAddressingMapper(databaseType, dataSourceMap);
+        Map<String, Collection<String>> result = initialize(databaseType, dataSourceMap);
         for (Entry<ShardingSphereRule, TableAddressingMapperDecorator> entry : OrderedSPIRegistry.getRegisteredServices(rules, TableAddressingMapperDecorator.class).entrySet()) {
             entry.getValue().decorate(entry.getKey(), result);
         }
         return result;
     }
     
-    private static Map<String, Collection<String>> initializeTableAddressingMapper(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) throws SQLException {
+    private static Map<String, Collection<String>> initialize(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) throws SQLException {
         Map<String, Collection<String>> result = new HashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            appendMetaData(result, databaseType, entry.getKey(), entry.getValue());
+            append(result, databaseType, entry.getKey(), entry.getValue());
         }
         return result;
     }
     
-    private static void appendMetaData(final Map<String, Collection<String>> tableAddressingMapper, 
-                                       final DatabaseType databaseType, final String dataSourceName, final DataSource dataSource) throws SQLException {
-        for (String each : PhysicalSchemaMetaDataLoader.loadTableNames(dataSource, databaseType, Collections.emptyList())) {
+    private static void append(final Map<String, Collection<String>> tableAddressingMapper, 
+                               final DatabaseType databaseType, final String dataSourceName, final DataSource dataSource) throws SQLException {
+        for (String each : PhysicalSchemaMetaDataLoader.loadAllTableNames(dataSource, databaseType)) {
             if (!tableAddressingMapper.containsKey(each)) {
                 tableAddressingMapper.put(each, new LinkedHashSet<>());
             }
