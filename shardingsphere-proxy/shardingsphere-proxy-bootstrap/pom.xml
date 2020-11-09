@@ -118,6 +118,10 @@
                     <groupId>io.netty</groupId>
                     <artifactId>netty-codec-socks</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-handler-proxy</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
