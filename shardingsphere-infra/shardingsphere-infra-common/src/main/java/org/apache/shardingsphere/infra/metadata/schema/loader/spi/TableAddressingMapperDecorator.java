@@ -24,17 +24,17 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Table addressing meta data decorator.
+ * Table addressing mapper decorator.
  * 
  * @param <T> type of ShardingSphere rule
  */
-public interface TableAddressingMetaDataDecorator<T extends ShardingSphereRule> extends OrderedSPI<T> {
+public interface TableAddressingMapperDecorator<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
-     * Build ShardingSphere rule.
+     * Decorate table addressing mapper with data source names.
      *
      * @param rule ShardingSphere rule
-     * @param tableDataSourceNamesMapper table data source names mapper
+     * @param tableAddressingMapper decorated table addressing mapper
      */
-    void decorate(T rule, Map<String, Collection<String>> tableDataSourceNamesMapper);
+    void decorate(T rule, Map<String, Collection<String>> tableAddressingMapper);
 }
