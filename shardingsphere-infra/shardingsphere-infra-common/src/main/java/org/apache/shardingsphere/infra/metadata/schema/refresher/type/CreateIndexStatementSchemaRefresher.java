@@ -36,8 +36,8 @@ public final class CreateIndexStatementSchemaRefresher implements SchemaRefreshe
         if (null == sqlStatement.getIndex()) {
             return;
         }
-        String indexName = sqlStatement.getIndex().getIdentifier().getValue();
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
+        String indexName = sqlStatement.getIndex().getIdentifier().getValue();
         schema.get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
     }
 }
