@@ -15,34 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
+package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.TableMetaDataLoaderCallback;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 
-import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Optional;
 
 /**
- * ShardingSphere schema refresher for create table statement.
+ * ShardingSphere schema refresher for drop table statement.
  */
-public final class CreateTableStatementSchemaRefresher implements SchemaRefresher<CreateTableStatement> {
+public final class DropTableStatementSchemaRefresher implements SchemaRefresher<DropTableStatement> {
     
     @Override
     public void refresh(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
-                        final CreateTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
-        String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        Optional<TableMetaData> tableMetaData = callback.load(tableName);
-        if (tableMetaData.isPresent()) {
-            schema.put(tableName, tableMetaData.get());
-        } else {
-            schema.put(tableName, new TableMetaData());
-        }
-        schema.get(tableName).getAddressingDataSources().addAll(routeDataSourceNames);
+                        final DropTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
+        sqlStatement.getTables().forEach(each -> schema.remove(each.getTableName().getIdentifier().getValue()));
     }
+
 }

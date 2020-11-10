@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
+package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
