@@ -25,9 +25,11 @@ import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
+import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
+import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
 import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 
 import javax.sql.DataSource;
@@ -35,10 +37,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Abstract JDBC importer implementation.
@@ -58,7 +59,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     protected AbstractJDBCImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
-        sqlBuilder = createSQLBuilder(importerConfig.getShardingColumnsMap());
+        sqlBuilder = createSQLBuilder();
     }
     
     /**
@@ -66,7 +67,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
      *
      * @return SQL builder
      */
-    protected abstract AbstractSQLBuilder createSQLBuilder(Map<String, Set<String>> shardingColumnsMap);
+    protected abstract AbstractSQLBuilder createSQLBuilder();
     
     @Override
     public final void start() {
@@ -140,25 +141,37 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     }
     
     private void executeInsert(final Connection connection, final DataRecord record) throws SQLException {
+        String insertSql = sqlBuilder.buildInsertSQL(record);
+        PreparedStatement ps = connection.prepareStatement(insertSql);
+        ps.setQueryTimeout(30);
         try {
-            executeSQL(connection, record, sqlBuilder.buildInsertSQL(record));
+            for (int i = 0; i < record.getColumnCount(); i++) {
+                ps.setObject(i + 1, record.getColumn(i).getValue());
+            }
+            ps.execute();
         } catch (final SQLIntegrityConstraintViolationException ignored) {
         }
     }
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
-        executeSQL(connection, record, sqlBuilder.buildUpdateSQL(record));
+        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, importerConfig.getShardingColumnsMap().get(record.getTableName()));
+        List<Column> values = new ArrayList<>();
+        values.addAll(RecordUtil.extractUpdatedColumns(record));
+        values.addAll(conditionColumns);
+        String updateSql = sqlBuilder.buildUpdateSQL(record, conditionColumns);
+        PreparedStatement ps = connection.prepareStatement(updateSql);
+        for (int i = 0; i < values.size(); i++) {
+            ps.setObject(i + 1, values.get(i).getValue());
+        }
+        ps.execute();
     }
     
     private void executeDelete(final Connection connection, final DataRecord record) throws SQLException {
-        executeSQL(connection, record, sqlBuilder.buildDeleteSQL(record));
-    }
-    
-    private void executeSQL(final Connection connection, final DataRecord record, final PreparedSQL preparedSQL) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement(preparedSQL.getSql());
-        for (int i = 0; i < preparedSQL.getValuesIndex().size(); i++) {
-            int columnIndex = preparedSQL.getValuesIndex().get(i);
-            ps.setObject(i + 1, record.getColumn(columnIndex).getValue());
+        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, importerConfig.getShardingColumnsMap().get(record.getTableName()));
+        String deleteSql = sqlBuilder.buildDeleteSQL(record, conditionColumns);
+        PreparedStatement ps = connection.prepareStatement(deleteSql);
+        for (int i = 0; i < conditionColumns.size(); i++) {
+            ps.setObject(i + 1, conditionColumns.get(i).getValue());
         }
         ps.execute();
     }
