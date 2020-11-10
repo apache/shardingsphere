@@ -36,7 +36,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class TableMetaDataLoaderTest {
+public final class TableMetaDataBuilderTest {
     
     @Mock
     private DatabaseType databaseType;
@@ -48,14 +48,14 @@ public final class TableMetaDataLoaderTest {
     private ConfigurationProperties props;
     
     @Test
-    public void assertLoadWithExistedTableName() throws SQLException {
-        assertTrue(TableMetaDataLoader.load("data_node_routed_table_0", 
+    public void assertBuildWithExistedTableName() throws SQLException {
+        assertTrue(TableMetaDataBuilder.build("data_node_routed_table_0", 
                 databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props).isPresent());
     }
     
     @Test
-    public void assertLoadWithNotExistedTableName() throws SQLException {
-        assertFalse(TableMetaDataLoader.load("invalid_table", 
+    public void assertBuildWithNotExistedTableName() throws SQLException {
+        assertFalse(TableMetaDataBuilder.build("invalid_table", 
                 databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props).isPresent());
     }
 }

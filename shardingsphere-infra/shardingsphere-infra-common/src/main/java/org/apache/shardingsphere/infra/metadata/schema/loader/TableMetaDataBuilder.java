@@ -37,17 +37,17 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Table meta data loader.
+ * Table meta data builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TableMetaDataLoader {
+public final class TableMetaDataBuilder {
     
     static {
         ShardingSphereServiceLoader.register(ShardingSphereMetaDataLoader.class);
     }
     
     /**
-     * Load table meta data.
+     * Build table meta data.
      *
      * @param tableName table name
      * @param databaseType database type
@@ -57,15 +57,15 @@ public final class TableMetaDataLoader {
      * @return table meta data
      * @throws SQLException SQL exception
      */
-    public static Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                               final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
-        Optional<TableMetaData> tableMetaData = loadTableMetaData(tableName, databaseType, dataSourceMap, rules, props);
-        return tableMetaData.map(optional -> decorateTableMetaData(tableName, optional, rules));
+    public static Optional<TableMetaData> build(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                                final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
+        Optional<TableMetaData> tableMetaData = load(tableName, databaseType, dataSourceMap, rules, props);
+        return tableMetaData.map(optional -> decorate(tableName, optional, rules));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static Optional<TableMetaData> loadTableMetaData(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                             final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
+    private static Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                                final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
         DataNodes dataNodes = new DataNodes(rules);
         for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
@@ -81,7 +81,7 @@ public final class TableMetaDataLoader {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static TableMetaData decorateTableMetaData(final String tableName, final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
+    private static TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
         TableMetaData result = null;
         for (Entry<ShardingSphereRule, ShardingSphereMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, ShardingSphereMetaDataLoader.class).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {

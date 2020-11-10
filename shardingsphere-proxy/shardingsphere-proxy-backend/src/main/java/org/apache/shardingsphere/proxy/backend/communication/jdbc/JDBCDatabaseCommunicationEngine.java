@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.Que
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.loader.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.loader.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategyFactory;
@@ -105,13 +105,13 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatement);
         if (refreshStrategy.isPresent()) {
             refreshStrategy.get().refreshMetaData(
-                    metaData.getSchema(), ProxyContext.getInstance().getMetaDataContexts().getDatabaseType(), routeDataSourceNames, sqlStatement, this::loadTableMetaData);
+                    metaData.getSchema(), ProxyContext.getInstance().getMetaDataContexts().getDatabaseType(), routeDataSourceNames, sqlStatement, this::buildTableMetaData);
             GovernanceEventBus.getInstance().post(new SchemaPersistEvent(metaData.getName(), metaData.getSchema()));
         }
     }
     
-    private Optional<TableMetaData> loadTableMetaData(final String tableName) throws SQLException {
-        return TableMetaDataLoader.load(tableName, ProxyContext.getInstance().getMetaDataContexts().getDatabaseType(), 
+    private Optional<TableMetaData> buildTableMetaData(final String tableName) throws SQLException {
+        return TableMetaDataBuilder.build(tableName, ProxyContext.getInstance().getMetaDataContexts().getDatabaseType(), 
                 metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), ProxyContext.getInstance().getMetaDataContexts().getProps());
     }
     

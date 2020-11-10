@@ -34,13 +34,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Schema loader.
+ * Schema builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaLoader {
+public final class SchemaBuilder {
     
     /**
-     * Load schema.
+     * Build ShardingSphere schema.
      * 
      * @param databaseType database type
      * @param dataSourceMap data source map
@@ -49,8 +49,8 @@ public final class SchemaLoader {
      * @return ShardingSphere schema
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereSchema load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                            final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
+    public static ShardingSphereSchema build(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                             final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
         ShardingSphereSchema result = loadSchema(databaseType, dataSourceMap, rules, props);
         setTableAddressingMapper(databaseType, dataSourceMap, rules, result);
         return result;
@@ -63,7 +63,7 @@ public final class SchemaLoader {
             if (rule instanceof TableContainedRule) {
                 for (String table : ((TableContainedRule) rule).getTables()) {
                     if (!result.containsTable(table)) {
-                        TableMetaDataLoader.load(table, databaseType, dataSourceMap, rules, props).ifPresent(optional -> result.put(table, optional));
+                        TableMetaDataBuilder.build(table, databaseType, dataSourceMap, rules, props).ifPresent(optional -> result.put(table, optional));
                     }
                 }
             }
