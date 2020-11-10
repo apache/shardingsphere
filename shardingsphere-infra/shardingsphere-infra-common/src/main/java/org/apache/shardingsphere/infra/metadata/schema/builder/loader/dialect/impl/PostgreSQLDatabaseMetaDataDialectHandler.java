@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.physical.dialect.impl;
+package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.impl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.schema.builder.physical.dialect.DatabaseMetaDataDialectHandler;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Properties;

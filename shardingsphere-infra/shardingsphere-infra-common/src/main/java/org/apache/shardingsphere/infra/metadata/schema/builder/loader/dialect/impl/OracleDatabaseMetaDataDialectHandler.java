@@ -15,23 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.physical.dialect.impl;
+package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.impl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.schema.builder.physical.dialect.DatabaseMetaDataDialectHandler;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Database meta data dialect handler of H2.
+ * Database meta data dialect handler of Oracle.
  */
 @Getter
 @Setter
-public final class H2DatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
+public final class OracleDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
     
     private Properties props;
+
+    @SuppressWarnings("ReturnOfNull")
+    @Override
+    public String getSchema(final Connection connection) {
+        try {
+            return Optional.ofNullable(connection.getMetaData().getUserName()).map(String::toUpperCase).orElse(null);
+        } catch (final SQLException ignored) {
+            return null;
+        }
+    }
+    
+    @Override
+    public String formatTableNamePattern(final String tableNamePattern) {
+        return tableNamePattern.toUpperCase();
+    }
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -40,6 +58,6 @@ public final class H2DatabaseMetaDataDialectHandler implements DatabaseMetaDataD
     
     @Override
     public String getType() {
-        return "H2";
+        return "Oracle";
     }
 }

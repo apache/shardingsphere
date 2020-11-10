@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.physical.dialect;
+package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect;
 
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;

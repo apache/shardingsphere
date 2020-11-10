@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.physical.dialect;
+package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

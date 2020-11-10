@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.physical;
+package org.apache.shardingsphere.infra.metadata.schema.builder.loader;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -44,6 +44,7 @@ public final class IndexMetaDataLoader {
      * @return index meta data list
      * @throws SQLException SQL exception
      */
+    @SuppressWarnings("CollectionWithoutInitialCapacity")
     public static Collection<IndexMetaData> load(final Connection connection, final String table) throws SQLException {
         Collection<IndexMetaData> result = new HashSet<>();
         try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), connection.getSchema(), table, false, false)) {

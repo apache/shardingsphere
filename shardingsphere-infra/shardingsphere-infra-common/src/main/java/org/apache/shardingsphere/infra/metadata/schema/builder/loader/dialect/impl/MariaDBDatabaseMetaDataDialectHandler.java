@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.physical.dialect.impl;
+package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.impl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.schema.builder.physical.dialect.DatabaseMetaDataDialectHandler;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Properties;
 
 /**
- * Database meta data dialect handler of SQL92.
+ * Database meta data dialect handler of MariaDB.
  */
 @Getter
 @Setter
-public final class SQL92DatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
+public final class MariaDBDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
     
     private Properties props;
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.QUOTE;
+        return QuoteCharacter.BACK_QUOTE;
     }
     
     @Override
     public String getType() {
-        return "SQL92";
+        return "MariaDB";
     }
 }

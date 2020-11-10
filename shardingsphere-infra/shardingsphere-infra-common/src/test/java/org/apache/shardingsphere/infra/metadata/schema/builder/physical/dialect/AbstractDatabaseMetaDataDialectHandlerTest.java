@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.metadata.schema.builder.physical.dialect
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandler;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandlerFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

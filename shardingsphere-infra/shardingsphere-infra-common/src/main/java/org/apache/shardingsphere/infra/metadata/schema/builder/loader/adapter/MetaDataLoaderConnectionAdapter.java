@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.physical.adapter;
+package org.apache.shardingsphere.infra.metadata.schema.builder.loader.adapter;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.builder.physical.dialect.DatabaseMetaDataDialectHandlerFactory;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandlerFactory;
 
 import java.sql.Array;
 import java.sql.Blob;

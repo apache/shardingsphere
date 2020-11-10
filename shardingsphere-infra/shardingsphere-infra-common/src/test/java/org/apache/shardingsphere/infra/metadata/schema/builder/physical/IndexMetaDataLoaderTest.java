@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder.physical;
 
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.IndexMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
