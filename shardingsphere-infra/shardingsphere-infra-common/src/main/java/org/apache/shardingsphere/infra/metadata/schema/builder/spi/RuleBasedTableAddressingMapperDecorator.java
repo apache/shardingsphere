@@ -24,11 +24,11 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Table addressing mapper decorator.
+ * Table addressing mapper decorator with related rule.
  * 
  * @param <T> type of ShardingSphere rule
  */
-public interface TableAddressingMapperDecorator<T extends ShardingSphereRule> extends OrderedSPI<T> {
+public interface RuleBasedTableAddressingMapperDecorator<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
      * Decorate table addressing mapper with data source names.

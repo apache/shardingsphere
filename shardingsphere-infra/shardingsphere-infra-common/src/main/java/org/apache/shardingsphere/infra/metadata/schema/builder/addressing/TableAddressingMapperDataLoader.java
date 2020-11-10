@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.builder.physical.PhysicalSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.TableAddressingMapperDecorator;
+import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableAddressingMapperDecorator;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
@@ -41,7 +41,7 @@ import java.util.Map.Entry;
 public final class TableAddressingMapperDataLoader {
     
     static {
-        ShardingSphereServiceLoader.register(TableAddressingMapperDecorator.class);
+        ShardingSphereServiceLoader.register(RuleBasedTableAddressingMapperDecorator.class);
     }
     
     /**
@@ -56,7 +56,7 @@ public final class TableAddressingMapperDataLoader {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Map<String, Collection<String>> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
         Map<String, Collection<String>> result = initialize(databaseType, dataSourceMap);
-        for (Entry<ShardingSphereRule, TableAddressingMapperDecorator> entry : OrderedSPIRegistry.getRegisteredServices(rules, TableAddressingMapperDecorator.class).entrySet()) {
+        for (Entry<ShardingSphereRule, RuleBasedTableAddressingMapperDecorator> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableAddressingMapperDecorator.class).entrySet()) {
             entry.getValue().decorate(entry.getKey(), result);
         }
         return result;
