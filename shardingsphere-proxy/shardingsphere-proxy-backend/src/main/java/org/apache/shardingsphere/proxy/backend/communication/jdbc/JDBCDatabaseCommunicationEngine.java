@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.MetaDataRefreshStrategyFactory;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresherFactory;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
@@ -102,7 +102,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (null == sqlStatement) {
             return;
         }
-        Optional<SchemaRefresher> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatement);
+        Optional<SchemaRefresher> refreshStrategy = SchemaRefresherFactory.newInstance(sqlStatement);
         if (refreshStrategy.isPresent()) {
             refreshStrategy.get().refresh(
                     metaData.getSchema(), ProxyContext.getInstance().getMetaDataContexts().getDatabaseType(), routeDataSourceNames, sqlStatement, this::buildTableMetaData);

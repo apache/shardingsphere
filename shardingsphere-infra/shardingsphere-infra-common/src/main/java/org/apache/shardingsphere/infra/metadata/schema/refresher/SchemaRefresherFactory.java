@@ -41,10 +41,10 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Meta data refresh strategy factory.
+ * ShardingSphere schema refresher factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MetaDataRefreshStrategyFactory {
+public final class SchemaRefresherFactory {
     
     private static final Map<Class<?>, SchemaRefresher<?>> REGISTRY = new HashMap<>();
     
@@ -59,10 +59,10 @@ public final class MetaDataRefreshStrategyFactory {
     }
     
     /**
-     * Create new instance of meta data refresh strategy.
+     * Create new instance of schema refresher.
      *
      * @param sqlStatement SQL statement
-     * @return meta data refresh strategy
+     * @return instance of schema refresher
      */
     public static Optional<SchemaRefresher> newInstance(final SQLStatement sqlStatement) {
         return REGISTRY.entrySet().stream().filter(entry -> entry.getKey().isAssignableFrom(sqlStatement.getClass())).findFirst().map(Entry::getValue);

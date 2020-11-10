@@ -32,35 +32,35 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MetaDataRefreshStrategyFactoryTest {
+public final class SchemaRefresherFactoryTest {
     
     @Test
     public void assertNewInstanceWithCreateTableStatement() {
-        assertTrue(MetaDataRefreshStrategyFactory.newInstance(mock(CreateTableStatement.class)).isPresent());
+        assertTrue(SchemaRefresherFactory.newInstance(mock(CreateTableStatement.class)).isPresent());
     }
     
     @Test
     public void assertNewInstanceWithAlterTableStatement() {
-        assertTrue(MetaDataRefreshStrategyFactory.newInstance(mock(AlterTableStatement.class)).isPresent());
+        assertTrue(SchemaRefresherFactory.newInstance(mock(AlterTableStatement.class)).isPresent());
     }
     
     @Test
     public void assertNewInstanceWithDropTableStatement() {
-        assertTrue(MetaDataRefreshStrategyFactory.newInstance(mock(DropTableStatement.class)).isPresent());
+        assertTrue(SchemaRefresherFactory.newInstance(mock(DropTableStatement.class)).isPresent());
     }
     
     @Test
     public void assertNewInstanceWithCreateIndexStatement() {
-        assertTrue(MetaDataRefreshStrategyFactory.newInstance(mock(CreateIndexStatement.class)).isPresent());
+        assertTrue(SchemaRefresherFactory.newInstance(mock(CreateIndexStatement.class)).isPresent());
     }
     
     @Test
     public void assertNewInstanceWithDropIndexStatement() {
-        assertTrue(MetaDataRefreshStrategyFactory.newInstance(mock(DropIndexStatement.class)).isPresent());
+        assertTrue(SchemaRefresherFactory.newInstance(mock(DropIndexStatement.class)).isPresent());
     }
     
     @Test
     public void assertNewInstanceWithSQLStatementNotNeedRefresh() {
-        assertFalse(MetaDataRefreshStrategyFactory.newInstance(mock(AlterIndexStatement.class)).isPresent());
+        assertFalse(SchemaRefresherFactory.newInstance(mock(AlterIndexStatement.class)).isPresent());
     }
 }
