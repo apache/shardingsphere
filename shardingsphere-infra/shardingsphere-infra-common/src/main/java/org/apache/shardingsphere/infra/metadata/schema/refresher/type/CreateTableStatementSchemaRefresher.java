@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
@@ -34,7 +33,7 @@ import java.util.Optional;
 public final class CreateTableStatementSchemaRefresher implements SchemaRefresher<CreateTableStatement> {
     
     @Override
-    public void refresh(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
+    public void refresh(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames,
                         final CreateTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         Optional<TableMetaData> tableMetaData = callback.load(tableName);

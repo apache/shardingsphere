@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -40,7 +38,6 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 public final class CreateTableStatementSchemaRefresherTest {
     
@@ -50,37 +47,37 @@ public final class CreateTableStatementSchemaRefresherTest {
         createTableStatement.setNotExisted(false);
         refresh(createTableStatement);
     }
-
+    
     @Test
     public void refreshForOracle() throws SQLException {
         OracleCreateTableStatement createTableStatement = new OracleCreateTableStatement();
         refresh(createTableStatement);
     }
-
+    
     @Test
     public void refreshForPostgreSQL() throws SQLException {
         PostgreSQLCreateTableStatement createTableStatement = new PostgreSQLCreateTableStatement();
         createTableStatement.setNotExisted(false);
         refresh(createTableStatement);
     }
-
+    
     @Test
     public void refreshForSQL92() throws SQLException {
         SQL92CreateTableStatement createTableStatement = new SQL92CreateTableStatement();
         refresh(createTableStatement);
     }
-
+    
     @Test
     public void refreshForSQLServer() throws SQLException {
         SQLServerCreateTableStatement createTableStatement = new SQLServerCreateTableStatement();
         refresh(createTableStatement);
     }
-
+    
     private void refresh(final CreateTableStatement createTableStatement) throws SQLException {
         ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
         SchemaRefresher<CreateTableStatement> schemaRefresher = new CreateTableStatementSchemaRefresher();
-        schemaRefresher.refresh(schema, mock(DatabaseType.class), Collections.emptyList(), createTableStatement, tableName -> Optional.of(new TableMetaData(
+        schemaRefresher.refresh(schema, Collections.emptyList(), createTableStatement, tableName -> Optional.of(new TableMetaData(
                 Collections.singletonList(new ColumnMetaData("order_id", 1, "String", true, false, false)),
                 Collections.singletonList(new IndexMetaData("index")))));
         assertTrue(schema.containsTable("t_order_0"));
@@ -92,35 +89,35 @@ public final class CreateTableStatementSchemaRefresherTest {
         createTableStatement.setNotExisted(false);
         refreshWithUnConfigured(createTableStatement);
     }
-
+    
     @Test
     public void refreshWithUnConfiguredForOracle() throws SQLException {
         OracleCreateTableStatement createTableStatement = new OracleCreateTableStatement();
         refreshWithUnConfigured(createTableStatement);
     }
-
+    
     @Test
     public void refreshWithUnConfiguredForPostgreSQL() throws SQLException {
         PostgreSQLCreateTableStatement createTableStatement = new PostgreSQLCreateTableStatement();
         createTableStatement.setNotExisted(false);
         refreshWithUnConfigured(createTableStatement);
     }
-
+    
     @Test
     public void refreshWithUnConfiguredForSQL92() throws SQLException {
         SQL92CreateTableStatement createTableStatement = new SQL92CreateTableStatement();
         refreshWithUnConfigured(createTableStatement);
     }
-
+    
     @Test
     public void refreshWithUnConfiguredForSQLServer() throws SQLException {
         SQLServerCreateTableStatement createTableStatement = new SQLServerCreateTableStatement();
         refreshWithUnConfigured(createTableStatement);
     }
-
+    
     private void refreshWithUnConfigured(final CreateTableStatement createTableStatement) throws SQLException {
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item_0"))));
         SchemaRefresher<CreateTableStatement> schemaRefresher = new CreateTableStatementSchemaRefresher();
-        schemaRefresher.refresh(ShardingSphereSchemaBuildUtil.buildSchema(), new MySQLDatabaseType(), Collections.singletonList("t_order_item"), createTableStatement, tableName -> Optional.empty());
+        schemaRefresher.refresh(ShardingSphereSchemaBuildUtil.buildSchema(), Collections.singletonList("t_order_item"), createTableStatement, tableName -> Optional.empty());
     }
 }

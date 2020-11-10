@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
@@ -36,7 +35,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.mock;
 
 public final class DropIndexStatementSchemaRefresherTest {
     
@@ -58,7 +56,7 @@ public final class DropIndexStatementSchemaRefresherTest {
         ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
         dropIndexStatement.getIndexes().add(new IndexSegment(1, 2, new IdentifierValue("index")));
         SchemaRefresher<DropIndexStatement> metaDataRefreshStrategy = new DropIndexStatementSchemaRefresher();
-        metaDataRefreshStrategy.refresh(schema, mock(DatabaseType.class), Collections.emptyList(), dropIndexStatement, tableName -> Optional.empty());
+        metaDataRefreshStrategy.refresh(schema, Collections.emptyList(), dropIndexStatement, tableName -> Optional.empty());
         assertFalse(schema.get("t_order").getIndexes().containsKey("index"));
     }
     
@@ -85,7 +83,7 @@ public final class DropIndexStatementSchemaRefresherTest {
         actualIndex.put("t_order_index", new IndexMetaData("t_order_index"));
         actualIndex.put("order_id_index", new IndexMetaData("order_id_index"));
         SchemaRefresher<DropIndexStatement> schemaRefresher = new DropIndexStatementSchemaRefresher();
-        schemaRefresher.refresh(schema, mock(DatabaseType.class), Collections.emptyList(), dropIndexStatement, tableName -> Optional.empty());
+        schemaRefresher.refresh(schema, Collections.emptyList(), dropIndexStatement, tableName -> Optional.empty());
         assertFalse(schema.get("t_order").getIndexes().containsKey("index"));
         assertFalse(schema.get("t_order").getIndexes().containsKey("t_order_index"));
         assertFalse(schema.get("t_order").getIndexes().containsKey("order_id_index"));

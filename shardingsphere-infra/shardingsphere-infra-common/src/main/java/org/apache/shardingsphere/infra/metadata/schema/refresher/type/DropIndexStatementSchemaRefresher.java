@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
@@ -37,7 +36,7 @@ import java.util.stream.Collectors;
 public final class DropIndexStatementSchemaRefresher implements SchemaRefresher<DropIndexStatement> {
     
     @Override
-    public void refresh(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
+    public void refresh(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames,
                         final DropIndexStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
         Collection<String> indexNames = getIndexNames(sqlStatement);
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(sqlStatement);

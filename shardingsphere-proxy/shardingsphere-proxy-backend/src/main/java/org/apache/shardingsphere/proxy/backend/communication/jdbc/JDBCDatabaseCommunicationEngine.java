@@ -104,8 +104,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         Optional<SchemaRefresher> refreshStrategy = SchemaRefresherFactory.newInstance(sqlStatement);
         if (refreshStrategy.isPresent()) {
-            refreshStrategy.get().refresh(
-                    metaData.getSchema(), ProxyContext.getInstance().getMetaDataContexts().getDatabaseType(), routeDataSourceNames, sqlStatement, this::buildTableMetaData);
+            refreshStrategy.get().refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, this::buildTableMetaData);
             GovernanceEventBus.getInstance().post(new SchemaPersistEvent(metaData.getName(), metaData.getSchema()));
         }
     }
