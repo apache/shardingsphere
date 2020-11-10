@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractMetaDataRefreshStrategyTest;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
@@ -41,37 +41,37 @@ import java.util.Optional;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class AlterTableStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
+public final class AlterTableStatementSchemaRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
     @Test
-    public void refreshMetaDataForMySQL() throws SQLException {
-        refreshMetaData(new MySQLAlterTableStatement());
+    public void refreshForMySQL() throws SQLException {
+        refresh(new MySQLAlterTableStatement());
     }
 
     @Test
-    public void refreshMetaDataForOracle() throws SQLException {
-        refreshMetaData(new OracleAlterTableStatement());
+    public void refreshForOracle() throws SQLException {
+        refresh(new OracleAlterTableStatement());
     }
 
     @Test
-    public void refreshMetaDataForPostgreSQL() throws SQLException {
-        refreshMetaData(new PostgreSQLAlterTableStatement());
+    public void refreshForPostgreSQL() throws SQLException {
+        refresh(new PostgreSQLAlterTableStatement());
     }
 
     @Test
-    public void refreshMetaDataForSQL92() throws SQLException {
-        refreshMetaData(new SQL92AlterTableStatement());
+    public void refreshForSQL92() throws SQLException {
+        refresh(new SQL92AlterTableStatement());
     }
 
     @Test
-    public void refreshMetaDataForSQLServer() throws SQLException {
-        refreshMetaData(new SQLServerAlterTableStatement());
+    public void refreshForSQLServer() throws SQLException {
+        refresh(new SQLServerAlterTableStatement());
     }
 
-    private void refreshMetaData(final AlterTableStatement alterTableStatement) throws SQLException {
-        MetaDataRefreshStrategy<AlterTableStatement> metaDataRefreshStrategy = new AlterTableStatementMetaDataRefreshStrategy();
+    private void refresh(final AlterTableStatement alterTableStatement) throws SQLException {
+        SchemaRefreshStrategy<AlterTableStatement> schemaRefreshStrategy = new AlterTableStatementSchemaRefreshStrategy();
         alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        metaDataRefreshStrategy.refreshMetaData(getSchema(), mock(DatabaseType.class), Collections.emptyList(), alterTableStatement, tableName -> Optional.of(new TableMetaData(
+        schemaRefreshStrategy.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), alterTableStatement, tableName -> Optional.of(new TableMetaData(
                 Collections.singletonList(new ColumnMetaData("order_id", 1, "String", true, false, false)),
                 Collections.singletonList(new IndexMetaData("index_alter")))));
         assertTrue(getSchema().get("t_order").getIndexes().containsKey("index_alter"));

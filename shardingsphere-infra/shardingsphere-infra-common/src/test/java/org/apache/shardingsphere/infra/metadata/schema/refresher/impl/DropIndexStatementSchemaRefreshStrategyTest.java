@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractMetaDataRefreshStrategyTest;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -38,26 +38,26 @@ import java.util.Optional;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 
-public final class DropIndexStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
+public final class DropIndexStatementSchemaRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
     @Test
-    public void refreshMetaDataForMySQL() throws SQLException {
+    public void refreshForMySQL() throws SQLException {
         MySQLDropIndexStatement dropIndexStatement = new MySQLDropIndexStatement();
         dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        refreshMetaData(dropIndexStatement);
+        refresh(dropIndexStatement);
     }
     
     @Test
-    public void refreshMetaDataForSQLServer() throws SQLException {
+    public void refreshForSQLServer() throws SQLException {
         SQLServerDropIndexStatement dropIndexStatement = new SQLServerDropIndexStatement();
         dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        refreshMetaData(dropIndexStatement);
+        refresh(dropIndexStatement);
     }
     
-    private void refreshMetaData(final DropIndexStatement dropIndexStatement) throws SQLException {
+    private void refresh(final DropIndexStatement dropIndexStatement) throws SQLException {
         dropIndexStatement.getIndexes().add(new IndexSegment(1, 2, new IdentifierValue("index")));
-        MetaDataRefreshStrategy<DropIndexStatement> metaDataRefreshStrategy = new DropIndexStatementMetaDataRefreshStrategy();
-        metaDataRefreshStrategy.refreshMetaData(getSchema(), mock(DatabaseType.class), Collections.emptyList(), dropIndexStatement, tableName -> Optional.empty());
+        SchemaRefreshStrategy<DropIndexStatement> metaDataRefreshStrategy = new DropIndexStatementSchemaRefreshStrategy();
+        metaDataRefreshStrategy.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), dropIndexStatement, tableName -> Optional.empty());
         assertFalse(getSchema().get("t_order").getIndexes().containsKey("index"));
     }
     
@@ -82,8 +82,8 @@ public final class DropIndexStatementMetaDataRefreshStrategyTest extends Abstrac
         Map<String, IndexMetaData> actualIndex = getSchema().get("t_order").getIndexes();
         actualIndex.put("t_order_index", new IndexMetaData("t_order_index"));
         actualIndex.put("order_id_index", new IndexMetaData("order_id_index"));
-        MetaDataRefreshStrategy<DropIndexStatement> metaDataRefreshStrategy = new DropIndexStatementMetaDataRefreshStrategy();
-        metaDataRefreshStrategy.refreshMetaData(getSchema(), mock(DatabaseType.class), Collections.emptyList(), dropIndexStatement, tableName -> Optional.empty());
+        SchemaRefreshStrategy<DropIndexStatement> metaDataRefreshStrategy = new DropIndexStatementSchemaRefreshStrategy();
+        metaDataRefreshStrategy.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), dropIndexStatement, tableName -> Optional.empty());
         assertFalse(getSchema().get("t_order").getIndexes().containsKey("index"));
         assertFalse(getSchema().get("t_order").getIndexes().containsKey("t_order_index"));
         assertFalse(getSchema().get("t_order").getIndexes().containsKey("order_id_index"));

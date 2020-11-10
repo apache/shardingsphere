@@ -25,21 +25,21 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Meta data refresh strategy.
+ * ShardingSphere schema refresh strategy.
  *
  * @param <T> type of SQL statement
  */
-public interface MetaDataRefreshStrategy<T extends SQLStatement> {
+public interface SchemaRefreshStrategy<T extends SQLStatement> {
     
     /**
-     * Refresh meta data.
+     * Refresh ShardingSphere schema.
      *
-     * @param schema ShardingSphere schema
+     * @param schema ShardingSphere schema to be refreshed
      * @param databaseType database type
      * @param routeDataSourceNames route dataSource names
      * @param sqlStatement SQL statement
      * @param callback callback
      * @throws SQLException SQL exception
      */
-    void refreshMetaData(ShardingSphereSchema schema, DatabaseType databaseType, Collection<String> routeDataSourceNames, T sqlStatement, TableMetaDataLoaderCallback callback) throws SQLException;
+    void refresh(ShardingSphereSchema schema, DatabaseType databaseType, Collection<String> routeDataSourceNames, T sqlStatement, TableMetaDataLoaderCallback callback) throws SQLException;
 }

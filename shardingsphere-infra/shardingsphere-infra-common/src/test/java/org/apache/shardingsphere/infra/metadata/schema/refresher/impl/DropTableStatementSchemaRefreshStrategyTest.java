@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractMetaDataRefreshStrategyTest;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
@@ -38,68 +38,68 @@ import java.util.Optional;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 
-public final class DropTableStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
+public final class DropTableStatementSchemaRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
     @Test
-    public void refreshDropTableMetaDataForMySQL() throws SQLException {
-        refreshMetaData(new MySQLDropTableStatement());   
+    public void refreshForMySQL() throws SQLException {
+        refresh(new MySQLDropTableStatement());   
     }
     
     @Test
-    public void refreshDropTableMetaDataForOracle() throws SQLException {
-        refreshMetaData(new OracleDropTableStatement());
+    public void refreshForOracle() throws SQLException {
+        refresh(new OracleDropTableStatement());
     }
     
     @Test
-    public void refreshDropTableMetaDataForPostgreSQL() throws SQLException {
-        refreshMetaData(new PostgreSQLDropTableStatement());
+    public void refreshForPostgreSQL() throws SQLException {
+        refresh(new PostgreSQLDropTableStatement());
     }
     
     @Test
-    public void refreshDropTableMetaDataForSQL92() throws SQLException {
-        refreshMetaData(new SQL92DropTableStatement());
+    public void refreshForSQL92() throws SQLException {
+        refresh(new SQL92DropTableStatement());
     }
     
     @Test
-    public void refreshDropTableMetaDataForSQLServer() throws SQLException {
-        refreshMetaData(new SQLServerDropTableStatement());
+    public void refreshForSQLServer() throws SQLException {
+        refresh(new SQLServerDropTableStatement());
     }
     
-    private void refreshMetaData(final DropTableStatement dropTableStatement) throws SQLException {
-        MetaDataRefreshStrategy<DropTableStatement> metaDataRefreshStrategy = new DropTableStatementMetaDataRefreshStrategy();
+    private void refresh(final DropTableStatement dropTableStatement) throws SQLException {
+        SchemaRefreshStrategy<DropTableStatement> metaDataRefreshStrategy = new DropTableStatementSchemaRefreshStrategy();
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        metaDataRefreshStrategy.refreshMetaData(getSchema(), mock(DatabaseType.class), Collections.emptyList(), dropTableStatement, tableName -> Optional.empty());
+        metaDataRefreshStrategy.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), dropTableStatement, tableName -> Optional.empty());
         assertFalse(getSchema().containsTable("t_order"));
     }
     
     @Test
-    public void refreshMetaDataWithUnConfiguredForMySQL() throws SQLException {
-        refreshMetaDataWithUnConfigured(new MySQLDropTableStatement());
+    public void refreshWithUnConfiguredForMySQL() throws SQLException {
+        refreshWithUnConfigured(new MySQLDropTableStatement());
     }
     
     @Test
-    public void refreshMetaDataWithUnConfiguredForOracle() throws SQLException {
-        refreshMetaDataWithUnConfigured(new OracleDropTableStatement());
+    public void refreshWithUnConfiguredForOracle() throws SQLException {
+        refreshWithUnConfigured(new OracleDropTableStatement());
     }
     
     @Test
-    public void refreshMetaDataWithUnConfiguredForPostgreSQL() throws SQLException {
-        refreshMetaDataWithUnConfigured(new PostgreSQLDropTableStatement());
+    public void refreshWithUnConfiguredForPostgreSQL() throws SQLException {
+        refreshWithUnConfigured(new PostgreSQLDropTableStatement());
     }
     
     @Test
-    public void refreshMetaDataWithUnConfiguredForSQL92() throws SQLException {
-        refreshMetaDataWithUnConfigured(new SQL92DropTableStatement());
+    public void refreshWithUnConfiguredForSQL92() throws SQLException {
+        refreshWithUnConfigured(new SQL92DropTableStatement());
     }
     
     @Test
-    public void refreshMetaDataWithUnConfiguredForSQLServer() throws SQLException {
-        refreshMetaDataWithUnConfigured(new SQLServerDropTableStatement());
+    public void refreshWithUnConfiguredForSQLServer() throws SQLException {
+        refreshWithUnConfigured(new SQLServerDropTableStatement());
     }
     
-    private void refreshMetaDataWithUnConfigured(final DropTableStatement dropTableStatement) throws SQLException {
-        MetaDataRefreshStrategy<DropTableStatement> metaDataRefreshStrategy = new DropTableStatementMetaDataRefreshStrategy();
+    private void refreshWithUnConfigured(final DropTableStatement dropTableStatement) throws SQLException {
+        SchemaRefreshStrategy<DropTableStatement> metaDataRefreshStrategy = new DropTableStatementSchemaRefreshStrategy();
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
-        metaDataRefreshStrategy.refreshMetaData(getSchema(), mock(DatabaseType.class), Collections.singletonList("t_order_item"), dropTableStatement, tableName -> Optional.empty());
+        metaDataRefreshStrategy.refresh(getSchema(), mock(DatabaseType.class), Collections.singletonList("t_order_item"), dropTableStatement, tableName -> Optional.empty());
     }
 }

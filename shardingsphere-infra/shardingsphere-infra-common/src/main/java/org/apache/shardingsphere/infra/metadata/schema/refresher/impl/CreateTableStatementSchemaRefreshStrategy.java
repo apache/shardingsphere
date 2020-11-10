@@ -18,27 +18,31 @@
 package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.TableMetaDataLoaderCallback;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 
+import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
- * Create index statement meta data refresh strategy.
+ * ShardingSphere schema refresh strategy for create table statement.
  */
-public final class CreateIndexStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<CreateIndexStatement> {
+public final class CreateTableStatementSchemaRefreshStrategy implements SchemaRefreshStrategy<CreateTableStatement> {
     
     @Override
-    public void refreshMetaData(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
-                                final CreateIndexStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
-        if (null == sqlStatement.getIndex()) {
-            return;
-        }
-        String indexName = sqlStatement.getIndex().getIdentifier().getValue();
+    public void refresh(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
+                        final CreateTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        schema.get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
+        Optional<TableMetaData> tableMetaData = callback.load(tableName);
+        if (tableMetaData.isPresent()) {
+            schema.put(tableName, tableMetaData.get());
+        } else {
+            schema.put(tableName, new TableMetaData());
+        }
+        schema.get(tableName).getAddressingDataSources().addAll(routeDataSourceNames);
     }
 }

@@ -19,20 +19,20 @@ package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.TableMetaDataLoaderCallback;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
 
 import java.util.Collection;
 
 /**
- * Drop view statement meta data refresh strategy.
+ * ShardingSphere schema refresh strategy for drop view statement.
  */
-public final class DropViewStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<DropViewStatement> {
+public final class DropViewStatementSchemaRefreshStrategy implements SchemaRefreshStrategy<DropViewStatement> {
     
     @Override
-    public void refreshMetaData(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
-                                final DropViewStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
+    public void refresh(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
+                        final DropViewStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
         sqlStatement.getViews().forEach(each -> schema.remove(each.getTableName().getIdentifier().getValue()));
     }
 

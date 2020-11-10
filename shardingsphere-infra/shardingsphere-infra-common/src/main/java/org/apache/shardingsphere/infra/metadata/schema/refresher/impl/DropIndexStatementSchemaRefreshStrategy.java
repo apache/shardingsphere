@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.TableMetaDataLoaderCallback;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
@@ -32,13 +32,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Drop index statement meta data refresh strategy.
+ * ShardingSphere schema refresh strategy for drop index statement.
  */
-public final class DropIndexStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<DropIndexStatement> {
+public final class DropIndexStatementSchemaRefreshStrategy implements SchemaRefreshStrategy<DropIndexStatement> {
     
     @Override
-    public void refreshMetaData(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
-                                final DropIndexStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
+    public void refresh(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
+                        final DropIndexStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
         Collection<String> indexNames = getIndexNames(sqlStatement);
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(sqlStatement);
         String tableName = simpleTableSegment.map(tableSegment -> tableSegment.getTableName().getIdentifier().getValue()).orElse("");

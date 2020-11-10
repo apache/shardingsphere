@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractMetaDataRefreshStrategyTest;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -39,60 +39,60 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class CreateIndexStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
+public final class CreateIndexStatementSchemaRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
     @Test
-    public void refreshMetaDataForMySQL() throws SQLException {
-        refreshMetaData(new MySQLCreateIndexStatement());
+    public void refreshForMySQL() throws SQLException {
+        refresh(new MySQLCreateIndexStatement());
     }
     
     @Test
-    public void refreshMetaDataForOracle() throws SQLException {
-        refreshMetaData(new OracleCreateIndexStatement());
+    public void refreshForOracle() throws SQLException {
+        refresh(new OracleCreateIndexStatement());
     }
     
     @Test
-    public void refreshMetaDataForPostgreSQL() throws SQLException {
-        refreshMetaData(new PostgreSQLCreateIndexStatement());
+    public void refreshForPostgreSQL() throws SQLException {
+        refresh(new PostgreSQLCreateIndexStatement());
     }
     
     @Test
-    public void refreshMetaDataForSQLServer() throws SQLException {
-        refreshMetaData(new SQLServerCreateIndexStatement());
+    public void refreshForSQLServer() throws SQLException {
+        refresh(new SQLServerCreateIndexStatement());
     }
     
-    private void refreshMetaData(final CreateIndexStatement createIndexStatement) throws SQLException {
-        MetaDataRefreshStrategy<CreateIndexStatement> metaDataRefreshStrategy = new CreateIndexStatementMetaDataRefreshStrategy();
+    private void refresh(final CreateIndexStatement createIndexStatement) throws SQLException {
+        SchemaRefreshStrategy<CreateIndexStatement> schemaRefreshStrategy = new CreateIndexStatementSchemaRefreshStrategy();
         createIndexStatement.setIndex(new IndexSegment(1, 2, new IdentifierValue("t_order_index")));
         createIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        metaDataRefreshStrategy.refreshMetaData(getSchema(), mock(DatabaseType.class), Collections.emptyList(), createIndexStatement, tableName -> Optional.empty());
+        schemaRefreshStrategy.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), createIndexStatement, tableName -> Optional.empty());
         assertTrue(getSchema().get("t_order").getIndexes().containsKey("t_order_index"));
     }
     
     @Test
-    public void refreshMetaDataIfIndexIsNullForMySQL() throws SQLException {
-        refreshMetaDataIfIndexIsNull(new MySQLCreateIndexStatement());
+    public void refreshIfIndexIsNullForMySQL() throws SQLException {
+        refreshIfIndexIsNull(new MySQLCreateIndexStatement());
     }
     
     @Test
-    public void refreshMetaDataIfIndexIsNullForOracle() throws SQLException {
-        refreshMetaDataIfIndexIsNull(new OracleCreateIndexStatement());
+    public void refreshIfIndexIsNullForOracle() throws SQLException {
+        refreshIfIndexIsNull(new OracleCreateIndexStatement());
     }
     
     @Test
-    public void refreshMetaDataIfIndexIsNullForPostgreSQL() throws SQLException {
-        refreshMetaDataIfIndexIsNull(new PostgreSQLCreateIndexStatement());
+    public void refreshIfIndexIsNullForPostgreSQL() throws SQLException {
+        refreshIfIndexIsNull(new PostgreSQLCreateIndexStatement());
     }
     
     @Test
-    public void refreshMetaDataIfIndexIsNullForSQLServer() throws SQLException {
-        refreshMetaDataIfIndexIsNull(new SQLServerCreateIndexStatement());
+    public void refreshIfIndexIsNullForSQLServer() throws SQLException {
+        refreshIfIndexIsNull(new SQLServerCreateIndexStatement());
     }
     
-    private void refreshMetaDataIfIndexIsNull(final CreateIndexStatement createIndexStatement) throws SQLException {
-        MetaDataRefreshStrategy<CreateIndexStatement> metaDataRefreshStrategy = new CreateIndexStatementMetaDataRefreshStrategy();
+    private void refreshIfIndexIsNull(final CreateIndexStatement createIndexStatement) throws SQLException {
+        SchemaRefreshStrategy<CreateIndexStatement> schemaRefreshStrategy = new CreateIndexStatementSchemaRefreshStrategy();
         createIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        metaDataRefreshStrategy.refreshMetaData(getSchema(), mock(DatabaseType.class), Collections.emptyList(), createIndexStatement, tableName -> Optional.empty());
+        schemaRefreshStrategy.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), createIndexStatement, tableName -> Optional.empty());
         assertFalse(getSchema().get("t_order").getIndexes().containsKey("t_order_index"));
     }
 }

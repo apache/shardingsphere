@@ -19,25 +19,23 @@ package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefreshStrategy;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.TableMetaDataLoaderCallback;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 
-import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Alter table statement meta data refresh strategy.
+ * ShardingSphere schema refresh strategy for create view statement.
  */
-public final class AlterTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<AlterTableStatement> {
+public final class CreateViewStatementSchemaRefreshStrategy implements SchemaRefreshStrategy<CreateViewStatement> {
     
     @Override
-    public void refreshMetaData(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
-                                final AlterTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
-        String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        if (null != schema && schema.containsTable(tableName)) {
-            callback.load(tableName).ifPresent(tableMetaData -> schema.put(tableName, tableMetaData));
-        }
+    public void refresh(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
+                        final CreateViewStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
+        String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
+        schema.put(viewName, new TableMetaData());
+        schema.get(viewName).getAddressingDataSources().addAll(routeDataSourceNames);
     }
-
 }
