@@ -23,8 +23,8 @@ import org.apache.shardingsphere.governance.core.event.model.datasource.DataSour
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaPersistEvent;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchemaMetaData;
-import org.apache.shardingsphere.governance.core.yaml.swapper.LogicSchemaMetaDataYamlSwapper;
+import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchema;
+import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
@@ -499,7 +499,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertPersistSchema() {
-        ShardingSphereSchema schema = new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlSchemaMetaData.class));
+        ShardingSphereSchema schema = new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlSchema.class));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.persistSchema("sharding_db", schema);
         verify(configurationRepository).persist(eq("/schemas/sharding_db/table"), anyString());
@@ -523,7 +523,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertRenewSchemaPersistEvent() {
-        SchemaPersistEvent event = new SchemaPersistEvent("sharding_db", new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlSchemaMetaData.class)));
+        SchemaPersistEvent event = new SchemaPersistEvent("sharding_db", new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlSchema.class)));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
         verify(configurationRepository).persist(eq("/schemas/sharding_db/table"), anyString());

@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 import java.util.Map;
 
 /**
- * Schema meta data configuration for YAML.
+ * ShardingSphere schema for YAML.
  */
 @Getter
 @Setter
-public final class YamlSchemaMetaData implements YamlConfiguration {
+public final class YamlSchema implements YamlConfiguration {
     
     private Map<String, YamlTableMetaData> tables;
 }

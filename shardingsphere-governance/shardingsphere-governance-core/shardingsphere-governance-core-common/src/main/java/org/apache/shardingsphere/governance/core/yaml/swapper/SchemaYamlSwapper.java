@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.yaml.swapper;
 
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlColumnMetaData;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlIndexMetaData;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchemaMetaData;
+import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlTableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -36,25 +36,25 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Logic schema meta data configuration YAML swapper.
+ * ShardingSphere schema YAML swapper.
  */
-public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlSchemaMetaData, ShardingSphereSchema> {
+public final class SchemaYamlSwapper implements YamlSwapper<YamlSchema, ShardingSphereSchema> {
     
     @Override
-    public YamlSchemaMetaData swapToYamlConfiguration(final ShardingSphereSchema schema) {
+    public YamlSchema swapToYamlConfiguration(final ShardingSphereSchema schema) {
         Map<String, YamlTableMetaData> tables = schema.getAllTableNames().stream()
                 .collect(Collectors.toMap(each -> each, each -> convertYamlTable(schema.get(each)), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        YamlSchemaMetaData result = new YamlSchemaMetaData();
+        YamlSchema result = new YamlSchema();
         result.setTables(tables);
         return result;
     }
     
     @Override
-    public ShardingSphereSchema swapToObject(final YamlSchemaMetaData yamlConfig) {
+    public ShardingSphereSchema swapToObject(final YamlSchema yamlConfig) {
         return Optional.ofNullable(yamlConfig).map(this::convertSchema).orElse(new ShardingSphereSchema());
     }
     
-    private ShardingSphereSchema convertSchema(final YamlSchemaMetaData schema) {
+    private ShardingSphereSchema convertSchema(final YamlSchema schema) {
         return new ShardingSphereSchema(schema.getTables().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> convertTable(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
@@ -78,7 +78,7 @@ public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlSch
     private ColumnMetaData convertColumn(final YamlColumnMetaData column) {
         return new ColumnMetaData(column.getName(), column.getDataType(), column.getDataTypeName(), column.isPrimaryKey(), column.isGenerated(), column.isCaseSensitive());
     }
-
+    
     private YamlTableMetaData convertYamlTable(final TableMetaData table) {
         YamlTableMetaData result = new YamlTableMetaData();
         result.setColumns(convertYamlColumns(table.getColumns()));

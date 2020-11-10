@@ -31,9 +31,9 @@ import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePe
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaPersistEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchemaMetaData;
+import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
-import org.apache.shardingsphere.governance.core.yaml.swapper.LogicSchemaMetaDataYamlSwapper;
+import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
@@ -341,7 +341,7 @@ public final class ConfigCenter {
      * @param schema ShardingSphere schema
      */
     public void persistSchema(final String schemaName, final ShardingSphereSchema schema) {
-        repository.persist(node.getTablePath(schemaName), YamlEngine.marshal(new LogicSchemaMetaDataYamlSwapper().swapToYamlConfiguration(schema)));
+        repository.persist(node.getTablePath(schemaName), YamlEngine.marshal(new SchemaYamlSwapper().swapToYamlConfiguration(schema)));
     }
     
     /**
@@ -355,7 +355,7 @@ public final class ConfigCenter {
         if (Strings.isNullOrEmpty(path)) {
             return Optional.empty();
         }
-        return Optional.of(new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(path, YamlSchemaMetaData.class)));
+        return Optional.of(new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(path, YamlSchema.class)));
     }
     
     /**

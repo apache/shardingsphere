@@ -29,9 +29,9 @@ import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDe
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchemaMetaData;
+import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
-import org.apache.shardingsphere.governance.core.yaml.swapper.LogicSchemaMetaDataYamlSwapper;
+import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
@@ -141,6 +141,6 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     }
     
     private GovernanceEvent createSchemaChangedEvent(final String schemaName, final DataChangedEvent event) {
-        return new SchemaChangedEvent(schemaName, new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlSchemaMetaData.class)));
+        return new SchemaChangedEvent(schemaName, new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlSchema.class)));
     }
 }

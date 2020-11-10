@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.yaml.swapper;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchemaMetaData;
+import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
@@ -34,24 +34,24 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public final class LogicSchemaMetaDataYamlSwapperTest {
+public final class SchemaYamlSwapperTest {
     
     private static final String YAML = "yaml/schema.yaml";
     
     @Test
-    public void assertSwapToYamlSchemaMetaData() {
-        ShardingSphereSchema schema = new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(YAML), YamlSchemaMetaData.class));
-        YamlSchemaMetaData yamlSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToYamlConfiguration(schema);
-        assertNotNull(yamlSchemaMetaData);
-        assertThat(yamlSchemaMetaData.getTables().keySet(), is(Collections.singleton("t_order")));
-        assertThat(yamlSchemaMetaData.getTables().get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
-        assertThat(yamlSchemaMetaData.getTables().get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
+    public void assertSwapToYamlSchema() {
+        ShardingSphereSchema schema = new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(YAML), YamlSchema.class));
+        YamlSchema yamlSchema = new SchemaYamlSwapper().swapToYamlConfiguration(schema);
+        assertNotNull(yamlSchema);
+        assertThat(yamlSchema.getTables().keySet(), is(Collections.singleton("t_order")));
+        assertThat(yamlSchema.getTables().get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
+        assertThat(yamlSchema.getTables().get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
     }
     
     @Test
     public void assertSwapToShardingSphereSchema() {
-        YamlSchemaMetaData yamlSchemaMetaData = YamlEngine.unmarshal(readYAML(YAML), YamlSchemaMetaData.class);
-        ShardingSphereSchema schema = new LogicSchemaMetaDataYamlSwapper().swapToObject(yamlSchemaMetaData);
+        YamlSchema yamlSchema = YamlEngine.unmarshal(readYAML(YAML), YamlSchema.class);
+        ShardingSphereSchema schema = new SchemaYamlSwapper().swapToObject(yamlSchema);
         assertThat(schema.getAllTableNames(), is(Collections.singleton("t_order")));
         assertThat(schema.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
         assertThat(schema.getAllColumnNames("t_order").size(), is(1));
