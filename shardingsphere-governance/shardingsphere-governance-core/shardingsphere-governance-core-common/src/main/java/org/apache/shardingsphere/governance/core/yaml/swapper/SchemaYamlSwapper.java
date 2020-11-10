@@ -60,7 +60,9 @@ public final class SchemaYamlSwapper implements YamlSwapper<YamlSchema, Sharding
     }
     
     private TableMetaData convertTable(final YamlTableMetaData table) {
-        return new TableMetaData(convertColumns(table.getColumns()), convertIndexes(table.getIndexes()));
+        TableMetaData result = new TableMetaData(convertColumns(table.getColumns()), convertIndexes(table.getIndexes()));
+        result.getAddressingDataSources().addAll(table.getAddressingDataSources());
+        return result;
     }
     
     private Collection<IndexMetaData> convertIndexes(final Map<String, YamlIndexMetaData> indexes) {
@@ -83,6 +85,7 @@ public final class SchemaYamlSwapper implements YamlSwapper<YamlSchema, Sharding
         YamlTableMetaData result = new YamlTableMetaData();
         result.setColumns(convertYamlColumns(table.getColumns()));
         result.setIndexes(convertYamlIndexes(table.getIndexes()));
+        result.setAddressingDataSources(table.getAddressingDataSources());
         return result;
     }
     
