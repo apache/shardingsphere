@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.builder.addressing.TableAddressingMapperDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.addressing.TableAddressingMapperLoader;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -73,7 +73,7 @@ public final class SchemaBuilder {
     
     private static void setTableAddressingMapper(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
                                                  final Collection<ShardingSphereRule> rules, final ShardingSphereSchema schema) throws SQLException {
-        for (Entry<String, Collection<String>> entry : TableAddressingMapperDataLoader.load(databaseType, dataSourceMap, rules).entrySet()) {
+        for (Entry<String, Collection<String>> entry : TableAddressingMapperLoader.load(databaseType, dataSourceMap, rules).entrySet()) {
             String tableName = entry.getKey();
             if (!schema.containsTable(tableName)) {
                 schema.put(tableName, new TableMetaData());
