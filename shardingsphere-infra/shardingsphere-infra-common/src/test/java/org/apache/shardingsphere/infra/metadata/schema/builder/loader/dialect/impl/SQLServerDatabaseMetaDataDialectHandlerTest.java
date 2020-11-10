@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.physical.dialect.impl;
+package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.impl;
 
-import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.builder.physical.dialect.AbstractDatabaseMetaDataDialectHandlerTest;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.AbstractDatabaseMetaDataDialectHandlerTest;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -28,26 +30,31 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
-public final class OracleDatabaseMetaDataDialectHandlerTest extends AbstractDatabaseMetaDataDialectHandlerTest {
+public final class SQLServerDatabaseMetaDataDialectHandlerTest extends AbstractDatabaseMetaDataDialectHandlerTest {
+    
+    private DatabaseType sqlServerDatabaseType;
+    
+    @Before
+    public void setUp() {
+        sqlServerDatabaseType = new SQLServerDatabaseType();
+    }
     
     @Test
     public void assertGetSchema() throws SQLException {
-        when(getConnection().getSchema()).thenReturn(USER_NAME);
-        when(getConnection().getMetaData()).thenReturn(getDatabaseMetaData());
-        String oracleSchema = getSchema(new OracleDatabaseType());
-        assertThat(oracleSchema, is(USER_NAME));
+        when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
+        String actualSQLServerSchema = getSchema(sqlServerDatabaseType);
+        assertThat(actualSQLServerSchema, is(DATABASE_NAME));
     }
     
     @Test
     public void assertFormatTableNamePattern() {
-        String oracleTableNamePattern = formatTableNamePattern(new OracleDatabaseType());
-        assertThat(oracleTableNamePattern, is(TABLE_NAME_PATTERN.toUpperCase()));
+        assertThat(formatTableNamePattern(sqlServerDatabaseType), is(TABLE_NAME_PATTERN));
     }
     
     @Test
     public void assertGetQuoteCharacter() {
-        QuoteCharacter oracleQuoteCharacter = getQuoteCharacter(new OracleDatabaseType());
-        assertThat(oracleQuoteCharacter.getStartDelimiter(), is("\""));
-        assertThat(oracleQuoteCharacter.getEndDelimiter(), is("\""));
+        QuoteCharacter actualSQLServerQuoteCharacter = getQuoteCharacter(sqlServerDatabaseType);
+        assertThat(actualSQLServerQuoteCharacter.getStartDelimiter(), is("["));
+        assertThat(actualSQLServerQuoteCharacter.getEndDelimiter(), is("]"));
     }
 }

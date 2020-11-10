@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.physical.dialect.impl;
+package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.impl;
 
-import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.builder.physical.dialect.AbstractDatabaseMetaDataDialectHandlerTest;
+import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.AbstractDatabaseMetaDataDialectHandlerTest;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
@@ -28,25 +28,26 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
-public final class MariaDBDatabaseMetaDataDialectHandlerTest extends AbstractDatabaseMetaDataDialectHandlerTest {
+public final class OracleDatabaseMetaDataDialectHandlerTest extends AbstractDatabaseMetaDataDialectHandlerTest {
     
     @Test
     public void assertGetSchema() throws SQLException {
-        when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
-        String mariadbSchema = getSchema(new MariaDBDatabaseType());
-        assertThat(mariadbSchema, is(DATABASE_NAME));
+        when(getConnection().getSchema()).thenReturn(USER_NAME);
+        when(getConnection().getMetaData()).thenReturn(getDatabaseMetaData());
+        String oracleSchema = getSchema(new OracleDatabaseType());
+        assertThat(oracleSchema, is(USER_NAME));
     }
     
     @Test
     public void assertFormatTableNamePattern() {
-        String mariadbTableNamePattern = formatTableNamePattern(new MariaDBDatabaseType());
-        assertThat(mariadbTableNamePattern, is(TABLE_NAME_PATTERN));
+        String oracleTableNamePattern = formatTableNamePattern(new OracleDatabaseType());
+        assertThat(oracleTableNamePattern, is(TABLE_NAME_PATTERN.toUpperCase()));
     }
     
     @Test
     public void assertGetQuoteCharacter() {
-        QuoteCharacter mariadbQuoteCharacter = getQuoteCharacter(new MariaDBDatabaseType());
-        assertThat(mariadbQuoteCharacter.getStartDelimiter(), is("`"));
-        assertThat(mariadbQuoteCharacter.getEndDelimiter(), is("`"));
+        QuoteCharacter oracleQuoteCharacter = getQuoteCharacter(new OracleDatabaseType());
+        assertThat(oracleQuoteCharacter.getStartDelimiter(), is("\""));
+        assertThat(oracleQuoteCharacter.getEndDelimiter(), is("\""));
     }
 }

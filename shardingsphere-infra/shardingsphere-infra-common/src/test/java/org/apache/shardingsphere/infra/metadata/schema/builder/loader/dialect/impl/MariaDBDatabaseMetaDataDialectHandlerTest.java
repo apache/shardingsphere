@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.physical.dialect.impl;
+package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.impl;
 
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.builder.physical.dialect.AbstractDatabaseMetaDataDialectHandlerTest;
+import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.AbstractDatabaseMetaDataDialectHandlerTest;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
@@ -28,25 +28,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLDatabaseMetaDataDialectHandlerTest extends AbstractDatabaseMetaDataDialectHandlerTest {
+public final class MariaDBDatabaseMetaDataDialectHandlerTest extends AbstractDatabaseMetaDataDialectHandlerTest {
     
     @Test
     public void assertGetSchema() throws SQLException {
         when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
-        String postgresqlSchema = getSchema(new PostgreSQLDatabaseType());
-        assertThat(postgresqlSchema, is(DATABASE_NAME));
+        String mariadbSchema = getSchema(new MariaDBDatabaseType());
+        assertThat(mariadbSchema, is(DATABASE_NAME));
     }
     
     @Test
     public void assertFormatTableNamePattern() {
-        String postgresqlTableNamePattern = formatTableNamePattern(new PostgreSQLDatabaseType());
-        assertThat(postgresqlTableNamePattern, is(TABLE_NAME_PATTERN));
+        String mariadbTableNamePattern = formatTableNamePattern(new MariaDBDatabaseType());
+        assertThat(mariadbTableNamePattern, is(TABLE_NAME_PATTERN));
     }
     
     @Test
     public void assertGetQuoteCharacter() {
-        QuoteCharacter postgresqlQuoteCharacter = getQuoteCharacter(new PostgreSQLDatabaseType());
-        assertThat(postgresqlQuoteCharacter.getStartDelimiter(), is("\""));
-        assertThat(postgresqlQuoteCharacter.getEndDelimiter(), is("\""));
+        QuoteCharacter mariadbQuoteCharacter = getQuoteCharacter(new MariaDBDatabaseType());
+        assertThat(mariadbQuoteCharacter.getStartDelimiter(), is("`"));
+        assertThat(mariadbQuoteCharacter.getEndDelimiter(), is("`"));
     }
 }

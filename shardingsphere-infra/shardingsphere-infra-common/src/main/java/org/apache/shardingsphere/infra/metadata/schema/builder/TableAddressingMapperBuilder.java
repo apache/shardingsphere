@@ -47,15 +47,13 @@ public final class TableAddressingMapperBuilder {
     /**
      * Build table addressing mapper with related data sources.
      *
-     * @param databaseType database type
-     * @param dataSourceMap data source map
-     * @param rules ShardingSphere rules
+     * @param materials schema builder materials
      * @return table addressing mapper with related data sources
      * @throws SQLException SQL exception
      */
-    public static Map<String, Collection<String>> build(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
-        Map<String, Collection<String>> result = load(databaseType, dataSourceMap);
-        decorate(rules, result);
+    public static Map<String, Collection<String>> build(final SchemaBuilderMaterials materials) throws SQLException {
+        Map<String, Collection<String>> result = load(materials.getDatabaseType(), materials.getDataSourceMap());
+        decorate(materials.getRules(), result);
         return result;
     }
     
