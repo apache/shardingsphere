@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.metadata.ShardingMetaDataLoader
+org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataBuilder

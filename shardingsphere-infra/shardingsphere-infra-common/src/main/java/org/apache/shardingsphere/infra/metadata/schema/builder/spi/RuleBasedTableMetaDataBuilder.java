@@ -30,11 +30,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * ShardingSphere meta data loader.
+ * Table meta data builder with related rule.
  * 
- * @param <T> type of base rule
+ * @param <T> type of ShardingSphere rule
  */
-public interface ShardingSphereMetaDataLoader<T extends TableContainedRule> extends OrderedSPI<T> {
+public interface RuleBasedTableMetaDataBuilder<T extends TableContainedRule> extends OrderedSPI<T> {
     
     /**
      * Load table meta data.
@@ -43,9 +43,9 @@ public interface ShardingSphereMetaDataLoader<T extends TableContainedRule> exte
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @param dataNodes data nodes
-     * @param rule rule
+     * @param rule ShardingSphere rule
      * @param props configuration properties
-     * @return meta data
+     * @return table meta data
      * @throws SQLException SQL exception
      */
     Optional<TableMetaData> load(String tableName, DatabaseType databaseType, Map<String, DataSource> dataSourceMap, DataNodes dataNodes, T rule, ConfigurationProperties props) throws SQLException;
@@ -54,8 +54,8 @@ public interface ShardingSphereMetaDataLoader<T extends TableContainedRule> exte
      * Decorate table meta data.
      *
      * @param tableName table name
-     * @param tableMetaData table meta data
-     * @param rule rule
+     * @param tableMetaData table meta data to be decorated
+     * @param rule ShardingSphere rule
      * @return decorated table meta data
      */
     TableMetaData decorate(String tableName, TableMetaData tableMetaData, T rule);

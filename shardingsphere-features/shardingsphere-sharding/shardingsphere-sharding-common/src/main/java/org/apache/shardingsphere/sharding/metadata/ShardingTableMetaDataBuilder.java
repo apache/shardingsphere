@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.builder.physical.PhysicalTableMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.ShardingSphereMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -53,9 +53,9 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 /**
- * Meta data loader for sharding.
+ * Table meta data builder for sharding.
  */
-public final class ShardingMetaDataLoader implements ShardingSphereMetaDataLoader<ShardingRule> {
+public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDataBuilder<ShardingRule> {
     
     private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
     

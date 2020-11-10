@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.builder.physical.PhysicalTableMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.ShardingSphereMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
@@ -35,9 +35,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Meta data loader for encrypt.
+ * Table meta data builder for encrypt.
  */
-public final class EncryptMetaDataLoader implements ShardingSphereMetaDataLoader<EncryptRule> {
+public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaDataBuilder<EncryptRule> {
     
     @Override
     public Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes,
