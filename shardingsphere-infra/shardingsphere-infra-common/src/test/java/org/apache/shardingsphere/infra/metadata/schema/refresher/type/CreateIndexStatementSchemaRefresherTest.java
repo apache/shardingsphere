@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -32,10 +33,10 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class CreateIndexStatementSchemaRefresherTest {
     
@@ -64,7 +65,7 @@ public final class CreateIndexStatementSchemaRefresherTest {
         SchemaRefresher<CreateIndexStatement> schemaRefresher = new CreateIndexStatementSchemaRefresher();
         createIndexStatement.setIndex(new IndexSegment(1, 2, new IdentifierValue("t_order_index")));
         createIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        schemaRefresher.refresh(schema, Collections.emptyList(), createIndexStatement, tableName -> Optional.empty());
+        schemaRefresher.refresh(schema, Collections.emptyList(), createIndexStatement, mock(SchemaBuilderMaterials.class));
         assertTrue(schema.get("t_order").getIndexes().containsKey("t_order_index"));
     }
     
@@ -92,7 +93,7 @@ public final class CreateIndexStatementSchemaRefresherTest {
         ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
         SchemaRefresher<CreateIndexStatement> schemaRefresher = new CreateIndexStatementSchemaRefresher();
         createIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        schemaRefresher.refresh(schema, Collections.emptyList(), createIndexStatement, tableName -> Optional.empty());
+        schemaRefresher.refresh(schema, Collections.emptyList(), createIndexStatement, mock(SchemaBuilderMaterials.class));
         assertFalse(schema.get("t_order").getIndexes().containsKey("t_order_index"));
     }
 }
