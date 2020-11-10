@@ -15,28 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config.metadata;
+package org.apache.shardingsphere.governance.core.yaml.config.schema;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
 /**
- * Column meta data configuration for YAML.
+ * Index meta data for YAML.
  */
 @Getter
 @Setter
-public final class YamlColumnMetaData implements YamlConfiguration {
-
-    private String name;
-
-    private int dataType;
-
-    private String dataTypeName;
-
-    private boolean primaryKey;
-
-    private boolean generated;
+public final class YamlIndexMetaData implements YamlConfiguration {
     
-    private boolean caseSensitive;
+    private String name;
 }

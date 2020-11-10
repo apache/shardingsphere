@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.governance.core.yaml.swapper;
 
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlColumnMetaData;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlIndexMetaData;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlLogicSchemaMetaData;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchemaMetaData;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlTableMetaData;
+import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlColumnMetaData;
+import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlIndexMetaData;
+import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
+import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
@@ -37,23 +36,25 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Logic schema meta data configuration YAML swapper.
+ * ShardingSphere schema YAML swapper.
  */
-public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlLogicSchemaMetaData, ShardingSphereSchema> {
-
+public final class SchemaYamlSwapper implements YamlSwapper<YamlSchema, ShardingSphereSchema> {
+    
     @Override
-    public YamlLogicSchemaMetaData swapToYamlConfiguration(final ShardingSphereSchema schema) {
-        YamlLogicSchemaMetaData result = new YamlLogicSchemaMetaData();
-        result.setConfiguredSchemaMetaData(convertYamlSchema(schema));
+    public YamlSchema swapToYamlConfiguration(final ShardingSphereSchema schema) {
+        Map<String, YamlTableMetaData> tables = schema.getAllTableNames().stream()
+                .collect(Collectors.toMap(each -> each, each -> convertYamlTable(schema.get(each)), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        YamlSchema result = new YamlSchema();
+        result.setTables(tables);
         return result;
     }
     
     @Override
-    public ShardingSphereSchema swapToObject(final YamlLogicSchemaMetaData yamlConfig) {
-        return Optional.ofNullable(yamlConfig.getConfiguredSchemaMetaData()).map(this::convertSchema).orElse(new ShardingSphereSchema());
+    public ShardingSphereSchema swapToObject(final YamlSchema yamlConfig) {
+        return Optional.ofNullable(yamlConfig).map(this::convertSchema).orElse(new ShardingSphereSchema());
     }
     
-    private ShardingSphereSchema convertSchema(final YamlSchemaMetaData schema) {
+    private ShardingSphereSchema convertSchema(final YamlSchema schema) {
         return new ShardingSphereSchema(schema.getTables().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> convertTable(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
@@ -61,29 +62,21 @@ public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlLog
     private TableMetaData convertTable(final YamlTableMetaData table) {
         return new TableMetaData(convertColumns(table.getColumns()), convertIndexes(table.getIndexes()));
     }
-
+    
     private Collection<IndexMetaData> convertIndexes(final Map<String, YamlIndexMetaData> indexes) {
         return null == indexes ? Collections.emptyList() : indexes.values().stream().map(this::convertIndex).collect(Collectors.toList());
     }
-
+    
     private IndexMetaData convertIndex(final YamlIndexMetaData index) {
         return new IndexMetaData(index.getName());
     }
-
+    
     private Collection<ColumnMetaData> convertColumns(final Map<String, YamlColumnMetaData> indexes) {
         return null == indexes ? Collections.emptyList() : indexes.values().stream().map(this::convertColumn).collect(Collectors.toList());
     }
-
+    
     private ColumnMetaData convertColumn(final YamlColumnMetaData column) {
         return new ColumnMetaData(column.getName(), column.getDataType(), column.getDataTypeName(), column.isPrimaryKey(), column.isGenerated(), column.isCaseSensitive());
-    }
-    
-    private YamlSchemaMetaData convertYamlSchema(final ShardingSphereSchema schema) {
-        Map<String, YamlTableMetaData> tables = schema.getAllTableNames().stream()
-                .collect(Collectors.toMap(each -> each, each -> convertYamlTable(schema.get(each)), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        YamlSchemaMetaData result = new YamlSchemaMetaData();
-        result.setTables(tables);
-        return result;
     }
     
     private YamlTableMetaData convertYamlTable(final TableMetaData table) {
@@ -92,7 +85,7 @@ public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlLog
         result.setIndexes(convertYamlIndexes(table.getIndexes()));
         return result;
     }
-
+    
     private Map<String, YamlIndexMetaData> convertYamlIndexes(final Map<String, IndexMetaData> indexes) {
         return indexes.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertYamlIndex(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
