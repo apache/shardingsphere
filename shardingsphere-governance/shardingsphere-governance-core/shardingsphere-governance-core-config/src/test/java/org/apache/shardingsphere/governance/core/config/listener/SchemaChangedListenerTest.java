@@ -64,7 +64,7 @@ public final class SchemaChangedListenerTest {
     
     private static final String ENCRYPT_RULE_FILE = "yaml/encrypt-rule.yaml";
     
-    private static final String META_DATA_FILE = "yaml/metadata.yaml";
+    private static final String META_DATA_FILE = "yaml/schema.yaml";
     
     private SchemaChangedListener schemaChangedListener;
     
