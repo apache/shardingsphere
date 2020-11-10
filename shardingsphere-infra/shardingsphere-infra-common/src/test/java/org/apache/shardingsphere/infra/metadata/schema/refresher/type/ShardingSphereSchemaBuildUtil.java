@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresh.spi;
+package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
+import com.google.common.collect.ImmutableMap;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
-/**
- * ShardingSphere schema changed notifier.
- */
-public interface SchemaChangedNotifier extends OrderedSPI<ShardingSphereSchema> {
+import java.util.Collections;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingSphereSchemaBuildUtil {
     
     /**
-     * Notify when ShardingSphere schema changed.
+     * Build schema.
      * 
-     * @param name schema name
-     * @param schema ShardingSphere schema
+     * @return ShardingSphere schema
      */
-    void notify(String name, ShardingSphereSchema schema);
+    public static ShardingSphereSchema buildSchema() {
+        return new ShardingSphereSchema(ImmutableMap.of("t_order", new TableMetaData(
+                Collections.singletonList(new ColumnMetaData("order_id", 1, "String", false, false, false)), Collections.singletonList(new IndexMetaData("index")))));
+    }
 }

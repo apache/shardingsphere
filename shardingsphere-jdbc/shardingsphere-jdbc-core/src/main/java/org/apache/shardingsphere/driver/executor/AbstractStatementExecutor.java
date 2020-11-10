@@ -30,9 +30,9 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLE
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategyFactory;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.spi.SchemaChangedNotifier;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresherFactory;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.spi.SchemaChangedNotifier;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
@@ -80,10 +80,10 @@ public abstract class AbstractStatementExecutor {
         if (null == sqlStatement) {
             return;
         }
-        Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatement);
-        if (refreshStrategy.isPresent()) {
+        Optional<SchemaRefresher> schemaRefresher = SchemaRefresherFactory.newInstance(sqlStatement);
+        if (schemaRefresher.isPresent()) {
             Collection<String> routeDataSourceNames = routeUnits.stream().map(RouteUnit::getDataSourceMapper).map(RouteMapper::getLogicName).collect(Collectors.toList());
-            refreshStrategy.get().refreshMetaData(metaData.getSchema(), metaDataContexts.getDatabaseType(), routeDataSourceNames, sqlStatement, 
+            schemaRefresher.get().refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, 
                 tableName -> TableMetaDataBuilder.build(tableName, metaDataContexts.getDatabaseType(), dataSourceMap, metaData.getRuleMetaData().getRules(), metaDataContexts.getProps()));
             notifyPersistSchema(DefaultSchema.LOGIC_NAME, metaData.getSchema());
         }

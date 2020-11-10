@@ -33,8 +33,8 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategyFactory;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresherFactory;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
@@ -102,10 +102,9 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (null == sqlStatement) {
             return;
         }
-        Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatement);
-        if (refreshStrategy.isPresent()) {
-            refreshStrategy.get().refreshMetaData(
-                    metaData.getSchema(), ProxyContext.getInstance().getMetaDataContexts().getDatabaseType(), routeDataSourceNames, sqlStatement, this::buildTableMetaData);
+        Optional<SchemaRefresher> schemaRefresher = SchemaRefresherFactory.newInstance(sqlStatement);
+        if (schemaRefresher.isPresent()) {
+            schemaRefresher.get().refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, this::buildTableMetaData);
             GovernanceEventBus.getInstance().post(new SchemaPersistEvent(metaData.getName(), metaData.getSchema()));
         }
     }

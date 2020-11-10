@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresh.impl;
+package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.AbstractMetaDataRefreshStrategyTest;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
@@ -32,23 +30,21 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.mockito.Mockito.mock;
-
-public final class DropViewStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
+public final class DropViewStatementSchemaRefresherTest {
     
     @Test
-    public void refreshMetaDataWithUnConfiguredForMySQL() throws SQLException {
-        refreshMetaDataWithUnConfigured(new MySQLDropViewStatement());
+    public void refreshWithUnConfiguredForMySQL() throws SQLException {
+        refreshWithUnConfigured(new MySQLDropViewStatement());
     }
     
     @Test
-    public void refreshMetaDataWithUnConfiguredForPostgreSQL() throws SQLException {
-        refreshMetaDataWithUnConfigured(new PostgreSQLDropViewStatement());
+    public void refreshWithUnConfiguredForPostgreSQL() throws SQLException {
+        refreshWithUnConfigured(new PostgreSQLDropViewStatement());
     }
     
-    private void refreshMetaDataWithUnConfigured(final DropViewStatement dropViewStatement) throws SQLException {
-        MetaDataRefreshStrategy<DropViewStatement> metaDataRefreshStrategy = new DropViewStatementMetaDataRefreshStrategy();
+    private void refreshWithUnConfigured(final DropViewStatement dropViewStatement) throws SQLException {
+        SchemaRefresher<DropViewStatement> schemaRefresher = new DropViewStatementSchemaRefresher();
         dropViewStatement.getViews().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
-        metaDataRefreshStrategy.refreshMetaData(getSchema(), mock(DatabaseType.class), Collections.singletonList("t_order_item"), dropViewStatement, tableName -> Optional.empty());
+        schemaRefresher.refresh(ShardingSphereSchemaBuildUtil.buildSchema(), Collections.singletonList("t_order_item"), dropViewStatement, tableName -> Optional.empty());
     }
 }

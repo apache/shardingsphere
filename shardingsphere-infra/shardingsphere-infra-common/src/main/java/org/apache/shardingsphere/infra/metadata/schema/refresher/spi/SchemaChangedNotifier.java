@@ -15,31 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresh;
+package org.apache.shardingsphere.infra.metadata.schema.refresher.spi;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-
-import java.sql.SQLException;
-import java.util.Collection;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
 /**
- * Meta data refresh strategy.
- *
- * @param <T> type of SQL statement
+ * ShardingSphere schema changed notifier.
  */
-public interface MetaDataRefreshStrategy<T extends SQLStatement> {
+public interface SchemaChangedNotifier extends OrderedSPI<ShardingSphereSchema> {
     
     /**
-     * Refresh meta data.
-     *
+     * Notify when ShardingSphere schema changed.
+     * 
+     * @param name schema name
      * @param schema ShardingSphere schema
-     * @param databaseType database type
-     * @param routeDataSourceNames route dataSource names
-     * @param sqlStatement SQL statement
-     * @param callback callback
-     * @throws SQLException SQL exception
      */
-    void refreshMetaData(ShardingSphereSchema schema, DatabaseType databaseType, Collection<String> routeDataSourceNames, T sqlStatement, TableMetaDataLoaderCallback callback) throws SQLException;
+    void notify(String name, ShardingSphereSchema schema);
 }

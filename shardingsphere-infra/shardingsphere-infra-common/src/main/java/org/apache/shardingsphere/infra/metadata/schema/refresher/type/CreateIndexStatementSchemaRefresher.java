@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresh.impl;
+package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.TableMetaDataLoaderCallback;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.TableMetaDataLoaderCallback;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 
 import java.util.Collection;
 
 /**
- * Create index statement meta data refresh strategy.
+ * ShardingSphere schema refresher for create index statement.
  */
-public final class CreateIndexStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<CreateIndexStatement> {
+public final class CreateIndexStatementSchemaRefresher implements SchemaRefresher<CreateIndexStatement> {
     
     @Override
-    public void refreshMetaData(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
-                                final CreateIndexStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
+    public void refresh(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames,
+                        final CreateIndexStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
         if (null == sqlStatement.getIndex()) {
             return;
         }

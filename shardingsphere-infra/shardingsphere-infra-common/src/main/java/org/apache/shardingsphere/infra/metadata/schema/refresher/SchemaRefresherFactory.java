@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresh;
+package org.apache.shardingsphere.infra.metadata.schema.refresher;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.impl.CreateIndexStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.impl.CreateTableStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.impl.CreateViewStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.impl.DropIndexStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.impl.AlterTableStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.impl.DropTableStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.impl.DropViewStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.type.CreateIndexStatementSchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.type.CreateTableStatementSchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.type.CreateViewStatementSchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.type.DropIndexStatementSchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.type.AlterTableStatementSchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.type.DropTableStatementSchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.type.DropViewStatementSchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
@@ -41,30 +41,30 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Meta data refresh strategy factory.
+ * ShardingSphere schema refresher factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MetaDataRefreshStrategyFactory {
+public final class SchemaRefresherFactory {
     
-    private static final Map<Class<?>, MetaDataRefreshStrategy<?>> REGISTRY = new HashMap<>();
+    private static final Map<Class<?>, SchemaRefresher<?>> REGISTRY = new HashMap<>();
     
     static {
-        REGISTRY.put(CreateTableStatement.class, new CreateTableStatementMetaDataRefreshStrategy());
-        REGISTRY.put(AlterTableStatement.class, new AlterTableStatementMetaDataRefreshStrategy());
-        REGISTRY.put(DropTableStatement.class, new DropTableStatementMetaDataRefreshStrategy());
-        REGISTRY.put(CreateIndexStatement.class, new CreateIndexStatementMetaDataRefreshStrategy());
-        REGISTRY.put(DropIndexStatement.class, new DropIndexStatementMetaDataRefreshStrategy());
-        REGISTRY.put(CreateViewStatement.class, new CreateViewStatementMetaDataRefreshStrategy());
-        REGISTRY.put(DropViewStatement.class, new DropViewStatementMetaDataRefreshStrategy());
+        REGISTRY.put(CreateTableStatement.class, new CreateTableStatementSchemaRefresher());
+        REGISTRY.put(AlterTableStatement.class, new AlterTableStatementSchemaRefresher());
+        REGISTRY.put(DropTableStatement.class, new DropTableStatementSchemaRefresher());
+        REGISTRY.put(CreateIndexStatement.class, new CreateIndexStatementSchemaRefresher());
+        REGISTRY.put(DropIndexStatement.class, new DropIndexStatementSchemaRefresher());
+        REGISTRY.put(CreateViewStatement.class, new CreateViewStatementSchemaRefresher());
+        REGISTRY.put(DropViewStatement.class, new DropViewStatementSchemaRefresher());
     }
     
     /**
-     * Create new instance of meta data refresh strategy.
+     * Create new instance of schema refresher.
      *
      * @param sqlStatement SQL statement
-     * @return meta data refresh strategy
+     * @return instance of schema refresher
      */
-    public static Optional<MetaDataRefreshStrategy> newInstance(final SQLStatement sqlStatement) {
+    public static Optional<SchemaRefresher> newInstance(final SQLStatement sqlStatement) {
         return REGISTRY.entrySet().stream().filter(entry -> entry.getKey().isAssignableFrom(sqlStatement.getClass())).findFirst().map(Entry::getValue);
     }
 }

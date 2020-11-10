@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresh.impl;
+package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.TableMetaDataLoaderCallback;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.TableMetaDataLoaderCallback;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Alter table statement meta data refresh strategy.
+ * ShardingSphere schema refresher for alter table statement.
  */
-public final class AlterTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<AlterTableStatement> {
+public final class AlterTableStatementSchemaRefresher implements SchemaRefresher<AlterTableStatement> {
     
     @Override
-    public void refreshMetaData(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
-                                final AlterTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
+    public void refresh(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames,
+                        final AlterTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (null != schema && schema.containsTable(tableName)) {
             callback.load(tableName).ifPresent(tableMetaData -> schema.put(tableName, tableMetaData));
         }
     }
-
 }

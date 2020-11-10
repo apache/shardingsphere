@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresh.impl;
+package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.TableMetaDataLoaderCallback;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.TableMetaDataLoaderCallback;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 
 import java.sql.SQLException;
@@ -29,13 +28,13 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Create table statement meta data refresh strategy.
+ * ShardingSphere schema refresher for create table statement.
  */
-public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<CreateTableStatement> {
+public final class CreateTableStatementSchemaRefresher implements SchemaRefresher<CreateTableStatement> {
     
     @Override
-    public void refreshMetaData(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
-                                final CreateTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
+    public void refresh(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames,
+                        final CreateTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         Optional<TableMetaData> tableMetaData = callback.load(tableName);
         if (tableMetaData.isPresent()) {

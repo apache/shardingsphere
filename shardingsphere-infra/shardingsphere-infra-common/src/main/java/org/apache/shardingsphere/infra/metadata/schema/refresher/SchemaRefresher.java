@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.governance.internal.metadata;
+package org.apache.shardingsphere.infra.metadata.schema.refresher;
 
-import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaPersistEvent;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.spi.SchemaChangedNotifier;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
+import java.sql.SQLException;
+import java.util.Collection;
 
 /**
- * ShardingSphere schema changed notifier for governance.
+ * ShardingSphere schema refresher.
+ *
+ * @param <T> type of SQL statement
  */
-public final class GovernanceSchemaChangedNotifier implements SchemaChangedNotifier {
+public interface SchemaRefresher<T extends SQLStatement> {
     
-    @Override
-    public void notify(final String name, final ShardingSphereSchema schema) {
-        GovernanceEventBus.getInstance().post(new SchemaPersistEvent(name, schema));
-    }
-    
-    @Override
-    public int getOrder() {
-        return 0;
-    }
-    
-    @Override
-    public Class<ShardingSphereSchema> getTypeClass() {
-        return ShardingSphereSchema.class;
-    }
+    /**
+     * Refresh ShardingSphere schema.
+     *
+     * @param schema ShardingSphere schema to be refreshed
+     * @param routeDataSourceNames route dataSource names
+     * @param sqlStatement SQL statement
+     * @param callback callback
+     * @throws SQLException SQL exception
+     */
+    void refresh(ShardingSphereSchema schema, Collection<String> routeDataSourceNames, T sqlStatement, TableMetaDataLoaderCallback callback) throws SQLException;
 }

@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresh.impl;
+package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.AbstractMetaDataRefreshStrategyTest;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
@@ -32,21 +30,21 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
-public final class CreateViewStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
+public final class CreateViewStatementSchemaRefresherTest {
     
     @Test
-    public void refreshMetaDataWithUnConfiguredForMySQL() throws SQLException {
-        refreshMetaDataWithUnConfigured(new MySQLCreateViewStatement());
+    public void refreshWithUnConfiguredForMySQL() throws SQLException {
+        refreshWithUnConfigured(new MySQLCreateViewStatement());
     }
     
     @Test
-    public void refreshMetaDataWithUnConfiguredForPostgreSQL() throws SQLException {
-        refreshMetaDataWithUnConfigured(new PostgreSQLCreateViewStatement());
+    public void refreshWithUnConfiguredForPostgreSQL() throws SQLException {
+        refreshWithUnConfigured(new PostgreSQLCreateViewStatement());
     }
     
-    private void refreshMetaDataWithUnConfigured(final CreateViewStatement createViewStatement) throws SQLException {
+    private void refreshWithUnConfigured(final CreateViewStatement createViewStatement) throws SQLException {
         createViewStatement.setView(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item_0"))));
-        MetaDataRefreshStrategy<CreateViewStatement> metaDataRefreshStrategy = new CreateViewStatementMetaDataRefreshStrategy();
-        metaDataRefreshStrategy.refreshMetaData(getSchema(), new MySQLDatabaseType(), Collections.singletonList("t_order_item"), createViewStatement, tableName -> Optional.empty());
+        SchemaRefresher<CreateViewStatement> schemaRefresher = new CreateViewStatementSchemaRefresher();
+        schemaRefresher.refresh(ShardingSphereSchemaBuildUtil.buildSchema(), Collections.singletonList("t_order_item"), createViewStatement, tableName -> Optional.empty());
     }
 }
