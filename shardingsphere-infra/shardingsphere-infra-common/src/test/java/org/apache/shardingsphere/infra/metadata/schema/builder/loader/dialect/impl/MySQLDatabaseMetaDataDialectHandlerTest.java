@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.physical.dialect.impl;
+package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.impl;
 
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.builder.physical.dialect.AbstractDatabaseMetaDataDialectHandlerTest;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.AbstractDatabaseMetaDataDialectHandlerTest;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 

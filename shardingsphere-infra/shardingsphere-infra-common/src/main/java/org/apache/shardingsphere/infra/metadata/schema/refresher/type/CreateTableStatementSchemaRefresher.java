@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.TableMetaDataLoaderCallback;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * ShardingSphere schema refresher for create table statement.
@@ -33,15 +33,11 @@ import java.util.Optional;
 public final class CreateTableStatementSchemaRefresher implements SchemaRefresher<CreateTableStatement> {
     
     @Override
-    public void refresh(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames,
-                        final CreateTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
+    public void refresh(final ShardingSphereSchema schema, 
+                        final Collection<String> routeDataSourceNames, final CreateTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        Optional<TableMetaData> tableMetaData = callback.load(tableName);
-        if (tableMetaData.isPresent()) {
-            schema.put(tableName, tableMetaData.get());
-        } else {
-            schema.put(tableName, new TableMetaData());
-        }
+        TableMetaData tableMetaData = TableMetaDataBuilder.build(tableName, materials).orElse(new TableMetaData());
+        schema.put(tableName, tableMetaData);
         schema.get(tableName).getAddressingDataSources().addAll(routeDataSourceNames);
     }
 }

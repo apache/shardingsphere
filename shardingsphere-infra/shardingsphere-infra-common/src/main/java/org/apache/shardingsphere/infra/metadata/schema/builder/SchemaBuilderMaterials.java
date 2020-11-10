@@ -15,24 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresher;
+package org.apache.shardingsphere.infra.metadata.schema.builder;
 
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import java.sql.SQLException;
-import java.util.Optional;
+import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * Table meta data loader callback.
+ * ShardingSphere schema builder materials.
  */
-public interface TableMetaDataLoaderCallback {
+@RequiredArgsConstructor
+@Getter
+public final class SchemaBuilderMaterials {
     
-    /**
-     * Load table meta data.
-     *
-     * @param tableName table name
-     * @return table meta data
-     * @throws SQLException SQL exception
-     */
-    Optional<TableMetaData> load(String tableName) throws SQLException;
+    private final DatabaseType databaseType;
+    
+    private final Map<String, DataSource> dataSourceMap;
+    
+    private final Collection<ShardingSphereRule> rules;
+    
+    private final ConfigurationProperties props;
 }

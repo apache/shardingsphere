@@ -49,13 +49,13 @@ public final class TableMetaDataBuilderTest {
     
     @Test
     public void assertBuildWithExistedTableName() throws SQLException {
-        assertTrue(TableMetaDataBuilder.build("data_node_routed_table_0", 
-                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props).isPresent());
+        assertTrue(TableMetaDataBuilder.build("data_node_routed_table_0", new SchemaBuilderMaterials(
+                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props)).isPresent());
     }
     
     @Test
     public void assertBuildWithNotExistedTableName() throws SQLException {
-        assertFalse(TableMetaDataBuilder.build("invalid_table", 
-                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props).isPresent());
+        assertFalse(TableMetaDataBuilder.build("invalid_table", new SchemaBuilderMaterials(
+                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props)).isPresent());
     }
 }

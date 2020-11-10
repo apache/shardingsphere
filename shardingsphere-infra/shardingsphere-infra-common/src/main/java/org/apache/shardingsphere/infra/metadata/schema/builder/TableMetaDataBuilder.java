@@ -19,8 +19,6 @@ package org.apache.shardingsphere.infra.metadata.schema.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -29,10 +27,8 @@ import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -50,28 +46,23 @@ public final class TableMetaDataBuilder {
      * Build table meta data.
      *
      * @param tableName table name
-     * @param databaseType database type
-     * @param dataSourceMap data source map
-     * @param rules ShardingSphere rules
-     * @param props configuration properties
+     * @param materials schema builder materials
      * @return table meta data
      * @throws SQLException SQL exception
      */
-    public static Optional<TableMetaData> build(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
-        Optional<TableMetaData> tableMetaData = load(tableName, databaseType, dataSourceMap, rules, props);
-        return tableMetaData.map(optional -> decorate(tableName, optional, rules));
+    public static Optional<TableMetaData> build(final String tableName, final SchemaBuilderMaterials materials) throws SQLException {
+        Optional<TableMetaData> tableMetaData = load(tableName, materials);
+        return tableMetaData.map(optional -> decorate(tableName, optional, materials.getRules()));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
-        DataNodes dataNodes = new DataNodes(rules);
-        for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).entrySet()) {
+    private static Optional<TableMetaData> load(final String tableName, final SchemaBuilderMaterials materials) throws SQLException {
+        DataNodes dataNodes = new DataNodes(materials.getRules());
+        for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(materials.getRules(), RuleBasedTableMetaDataBuilder.class).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
                 TableContainedRule rule = (TableContainedRule) entry.getKey();
                 RuleBasedTableMetaDataBuilder loader = entry.getValue();
-                Optional<TableMetaData> tableMetaData = loader.load(tableName, databaseType, dataSourceMap, dataNodes, rule, props);
+                Optional<TableMetaData> tableMetaData = loader.load(tableName, materials.getDatabaseType(), materials.getDataSourceMap(), dataNodes, rule, materials.getProps());
                 if (tableMetaData.isPresent()) {
                     return tableMetaData;
                 }

@@ -52,7 +52,7 @@ public final class SchemaBuilderTest {
     @Test
     public void assertBuild() throws SQLException {
         ShardingSphereSchema actual = SchemaBuilder.build(
-                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props);
+                new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props));
         assertSchema(actual);
     }
     

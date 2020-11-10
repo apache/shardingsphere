@@ -19,17 +19,13 @@ package org.apache.shardingsphere.infra.metadata.schema.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -41,28 +37,23 @@ public final class SchemaBuilder {
     /**
      * Build ShardingSphere schema.
      * 
-     * @param databaseType database type
-     * @param dataSourceMap data source map
-     * @param rules ShardingSphere rules
-     * @param props configuration properties
+     * @param materials schema builder materials
      * @return ShardingSphere schema
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereSchema build(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                             final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
-        ShardingSphereSchema result = loadSchema(databaseType, dataSourceMap, rules, props);
-        setTableAddressingMapper(databaseType, dataSourceMap, rules, result);
+    public static ShardingSphereSchema build(final SchemaBuilderMaterials materials) throws SQLException {
+        ShardingSphereSchema result = loadSchema(materials);
+        setTableAddressingMapper(materials, result);
         return result;
     }
     
-    private static ShardingSphereSchema loadSchema(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                   final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
+    private static ShardingSphereSchema loadSchema(final SchemaBuilderMaterials materials) throws SQLException {
         ShardingSphereSchema result = new ShardingSphereSchema();
-        for (ShardingSphereRule rule : rules) {
+        for (ShardingSphereRule rule : materials.getRules()) {
             if (rule instanceof TableContainedRule) {
                 for (String table : ((TableContainedRule) rule).getTables()) {
                     if (!result.containsTable(table)) {
-                        TableMetaDataBuilder.build(table, databaseType, dataSourceMap, rules, props).ifPresent(optional -> result.put(table, optional));
+                        TableMetaDataBuilder.build(table, materials).ifPresent(optional -> result.put(table, optional));
                     }
                 }
             }
@@ -70,9 +61,8 @@ public final class SchemaBuilder {
         return result;
     }
     
-    private static void setTableAddressingMapper(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                 final Collection<ShardingSphereRule> rules, final ShardingSphereSchema schema) throws SQLException {
-        for (Entry<String, Collection<String>> entry : TableAddressingMapperBuilder.build(databaseType, dataSourceMap, rules).entrySet()) {
+    private static void setTableAddressingMapper(final SchemaBuilderMaterials materials, final ShardingSphereSchema schema) throws SQLException {
+        for (Entry<String, Collection<String>> entry : TableAddressingMapperBuilder.build(materials).entrySet()) {
             String tableName = entry.getKey();
             if (!schema.containsTable(tableName)) {
                 schema.put(tableName, new TableMetaData());
