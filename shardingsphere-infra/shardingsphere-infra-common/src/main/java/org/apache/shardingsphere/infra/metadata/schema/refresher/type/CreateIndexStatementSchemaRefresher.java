@@ -21,8 +21,6 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 
 import java.util.Collection;
@@ -39,19 +37,7 @@ public final class CreateIndexStatementSchemaRefresher implements SchemaRefreshe
             return;
         }
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        if (!containsInTableContainedRule(tableName, materials)) {
-            return;
-        }
         String indexName = sqlStatement.getIndex().getIdentifier().getValue();
         schema.get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
-    }
-    
-    private boolean containsInTableContainedRule(final String tableName, final SchemaBuilderMaterials materials) {
-        for (ShardingSphereRule each : materials.getRules()) {
-            if (each instanceof TableContainedRule && ((TableContainedRule) each).getTables().contains(tableName)) {
-                return true;
-            }
-        }
-        return false;
     }
 }
