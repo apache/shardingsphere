@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.governance.core.yaml.swapper;
 
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlColumnMetaData;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlIndexMetaData;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchema;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlTableMetaData;
+import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlColumnMetaData;
+import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlIndexMetaData;
+import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
+import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlTableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;

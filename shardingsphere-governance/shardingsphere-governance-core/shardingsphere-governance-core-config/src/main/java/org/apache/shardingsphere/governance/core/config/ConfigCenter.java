@@ -31,7 +31,7 @@ import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePe
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaPersistEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchema;
+import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;

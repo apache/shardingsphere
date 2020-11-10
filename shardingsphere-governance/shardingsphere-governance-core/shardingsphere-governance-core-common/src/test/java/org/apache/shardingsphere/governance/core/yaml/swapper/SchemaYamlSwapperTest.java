@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.yaml.swapper;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchema;
+import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;

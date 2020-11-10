@@ -23,7 +23,7 @@ import org.apache.shardingsphere.governance.core.event.model.datasource.DataSour
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaPersistEvent;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlSchema;
+import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.infra.auth.Authentication;
