@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
 import java.sql.SQLException;
@@ -35,8 +37,20 @@ public final class AlterTableStatementSchemaRefresher implements SchemaRefresher
     public void refresh(final ShardingSphereSchema schema, 
                         final Collection<String> routeDataSourceNames, final AlterTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
+        if (!containsInTableContainedRule(tableName, materials)) {
+            return;
+        }
         if (null != schema && schema.containsTable(tableName)) {
             TableMetaDataBuilder.build(tableName, materials).ifPresent(tableMetaData -> schema.put(tableName, tableMetaData));
         }
+    }
+    
+    private boolean containsInTableContainedRule(final String tableName, final SchemaBuilderMaterials materials) {
+        for (ShardingSphereRule each : materials.getRules()) {
+            if (each instanceof TableContainedRule && ((TableContainedRule) each).getTables().contains(tableName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
