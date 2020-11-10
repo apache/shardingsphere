@@ -27,15 +27,15 @@ import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 @Getter
 @Setter
 public final class YamlColumnMetaData implements YamlConfiguration {
-
+    
     private String name;
-
+    
     private int dataType;
-
+    
     private String dataTypeName;
-
+    
     private boolean primaryKey;
-
+    
     private boolean generated;
     
     private boolean caseSensitive;

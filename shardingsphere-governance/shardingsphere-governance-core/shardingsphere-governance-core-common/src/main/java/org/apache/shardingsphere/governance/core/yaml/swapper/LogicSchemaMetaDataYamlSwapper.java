@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  * Logic schema meta data configuration YAML swapper.
  */
 public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlLogicSchemaMetaData, ShardingSphereSchema> {
-
+    
     @Override
     public YamlLogicSchemaMetaData swapToYamlConfiguration(final ShardingSphereSchema schema) {
         YamlLogicSchemaMetaData result = new YamlLogicSchemaMetaData();
@@ -61,19 +61,19 @@ public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlLog
     private TableMetaData convertTable(final YamlTableMetaData table) {
         return new TableMetaData(convertColumns(table.getColumns()), convertIndexes(table.getIndexes()));
     }
-
+    
     private Collection<IndexMetaData> convertIndexes(final Map<String, YamlIndexMetaData> indexes) {
         return null == indexes ? Collections.emptyList() : indexes.values().stream().map(this::convertIndex).collect(Collectors.toList());
     }
-
+    
     private IndexMetaData convertIndex(final YamlIndexMetaData index) {
         return new IndexMetaData(index.getName());
     }
-
+    
     private Collection<ColumnMetaData> convertColumns(final Map<String, YamlColumnMetaData> indexes) {
         return null == indexes ? Collections.emptyList() : indexes.values().stream().map(this::convertColumn).collect(Collectors.toList());
     }
-
+    
     private ColumnMetaData convertColumn(final YamlColumnMetaData column) {
         return new ColumnMetaData(column.getName(), column.getDataType(), column.getDataTypeName(), column.isPrimaryKey(), column.isGenerated(), column.isCaseSensitive());
     }
@@ -92,7 +92,7 @@ public final class LogicSchemaMetaDataYamlSwapper implements YamlSwapper<YamlLog
         result.setIndexes(convertYamlIndexes(table.getIndexes()));
         return result;
     }
-
+    
     private Map<String, YamlIndexMetaData> convertYamlIndexes(final Map<String, IndexMetaData> indexes) {
         return indexes.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertYamlIndex(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
