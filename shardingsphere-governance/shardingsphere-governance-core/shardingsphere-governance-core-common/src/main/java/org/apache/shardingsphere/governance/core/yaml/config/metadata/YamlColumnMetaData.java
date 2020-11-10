@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
 /**
- * Column meta data configuration for YAML.
+ * Column meta data for YAML.
  */
 @Getter
 @Setter

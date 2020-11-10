@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 import java.util.Map;
 
 /**
- * Table meta data configuration for YAML.
+ * Table meta data for YAML.
  */
 @Getter
 @Setter
