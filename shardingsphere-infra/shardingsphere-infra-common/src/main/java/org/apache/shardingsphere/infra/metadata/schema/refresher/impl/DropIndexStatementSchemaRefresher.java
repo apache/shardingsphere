@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.TableMetaDataLoaderCallback;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
@@ -32,9 +32,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * ShardingSphere schema refresh strategy for drop index statement.
+ * ShardingSphere schema refresher for drop index statement.
  */
-public final class DropIndexStatementSchemaRefreshStrategy implements SchemaRefreshStrategy<DropIndexStatement> {
+public final class DropIndexStatementSchemaRefresher implements SchemaRefresher<DropIndexStatement> {
     
     @Override
     public void refresh(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,

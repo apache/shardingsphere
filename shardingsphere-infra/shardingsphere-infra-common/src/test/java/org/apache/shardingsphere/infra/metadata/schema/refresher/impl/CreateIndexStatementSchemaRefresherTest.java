@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractMetaDataRefreshStrategyTest;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractSchemaRefresherTest;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class CreateIndexStatementSchemaRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
+public final class CreateIndexStatementSchemaRefresherTest extends AbstractSchemaRefresherTest {
     
     @Test
     public void refreshForMySQL() throws SQLException {
@@ -62,10 +62,10 @@ public final class CreateIndexStatementSchemaRefreshStrategyTest extends Abstrac
     }
     
     private void refresh(final CreateIndexStatement createIndexStatement) throws SQLException {
-        SchemaRefreshStrategy<CreateIndexStatement> schemaRefreshStrategy = new CreateIndexStatementSchemaRefreshStrategy();
+        SchemaRefresher<CreateIndexStatement> schemaRefresher = new CreateIndexStatementSchemaRefresher();
         createIndexStatement.setIndex(new IndexSegment(1, 2, new IdentifierValue("t_order_index")));
         createIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        schemaRefreshStrategy.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), createIndexStatement, tableName -> Optional.empty());
+        schemaRefresher.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), createIndexStatement, tableName -> Optional.empty());
         assertTrue(getSchema().get("t_order").getIndexes().containsKey("t_order_index"));
     }
     
@@ -90,9 +90,9 @@ public final class CreateIndexStatementSchemaRefreshStrategyTest extends Abstrac
     }
     
     private void refreshIfIndexIsNull(final CreateIndexStatement createIndexStatement) throws SQLException {
-        SchemaRefreshStrategy<CreateIndexStatement> schemaRefreshStrategy = new CreateIndexStatementSchemaRefreshStrategy();
+        SchemaRefresher<CreateIndexStatement> schemaRefresher = new CreateIndexStatementSchemaRefresher();
         createIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        schemaRefreshStrategy.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), createIndexStatement, tableName -> Optional.empty());
+        schemaRefresher.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), createIndexStatement, tableName -> Optional.empty());
         assertFalse(getSchema().get("t_order").getIndexes().containsKey("t_order_index"));
     }
 }

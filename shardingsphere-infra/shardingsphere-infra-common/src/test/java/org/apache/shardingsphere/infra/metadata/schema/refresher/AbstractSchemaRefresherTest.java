@@ -28,7 +28,7 @@ import org.junit.Before;
 import java.util.Collections;
 
 @Getter
-public abstract class AbstractMetaDataRefreshStrategyTest {
+public abstract class AbstractSchemaRefresherTest {
     
     private ShardingSphereSchema schema;
     
@@ -42,4 +42,3 @@ public abstract class AbstractMetaDataRefreshStrategyTest {
                 Collections.singletonList(new ColumnMetaData("order_id", 1, "String", false, false, false)), Collections.singletonList(new IndexMetaData("index")))));
     }
 }
-

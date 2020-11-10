@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractMetaDataRefreshStrategyTest;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractSchemaRefresherTest;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
@@ -42,7 +42,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class CreateTableStatementSchemaRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
+public final class CreateTableStatementSchemaRefresherTest extends AbstractSchemaRefresherTest {
     
     @Test
     public void refreshForMySQL() throws SQLException {
@@ -78,8 +78,8 @@ public final class CreateTableStatementSchemaRefreshStrategyTest extends Abstrac
 
     private void refresh(final CreateTableStatement createTableStatement) throws SQLException {
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
-        SchemaRefreshStrategy<CreateTableStatement> metaDataRefreshStrategy = new CreateTableStatementSchemaRefreshStrategy();
-        metaDataRefreshStrategy.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), createTableStatement, tableName -> Optional.of(new TableMetaData(
+        SchemaRefresher<CreateTableStatement> schemaRefresher = new CreateTableStatementSchemaRefresher();
+        schemaRefresher.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), createTableStatement, tableName -> Optional.of(new TableMetaData(
                 Collections.singletonList(new ColumnMetaData("order_id", 1, "String", true, false, false)),
                 Collections.singletonList(new IndexMetaData("index")))));
         assertTrue(getSchema().containsTable("t_order_0"));
@@ -119,7 +119,7 @@ public final class CreateTableStatementSchemaRefreshStrategyTest extends Abstrac
 
     private void refreshWithUnConfigured(final CreateTableStatement createTableStatement) throws SQLException {
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item_0"))));
-        SchemaRefreshStrategy<CreateTableStatement> metaDataRefreshStrategy = new CreateTableStatementSchemaRefreshStrategy();
-        metaDataRefreshStrategy.refresh(getSchema(), new MySQLDatabaseType(), Collections.singletonList("t_order_item"), createTableStatement, tableName -> Optional.empty());
+        SchemaRefresher<CreateTableStatement> schemaRefresher = new CreateTableStatementSchemaRefresher();
+        schemaRefresher.refresh(getSchema(), new MySQLDatabaseType(), Collections.singletonList("t_order_item"), createTableStatement, tableName -> Optional.empty());
     }
 }

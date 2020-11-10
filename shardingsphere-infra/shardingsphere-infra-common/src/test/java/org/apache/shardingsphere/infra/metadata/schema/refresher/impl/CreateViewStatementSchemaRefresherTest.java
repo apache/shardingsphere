@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractMetaDataRefreshStrategyTest;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractSchemaRefresherTest;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
@@ -32,7 +32,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
-public final class CreateViewStatementSchemaRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
+public final class CreateViewStatementSchemaRefresherTest extends AbstractSchemaRefresherTest {
     
     @Test
     public void refreshWithUnConfiguredForMySQL() throws SQLException {
@@ -46,7 +46,7 @@ public final class CreateViewStatementSchemaRefreshStrategyTest extends Abstract
     
     private void refreshWithUnConfigured(final CreateViewStatement createViewStatement) throws SQLException {
         createViewStatement.setView(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item_0"))));
-        SchemaRefreshStrategy<CreateViewStatement> metaDataRefreshStrategy = new CreateViewStatementSchemaRefreshStrategy();
-        metaDataRefreshStrategy.refresh(getSchema(), new MySQLDatabaseType(), Collections.singletonList("t_order_item"), createViewStatement, tableName -> Optional.empty());
+        SchemaRefresher<CreateViewStatement> schemaRefresher = new CreateViewStatementSchemaRefresher();
+        schemaRefresher.refresh(getSchema(), new MySQLDatabaseType(), Collections.singletonList("t_order_item"), createViewStatement, tableName -> Optional.empty());
     }
 }

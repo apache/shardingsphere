@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractMetaDataRefreshStrategyTest;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractSchemaRefresherTest;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -38,7 +38,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 
-public final class DropIndexStatementSchemaRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
+public final class DropIndexStatementSchemaRefresherTest extends AbstractSchemaRefresherTest {
     
     @Test
     public void refreshForMySQL() throws SQLException {
@@ -56,7 +56,7 @@ public final class DropIndexStatementSchemaRefreshStrategyTest extends AbstractM
     
     private void refresh(final DropIndexStatement dropIndexStatement) throws SQLException {
         dropIndexStatement.getIndexes().add(new IndexSegment(1, 2, new IdentifierValue("index")));
-        SchemaRefreshStrategy<DropIndexStatement> metaDataRefreshStrategy = new DropIndexStatementSchemaRefreshStrategy();
+        SchemaRefresher<DropIndexStatement> metaDataRefreshStrategy = new DropIndexStatementSchemaRefresher();
         metaDataRefreshStrategy.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), dropIndexStatement, tableName -> Optional.empty());
         assertFalse(getSchema().get("t_order").getIndexes().containsKey("index"));
     }
@@ -82,8 +82,8 @@ public final class DropIndexStatementSchemaRefreshStrategyTest extends AbstractM
         Map<String, IndexMetaData> actualIndex = getSchema().get("t_order").getIndexes();
         actualIndex.put("t_order_index", new IndexMetaData("t_order_index"));
         actualIndex.put("order_id_index", new IndexMetaData("order_id_index"));
-        SchemaRefreshStrategy<DropIndexStatement> metaDataRefreshStrategy = new DropIndexStatementSchemaRefreshStrategy();
-        metaDataRefreshStrategy.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), dropIndexStatement, tableName -> Optional.empty());
+        SchemaRefresher<DropIndexStatement> schemaRefresher = new DropIndexStatementSchemaRefresher();
+        schemaRefresher.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), dropIndexStatement, tableName -> Optional.empty());
         assertFalse(getSchema().get("t_order").getIndexes().containsKey("index"));
         assertFalse(getSchema().get("t_order").getIndexes().containsKey("t_order_index"));
         assertFalse(getSchema().get("t_order").getIndexes().containsKey("order_id_index"));

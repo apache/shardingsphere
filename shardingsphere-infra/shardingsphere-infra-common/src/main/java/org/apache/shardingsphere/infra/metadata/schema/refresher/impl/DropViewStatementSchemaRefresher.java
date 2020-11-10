@@ -18,27 +18,22 @@
 package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.TableMetaDataLoaderCallback;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
 
 import java.util.Collection;
 
 /**
- * ShardingSphere schema refresh strategy for create index statement.
+ * ShardingSphere schema refresher for drop view statement.
  */
-public final class CreateIndexStatementSchemaRefreshStrategy implements SchemaRefreshStrategy<CreateIndexStatement> {
+public final class DropViewStatementSchemaRefresher implements SchemaRefresher<DropViewStatement> {
     
     @Override
     public void refresh(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
-                        final CreateIndexStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
-        if (null == sqlStatement.getIndex()) {
-            return;
-        }
-        String indexName = sqlStatement.getIndex().getIdentifier().getValue();
-        String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        schema.get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
+                        final DropViewStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
+        sqlStatement.getViews().forEach(each -> schema.remove(each.getTableName().getIdentifier().getValue()));
     }
+
 }

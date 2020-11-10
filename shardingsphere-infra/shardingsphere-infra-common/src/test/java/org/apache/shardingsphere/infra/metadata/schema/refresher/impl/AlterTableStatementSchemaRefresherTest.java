@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractMetaDataRefreshStrategyTest;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractSchemaRefresherTest;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
@@ -41,7 +41,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class AlterTableStatementSchemaRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
+public final class AlterTableStatementSchemaRefresherTest extends AbstractSchemaRefresherTest {
     
     @Test
     public void refreshForMySQL() throws SQLException {
@@ -69,9 +69,9 @@ public final class AlterTableStatementSchemaRefreshStrategyTest extends Abstract
     }
 
     private void refresh(final AlterTableStatement alterTableStatement) throws SQLException {
-        SchemaRefreshStrategy<AlterTableStatement> schemaRefreshStrategy = new AlterTableStatementSchemaRefreshStrategy();
+        SchemaRefresher<AlterTableStatement> schemaRefresher = new AlterTableStatementSchemaRefresher();
         alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        schemaRefreshStrategy.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), alterTableStatement, tableName -> Optional.of(new TableMetaData(
+        schemaRefresher.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), alterTableStatement, tableName -> Optional.of(new TableMetaData(
                 Collections.singletonList(new ColumnMetaData("order_id", 1, "String", true, false, false)),
                 Collections.singletonList(new IndexMetaData("index_alter")))));
         assertTrue(getSchema().get("t_order").getIndexes().containsKey("index_alter"));

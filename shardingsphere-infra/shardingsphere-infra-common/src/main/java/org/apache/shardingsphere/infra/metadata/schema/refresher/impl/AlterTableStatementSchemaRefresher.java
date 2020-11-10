@@ -19,30 +19,24 @@ package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.TableMetaDataLoaderCallback;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Optional;
 
 /**
- * ShardingSphere schema refresh strategy for create table statement.
+ * ShardingSphere schema refresher for alter table statement.
  */
-public final class CreateTableStatementSchemaRefreshStrategy implements SchemaRefreshStrategy<CreateTableStatement> {
+public final class AlterTableStatementSchemaRefresher implements SchemaRefresher<AlterTableStatement> {
     
     @Override
     public void refresh(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
-                        final CreateTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
+                        final AlterTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        Optional<TableMetaData> tableMetaData = callback.load(tableName);
-        if (tableMetaData.isPresent()) {
-            schema.put(tableName, tableMetaData.get());
-        } else {
-            schema.put(tableName, new TableMetaData());
+        if (null != schema && schema.containsTable(tableName)) {
+            callback.load(tableName).ifPresent(tableMetaData -> schema.put(tableName, tableMetaData));
         }
-        schema.get(tableName).getAddressingDataSources().addAll(routeDataSourceNames);
     }
 }

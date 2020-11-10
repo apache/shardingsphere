@@ -19,13 +19,13 @@ package org.apache.shardingsphere.infra.metadata.schema.refresher;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.CreateIndexStatementSchemaRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.CreateTableStatementSchemaRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.CreateViewStatementSchemaRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.DropIndexStatementSchemaRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.AlterTableStatementSchemaRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.DropTableStatementSchemaRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.DropViewStatementSchemaRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.CreateIndexStatementSchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.CreateTableStatementSchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.CreateViewStatementSchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.DropIndexStatementSchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.AlterTableStatementSchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.DropTableStatementSchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.DropViewStatementSchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
@@ -46,16 +46,16 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MetaDataRefreshStrategyFactory {
     
-    private static final Map<Class<?>, SchemaRefreshStrategy<?>> REGISTRY = new HashMap<>();
+    private static final Map<Class<?>, SchemaRefresher<?>> REGISTRY = new HashMap<>();
     
     static {
-        REGISTRY.put(CreateTableStatement.class, new CreateTableStatementSchemaRefreshStrategy());
-        REGISTRY.put(AlterTableStatement.class, new AlterTableStatementSchemaRefreshStrategy());
-        REGISTRY.put(DropTableStatement.class, new DropTableStatementSchemaRefreshStrategy());
-        REGISTRY.put(CreateIndexStatement.class, new CreateIndexStatementSchemaRefreshStrategy());
-        REGISTRY.put(DropIndexStatement.class, new DropIndexStatementSchemaRefreshStrategy());
-        REGISTRY.put(CreateViewStatement.class, new CreateViewStatementSchemaRefreshStrategy());
-        REGISTRY.put(DropViewStatement.class, new DropViewStatementSchemaRefreshStrategy());
+        REGISTRY.put(CreateTableStatement.class, new CreateTableStatementSchemaRefresher());
+        REGISTRY.put(AlterTableStatement.class, new AlterTableStatementSchemaRefresher());
+        REGISTRY.put(DropTableStatement.class, new DropTableStatementSchemaRefresher());
+        REGISTRY.put(CreateIndexStatement.class, new CreateIndexStatementSchemaRefresher());
+        REGISTRY.put(DropIndexStatement.class, new DropIndexStatementSchemaRefresher());
+        REGISTRY.put(CreateViewStatement.class, new CreateViewStatementSchemaRefresher());
+        REGISTRY.put(DropViewStatement.class, new DropViewStatementSchemaRefresher());
     }
     
     /**
@@ -64,7 +64,7 @@ public final class MetaDataRefreshStrategyFactory {
      * @param sqlStatement SQL statement
      * @return meta data refresh strategy
      */
-    public static Optional<SchemaRefreshStrategy> newInstance(final SQLStatement sqlStatement) {
+    public static Optional<SchemaRefresher> newInstance(final SQLStatement sqlStatement) {
         return REGISTRY.entrySet().stream().filter(entry -> entry.getKey().isAssignableFrom(sqlStatement.getClass())).findFirst().map(Entry::getValue);
     }
 }
