@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractSchemaRefresherTest;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class CreateIndexStatementSchemaRefresherTest extends AbstractSchemaRefresherTest {
+public final class CreateIndexStatementSchemaRefresherTest {
     
     @Test
     public void refreshForMySQL() throws SQLException {
@@ -62,11 +62,12 @@ public final class CreateIndexStatementSchemaRefresherTest extends AbstractSchem
     }
     
     private void refresh(final CreateIndexStatement createIndexStatement) throws SQLException {
+        ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
         SchemaRefresher<CreateIndexStatement> schemaRefresher = new CreateIndexStatementSchemaRefresher();
         createIndexStatement.setIndex(new IndexSegment(1, 2, new IdentifierValue("t_order_index")));
         createIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        schemaRefresher.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), createIndexStatement, tableName -> Optional.empty());
-        assertTrue(getSchema().get("t_order").getIndexes().containsKey("t_order_index"));
+        schemaRefresher.refresh(schema, mock(DatabaseType.class), Collections.emptyList(), createIndexStatement, tableName -> Optional.empty());
+        assertTrue(schema.get("t_order").getIndexes().containsKey("t_order_index"));
     }
     
     @Test
@@ -90,9 +91,10 @@ public final class CreateIndexStatementSchemaRefresherTest extends AbstractSchem
     }
     
     private void refreshIfIndexIsNull(final CreateIndexStatement createIndexStatement) throws SQLException {
+        ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
         SchemaRefresher<CreateIndexStatement> schemaRefresher = new CreateIndexStatementSchemaRefresher();
         createIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        schemaRefresher.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), createIndexStatement, tableName -> Optional.empty());
-        assertFalse(getSchema().get("t_order").getIndexes().containsKey("t_order_index"));
+        schemaRefresher.refresh(schema, mock(DatabaseType.class), Collections.emptyList(), createIndexStatement, tableName -> Optional.empty());
+        assertFalse(schema.get("t_order").getIndexes().containsKey("t_order_index"));
     }
 }

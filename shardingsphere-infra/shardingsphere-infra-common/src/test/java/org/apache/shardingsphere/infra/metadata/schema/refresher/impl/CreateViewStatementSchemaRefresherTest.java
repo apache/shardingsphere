@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractSchemaRefresherTest;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -32,7 +31,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
-public final class CreateViewStatementSchemaRefresherTest extends AbstractSchemaRefresherTest {
+public final class CreateViewStatementSchemaRefresherTest {
     
     @Test
     public void refreshWithUnConfiguredForMySQL() throws SQLException {
@@ -47,6 +46,6 @@ public final class CreateViewStatementSchemaRefresherTest extends AbstractSchema
     private void refreshWithUnConfigured(final CreateViewStatement createViewStatement) throws SQLException {
         createViewStatement.setView(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item_0"))));
         SchemaRefresher<CreateViewStatement> schemaRefresher = new CreateViewStatementSchemaRefresher();
-        schemaRefresher.refresh(getSchema(), new MySQLDatabaseType(), Collections.singletonList("t_order_item"), createViewStatement, tableName -> Optional.empty());
+        schemaRefresher.refresh(ShardingSphereSchemaBuildUtil.buildSchema(), new MySQLDatabaseType(), Collections.singletonList("t_order_item"), createViewStatement, tableName -> Optional.empty());
     }
 }

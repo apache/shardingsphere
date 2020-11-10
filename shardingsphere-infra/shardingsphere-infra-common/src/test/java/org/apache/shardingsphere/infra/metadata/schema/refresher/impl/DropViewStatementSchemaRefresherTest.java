@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractSchemaRefresherTest;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -34,7 +33,7 @@ import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
 
-public final class DropViewStatementSchemaRefresherTest extends AbstractSchemaRefresherTest {
+public final class DropViewStatementSchemaRefresherTest {
     
     @Test
     public void refreshWithUnConfiguredForMySQL() throws SQLException {
@@ -49,6 +48,6 @@ public final class DropViewStatementSchemaRefresherTest extends AbstractSchemaRe
     private void refreshWithUnConfigured(final DropViewStatement dropViewStatement) throws SQLException {
         SchemaRefresher<DropViewStatement> schemaRefresher = new DropViewStatementSchemaRefresher();
         dropViewStatement.getViews().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
-        schemaRefresher.refresh(getSchema(), mock(DatabaseType.class), Collections.singletonList("t_order_item"), dropViewStatement, tableName -> Optional.empty());
+        schemaRefresher.refresh(ShardingSphereSchemaBuildUtil.buildSchema(), mock(DatabaseType.class), Collections.singletonList("t_order_item"), dropViewStatement, tableName -> Optional.empty());
     }
 }

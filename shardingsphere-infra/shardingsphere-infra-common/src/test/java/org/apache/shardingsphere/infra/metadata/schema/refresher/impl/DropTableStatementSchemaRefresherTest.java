@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractSchemaRefresherTest;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -38,7 +38,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 
-public final class DropTableStatementSchemaRefresherTest extends AbstractSchemaRefresherTest {
+public final class DropTableStatementSchemaRefresherTest {
     
     @Test
     public void refreshForMySQL() throws SQLException {
@@ -66,10 +66,11 @@ public final class DropTableStatementSchemaRefresherTest extends AbstractSchemaR
     }
     
     private void refresh(final DropTableStatement dropTableStatement) throws SQLException {
+        ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
         SchemaRefresher<DropTableStatement> schemaRefresher = new DropTableStatementSchemaRefresher();
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        schemaRefresher.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), dropTableStatement, tableName -> Optional.empty());
-        assertFalse(getSchema().containsTable("t_order"));
+        schemaRefresher.refresh(schema, mock(DatabaseType.class), Collections.emptyList(), dropTableStatement, tableName -> Optional.empty());
+        assertFalse(schema.containsTable("t_order"));
     }
     
     @Test
@@ -100,6 +101,6 @@ public final class DropTableStatementSchemaRefresherTest extends AbstractSchemaR
     private void refreshWithUnConfigured(final DropTableStatement dropTableStatement) throws SQLException {
         SchemaRefresher<DropTableStatement> schemaRefresher = new DropTableStatementSchemaRefresher();
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
-        schemaRefresher.refresh(getSchema(), mock(DatabaseType.class), Collections.singletonList("t_order_item"), dropTableStatement, tableName -> Optional.empty());
+        schemaRefresher.refresh(ShardingSphereSchemaBuildUtil.buildSchema(), mock(DatabaseType.class), Collections.singletonList("t_order_item"), dropTableStatement, tableName -> Optional.empty());
     }
 }

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.AbstractSchemaRefresherTest;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -38,7 +38,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 
-public final class DropIndexStatementSchemaRefresherTest extends AbstractSchemaRefresherTest {
+public final class DropIndexStatementSchemaRefresherTest {
     
     @Test
     public void refreshForMySQL() throws SQLException {
@@ -55,10 +55,11 @@ public final class DropIndexStatementSchemaRefresherTest extends AbstractSchemaR
     }
     
     private void refresh(final DropIndexStatement dropIndexStatement) throws SQLException {
+        ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
         dropIndexStatement.getIndexes().add(new IndexSegment(1, 2, new IdentifierValue("index")));
         SchemaRefresher<DropIndexStatement> metaDataRefreshStrategy = new DropIndexStatementSchemaRefresher();
-        metaDataRefreshStrategy.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), dropIndexStatement, tableName -> Optional.empty());
-        assertFalse(getSchema().get("t_order").getIndexes().containsKey("index"));
+        metaDataRefreshStrategy.refresh(schema, mock(DatabaseType.class), Collections.emptyList(), dropIndexStatement, tableName -> Optional.empty());
+        assertFalse(schema.get("t_order").getIndexes().containsKey("index"));
     }
     
     @Test
@@ -76,16 +77,17 @@ public final class DropIndexStatementSchemaRefresherTest extends AbstractSchemaR
     }
     
     private void assertRemoveIndexes(final DropIndexStatement dropIndexStatement) throws SQLException {
+        ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
         dropIndexStatement.getIndexes().add(new IndexSegment(1, 2, new IdentifierValue("index")));
         dropIndexStatement.getIndexes().add(new IndexSegment(2, 3, new IdentifierValue("t_order_index")));
         dropIndexStatement.getIndexes().add(new IndexSegment(3, 4, new IdentifierValue("order_id_index")));
-        Map<String, IndexMetaData> actualIndex = getSchema().get("t_order").getIndexes();
+        Map<String, IndexMetaData> actualIndex = schema.get("t_order").getIndexes();
         actualIndex.put("t_order_index", new IndexMetaData("t_order_index"));
         actualIndex.put("order_id_index", new IndexMetaData("order_id_index"));
         SchemaRefresher<DropIndexStatement> schemaRefresher = new DropIndexStatementSchemaRefresher();
-        schemaRefresher.refresh(getSchema(), mock(DatabaseType.class), Collections.emptyList(), dropIndexStatement, tableName -> Optional.empty());
-        assertFalse(getSchema().get("t_order").getIndexes().containsKey("index"));
-        assertFalse(getSchema().get("t_order").getIndexes().containsKey("t_order_index"));
-        assertFalse(getSchema().get("t_order").getIndexes().containsKey("order_id_index"));
+        schemaRefresher.refresh(schema, mock(DatabaseType.class), Collections.emptyList(), dropIndexStatement, tableName -> Optional.empty());
+        assertFalse(schema.get("t_order").getIndexes().containsKey("index"));
+        assertFalse(schema.get("t_order").getIndexes().containsKey("t_order_index"));
+        assertFalse(schema.get("t_order").getIndexes().containsKey("order_id_index"));
     }
 }

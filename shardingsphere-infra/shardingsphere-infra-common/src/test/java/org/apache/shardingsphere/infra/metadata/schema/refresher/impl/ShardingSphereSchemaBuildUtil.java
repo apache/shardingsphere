@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresher;
+package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.Getter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.junit.Before;
 
 import java.util.Collections;
 
-@Getter
-public abstract class AbstractSchemaRefresherTest {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingSphereSchemaBuildUtil {
     
-    private ShardingSphereSchema schema;
-    
-    @Before
-    public void setUp() {
-        schema = buildSchema();
-    }
-    
-    private ShardingSphereSchema buildSchema() {
+    /**
+     * Build schema.
+     * 
+     * @return ShardingSphere schema
+     */
+    public static ShardingSphereSchema buildSchema() {
         return new ShardingSphereSchema(ImmutableMap.of("t_order", new TableMetaData(
                 Collections.singletonList(new ColumnMetaData("order_id", 1, "String", false, false, false)), Collections.singletonList(new IndexMetaData("index")))));
     }
