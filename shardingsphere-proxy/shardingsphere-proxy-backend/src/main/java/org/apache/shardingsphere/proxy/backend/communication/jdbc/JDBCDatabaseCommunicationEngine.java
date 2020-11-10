@@ -102,9 +102,9 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (null == sqlStatement) {
             return;
         }
-        Optional<SchemaRefresher> refreshStrategy = SchemaRefresherFactory.newInstance(sqlStatement);
-        if (refreshStrategy.isPresent()) {
-            refreshStrategy.get().refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, this::buildTableMetaData);
+        Optional<SchemaRefresher> schemaRefresher = SchemaRefresherFactory.newInstance(sqlStatement);
+        if (schemaRefresher.isPresent()) {
+            schemaRefresher.get().refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, this::buildTableMetaData);
             GovernanceEventBus.getInstance().post(new SchemaPersistEvent(metaData.getName(), metaData.getSchema()));
         }
     }

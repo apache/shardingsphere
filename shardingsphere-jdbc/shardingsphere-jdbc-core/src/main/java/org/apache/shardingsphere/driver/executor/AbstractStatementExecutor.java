@@ -80,10 +80,10 @@ public abstract class AbstractStatementExecutor {
         if (null == sqlStatement) {
             return;
         }
-        Optional<SchemaRefresher> refreshStrategy = SchemaRefresherFactory.newInstance(sqlStatement);
-        if (refreshStrategy.isPresent()) {
+        Optional<SchemaRefresher> schemaRefresher = SchemaRefresherFactory.newInstance(sqlStatement);
+        if (schemaRefresher.isPresent()) {
             Collection<String> routeDataSourceNames = routeUnits.stream().map(RouteUnit::getDataSourceMapper).map(RouteMapper::getLogicName).collect(Collectors.toList());
-            refreshStrategy.get().refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, 
+            schemaRefresher.get().refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, 
                 tableName -> TableMetaDataBuilder.build(tableName, metaDataContexts.getDatabaseType(), dataSourceMap, metaData.getRuleMetaData().getRules(), metaDataContexts.getProps()));
             notifyPersistSchema(DefaultSchema.LOGIC_NAME, metaData.getSchema());
         }
