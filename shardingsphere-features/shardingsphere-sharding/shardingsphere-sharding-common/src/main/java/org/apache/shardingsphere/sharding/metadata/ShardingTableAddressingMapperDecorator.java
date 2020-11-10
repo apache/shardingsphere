@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.metadata;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.schema.loader.spi.TableAddressingMapperDecorator;
+import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableAddressingMapperDecorator;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Table addressing mapper decorator of sharding.
  */
-public final class ShardingTableAddressingMapperDecorator implements TableAddressingMapperDecorator<ShardingRule> {
+public final class ShardingTableAddressingMapperDecorator implements RuleBasedTableAddressingMapperDecorator<ShardingRule> {
     
     @Override
     public void decorate(final ShardingRule rule, final Map<String, Collection<String>> tableAddressingMapper) {
