@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<String> {
-    @Getter
     private StringBuilder result = new StringBuilder();
 
     private final boolean uperCase = true;
@@ -38,8 +37,6 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     private int indentCount;
 
     private int lines;
-
-    private int rowConstructorNumberOfLine = 5;
 
     private int projectionsCountOfLine = 3;
 
@@ -226,12 +223,12 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     public String visitExpr(final MySQLStatementParser.ExprContext ctx) {
         if (null != ctx.logicalOperator()) {
             MySQLStatementParser.ExprContext left = ctx.expr(0);
-            MySQLStatementParser.ExprContext right = ctx.expr(1);
             visit(left);
             println();
+            MySQLStatementParser.ExprContext right = ctx.expr(1);
             print(ctx.logicalOperator().getText());
             visit(right);
-        } else if (null != ctx.notOperator()){
+        } else if (null != ctx.notOperator()) {
             print(ctx.notOperator().getText());
             visit(ctx.expr(0));
         } else {
@@ -254,7 +251,8 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
             result.append(" ");
         }
         int projectionCount = ctx.projection().size();
-        for (int i = 0, lineItemCount=0; i < projectionCount; i++, lineItemCount++) {
+        int lineItemCount = 0;
+        for (int i = 0; i < projectionCount; i++) {
             if (0 != i) {
                 result.append(", ");
                 if (lineItemCount >= projectionsCountOfLine) {
@@ -263,6 +261,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
                 }
             }
             visit(ctx.projection(i));
+            lineItemCount++;
         }
         this.indentCount--;
         return result.toString();
