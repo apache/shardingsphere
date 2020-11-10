@@ -16,4 +16,4 @@ chapter = true
 
 5. [海量数据下的NewSQL数据库生态构建](/cn/videos/ecosystem/)  
 
-6. [Apache ShardingSphere 5.x 的新功能](/cn/videos/Newfeature/)  
+6. [Apache ShardingSphere 5.x的新功能](/cn/videos/Newfeature/)
