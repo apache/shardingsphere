@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.builder.addressing;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.builder.physical.PhysicalSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.physical.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableAddressingMapperDecorator;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -72,7 +72,7 @@ public final class TableAddressingMapperDataLoader {
     
     private static void append(final Map<String, Collection<String>> tableAddressingMapper, 
                                final DatabaseType databaseType, final String dataSourceName, final DataSource dataSource) throws SQLException {
-        for (String each : PhysicalSchemaMetaDataLoader.loadAllTableNames(dataSource, databaseType)) {
+        for (String each : SchemaMetaDataLoader.loadAllTableNames(dataSource, databaseType)) {
             if (!tableAddressingMapper.containsKey(each)) {
                 tableAddressingMapper.put(each, new LinkedHashSet<>());
             }

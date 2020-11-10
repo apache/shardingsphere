@@ -31,10 +31,10 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * Physical table meta data loader.
+ * Table meta data loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PhysicalTableMetaDataLoader {
+public final class TableMetaDataLoader {
     
     /**
      * Load table meta data.
@@ -49,8 +49,8 @@ public final class PhysicalTableMetaDataLoader {
         try (MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
             String formattedTableNamePattern = formatTableNamePattern(tableNamePattern, databaseType);
             return isTableExist(connectionAdapter, formattedTableNamePattern)
-                    ? Optional.of(new TableMetaData(PhysicalColumnMetaDataLoader.load(
-                            connectionAdapter, formattedTableNamePattern, databaseType), PhysicalIndexMetaDataLoader.load(connectionAdapter, formattedTableNamePattern)))
+                    ? Optional.of(new TableMetaData(ColumnMetaDataLoader.load(
+                            connectionAdapter, formattedTableNamePattern, databaseType), IndexMetaDataLoader.load(connectionAdapter, formattedTableNamePattern)))
                     : Optional.empty();
         }
     }

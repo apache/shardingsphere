@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PhysicalTableMetaDataLoaderTest {
+public final class TableMetaDataLoaderTest {
     
     private static final String TEST_CATALOG = "catalog";
     
@@ -101,7 +101,7 @@ public final class PhysicalTableMetaDataLoaderTest {
     
     @Test
     public void assertLoadWithExistedTable() throws SQLException {
-        Optional<TableMetaData> actual = PhysicalTableMetaDataLoader.load(dataSource, TEST_TABLE, mock(DatabaseType.class));
+        Optional<TableMetaData> actual = TableMetaDataLoader.load(dataSource, TEST_TABLE, mock(DatabaseType.class));
         assertTrue(actual.isPresent());
         Map<String, ColumnMetaData> columnMetaDataMap = actual.get().getColumns();
         assertThat(columnMetaDataMap.size(), is(2));
@@ -124,6 +124,6 @@ public final class PhysicalTableMetaDataLoaderTest {
     public void assertLoadWithNotExistedTable() throws SQLException {
         when(dataSource.getConnection().getMetaData().getTables(TEST_CATALOG, null, TEST_TABLE, null)).thenReturn(tableNotExistResultSet);
         when(tableNotExistResultSet.next()).thenReturn(false);
-        assertFalse(PhysicalTableMetaDataLoader.load(dataSource, TEST_TABLE, mock(DatabaseType.class)).isPresent());
+        assertFalse(TableMetaDataLoader.load(dataSource, TEST_TABLE, mock(DatabaseType.class)).isPresent());
     }
 }

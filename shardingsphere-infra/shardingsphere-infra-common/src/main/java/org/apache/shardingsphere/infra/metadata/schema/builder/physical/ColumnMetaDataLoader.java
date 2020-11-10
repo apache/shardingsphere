@@ -36,10 +36,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Physical column meta data loader.
+ * Column meta data loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PhysicalColumnMetaDataLoader {
+public final class ColumnMetaDataLoader {
     
     private static final String COLUMN_NAME = "COLUMN_NAME";
     

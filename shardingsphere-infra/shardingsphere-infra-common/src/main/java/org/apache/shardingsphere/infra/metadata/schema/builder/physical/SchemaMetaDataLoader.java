@@ -33,11 +33,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Physical schema meta data loader.
+ * Schema meta data loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j(topic = "ShardingSphere-metadata")
-public final class PhysicalSchemaMetaDataLoader {
+public final class SchemaMetaDataLoader {
     
     private static final String TABLE_TYPE = "TABLE";
     

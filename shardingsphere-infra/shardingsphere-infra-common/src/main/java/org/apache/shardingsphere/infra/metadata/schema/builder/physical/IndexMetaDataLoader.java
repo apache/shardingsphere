@@ -28,10 +28,10 @@ import java.util.Collection;
 import java.util.HashSet;
 
 /**
- * Physical index meta data loader.
+ * Index meta data loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PhysicalIndexMetaDataLoader {
+public final class IndexMetaDataLoader {
     
     private static final String INDEX_NAME = "INDEX_NAME";
     
