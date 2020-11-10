@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresh.impl;
+package org.apache.shardingsphere.infra.metadata.schema.refresher.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.TableMetaDataLoaderCallback;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.TableMetaDataLoaderCallback;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Create view statement meta data refresh strategy.
+ * Alter table statement meta data refresh strategy.
  */
-public final class CreateViewStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<CreateViewStatement> {
+public final class AlterTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<AlterTableStatement> {
     
     @Override
     public void refreshMetaData(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
-                                final CreateViewStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
-        String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
-        schema.put(viewName, new TableMetaData());
-        schema.get(viewName).getAddressingDataSources().addAll(routeDataSourceNames);
+                                final AlterTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) throws SQLException {
+        String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
+        if (null != schema && schema.containsTable(tableName)) {
+            callback.load(tableName).ifPresent(tableMetaData -> schema.put(tableName, tableMetaData));
+        }
     }
+
 }

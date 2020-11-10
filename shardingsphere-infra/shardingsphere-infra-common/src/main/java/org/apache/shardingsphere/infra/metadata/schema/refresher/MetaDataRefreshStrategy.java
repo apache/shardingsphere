@@ -15,25 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresh.impl;
+package org.apache.shardingsphere.infra.metadata.schema.refresher;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.MetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.TableMetaDataLoaderCallback;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Drop table statement meta data refresh strategy.
+ * Meta data refresh strategy.
+ *
+ * @param <T> type of SQL statement
  */
-public final class DropTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<DropTableStatement> {
+public interface MetaDataRefreshStrategy<T extends SQLStatement> {
     
-    @Override
-    public void refreshMetaData(final ShardingSphereSchema schema, final DatabaseType databaseType, final Collection<String> routeDataSourceNames,
-                                final DropTableStatement sqlStatement, final TableMetaDataLoaderCallback callback) {
-        sqlStatement.getTables().forEach(each -> schema.remove(each.getTableName().getIdentifier().getValue()));
-    }
-
+    /**
+     * Refresh meta data.
+     *
+     * @param schema ShardingSphere schema
+     * @param databaseType database type
+     * @param routeDataSourceNames route dataSource names
+     * @param sqlStatement SQL statement
+     * @param callback callback
+     * @throws SQLException SQL exception
+     */
+    void refreshMetaData(ShardingSphereSchema schema, DatabaseType databaseType, Collection<String> routeDataSourceNames, T sqlStatement, TableMetaDataLoaderCallback callback) throws SQLException;
 }

@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresh.spi;
+package org.apache.shardingsphere.infra.metadata.schema.refresher;
 
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+
+import java.sql.SQLException;
+import java.util.Optional;
 
 /**
- * ShardingSphere schema changed notifier.
+ * Table meta data loader callback.
  */
-public interface SchemaChangedNotifier extends OrderedSPI<ShardingSphereSchema> {
+public interface TableMetaDataLoaderCallback {
     
     /**
-     * Notify when ShardingSphere schema changed.
-     * 
-     * @param name schema name
-     * @param schema ShardingSphere schema
+     * Load table meta data.
+     *
+     * @param tableName table name
+     * @return table meta data
+     * @throws SQLException SQL exception
      */
-    void notify(String name, ShardingSphereSchema schema);
+    Optional<TableMetaData> load(String tableName) throws SQLException;
 }

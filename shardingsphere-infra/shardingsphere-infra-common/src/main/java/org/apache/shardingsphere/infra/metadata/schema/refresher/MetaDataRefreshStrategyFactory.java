@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresh;
+package org.apache.shardingsphere.infra.metadata.schema.refresher;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.impl.CreateIndexStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.impl.CreateTableStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.impl.CreateViewStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.impl.DropIndexStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.impl.AlterTableStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.impl.DropTableStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.schema.refresh.impl.DropViewStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.CreateIndexStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.CreateTableStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.CreateViewStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.DropIndexStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.AlterTableStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.DropTableStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.impl.DropViewStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
