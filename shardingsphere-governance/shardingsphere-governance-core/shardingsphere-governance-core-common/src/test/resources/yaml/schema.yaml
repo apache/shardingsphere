@@ -27,3 +27,6 @@ tables:
     indexes:
        primary:
           name: PRIMARY
+    addressingDataSources:
+      - ds_0
+      - ds_1
