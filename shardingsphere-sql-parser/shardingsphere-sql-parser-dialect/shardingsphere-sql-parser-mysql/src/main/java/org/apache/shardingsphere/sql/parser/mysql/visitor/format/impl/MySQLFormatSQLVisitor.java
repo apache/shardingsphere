@@ -82,13 +82,6 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         return result.toString();
     }
 
-//    @Override
-//    public String visitFromClause(final MySQLStatementParser.FromClauseContext ctx) {
-//        print("FROM ");
-//        visit(ctx.getChild(1));
-//        return result.toString();
-//    }
-
     @Override
     public String visitQueryExpressionParens(final MySQLStatementParser.QueryExpressionParensContext ctx) {
         println();
@@ -317,7 +310,6 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
 
     @Override
     public String visitStringLiterals(final MySQLStatementParser.StringLiteralsContext ctx) {
-//        print(ctx.getText());
         print("?");
         return result.toString();
     }
@@ -446,10 +438,5 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         print('\n');
         lines++;
         printIndent();
-    }
-
-    private void println(final String text) {
-        print(text);
-        println();
     }
 }
