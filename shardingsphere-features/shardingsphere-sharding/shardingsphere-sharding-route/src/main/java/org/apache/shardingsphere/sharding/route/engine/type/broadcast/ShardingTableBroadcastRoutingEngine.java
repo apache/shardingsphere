@@ -44,7 +44,7 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
     
     private final ShardingSphereSchema schema;
     
-    private final SQLStatementContext sqlStatementContext;
+    private final SQLStatementContext<?> sqlStatementContext;
     
     @Override
     public void route(final RouteContext routeContext, final ShardingRule shardingRule) {

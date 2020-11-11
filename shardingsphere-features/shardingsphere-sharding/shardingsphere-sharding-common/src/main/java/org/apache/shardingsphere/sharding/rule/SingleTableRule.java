@@ -15,30 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.fixture;
+package org.apache.shardingsphere.sharding.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
+import lombok.RequiredArgsConstructor;
 
-public final class TestShardingSphereRuleBuilder implements ShardingSphereRuleBuilder {
+/**
+ * Single table rule.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class SingleTableRule {
     
-    @Getter
-    private static ShardingSphereRule rule = new TestShardingSphereRule();
+    private final String tableName;
     
-    @Override
-    public ShardingSphereRule build(final RuleConfiguration ruleConfig) {
-        return rule;
-    }
-    
-    @Override
-    public int getOrder() {
-        return 0;
-    }
-    
-    @Override
-    public Class getTypeClass() {
-        return TestRuleConfiguration.class;
-    }
+    private final String dataSourceName;
 }

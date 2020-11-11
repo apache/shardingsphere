@@ -22,15 +22,13 @@ import org.apache.shardingsphere.replicaquery.algorithm.config.AlgorithmProvided
 import org.apache.shardingsphere.replicaquery.constant.ReplicaQueryOrder;
 import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryRule;
 
-import java.util.Collection;
-
 /**
  * Algorithm provided replica query rule builder.
  */
 public final class AlgorithmProvidedReplicaQueryRuleBuilder implements ShardingSphereRuleBuilder<ReplicaQueryRule, AlgorithmProvidedReplicaQueryRuleConfiguration> {
     
     @Override
-    public ReplicaQueryRule build(final AlgorithmProvidedReplicaQueryRuleConfiguration ruleConfig, final Collection<String> dataSourceNames) {
+    public ReplicaQueryRule build(final AlgorithmProvidedReplicaQueryRuleConfiguration ruleConfig) {
         return new ReplicaQueryRule(ruleConfig);
     }
     

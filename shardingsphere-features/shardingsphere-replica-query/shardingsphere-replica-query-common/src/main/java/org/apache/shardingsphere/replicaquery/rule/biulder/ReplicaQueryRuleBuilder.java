@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.replicaquery.rule.biulder;
 
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
 import org.apache.shardingsphere.replicaquery.constant.ReplicaQueryOrder;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryRule;
-
-import java.util.Collection;
 
 /**
  * Replica query rule builder.
@@ -30,7 +28,7 @@ import java.util.Collection;
 public final class ReplicaQueryRuleBuilder implements ShardingSphereRuleBuilder<ReplicaQueryRule, ReplicaQueryRuleConfiguration> {
     
     @Override
-    public ReplicaQueryRule build(final ReplicaQueryRuleConfiguration ruleConfig, final Collection<String> dataSourceNames) {
+    public ReplicaQueryRule build(final ReplicaQueryRuleConfiguration ruleConfig) {
         return new ReplicaQueryRule(ruleConfig);
     }
     
