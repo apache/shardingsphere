@@ -84,7 +84,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         ConfigCenterNode node = new ConfigCenterNode();
         configurationRepository.persist(node.getAuthenticationPath(), readYAML(AUTHENTICATION_YAML));
         configurationRepository.persist(node.getPropsPath(), readYAML(PROPS_YAML));
-        configurationRepository.persist(node.getSchemasPath(), "db");
+        configurationRepository.persist(node.getMetadataNodePath(), "db");
         configurationRepository.persist(node.getDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
         configurationRepository.persist(node.getRulePath("db"), readYAML(SHARDING_RULE_YAML));
     }
