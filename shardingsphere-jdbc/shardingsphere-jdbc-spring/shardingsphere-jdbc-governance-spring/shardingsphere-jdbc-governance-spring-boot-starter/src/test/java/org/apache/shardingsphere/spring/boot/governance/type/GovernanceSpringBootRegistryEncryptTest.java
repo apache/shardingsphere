@@ -67,8 +67,8 @@ public class GovernanceSpringBootRegistryEncryptTest {
         String dataSource = readYAML(DATA_SOURCE_FILE);
         String encryptRule = readYAML(ENCRYPT_RULE_FILE);
         TestGovernanceRepository repository = new TestGovernanceRepository();
-        repository.persist("/schemas/logic_db/datasource", dataSource);
-        repository.persist("/schemas/logic_db/rule", encryptRule);
+        repository.persist("/metadata/logic_db/datasource", dataSource);
+        repository.persist("/metadata/logic_db/rule", encryptRule);
         repository.persist("/props", ConfigurationPropertyKey.SQL_SHOW.getKey() + ": 'true'\n");
         repository.persist("/states/datanodes", "");
     }

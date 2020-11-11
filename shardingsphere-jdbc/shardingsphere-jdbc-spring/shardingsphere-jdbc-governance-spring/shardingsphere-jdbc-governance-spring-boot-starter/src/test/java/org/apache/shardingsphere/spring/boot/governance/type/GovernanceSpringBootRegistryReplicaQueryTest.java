@@ -61,8 +61,8 @@ public class GovernanceSpringBootRegistryReplicaQueryTest {
     public static void init() {
         EmbedTestingServer.start();
         TestGovernanceRepository repository = new TestGovernanceRepository();
-        repository.persist("/schemas/logic_db/datasource", readYAML(DATA_SOURCE_FILE));
-        repository.persist("/schemas/logic_db/rule", readYAML(RULE_FILE));
+        repository.persist("/metadata/logic_db/datasource", readYAML(DATA_SOURCE_FILE));
+        repository.persist("/metadata/logic_db/rule", readYAML(RULE_FILE));
         repository.persist("/props", "{}\n");
         repository.persist("/states/datanodes", "");
     }
