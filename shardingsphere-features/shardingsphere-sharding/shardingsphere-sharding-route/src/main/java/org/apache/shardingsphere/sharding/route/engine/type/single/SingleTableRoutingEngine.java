@@ -57,7 +57,6 @@ public final class SingleTableRoutingEngine implements ShardingRouteEngine {
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName.get(), dataSourceName.get()), routingTables));
     }
     
-    // TODO maybe enhance here, only return one data source for multiple tables for now
     private Optional<String> findDataSourceName() {
         for (String each : logicTables) {
             if (schema.containsTable(each)) {

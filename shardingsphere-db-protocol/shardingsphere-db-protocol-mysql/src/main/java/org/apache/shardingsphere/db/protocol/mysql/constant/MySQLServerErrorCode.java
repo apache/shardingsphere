@@ -48,7 +48,7 @@ public enum MySQLServerErrorCode implements SQLErrorCode {
     
     ER_TABLE_EXISTS_ERROR(1050, "42S01", "Table '%s' already exists"),
     
-    ER_NO_SUCH_TABLE(1146, "42S02", "Table '%s.%s' doesn't exist"),
+    ER_NO_SUCH_TABLE(1146, "42S02", "Table '%s' doesn't exist"),
     
     ER_NOT_SUPPORTED_YET(1235, "42000", "This version of ShardingProxy doesn't yet support this SQL. '%s'"),
     

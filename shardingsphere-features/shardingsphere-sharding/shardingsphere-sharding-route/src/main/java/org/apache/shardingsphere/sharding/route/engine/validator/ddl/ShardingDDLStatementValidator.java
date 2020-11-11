@@ -57,8 +57,7 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
             if (!schema.containsTable(tableName)) {
-                String dataSourceName = schema.get(tableName).getAddressingDataSources().iterator().next();
-                throw new NoSuchTableException(dataSourceName, tableName);
+                throw new NoSuchTableException(tableName);
             }
         }
     }

@@ -19,16 +19,15 @@ package org.apache.shardingsphere.sharding.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.SchemaMetaDataLoader;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.SingleTableRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -43,13 +42,11 @@ public final class SingleTableRuleLoader {
      * 
      * @param databaseType database type
      * @param dataSourceMap data source map
-     * @param shardingRule sharding rule
+     * @param excludedTables exclude table names
      * @return single table rule map
-     * @throws SQLException SQL exception
      */
     @SuppressWarnings("CollectionWithoutInitialCapacity")
-    public static Map<String, SingleTableRule> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
-        Collection<String> excludedTables = getExcludedTables(shardingRule);
+    public static Map<String, SingleTableRule> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<String> excludedTables) {
         Map<String, SingleTableRule> result = new HashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             result.putAll(load(databaseType, entry.getKey(), entry.getValue(), excludedTables));
@@ -58,20 +55,19 @@ public final class SingleTableRuleLoader {
     }
     
     private static Map<String, SingleTableRule> load(final DatabaseType databaseType,
-                                                     final String dataSourceName, final DataSource dataSource, final Collection<String> excludedTables) throws SQLException {
-        Collection<String> tables = SchemaMetaDataLoader.loadAllTableNames(dataSource, databaseType);
+                                                     final String dataSourceName, final DataSource dataSource, final Collection<String> excludedTables) {
+        Collection<String> tables;
+        try {
+            tables = SchemaMetaDataLoader.loadAllTableNames(dataSource, databaseType);
+        } catch (final SQLException ex) {
+            throw new ShardingSphereConfigurationException("Can not load table: ", ex.getMessage());
+        }
         Map<String, SingleTableRule> result = new HashMap<>(tables.size(), 1);
         for (String each : tables) {
             if (!excludedTables.contains(each)) {
                 result.put(each, new SingleTableRule(each, dataSourceName));
             }
         }
-        return result;
-    }
-    
-    private static Collection<String> getExcludedTables(final ShardingRule shardingRule) {
-        Collection<String> result = new HashSet<>(shardingRule.getTables());
-        result.addAll(shardingRule.getAllActualTables());
         return result;
     }
 }
