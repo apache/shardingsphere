@@ -17,32 +17,33 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
-import com.google.common.collect.Maps;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.PreparedSQL;
+import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
-import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
-import org.hamcrest.Matchers;
+import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class MySQLSqlBuilderTest {
+public class MySQLSQLBuilderTest {
+    
+    private AbstractSQLBuilder sqlBuilder = new MySQLSQLBuilder();
     
     @Test
     public void assertBuildInsertSQL() {
-        PreparedSQL actual = new MySQLSQLBuilder(Maps.newHashMap()).buildInsertSQL(mockDataRecord());
-        assertThat(actual.getSql(), is("INSERT INTO `t_order`(`id`,`name`,`age`) VALUES(?,?,?) ON DUPLICATE KEY UPDATE `name`=?,`age`=?"));
-        assertThat(actual.getValuesIndex().toArray(), Matchers.arrayContaining(0, 1, 2, 1, 2));
+        String actual = sqlBuilder.buildInsertSQL(mockDataRecord("t1"));
+        assertThat(actual, is("INSERT INTO `t1`(`id`,`sc`,`c1`,`c2`,`c3`) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE `sc`=VALUES(`sc`),`c1`=VALUES(`c1`),`c2`=VALUES(`c2`),`c3`=VALUES(`c3`)"));
     }
     
-    private DataRecord mockDataRecord() {
-        DataRecord result = new DataRecord(new BinlogPosition("", 1), 2);
-        result.setTableName("t_order");
-        result.addColumn(new Column("id", 1, true, true));
-        result.addColumn(new Column("name", "", true, false));
-        result.addColumn(new Column("age", 1, true, false));
+    private DataRecord mockDataRecord(final String tableName) {
+        DataRecord result = new DataRecord(new NopPosition(), 4);
+        result.setTableName(tableName);
+        result.addColumn(new Column("id", "", false, true));
+        result.addColumn(new Column("sc", "", false, false));
+        result.addColumn(new Column("c1", "", true, false));
+        result.addColumn(new Column("c2", "", true, false));
+        result.addColumn(new Column("c3", "", true, false));
         return result;
     }
 }

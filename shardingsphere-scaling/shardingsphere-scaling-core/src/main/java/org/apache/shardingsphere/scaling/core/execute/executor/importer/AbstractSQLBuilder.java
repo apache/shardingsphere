@@ -17,21 +17,18 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 
-import lombok.RequiredArgsConstructor;
+import com.google.common.collect.Collections2;
+import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
  * Abstract SQL builder.
  */
-@RequiredArgsConstructor
 public abstract class AbstractSQLBuilder {
     
     private static final String INSERT_SQL_CACHE_KEY_PREFIX = "INSERT_";
@@ -40,9 +37,7 @@ public abstract class AbstractSQLBuilder {
     
     private static final String DELETE_SQL_CACHE_KEY_PREFIX = "DELETE_";
     
-    private final Map<String, Set<String>> shardingColumnsMap;
-    
-    private final ConcurrentMap<String, PreparedSQL> sqlCacheMap = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, String> sqlCacheMap = new ConcurrentHashMap<>();
     
     /**
      * Get left identifier quote string.
@@ -72,90 +67,79 @@ public abstract class AbstractSQLBuilder {
      * Build insert SQL.
      *
      * @param dataRecord data record
-     * @return insert prepared SQL
+     * @return insert SQL
      */
-    public PreparedSQL buildInsertSQL(final DataRecord dataRecord) {
+    public String buildInsertSQL(final DataRecord dataRecord) {
         String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildInsertSQLInternal(dataRecord));
+            sqlCacheMap.put(sqlCacheKey, buildInsertSQLInternal(dataRecord.getTableName(), dataRecord.getColumns()));
         }
         return sqlCacheMap.get(sqlCacheKey);
     }
     
-    protected PreparedSQL buildInsertSQLInternal(final DataRecord dataRecord) {
+    private String buildInsertSQLInternal(final String tableName, final List<Column> columns) {
         StringBuilder columnsLiteral = new StringBuilder();
         StringBuilder holder = new StringBuilder();
-        List<Integer> valuesIndex = new ArrayList<>();
-        for (int i = 0; i < dataRecord.getColumnCount(); i++) {
-            columnsLiteral.append(String.format("%s,", quote(dataRecord.getColumn(i).getName())));
+        for (Column each : columns) {
+            columnsLiteral.append(String.format("%s,", quote(each.getName())));
             holder.append("?,");
-            valuesIndex.add(i);
         }
         columnsLiteral.setLength(columnsLiteral.length() - 1);
         holder.setLength(holder.length() - 1);
-        return new PreparedSQL(
-                String.format("INSERT INTO %s(%s) VALUES(%s)", quote(dataRecord.getTableName()), columnsLiteral, holder),
-                valuesIndex);
+        return String.format("INSERT INTO %s(%s) VALUES(%s)", quote(tableName), columnsLiteral, holder);
     }
     
     /**
      * Build update SQL.
      *
      * @param dataRecord data record
-     * @return update prepared SQL
+     * @param conditionColumns condition columns
+     * @return update SQL
      */
-    public PreparedSQL buildUpdateSQL(final DataRecord dataRecord) {
+    public String buildUpdateSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(dataRecord));
+            sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(dataRecord.getTableName(), conditionColumns));
         }
         StringBuilder updatedColumnString = new StringBuilder();
-        List<Integer> valuesIndex = new ArrayList<>();
-        for (Integer each : RecordUtil.extractUpdatedColumns(dataRecord)) {
-            updatedColumnString.append(String.format("%s = ?,", quote(dataRecord.getColumn(each).getName())));
-            valuesIndex.add(each);
+        for (Column each : extractUpdatedColumns(dataRecord.getColumns())) {
+            updatedColumnString.append(String.format("%s = ?,", quote(each.getName())));
         }
         updatedColumnString.setLength(updatedColumnString.length() - 1);
-        PreparedSQL preparedSQL = sqlCacheMap.get(sqlCacheKey);
-        valuesIndex.addAll(preparedSQL.getValuesIndex());
-        return new PreparedSQL(
-                String.format(preparedSQL.getSql(), updatedColumnString),
-                valuesIndex);
+        return String.format(sqlCacheMap.get(sqlCacheKey), updatedColumnString);
     }
     
-    private PreparedSQL buildUpdateSQLInternal(final DataRecord dataRecord) {
-        List<Integer> valuesIndex = new ArrayList<>();
-        return new PreparedSQL(
-                String.format("UPDATE %s SET %%s WHERE %s", quote(dataRecord.getTableName()), buildWhereSQL(dataRecord, valuesIndex)),
-                valuesIndex);
+    private String buildUpdateSQLInternal(final String tableName, final Collection<Column> conditionColumns) {
+        return String.format("UPDATE %s SET %%s WHERE %s", quote(tableName), buildWhereSQL(conditionColumns));
+    }
+    
+    private Collection<Column> extractUpdatedColumns(final Collection<Column> columns) {
+        return Collections2.filter(columns, Column::isUpdated);
     }
     
     /**
      * Build delete SQL.
      *
      * @param dataRecord data record
-     * @return delete prepared SQL
+     * @param conditionColumns condition columns
+     * @return delete SQL
      */
-    public PreparedSQL buildDeleteSQL(final DataRecord dataRecord) {
+    public String buildDeleteSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = DELETE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildDeleteSQLInternal(dataRecord));
+            sqlCacheMap.put(sqlCacheKey, buildDeleteSQLInternal(dataRecord.getTableName(), conditionColumns));
         }
         return sqlCacheMap.get(sqlCacheKey);
     }
     
-    private PreparedSQL buildDeleteSQLInternal(final DataRecord dataRecord) {
-        List<Integer> columnsIndex = new ArrayList<>();
-        return new PreparedSQL(
-                String.format("DELETE FROM %s WHERE %s", quote(dataRecord.getTableName()), buildWhereSQL(dataRecord, columnsIndex)),
-                columnsIndex);
+    private String buildDeleteSQLInternal(final String tableName, final Collection<Column> conditionColumns) {
+        return String.format("DELETE FROM %s WHERE %s", quote(tableName), buildWhereSQL(conditionColumns));
     }
     
-    private String buildWhereSQL(final DataRecord dataRecord, final List<Integer> valuesIndex) {
+    private String buildWhereSQL(final Collection<Column> conditionColumns) {
         StringBuilder where = new StringBuilder();
-        for (Integer each : RecordUtil.extractConditionColumns(dataRecord, shardingColumnsMap.get(dataRecord.getTableName()))) {
-            where.append(String.format("%s = ? and ", quote(dataRecord.getColumn(each).getName())));
-            valuesIndex.add(each);
+        for (Column each : conditionColumns) {
+            where.append(String.format("%s = ? and ", quote(each.getName())));
         }
         where.setLength(where.length() - 5);
         return where.toString();

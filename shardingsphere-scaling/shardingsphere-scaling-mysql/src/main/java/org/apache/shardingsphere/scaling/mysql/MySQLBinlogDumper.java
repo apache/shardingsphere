@@ -138,7 +138,10 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
             for (int j = 0; j < beforeValues.length; j++) {
                 Object oldValue = beforeValues[j];
                 Object newValue = afterValues[j];
-                record.addColumn(new Column(tableMetaData.getColumnMetaData(j).getName(), newValue, !Objects.equals(newValue, oldValue), tableMetaData.isPrimaryKey(j)));
+                boolean updated = !Objects.equals(newValue, oldValue);
+                record.addColumn(new Column(tableMetaData.getColumnMetaData(j).getName(),
+                        (tableMetaData.isPrimaryKey(j) && updated) ? oldValue : null,
+                        newValue, updated, tableMetaData.isPrimaryKey(j)));
             }
             pushRecord(record);
         }

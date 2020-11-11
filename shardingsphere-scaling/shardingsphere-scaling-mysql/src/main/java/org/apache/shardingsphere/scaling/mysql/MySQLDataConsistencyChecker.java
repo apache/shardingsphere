@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.check.AbstractDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceWrapper;
@@ -99,6 +98,6 @@ public final class MySQLDataConsistencyChecker extends AbstractDataConsistencyCh
     
     @Override
     protected MySQLSQLBuilder getSqlBuilder() {
-        return new MySQLSQLBuilder(Maps.newHashMap());
+        return new MySQLSQLBuilder();
     }
 }
