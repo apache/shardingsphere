@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.DeleteStatementHandler;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.l
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.orderby.OrderByClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.output.OutputClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.where.WhereClauseAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.with.WithClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
 
 import java.util.Optional;
@@ -51,11 +53,22 @@ public final class DeleteStatementAssert {
      * @param expected expected delete statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
+        assertWithClause(assertContext, actual, expected);
         assertTable(assertContext, actual, expected);
         assertOutput(assertContext, actual, expected);
         assertWhereClause(assertContext, actual, expected);
         assertOrderByClause(assertContext, actual, expected);
         assertLimitClause(assertContext, actual, expected);
+    }
+    
+    private static void assertWithClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
+        Optional<WithSegment> withSegment = DeleteStatementHandler.getWithSegment(actual);
+        if (null != expected.getWithClause()) {
+            assertTrue(assertContext.getText("Actual with segment should exist."), withSegment.isPresent());
+            WithClauseAssert.assertIs(assertContext, withSegment.get(), expected.getWithClause());
+        } else {
+            assertFalse(assertContext.getText("Actual with segment should not exist."), withSegment.isPresent());
+        }
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {

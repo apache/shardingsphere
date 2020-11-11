@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.output.ExpectedOutputClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.predicate.ExpectedWhereClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.with.ExpectedWithClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -37,6 +38,9 @@ import java.util.List;
 @Setter
 public final class DeleteStatementTestCase extends SQLParserTestCase {
     
+    @XmlElement(name = "with")
+    private ExpectedWithClause withClause;
+    
     @XmlElement(name = "table")
     private final List<ExpectedSimpleTable> tables = new LinkedList<>();
     
@@ -45,10 +49,10 @@ public final class DeleteStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "where")
     private ExpectedWhereClause whereClause;
-
+    
     @XmlElement(name = "order-by")
     private ExpectedOrderByClause orderByClause;
-
+    
     @XmlElement(name = "limit")
     private ExpectedLimitClause limitClause;
 }
