@@ -32,6 +32,7 @@ import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -45,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -133,6 +135,32 @@ public final class AbstractJDBCImporterTest {
         verify(preparedStatement).setObject(3, 1);
         verify(preparedStatement).setObject(4, 10);
         verify(preparedStatement).execute();
+    }
+    
+    @Test
+    public void assertUpdatePrimaryKeyDataRecord() throws SQLException {
+        DataRecord updateRecord = getUpdatePrimaryKeyDataRecord();
+        when(sqlBuilder.buildUpdateSQL(updateRecord, mockConditionColumns(updateRecord))).thenReturn(UPDATE_SQL);
+        when(connection.prepareStatement(UPDATE_SQL)).thenReturn(preparedStatement);
+        when(channel.fetchRecords(100, 3)).thenReturn(mockRecords(updateRecord));
+        jdbcImporter.run();
+        InOrder inOrder = inOrder(preparedStatement);
+        inOrder.verify(preparedStatement).setObject(1, 2);
+        inOrder.verify(preparedStatement).setObject(2, 10);
+        inOrder.verify(preparedStatement).setObject(3, "UPDATE");
+        inOrder.verify(preparedStatement).setObject(4, 1);
+        inOrder.verify(preparedStatement).setObject(5, 10);
+        inOrder.verify(preparedStatement).execute();
+    }
+    
+    private DataRecord getUpdatePrimaryKeyDataRecord() {
+        DataRecord result = new DataRecord(new NopPosition(), 3);
+        result.setTableName(TABLE_NAME);
+        result.setType("UPDATE");
+        result.addColumn(new Column("id", 1, 2, true, true));
+        result.addColumn(new Column("user", 10, true, false));
+        result.addColumn(new Column("status", "UPDATE", true, false));
+        return result;
     }
     
     private Collection<Column> mockConditionColumns(final DataRecord dataRecord) {

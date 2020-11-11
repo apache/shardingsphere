@@ -49,7 +49,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     public FrontendChannelInboundHandler(final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine) {
         this.databaseProtocolFrontendEngine = databaseProtocolFrontendEngine;
-        TransactionType transactionType = TransactionType.valueOf(ProxyContext.getInstance().getSchemaContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE));
+        TransactionType transactionType = TransactionType.valueOf(ProxyContext.getInstance().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE));
         backendConnection = new BackendConnection(transactionType);
     }
     
@@ -65,7 +65,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             authorized = auth(context, (ByteBuf) message);
             return;
         }
-        boolean supportHint = ProxyContext.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED);
+        boolean supportHint = ProxyContext.getInstance().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED);
         boolean isOccupyThreadForPerConnection = databaseProtocolFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection();
         ExecutorService executorService = CommandExecutorSelector.getExecutorService(
                 isOccupyThreadForPerConnection, supportHint, backendConnection.getTransactionStatus().getTransactionType(), context.channel().id());

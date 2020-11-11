@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.registry.listener;
 
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
 import java.util.Collection;
 
@@ -40,7 +40,7 @@ public final class RegistryListenerManager {
      * Initialize all state changed listeners.
      */
     public void initListeners() {
-        instanceStateChangedListener.watch(ChangedType.UPDATED);
-        dataSourceStateChangedListener.watch(ChangedType.UPDATED, ChangedType.DELETED, ChangedType.ADDED);
+        instanceStateChangedListener.watch(Type.UPDATED);
+        dataSourceStateChangedListener.watch(Type.UPDATED, Type.DELETED, Type.ADDED);
     }
 }

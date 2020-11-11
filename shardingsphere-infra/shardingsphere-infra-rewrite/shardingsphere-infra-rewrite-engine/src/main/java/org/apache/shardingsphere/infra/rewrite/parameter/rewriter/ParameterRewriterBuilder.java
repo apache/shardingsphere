@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.parameter.rewriter;
 
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 
 import java.util.Collection;
 
@@ -29,8 +29,8 @@ public interface ParameterRewriterBuilder {
     /**
      * Get parameter rewriters.
      * 
-     * @param schemaMetaData schema meta data
+     * @param schema ShardingSphere schema
      * @return parameter rewriters
      */
-    Collection<ParameterRewriter> getParameterRewriters(PhysicalSchemaMetaData schemaMetaData);
+    Collection<ParameterRewriter> getParameterRewriters(ShardingSphereSchema schema);
 }

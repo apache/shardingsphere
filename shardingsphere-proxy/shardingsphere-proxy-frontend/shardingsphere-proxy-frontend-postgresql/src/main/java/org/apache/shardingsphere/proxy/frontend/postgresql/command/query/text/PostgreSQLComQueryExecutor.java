@@ -63,7 +63,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
-        if (ProxyContext.getInstance().getSchemaContexts().isCircuitBreak()) {
+        if (ProxyContext.getInstance().getMetaDataContexts().isCircuitBreak()) {
             return Collections.singletonList(new PostgreSQLErrorResponsePacket());
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();

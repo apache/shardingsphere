@@ -49,7 +49,7 @@ public final class PostgreSQLAuthenticationHandler {
      */
     public static PostgreSQLLoginResult loginWithMd5Password(final String username, final String databaseName, final byte[] md5Salt, final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
         ProxyUser proxyUser = null;
-        for (Map.Entry<String, ProxyUser> entry : ProxyContext.getInstance().getSchemaContexts().getAuthentication().getUsers().entrySet()) {
+        for (Map.Entry<String, ProxyUser> entry : ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getUsers().entrySet()) {
             if (entry.getKey().equals(username)) {
                 proxyUser = entry.getValue();
                 break;

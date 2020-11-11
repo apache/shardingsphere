@@ -24,23 +24,23 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.governance.core.event.model.persist.DataSourcePersistEvent;
-import org.apache.shardingsphere.governance.core.event.model.persist.MetaDataPersistEvent;
-import org.apache.shardingsphere.governance.core.event.model.persist.RulePersistEvent;
-import org.apache.shardingsphere.governance.core.event.model.persist.SchemaNamePersistEvent;
 import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
+import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaPersistEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlLogicSchemaMetaData;
+import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
-import org.apache.shardingsphere.governance.core.yaml.swapper.LogicSchemaMetaDataYamlSwapper;
+import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -121,7 +121,7 @@ public final class ConfigCenter {
      * @param event Rule event.
      */
     @Subscribe
-    public synchronized void renew(final RulePersistEvent event) {
+    public synchronized void renew(final RuleConfigurationsPersistEvent event) {
         persistRuleConfigurations(event.getSchemaName(), event.getRuleConfigurations());
     }
     
@@ -132,7 +132,14 @@ public final class ConfigCenter {
      */
     @Subscribe
     public synchronized void renew(final SchemaNamePersistEvent event) {
-        persistSchema(event.getSchemaName(), event.isDrop());
+        String schemaNames = repository.get(node.getSchemasPath());
+        Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
+        if (event.isDrop()) {
+            schemas.remove(event.getSchemaName());
+        } else if (!schemas.contains(event.getSchemaName())) {
+            schemas.add(event.getSchemaName());
+        }
+        repository.persist(node.getSchemasPath(), Joiner.on(",").join(schemas));
     }
     
     /**
@@ -141,8 +148,8 @@ public final class ConfigCenter {
      * @param event Meta data event.
      */
     @Subscribe
-    public synchronized void renew(final MetaDataPersistEvent event) {
-        persistMetaData(event.getSchemaName(), event.getMetaData());
+    public synchronized void renew(final SchemaPersistEvent event) {
+        persistSchema(event.getSchemaName(), event.getSchema());
     }
     
     private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
@@ -251,17 +258,6 @@ public final class ConfigCenter {
         repository.persist(node.getSchemasPath(), Joiner.on(",").join(newArrayList));
     }
     
-    private void persistSchema(final String schemaName, final boolean isDrop) {
-        String schemaNames = repository.get(node.getSchemasPath());
-        Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
-        if (isDrop) {
-            schemas.remove(schemaName);
-        } else if (!schemas.contains(schemaName)) {
-            schemas.add(schemaName);
-        }
-        repository.persist(node.getSchemasPath(), Joiner.on(",").join(schemas));
-    }
-    
     /**
      * Load data source configurations.
      *
@@ -339,27 +335,27 @@ public final class ConfigCenter {
     }
     
     /**
-     * Persist rule schema meta data.
+     * Persist ShardingSphere schema.
      *
      * @param schemaName schema name
-     * @param logicSchemaMetaData logic schema meta data
+     * @param schema ShardingSphere schema
      */
-    public void persistMetaData(final String schemaName, final LogicSchemaMetaData logicSchemaMetaData) {
-        repository.persist(node.getTablePath(schemaName), YamlEngine.marshal(new LogicSchemaMetaDataYamlSwapper().swapToYamlConfiguration(logicSchemaMetaData)));
+    public void persistSchema(final String schemaName, final ShardingSphereSchema schema) {
+        repository.persist(node.getTablePath(schemaName), YamlEngine.marshal(new SchemaYamlSwapper().swapToYamlConfiguration(schema)));
     }
     
     /**
-     * Load rule schema meta data.
+     * Load ShardingSphere schema.
      *
      * @param schemaName schema name
-     * @return rule schema meta data of the schema
+     * @return ShardingSphere schema
      */
-    public Optional<LogicSchemaMetaData> loadMetaData(final String schemaName) {
+    public Optional<ShardingSphereSchema> loadSchema(final String schemaName) {
         String path = repository.get(node.getTablePath(schemaName));
         if (Strings.isNullOrEmpty(path)) {
             return Optional.empty();
         }
-        return Optional.of(new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(path, YamlLogicSchemaMetaData.class)));
+        return Optional.of(new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(path, YamlSchema.class)));
     }
     
     /**

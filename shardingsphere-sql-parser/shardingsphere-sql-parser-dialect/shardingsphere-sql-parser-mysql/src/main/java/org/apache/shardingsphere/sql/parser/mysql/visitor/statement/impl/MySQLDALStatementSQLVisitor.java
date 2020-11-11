@@ -301,21 +301,21 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitSetName(final SetNameContext ctx) {
+        VariableAssignSegment characterSet = new VariableAssignSegment();
+        VariableSegment variable = new VariableSegment();
+        variable.setVariable("charset");
+        characterSet.setVariable(variable);
+        String assignValue = ctx.charsetName().getText();
+        characterSet.setAssignValue(assignValue);
         MySQLSetStatement result = new MySQLSetStatement();
-        if (null != ctx.characterSetName() || null != ctx.DEFAULT()) {
-            VariableAssignSegment characterSet = new VariableAssignSegment();
-            VariableSegment variable = new VariableSegment();
-            variable.setVariable("charset");
-            characterSet.setVariable(variable);
-            String assignValue = (null != ctx.DEFAULT()) ? ctx.DEFAULT().getText() : ctx.characterSetName().getText();
-            characterSet.setAssignValue(assignValue);
-        }
-        if (null != ctx.collationName_()) {
+        result.getVariableAssigns().add(characterSet);
+        if (null != ctx.collationName()) {
             VariableAssignSegment collation = new VariableAssignSegment();
-            VariableSegment variable = new VariableSegment();
-            variable.setVariable(ctx.COLLATE().getText());
-            collation.setVariable(variable);
-            collation.setAssignValue(ctx.collationName_().getText());
+            VariableSegment collationVariable = new VariableSegment();
+            collationVariable.setVariable(ctx.COLLATE().getText());
+            collation.setVariable(collationVariable);
+            collation.setAssignValue(ctx.collationName().getText());
+            result.getVariableAssigns().add(collation);
         }
         return result;
     }
@@ -327,7 +327,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         VariableSegment variable = new VariableSegment();
         String variableName = (null != ctx.CHARSET()) ? ctx.CHARSET().getText() : "charset";
         variable.setVariable(variableName);
-        String assignValue = (null != ctx.DEFAULT()) ? ctx.DEFAULT().getText() : ctx.characterSetName().getText();
+        String assignValue = (null != ctx.DEFAULT()) ? ctx.DEFAULT().getText() : ctx.charsetName().getText();
         characterSet.setAssignValue(assignValue);
         return result;
     }

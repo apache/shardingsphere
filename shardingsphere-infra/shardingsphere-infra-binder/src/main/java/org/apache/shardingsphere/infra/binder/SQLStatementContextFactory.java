@@ -45,7 +45,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementConte
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
@@ -87,14 +87,14 @@ public final class SQLStatementContextFactory {
     /**
      * Create SQL statement context.
      *
-     * @param schemaMetaData table meta data
+     * @param schema ShardingSphere schema
      * @param parameters SQL parameters
      * @param sqlStatement SQL statement
      * @return SQL statement context
      */
-    public static SQLStatementContext<?> newInstance(final PhysicalSchemaMetaData schemaMetaData, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public static SQLStatementContext<?> newInstance(final ShardingSphereSchema schema, final List<Object> parameters, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementContext(schemaMetaData, parameters, (DMLStatement) sqlStatement);
+            return getDMLStatementContext(schema, parameters, (DMLStatement) sqlStatement);
         }
         if (sqlStatement instanceof DDLStatement) {
             return getDDLStatementContext((DDLStatement) sqlStatement);
@@ -108,9 +108,9 @@ public final class SQLStatementContextFactory {
         return new CommonSQLStatementContext<>(sqlStatement);
     }
     
-    private static SQLStatementContext<?> getDMLStatementContext(final PhysicalSchemaMetaData schemaMetaData, final List<Object> parameters, final DMLStatement sqlStatement) {
+    private static SQLStatementContext<?> getDMLStatementContext(final ShardingSphereSchema schema, final List<Object> parameters, final DMLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectStatementContext(schemaMetaData, parameters, (SelectStatement) sqlStatement);
+            return new SelectStatementContext(schema, parameters, (SelectStatement) sqlStatement);
         }
         if (sqlStatement instanceof UpdateStatement) {
             return new UpdateStatementContext((UpdateStatement) sqlStatement);
@@ -119,7 +119,7 @@ public final class SQLStatementContextFactory {
             return new DeleteStatementContext((DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertStatementContext(schemaMetaData, parameters, (InsertStatement) sqlStatement);
+            return new InsertStatementContext(schema, parameters, (InsertStatement) sqlStatement);
         }
         if (sqlStatement instanceof CallStatement) {
             return new CallStatementContext((CallStatement) sqlStatement);

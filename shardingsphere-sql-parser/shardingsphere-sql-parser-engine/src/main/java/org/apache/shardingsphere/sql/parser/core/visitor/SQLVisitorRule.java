@@ -55,7 +55,9 @@ public enum SQLVisitorRule {
     CREATE_PROCEDURE("CreateProcedure", SQLStatementType.DDL),
     
     ALTER_PROCEDURE("AlterProcedure", SQLStatementType.DDL),
-    
+
+    ALTER_STATEMENT("AlterStatement", SQLStatementType.DDL),
+
     DROP_PROCEDURE("DropProcedure", SQLStatementType.DDL),
     
     CREATE_FUNCTION("CreateFunction", SQLStatementType.DDL),
@@ -65,7 +67,7 @@ public enum SQLVisitorRule {
     DROP_FUNCTION("DropFunction", SQLStatementType.DDL),
     
     CREATE_DATABASE("CreateDatabase", SQLStatementType.DDL),
-    
+
     ALTER_DATABASE("AlterDatabase", SQLStatementType.DDL),
     
     DROP_DATABASE("DropDatabase", SQLStatementType.DDL),

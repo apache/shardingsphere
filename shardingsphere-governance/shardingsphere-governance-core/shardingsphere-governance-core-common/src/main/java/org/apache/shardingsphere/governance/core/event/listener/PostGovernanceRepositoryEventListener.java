@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 
 import java.util.Arrays;
@@ -39,16 +39,16 @@ public abstract class PostGovernanceRepositoryEventListener implements Governanc
     private final Collection<String> watchKeys;
     
     @Override
-    public final void watch(final ChangedType... changedTypes) {
-        Collection<ChangedType> watchedChangedTypeList = Arrays.asList(changedTypes);
+    public final void watch(final Type... types) {
+        Collection<Type> typeList = Arrays.asList(types);
         for (String watchKey : watchKeys) {
-            watch(watchKey, watchedChangedTypeList);
+            watch(watchKey, typeList);
         }
     }
     
-    private void watch(final String watchKey, final Collection<ChangedType> changedTypes) {
+    private void watch(final String watchKey, final Collection<Type> types) {
         governanceRepository.watch(watchKey, dataChangedEvent -> {
-            if (changedTypes.contains(dataChangedEvent.getChangedType())) {
+            if (types.contains(dataChangedEvent.getType())) {
                 Optional<GovernanceEvent> event = createGovernanceEvent(dataChangedEvent);
                 event.ifPresent(GovernanceEventBus.getInstance()::post);
             }

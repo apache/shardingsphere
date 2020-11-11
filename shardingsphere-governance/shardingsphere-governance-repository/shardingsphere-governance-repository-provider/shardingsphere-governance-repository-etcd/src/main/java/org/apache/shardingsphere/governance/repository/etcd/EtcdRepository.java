@@ -35,7 +35,7 @@ import org.apache.shardingsphere.governance.repository.api.ConfigurationReposito
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 
 import java.util.List;
@@ -107,24 +107,24 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
         Watch.Listener listener = Watch.listener(response -> {
             for (WatchEvent each : response.getEvents()) {
-                ChangedType changedType = getEventChangedType(each);
-                if (ChangedType.IGNORED != changedType) {
+                Type type = getEventChangedType(each);
+                if (Type.IGNORED != type) {
                     dataChangedEventListener.onChange(new DataChangedEvent(each.getKeyValue().getKey().toString(StandardCharsets.UTF_8),
-                            each.getKeyValue().getValue().toString(StandardCharsets.UTF_8), changedType));
+                            each.getKeyValue().getValue().toString(StandardCharsets.UTF_8), type));
                 }
             }
         });
         client.getWatchClient().watch(ByteSequence.from(key, StandardCharsets.UTF_8), listener);
     }
     
-    private ChangedType getEventChangedType(final WatchEvent event) {
+    private Type getEventChangedType(final WatchEvent event) {
         switch (event.getEventType()) {
             case PUT:
-                return ChangedType.UPDATED;
+                return Type.UPDATED;
             case DELETE:
-                return ChangedType.DELETED;
+                return Type.DELETED;
             default:
-                return ChangedType.IGNORED;
+                return Type.IGNORED;
         }
     }
     

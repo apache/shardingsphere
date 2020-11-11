@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.rule;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.rule.fixture.TestRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.fixture.TestShardingSphereRuleBuilder;
 import org.junit.Test;

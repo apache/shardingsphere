@@ -22,15 +22,14 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.model.addressing.TableAddressingMetaData;
-import org.apache.shardingsphere.infra.metadata.model.datasource.CachedDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.model.datasource.DataSourcesMetaData;
-import org.apache.shardingsphere.infra.metadata.model.logic.LogicSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.index.PhysicalIndexMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
@@ -42,12 +41,10 @@ import org.apache.shardingsphere.infra.rewrite.parameterized.engine.parameter.SQ
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.io.File;
@@ -83,15 +80,15 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(
                 new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlRootRuleConfigs.getRules()), yamlRootRuleConfigs.getDataSources().keySet());
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
-        ShardingSphereMetaData metaData = createShardingSphereMetaData();
+        ShardingSphereSchema schema = mockSchema();
         ConfigurationProperties props = new ConfigurationProperties(yamlRootRuleConfigs.getProps());
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchemaMetaData().getConfiguredSchemaMetaData(), 
-                getTestParameters().getInputParameters(), sqlStatementParserEngine.parse(getTestParameters().getInputSQL(), false));
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
+                schema, getTestParameters().getInputParameters(), sqlStatementParserEngine.parse(getTestParameters().getInputSQL(), false));
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
-        ShardingSphereSchema schema = new ShardingSphereSchema("sharding_db", Collections.emptyList(), rules, Collections.emptyMap(), metaData);
-        RouteContext routeContext = new SQLRouteEngine(props, rules).route(logicSQL, schema);
-        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(metaData.getSchemaMetaData().getConfiguredSchemaMetaData(),
-                props, rules).rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatementContext, routeContext);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", mock(ShardingSphereResource.class), new ShardingSphereRuleMetaData(Collections.emptyList(), rules), schema);
+        RouteContext routeContext = new SQLRouteEngine(rules, props).route(logicSQL, metaData);
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(
+                schema, props, rules).rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatementContext, routeContext);
         return sqlRewriteResult instanceof GenericSQLRewriteResult
                 ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit()) : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
     }
@@ -102,29 +99,26 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class);
     }
     
-    private ShardingSphereMetaData createShardingSphereMetaData() {
-        PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
-        when(schemaMetaData.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_detail"));
-        PhysicalTableMetaData accountTableMetaData = mock(PhysicalTableMetaData.class);
+    private ShardingSphereSchema mockSchema() {
+        ShardingSphereSchema result = mock(ShardingSphereSchema.class);
+        when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_detail"));
+        TableMetaData accountTableMetaData = mock(TableMetaData.class);
         when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
-        Map<String, PhysicalIndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
-        indexMetaDataMap.put("index_name", new PhysicalIndexMetaData("index_name"));
+        Map<String, IndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
+        indexMetaDataMap.put("index_name", new IndexMetaData("index_name"));
         when(accountTableMetaData.getIndexes()).thenReturn(indexMetaDataMap);
-        when(schemaMetaData.containsTable("t_account")).thenReturn(true);
-        when(schemaMetaData.get("t_account")).thenReturn(accountTableMetaData);
-        when(schemaMetaData.get("t_account_detail")).thenReturn(mock(PhysicalTableMetaData.class));
-        when(schemaMetaData.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "amount", "status"));
-        LogicSchemaMetaData logicSchemaMetaData = mock(LogicSchemaMetaData.class);
-        when(logicSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
-        when(logicSchemaMetaData.getSchemaMetaData()).thenReturn(schemaMetaData);
-        return new ShardingSphereMetaData(mock(DataSourcesMetaData.class), logicSchemaMetaData, mock(TableAddressingMetaData.class), mock(CachedDatabaseMetaData.class));
+        when(result.containsTable("t_account")).thenReturn(true);
+        when(result.get("t_account")).thenReturn(accountTableMetaData);
+        when(result.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
+        when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "amount", "status"));
+        return result;
     }
     
-    private Map<String, PhysicalColumnMetaData> createColumnMetaDataMap() {
-        Map<String, PhysicalColumnMetaData> result = new LinkedHashMap<>(3, 1);
-        result.put("account_id", new PhysicalColumnMetaData("account_id", Types.INTEGER, "INT", true, true, false));
-        result.put("amount", mock(PhysicalColumnMetaData.class));
-        result.put("status", mock(PhysicalColumnMetaData.class));
+    private Map<String, ColumnMetaData> createColumnMetaDataMap() {
+        Map<String, ColumnMetaData> result = new LinkedHashMap<>(3, 1);
+        result.put("account_id", new ColumnMetaData("account_id", Types.INTEGER, "INT", true, true, false));
+        result.put("amount", mock(ColumnMetaData.class));
+        result.put("status", mock(ColumnMetaData.class));
         return result;
     }
 }

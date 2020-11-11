@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.governance.repository.apollo.wrapper.ApolloConfigWrapper;
 import org.apache.shardingsphere.governance.repository.apollo.wrapper.ApolloOpenApiWrapper;
@@ -89,28 +89,28 @@ public final class ApolloRepository implements ConfigurationRepository {
         ConfigChangeListener listener = changeEvent -> {
             for (String changeKey : changeEvent.changedKeys()) {
                 ConfigChange change = changeEvent.getChange(changeKey);
-                ChangedType changedType = getChangedType(change.getChangeType());
-                if (ChangedType.IGNORED == changedType) {
+                Type type = getChangedType(change.getChangeType());
+                if (Type.IGNORED == type) {
                     continue;
                 }
                 if (!caches.containsKey(changeKey)) {
                     continue;
                 }
-                caches.get(changeKey).onChange(new DataChangedEvent(keyToPath(changeKey), change.getNewValue(), changedType));
+                caches.get(changeKey).onChange(new DataChangedEvent(keyToPath(changeKey), change.getNewValue(), type));
             }
         };
         configWrapper.addChangeListener(listener, Collections.singleton(apolloKey), Collections.singleton(apolloKey));
     }
     
-    private ChangedType getChangedType(final PropertyChangeType changeType) {
+    private Type getChangedType(final PropertyChangeType changeType) {
         switch (changeType) {
             case ADDED:
             case MODIFIED:
-                return ChangedType.UPDATED;
+                return Type.UPDATED;
             case DELETED:
-                return ChangedType.DELETED;
+                return Type.DELETED;
             default:
-                return ChangedType.IGNORED;
+                return Type.IGNORED;
         }
     }
     

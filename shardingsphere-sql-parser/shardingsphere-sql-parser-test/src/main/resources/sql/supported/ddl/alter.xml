@@ -18,6 +18,15 @@
 
 <sql-cases>
     <sql-case id="alter_table" value="ALTER TABLE t_log ADD name varchar(10)" />
+    <sql-case id="alter_table_not_null" value="alter table t1 add c2 real  not null" db-types="MySQL" />
+    <sql-case id="alter_table_not_null_first" value="alter table t1 add c2 real  not null first" db-types="MySQL" />
+    <sql-case id="alter_table_not_null_after" value="alter table t1 add c4 real  not null after c2" db-types="MySQL" />
+    <sql-case id="alter_table_change_unsigned_not_null" value="alter table t1 change c1 c2 real unsigned not null" db-types="MySQL" />
+    <sql-case id="alter_table_modify_unsigned_not_null" value="alter table t1 modify c1 real unsigned not null" db-types="MySQL" />
+    <sql-case id="alter_table_modify_unsigned_zerofill_not_null" value="alter table t1 modify c1 real unsigned zerofill not null" db-types="MySQL" />
+    <sql-case id="alter_table_change_unsigned_zerofill_not_null" value="alter table t1 change c1 c2 real unsigned zerofill not null" db-types="MySQL" />
+    <sql-case id="alter_table_add_partition" value="alter table t1 add partition partitions 10" db-types="MySQL" />
+    <sql-case id="alter_table_partition" value="alter table t1 partition by key(c1) partitions 5" db-types="MySQL" />
     <sql-case id="alter_table_if_exists_only" value="ALTER TABLE IF EXISTS ONLY t_log ADD name varchar" db-types="PostgreSQL" />
     <sql-case id="alter_table_with_force" value="ALTER TABLE t_order FORCE" db-types="MySQL" />
     <sql-case id="alter_table_with_space" value="    ALTER TABLE
@@ -34,8 +43,8 @@
     <sql-case id="alter_table_add_columns_date_type_mysql" value="ALTER TABLE t_order ADD column4 YEAR" db-types="MySQL" />
     <sql-case id="alter_table_add_columns_date_type_oracle" value="ALTER TABLE t_order ADD (column4 DATE, column5 DATETIME, column6 TIMESTAMP, column7 TIMESTAMP WITH TIME ZONE)" db-types="Oracle" />
     <sql-case id="alter_table_add_columns_date_type" value="ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, ADD column6 TIMESTAMP, ADD column7 TIME" db-types="MySQL,PostgreSQL" />
-    <sql-case id="alter_table_add_columns_string_type" value="ALTER TABLE t_order ADD column4 CHAR, ADD column5 VARCHAR, ADD column6 TEXT" db-types="MySQL,PostgreSQL,SQLServer" />
-    <sql-case id="alter_table_add_columns_string_type_mysql" value="ALTER TABLE t_order ADD column4 BINARY, ADD column5 VARBINARY, ADD column6 TINYBLOB, ADD column7 TINYTEXT, ADD column8 BLOB, ADD column9 MEDIUMBLOB, ADD column10 MEDIUMTEXT, ADD column11 LONGBLOB, ADD column12 LONGTEXT, ADD column13 ENUM, ADD column14 SET" db-types="MySQL" />
+    <sql-case id="alter_table_add_columns_string_type" value="ALTER TABLE t_order ADD column4 CHAR, ADD column5 VARCHAR(32), ADD column6 TEXT" db-types="MySQL,PostgreSQL,SQLServer" />
+    <sql-case id="alter_table_add_columns_string_type_mysql" value="ALTER TABLE t_order ADD column4 BINARY, ADD column5 VARBINARY(10), ADD column6 TINYBLOB, ADD column7 TINYTEXT, ADD column8 BLOB, ADD column9 MEDIUMBLOB, ADD column10 MEDIUMTEXT, ADD column11 LONGBLOB, ADD column12 LONGTEXT, ADD column13 ENUM('1','2'), ADD column14 SET('1')" db-types="MySQL" />
     <sql-case id="alter_table_add_columns_integer_type" value="ALTER TABLE t_order ADD column4 INT, ADD column5 SMALLINT, ADD column6 BIGINT" db-types="MySQL,PostgreSQL,SQLServer" />
     <sql-case id="alter_table_add_columns_float_point_type_postgresql" value="ALTER TABLE t_order ADD column4 FLOAT, ADD column5 double precision, ADD column6 REAL, ADD column7 SMALLSERIAL, ADD column8 SERIAL, ADD column9 BIGSERIAL, ADD column10 float4" db-types="PostgreSQL" />
     <sql-case id="alter_table_add_columns_string_type_postgresql" value="ALTER TABLE t_order ADD column4 CHARACTER, ADD column5 NAME" db-types="PostgreSQL" />
