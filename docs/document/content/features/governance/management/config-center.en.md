@@ -125,9 +125,6 @@ tables:                                       # Tables
         generated: false
         name: order_id
         primaryKey: false
-  addressingDataSources:                      # Actual data source names
-    - ds_0
-    - ds_1
 ```
 
 ## Dynamic Effectiveness

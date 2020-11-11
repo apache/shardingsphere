@@ -21,8 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.Map;
 
 /**
@@ -35,6 +33,4 @@ public final class YamlTableMetaData implements YamlConfiguration {
     private Map<String, YamlColumnMetaData> columns;
     
     private Map<String, YamlIndexMetaData> indexes;
-    
-    private Collection<String> addressingDataSources = new LinkedHashSet<>();
 }

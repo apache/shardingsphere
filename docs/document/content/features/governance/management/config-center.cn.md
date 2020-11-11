@@ -125,9 +125,6 @@ tables:                                       # 表
         generated: false
         name: order_id
         primaryKey: false
-  addressingDataSources:                      # 所在真实数据源名
-    - ds_0
-    - ds_1
 ```
 
 ## 动态生效
