@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.single;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,6 +38,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class SingleTableRoutingEngineTest {
     
@@ -43,7 +46,7 @@ public final class SingleTableRoutingEngineTest {
     public void assertRoute() {
         SingleTableRoutingEngine singleTableRoutingEngine = new SingleTableRoutingEngine(Arrays.asList("t_order", "t_order_item"), buildSchema(), null);
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap());
         RouteContext routeContext = new RouteContext();
         singleTableRoutingEngine.route(routeContext, shardingRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
@@ -63,7 +66,7 @@ public final class SingleTableRoutingEngineTest {
     public void assertRouteWithoutShardingRule() {
         SingleTableRoutingEngine singleTableRoutingEngine = new SingleTableRoutingEngine(Arrays.asList("t_order", "t_order_item"), buildSchema(), new MySQLCreateTableStatement());
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap());
         RouteContext routeContext = new RouteContext();
         singleTableRoutingEngine.route(routeContext, shardingRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
@@ -88,6 +91,13 @@ public final class SingleTableRoutingEngineTest {
     private TableMetaData buildTableMetaData() {
         TableMetaData result = new TableMetaData();
         result.getAddressingDataSources().add("ds_0");
+        return result;
+    }
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>(2, 1);
+        result.put("ds_0", mock(DataSource.class));
+        result.put("ds_1", mock(DataSource.class));
         return result;
     }
 }

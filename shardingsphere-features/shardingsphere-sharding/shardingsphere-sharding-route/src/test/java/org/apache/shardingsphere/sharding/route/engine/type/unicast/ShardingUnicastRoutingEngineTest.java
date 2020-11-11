@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.type.unicast;
 
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -25,14 +26,17 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
+import javax.sql.DataSource;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class ShardingUnicastRoutingEngineTest {
     
@@ -41,9 +45,9 @@ public final class ShardingUnicastRoutingEngineTest {
     @Before
     public void setUp() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}"));
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..2}"));
         shardingRuleConfig.getBroadcastTables().add("t_config");
-        shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1", "ds2"));
+        shardingRule = new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap());
     }
     
     @Test
@@ -52,7 +56,7 @@ public final class ShardingUnicastRoutingEngineTest {
         RouteContext routeContext = new RouteContext();
         unicastRoutingEngine.route(routeContext, shardingRule);
         assertThat(routeContext.getRouteUnits().size(), is(1));
-        assertFalse("ds2".equalsIgnoreCase(routeContext.getRouteUnits().iterator().next().getDataSourceMapper().getLogicName()));
+        assertFalse("ds_2".equalsIgnoreCase(routeContext.getRouteUnits().iterator().next().getDataSourceMapper().getLogicName()));
     }
 
     @Test
@@ -99,5 +103,13 @@ public final class ShardingUnicastRoutingEngineTest {
         RouteContext routeContext = new RouteContext();
         unicastRoutingEngine.route(routeContext, shardingRule);
         assertThat(routeContext.getRouteUnits().size(), is(1));
+    }
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>(3, 1);
+        result.put("ds_0", mock(DataSource.class));
+        result.put("ds_1", mock(DataSource.class));
+        result.put("ds_2", mock(DataSource.class));
+        return result;
     }
 }

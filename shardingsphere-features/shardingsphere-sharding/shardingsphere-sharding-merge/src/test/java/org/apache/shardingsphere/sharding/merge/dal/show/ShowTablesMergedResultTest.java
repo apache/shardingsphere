@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.sharding.merge.dal.show;
 
-import com.google.common.collect.Lists;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,7 +55,7 @@ public final class ShowTablesMergedResultTest {
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("table", "ds.table_${0..2}");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(tableRuleConfig);
-        return new ShardingRule(shardingRuleConfig, Lists.newArrayList("ds"));
+        return new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), Collections.singletonMap("ds", mock(DataSource.class)));
     }
     
     private ShardingSphereSchema buildSchema() {
