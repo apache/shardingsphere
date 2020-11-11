@@ -27,29 +27,45 @@ import org.apache.shardingsphere.sql.parser.mysql.parser.MySQLParser;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl.MySQLDMLFormatSQLVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl.MySQLFormatSQLVisitor;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.nio.CharBuffer;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
+@RunWith(Parameterized.class)
 public final class MySQLFormartTest {
 
-    private final static List<String[]> testUnits = new LinkedList();
+    private static Collection<String[]> testUnits = new LinkedList();
 
-    {
-        testUnits.add(new String[]{"test", "select a+1 as b, name n from table1 join table2 where id=1 and name='lu';", "SELECT a + ? AS b, name n\n"
+    private final String caseId;
+
+    private final String inputSql;
+
+    private final String expectFormartedSql;
+
+    public MySQLFormartTest(final String caseId, final String inputSql, final String expectFormartedSql) {
+        this.caseId = caseId;
+        this.inputSql = inputSql;
+        this.expectFormartedSql = expectFormartedSql;
+    }
+
+    static {
+        testUnits.add(new String[]{"select_with_union", "select a+1 as b, name n from table1 join table2 where id=1 and name='lu';", "SELECT a + ? AS b, name n\n"
                 + "FROM table1 JOIN table2\n"
                 + "WHERE \n"
                 + "\tid = ?\n"
                 + "\tandname = ?;"});
-        testUnits.add(new String[]{"", "select id, name, age, sex, ss, yy from table1 where id=1", "SELECT id , name , age , \n"
+        testUnits.add(new String[]{"select_item_nums", "select id, name, age, sex, ss, yy from table1 where id=1", "SELECT id , name , age , \n"
                 + "\tsex , ss , yy \n"
                 + "FROM table1\n"
                 + "WHERE \n"
                 + "\tid = ?;"});
-        testUnits.add(new String[]{"", "select id, name, age, count(*) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1", "SELECT id , name , age , \n"
+        testUnits.add(new String[]{"select_with_subquery", "select id, name, age, count(*) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1", "SELECT id ,"
+                + " name , age , \n"
                 + "\tCOUNT ( * ) AS n, \n"
                 + "\t(\n"
                 + "\t\tSELECT id , name , age , \n"
@@ -61,7 +77,7 @@ public final class MySQLFormartTest {
                 + "FROM table1\n"
                 + "WHERE \n"
                 + "\tid = ?;"});
-        testUnits.add(new String[]{"", "select id, name, age, sex, ss, yy from table1 where id=1 and name=1 and a=1 and b=2 and c=4 and d=3", "SELECT id , name , age , \n"
+        testUnits.add(new String[]{"select_where_num", "select id, name, age, sex, ss, yy from table1 where id=1 and name=1 and a=1 and b=2 and c=4 and d=3", "SELECT id , name , age , \n"
                 + "\tsex , ss , yy \n"
                 + "FROM table1\n"
                 + "WHERE \n"
@@ -71,19 +87,22 @@ public final class MySQLFormartTest {
                 + "\tandb = ?\n"
                 + "\tandc = ?\n"
                 + "\tandd = ?;"});
-        testUnits.add(new String[]{"", "ALTER TABLE t_log ADD name varchar(10)", "ALTER TABLE t_log ADD name VARCHAR ( 10 )"});
+        testUnits.add(new String[]{"alter_table", "ALTER TABLE t_log ADD name varchar(10)", "ALTER TABLE t_log ADD name VARCHAR ( 10 )"});
+    }
+
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<String[]> getTestParameters() {
+        return testUnits;
     }
 
     @Test
-    public final void assertSqlFormat() {
-        for (String[] each : testUnits) {
-            CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(each[1].toCharArray()));
-            MySQLLexer lexer = new MySQLLexer(CodePointCharStream.fromBuffer(buffer));
-            MySQLParser parser = new MySQLParser(new CommonTokenStream(lexer));
-            ParseTree tree = ((ParseASTNode) parser.parse()).getRootNode();
-            MySQLFormatSQLVisitor visitor = new MySQLDMLFormatSQLVisitor();
-            String result = visitor.visit(tree);
-            assertTrue("SQL format error", each[2].equals(result));
-        }
+    public void assertSqlFormat() {
+        CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(inputSql.toCharArray()));
+        MySQLLexer lexer = new MySQLLexer(CodePointCharStream.fromBuffer(buffer));
+        MySQLParser parser = new MySQLParser(new CommonTokenStream(lexer));
+        ParseTree tree = ((ParseASTNode) parser.parse()).getRootNode();
+        MySQLFormatSQLVisitor visitor = new MySQLDMLFormatSQLVisitor();
+        String result = visitor.visit(tree);
+        assertTrue("SQL format error", expectFormartedSql.equals(result));
     }
 }
