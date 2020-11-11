@@ -40,7 +40,7 @@ public final class AlgorithmProvidedShardingRuleBuilder implements ShardingSpher
     
     @Override
     public ShardingRule build(final AlgorithmProvidedShardingRuleConfiguration ruleConfig) {
-        return new ShardingRule(ruleConfig, dataSourceMap.keySet());
+        return new ShardingRule(ruleConfig, databaseType, dataSourceMap);
     }
     
     @Override

@@ -40,7 +40,7 @@ public final class ShardingRuleBuilder implements ShardingSphereRuleBuilder<Shar
     
     @Override
     public ShardingRule build(final ShardingRuleConfiguration ruleConfig) {
-        return new ShardingRule(ruleConfig, dataSourceMap.keySet());
+        return new ShardingRule(ruleConfig, databaseType, dataSourceMap);
     }
     
     @Override
