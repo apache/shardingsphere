@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<String> {
+
     private StringBuilder result = new StringBuilder();
 
     private final boolean uperCase = true;
