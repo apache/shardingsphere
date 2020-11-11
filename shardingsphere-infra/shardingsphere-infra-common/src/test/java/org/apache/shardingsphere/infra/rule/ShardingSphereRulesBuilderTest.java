@@ -37,6 +37,6 @@ public final class ShardingSphereRulesBuilderTest {
     public void assertBuild() {
         RuleConfiguration ruleConfig = new TestRuleConfiguration();
         Collection<ShardingSphereRule> shardingSphereRules = ShardingSphereRulesBuilder.build(Collections.singletonList(ruleConfig), mock(DatabaseType.class), Collections.emptyMap());
-        assertThat(shardingSphereRules, is(Collections.singletonList(TestShardingSphereRuleBuilder.getShardingSphereRule())));
+        assertThat(shardingSphereRules, is(Collections.singletonList(TestShardingSphereRuleBuilder.getRule())));
     }
 }

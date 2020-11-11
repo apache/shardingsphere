@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.ha.rule.biulder;
 
-import org.apache.shardingsphere.ha.rule.HARule;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.ha.algorithm.config.AlgorithmProvidedHARuleConfiguration;
 import org.apache.shardingsphere.ha.constant.HAOrder;
-
-import java.util.Collection;
+import org.apache.shardingsphere.ha.rule.HARule;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 
 /**
  * Algorithm provided HA rule builder.
@@ -30,7 +28,7 @@ import java.util.Collection;
 public final class AlgorithmProvidedHARuleBuilder implements ShardingSphereRuleBuilder<HARule, AlgorithmProvidedHARuleConfiguration> {
     
     @Override
-    public HARule build(final AlgorithmProvidedHARuleConfiguration ruleConfig, final Collection<String> dataSourceNames) {
+    public HARule build(final AlgorithmProvidedHARuleConfiguration ruleConfig) {
         return new HARule(ruleConfig);
     }
     

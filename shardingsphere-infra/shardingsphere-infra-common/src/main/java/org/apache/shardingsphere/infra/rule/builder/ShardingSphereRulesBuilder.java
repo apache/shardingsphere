@@ -53,7 +53,7 @@ public final class ShardingSphereRulesBuilder {
     public static Collection<ShardingSphereRule> build(final Collection<RuleConfiguration> ruleConfigurations, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         Map<RuleConfiguration, ShardingSphereRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(ruleConfigurations, ShardingSphereRuleBuilder.class);
         setResources(builders.values(), databaseType, dataSourceMap);
-        return builders.entrySet().stream().map(entry -> entry.getValue().build(entry.getKey(), dataSourceMap.keySet())).collect(Collectors.toList());
+        return builders.entrySet().stream().map(entry -> entry.getValue().build(entry.getKey())).collect(Collectors.toList());
     }
     
     @SuppressWarnings("rawtypes")

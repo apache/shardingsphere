@@ -45,6 +45,6 @@ public final class AlgorithmProvidedShardingRuleBuilderTest {
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
         ((AlgorithmProvidedShardingRuleBuilder) builder).setDatabaseType(mock(DatabaseType.class));
         ((AlgorithmProvidedShardingRuleBuilder) builder).setDataSourceMap(Collections.singletonMap("name", mock(DataSource.class)));
-        assertThat(builder.build(ruleConfig, Collections.singletonList("name")), instanceOf(ShardingRule.class));
+        assertThat(builder.build(ruleConfig), instanceOf(ShardingRule.class));
     }
 }

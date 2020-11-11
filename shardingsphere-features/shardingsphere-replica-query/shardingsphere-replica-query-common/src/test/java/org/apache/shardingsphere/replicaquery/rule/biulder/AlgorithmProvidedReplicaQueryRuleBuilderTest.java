@@ -47,6 +47,6 @@ public final class AlgorithmProvidedReplicaQueryRuleBuilderTest {
         when(algorithmProvidedRuleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfig));
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(
                 Collections.singletonList(algorithmProvidedRuleConfig), ShardingSphereRuleBuilder.class).get(algorithmProvidedRuleConfig);
-        assertThat(builder.build(algorithmProvidedRuleConfig, Collections.emptyList()), instanceOf(ReplicaQueryRule.class));
+        assertThat(builder.build(algorithmProvidedRuleConfig), instanceOf(ReplicaQueryRule.class));
     }
 }

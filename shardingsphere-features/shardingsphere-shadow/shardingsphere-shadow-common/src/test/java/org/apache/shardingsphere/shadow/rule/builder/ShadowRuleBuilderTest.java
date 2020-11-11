@@ -36,10 +36,11 @@ public final class ShadowRuleBuilderTest {
         ShardingSphereServiceLoader.register(ShardingSphereRuleBuilder.class);
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuild() {
         ShadowRuleConfiguration ruleConfig = mock(ShadowRuleConfiguration.class);
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
-        assertThat(builder.build(ruleConfig, Collections.emptyList()), instanceOf(ShadowRule.class));
+        assertThat(builder.build(ruleConfig), instanceOf(ShadowRule.class));
     }
 }

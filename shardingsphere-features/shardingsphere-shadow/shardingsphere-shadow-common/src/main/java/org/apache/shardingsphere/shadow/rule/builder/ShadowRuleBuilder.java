@@ -22,15 +22,13 @@ import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
-import java.util.Collection;
-
 /**
  * Shadow rule builder.
  */
 public final class ShadowRuleBuilder implements ShardingSphereRuleBuilder<ShadowRule, ShadowRuleConfiguration> {
     
     @Override
-    public ShadowRule build(final ShadowRuleConfiguration ruleConfig, final Collection<String> dataSourceNames) {
+    public ShadowRule build(final ShadowRuleConfiguration ruleConfig) {
         return new ShadowRule(ruleConfig);
     }
     

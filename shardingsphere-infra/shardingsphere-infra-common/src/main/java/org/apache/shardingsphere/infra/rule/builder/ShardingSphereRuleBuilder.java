@@ -21,8 +21,6 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
-import java.util.Collection;
-
 /**
  * ShardingSphere rule builder.
  * 
@@ -35,8 +33,7 @@ public interface ShardingSphereRuleBuilder<R extends ShardingSphereRule, T exten
      * Build ShardingSphere rule.
      *
      * @param ruleConfig rule configuration
-     * @param dataSourceNames data source names
      * @return ShardingSphere rule
      */
-    R build(T ruleConfig, Collection<String> dataSourceNames);
+    R build(T ruleConfig);
 }

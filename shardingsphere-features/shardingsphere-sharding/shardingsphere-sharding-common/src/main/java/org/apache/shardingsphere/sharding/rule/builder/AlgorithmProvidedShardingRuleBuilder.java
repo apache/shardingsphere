@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import javax.sql.DataSource;
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -40,7 +39,7 @@ public final class AlgorithmProvidedShardingRuleBuilder implements ShardingSpher
     private Map<String, DataSource> dataSourceMap;
     
     @Override
-    public ShardingRule build(final AlgorithmProvidedShardingRuleConfiguration ruleConfig, final Collection<String> dataSourceNames) {
+    public ShardingRule build(final AlgorithmProvidedShardingRuleConfiguration ruleConfig) {
         return new ShardingRule(ruleConfig, dataSourceMap.keySet());
     }
     

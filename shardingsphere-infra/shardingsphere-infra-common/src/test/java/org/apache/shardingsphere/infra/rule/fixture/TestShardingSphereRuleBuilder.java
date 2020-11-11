@@ -22,16 +22,14 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 
-import java.util.Collection;
-
 public final class TestShardingSphereRuleBuilder implements ShardingSphereRuleBuilder {
     
     @Getter
-    private static ShardingSphereRule shardingSphereRule = new TestShardingSphereRule();
+    private static ShardingSphereRule rule = new TestShardingSphereRule();
     
     @Override
-    public ShardingSphereRule build(final RuleConfiguration ruleConfig, final Collection dataSourceNames) {
-        return shardingSphereRule;
+    public ShardingSphereRule build(final RuleConfiguration ruleConfig) {
+        return rule;
     }
     
     @Override
