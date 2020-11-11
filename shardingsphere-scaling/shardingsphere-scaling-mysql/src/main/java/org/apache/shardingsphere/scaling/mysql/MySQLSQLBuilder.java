@@ -18,23 +18,13 @@
 package org.apache.shardingsphere.scaling.mysql;
 
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.PreparedSQL;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * MySQL SQL builder.
  */
 public final class MySQLSQLBuilder extends AbstractSQLBuilder {
-    
-    public MySQLSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
-        super(shardingColumnsMap);
-    }
     
     @Override
     public String getLeftIdentifierQuoteString() {
@@ -47,19 +37,20 @@ public final class MySQLSQLBuilder extends AbstractSQLBuilder {
     }
     
     @Override
-    protected PreparedSQL buildInsertSQLInternal(final DataRecord dataRecord) {
-        PreparedSQL preparedSQL = super.buildInsertSQLInternal(dataRecord);
-        StringBuilder insertSQL = new StringBuilder(preparedSQL.getSql() + " ON DUPLICATE KEY UPDATE ");
-        List<Integer> valuesIndex = new ArrayList<>(preparedSQL.getValuesIndex());
+    public String buildInsertSQL(final DataRecord dataRecord) {
+        return super.buildInsertSQL(dataRecord) + buildDuplicateUpdateSQL(dataRecord);
+    }
+    
+    private String buildDuplicateUpdateSQL(final DataRecord dataRecord) {
+        StringBuilder result = new StringBuilder(" ON DUPLICATE KEY UPDATE ");
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
             Column column = dataRecord.getColumn(i);
             if (!dataRecord.getColumn(i).isPrimaryKey()) {
-                insertSQL.append(quote(column.getName())).append("=?,");
-                valuesIndex.add(i);
+                result.append(quote(column.getName())).append("=VALUES(").append(quote(column.getName())).append("),");
             }
         }
-        insertSQL.setLength(insertSQL.length() - 1);
-        return new PreparedSQL(insertSQL.toString(), valuesIndex);
+        result.setLength(result.length() - 1);
+        return result.toString();
     }
     
     /**

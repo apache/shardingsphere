@@ -17,14 +17,11 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.PreparedSQL;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -45,9 +42,8 @@ public final class MySQLImporterTest {
     @Test
     public void assertCreateSqlBuilder() {
         MySQLImporter mySQLImporter = new MySQLImporter(importerConfig, dataSourceManager);
-        PreparedSQL insertSQL = mySQLImporter.createSQLBuilder(Maps.newHashMap()).buildInsertSQL(mockDataRecord());
-        assertThat(insertSQL.getSql(), is("INSERT INTO `t_order`(`id`,`name`) VALUES(?,?) ON DUPLICATE KEY UPDATE `name`=?"));
-        assertThat(insertSQL.getValuesIndex().toArray(), Matchers.arrayContaining(0, 1, 1));
+        String insertSQL = mySQLImporter.createSQLBuilder().buildInsertSQL(mockDataRecord());
+        assertThat(insertSQL, is("INSERT INTO `t_order`(`id`,`name`) VALUES(?,?) ON DUPLICATE KEY UPDATE `name`=VALUES(`name`)"));
     }
     
     private DataRecord mockDataRecord() {

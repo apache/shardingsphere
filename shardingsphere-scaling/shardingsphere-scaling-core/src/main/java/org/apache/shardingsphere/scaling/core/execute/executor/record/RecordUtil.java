@@ -20,10 +20,9 @@ package org.apache.shardingsphere.scaling.core.execute.executor.record;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Record utility.
@@ -32,45 +31,51 @@ import java.util.stream.IntStream;
 public final class RecordUtil {
     
     /**
-     * Extract primary columns index from data record.
+     * Extract primary columns from data record.
      *
      * @param dataRecord data record
-     * @return primary columns index
+     * @return primary columns
      */
-    public static List<Integer> extractPrimaryColumns(final DataRecord dataRecord) {
-        return IntStream.range(0, dataRecord.getColumnCount())
-                .filter(each -> dataRecord.getColumn(each).isPrimaryKey())
-                .mapToObj(each -> each)
-                .collect(Collectors.toList());
+    public static List<Column> extractPrimaryColumns(final DataRecord dataRecord) {
+        List<Column> result = new ArrayList<>(dataRecord.getColumns().size());
+        for (Column each : dataRecord.getColumns()) {
+            if (each.isPrimaryKey()) {
+                result.add(each);
+            }
+        }
+        return result;
     }
     
     /**
-     * Extract condition columns(include primary and sharding columns) index from data record.
+     * Extract condition columns(include primary and sharding columns) from data record.
      *
      * @param dataRecord data record
      * @param shardingColumns sharding columns
-     * @return condition columns index
+     * @return condition columns
      */
-    public static List<Integer> extractConditionColumns(final DataRecord dataRecord, final Set<String> shardingColumns) {
-        return IntStream.range(0, dataRecord.getColumnCount())
-                .filter(each -> {
-                    Column column = dataRecord.getColumn(each);
-                    return column.isPrimaryKey() || shardingColumns.contains(column.getName());
-                })
-                .mapToObj(each -> each)
-                .collect(Collectors.toList());
+    public static List<Column> extractConditionColumns(final DataRecord dataRecord, final Set<String> shardingColumns) {
+        List<Column> result = new ArrayList<>(dataRecord.getColumns().size());
+        for (Column each : dataRecord.getColumns()) {
+            if (each.isPrimaryKey() || shardingColumns.contains(each.getName())) {
+                result.add(each);
+            }
+        }
+        return result;
     }
     
     /**
      * Extract updated columns from data record.
      *
      * @param dataRecord data record
-     * @return updated columns index
+     * @return updated columns
      */
-    public static List<Integer> extractUpdatedColumns(final DataRecord dataRecord) {
-        return IntStream.range(0, dataRecord.getColumnCount())
-                .filter(each -> dataRecord.getColumn(each).isUpdated())
-                .mapToObj(each -> each)
-                .collect(Collectors.toList());
+    public static List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
+        List<Column> result = new ArrayList<>(dataRecord.getColumns().size());
+        for (Column each : dataRecord.getColumns()) {
+            if (each.isUpdated()) {
+                result.add(each);
+            }
+        }
+        return result;
     }
 }
