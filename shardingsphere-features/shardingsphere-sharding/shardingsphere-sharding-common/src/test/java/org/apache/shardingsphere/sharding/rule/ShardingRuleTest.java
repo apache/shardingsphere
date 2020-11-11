@@ -295,6 +295,11 @@ public final class ShardingRuleTest {
         assertFalse(createMinimumShardingRule().tableRuleExists(Collections.singletonList("table_0")));
     }
     
+    @Test
+    public void assertGetTables() {
+        assertThat(createMaximumShardingRule().getTables(), is(Arrays.asList("logic_table", "sub_logic_table")));
+    }
+    
     private ShardingRule createMaximumShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");

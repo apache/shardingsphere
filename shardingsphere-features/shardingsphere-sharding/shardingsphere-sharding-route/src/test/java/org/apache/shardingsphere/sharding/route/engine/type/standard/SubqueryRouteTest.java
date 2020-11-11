@@ -149,16 +149,6 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         assertRoute(sql, parameters);
     }
     
-    @Test(expected = IllegalStateException.class)
-    public void assertSubqueryWithoutHint() {
-        List<Object> parameters = new LinkedList<>();
-        parameters.add(1);
-        parameters.add(2);
-        parameters.add(5);
-        String sql = "select count(*) from t_hint_test where user_id = (select t_hint_test from t_hint_test where user_id in (?,?,?)) ";
-        assertRoute(sql, parameters);
-    }
-    
     @Test
     public void assertSubqueryWithHint() {
         HintManager hintManager = HintManager.getInstance();

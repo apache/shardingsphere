@@ -60,7 +60,7 @@ public abstract class AbstractSQLTest {
     
     private static void createDataSources(final String dbName, final DatabaseType databaseType) {
         DATABASE_TYPE_MAP.computeIfAbsent(databaseType, key -> new LinkedHashMap<>()).put(dbName, buildDataSource(dbName, databaseType));
-        createSchema(dbName, databaseType);
+        buildSchema(dbName, databaseType);
     }
     
     private static BasicDataSource buildDataSource(final String dbName, final DatabaseType databaseType) {
@@ -74,7 +74,7 @@ public abstract class AbstractSQLTest {
         return result;
     }
     
-    private static void createSchema(final String dbName, final DatabaseType databaseType) {
+    private static void buildSchema(final String dbName, final DatabaseType databaseType) {
         try {
             Connection conn = DATABASE_TYPE_MAP.get(databaseType).get(dbName).getConnection();
             RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_init.sql"))));

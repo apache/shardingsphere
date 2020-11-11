@@ -20,29 +20,37 @@ package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
 import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collection;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AbstractSqlBuilderTest {
+    
+    @Mock
+    private Map shardingColumnsMap;
     
     private AbstractSQLBuilder sqlBuilder;
     
     @Before
     public void setUp() {
-        sqlBuilder = new AbstractSQLBuilder() {
+        sqlBuilder = new AbstractSQLBuilder(shardingColumnsMap) {
             
             @Override
             protected String getLeftIdentifierQuoteString() {
                 return "`";
             }
-    
+            
             @Override
             protected String getRightIdentifierQuoteString() {
                 return "`";
@@ -52,38 +60,66 @@ public class AbstractSqlBuilderTest {
     
     @Test
     public void assertBuildInsertSQL() {
-        String actual = sqlBuilder.buildInsertSQL(mockDataRecord("t1"));
-        assertThat(actual, is("INSERT INTO `t1`(`id`,`sc`,`c1`,`c2`,`c3`) VALUES(?,?,?,?,?)"));
+        PreparedSQL actual = sqlBuilder.buildInsertSQL(mockDataRecord("t1"));
+        assertThat(actual.getSql(), is("INSERT INTO `t1`(`id`,`sc`,`c1`,`c2`,`c3`) VALUES(?,?,?,?,?)"));
+        assertThat(actual.getValuesIndex().toArray(), Matchers.arrayContaining(0, 1, 2, 3, 4));
     }
     
     @Test
     public void assertBuildUpdateSQLWithPrimaryKey() {
-        String actual = sqlBuilder.buildUpdateSQL(mockDataRecord("t2"), RecordUtil.extractPrimaryColumns(mockDataRecord("t2")));
-        assertThat(actual, is("UPDATE `t2` SET `c1` = ?,`c2` = ?,`c3` = ? WHERE `id` = ?"));
+        when(shardingColumnsMap.get("t2")).thenReturn(Sets.newHashSet());
+        PreparedSQL actual = sqlBuilder.buildUpdateSQL(mockDataRecord("t2"));
+        assertThat(actual.getSql(), is("UPDATE `t2` SET `c1` = ?,`c2` = ?,`c3` = ? WHERE `id` = ?"));
+        assertThat(actual.getValuesIndex().toArray(), Matchers.arrayContaining(2, 3, 4, 0));
     }
     
     @Test
     public void assertBuildUpdateSQLWithShardingColumns() {
+        when(shardingColumnsMap.get("t2")).thenReturn(Sets.newHashSet("sc"));
         DataRecord dataRecord = mockDataRecord("t2");
-        String actual = sqlBuilder.buildUpdateSQL(dataRecord, mockConditionColumns(dataRecord));
-        assertThat(actual, is("UPDATE `t2` SET `c1` = ?,`c2` = ?,`c3` = ? WHERE `id` = ? and `sc` = ?"));
+        PreparedSQL actual = sqlBuilder.buildUpdateSQL(dataRecord);
+        assertThat(actual.getSql(), is("UPDATE `t2` SET `c1` = ?,`c2` = ?,`c3` = ? WHERE `id` = ? and `sc` = ?"));
+        assertThat(actual.getValuesIndex().toArray(), Matchers.arrayContaining(2, 3, 4, 0, 1));
+    }
+    
+    @Test
+    public void assertBuildUpdateSQLWithShardingColumnsUseCache() {
+        when(shardingColumnsMap.get("t2")).thenReturn(Sets.newHashSet("sc"));
+        DataRecord dataRecord = mockDataRecord("t2");
+        PreparedSQL actual = sqlBuilder.buildUpdateSQL(dataRecord);
+        assertThat(actual.getSql(), is("UPDATE `t2` SET `c1` = ?,`c2` = ?,`c3` = ? WHERE `id` = ? and `sc` = ?"));
+        assertThat(actual.getValuesIndex().toArray(), Matchers.arrayContaining(2, 3, 4, 0, 1));
+        actual = sqlBuilder.buildUpdateSQL(mockDataRecord2("t2"));
+        assertThat(actual.getSql(), is("UPDATE `t2` SET `c1` = ?,`c3` = ? WHERE `id` = ? and `sc` = ?"));
+        assertThat(actual.getValuesIndex().toArray(), Matchers.arrayContaining(2, 4, 0, 1));
+    }
+    
+    private DataRecord mockDataRecord2(final String tableName) {
+        DataRecord result = new DataRecord(new NopPosition(), 4);
+        result.setTableName(tableName);
+        result.addColumn(new Column("id", "", false, true));
+        result.addColumn(new Column("sc", "", false, false));
+        result.addColumn(new Column("c1", "", true, false));
+        result.addColumn(new Column("c2", "", false, false));
+        result.addColumn(new Column("c3", "", true, false));
+        return result;
     }
     
     @Test
     public void assertBuildDeleteSQLWithPrimaryKey() {
-        String actual = sqlBuilder.buildDeleteSQL(mockDataRecord("t3"), RecordUtil.extractPrimaryColumns(mockDataRecord("t3")));
-        assertThat(actual, is("DELETE FROM `t3` WHERE `id` = ?"));
+        when(shardingColumnsMap.get("t3")).thenReturn(Sets.newHashSet());
+        PreparedSQL actual = sqlBuilder.buildDeleteSQL(mockDataRecord("t3"));
+        assertThat(actual.getSql(), is("DELETE FROM `t3` WHERE `id` = ?"));
+        assertThat(actual.getValuesIndex().toArray(), Matchers.arrayContaining(0));
     }
     
     @Test
-    public void assertBuildDeleteSQLWithConditionColumns() {
+    public void assertBuildDeleteSQLWithShardingColumns() {
+        when(shardingColumnsMap.get("t3")).thenReturn(Sets.newHashSet("sc"));
         DataRecord dataRecord = mockDataRecord("t3");
-        String actual = sqlBuilder.buildDeleteSQL(dataRecord, mockConditionColumns(dataRecord));
-        assertThat(actual, is("DELETE FROM `t3` WHERE `id` = ? and `sc` = ?"));
-    }
-    
-    private Collection<Column> mockConditionColumns(final DataRecord dataRecord) {
-        return RecordUtil.extractConditionColumns(dataRecord, Sets.newHashSet("sc"));
+        PreparedSQL actual = sqlBuilder.buildDeleteSQL(dataRecord);
+        assertThat(actual.getSql(), is("DELETE FROM `t3` WHERE `id` = ? and `sc` = ?"));
+        assertThat(actual.getValuesIndex().toArray(), Matchers.arrayContaining(0, 1));
     }
     
     private DataRecord mockDataRecord(final String tableName) {

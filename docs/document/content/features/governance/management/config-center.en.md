@@ -99,63 +99,35 @@ rules:
 Dynamic modification of metadata content is not supported currently.
 
 ```yaml
-configuredSchemaMetaData:                       # Tables of configured with sharding rules
-  tables:                                       # Tables
-    t_order:                                    # table_name
-      columns:                                  # Columns
-        id:                                     # column_name
-          caseSensitive: false
-          dataType: 0
-          generated: false
-          name: id
-          primaryKey: trues
-        order_id:
-          caseSensitive: false
-          dataType: 0
-          generated: false
-          name: order_id
-          primaryKey: false
-      indexs:                                   # Indexes
-        t_user_order_id_index:                  # index_name
-          name: t_user_order_id_index
-    t_order_item:
-      columns:
-        order_id:
-          caseSensitive: false
-          dataType: 0
-          generated: false
-          name: order_id
-          primaryKey: false
-unconfiguredSchemaMetaDataMap:                  # Tables of no sharding rules configured
-  ds_0:                                         # DataSources
-    tables:                                     # Tables
-      t_user:                                   # table_name
-        columns:                                # Columns
-          user_id:                              # column_name
-            caseSensitive: false
-            dataType: 0
-            generated: false
-            name: user_id
-            primaryKey: false
-          id:
-            caseSensitive: false
-            dataType: 0
-            generated: false
-            name: id
-            primaryKey: true
-          order_id:
-            caseSensitive: false
-            dataType: 0
-            generated: false
-            name: order_id
-            primaryKey: false
-        indexes:                                # Indexes
-          t_user_order_id_index:                # index_name
-            name: t_user_order_id_index
-          t_user_user_id_index:
-            name: t_user_user_id_index
-          primary:
-            name: PRIMARY
+tables:                                       # Tables
+  t_order:                                    # table_name
+    columns:                                  # Columns
+      id:                                     # column_name
+        caseSensitive: false
+        dataType: 0
+        generated: false
+        name: id
+        primaryKey: trues
+      order_id:
+        caseSensitive: false
+        dataType: 0
+        generated: false
+        name: order_id
+        primaryKey: false
+    indexs:                                   # Indexes
+      t_user_order_id_index:                  # index_name
+        name: t_user_order_id_index
+  t_order_item:
+    columns:
+      order_id:
+        caseSensitive: false
+        dataType: 0
+        generated: false
+        name: order_id
+        primaryKey: false
+  addressingDataSources:                      # Actual data source names
+    - ds_0
+    - ds_1
 ```
 
 ## Dynamic Effectiveness

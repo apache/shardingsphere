@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.merge.dal.impl.MergedEncryptColumnsMerg
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.DescribeStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowColumnsStatementContext;
@@ -47,36 +47,36 @@ import static org.mockito.Mockito.when;
 public final class EncryptDALResultDecoratorTest {
     
     @Mock
-    private PhysicalSchemaMetaData schemaMetaData;
+    private ShardingSphereSchema schema;
     
     @Mock
     private SQLStatementContext<?> sqlStatementContext;
     
     @Test
     public void assertMergedResultWithDescribeStatement() {
-        schemaMetaData = mock(PhysicalSchemaMetaData.class);
+        schema = mock(ShardingSphereSchema.class);
         sqlStatementContext = getDescribeStatementContext();
         EncryptDALResultDecorator encryptDALResultDecorator = new EncryptDALResultDecorator();
-        assertThat(encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, schemaMetaData), instanceOf(MergedEncryptColumnsMergedResult.class));
-        assertThat(encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, schemaMetaData), instanceOf(DecoratedEncryptColumnsMergedResult.class));
+        assertThat(encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, schema), instanceOf(MergedEncryptColumnsMergedResult.class));
+        assertThat(encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, schema), instanceOf(DecoratedEncryptColumnsMergedResult.class));
     }
     
     @Test
     public void assertMergedResultWithShowColumnsStatement() {
-        schemaMetaData = mock(PhysicalSchemaMetaData.class);
+        schema = mock(ShardingSphereSchema.class);
         sqlStatementContext = getShowColumnsStatementContext();
         EncryptDALResultDecorator encryptDALResultDecorator = new EncryptDALResultDecorator();
-        assertThat(encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, schemaMetaData), instanceOf(MergedEncryptColumnsMergedResult.class));
-        assertThat(encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, schemaMetaData), instanceOf(DecoratedEncryptColumnsMergedResult.class));
+        assertThat(encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, schema), instanceOf(MergedEncryptColumnsMergedResult.class));
+        assertThat(encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, schema), instanceOf(DecoratedEncryptColumnsMergedResult.class));
     }
     
     @Test
     public void assertMergedResultWithOtherStatement() {
-        schemaMetaData = mock(PhysicalSchemaMetaData.class);
+        schema = mock(ShardingSphereSchema.class);
         sqlStatementContext = mock(SQLStatementContext.class);
         EncryptDALResultDecorator encryptDALResultDecorator = new EncryptDALResultDecorator();
-        assertThat(encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, schemaMetaData), instanceOf(TransparentMergedResult.class));
-        assertThat(encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, schemaMetaData), instanceOf(MergedResult.class));
+        assertThat(encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, schema), instanceOf(TransparentMergedResult.class));
+        assertThat(encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, schema), instanceOf(MergedResult.class));
     }
     
     private SQLStatementContext<?> getDescribeStatementContext() {

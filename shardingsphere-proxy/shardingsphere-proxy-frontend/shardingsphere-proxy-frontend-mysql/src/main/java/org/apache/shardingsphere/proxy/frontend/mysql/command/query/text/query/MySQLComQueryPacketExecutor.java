@@ -56,7 +56,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
-        if (ProxyContext.getInstance().getSchemaContexts().isCircuitBreak()) {
+        if (ProxyContext.getInstance().getMetaDataContexts().isCircuitBreak()) {
             throw new CircuitBreakException();
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();

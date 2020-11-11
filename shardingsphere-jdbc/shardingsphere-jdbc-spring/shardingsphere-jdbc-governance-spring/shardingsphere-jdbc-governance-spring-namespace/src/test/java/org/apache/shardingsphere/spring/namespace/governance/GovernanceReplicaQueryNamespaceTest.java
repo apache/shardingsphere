@@ -20,7 +20,7 @@ package org.apache.shardingsphere.spring.namespace.governance;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.replicaquery.algorithm.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.replicaquery.algorithm.RoundRobinReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryDataSourceRule;
@@ -89,8 +89,8 @@ public class GovernanceReplicaQueryNamespaceTest extends AbstractJUnit4SpringCon
     
     private ReplicaQueryRule getReplicaQueryRule(final String dataSourceName) {
         GovernanceShardingSphereDataSource dataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
-        SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(dataSource, "schemaContexts");
-        return (ReplicaQueryRule) schemaContexts.getDefaultSchema().getRules().iterator().next();
+        MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(dataSource, "metaDataContexts");
+        return (ReplicaQueryRule) metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().iterator().next();
     }
     
     @Test
@@ -101,7 +101,7 @@ public class GovernanceReplicaQueryNamespaceTest extends AbstractJUnit4SpringCon
     
     private ConfigurationProperties getProperties(final String dataSourceName) {
         GovernanceShardingSphereDataSource dataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
-        SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(dataSource, "schemaContexts");
-        return schemaContexts.getProps();
+        MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(dataSource, "metaDataContexts");
+        return metaDataContexts.getProps();
     }
 }

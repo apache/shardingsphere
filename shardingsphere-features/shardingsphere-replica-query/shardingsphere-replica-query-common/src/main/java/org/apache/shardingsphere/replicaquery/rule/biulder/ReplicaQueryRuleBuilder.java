@@ -19,7 +19,7 @@ package org.apache.shardingsphere.replicaquery.rule.biulder;
 
 import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
 import org.apache.shardingsphere.replicaquery.constant.ReplicaQueryOrder;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryRule;
 
 import java.util.Collection;
