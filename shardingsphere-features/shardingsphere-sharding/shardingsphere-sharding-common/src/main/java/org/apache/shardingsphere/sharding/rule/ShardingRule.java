@@ -41,11 +41,13 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
+import org.apache.shardingsphere.sharding.metadata.SingleTableRuleLoader;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -77,6 +79,8 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
     private final Collection<BindingTableRule> bindingTableRules;
     
     private final Collection<String> broadcastTables;
+
+    private final Map<String, SingleTableRule> singleTableRules;
     
     @Getter(AccessLevel.NONE)
     private final ShardingStrategyConfiguration defaultDatabaseShardingStrategyConfig;
@@ -96,6 +100,7 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
         tableRules.addAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
         broadcastTables = config.getBroadcastTables();
         bindingTableRules = createBindingTableRules(config.getBindingTableGroups());
+        singleTableRules = SingleTableRuleLoader.load(databaseType, dataSourceMap, getExcludedTables());
         defaultDatabaseShardingStrategyConfig = null == config.getDefaultDatabaseShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultDatabaseShardingStrategy();
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
@@ -112,6 +117,7 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
         tableRules.addAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
         broadcastTables = config.getBroadcastTables();
         bindingTableRules = createBindingTableRules(config.getBindingTableGroups());
+        singleTableRules = SingleTableRuleLoader.load(databaseType, dataSourceMap, getExcludedTables());
         defaultDatabaseShardingStrategyConfig = null == config.getDefaultDatabaseShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultDatabaseShardingStrategy();
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
@@ -161,6 +167,12 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
     
     private BindingTableRule createBindingTableRule(final String bindingTableGroup) {
         return new BindingTableRule(Splitter.on(",").trimResults().splitToList(bindingTableGroup).stream().map(this::getTableRule).collect(Collectors.toList()));
+    }
+    
+    private Collection<String> getExcludedTables() {
+        Collection<String> result = new HashSet<>(getTables());
+        result.addAll(getAllActualTables());
+        return result;
     }
     
     /**

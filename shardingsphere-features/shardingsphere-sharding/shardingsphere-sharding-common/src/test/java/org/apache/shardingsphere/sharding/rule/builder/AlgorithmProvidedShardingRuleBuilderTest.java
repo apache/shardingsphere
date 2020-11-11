@@ -30,6 +30,7 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 public final class AlgorithmProvidedShardingRuleBuilderTest {
@@ -44,7 +45,7 @@ public final class AlgorithmProvidedShardingRuleBuilderTest {
         AlgorithmProvidedShardingRuleConfiguration ruleConfig = mock(AlgorithmProvidedShardingRuleConfiguration.class);
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
         ((AlgorithmProvidedShardingRuleBuilder) builder).setDatabaseType(mock(DatabaseType.class));
-        ((AlgorithmProvidedShardingRuleBuilder) builder).setDataSourceMap(Collections.singletonMap("name", mock(DataSource.class)));
+        ((AlgorithmProvidedShardingRuleBuilder) builder).setDataSourceMap(Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)));
         assertThat(builder.build(ruleConfig), instanceOf(ShardingRule.class));
     }
 }

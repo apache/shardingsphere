@@ -36,6 +36,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -55,7 +56,7 @@ public final class ShowTablesMergedResultTest {
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("table", "ds.table_${0..2}");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(tableRuleConfig);
-        return new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), Collections.singletonMap("ds", mock(DataSource.class)));
+        return new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)));
     }
     
     private ShardingSphereSchema buildSchema() {

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.route.engine.type.single;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -43,13 +42,11 @@ public final class SingleTableRoutingEngine implements ShardingRouteEngine {
     
     private final Collection<String> logicTables;
     
-    private final ShardingSphereSchema schema;
-    
     private final SQLStatement sqlStatement;
     
     @Override
     public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
-        Optional<String> dataSourceName = sqlStatement instanceof CreateTableStatement ? getRandomDataSourceName(shardingRule.getDataSourceNames()) : findDataSourceName();
+        Optional<String> dataSourceName = sqlStatement instanceof CreateTableStatement ? getRandomDataSourceName(shardingRule.getDataSourceNames()) : findDataSourceNameOfSingleTable(shardingRule);
         if (!dataSourceName.isPresent()) {
             throw new ShardingSphereException("Can not route tables for `%s`, please make sure the tables are in same schema.", logicTables);
         }
@@ -57,11 +54,10 @@ public final class SingleTableRoutingEngine implements ShardingRouteEngine {
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName.get(), dataSourceName.get()), routingTables));
     }
     
-    // TODO maybe enhance here, only return one data source for multiple tables for now
-    private Optional<String> findDataSourceName() {
+    private Optional<String> findDataSourceNameOfSingleTable(final ShardingRule shardingRule) {
         for (String each : logicTables) {
-            if (schema.containsTable(each)) {
-                return Optional.of(schema.get(each).getAddressingDataSources().iterator().next());
+            if (shardingRule.getSingleTableRules().containsKey(each)) {
+                return Optional.of(shardingRule.getSingleTableRules().get(each).getDataSourceName());
             }
         }
         return Optional.empty();

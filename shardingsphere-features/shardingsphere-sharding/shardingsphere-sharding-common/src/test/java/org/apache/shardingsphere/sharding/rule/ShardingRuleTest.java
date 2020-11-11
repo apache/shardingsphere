@@ -43,6 +43,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 public final class ShardingRuleTest {
@@ -343,8 +344,8 @@ public final class ShardingRuleTest {
     
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds_0", mock(DataSource.class));
-        result.put("ds_1", mock(DataSource.class));
+        result.put("ds_0", mock(DataSource.class, RETURNS_DEEP_STUBS));
+        result.put("ds_1", mock(DataSource.class, RETURNS_DEEP_STUBS));
         return result;
     }
     

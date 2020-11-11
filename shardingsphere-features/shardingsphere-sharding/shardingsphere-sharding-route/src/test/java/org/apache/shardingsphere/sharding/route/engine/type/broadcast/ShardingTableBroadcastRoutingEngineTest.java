@@ -51,6 +51,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -91,8 +92,8 @@ public final class ShardingTableBroadcastRoutingEngineTest {
     
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds0", mock(DataSource.class));
-        result.put("ds1", mock(DataSource.class));
+        result.put("ds0", mock(DataSource.class, RETURNS_DEEP_STUBS));
+        result.put("ds1", mock(DataSource.class, RETURNS_DEEP_STUBS));
         return result;
     }
     

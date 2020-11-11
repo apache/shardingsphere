@@ -96,7 +96,8 @@ public final class ShardingSphereDatabaseMetaDataTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getDefaultMetaData()).thenReturn(metaData);
         when(metaData.getResource().getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
-        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(mockShardingRule()));
+        ShardingRule shardingRule = mockShardingRule();
+        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));
         shardingSphereDatabaseMetaData = new ShardingSphereDatabaseMetaData(shardingSphereConnection);
     }
     
@@ -104,7 +105,7 @@ public final class ShardingSphereDatabaseMetaDataTest {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration(TABLE_NAME, DATA_SOURCE_NAME + "." + TABLE_NAME);
         ruleConfig.setTables(Collections.singletonList(shardingTableRuleConfig));
-        return new ShardingRule(ruleConfig, mock(DatabaseType.class), Collections.singletonMap(DATA_SOURCE_NAME, mock(DataSource.class)));
+        return new ShardingRule(ruleConfig, mock(DatabaseType.class), Collections.singletonMap(DATA_SOURCE_NAME, mock(DataSource.class, RETURNS_DEEP_STUBS)));
     }
     
     @Test
