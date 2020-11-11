@@ -41,18 +41,6 @@ public final class MySQLFormartTest {
 
     private static Collection<String[]> testUnits = new LinkedList();
 
-    private final String caseId;
-
-    private final String inputSql;
-
-    private final String expectFormartedSql;
-
-    public MySQLFormartTest(final String caseId, final String inputSql, final String expectFormartedSql) {
-        this.caseId = caseId;
-        this.inputSql = inputSql;
-        this.expectFormartedSql = expectFormartedSql;
-    }
-
     static {
         testUnits.add(new String[]{"select_with_union", "select a+1 as b, name n from table1 join table2 where id=1 and name='lu';", "SELECT a + ? AS b, name n\n"
                 + "FROM table1 JOIN table2\n"
@@ -88,6 +76,18 @@ public final class MySQLFormartTest {
                 + "\tandc = ?\n"
                 + "\tandd = ?;"});
         testUnits.add(new String[]{"alter_table", "ALTER TABLE t_log ADD name varchar(10)", "ALTER TABLE t_log ADD name VARCHAR ( 10 )"});
+    }
+
+    private final String caseId;
+
+    private final String inputSql;
+
+    private final String expectFormartedSql;
+
+    public MySQLFormartTest(final String caseId, final String inputSql, final String expectFormartedSql) {
+        this.caseId = caseId;
+        this.inputSql = inputSql;
+        this.expectFormartedSql = expectFormartedSql;
     }
 
     @Parameterized.Parameters(name = "{0}")

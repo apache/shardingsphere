@@ -24,6 +24,31 @@ import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AliasContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CteClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExplicitTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IdentifierContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IgnoredIdentifierContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NumberLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RowConstructorListContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryExpressionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryExpressionParensContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryExpressionBodyContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QuerySpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableValueConstructorContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WithClauseContext;
 
 /**
  * MySQL Format SQL visitor for MySQL.
@@ -42,7 +67,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     private final int projectionsCountOfLine = 3;
 
     @Override
-    public String visitSelect(final MySQLStatementParser.SelectContext ctx) {
+    public String visitSelect(final SelectContext ctx) {
         if (null != ctx.queryExpression()) {
             visit(ctx.queryExpression());
             if (null != ctx.lockClauseList()) {
@@ -59,7 +84,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     @Override
-    public String visitQueryExpression(final MySQLStatementParser.QueryExpressionContext ctx) {
+    public String visitQueryExpression(final QueryExpressionContext ctx) {
         if (null != ctx.withClause()) {
             visit(ctx.withClause());
             formartPrint(" ");
@@ -81,7 +106,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     @Override
-    public String visitQueryExpressionParens(final MySQLStatementParser.QueryExpressionParensContext ctx) {
+    public String visitQueryExpressionParens(final QueryExpressionParensContext ctx) {
         formartPrintln();
         this.indentCount++;
         formartPrint("(");
@@ -102,7 +127,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     @Override
-    public String visitQueryExpressionBody(final MySQLStatementParser.QueryExpressionBodyContext ctx) {
+    public String visitQueryExpressionBody(final QueryExpressionBodyContext ctx) {
         if (1 == ctx.getChildCount()) {
             visit(ctx.queryPrimary());
         } else {
@@ -122,7 +147,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     @Override
-    public String visitQuerySpecification(final MySQLStatementParser.QuerySpecificationContext ctx) {
+    public String visitQuerySpecification(final QuerySpecificationContext ctx) {
         formartPrint("SELECT ");
         int selectSpecCount = ctx.selectSpecification().size();
         for (int i = 0; i < selectSpecCount; i++) {
@@ -154,14 +179,14 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     @Override
-    public String visitExplicitTable(final MySQLStatementParser.ExplicitTableContext ctx) {
+    public String visitExplicitTable(final ExplicitTableContext ctx) {
         formartPrint("TABLE ");
         visit(ctx.tableName());
         return result.toString();
     }
 
     @Override
-    public String visitTableName(final MySQLStatementParser.TableNameContext ctx) {
+    public String visitTableName(final TableNameContext ctx) {
         if (null != ctx.owner()) {
             formartPrint(ctx.owner().getText());
             formartPrint(".");
@@ -171,20 +196,19 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     @Override
-    public String visitTableValueConstructor(final MySQLStatementParser.TableValueConstructorContext ctx) {
+    public String visitTableValueConstructor(final TableValueConstructorContext ctx) {
         formartPrint("VALUES ");
         visit(ctx.rowConstructorList());
         return result.toString();
     }
 
     @Override
-    public String visitRowConstructorList(final MySQLStatementParser.RowConstructorListContext ctx) {
+    public String visitRowConstructorList(final RowConstructorListContext ctx) {
         int rowCount = ctx.assignmentValues().size();
         for (int i = 0; i < rowCount; i++) {
             if (i != 0 && i != rowCount) {
                 formartPrint(", ROW");
                 visit(ctx.assignmentValues(i));
-
             } else {
                 formartPrint("ROW");
                 visit(ctx.assignmentValues(i));
@@ -194,7 +218,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     @Override
-    public String visitAssignmentValues(final MySQLStatementParser.AssignmentValuesContext ctx) {
+    public String visitAssignmentValues(final AssignmentValuesContext ctx) {
         formartPrint("(");
         int assignCount = ctx.assignmentValue().size();
         for (int i = 0; i < assignCount; i++) {
@@ -210,7 +234,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     @Override
-    public String visitWhereClause(final MySQLStatementParser.WhereClauseContext ctx) {
+    public String visitWhereClause(final WhereClauseContext ctx) {
         visit(ctx.WHERE());
         formartPrint(" ");
         this.indentCount++;
@@ -221,7 +245,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     @Override
-    public String visitExpr(final MySQLStatementParser.ExprContext ctx) {
+    public String visitExpr(final ExprContext ctx) {
         if (null != ctx.logicalOperator()) {
             MySQLStatementParser.ExprContext left = ctx.expr(0);
             visit(left);
@@ -239,13 +263,13 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     @Override
-    public String visitAlias(final MySQLStatementParser.AliasContext ctx) {
+    public String visitAlias(final AliasContext ctx) {
         formartPrint(ctx.getText());
         return result.toString();
     }
 
     @Override
-    public String visitProjections(final MySQLStatementParser.ProjectionsContext ctx) {
+    public String visitProjections(final ProjectionsContext ctx) {
         this.indentCount++;
         if (null != ctx.unqualifiedShorthand()) {
             visit(ctx.unqualifiedShorthand());
@@ -269,7 +293,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     @Override
-    public String visitProjection(final MySQLStatementParser.ProjectionContext ctx) {
+    public String visitProjection(final ProjectionContext ctx) {
         if (null != ctx.expr()) {
             visit(ctx.expr());
             formartPrint(" ");
@@ -297,31 +321,31 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     @Override
-    public String visitIdentifier(final MySQLStatementParser.IdentifierContext ctx) {
+    public String visitIdentifier(final IdentifierContext ctx) {
         formartPrint(ctx.getText());
         return result.toString();
     }
 
     @Override
-    public String visitLiterals(final MySQLStatementParser.LiteralsContext ctx) {
+    public String visitLiterals(final LiteralsContext ctx) {
         formartPrint("?");
         return result.toString();
     }
 
     @Override
-    public String visitStringLiterals(final MySQLStatementParser.StringLiteralsContext ctx) {
+    public String visitStringLiterals(final StringLiteralsContext ctx) {
         formartPrint("?");
         return result.toString();
     }
 
     @Override
-    public String visitNumberLiterals(final MySQLStatementParser.NumberLiteralsContext ctx) {
+    public String visitNumberLiterals(final NumberLiteralsContext ctx) {
         formartPrint("?");
         return result.toString();
     }
 
     @Override
-    public String visitWithClause(final MySQLStatementParser.WithClauseContext ctx) {
+    public String visitWithClause(final WithClauseContext ctx) {
         formartPrint("WITH ");
         if (null != ctx.RECURSIVE()) {
             visit(ctx.RECURSIVE());
@@ -340,7 +364,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     @Override
-    public String visitCteClause(final MySQLStatementParser.CteClauseContext ctx) {
+    public String visitCteClause(final CteClauseContext ctx) {
         visit(ctx.ignoredIdentifier());
         result.append(" ");
         if (null != ctx.columnNames()) {
@@ -353,7 +377,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     @Override
-    public String visitIgnoredIdentifier(final MySQLStatementParser.IgnoredIdentifierContext ctx) {
+    public String visitIgnoredIdentifier(final IgnoredIdentifierContext ctx) {
         visit(ctx.identifier(0));
         if (null != ctx.DOT_()) {
             visit(ctx.DOT_());
@@ -363,7 +387,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     @Override
-    public String visitColumnNames(final MySQLStatementParser.ColumnNamesContext ctx) {
+    public String visitColumnNames(final ColumnNamesContext ctx) {
         if (null != ctx.LP_()) {
             visit(ctx.LP_());
         }
@@ -382,7 +406,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     @Override
-    public String visitColumnName(final MySQLStatementParser.ColumnNameContext ctx) {
+    public String visitColumnName(final ColumnNameContext ctx) {
         if (null != ctx.owner()) {
             visit(ctx.owner());
             visit(ctx.DOT_(0));
