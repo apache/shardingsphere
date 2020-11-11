@@ -45,7 +45,6 @@ public final class CreateTableStatementSchemaRefresher implements SchemaRefreshe
             tableMetaData = new TableMetaData();
         }
         schema.put(tableName, tableMetaData);
-        schema.get(tableName).getAddressingDataSources().addAll(routeDataSourceNames);
     }
     
     private boolean containsInTableContainedRule(final String tableName, final SchemaBuilderMaterials materials) {

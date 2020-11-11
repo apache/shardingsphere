@@ -35,6 +35,5 @@ public final class CreateViewStatementSchemaRefresher implements SchemaRefresher
                         final Collection<String> routeDataSourceNames, final CreateViewStatement sqlStatement, final SchemaBuilderMaterials materials) {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
         schema.put(viewName, new TableMetaData());
-        schema.get(viewName).getAddressingDataSources().addAll(routeDataSourceNames);
     }
 }
