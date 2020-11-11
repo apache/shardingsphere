@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.SingleTableRule;
+import org.apache.shardingsphere.sharding.rule.single.SingleTableRule;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
