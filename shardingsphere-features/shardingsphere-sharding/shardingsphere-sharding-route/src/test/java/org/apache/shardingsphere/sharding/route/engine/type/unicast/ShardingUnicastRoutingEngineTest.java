@@ -36,6 +36,7 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 public final class ShardingUnicastRoutingEngineTest {
@@ -88,7 +89,7 @@ public final class ShardingUnicastRoutingEngineTest {
     
     @Test(expected = ShardingSphereConfigurationException.class)
     public void assertRouteForWithNoIntersection() {
-        Set<String> sets = new HashSet<>();
+        Set<String> sets = new HashSet<>(3, 1);
         sets.add("t_order");
         sets.add("t_config");
         sets.add("t_product");
@@ -107,9 +108,9 @@ public final class ShardingUnicastRoutingEngineTest {
     
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>(3, 1);
-        result.put("ds_0", mock(DataSource.class));
-        result.put("ds_1", mock(DataSource.class));
-        result.put("ds_2", mock(DataSource.class));
+        result.put("ds_0", mock(DataSource.class, RETURNS_DEEP_STUBS));
+        result.put("ds_1", mock(DataSource.class, RETURNS_DEEP_STUBS));
+        result.put("ds_2", mock(DataSource.class, RETURNS_DEEP_STUBS));
         return result;
     }
 }

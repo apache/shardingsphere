@@ -93,7 +93,7 @@ public final class ShardingRouteEngineFactory {
             return new ShardingUnicastRoutingEngine(tableNames);
         }
         if (!shardingRule.tableRuleExists(tableNames)) {
-            return new SingleTableRoutingEngine(tableNames, metaData.getSchema(), sqlStatement);
+            return new SingleTableRoutingEngine(tableNames, sqlStatement);
         }
         return getShardingRoutingEngine(shardingRule, shardingConditions, tableNames, props);
     }
@@ -107,7 +107,7 @@ public final class ShardingRouteEngineFactory {
         }
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         if (!tableNames.isEmpty() && !shardingRule.tableRuleExists(tableNames)) {
-            return new SingleTableRoutingEngine(tableNames, metaData.getSchema(), sqlStatement);
+            return new SingleTableRoutingEngine(tableNames, sqlStatement);
         }
         return new ShardingTableBroadcastRoutingEngine(metaData.getSchema(), sqlStatementContext);
     }
@@ -121,7 +121,7 @@ public final class ShardingRouteEngineFactory {
             return new ShardingDatabaseBroadcastRoutingEngine();
         }
         if (!tableNames.isEmpty() && !shardingRule.tableRuleExists(tableNames)) {
-            return new SingleTableRoutingEngine(tableNames, metaData.getSchema(), sqlStatement);
+            return new SingleTableRoutingEngine(tableNames, sqlStatement);
         }
         if (!tableNames.isEmpty()) {
             return new ShardingUnicastRoutingEngine(tableNames);
@@ -134,7 +134,7 @@ public final class ShardingRouteEngineFactory {
             Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
             return shardingRule.tableRuleExists(tableNames)
                     ? new ShardingTableBroadcastRoutingEngine(metaData.getSchema(), sqlStatementContext)
-                    : new SingleTableRoutingEngine(tableNames, metaData.getSchema(), sqlStatementContext.getSqlStatement());
+                    : new SingleTableRoutingEngine(tableNames, sqlStatementContext.getSqlStatement());
         } else {
             return new ShardingInstanceBroadcastRoutingEngine(metaData.getResource().getDataSourcesMetaData());
         }
