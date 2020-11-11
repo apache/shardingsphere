@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.mysql;
 
-import lombok.Getter;
 import org.antlr.v4.runtime.CodePointBuffer;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -35,10 +34,9 @@ import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
-public class MySQLFormartTest {
+public final class MySQLFormartTest {
 
-    @Getter
-    private static List<String[]> testUnits = new LinkedList();
+    private final static List<String[]> testUnits = new LinkedList();
 
     {
         testUnits.add(new String[]{"test", "select a+1 as b, name n from table1 join table2 where id=1 and name='lu';", "SELECT a + ? AS b, name n\n"
@@ -77,7 +75,7 @@ public class MySQLFormartTest {
     }
 
     @Test
-    public final void assertTest() {
+    public final void assertSqlFormat() {
         for (String[] each : testUnits) {
             CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(each[1].toCharArray()));
             MySQLLexer lexer = new MySQLLexer(CodePointCharStream.fromBuffer(buffer));

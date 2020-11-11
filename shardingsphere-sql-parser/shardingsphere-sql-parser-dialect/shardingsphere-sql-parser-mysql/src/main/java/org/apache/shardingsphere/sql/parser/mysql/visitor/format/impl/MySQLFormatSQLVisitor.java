@@ -411,21 +411,21 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     private void print(final char value) {
-        if (this.result == null) {
+        if (null == this.result) {
             return;
         }
         this.result.append(value);
     }
 
     private void print(final String text) {
-        if (this.result == null) {
+        if (null == this.result) {
             return;
         }
         result.append(text);
     }
 
     protected void printIndent() {
-        if (this.result == null) {
+        if (null == this.result) {
             return;
         }
         for (int i = 0; i < this.indentCount; ++i) {
