@@ -96,7 +96,7 @@ public final class MergeEngine {
         for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultDecoratorEngine) {
                 ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(databaseType, schema, entry.getKey(), props, sqlStatementContext);
-                result = null == result ? resultDecorator.decorate(mergedResult, sqlStatementContext, schema) : resultDecorator.decorate(result, sqlStatementContext, schema);
+                result = null == result ? resultDecorator.decorate(mergedResult, sqlStatementContext, entry.getKey()) : resultDecorator.decorate(result, sqlStatementContext, entry.getKey());
             }
         }
         return null == result ? mergedResult : result;
@@ -108,7 +108,7 @@ public final class MergeEngine {
         for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultDecoratorEngine) {
                 ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(databaseType, schema, entry.getKey(), props, sqlStatementContext);
-                result = null == result ? resultDecorator.decorate(queryResult, sqlStatementContext, schema) : resultDecorator.decorate(result, sqlStatementContext, schema);
+                result = null == result ? resultDecorator.decorate(queryResult, sqlStatementContext, entry.getKey()) : resultDecorator.decorate(result, sqlStatementContext, entry.getKey());
             }
         }
         return Optional.ofNullable(result);

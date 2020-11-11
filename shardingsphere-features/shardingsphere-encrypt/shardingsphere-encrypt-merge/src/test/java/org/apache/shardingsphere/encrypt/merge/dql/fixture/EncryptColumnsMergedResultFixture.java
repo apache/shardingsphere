@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.encrypt.merge.dql.fixture;
 
 import org.apache.shardingsphere.encrypt.merge.dal.impl.EncryptColumnsMergedResult;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 public final class EncryptColumnsMergedResultFixture extends EncryptColumnsMergedResult {
     
-    public EncryptColumnsMergedResultFixture(final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema) {
-        super(sqlStatementContext, schema);
+    public EncryptColumnsMergedResultFixture(final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
+        super(sqlStatementContext, encryptRule);
     }
     
     @Override

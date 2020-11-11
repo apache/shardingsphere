@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.encrypt.merge.dal;
 
 import org.apache.shardingsphere.encrypt.merge.dal.impl.MergedEncryptColumnsMergedResult;
-import org.apache.shardingsphere.encrypt.metadata.EncryptColumnMetaData;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -32,10 +31,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -51,71 +48,62 @@ public final class MergedEncryptColumnsMergedResultTest {
     private QueryResult queryResult;
     
     @Test
-    public void assertNextWithTableEncryptColumnMetaDataListEmpty() throws SQLException {
-        when(queryResult.next()).thenReturn(true);
-        TableMetaData tableMetaData = new TableMetaData(Collections.emptyList(), Collections.emptyList());
-        Map<String, TableMetaData> tables = new HashMap<>(1, 1);
-        tables.put("test", tableMetaData);
-        assertTrue(createMergedEncryptColumnsMergedResult(queryResult, new ShardingSphereSchema(tables)).next());
+    public void assertNextWithNotHasNext() throws SQLException {
+        assertFalse(createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).next());
     }
     
     @Test
     public void assertNextWithHasNext() throws SQLException {
-        assertFalse(createMergedEncryptColumnsMergedResult(queryResult, mock(ShardingSphereSchema.class)).next());
+        when(queryResult.next()).thenReturn(true);
+        assertTrue(createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).next());
     }
     
     @Test
     public void assertNextWithAssistedQuery() throws SQLException {
         when(queryResult.next()).thenReturn(true).thenReturn(false);
         when(queryResult.getValue(1, String.class)).thenReturn("assistedQuery");
-        EncryptColumnMetaData encryptColumnMetaData = new EncryptColumnMetaData("id", Types.VARCHAR, "varchar", true, "cipher", "plain", "assistedQuery");
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(encryptColumnMetaData), Collections.emptyList());
-        Map<String, TableMetaData> tables = new HashMap<>(1, 1);
-        tables.put("test", tableMetaData);
-        assertFalse(createMergedEncryptColumnsMergedResult(queryResult, new ShardingSphereSchema(tables)).next());
+        assertFalse(createMergedEncryptColumnsMergedResult(queryResult, mockEncryptRule()).next());
     }
     
     @Test
     public void assertGetValueWithCipherColumn() throws SQLException {
         when(queryResult.getValue(1, String.class)).thenReturn("cipher");
-        EncryptColumnMetaData encryptColumnMetaData = new EncryptColumnMetaData("id", Types.VARCHAR, "varchar", true, "cipher", "plain", "assistedQuery");
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(encryptColumnMetaData), Collections.emptyList());
-        Map<String, TableMetaData> tables = new HashMap<>(1);
-        tables.put("test", tableMetaData);
-        assertThat(createMergedEncryptColumnsMergedResult(queryResult, new ShardingSphereSchema(tables)).getValue(1, String.class), is("id"));
+        assertThat(createMergedEncryptColumnsMergedResult(queryResult, mockEncryptRule()).getValue(1, String.class), is("id"));
+    }
+    
+    private EncryptRule mockEncryptRule() {
+        EncryptRule encryptRule = mock(EncryptRule.class);
+        EncryptTable encryptTable = mock(EncryptTable.class);
+        when(encryptRule.findEncryptTable("test")).thenReturn(Optional.of(encryptTable));
+        when(encryptTable.getAssistedQueryColumns()).thenReturn(Collections.singleton("assistedQuery"));
+        when(encryptTable.isCipherColumn("cipher")).thenReturn(true);
+        when(encryptTable.getLogicColumn("cipher")).thenReturn("id");
+        return encryptRule;
     }
     
     @Test
     public void assertGetValueWithOtherColumn() throws SQLException {
         when(queryResult.getValue(1, String.class)).thenReturn("assistedQuery");
-        EncryptColumnMetaData encryptColumnMetaData = new EncryptColumnMetaData("id", Types.VARCHAR, "varchar", true, "cipher", "plain", "assistedQuery");
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(encryptColumnMetaData), Collections.emptyList());
-        Map<String, TableMetaData> tables = new HashMap<>(1, 1);
-        tables.put("test", tableMetaData);
-        assertThat(createMergedEncryptColumnsMergedResult(queryResult, new ShardingSphereSchema(tables)).getValue(1, String.class), is("assistedQuery"));
+        assertThat(createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).getValue(1, String.class), is("assistedQuery"));
     }
     
     @Test
     public void assertGetValueWithOtherIndex() throws SQLException {
         when(queryResult.getValue(2, String.class)).thenReturn("id");
-        EncryptColumnMetaData encryptColumnMetaData = new EncryptColumnMetaData("id", Types.VARCHAR, "varchar", true, "cipher", "plain", "assistedQuery");
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(encryptColumnMetaData), Collections.emptyList());
-        Map<String, TableMetaData> tables = new HashMap<>(1, 1);
-        tables.put("test", tableMetaData);
-        assertThat(createMergedEncryptColumnsMergedResult(queryResult, new ShardingSphereSchema(tables)).getValue(2, String.class), is("id"));
+        assertThat(createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).getValue(2, String.class), is("id"));
     }
     
     @Test
     public void assertWasNull() throws SQLException {
-        assertFalse(createMergedEncryptColumnsMergedResult(queryResult, mock(ShardingSphereSchema.class)).wasNull());
+        assertFalse(createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).wasNull());
     }
     
-    private MergedEncryptColumnsMergedResult createMergedEncryptColumnsMergedResult(final QueryResult queryResult, final ShardingSphereSchema schema) {
+    private MergedEncryptColumnsMergedResult createMergedEncryptColumnsMergedResult(final QueryResult queryResult, final EncryptRule encryptRule) {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         IdentifierValue identifierValue = new IdentifierValue("test");
         TableNameSegment tableNameSegment = new TableNameSegment(1, 4, identifierValue);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(tableNameSegment);
         when(sqlStatementContext.getAllTables()).thenReturn(Collections.singletonList(simpleTableSegment));
-        return new MergedEncryptColumnsMergedResult(queryResult, sqlStatementContext, schema);
+        return new MergedEncryptColumnsMergedResult(queryResult, sqlStatementContext, encryptRule);
     }
 }
