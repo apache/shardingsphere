@@ -37,7 +37,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -155,13 +154,17 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
         List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, importerConfig.getShardingColumnsMap().get(record.getTableName()));
-        List<Column> values = new ArrayList<>();
-        values.addAll(RecordUtil.extractUpdatedColumns(record));
-        values.addAll(conditionColumns);
+        List<Column> updatedColumns = RecordUtil.extractUpdatedColumns(record);
         String updateSql = sqlBuilder.buildUpdateSQL(record, conditionColumns);
         PreparedStatement ps = connection.prepareStatement(updateSql);
-        for (int i = 0; i < values.size(); i++) {
-            ps.setObject(i + 1, values.get(i).getValue());
+        for (int i = 0; i < updatedColumns.size(); i++) {
+            ps.setObject(i + 1, updatedColumns.get(i).getValue());
+        }
+        for (int i = 0; i < conditionColumns.size(); i++) {
+            Column keyColumn = conditionColumns.get(i);
+            ps.setObject(updatedColumns.size() + i + 1,
+                    // sharding column can not be updated
+                    (keyColumn.isPrimaryKey() && keyColumn.isUpdated()) ? keyColumn.getOldValue() : keyColumn.getValue());
         }
         ps.execute();
     }
