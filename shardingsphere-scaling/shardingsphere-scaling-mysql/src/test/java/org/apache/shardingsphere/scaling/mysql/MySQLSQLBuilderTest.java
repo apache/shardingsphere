@@ -17,40 +17,33 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
-import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
-import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
+import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class MySQLImporterTest {
+public class MySQLSQLBuilderTest {
     
-    @Mock
-    private ImporterConfiguration importerConfig;
-    
-    @Mock
-    private DataSourceManager dataSourceManager;
+    private AbstractSQLBuilder sqlBuilder = new MySQLSQLBuilder();
     
     @Test
-    public void assertCreateSqlBuilder() {
-        MySQLImporter mySQLImporter = new MySQLImporter(importerConfig, dataSourceManager);
-        String insertSQL = mySQLImporter.createSQLBuilder().buildInsertSQL(mockDataRecord());
-        assertThat(insertSQL, is("INSERT INTO `t_order`(`id`,`name`) VALUES(?,?) ON DUPLICATE KEY UPDATE `name`=VALUES(`name`)"));
+    public void assertBuildInsertSQL() {
+        String actual = sqlBuilder.buildInsertSQL(mockDataRecord("t1"));
+        assertThat(actual, is("INSERT INTO `t1`(`id`,`sc`,`c1`,`c2`,`c3`) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE `sc`=VALUES(`sc`),`c1`=VALUES(`c1`),`c2`=VALUES(`c2`),`c3`=VALUES(`c3`)"));
     }
     
-    private DataRecord mockDataRecord() {
-        DataRecord result = new DataRecord(new BinlogPosition("binlog-000001", 4), 2);
-        result.setTableName("t_order");
-        result.addColumn(new Column("id", 1, true, true));
-        result.addColumn(new Column("name", "", true, false));
+    private DataRecord mockDataRecord(final String tableName) {
+        DataRecord result = new DataRecord(new NopPosition(), 4);
+        result.setTableName(tableName);
+        result.addColumn(new Column("id", "", false, true));
+        result.addColumn(new Column("sc", "", false, false));
+        result.addColumn(new Column("c1", "", true, false));
+        result.addColumn(new Column("c2", "", true, false));
+        result.addColumn(new Column("c3", "", true, false));
         return result;
     }
 }
