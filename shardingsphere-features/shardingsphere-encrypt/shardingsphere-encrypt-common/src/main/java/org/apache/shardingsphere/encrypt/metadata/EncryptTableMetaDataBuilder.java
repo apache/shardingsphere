@@ -67,11 +67,8 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
             return originalColumnMetaData;
         }
         String logicColumnName = encryptRule.getLogicColumnOfCipher(tableName, originalColumnMetaData.getName());
-        String plainColumnName = encryptRule.findPlainColumn(tableName, logicColumnName).orElse(null);
-        String assistedQueryColumnName = encryptRule.findAssistedQueryColumn(tableName, logicColumnName).orElse(null);
-        return new EncryptColumnMetaData(
-                logicColumnName, originalColumnMetaData.getDataType(), originalColumnMetaData.getDataTypeName(), originalColumnMetaData.isPrimaryKey(), originalColumnMetaData.getName(),
-                plainColumnName, assistedQueryColumnName);
+        return new ColumnMetaData(logicColumnName, originalColumnMetaData.getDataType(), 
+                originalColumnMetaData.getDataTypeName(), originalColumnMetaData.isPrimaryKey(), originalColumnMetaData.isGenerated(), originalColumnMetaData.isCaseSensitive());
     }
     
     @Override
