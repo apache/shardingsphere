@@ -15,31 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.model;
+package org.apache.shardingsphere.infra.merge.engine.decorator.impl;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * Column meta data.
+ * Transparent rule.
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-@ToString
-public final class ColumnMetaData {
-    
-    private final String name;
-    
-    private final int dataType;
-    
-    private final String dataTypeName;
-    
-    private final boolean primaryKey;
-    
-    private final boolean generated;
-    
-    private final boolean caseSensitive;
+public final class TransparentRule implements ShardingSphereRule {
 }
