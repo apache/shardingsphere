@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class SchemaYamlSwapperTest {
     
@@ -47,9 +46,6 @@ public final class SchemaYamlSwapperTest {
         assertThat(yamlSchema.getTables().keySet(), is(Collections.singleton("t_order")));
         assertThat(yamlSchema.getTables().get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
         assertThat(yamlSchema.getTables().get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
-        assertThat(yamlSchema.getTables().get("t_order").getAddressingDataSources().size(), is(2));
-        assertTrue(yamlSchema.getTables().get("t_order").getAddressingDataSources().contains("ds_0"));
-        assertTrue(yamlSchema.getTables().get("t_order").getAddressingDataSources().contains("ds_1"));
     }
     
     @Test
@@ -60,9 +56,6 @@ public final class SchemaYamlSwapperTest {
         assertThat(schema.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
         assertThat(schema.getAllColumnNames("t_order").size(), is(1));
         assertThat(schema.get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
-        assertThat(schema.get("t_order").getAddressingDataSources().size(), is(2));
-        assertTrue(schema.get("t_order").getAddressingDataSources().contains("ds_0"));
-        assertTrue(schema.get("t_order").getAddressingDataSources().contains("ds_1"));
     }
     
     @SneakyThrows({URISyntaxException.class, IOException.class})

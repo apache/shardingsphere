@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.metadata;
+package org.apache.shardingsphere.sharding.rule.single;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.SchemaMetaDataLoader;
-import org.apache.shardingsphere.sharding.rule.SingleTableRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

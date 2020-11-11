@@ -20,13 +20,10 @@ package org.apache.shardingsphere.infra.metadata.schema.builder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Map.Entry;
 
 /**
  * Schema builder.
@@ -42,12 +39,6 @@ public final class SchemaBuilder {
      * @throws SQLException SQL exception
      */
     public static ShardingSphereSchema build(final SchemaBuilderMaterials materials) throws SQLException {
-        ShardingSphereSchema result = loadSchema(materials);
-        setTableAddressingMapper(materials, result);
-        return result;
-    }
-    
-    private static ShardingSphereSchema loadSchema(final SchemaBuilderMaterials materials) throws SQLException {
         ShardingSphereSchema result = new ShardingSphereSchema();
         for (ShardingSphereRule rule : materials.getRules()) {
             if (rule instanceof TableContainedRule) {
@@ -59,15 +50,5 @@ public final class SchemaBuilder {
             }
         }
         return result;
-    }
-    
-    private static void setTableAddressingMapper(final SchemaBuilderMaterials materials, final ShardingSphereSchema schema) throws SQLException {
-        for (Entry<String, Collection<String>> entry : TableAddressingMapperBuilder.build(materials).entrySet()) {
-            String tableName = entry.getKey();
-            if (!schema.containsTable(tableName)) {
-                schema.put(tableName, new TableMetaData());
-            }
-            schema.get(tableName).getAddressingDataSources().addAll(entry.getValue());
-        }
     }
 }

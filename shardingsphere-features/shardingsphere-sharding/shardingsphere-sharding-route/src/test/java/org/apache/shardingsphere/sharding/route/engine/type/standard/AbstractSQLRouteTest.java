@@ -74,7 +74,6 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
                 new ColumnMetaData("c_date", Types.TIMESTAMP, "timestamp", false, false, false)), Collections.emptySet()));
         tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
         tableMetaDataMap.put("t_category", new TableMetaData());
-        tableMetaDataMap.get("t_category").getAddressingDataSources().add("single_db");
         return new ShardingSphereSchema(tableMetaDataMap);
     }
 }
