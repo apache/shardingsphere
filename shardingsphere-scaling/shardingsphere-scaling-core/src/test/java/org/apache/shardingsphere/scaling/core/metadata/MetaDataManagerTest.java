@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.metadata;
 
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.column.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -118,14 +118,14 @@ public final class MetaDataManagerTest {
         assertThat(actual.get(0), is("id"));
     }
     
-    private void assertColumnMetaData(final PhysicalTableMetaData actual) {
+    private void assertColumnMetaData(final TableMetaData actual) {
         assertThat(actual.getColumns().size(), is(3));
         assertColumnMetaData(actual.getColumnMetaData(0), "id", Types.BIGINT, "BIGINT");
         assertColumnMetaData(actual.getColumnMetaData(1), "name", Types.VARCHAR, "VARCHAR");
         assertColumnMetaData(actual.getColumnMetaData(2), "age", Types.INTEGER, "INTEGER");
     }
     
-    private void assertColumnMetaData(final PhysicalColumnMetaData actual, final String expectedName, final int expectedType, final String expectedTypeName) {
+    private void assertColumnMetaData(final ColumnMetaData actual, final String expectedName, final int expectedType, final String expectedTypeName) {
         assertThat(actual.getName(), is(expectedName));
         assertThat(actual.getDataType(), is(expectedType));
         assertThat(actual.getDataTypeName(), is(expectedTypeName));

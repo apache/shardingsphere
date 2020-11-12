@@ -22,13 +22,12 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
-import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.schema.model.datasource.DataSourcesMetaData;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.column.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.index.PhysicalIndexMetaData;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
@@ -42,6 +41,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -126,19 +126,17 @@ public final class QueryHeaderBuilderTest {
     }
     
     private ShardingSphereMetaData createMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
-        PhysicalColumnMetaData columnMetaData = new PhysicalColumnMetaData("order_id", Types.INTEGER, "int", true, false, false);
-        PhysicalSchemaMetaData schemaMetaData = mock(PhysicalSchemaMetaData.class);
-        when(schemaMetaData.get("t_logic_order")).thenReturn(new PhysicalTableMetaData(Collections.singletonList(columnMetaData), Collections.singletonList(new PhysicalIndexMetaData("order_id"))));
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        ColumnMetaData columnMetaData = new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.getSchemaMetaData()).thenReturn(schemaMetaData);
+        when(schema.get("t_logic_order")).thenReturn(new TableMetaData(Collections.singletonList(columnMetaData), Collections.singletonList(new IndexMetaData("order_id"))));
         DataSourcesMetaData dataSourcesMetaData = mock(DataSourcesMetaData.class);
         when(dataSourcesMetaData.getDataSourceMetaData("ds_0")).thenReturn(mock(DataSourceMetaData.class));
-        when(schema.getDataSourcesMetaData()).thenReturn(dataSourcesMetaData);
+        when(result.getResource().getDataSourcesMetaData()).thenReturn(dataSourcesMetaData);
         when(result.getSchema()).thenReturn(schema);
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));
-        when(result.getRules()).thenReturn(Collections.singletonList(shardingRule));
+        when(result.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(shardingRule));
         when(result.getName()).thenReturn("sharding_schema");
         return result;
     }

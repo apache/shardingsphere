@@ -19,7 +19,7 @@ package org.apache.shardingsphere.spring.boot.governance.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryDataSourceRule;
 import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryRule;
@@ -58,14 +58,14 @@ public class GovernanceSpringBootReplicaQueryTest {
     @Test
     public void assertDataSource() throws NoSuchFieldException, IllegalAccessException {
         assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
-        Field field = GovernanceShardingSphereDataSource.class.getDeclaredField("schemaContexts");
+        Field field = GovernanceShardingSphereDataSource.class.getDeclaredField("metaDataContexts");
         field.setAccessible(true);
-        SchemaContexts schemaContexts = (SchemaContexts) field.get(dataSource);
-        for (DataSource each : schemaContexts.getDefaultMetaData().getDataSources().values()) {
+        MetaDataContexts metaDataContexts = (MetaDataContexts) field.get(dataSource);
+        for (DataSource each : metaDataContexts.getDefaultMetaData().getResource().getDataSources().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
             assertThat(((BasicDataSource) each).getUsername(), is("sa"));
         }
-        Collection<ShardingSphereRule> rules = schemaContexts.getDefaultMetaData().getRules();
+        Collection<ShardingSphereRule> rules = metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules();
         assertThat(rules.size(), is(1));
         assertReplicaQueryRule((ReplicaQueryRule) rules.iterator().next());
     }

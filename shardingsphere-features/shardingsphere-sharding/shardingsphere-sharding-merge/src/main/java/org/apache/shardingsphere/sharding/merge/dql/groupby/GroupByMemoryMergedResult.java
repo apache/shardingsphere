@@ -26,9 +26,9 @@ import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResul
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnitFactory;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.column.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
@@ -51,13 +51,13 @@ import java.util.Map.Entry;
  */
 public final class GroupByMemoryMergedResult extends MemoryMergedResult<ShardingRule> {
     
-    public GroupByMemoryMergedResult(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext, final PhysicalSchemaMetaData schemaMetaData) throws SQLException {
-        super(null, schemaMetaData, selectStatementContext, queryResults);
+    public GroupByMemoryMergedResult(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
+        super(null, schema, selectStatementContext, queryResults);
     }
     
     @Override
     protected List<MemoryQueryResultRow> init(final ShardingRule shardingRule,
-                                              final PhysicalSchemaMetaData schemaMetaData, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+                                              final ShardingSphereSchema schema, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
         Map<GroupByValue, MemoryQueryResultRow> dataMap = new HashMap<>(1024);
         Map<GroupByValue, Map<AggregationProjection, AggregationUnit>> aggregationMap = new HashMap<>(1024);
@@ -69,7 +69,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
             }
         }
         setAggregationValueToMemoryRow(selectStatementContext, dataMap, aggregationMap);
-        List<Boolean> valueCaseSensitive = queryResults.isEmpty() ? Collections.emptyList() : getValueCaseSensitive(queryResults.iterator().next(), selectStatementContext, schemaMetaData);
+        List<Boolean> valueCaseSensitive = queryResults.isEmpty() ? Collections.emptyList() : getValueCaseSensitive(queryResults.iterator().next(), selectStatementContext, schema);
         return getMemoryResultSetRows(selectStatementContext, dataMap, valueCaseSensitive);
     }
     
@@ -116,20 +116,20 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         }
     }
     
-    private List<Boolean> getValueCaseSensitive(final QueryResult queryResult, final SelectStatementContext selectStatementContext, final PhysicalSchemaMetaData schemaMetaData) throws SQLException {
+    private List<Boolean> getValueCaseSensitive(final QueryResult queryResult, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
         List<Boolean> result = Lists.newArrayList(false);
         for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
-            result.add(getValueCaseSensitiveFromTables(queryResult, selectStatementContext, schemaMetaData, columnIndex));
+            result.add(getValueCaseSensitiveFromTables(queryResult, selectStatementContext, schema, columnIndex));
         }
         return result;
     }
     
-    private boolean getValueCaseSensitiveFromTables(final QueryResult queryResult, final SelectStatementContext selectStatementContext,
-                                                    final PhysicalSchemaMetaData schemaMetaData, final int columnIndex) throws SQLException {
+    private boolean getValueCaseSensitiveFromTables(final QueryResult queryResult, 
+                                                    final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final int columnIndex) throws SQLException {
         for (SimpleTableSegment each : selectStatementContext.getSimpleTableSegments()) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            PhysicalTableMetaData tableMetaData = schemaMetaData.get(tableName);
-            Map<String, PhysicalColumnMetaData> columns = tableMetaData.getColumns();
+            TableMetaData tableMetaData = schema.get(tableName);
+            Map<String, ColumnMetaData> columns = tableMetaData.getColumns();
             String columnName = queryResult.getColumnName(columnIndex);
             if (columns.containsKey(columnName)) {
                 return columns.get(columnName).isCaseSensitive();

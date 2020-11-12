@@ -34,26 +34,26 @@ import static org.junit.Assert.assertThat;
 public final class HADataSourceRuleTest {
     
     private final HADataSourceRule haDataSourceRule = new HADataSourceRule(
-            new HADataSourceRuleConfiguration("test_pr", "primary_ds", Arrays.asList("replica_ds_0", "replica_ds_1"), "random"), new RandomReplicaLoadBalanceAlgorithm());
+            new HADataSourceRuleConfiguration("test_pr", "primary_ds", Arrays.asList("replica_ds_0", "replica_ds_1"), "random", true), new RandomReplicaLoadBalanceAlgorithm());
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewHADataSourceRuleWithoutName() {
-        new HADataSourceRule(new HADataSourceRuleConfiguration("", "primary_ds", Collections.singletonList("replica_ds"), null), new RoundRobinReplicaLoadBalanceAlgorithm());
+        new HADataSourceRule(new HADataSourceRuleConfiguration("", "primary_ds", Collections.singletonList("replica_ds"), null, true), new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewHADataSourceRuleWithoutPrimaryDataSourceName() {
-        new HADataSourceRule(new HADataSourceRuleConfiguration("ds", "", Collections.singletonList("replica_ds"), null), new RoundRobinReplicaLoadBalanceAlgorithm());
+        new HADataSourceRule(new HADataSourceRuleConfiguration("ds", "", Collections.singletonList("replica_ds"), null, true), new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewHADataSourceRuleWithNullReplicaDataSourceName() {
-        new HADataSourceRule(new HADataSourceRuleConfiguration("ds", "primary_ds", null, null), new RoundRobinReplicaLoadBalanceAlgorithm());
+        new HADataSourceRule(new HADataSourceRuleConfiguration("ds", "primary_ds", null, null, true), new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewHADataSourceRuleWithEmptyReplicaDataSourceName() {
-        new HADataSourceRule(new HADataSourceRuleConfiguration("ds", "primary_ds", Collections.emptyList(), null), new RoundRobinReplicaLoadBalanceAlgorithm());
+        new HADataSourceRule(new HADataSourceRuleConfiguration("ds", "primary_ds", Collections.emptyList(), null, true), new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test

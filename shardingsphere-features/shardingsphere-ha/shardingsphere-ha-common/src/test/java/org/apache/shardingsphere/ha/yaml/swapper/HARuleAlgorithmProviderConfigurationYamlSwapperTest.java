@@ -80,12 +80,12 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapperTest {
     
     @Test
     public void assertGetOrder() {
-        assertThat(swapper.getOrder(), is(HAOrder.ALGORITHM_PROVIDER_ORDER));
+        assertThat(swapper.getOrder(), is(HAOrder.ALGORITHM_PROVIDER_HA_ORDER));
     }
     
     private YamlHARuleConfiguration createYamlHARuleConfiguration() {
         HADataSourceRuleConfiguration ruleConfig = new HADataSourceRuleConfiguration("name", "primaryDataSourceName",
-                Collections.singletonList("replicaDataSourceName"), "loadBalancerName");
+                Collections.singletonList("replicaDataSourceName"), "loadBalancerName", true);
         return swapper.swapToYamlConfiguration(
                 new AlgorithmProvidedHARuleConfiguration(Collections.singletonList(ruleConfig), ImmutableMap.of("name", new RandomReplicaLoadBalanceAlgorithm())));
     }

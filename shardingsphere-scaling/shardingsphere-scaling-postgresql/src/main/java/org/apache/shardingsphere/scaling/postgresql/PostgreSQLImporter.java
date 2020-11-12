@@ -22,9 +22,6 @@ import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractJDBCImporter;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
 
-import java.util.Map;
-import java.util.Set;
-
 /**
  * postgreSQL importer.
  */
@@ -35,8 +32,8 @@ public final class PostgreSQLImporter extends AbstractJDBCImporter {
     }
     
     @Override
-    protected AbstractSQLBuilder createSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
-        return new PostgreSQLSQLBuilder(shardingColumnsMap);
+    protected AbstractSQLBuilder createSQLBuilder() {
+        return new PostgreSQLSQLBuilder();
     }
 }
 

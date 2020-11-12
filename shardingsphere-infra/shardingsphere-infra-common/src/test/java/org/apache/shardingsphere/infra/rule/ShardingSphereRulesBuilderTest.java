@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.rule;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.rule.fixture.TestRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.fixture.TestShardingSphereRuleBuilder;
 import org.junit.Test;
@@ -27,13 +29,14 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class ShardingSphereRulesBuilderTest {
     
     @Test
     public void assertBuild() {
         RuleConfiguration ruleConfig = new TestRuleConfiguration();
-        Collection<ShardingSphereRule> shardingSphereRules = ShardingSphereRulesBuilder.build(Collections.singletonList(ruleConfig), Collections.singletonList(""));
-        assertThat(shardingSphereRules, is(Collections.singletonList(TestShardingSphereRuleBuilder.getShardingSphereRule())));
+        Collection<ShardingSphereRule> shardingSphereRules = ShardingSphereRulesBuilder.build(Collections.singletonList(ruleConfig), mock(DatabaseType.class), Collections.emptyMap());
+        assertThat(shardingSphereRules, is(Collections.singletonList(TestShardingSphereRuleBuilder.getRule())));
     }
 }

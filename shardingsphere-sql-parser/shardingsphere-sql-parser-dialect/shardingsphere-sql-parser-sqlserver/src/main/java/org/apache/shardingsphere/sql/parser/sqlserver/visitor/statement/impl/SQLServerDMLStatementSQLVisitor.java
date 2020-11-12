@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AliasContext;
@@ -296,6 +296,9 @@ public final class SQLServerDMLStatementSQLVisitor extends SQLServerStatementSQL
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         SQLServerDeleteStatement result = new SQLServerDeleteStatement();
+        if (null != ctx.withClause()) {
+            result.setWithSegment((WithSegment) visit(ctx.withClause()));
+        }
         if (null != ctx.multipleTablesClause()) {
             result.setTableSegment((TableSegment) visit(ctx.multipleTablesClause()));
         } else {

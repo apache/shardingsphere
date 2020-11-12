@@ -20,8 +20,8 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
-import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
@@ -92,9 +92,9 @@ public final class ShardingSphereResultSetTest {
     
     private ShardingSphereStatement getShardingSphereStatement() {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class);
-        SchemaContexts schemaContexts = mock(StandardSchemaContexts.class);
-        when(schemaContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        when(connection.getSchemaContexts()).thenReturn(schemaContexts);
+        MetaDataContexts metaDataContexts = mock(StandardMetaDataContexts.class);
+        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(connection.getMetaDataContexts()).thenReturn(metaDataContexts);
         ShardingSphereStatement result = mock(ShardingSphereStatement.class);
         when(result.getConnection()).thenReturn(connection);
         return result;

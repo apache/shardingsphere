@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.binder.segment.select.projection.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class ProjectionEngine {
     
-    private final PhysicalSchemaMetaData schemaMetaData;
+    private final ShardingSphereSchema schema;
     
     private int aggregationAverageDerivedColumnCount;
     
@@ -123,7 +123,7 @@ public final class ProjectionEngine {
     private Collection<ColumnProjection> getUnqualifiedShorthandColumns(final Collection<SimpleTableSegment> tables) {
         Collection<ColumnProjection> result = new LinkedList<>();
         for (SimpleTableSegment each : tables) {
-            result.addAll(schemaMetaData.getAllColumnNames(
+            result.addAll(schema.getAllColumnNames(
                     each.getTableName().getIdentifier().getValue()).stream().map(columnName -> new ColumnProjection(null, columnName, null)).collect(Collectors.toList()));
         }
         return result;
@@ -133,7 +133,7 @@ public final class ProjectionEngine {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
             if (owner.equalsIgnoreCase(each.getAlias().orElse(tableName))) {
-                return schemaMetaData.getAllColumnNames(tableName).stream().map(columnName -> new ColumnProjection(owner, columnName, null)).collect(Collectors.toList());
+                return schema.getAllColumnNames(tableName).stream().map(columnName -> new ColumnProjection(owner, columnName, null)).collect(Collectors.toList());
             }
         }
         return Collections.emptyList();

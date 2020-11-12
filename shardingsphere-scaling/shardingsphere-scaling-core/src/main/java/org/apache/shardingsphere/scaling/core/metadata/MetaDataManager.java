@@ -19,8 +19,8 @@ package org.apache.shardingsphere.scaling.core.metadata;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.table.PhysicalTableMetaData;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.table.PhysicalTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -35,7 +35,7 @@ public final class MetaDataManager {
     
     private final DataSource dataSource;
     
-    private final Map<String, PhysicalTableMetaData> tableMetaDataMap = new HashMap<>();
+    private final Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
     
     /**
      * Get table meta data by table name.
@@ -43,10 +43,10 @@ public final class MetaDataManager {
      * @param tableName table name
      * @return table meta data
      */
-    public PhysicalTableMetaData getTableMetaData(final String tableName) {
+    public TableMetaData getTableMetaData(final String tableName) {
         if (!tableMetaDataMap.containsKey(tableName)) {
             try {
-                PhysicalTableMetaDataLoader.load(dataSource, tableName, DatabaseTypeRegistry.getActualDatabaseType("MySQL")).ifPresent(tableMetaData -> tableMetaDataMap.put(tableName, tableMetaData));
+                TableMetaDataLoader.load(dataSource, tableName, DatabaseTypeRegistry.getActualDatabaseType("MySQL")).ifPresent(tableMetaData -> tableMetaDataMap.put(tableName, tableMetaData));
             } catch (final SQLException ex) {
                 throw new RuntimeException(String.format("Load metaData for table %s failed", tableName), ex);
             }

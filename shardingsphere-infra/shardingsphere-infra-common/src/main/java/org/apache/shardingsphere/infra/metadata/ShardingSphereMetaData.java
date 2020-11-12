@@ -19,14 +19,9 @@ package org.apache.shardingsphere.infra.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-
-import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Map;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 
 /**
  * ShardingSphere meta data.
@@ -37,43 +32,18 @@ public final class ShardingSphereMetaData {
     
     private final String name;
     
-    private final Collection<RuleConfiguration> configurations;
+    private final ShardingSphereResource resource;
     
-    private final Collection<ShardingSphereRule> rules;
-    
-    private final Map<String, DataSource> dataSources;
+    private final ShardingSphereRuleMetaData ruleMetaData;
     
     private final ShardingSphereSchema schema;
     
     /**
-     * Is complete schema context.
+     * Judge whether is completed.
      *
-     * @return is complete schema context or not
+     * @return is completed or not
      */
     public boolean isComplete() {
-        return !rules.isEmpty() && !dataSources.isEmpty();
-    }
-    
-    /**
-     * Close data sources.
-     * @param dataSources data sources
-     * @throws SQLException exception
-     */
-    public void closeDataSources(final Collection<String> dataSources) throws SQLException {
-        for (String each :dataSources) {
-            close(this.dataSources.get(each));
-        }
-    }
-    
-    private void close(final DataSource dataSource) throws SQLException {
-        if (dataSource instanceof AutoCloseable) {
-            try {
-                ((AutoCloseable) dataSource).close();
-            // CHECKSTYLE:OFF
-            } catch (final Exception e) {
-            // CHECKSTYLE:ON
-                throw new SQLException(e);
-            }
-        }
+        return !ruleMetaData.getRules().isEmpty() && !resource.getDataSources().isEmpty();
     }
 }

@@ -46,6 +46,8 @@ public final class HADataSourceRule {
     
     private final ReplicaLoadBalanceAlgorithm loadBalancer;
     
+    private final Boolean readWriteSplit;
+    
     @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
@@ -55,6 +57,7 @@ public final class HADataSourceRule {
         primaryDataSourceName = config.getPrimaryDataSourceName();
         replicaDataSourceNames = config.getReplicaDataSourceNames();
         this.loadBalancer = loadBalancer;
+        this.readWriteSplit = config.getReadWriteSplit();
     }
     
     private void checkConfiguration(final HADataSourceRuleConfiguration config) {

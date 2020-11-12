@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.governance.core.config;
 
 import lombok.SneakyThrows;
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.governance.core.event.model.persist.DataSourcePersistEvent;
-import org.apache.shardingsphere.governance.core.event.model.persist.MetaDataPersistEvent;
-import org.apache.shardingsphere.governance.core.event.model.persist.RulePersistEvent;
-import org.apache.shardingsphere.governance.core.event.model.persist.SchemaNamePersistEvent;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlLogicSchemaMetaData;
-import org.apache.shardingsphere.governance.core.yaml.swapper.LogicSchemaMetaDataYamlSwapper;
+import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaPersistEvent;
+import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
+import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
@@ -34,7 +33,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -93,7 +92,7 @@ public final class ConfigCenterTest {
     
     private static final String DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQL = "yaml/configCenter/data-source-init-sql.yaml";
     
-    private static final String META_DATA_YAML = "yaml/metadata.yaml";
+    private static final String META_DATA_YAML = "yaml/schema.yaml";
     
     @Mock
     private ConfigurationRepository configurationRepository;
@@ -102,118 +101,118 @@ public final class ConfigCenterTest {
     public void assertPersistConfigurationForShardingRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/rule"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
     }
     
     @Test
     public void assertMoreSchema() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
-        verify(configurationRepository, times(0)).persist("/schemas", "myTest1,myTest2,sharding_db");
+        verify(configurationRepository, times(0)).persist("/metadata", "myTest1,myTest2,sharding_db");
     }
     
     @Test
     public void assertMoreAndContainsSchema() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
-        verify(configurationRepository, times(0)).persist("/schemas", "myTest1,sharding_db");
+        verify(configurationRepository, times(0)).persist("/metadata", "myTest1,sharding_db");
     }
     
     @Test
     public void assertPersistConfigurationForShardingRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/rule"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
     }
     
     @Test
     public void assertPersistConfigurationForShardingRuleWithoutAuthenticationAndIsOverwrite() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), true);
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository, times(0)).persist("/schemas/sharding_db/rule", readYAML(SHARDING_RULE_YAML));
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(SHARDING_RULE_YAML));
     }
     
     @Test
     public void assertPersistConfigurationForReplicaQueryRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReplicaQueryRuleConfiguration(), false);
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/rule"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
     }
     
     @Test
     public void assertPersistConfigurationForReplicaQueryRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReplicaQueryRuleConfiguration(), false);
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/rule"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
     }
     
     @Test
     public void assertPersistConfigurationForReplicaQueryRuleWithoutAuthenticationAndIsOverwrite() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReplicaQueryRuleConfiguration(), true);
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository, times(0)).persist("/schemas/sharding_db/rule", readYAML(REPLICA_QUERY_RULE_YAML));
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(REPLICA_QUERY_RULE_YAML));
     }
     
     @Test
     public void assertPersistConfigurationForShardingRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/rule"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
     }
     
     @Test
     public void assertPersistConfigurationForShardingRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/rule"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
     }
     
     @Test
     public void assertPersistConfigurationForShardingRuleWithAuthenticationAndIsOverwrite() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), true);
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository, times(0)).persist("/schemas/sharding_db/rule", readYAML(SHARDING_RULE_YAML));
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(SHARDING_RULE_YAML));
     }
     
     @Test
     public void assertPersistConfigurationForReplicaQueryRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReplicaQueryRuleConfiguration(), false);
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/rule"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
     }
     
     @Test
     public void assertPersistConfigurationForReplicaQueryRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReplicaQueryRuleConfiguration(), false);
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/rule"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
     }
     
     @Test
     public void assertPersistConfigurationForReplicaQueryRuleWithAuthenticationAndIsOverwrite() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReplicaQueryRuleConfiguration(), true);
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository, times(0)).persist("/schemas/sharding_db/rule", readYAML(REPLICA_QUERY_RULE_YAML));
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(REPLICA_QUERY_RULE_YAML));
     }
     
     @Test
     public void assertPersistConfigurationForEncrypt() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createEncryptRuleConfiguration(), true);
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository, times(0)).persist("/schemas/sharding_db/rule", readYAML(ENCRYPT_RULE_YAML));
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(ENCRYPT_RULE_YAML));
     }
     
     @Test
@@ -226,8 +225,8 @@ public final class ConfigCenterTest {
     public void assertPersistConfigurationForShadow() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createShadowRuleConfiguration(), true);
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(configurationRepository, times(0)).persist("/schemas/sharding_db/rule", readYAML(SHADOW_RULE_YAML));
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(SHADOW_RULE_YAML));
     }
     
     @Test
@@ -255,7 +254,7 @@ public final class ConfigCenterTest {
     }
     
     private DataSource createDataSource(final String name) {
-        BasicDataSource result = new BasicDataSource();
+        MockDataSource result = new MockDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");
         result.setUrl("jdbc:mysql://localhost:3306/" + name);
         result.setUsername("root");
@@ -291,7 +290,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertLoadDataSourceConfigurations() {
-        when(configurationRepository.get("/schemas/sharding_db/datasource")).thenReturn(readYAML(DATA_SOURCE_YAM));
+        when(configurationRepository.get("/metadata/sharding_db/datasource")).thenReturn(readYAML(DATA_SOURCE_YAM));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         Map<String, DataSourceConfiguration> actual = configCenter.loadDataSourceConfigurations("sharding_db");
         assertThat(actual.size(), is(2));
@@ -308,7 +307,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertLoadDataSourceConfigurationsNotExistPath() {
-        when(configurationRepository.get("/schemas/sharding_db/datasource")).thenReturn("");
+        when(configurationRepository.get("/metadata/sharding_db/datasource")).thenReturn("");
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         Map<String, DataSourceConfiguration> actual = configCenter.loadDataSourceConfigurations("sharding_db");
         assertThat(actual.size(), is(0));
@@ -316,7 +315,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertLoadShardingAndEncryptRuleConfiguration() {
-        when(configurationRepository.get("/schemas/sharding_db/rule")).thenReturn(readYAML(SHARDING_AND_ENCRYPT_RULE_YAML));
+        when(configurationRepository.get("/metadata/sharding_db/rule")).thenReturn(readYAML(SHARDING_AND_ENCRYPT_RULE_YAML));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         Collection<RuleConfiguration> ruleConfigurations = configCenter.loadRuleConfigurations("sharding_db");
         assertThat(ruleConfigurations.size(), is(2));
@@ -337,7 +336,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertLoadShardingRuleConfiguration() {
-        when(configurationRepository.get("/schemas/sharding_db/rule")).thenReturn(readYAML(SHARDING_RULE_YAML));
+        when(configurationRepository.get("/metadata/sharding_db/rule")).thenReturn(readYAML(SHARDING_RULE_YAML));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         Collection<RuleConfiguration> actual = configCenter.loadRuleConfigurations("sharding_db");
         assertThat(actual.size(), is(1));
@@ -348,7 +347,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertLoadReplicaQueryRuleConfiguration() {
-        when(configurationRepository.get("/schemas/sharding_db/rule")).thenReturn(readYAML(REPLICA_QUERY_RULE_YAML));
+        when(configurationRepository.get("/metadata/sharding_db/rule")).thenReturn(readYAML(REPLICA_QUERY_RULE_YAML));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         Collection<RuleConfiguration> actual = configCenter.loadRuleConfigurations("sharding_db");
         ReplicaQueryRuleConfiguration config = (ReplicaQueryRuleConfiguration) actual.iterator().next();
@@ -359,7 +358,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertLoadEncryptRuleConfiguration() {
-        when(configurationRepository.get("/schemas/sharding_db/rule")).thenReturn(readYAML(ENCRYPT_RULE_YAML));
+        when(configurationRepository.get("/metadata/sharding_db/rule")).thenReturn(readYAML(ENCRYPT_RULE_YAML));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         EncryptRuleConfiguration actual = (EncryptRuleConfiguration) configCenter.loadRuleConfigurations("sharding_db").iterator().next();
         assertThat(actual.getEncryptors().size(), is(1));
@@ -370,7 +369,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertLoadShadowRuleConfiguration() {
-        when(configurationRepository.get("/schemas/sharding_db/rule")).thenReturn(readYAML(SHADOW_RULE_YAML));
+        when(configurationRepository.get("/metadata/sharding_db/rule")).thenReturn(readYAML(SHADOW_RULE_YAML));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         ShadowRuleConfiguration actual = (ShadowRuleConfiguration) configCenter.loadRuleConfigurations("sharding_db").iterator().next();
         assertThat(actual.getSourceDataSourceNames(), is(Arrays.asList("ds", "ds1")));
@@ -397,7 +396,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertGetAllSchemaNames() {
-        when(configurationRepository.get("/schemas")).thenReturn("sharding_db,replica_query_db");
+        when(configurationRepository.get("/metadata")).thenReturn("sharding_db,replica_query_db");
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         Collection<String> actual = configCenter.getAllSchemaNames();
         assertThat(actual.size(), is(2));
@@ -407,7 +406,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertLoadDataSourceConfigurationsWithConnectionInitSqls() {
-        when(configurationRepository.get("/schemas/sharding_db/datasource")).thenReturn(readYAML(DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQL));
+        when(configurationRepository.get("/metadata/sharding_db/datasource")).thenReturn(readYAML(DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQL));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         Map<String, DataSourceConfiguration> actual = configCenter.loadDataSourceConfigurations("sharding_db");
         assertThat(actual.size(), is(2));
@@ -416,7 +415,7 @@ public final class ConfigCenterTest {
     }
     
     private DataSource createDataSourceWithConnectionInitSqls(final String name) {
-        BasicDataSource result = new BasicDataSource();
+        MockDataSource result = new MockDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");
         result.setUrl("jdbc:mysql://localhost:3306/" + name);
         result.setUsername("root");
@@ -442,17 +441,17 @@ public final class ConfigCenterTest {
     @Test
     public void assertPersistSchemaNameWithExistSchema() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
-        when(configurationRepository.get("/schemas")).thenReturn("sharding_db");
+        when(configurationRepository.get("/metadata")).thenReturn("sharding_db");
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), true);
-        verify(configurationRepository, times(0)).persist(eq("/schemas"), eq("sharding_db"));
+        verify(configurationRepository, times(0)).persist(eq("/metadata"), eq("sharding_db"));
     }
     
     @Test
     public void assertPersistSchemaNameWithExistAndNewSchema() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
-        when(configurationRepository.get("/schemas")).thenReturn("replica_query_db");
+        when(configurationRepository.get("/metadata")).thenReturn("replica_query_db");
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), true);
-        verify(configurationRepository).persist(eq("/schemas"), eq("replica_query_db,sharding_db"));
+        verify(configurationRepository).persist(eq("/metadata"), eq("replica_query_db,sharding_db"));
     }
     
     @Test
@@ -460,81 +459,80 @@ public final class ConfigCenterTest {
         DataSourcePersistEvent event = new DataSourcePersistEvent("sharding_db", createDataSourceConfigurations());
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/datasource"), anyString());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), anyString());
     }
     
     @Test
     public void assertRenewRuleEvent() {
-        RulePersistEvent event = new RulePersistEvent("sharding_db", createRuleConfigurations());
+        RuleConfigurationsPersistEvent event = new RuleConfigurationsPersistEvent("sharding_db", createRuleConfigurations());
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/rule"), anyString());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/rule"), anyString());
     }
     
     @Test
     public void assertRenewSchemaNameEventWithDrop() {
         SchemaNamePersistEvent event = new SchemaNamePersistEvent("sharding_db", true);
-        when(configurationRepository.get("/schemas")).thenReturn("sharding_db,replica_query_db");
+        when(configurationRepository.get("/metadata")).thenReturn("sharding_db,replica_query_db");
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
-        verify(configurationRepository).persist(eq("/schemas"), eq("replica_query_db"));
+        verify(configurationRepository).persist(eq("/metadata"), eq("replica_query_db"));
     }
     
     @Test
     public void assertRenewSchemaNameEventWithAdd() {
         SchemaNamePersistEvent event = new SchemaNamePersistEvent("sharding_db", false);
-        when(configurationRepository.get("/schemas")).thenReturn("replica_query_db");
+        when(configurationRepository.get("/metadata")).thenReturn("replica_query_db");
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
-        verify(configurationRepository).persist(eq("/schemas"), eq("replica_query_db,sharding_db"));
+        verify(configurationRepository).persist(eq("/metadata"), eq("replica_query_db,sharding_db"));
     }
     
     @Test
     public void assertRenewSchemaNameEventWithAddAndExist() {
         SchemaNamePersistEvent event = new SchemaNamePersistEvent("sharding_db", false);
-        when(configurationRepository.get("/schemas")).thenReturn("sharding_db,replica_query_db");
+        when(configurationRepository.get("/metadata")).thenReturn("sharding_db,replica_query_db");
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
-        verify(configurationRepository).persist(eq("/schemas"), eq("sharding_db,replica_query_db"));
+        verify(configurationRepository).persist(eq("/metadata"), eq("sharding_db,replica_query_db"));
     }
     
     @Test
-    public void assertPersistMetaData() {
-        PhysicalSchemaMetaData physicalSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlLogicSchemaMetaData.class));
+    public void assertPersistSchema() {
+        ShardingSphereSchema schema = new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlSchema.class));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
-        configCenter.persistMetaData("sharding_db", physicalSchemaMetaData);
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/table"), anyString());
+        configCenter.persistSchema("sharding_db", schema);
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/schema"), anyString());
     }
     
     @Test
-    public void assertLoadMetaData() {
-        when(configurationRepository.get("/schemas/sharding_db/table")).thenReturn(readYAML(META_DATA_YAML));
+    public void assertLoadSchema() {
+        when(configurationRepository.get("/metadata/sharding_db/schema")).thenReturn(readYAML(META_DATA_YAML));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
-        Optional<PhysicalSchemaMetaData> physicalSchemaMetaDataOptional = configCenter.loadMetaData("sharding_db");
-        assertTrue(physicalSchemaMetaDataOptional.isPresent());
-        Optional<PhysicalSchemaMetaData> empty = configCenter.loadMetaData("test");
+        Optional<ShardingSphereSchema> schemaOptional = configCenter.loadSchema("sharding_db");
+        assertTrue(schemaOptional.isPresent());
+        Optional<ShardingSphereSchema> empty = configCenter.loadSchema("test");
         assertThat(empty, is(Optional.empty()));
-        PhysicalSchemaMetaData physicalSchemaMetaData = physicalSchemaMetaDataOptional.get();
-        verify(configurationRepository).get(eq("/schemas/sharding_db/table"));
-        assertThat(physicalSchemaMetaData.getAllTableNames(), is(Collections.singleton("t_order")));
-        assertThat(physicalSchemaMetaData.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
-        assertThat(physicalSchemaMetaData.getAllColumnNames("t_order").size(), is(1));
-        assertThat(physicalSchemaMetaData.get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
+        ShardingSphereSchema schema = schemaOptional.get();
+        verify(configurationRepository).get(eq("/metadata/sharding_db/schema"));
+        assertThat(schema.getAllTableNames(), is(Collections.singleton("t_order")));
+        assertThat(schema.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
+        assertThat(schema.getAllColumnNames("t_order").size(), is(1));
+        assertThat(schema.get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
     }
     
     @Test
-    public void assertRenewMetaDataPersistEvent() {
-        MetaDataPersistEvent event = new MetaDataPersistEvent("sharding_db", 
-                new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlLogicSchemaMetaData.class)));
+    public void assertRenewSchemaPersistEvent() {
+        SchemaPersistEvent event = new SchemaPersistEvent("sharding_db", new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlSchema.class)));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
-        verify(configurationRepository).persist(eq("/schemas/sharding_db/table"), anyString());
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/schema"), anyString());
     }
     
     @Test
     public void assertDeleteSchema() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.deleteSchema("sharding_db");
-        verify(configurationRepository).delete(eq("/schemas/sharding_db"));
+        verify(configurationRepository).delete(eq("/metadata/sharding_db"));
     }
 }

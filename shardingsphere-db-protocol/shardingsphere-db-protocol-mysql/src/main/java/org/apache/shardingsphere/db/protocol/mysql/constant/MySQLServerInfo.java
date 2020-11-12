@@ -38,7 +38,7 @@ public final class MySQLServerInfo {
     
     private static final String DEFAULT_MYSQL_VERSION = "8.0.20";
     
-    private static final String PROXY_VERSION = "5.0.0-RC1";
+    private static final String PROXY_VERSION = "5.0.0-beta";
     
     private static final String SERVER_VERSION_PATTERN = "%s-ShardingSphere-Proxy %s";
     

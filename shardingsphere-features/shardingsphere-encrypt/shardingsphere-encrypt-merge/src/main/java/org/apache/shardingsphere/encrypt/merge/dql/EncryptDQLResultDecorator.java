@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.merge.dql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
@@ -29,19 +29,19 @@ import org.apache.shardingsphere.infra.merge.result.impl.transparent.Transparent
  * DQL result decorator for encrypt.
  */
 @RequiredArgsConstructor
-public final class EncryptDQLResultDecorator implements ResultDecorator {
+public final class EncryptDQLResultDecorator implements ResultDecorator<EncryptRule> {
     
     private final EncryptAlgorithmMetaData metaData;
     
     private final boolean queryWithCipherColumn;
     
     @Override
-    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext<?> sqlStatementContext, final PhysicalSchemaMetaData schemaMetaData) {
+    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext<?> sqlStatementContext, final EncryptRule rule) {
         return new EncryptMergedResult(metaData, new TransparentMergedResult(queryResult), queryWithCipherColumn);
     }
     
     @Override
-    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext<?> sqlStatementContext, final PhysicalSchemaMetaData schemaMetaData) {
+    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext<?> sqlStatementContext, final EncryptRule rule) {
         return new EncryptMergedResult(metaData, mergedResult, queryWithCipherColumn);
     }
 }

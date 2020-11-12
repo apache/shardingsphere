@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.ha.rule.biulder;
 
 import org.apache.shardingsphere.ha.rule.HARule;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
@@ -43,10 +43,10 @@ public final class AlgorithmProvidedHARuleBuilderTest {
     public void assertBuild() {
         AlgorithmProvidedHARuleConfiguration algorithmProvidedRuleConfig = mock(AlgorithmProvidedHARuleConfiguration.class);
         HADataSourceRuleConfiguration ruleConfig = new HADataSourceRuleConfiguration(
-                "name", "primaryDataSourceName", Collections.singletonList("name"), "loadBalancerName");
+                "name", "primaryDataSourceName", Collections.singletonList("name"), "loadBalancerName", true);
         when(algorithmProvidedRuleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfig));
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(
                 Collections.singletonList(algorithmProvidedRuleConfig), ShardingSphereRuleBuilder.class).get(algorithmProvidedRuleConfig);
-        assertThat(builder.build(algorithmProvidedRuleConfig, Collections.emptyList()), instanceOf(HARule.class));
+        assertThat(builder.build(algorithmProvidedRuleConfig), instanceOf(HARule.class));
     }
 }

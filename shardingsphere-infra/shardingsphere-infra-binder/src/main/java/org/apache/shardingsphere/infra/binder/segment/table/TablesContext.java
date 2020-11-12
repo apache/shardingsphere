@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.table;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -74,34 +74,34 @@ public final class TablesContext {
      * Find table name.
      *
      * @param column column segment
-     * @param schemaMetaData schema meta data
+     * @param schema schema meta data
      * @return table name
      */
-    public Optional<String> findTableName(final ColumnSegment column, final PhysicalSchemaMetaData schemaMetaData) {
+    public Optional<String> findTableName(final ColumnSegment column, final ShardingSphereSchema schema) {
         if (1 == tables.size()) {
             return Optional.of(tables.iterator().next().getTableName().getIdentifier().getValue());
         }
         if (column.getOwner().isPresent()) {
             return Optional.of(findTableNameFromSQL(column.getOwner().get().getIdentifier().getValue()));
         }
-        return findTableNameFromMetaData(column.getIdentifier().getValue(), schemaMetaData);
+        return findTableNameFromMetaData(column.getIdentifier().getValue(), schema);
     }
     
     /**
      * Find table name.
      *
      * @param column column projection
-     * @param schemaMetaData schema meta data
+     * @param schema schema meta data
      * @return table name
      */
-    public Optional<String> findTableName(final ColumnProjection column, final PhysicalSchemaMetaData schemaMetaData) {
+    public Optional<String> findTableName(final ColumnProjection column, final ShardingSphereSchema schema) {
         if (1 == tables.size()) {
             return Optional.of(tables.iterator().next().getTableName().getIdentifier().getValue());
         }
         if (null != column.getOwner()) {
             return Optional.of(findTableNameFromSQL(column.getOwner()));
         }
-        return findTableNameFromMetaData(column.getName(), schemaMetaData);
+        return findTableNameFromMetaData(column.getName(), schema);
     }
     
     /**
@@ -118,9 +118,9 @@ public final class TablesContext {
         throw new IllegalStateException("Can not find owner from table.");
     }
     
-    private Optional<String> findTableNameFromMetaData(final String columnName, final PhysicalSchemaMetaData schemaMetaData) {
+    private Optional<String> findTableNameFromMetaData(final String columnName, final ShardingSphereSchema schema) {
         for (SimpleTableSegment each : tables) {
-            if (schemaMetaData.containsColumn(each.getTableName().getIdentifier().getValue(), columnName)) {
+            if (schema.containsColumn(each.getTableName().getIdentifier().getValue(), columnName)) {
                 return Optional.of(each.getTableName().getIdentifier().getValue());
             }
         }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.spring.boot.governance.type;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.spring.boot.governance.registry.TestGovernanceRepository;
 import org.apache.shardingsphere.spring.boot.governance.util.EmbedTestingServer;
 import org.junit.BeforeClass;
@@ -61,8 +61,8 @@ public class GovernanceSpringBootRegistryReplicaQueryTest {
     public static void init() {
         EmbedTestingServer.start();
         TestGovernanceRepository repository = new TestGovernanceRepository();
-        repository.persist("/schemas/logic_db/datasource", readYAML(DATA_SOURCE_FILE));
-        repository.persist("/schemas/logic_db/rule", readYAML(RULE_FILE));
+        repository.persist("/metadata/logic_db/datasource", readYAML(DATA_SOURCE_FILE));
+        repository.persist("/metadata/logic_db/rule", readYAML(RULE_FILE));
         repository.persist("/props", "{}\n");
         repository.persist("/states/datanodes", "");
     }
@@ -70,10 +70,10 @@ public class GovernanceSpringBootRegistryReplicaQueryTest {
     @Test
     public void assertWithReplicaQueryDataSource() throws NoSuchFieldException, IllegalAccessException {
         assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
-        Field field = GovernanceShardingSphereDataSource.class.getDeclaredField("schemaContexts");
+        Field field = GovernanceShardingSphereDataSource.class.getDeclaredField("metaDataContexts");
         field.setAccessible(true);
-        SchemaContexts schemaContexts = (SchemaContexts) field.get(dataSource);
-        for (DataSource each : schemaContexts.getDefaultMetaData().getDataSources().values()) {
+        MetaDataContexts metaDataContexts = (MetaDataContexts) field.get(dataSource);
+        for (DataSource each : metaDataContexts.getDefaultMetaData().getResource().getDataSources().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
             assertThat(((BasicDataSource) each).getUsername(), is("sa"));
         }

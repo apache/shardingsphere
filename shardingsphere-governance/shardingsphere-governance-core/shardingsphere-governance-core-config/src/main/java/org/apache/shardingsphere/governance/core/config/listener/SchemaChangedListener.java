@@ -24,18 +24,17 @@ import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
 import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataAddedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAddedEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaDeletedEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
-import org.apache.shardingsphere.governance.core.yaml.config.metadata.YamlLogicSchemaMetaData;
+import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
-import org.apache.shardingsphere.governance.core.yaml.swapper.LogicSchemaMetaDataYamlSwapper;
+import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -68,7 +67,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     @Override
     protected Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         // TODO Consider removing the following one.
-        if (configurationNode.getSchemasPath().equals(event.getKey())) {
+        if (configurationNode.getMetadataNodePath().equals(event.getKey())) {
             return createSchemaNamesUpdatedEvent(event.getValue());
         }
         String schemaName = configurationNode.getSchemaName(event.getKey());
@@ -83,7 +82,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         }
         if (Type.DELETED == event.getType()) {
             existedSchemaNames.remove(schemaName);
-            return Optional.of(new SchemaDeletedEvent(schemaName));
+            return Optional.of(new MetaDataDeletedEvent(schemaName));
         }
         return Optional.empty();
     }
@@ -98,7 +97,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         if (!deletedSchemaNames.isEmpty()) {
             String schemaName = deletedSchemaNames.iterator().next();
             existedSchemaNames.remove(schemaName);
-            return Optional.of(new SchemaDeletedEvent(schemaName));
+            return Optional.of(new MetaDataDeletedEvent(schemaName));
         }
         return Optional.empty();
     }
@@ -106,12 +105,12 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     private boolean isValidNodeChangedEvent(final String schemaName, final String nodeFullPath) {
         return !existedSchemaNames.contains(schemaName) || configurationNode.getDataSourcePath(schemaName).equals(nodeFullPath) 
                 || configurationNode.getRulePath(schemaName).equals(nodeFullPath)
-                || configurationNode.getTablePath(schemaName).equals(nodeFullPath);
+                || configurationNode.getSchemaPath(schemaName).equals(nodeFullPath);
     }
     
     private GovernanceEvent createAddedEvent(final String schemaName) {
         existedSchemaNames.add(schemaName);
-        return new SchemaAddedEvent(schemaName, Collections.emptyMap(), Collections.emptyList());
+        return new MetaDataAddedEvent(schemaName, Collections.emptyMap(), Collections.emptyList());
     }
     
     private GovernanceEvent createUpdatedEvent(final String schemaName, final DataChangedEvent event) {
@@ -125,7 +124,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         } else if (event.getKey().equals(configurationNode.getRulePath(schemaName))) {
             return createRuleChangedEvent(schemaName, event);
         }
-        return createMetaDataChangedEvent(schemaName, event);
+        return createSchemaChangedEvent(schemaName, event);
     }
     
     private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
@@ -141,8 +140,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         return new RuleConfigurationsChangedEvent(schemaName, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()));
     }
     
-    private GovernanceEvent createMetaDataChangedEvent(final String schemaName, final DataChangedEvent event) {
-        PhysicalSchemaMetaData physicalSchemaMetaData = new LogicSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlLogicSchemaMetaData.class));
-        return new MetaDataChangedEvent(schemaName, physicalSchemaMetaData);
+    private GovernanceEvent createSchemaChangedEvent(final String schemaName, final DataChangedEvent event) {
+        return new SchemaChangedEvent(schemaName, new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlSchema.class)));
     }
 }

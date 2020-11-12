@@ -20,18 +20,16 @@ package org.apache.shardingsphere.infra.rule.fixture;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 
 public final class TestShardingSphereRuleBuilder implements ShardingSphereRuleBuilder {
     
     @Getter
-    private static ShardingSphereRule shardingSphereRule = new TestShardingSphereRule();
+    private static ShardingSphereRule rule = new TestShardingSphereRule();
     
     @Override
-    public ShardingSphereRule build(final RuleConfiguration ruleConfig, final Collection dataSourceNames) {
-        return shardingSphereRule;
+    public ShardingSphereRule build(final RuleConfiguration ruleConfig) {
+        return rule;
     }
     
     @Override

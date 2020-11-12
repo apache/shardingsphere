@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.Paramet
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 import java.util.Collection;
@@ -62,14 +62,14 @@ public final class SQLTokenGenerators {
      *
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
-     * @param schemaMetaData schema meta data
+     * @param schema sShardingSphere schema
      * @return SQL tokens
      */
     @SuppressWarnings("unchecked")
-    public List<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final PhysicalSchemaMetaData schemaMetaData) {
+    public List<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final ShardingSphereSchema schema) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : sqlTokenGenerators) {
-            setUpSQLTokenGenerator(each, parameters, schemaMetaData, result);
+            setUpSQLTokenGenerator(each, parameters, schema, result);
             if (!each.isGenerateSQLToken(sqlStatementContext)) {
                 continue;
             }
@@ -85,12 +85,12 @@ public final class SQLTokenGenerators {
         return result;
     }
     
-    private void setUpSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator, final List<Object> parameters, final PhysicalSchemaMetaData schemaMetaData, final List<SQLToken> previousSQLTokens) {
+    private void setUpSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator, final List<Object> parameters, final ShardingSphereSchema schema, final List<SQLToken> previousSQLTokens) {
         if (sqlTokenGenerator instanceof ParametersAware) {
             ((ParametersAware) sqlTokenGenerator).setParameters(parameters);
         }
         if (sqlTokenGenerator instanceof SchemaMetaDataAware) {
-            ((SchemaMetaDataAware) sqlTokenGenerator).setSchemaMetaData(schemaMetaData);
+            ((SchemaMetaDataAware) sqlTokenGenerator).setSchema(schema);
         }
         if (sqlTokenGenerator instanceof PreviousSQLTokensAware) {
             ((PreviousSQLTokensAware) sqlTokenGenerator).setPreviousSQLTokens(previousSQLTokens);

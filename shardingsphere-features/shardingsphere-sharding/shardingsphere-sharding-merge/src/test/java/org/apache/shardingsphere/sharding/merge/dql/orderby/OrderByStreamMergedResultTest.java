@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.column.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
@@ -74,7 +74,7 @@ public final class OrderByStreamMergedResultTest {
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createSchemaMetaData());
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, buildSchema());
         assertFalse(actual.next());
     }
     
@@ -90,7 +90,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createSchemaMetaData());
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, buildSchema());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
         assertTrue(actual.next());
@@ -114,7 +114,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(1).getValue(1, Object.class)).thenReturn("2", "2", "3", "3", "4", "4");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createSchemaMetaData());
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, buildSchema());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
         assertTrue(actual.next());
@@ -144,7 +144,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(2).next()).thenReturn(true, false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("A");
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createSchemaMetaData());
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, buildSchema());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("A"));
         assertTrue(actual.next());
@@ -170,7 +170,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(2).next()).thenReturn(true, false);
         when(queryResults.get(2).getValue(2, Object.class)).thenReturn("A");
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createSchemaMetaData());
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, buildSchema());
         assertTrue(actual.next());
         assertThat(actual.getValue(2, Object.class).toString(), is("a"));
         assertTrue(actual.next());
@@ -182,10 +182,10 @@ public final class OrderByStreamMergedResultTest {
         assertFalse(actual.next());
     }
     
-    private PhysicalSchemaMetaData createSchemaMetaData() {
-        PhysicalColumnMetaData columnMetaData1 = new PhysicalColumnMetaData("col1", 0, "dataType", false, false, true);
-        PhysicalColumnMetaData columnMetaData2 = new PhysicalColumnMetaData("col2", 0, "dataType", false, false, false);
-        PhysicalTableMetaData tableMetaData = new PhysicalTableMetaData(Arrays.asList(columnMetaData1, columnMetaData2), Collections.emptyList());
-        return new PhysicalSchemaMetaData(ImmutableMap.of("tbl", tableMetaData));
+    private ShardingSphereSchema buildSchema() {
+        ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", 0, "dataType", false, false, true);
+        ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", 0, "dataType", false, false, false);
+        TableMetaData tableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2), Collections.emptyList());
+        return new ShardingSphereSchema(ImmutableMap.of("tbl", tableMetaData));
     }
 }

@@ -20,23 +20,23 @@ package org.apache.shardingsphere.driver.executor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutorCallback;
-import org.apache.shardingsphere.infra.schema.model.schema.SchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.schema.model.schema.spi.SchemaMetaDataNotifier;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.schema.refresh.MetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.schema.refresh.MetaDataRefreshStrategyFactory;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresherFactory;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.spi.SchemaChangedNotifier;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -58,17 +58,17 @@ import java.util.stream.Collectors;
 public abstract class AbstractStatementExecutor {
     
     static {
-        ShardingSphereServiceLoader.register(SchemaMetaDataNotifier.class);
+        ShardingSphereServiceLoader.register(SchemaChangedNotifier.class);
     }
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final SchemaContexts schemaContexts;
+    private final MetaDataContexts metaDataContexts;
     
     private final SQLExecutor sqlExecutor;
     
     protected final boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext<?> sqlStatementContext) {
-        return rules.stream().anyMatch(each -> ((DataNodeRoutedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
+        return rules.stream().anyMatch(each -> ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
     }
     
     protected final int accumulate(final List<Integer> results) {
@@ -80,25 +80,24 @@ public abstract class AbstractStatementExecutor {
         if (null == sqlStatement) {
             return;
         }
-        Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatement);
-        if (refreshStrategy.isPresent()) {
-            SchemaMetaDataLoader loader = new SchemaMetaDataLoader(metaData.getRules());
+        Optional<SchemaRefresher> schemaRefresher = SchemaRefresherFactory.newInstance(sqlStatement);
+        if (schemaRefresher.isPresent()) {
             Collection<String> routeDataSourceNames = routeUnits.stream().map(RouteUnit::getDataSourceMapper).map(RouteMapper::getLogicName).collect(Collectors.toList());
-            refreshStrategy.get().refreshMetaData(metaData.getSchema(), schemaContexts.getDatabaseType(), routeDataSourceNames, 
-                    sqlStatement, tableName -> loader.load(schemaContexts.getDatabaseType(), dataSourceMap, tableName, schemaContexts.getProps()));
-            notifyPersistLogicMetaData(DefaultSchema.LOGIC_NAME, metaData.getSchema().getSchemaMetaData());
+            schemaRefresher.get().refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, 
+                    new SchemaBuilderMaterials(metaDataContexts.getDatabaseType(), dataSourceMap, metaData.getRuleMetaData().getRules(), metaDataContexts.getProps()));
+            notifyPersistSchema(DefaultSchema.LOGIC_NAME, metaData.getSchema());
         }
     }
     
-    protected boolean executeAndRefreshMetaData(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatement sqlStatement,
+    protected final boolean executeAndRefreshMetaData(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatement sqlStatement,
                                                 final Collection<RouteUnit> routeUnits, final SQLExecutorCallback<Boolean> sqlExecutorCallback) throws SQLException {
         List<Boolean> result = sqlExecutor.execute(inputGroups, sqlExecutorCallback);
-        refreshTableMetaData(schemaContexts.getDefaultMetaData(), sqlStatement, routeUnits);
+        refreshTableMetaData(metaDataContexts.getDefaultMetaData(), sqlStatement, routeUnits);
         return null != result && !result.isEmpty() && null != result.get(0) && result.get(0);
     }
     
-    private void notifyPersistLogicMetaData(final String schemaName, final PhysicalSchemaMetaData metaData) {
-        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(metaData), SchemaMetaDataNotifier.class).values().forEach(each -> each.notify(schemaName, metaData));
+    private void notifyPersistSchema(final String schemaName, final ShardingSphereSchema schema) {
+        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(schemaName, schema));
     }
     
     /**

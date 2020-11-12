@@ -128,7 +128,8 @@ public final class SyncConfigurationUtil {
     }
     
     private static Map<String, Map<String, String>> toDataSourceTableNameMap(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
-        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceNames);
+        // TODO FIXME with correct database type and data source map
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, null, Collections.emptyMap());
         Map<String, Map<String, String>> result = new HashMap<>();
         for (TableRule each : shardingRule.getTableRules()) {
             mergeDataSourceTableNameMap(result, toDataSourceTableNameMap(each));

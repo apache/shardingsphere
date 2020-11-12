@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGener
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerators;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.builder.DefaultTokenGeneratorBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 
@@ -40,7 +40,7 @@ import java.util.List;
 @Getter
 public final class SQLRewriteContext {
     
-    private final PhysicalSchemaMetaData schemaMetaData;
+    private final ShardingSphereSchema schema;
     
     private final SQLStatementContext<?> sqlStatementContext;
     
@@ -55,8 +55,8 @@ public final class SQLRewriteContext {
     @Getter(AccessLevel.NONE)
     private final SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
     
-    public SQLRewriteContext(final PhysicalSchemaMetaData schemaMetaData, final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters) {
-        this.schemaMetaData = schemaMetaData;
+    public SQLRewriteContext(final ShardingSphereSchema schema, final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters) {
+        this.schema = schema;
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         this.parameters = parameters;
@@ -80,6 +80,6 @@ public final class SQLRewriteContext {
      * Generate SQL tokens.
      */
     public void generateSQLTokens() {
-        sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, schemaMetaData));
+        sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, schema));
     }
 }

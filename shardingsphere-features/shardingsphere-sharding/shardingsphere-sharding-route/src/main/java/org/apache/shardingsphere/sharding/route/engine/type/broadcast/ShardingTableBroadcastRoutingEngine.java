@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
@@ -42,9 +42,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteEngine {
     
-    private final PhysicalSchemaMetaData schemaMetaData;
+    private final ShardingSphereSchema schema;
     
-    private final SQLStatementContext sqlStatementContext;
+    private final SQLStatementContext<?> sqlStatementContext;
     
     @Override
     public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
@@ -69,8 +69,8 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
     }
     
     private Optional<String> findLogicTableNameFromMetaData(final String logicIndexName) {
-        for (String each : schemaMetaData.getAllTableNames()) {
-            if (schemaMetaData.get(each).getIndexes().containsKey(logicIndexName)) {
+        for (String each : schema.getAllTableNames()) {
+            if (schema.get(each).getIndexes().containsKey(logicIndexName)) {
                 return Optional.of(each);
             }
         }

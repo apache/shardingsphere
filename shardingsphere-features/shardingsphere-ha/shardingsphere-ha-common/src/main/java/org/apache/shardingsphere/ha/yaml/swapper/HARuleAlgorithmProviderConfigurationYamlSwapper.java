@@ -54,6 +54,7 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapper
         result.setPrimaryDataSourceName(dataSourceRuleConfig.getPrimaryDataSourceName());
         result.setReplicaDataSourceNames(dataSourceRuleConfig.getReplicaDataSourceNames());
         result.setLoadBalancerName(dataSourceRuleConfig.getLoadBalancerName());
+        result.setReadWriteSplit(dataSourceRuleConfig.getReadWriteSplit());
         return result;
     }
     
@@ -69,8 +70,8 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapper
     }
     
     private HADataSourceRuleConfiguration swapToObject(final String name, final YamlHADataSourceRuleConfiguration yamlDataSourceRuleConfig) {
-        return new HADataSourceRuleConfiguration(name,
-                yamlDataSourceRuleConfig.getPrimaryDataSourceName(), yamlDataSourceRuleConfig.getReplicaDataSourceNames(), yamlDataSourceRuleConfig.getLoadBalancerName());
+        return new HADataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getPrimaryDataSourceName(), yamlDataSourceRuleConfig.getReplicaDataSourceNames(),
+                yamlDataSourceRuleConfig.getLoadBalancerName(), yamlDataSourceRuleConfig.getReadWriteSplit());
     }
     
     @Override
@@ -85,6 +86,6 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapper
     
     @Override
     public int getOrder() {
-        return HAOrder.ALGORITHM_PROVIDER_ORDER;
+        return HAOrder.ALGORITHM_PROVIDER_HA_ORDER;
     }
 }

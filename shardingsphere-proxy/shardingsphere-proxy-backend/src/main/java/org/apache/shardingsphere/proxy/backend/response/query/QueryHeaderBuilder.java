@@ -20,9 +20,9 @@ package org.apache.shardingsphere.proxy.backend.response.query;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
-import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
@@ -68,12 +68,13 @@ public final class QueryHeaderBuilder {
     private static QueryHeader build(final ResultSetMetaData resultSetMetaData, final ShardingSphereMetaData metaData, final String columnName, final int columnIndex) throws SQLException {
         String schemaName = metaData.getName();
         String actualTableName = resultSetMetaData.getTableName(columnIndex);
-        Optional<DataNodeRoutedRule> dataNodeRoutedRule = metaData.getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
+        Optional<DataNodeContainedRule> dataNodeContainedRule = 
+                metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
         String tableName;
         boolean primaryKey;
-        if (null != actualTableName && dataNodeRoutedRule.isPresent()) {
-            tableName = dataNodeRoutedRule.get().findLogicTableByActualTable(actualTableName).orElse("");
-            PhysicalTableMetaData tableMetaData = metaData.getSchema().getSchemaMetaData().get(tableName);
+        if (null != actualTableName && dataNodeContainedRule.isPresent()) {
+            tableName = dataNodeContainedRule.get().findLogicTableByActualTable(actualTableName).orElse("");
+            TableMetaData tableMetaData = metaData.getSchema().get(tableName);
             primaryKey = null != tableMetaData && tableMetaData.getColumns().get(columnName.toLowerCase()).isPrimaryKey();
         } else {
             tableName = actualTableName;

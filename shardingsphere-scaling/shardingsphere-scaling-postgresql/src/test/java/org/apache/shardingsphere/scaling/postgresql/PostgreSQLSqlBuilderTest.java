@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.scaling.postgresql;
 
-import com.google.common.collect.Maps;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.PreparedSQL;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.postgresql.replication.LogSequenceNumber;
 
@@ -33,9 +30,8 @@ public final class PostgreSQLSqlBuilderTest {
     
     @Test
     public void assertBuildInsertSQL() {
-        PreparedSQL actual = new PostgreSQLSQLBuilder(Maps.newHashMap()).buildInsertSQL(mockDataRecord());
-        assertThat(actual.getSql(), is("INSERT INTO \"t_order\"(\"id\",\"name\") VALUES(?,?) ON CONFLICT (id) DO NOTHING"));
-        assertThat(actual.getValuesIndex().toArray(), Matchers.arrayContaining(0, 1));
+        String actual = new PostgreSQLSQLBuilder().buildInsertSQL(mockDataRecord());
+        assertThat(actual, is("INSERT INTO \"t_order\"(\"id\",\"name\") VALUES(?,?) ON CONFLICT (id) DO NOTHING"));
     }
     
     private DataRecord mockDataRecord() {

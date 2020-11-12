@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -59,19 +59,19 @@ public class GovernanceSpringBootShardingTest {
     @Test
     public void assertWithShardingSphereDataSource() {
         assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
-        SchemaContexts schemaContexts = getFieldValue("schemaContexts", GovernanceShardingSphereDataSource.class, dataSource);
-        for (DataSource each : schemaContexts.getDefaultMetaData().getDataSources().values()) {
+        MetaDataContexts metaDataContexts = getFieldValue("metaDataContexts", GovernanceShardingSphereDataSource.class, dataSource);
+        for (DataSource each : metaDataContexts.getDefaultMetaData().getResource().getDataSources().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
         }
-        assertTrue(schemaContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
-        assertTrue(schemaContexts.getProps().getValue(ConfigurationPropertyKey.SQL_SHOW));
-        assertThat(schemaContexts.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(100));
+        assertTrue(metaDataContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertTrue(metaDataContexts.getProps().getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertThat(metaDataContexts.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(100));
     }
     
     @Test
     public void assertWithShardingSphereDataSourceNames() {
-        SchemaContexts schemaContexts = getFieldValue("schemaContexts", GovernanceShardingSphereDataSource.class, dataSource);
-        ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultMetaData().getRules().iterator().next();
+        MetaDataContexts metaDataContexts = getFieldValue("metaDataContexts", GovernanceShardingSphereDataSource.class, dataSource);
+        ShardingRule shardingRule = (ShardingRule) metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().iterator().next();
         assertThat(shardingRule.getDataSourceNames().size(), is(2));
         assertTrue(shardingRule.getDataSourceNames().contains("ds_0"));
         assertTrue(shardingRule.getDataSourceNames().contains("ds_1"));
@@ -79,8 +79,8 @@ public class GovernanceSpringBootShardingTest {
     
     @Test
     public void assertWithTableRules() {
-        SchemaContexts schemaContexts = getFieldValue("schemaContexts", GovernanceShardingSphereDataSource.class, dataSource);
-        ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultMetaData().getRules().iterator().next();
+        MetaDataContexts metaDataContexts = getFieldValue("metaDataContexts", GovernanceShardingSphereDataSource.class, dataSource);
+        ShardingRule shardingRule = (ShardingRule) metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().iterator().next();
         assertThat(shardingRule.getTableRules().size(), is(2));
         TableRule orderRule = shardingRule.getTableRule("t_order");
         assertThat(orderRule.getLogicTable(), is("t_order"));
@@ -105,8 +105,8 @@ public class GovernanceSpringBootShardingTest {
     
     @Test
     public void assertWithBindingTableRules() {
-        SchemaContexts schemaContexts = getFieldValue("schemaContexts", GovernanceShardingSphereDataSource.class, dataSource);
-        ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultMetaData().getRules().iterator().next();
+        MetaDataContexts metaDataContexts = getFieldValue("metaDataContexts", GovernanceShardingSphereDataSource.class, dataSource);
+        ShardingRule shardingRule = (ShardingRule) metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().iterator().next();
         assertThat(shardingRule.getBindingTableRules().size(), is(2));
         TableRule orderRule = shardingRule.getTableRule("t_order");
         assertThat(orderRule.getLogicTable(), is("t_order"));
@@ -130,8 +130,8 @@ public class GovernanceSpringBootShardingTest {
     
     @Test
     public void assertWithBroadcastTables() {
-        SchemaContexts schemaContexts = getFieldValue("schemaContexts", GovernanceShardingSphereDataSource.class, dataSource);
-        ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultMetaData().getRules().iterator().next();
+        MetaDataContexts metaDataContexts = getFieldValue("metaDataContexts", GovernanceShardingSphereDataSource.class, dataSource);
+        ShardingRule shardingRule = (ShardingRule) metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().iterator().next();
         assertThat(shardingRule.getBroadcastTables().size(), is(1));
         assertThat(shardingRule.getBroadcastTables().iterator().next(), is("t_config"));
     }

@@ -50,7 +50,7 @@ public final class HARuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlWithLoadBalanceAlgorithm() {
         HADataSourceRuleConfiguration dataSourceConfig =
-                new HADataSourceRuleConfiguration("ds", "primary", Collections.singletonList("replica"), "roundRobin");
+                new HADataSourceRuleConfiguration("ds", "primary", Collections.singletonList("replica"), "roundRobin", true);
         YamlHARuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(new HARuleConfiguration(
                 Collections.singleton(dataSourceConfig), ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties()))));
         assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
@@ -61,7 +61,7 @@ public final class HARuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
-        HADataSourceRuleConfiguration dataSourceConfig = new HADataSourceRuleConfiguration("ds", "primary", Collections.singletonList("replica"), null);
+        HADataSourceRuleConfiguration dataSourceConfig = new HADataSourceRuleConfiguration("ds", "primary", Collections.singletonList("replica"), null, true);
         YamlHARuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(
                 new HARuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap()));
         assertThat(actual.getDataSources().get("ds").getName(), is("ds"));

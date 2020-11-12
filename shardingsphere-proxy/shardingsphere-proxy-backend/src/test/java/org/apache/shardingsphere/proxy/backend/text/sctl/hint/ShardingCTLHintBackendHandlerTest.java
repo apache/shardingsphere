@@ -21,18 +21,14 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
-import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.hint.HintManager;
-import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.schema.model.addressing.TableAddressingMetaData;
-import org.apache.shardingsphere.infra.schema.model.datasource.CachedDatabaseMetaData;
-import org.apache.shardingsphere.infra.schema.model.datasource.DataSourcesMetaData;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.table.PhysicalTableMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
@@ -73,9 +69,9 @@ public final class ShardingCTLHintBackendHandlerTest {
     
     @Before
     public void setUp() {
-        SchemaContexts schemaContexts = mock(SchemaContexts.class, RETURNS_DEEP_STUBS);
-        when(schemaContexts.getProps().getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(true);
-        ProxyContext.getInstance().init(schemaContexts, mock(TransactionContexts.class));
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        when(metaDataContexts.getProps().getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(true);
+        ProxyContext.getInstance().init(metaDataContexts, mock(TransactionContexts.class));
     }
     
     @Test(expected = InvalidShardingCTLFormatException.class)
@@ -169,12 +165,12 @@ public final class ShardingCTLHintBackendHandlerTest {
     public void assertShowTableStatus() throws SQLException, NoSuchFieldException, IllegalAccessException {
         clearThreadLocal();
         when(backendConnection.getSchemaName()).thenReturn("schema");
-        Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
-        schemaContexts.setAccessible(true);
+        Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
+        metaDataContexts.setAccessible(true);
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey(), Boolean.TRUE.toString());
-        schemaContexts.set(ProxyContext.getInstance(), 
-                new StandardSchemaContexts(getMetaDataMap(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(props), new MySQLDatabaseType()));
+        metaDataContexts.set(ProxyContext.getInstance(), 
+                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(props), new MySQLDatabaseType()));
         String sql = "sctl:hint show table status";
         ShardingCTLHintBackendHandler defaultHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         BackendResponse backendResponse = defaultHintBackendHandler.execute();
@@ -206,8 +202,7 @@ public final class ShardingCTLHintBackendHandlerTest {
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getSchema()).thenReturn(new ShardingSphereSchema(mock(DataSourcesMetaData.class), mock(TableAddressingMetaData.class), 
-                new PhysicalSchemaMetaData(ImmutableMap.of("user", mock(PhysicalTableMetaData.class))), mock(CachedDatabaseMetaData.class)));
+        when(metaData.getSchema()).thenReturn(new ShardingSphereSchema(ImmutableMap.of("user", mock(TableMetaData.class))));
         when(metaData.isComplete()).thenReturn(true);
         return Collections.singletonMap("schema", metaData);
     }

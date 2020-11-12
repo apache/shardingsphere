@@ -22,9 +22,9 @@ import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.driver.jdbc.adapter.AdaptedDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 
 import java.security.SecureRandom;
 import java.sql.Connection;
@@ -48,7 +48,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     private final Collection<String> datasourceNames;
     
-    private final ShardingSphereSchema schema;
+    private final DataSourcesMetaData dataSourcesMetaData;
     
     private final Random random = new SecureRandom();
     
@@ -57,11 +57,11 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     private DatabaseMetaData currentDatabaseMetaData;
     
     public ShardingSphereDatabaseMetaData(final AbstractConnectionAdapter connection) {
-        super(connection.getSchemaContexts().getDefaultMetaData().getSchema().getCachedDatabaseMetaData());
+        super(connection.getMetaDataContexts().getDefaultMetaData().getResource().getCachedDatabaseMetaData());
         this.connection = connection;
-        rules = connection.getSchemaContexts().getDefaultMetaData().getRules();
+        rules = connection.getMetaDataContexts().getDefaultMetaData().getRuleMetaData().getRules();
         datasourceNames = connection.getDataSourceMap().keySet();
-        schema = connection.getSchemaContexts().getDefaultMetaData().getSchema();
+        dataSourcesMetaData = connection.getMetaDataContexts().getDefaultMetaData().getResource().getDataSourcesMetaData();
     }
     
     @Override
@@ -208,9 +208,9 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
         if (null == tableNamePattern) {
             return null;
         }
-        Optional<DataNodeRoutedRule> dataNodeRoutedRule = findDataNodeRoutedRule();
-        if (dataNodeRoutedRule.isPresent()) {
-            return dataNodeRoutedRule.get().findFirstActualTable(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern;
+        Optional<DataNodeContainedRule> dataNodeContainedRule = findDataNodeContainedRule();
+        if (dataNodeContainedRule.isPresent()) {
+            return dataNodeContainedRule.get().findFirstActualTable(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern;
         }
         return tableNamePattern;
     }
@@ -219,12 +219,11 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
         if (null == table) {
             return null;
         }
-        Optional<DataNodeRoutedRule> dataNodeRoutedRule = findDataNodeRoutedRule();
-        return dataNodeRoutedRule.map(nodeRoutedRule -> nodeRoutedRule.findFirstActualTable(table).orElse(table)).orElse(table);
+        return findDataNodeContainedRule().map(each -> each.findFirstActualTable(table).orElse(table)).orElse(table);
     }
     
-    private Optional<DataNodeRoutedRule> findDataNodeRoutedRule() {
-        return rules.stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
+    private Optional<DataNodeContainedRule> findDataNodeContainedRule() {
+        return rules.stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
     }
     
     private ResultSet createDatabaseMetaDataResultSet(final ResultSet resultSet) throws SQLException {
@@ -232,11 +231,11 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     }
     
     private String getActualCatalog(final String catalog) {
-        return null != catalog && catalog.contains(DefaultSchema.LOGIC_NAME) ? schema.getDataSourcesMetaData().getDataSourceMetaData(getDataSourceName()).getCatalog() : catalog;
+        return null != catalog && catalog.contains(DefaultSchema.LOGIC_NAME) ? dataSourcesMetaData.getDataSourceMetaData(getDataSourceName()).getCatalog() : catalog;
     }
     
     private String getActualSchema(final String schema) {
-        return null != schema && schema.contains(DefaultSchema.LOGIC_NAME) ? this.schema.getDataSourcesMetaData().getDataSourceMetaData(getDataSourceName()).getSchema() : schema;
+        return null != schema && schema.contains(DefaultSchema.LOGIC_NAME) ? dataSourcesMetaData.getDataSourceMetaData(getDataSourceName()).getSchema() : schema;
     }
     
     private String getDataSourceName() {

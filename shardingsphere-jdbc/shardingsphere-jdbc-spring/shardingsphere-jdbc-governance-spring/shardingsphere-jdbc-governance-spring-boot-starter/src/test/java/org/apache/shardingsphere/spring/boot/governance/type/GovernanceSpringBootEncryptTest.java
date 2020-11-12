@@ -21,7 +21,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.spring.boot.governance.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -56,14 +56,14 @@ public class GovernanceSpringBootEncryptTest {
     @Test
     public void assertWithEncryptDataSource() throws NoSuchFieldException, IllegalAccessException {
         assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
-        Field field = GovernanceShardingSphereDataSource.class.getDeclaredField("schemaContexts");
+        Field field = GovernanceShardingSphereDataSource.class.getDeclaredField("metaDataContexts");
         field.setAccessible(true);
-        SchemaContexts schemaContexts = (SchemaContexts) field.get(dataSource);
-        BasicDataSource embedDataSource = (BasicDataSource) schemaContexts.getDefaultMetaData().getDataSources().values().iterator().next();
+        MetaDataContexts metaDataContexts = (MetaDataContexts) field.get(dataSource);
+        BasicDataSource embedDataSource = (BasicDataSource) metaDataContexts.getDefaultMetaData().getResource().getDataSources().values().iterator().next();
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
         AlgorithmProvidedEncryptRuleConfiguration configuration =
-                (AlgorithmProvidedEncryptRuleConfiguration) schemaContexts.getDefaultMetaData().getConfigurations().iterator().next();
+                (AlgorithmProvidedEncryptRuleConfiguration) metaDataContexts.getDefaultMetaData().getRuleMetaData().getConfigurations().iterator().next();
         assertThat(configuration.getEncryptors().size(), is(1));
         EncryptAlgorithm encryptAlgorithm = configuration.getEncryptors().get("order_encrypt");
         assertThat(encryptAlgorithm.getType(), is("AES"));

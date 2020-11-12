@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
@@ -41,7 +41,7 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     protected void validateShardingTable(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            if (schema.getSchemaMetaData().getAllTableNames().contains(tableName)) {
+            if (schema.getAllTableNames().contains(tableName)) {
                 throw new ShardingSphereException("Can not support sharding table '%s'.", tableName);
             }
         }
@@ -56,9 +56,8 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     protected void validateTableExist(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            if (!schema.getTableAddressingMetaData().getTableDataSourceNamesMapper().containsKey(tableName)) {
-                String dataSourceName = schema.getTableAddressingMetaData().getTableDataSourceNamesMapper().get(tableName).iterator().next();
-                throw new NoSuchTableException(dataSourceName, tableName);
+            if (!schema.containsTable(tableName)) {
+                throw new NoSuchTableException(tableName);
             }
         }
     }
@@ -72,7 +71,7 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     protected void validateTableNotExist(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            if (schema.getTableAddressingMetaData().getTableDataSourceNamesMapper().containsKey(tableName)) {
+            if (schema.containsTable(tableName)) {
                 throw new TableExistsException(tableName);
             }
         }

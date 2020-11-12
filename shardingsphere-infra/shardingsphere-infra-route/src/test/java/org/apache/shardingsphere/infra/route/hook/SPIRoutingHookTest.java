@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.route.hook;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.hook.fixture.RoutingHookFixture;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -42,7 +42,7 @@ public final class SPIRoutingHookTest {
     private RouteContext routeContext;
     
     @Mock
-    private PhysicalSchemaMetaData schemaMetaData;
+    private ShardingSphereSchema schema;
     
     @Mock
     private Exception exception;
@@ -58,11 +58,11 @@ public final class SPIRoutingHookTest {
     
     @Test
     public void assertFinishSuccess() {
-        spiRoutingHook.finishSuccess(routeContext, schemaMetaData);
+        spiRoutingHook.finishSuccess(routeContext, schema);
         RoutingHook routingHook = getFixtureHook();
         assertThat(routingHook, instanceOf(RoutingHookFixture.class));
         assertThat(((RoutingHookFixture) routingHook).getRouteContext(), is(routeContext));
-        assertThat(((RoutingHookFixture) routingHook).getSchemaMetaData(), is(schemaMetaData));
+        assertThat(((RoutingHookFixture) routingHook).getSchema(), is(schema));
     }
     
     @Test

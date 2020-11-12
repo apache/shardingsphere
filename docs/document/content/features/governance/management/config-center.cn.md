@@ -99,63 +99,32 @@ rules:
 表结构配置，暂不支持动态修改。
 
 ```yaml
-configuredSchemaMetaData:                       # 配置了分片规则的表结构
-  tables:                                       # 表
-    t_order:                                    # 表名
-      columns:                                  # 列
-        id:                                     # 列名
-          caseSensitive: false
-          dataType: 0
-          generated: false
-          name: id
-          primaryKey: trues
-        order_id:
-          caseSensitive: false
-          dataType: 0
-          generated: false
-          name: order_id
-          primaryKey: false
-      indexs:                                   # 索引
-        t_user_order_id_index:                  # 索引名
-          name: t_user_order_id_index
-    t_order_item:
-      columns:
-        order_id:
-          caseSensitive: false
-          dataType: 0
-          generated: false
-          name: order_id
-          primaryKey: false
-unconfiguredSchemaMetaDataMap:                  # 没有配置分片规则的表结构
-  ds_0:                                         # 数据源
-    tables:                                     # 表
-      t_user:                                   # 表名
-        columns:                                # 列
-          user_id:                              # 列名
-            caseSensitive: false
-            dataType: 0
-            generated: false
-            name: user_id
-            primaryKey: false
-          id:
-            caseSensitive: false
-            dataType: 0
-            generated: false
-            name: id
-            primaryKey: true
-          order_id:
-            caseSensitive: false
-            dataType: 0
-            generated: false
-            name: order_id
-            primaryKey: false
-        indexes:                                # 索引
-          t_user_order_id_index:                # 索引名
-            name: t_user_order_id_index
-          t_user_user_id_index:
-            name: t_user_user_id_index
-          primary:
-            name: PRIMARY
+tables:                                       # 表
+  t_order:                                    # 表名
+    columns:                                  # 列
+      id:                                     # 列名
+        caseSensitive: false
+        dataType: 0
+        generated: false
+        name: id
+        primaryKey: trues
+      order_id:
+        caseSensitive: false
+        dataType: 0
+         generated: false
+         name: order_id
+         primaryKey: false
+    indexs:                                   # 索引
+      t_user_order_id_index:                  # 索引名
+        name: t_user_order_id_index
+  t_order_item:
+    columns:
+      order_id:
+        caseSensitive: false
+        dataType: 0
+        generated: false
+        name: order_id
+        primaryKey: false
 ```
 
 ## 动态生效

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.binder.segment.select.projection.engine;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
@@ -45,13 +45,13 @@ import java.util.Optional;
  */
 public final class ProjectionsContextEngine {
     
-    private final PhysicalSchemaMetaData schemaMetaData;
+    private final ShardingSphereSchema schema;
     
     private final ProjectionEngine projectionEngine;
     
-    public ProjectionsContextEngine(final PhysicalSchemaMetaData schemaMetaData) {
-        this.schemaMetaData = schemaMetaData;
-        projectionEngine = new ProjectionEngine(schemaMetaData);
+    public ProjectionsContextEngine(final ShardingSphereSchema schema) {
+        this.schema = schema;
+        projectionEngine = new ProjectionEngine(schema);
     }
     
     /**
@@ -177,7 +177,7 @@ public final class ProjectionsContextEngine {
     private boolean isSameProjection(final ShorthandProjection shorthandProjection, final ColumnOrderByItemSegment orderItem, final Collection<SimpleTableSegment> tables) {
         Preconditions.checkState(shorthandProjection.getOwner().isPresent());
         SimpleTableSegment tableSegment = find(shorthandProjection.getOwner().get(), tables);
-        return schemaMetaData.containsColumn(tableSegment.getTableName().getIdentifier().getValue(), orderItem.getColumn().getIdentifier().getValue());
+        return schema.containsColumn(tableSegment.getTableName().getIdentifier().getValue(), orderItem.getColumn().getIdentifier().getValue());
     }
     
     private boolean isSameAlias(final Projection projection, final TextOrderByItemSegment orderItem) {

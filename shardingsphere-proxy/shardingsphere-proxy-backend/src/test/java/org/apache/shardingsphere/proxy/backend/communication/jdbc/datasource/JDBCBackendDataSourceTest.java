@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
@@ -65,22 +65,22 @@ public final class JDBCBackendDataSourceTest {
     
     @Before
     public void setUp() {
-        setSchemaContexts();
+        setMetaDataContexts();
         setTransactionContexts();
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setSchemaContexts() {
-        Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
-        schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxyContext.getInstance(), 
-                new StandardSchemaContexts(createMetaDataMap(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+    private void setMetaDataContexts() {
+        Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
+        metaDataContexts.setAccessible(true);
+        metaDataContexts.set(ProxyContext.getInstance(), 
+                new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getName()).thenReturn("schema");
-        when(metaData.getDataSources()).thenReturn(mockDataSources(2));
+        when(metaData.getResource().getDataSources()).thenReturn(mockDataSources(2));
         return Collections.singletonMap("schema", metaData);
     }
     

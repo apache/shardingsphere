@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCond
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.schema.model.schema.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -51,7 +51,7 @@ public final class EncryptConditionEngine {
     
     private final EncryptRule encryptRule;
     
-    private final PhysicalSchemaMetaData schemaMetaData;
+    private final ShardingSphereSchema schema;
     
     /**
      * Create encrypt conditions.
@@ -100,7 +100,7 @@ public final class EncryptConditionEngine {
         if (!column.isPresent()) {
             return Optional.empty();
         }
-        Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(column.get(), schemaMetaData);
+        Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(column.get(), schema);
         return tableName.isPresent() && encryptRule.findEncryptor(tableName.get(), column.get().getIdentifier().getValue()).isPresent()
                 ? createEncryptCondition(expression, tableName.get()) : Optional.empty();
     }

@@ -99,7 +99,7 @@ public final class ShardingSphereDataSourceTest {
     
     private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {
         try {
-            assertThat(createShardingSphereDataSource(dataSourceMap).getSchemaContexts().getDatabaseType(),
+            assertThat(createShardingSphereDataSource(dataSourceMap).getMetaDataContexts().getDatabaseType(),
                     instanceOf(H2DatabaseType.class));
         } finally {
             for (Connection each : connections) {

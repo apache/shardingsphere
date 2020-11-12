@@ -55,7 +55,7 @@ public final class SQLRouteEngine {
         try {
             SQLRouteExecutor executor = isNeedAllSchemas(logicSQL.getSqlStatementContext().getSqlStatement()) ? new AllSQLRouteExecutor() : new PartialSQLRouteExecutor(rules, props);
             RouteContext result = executor.route(logicSQL, metaData);
-            routingHook.finishSuccess(result, metaData.getSchema().getSchemaMetaData());
+            routingHook.finishSuccess(result, metaData.getSchema());
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {

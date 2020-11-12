@@ -72,7 +72,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
         if (null != packet.getSql() && null != metaData) {
             ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(
-                    DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getSchemaContexts().getDatabaseType()));
+                    DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getMetaDataContexts().getDatabaseType()));
             SQLStatement sqlStatement = sqlStatementParserEngine.parse(packet.getSql(), true);
             databaseCommunicationEngine =
                     DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatement, packet.getSql(), packet.getParameters(), backendConnection);
@@ -83,7 +83,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
-        if (ProxyContext.getInstance().getSchemaContexts().isCircuitBreak()) {
+        if (ProxyContext.getInstance().getMetaDataContexts().isCircuitBreak()) {
             return Collections.singletonList(new PostgreSQLErrorResponsePacket());
         }
         List<DatabasePacket<?>> result = new LinkedList<>();
