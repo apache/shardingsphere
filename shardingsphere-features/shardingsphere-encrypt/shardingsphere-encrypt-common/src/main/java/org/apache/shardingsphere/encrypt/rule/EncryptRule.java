@@ -142,17 +142,6 @@ public final class EncryptRule implements TableContainedRule {
     }
     
     /**
-     * Is cipher column or not.
-     *
-     * @param tableName table name
-     * @param columnName column name
-     * @return cipher column or not
-     */
-    public boolean isCipherColumn(final String tableName, final String columnName) {
-        return tables.containsKey(tableName) && tables.get(tableName).isCipherColumn(columnName);
-    }
-    
-    /**
      * Get cipher column.
      *
      * @param logicTable logic table name

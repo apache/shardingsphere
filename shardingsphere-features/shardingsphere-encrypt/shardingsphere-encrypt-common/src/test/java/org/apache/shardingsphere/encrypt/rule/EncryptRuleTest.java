@@ -91,11 +91,6 @@ public final class EncryptRuleTest {
     }
     
     @Test
-    public void assertIsCipherColumn() {
-        assertTrue(new EncryptRule(createEncryptRuleConfiguration()).isCipherColumn("t_encrypt", "pwd_cipher"));
-    }
-    
-    @Test
     public void assertGetCipherColumnWhenEncryptColumnExist() {
         assertThat(new EncryptRule(createEncryptRuleConfiguration()).getCipherColumn("t_encrypt", "pwd"), is("pwd_cipher"));
     }
