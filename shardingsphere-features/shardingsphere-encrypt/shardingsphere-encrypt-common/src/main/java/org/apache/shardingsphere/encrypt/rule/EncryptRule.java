@@ -153,17 +153,6 @@ public final class EncryptRule implements TableContainedRule {
     }
     
     /**
-     * Get logic column of cipher column.
-     *
-     * @param logicTable logic table
-     * @param cipherColumn cipher column
-     * @return logic column
-     */
-    public String getLogicColumnOfCipher(final String logicTable, final String cipherColumn) {
-        return tables.get(logicTable).getLogicColumn(cipherColumn);
-    }
-    
-    /**
      * Get logic and cipher columns.
      *
      * @param logicTable logic table 
