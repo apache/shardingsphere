@@ -126,10 +126,12 @@ public final class EncryptTableMetaDataBuilderTest {
     
     private EncryptRule createEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
-        when(result.findEncryptTable(TABLE_NAME)).thenReturn(Optional.of(mock(EncryptTable.class)));
-        when(result.getLogicColumnOfCipher("t_encrypt", "pwd_cipher")).thenReturn("pwd");
-        when(result.isCipherColumn("t_encrypt", "pwd_cipher")).thenReturn(true);
-        when(result.getAssistedQueryAndPlainColumns("t_encrypt")).thenReturn(Collections.singletonList("pwd_plain"));
+        EncryptTable encryptTable = mock(EncryptTable.class);
+        when(result.findEncryptTable(TABLE_NAME)).thenReturn(Optional.of(encryptTable));
+        when(encryptTable.getAssistedQueryColumns()).thenReturn(Collections.emptyList());
+        when(encryptTable.getPlainColumns()).thenReturn(Collections.singleton("pwd_plain"));
+        when(encryptTable.isCipherColumn("pwd_cipher")).thenReturn(true);
+        when(encryptTable.getLogicColumn("pwd_cipher")).thenReturn("pwd");
         return result;
     }
     

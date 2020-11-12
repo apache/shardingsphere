@@ -60,6 +60,7 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
             String columnName = each.getName();
             if (encryptTable.isCipherColumn(columnName)) {
                 result.add(createColumnMetaData(encryptTable.getLogicColumn(columnName), each));
+                continue;
             }
             if (!plainColumns.contains(columnName) && !assistedQueryColumns.contains(columnName)) {
                 result.add(each);
