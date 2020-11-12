@@ -124,11 +124,6 @@ public final class EncryptRuleTest {
     }
     
     @Test
-    public void assertGetAssistedQueryAndPlainColumns() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).getAssistedQueryAndPlainColumns("t_encrypt").isEmpty());
-    }
-    
-    @Test
     public void assertFindPlainColumn() {
         assertTrue(new EncryptRule(createEncryptRuleConfiguration()).findPlainColumn("t_encrypt", "pwd").isPresent());
         assertTrue(new EncryptRule(createEncryptRuleConfiguration()).findPlainColumn("t_encrypt", "credit_card".toLowerCase()).isPresent());
