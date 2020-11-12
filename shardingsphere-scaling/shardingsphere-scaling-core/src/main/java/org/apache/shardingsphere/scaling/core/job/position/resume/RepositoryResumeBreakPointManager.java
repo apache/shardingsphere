@@ -17,18 +17,9 @@
 
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
-import com.google.common.base.Preconditions;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
-import org.apache.shardingsphere.scaling.core.config.ScalingContext;
+import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -100,35 +91,5 @@ public final class RepositoryResumeBreakPointManager extends AbstractResumeBreak
         String result = getIncrementalPositionData();
         registryRepository.persist(incrementalPath, result);
         log.info("persist incremental position {} = {}", incrementalPath, result);
-    }
-    
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static final class RegistryRepositoryHolder {
-    
-        public static final RegistryRepository REGISTRY_REPOSITORY = getInstance();
-        
-        @Getter
-        private static boolean available;
-    
-        private static RegistryRepository getInstance() {
-            RegistryRepository result = null;
-            YamlGovernanceConfiguration resumeBreakPoint = ScalingContext.getInstance().getServerConfig().getResumeBreakPoint();
-            if (resumeBreakPoint != null) {
-                result = createRegistryRepository(new GovernanceConfigurationYamlSwapper().swapToObject(resumeBreakPoint));
-            }
-            if (result != null) {
-                log.info("zookeeper resume from break-point manager is available.");
-                available = true;
-            }
-            return result;
-        }
-    
-        private static RegistryRepository createRegistryRepository(final GovernanceConfiguration config) {
-            GovernanceCenterConfiguration registryCenterConfig = config.getRegistryCenterConfiguration();
-            Preconditions.checkNotNull(registryCenterConfig, "Registry center configuration cannot be null.");
-            RegistryRepository result = TypedSPIRegistry.getRegisteredService(RegistryRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
-            result.init(config.getName(), registryCenterConfig);
-            return result;
-        }
     }
 }

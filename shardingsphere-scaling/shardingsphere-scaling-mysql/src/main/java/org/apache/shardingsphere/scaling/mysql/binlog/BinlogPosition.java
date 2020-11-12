@@ -47,6 +47,9 @@ public final class BinlogPosition implements IncrementalPosition {
     
     private long serverId;
     
+    @Expose
+    private long delay;
+    
     @Override
     public int compareTo(final Position position) {
         if (null == position) {

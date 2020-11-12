@@ -20,7 +20,6 @@ package org.apache.shardingsphere.scaling.core.datasource;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -81,19 +80,19 @@ public final class DataSourceWrapper implements DataSource, AutoCloseable {
     }
     
     @Override
-    public void close() throws IOException {
+    public void close() throws SQLException {
         if (dataSource == null) {
             return;
         }
         if (dataSource instanceof AutoCloseable) {
             try {
                 ((AutoCloseable) dataSource).close();
-            } catch (final IOException ex) {
+            } catch (final SQLException ex) {
                 throw ex;
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                throw new IOException("data source close failed.", ex);
+                throw new SQLException("data source close failed.", ex);
             }
         }
     }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfigurat
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 
 import javax.sql.DataSource;
-import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -94,7 +94,7 @@ public final class DataSourceManager implements AutoCloseable {
         for (DataSourceWrapper each : cachedDataSources.values()) {
             try {
                 each.close();
-            } catch (final IOException ex) {
+            } catch (final SQLException ex) {
                 log.error("An exception occurred while closing the data source", ex);
             }
         }

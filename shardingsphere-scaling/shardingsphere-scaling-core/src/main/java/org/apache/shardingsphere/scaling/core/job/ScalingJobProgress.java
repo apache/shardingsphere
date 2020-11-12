@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.scaling.core.job;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Scaling job progress.
@@ -30,13 +31,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class ScalingJobProgress implements SyncProgress {
     
-    private final int id;
-    
-    private final String jobName;
+    private final long id;
     
     private final String status;
     
-    private final Collection<SyncProgress> inventoryDataTasks = new LinkedList<>();
+    private final Map<String, Collection<SyncProgress>> inventoryDataSyncTaskProgress = Maps.newHashMap();
     
-    private final Collection<SyncProgress> incrementalDataTasks = new LinkedList<>();
+    private final Map<String, Collection<SyncProgress>> incrementalDataSyncTaskProgress = Maps.newHashMap();
 }

@@ -157,14 +157,16 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
     }
     
     private DataRecord createDataRecord(final AbstractRowsEvent rowsEvent, final int columnCount) {
-        DataRecord result = new DataRecord(new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId()), columnCount);
+        long delay = System.currentTimeMillis() - rowsEvent.getTimestamp() * 1000;
+        DataRecord result = new DataRecord(new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId(), delay), columnCount);
         result.setTableName(dumperConfig.getTableNameMap().get(rowsEvent.getTableName()));
         result.setCommitTime(rowsEvent.getTimestamp() * 1000);
         return result;
     }
     
     private void createPlaceholderRecord(final AbstractBinlogEvent event) {
-        PlaceholderRecord record = new PlaceholderRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()));
+        long delay = System.currentTimeMillis() - event.getTimestamp() * 1000;
+        PlaceholderRecord record = new PlaceholderRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId(), delay));
         record.setCommitTime(event.getTimestamp() * 1000);
         pushRecord(record);
     }

@@ -15,17 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.scaling.core.utils;
+
+import lombok.SneakyThrows;
+
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Incremental position interface.
+ * Reflection utils.
  */
-public interface IncrementalPosition extends Position {
+public final class ReflectionUtils {
     
     /**
-     * Get incremental sync task delay millisecond.
+     * Get field map.
      *
-     * @return incremental sync delay
+     * @param object object
+     * @return field map
      */
-    long getDelay();
+    @SneakyThrows(ReflectiveOperationException.class)
+    public static Map<String, Object> getFieldMap(final Object object) {
+        Map<String, Object> result = new HashMap<>();
+        for (Field field : object.getClass().getFields()) {
+            result.put(field.getName(), field.get(object));
+        }
+        return result;
+    }
 }

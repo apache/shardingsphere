@@ -15,17 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.scaling.core.service;
+
+import org.apache.shardingsphere.scaling.core.service.impl.DistributedScalingJobService;
+import org.apache.shardingsphere.scaling.core.service.impl.StandaloneScalingJobService;
 
 /**
- * Incremental position interface.
+ * Scaling job service factory.
  */
-public interface IncrementalPosition extends Position {
+public final class ScalingJobServiceFactory {
     
     /**
-     * Get incremental sync task delay millisecond.
+     * Get instance of {@code ScalingJobService}.
      *
-     * @return incremental sync delay
+     * @return scaling job service
      */
-    long getDelay();
+    public static ScalingJobService getInstance() {
+        return RegistryRepositoryHolder.isAvailable() ? new DistributedScalingJobService() : new StandaloneScalingJobService();
+    }
 }
