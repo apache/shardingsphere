@@ -107,15 +107,6 @@ public final class EncryptRule implements TableContainedRule {
     }
     
     /**
-     * Get encrypt table names.
-     *
-     * @return encrypt table names
-     */
-    public Collection<String> getEncryptTableNames() {
-        return tables.keySet();
-    }
-    
-    /**
      * Find encrypt table.
      * 
      * @param logicTable logic table

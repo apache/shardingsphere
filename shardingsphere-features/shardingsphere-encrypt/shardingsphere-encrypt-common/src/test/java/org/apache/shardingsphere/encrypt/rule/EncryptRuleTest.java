@@ -46,7 +46,7 @@ public final class EncryptRuleTest {
         AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
                 Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", new TestEncryptAlgorithm()));
         EncryptRule actual = new EncryptRule(ruleConfig);
-        assertThat(actual.getEncryptTableNames(), is(Collections.singleton("t_encrypt")));
+        assertTrue(actual.findEncryptTable("t_encrypt").isPresent());
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -65,11 +65,6 @@ public final class EncryptRuleTest {
         AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
                 Collections.singleton(tableConfig), ImmutableMap.of("invalid_encryptor", new TestEncryptAlgorithm()));
         new EncryptRule(ruleConfig);
-    }
-    
-    @Test
-    public void assertGetEncryptTableNames() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).getEncryptTableNames().isEmpty());
     }
     
     @Test

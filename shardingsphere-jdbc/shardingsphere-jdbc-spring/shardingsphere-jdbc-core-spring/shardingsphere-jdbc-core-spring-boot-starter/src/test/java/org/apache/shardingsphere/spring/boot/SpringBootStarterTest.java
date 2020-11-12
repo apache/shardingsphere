@@ -118,7 +118,7 @@ public class SpringBootStarterTest {
     }
     
     private void assertEncryptRule(final EncryptRule rule) {
-        assertThat(rule.getEncryptTableNames(), is(Sets.newLinkedHashSet(Collections.singletonList("t_order"))));
+        assertTrue(rule.findEncryptTable("t_order").isPresent());
         assertThat(rule.getCipherColumn("t_order", "pwd"), is("pwd_cipher"));
         assertThat(rule.getAssistedQueryColumns("t_order"), is(Collections.singletonList("pwd_assisted_query_cipher")));
         assertThat(rule.getLogicAndCipherColumns("t_order"), is(Collections.singletonMap("pwd", "pwd_cipher")));
