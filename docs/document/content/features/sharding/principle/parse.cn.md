@@ -31,6 +31,8 @@ SQL 的一次解析过程是不可逆的，一个个 Token 按 SQL 原本的顺�
 
 ## SQL 解析引擎
 
+### 历史
+
 SQL 解析作为分库分表类产品的核心，其性能和兼容性是最重要的衡量指标。
 ShardingSphere 的 SQL 解析器经历了 3 代产品的更新迭代。
 
@@ -39,6 +41,46 @@ ShardingSphere 的 SQL 解析器经历了 3 代产品的更新迭代。
 第二代 SQL 解析器从 1.5.x 版本开始，ShardingSphere 采用完全自研的 SQL 解析引擎。
 由于目的不同，ShardingSphere 并不需要将 SQL 转为一颗完全的抽象语法树，也无需通过访问器模式进行二次遍历。它采用对 SQL `半理解`的方式，仅提炼数据分片需要关注的上下文，因此 SQL 解析的性能和兼容性得到了进一步的提高。
 
-第三代 SQL 解析器从 3.0.x 版本开始，尝试使用 ANTLR 作为 SQL 解析引擎 的生成器，并采用 Visit 的方式从 AST 中获取 SQL Statement。从5.0.x 版本开始，解析引擎的架构已完成重构调整，同时通过将第一次解析的得到的 AST 放入缓存，方便下次直接获取相同  SQL的解析结果，来提高解析效率。 因此我们建议用户采用 `PreparedStatement` 这种 SQL 预编译的方式来提升性能。当前，用户还可以独立使用 ShardingSphere 的 SQL 解析引擎，获得多款主流关系型数据库的 AST 及 SQL Statement。 未来，SQL 解析引擎将继续提供 SQL 格式化、 SQL 模板化等强大的功能。
+第三代 SQL 解析器从 3.0.x 版本开始，尝试使用 ANTLR 作为 SQL 解析引擎 的生成器，并采用 Visit 的方式从 AST 中获取 SQL Statement。从5.0.x 版本开始，解析引擎的架构已完成重构调整，同时通过将第一次解析的得到的 AST 放入缓存，方便下次直接获取相同  SQL的解析结果，来提高解析效率。 因此我们建议用户采用 `PreparedStatement` 这种 SQL 预编译的方式来提升性能。
 
-* 优点：使用 `ANTLR` 可以方便的对语法规则进行扩充和修改
+### 功能点
+
+* 提供独立的SQL解析功能
+* 支持多种方言的SQL解析
+
+| 数据库    | 支持状态 |
+|----------|--------|
+|MySQL     |支持，完善|
+|PostgreSQL|支持，完善|
+|SQLServer |支持     |
+|Oracle    |支持     |
+|SQL92     |支持     |
+* 提供SQL格式化功能（开发中）
+* 提供SQL模板话功能（开发中）
+### 优点
+由于使用了 `ANTLR`， 可以非常方便的对语法规则进行扩充和修改
+
+### API使用
+
+引入Maven依赖
+```
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-sql-parser-engine</artifactId>
+    <version>${project.version}</version>
+</dependency>
+// 根据需要引入指定方言的解析模块（以MySQL为例）
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-sql-parser-mysql</artifactId>
+    <version>${project.version}</version>
+</dependency>
+```
+
+例子
+
+1. 获取语法树
+
+```
+ParseTree tree = new SQLParserEngine(databaseType).parse(sql, false)
+```

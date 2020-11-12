@@ -25,6 +25,8 @@ At last, through traversing the abstract syntax tree, the context needed by shar
 
 ## SQL Parser
 
+### History
+
 As the core of database sharding and table sharding, SQL parser takes the performance and compatibility as its most important index. ShardingSphere SQL parser has undergone the upgrade and iteration of 3 generations of products.
 
 To pursue good performance and quick achievement, the first generation of SQL parser uses `Druid` before 1.4.x version. As tested in practice, its performance exceeds other parsers a lot.
@@ -33,4 +35,46 @@ The second generation of SQL parsing engine begins from 1.5.x version, ShardingS
 
 The third generation of SQL parsing engine begins from 3.0.x version. ShardingSphere tries to adopts ANTLR as a generator for the SQL parsing engine, and uses Visit to obtain SQL Statement from AST. Starting from version 5.0.x, the architecture of the parsing engine has been refactored. At the same time, it is convenient to directly obtain the parsing results of the same SQL to improve parsing efficiency by putting the AST obtained from the first parsing into the cache. Therefore, we recommend that users adopt `PreparedStatement` this SQL pre-compilation method to improve performance. Currently, users can also use ShardingSphere's SQL parsing engine independently to obtain AST and SQL Statements for a variety of mainstream relational databases. In the future, the SQL parsing engine will continue to provide powerful functions such as SQL formatting and SQL templating.
 
-* Advantages: the syntax rules can be easily expanded and modified by using `ANTLR`
+### Features
+
+* Independent SQL parsing engine
+* Support multiple dialects
+
+| DB    | Status |
+|----------|--------|
+|MySQL     |supported|
+|PostgreSQL|supported|
+|SQLServer |supported|
+|Oracle    |supported|
+|SQL92     |supported|
+
+* SQL format (developing)
+* SQL parameterize (developing)
+
+### Advantages
+The syntax rules can be easily expanded and modified by using `ANTLR`
+
+### API Usage
+
+Maven config
+```
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-sql-parser-engine</artifactId>
+    <version>${project.version}</version>
+</dependency>
+// According to the needs, introduce the parsing module of the specified dialect (take MySQL as an example)
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-sql-parser-mysql</artifactId>
+    <version>${project.version}</version>
+</dependency>
+```
+
+demo:
+
+1. Get AST
+
+```
+ParseTree tree = new SQLParserEngine(databaseType).parse(sql, false)
+```
