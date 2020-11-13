@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.core.job.position.resume;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 
 import java.util.concurrent.Executors;
@@ -31,11 +32,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class RepositoryResumeBreakPointManager extends AbstractResumeBreakPointManager {
     
-    private static final String INVENTORY = "/inventory";
-    
-    private static final String INCREMENTAL = "/incremental";
-    
-    private static RegistryRepository registryRepository = RegistryRepositoryHolder.REGISTRY_REPOSITORY;
+    private static final RegistryRepository REGISTRY_REPOSITORY = RegistryRepositoryHolder.getInstance();
     
     private final ScheduledExecutorService executor;
     
@@ -46,32 +43,17 @@ public final class RepositoryResumeBreakPointManager extends AbstractResumeBreak
     public RepositoryResumeBreakPointManager(final String databaseType, final String taskPath) {
         setDatabaseType(databaseType);
         setTaskPath(taskPath);
-        inventoryPath = taskPath + INVENTORY;
-        incrementalPath = taskPath + INCREMENTAL;
+        inventoryPath = String.format("%s/%s", taskPath, ScalingConstant.INVENTORY);
+        incrementalPath = String.format("%s/%s", taskPath, ScalingConstant.INCREMENTAL);
         resumePosition();
         setResumable(!getInventoryPositionManagerMap().isEmpty() && !getIncrementalPositionManagerMap().isEmpty());
         executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleWithFixedDelay(this::persistPosition, 1, 1, TimeUnit.MINUTES);
     }
     
-    /**
-     * If it is available.
-     *
-     * @return is available
-     */
-    public static boolean isAvailable() {
-        return RegistryRepositoryHolder.isAvailable();
-    }
-    
-    @Override
-    public void close() {
-        executor.submit(this::persistPosition);
-        executor.shutdown();
-    }
-    
     private void resumePosition() {
-        resumeInventoryPosition(registryRepository.get(inventoryPath));
-        resumeIncrementalPosition(registryRepository.get(incrementalPath));
+        resumeInventoryPosition(REGISTRY_REPOSITORY.get(inventoryPath));
+        resumeIncrementalPosition(REGISTRY_REPOSITORY.get(incrementalPath));
     }
     
     private void persistPosition() {
@@ -82,14 +64,20 @@ public final class RepositoryResumeBreakPointManager extends AbstractResumeBreak
     @Override
     public void persistInventoryPosition() {
         String result = getInventoryPositionData();
-        registryRepository.persist(inventoryPath, result);
+        REGISTRY_REPOSITORY.persist(inventoryPath, result);
         log.info("persist inventory position {} = {}", inventoryPath, result);
     }
     
     @Override
     public void persistIncrementalPosition() {
         String result = getIncrementalPositionData();
-        registryRepository.persist(incrementalPath, result);
+        REGISTRY_REPOSITORY.persist(incrementalPath, result);
         log.info("persist incremental position {} = {}", incrementalPath, result);
+    }
+    
+    @Override
+    public void close() {
+        executor.submit(this::persistPosition);
+        executor.shutdown();
     }
 }

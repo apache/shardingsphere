@@ -23,6 +23,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -58,5 +60,24 @@ public final class ScalingConfigurationUtil {
      */
     public static ShardingScalingJob initJob(final String configFile) throws IOException {
         return new ShardingScalingJob(initConfig(configFile));
+    }
+    
+    /**
+     * Get config by file.
+     *
+     * @param configFile config file
+     * @return config string
+     * @throws IOException IO Exception
+     */
+    public static String getConfig(final String configFile) throws IOException {
+        StringBuilder result = new StringBuilder();
+        try (FileReader fileReader = new FileReader(ScalingConfigurationUtil.class.getResource(configFile).getFile());
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                result.append(line).append(System.lineSeparator());
+            }
+            return result.toString();
+        }
     }
 }

@@ -43,6 +43,6 @@ public final class BinlogPositionTest {
     @Test
     public void assertToJson() {
         BinlogPosition binlogPosition = new BinlogPosition("mysql-bin.000001", 4);
-        assertThat(binlogPosition.toJson().toString(), is("{\"filename\":\"mysql-bin.000001\",\"position\":4}"));
+        assertThat(binlogPosition.toJson().toString(), is("{\"filename\":\"mysql-bin.000001\",\"position\":4,\"delay\":0}"));
     }
 }

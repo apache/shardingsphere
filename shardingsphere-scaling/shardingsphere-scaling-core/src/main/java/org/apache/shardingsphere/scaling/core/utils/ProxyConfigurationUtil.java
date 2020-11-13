@@ -19,7 +19,6 @@ package org.apache.shardingsphere.scaling.core.utils;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.gson.Gson;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -28,11 +27,9 @@ import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfi
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ShardingSphereJDBCScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.metadata.JdbcUri;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
@@ -56,17 +53,60 @@ import java.util.stream.Collectors;
 public final class ProxyConfigurationUtil {
     
     /**
-     * Get should scaling actual data nodes.
+     * Yaml proxy configuration transform to {@code ScalingConfiguration}.
      *
-     * @param oldConfiguration old yaml proxy configuration
-     * @param newConfiguration new yaml proxy configuration
-     * @return should scaling actual data nodes
+     * @param oldYamlProxyConfiguration old yaml proxy configuration
+     * @param newYamlProxyConfiguration new yaml proxy configuration
+     * @return {@code ScalingConfiguration} instance
      */
-    public static List<String> getShouldScalingActualDataNodes(final String oldConfiguration, final String newConfiguration) {
+    public static ScalingConfiguration toScalingConfiguration(final String oldYamlProxyConfiguration, final String newYamlProxyConfiguration) {
+        ScalingConfiguration result = new ScalingConfiguration();
+        RuleConfiguration ruleConfiguration = new RuleConfiguration();
+        ruleConfiguration.setSource(toDataSourceConf(oldYamlProxyConfiguration));
+        ruleConfiguration.setTarget(toDataSourceConf(newYamlProxyConfiguration));
+        result.setRuleConfiguration(ruleConfiguration);
+        JobConfiguration jobConfiguration = new JobConfiguration();
+        jobConfiguration.setShardingTables(groupByDataSource(getShouldScalingActualDataNodes(result)));
+        result.setJobConfiguration(jobConfiguration);
+        return result;
+    }
+    
+    private static RuleConfiguration.DataSourceConf toDataSourceConf(final String yamlProxyConfiguration) {
+        RuleConfiguration.DataSourceConf result = new RuleConfiguration.DataSourceConf();
+        ShardingSphereJDBCScalingDataSourceConfiguration scalingDataSourceConfiguration = toScalingDataSourceConfiguration(yamlProxyConfiguration);
+        result.setType("shardingSphereJdbc");
+        result.setParameter(scalingDataSourceConfiguration.toJsonTree());
+        return result;
+    }
+    
+    private static ShardingSphereJDBCScalingDataSourceConfiguration toScalingDataSourceConfiguration(final String yamlProxyConfiguration) {
+        YamlProxyRuleConfiguration proxyRuleConfiguration = YamlEngine.unmarshal(yamlProxyConfiguration, YamlProxyRuleConfiguration.class);
+        return new ShardingSphereJDBCScalingDataSourceConfiguration(getDataSourceConfiguration(proxyRuleConfiguration), getRuleConfiguration(proxyRuleConfiguration));
+    }
+    
+    private static String getDataSourceConfiguration(final YamlProxyRuleConfiguration proxyRuleConfiguration) {
+        YamlDataSourceConfigurationWrap result = new YamlDataSourceConfigurationWrap();
+        Map<String, YamlDataSourceConfiguration> dataSources = proxyRuleConfiguration.getDataSources().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> toYamlDataSourceConfiguration(proxyRuleConfiguration, entry.getValue())));
+        result.setDataSources(dataSources);
+        return YamlEngine.marshal(result);
+    }
+    
+    private static String getRuleConfiguration(final YamlProxyRuleConfiguration proxyRuleConfiguration) {
+        YamlProxyRuleConfiguration result = new YamlProxyRuleConfiguration();
+        result.setRules(proxyRuleConfiguration.getRules());
+        return YamlEngine.marshal(result);
+    }
+    
+    private static List<String> getShouldScalingActualDataNodes(final ScalingConfiguration scalingConfiguration) {
+        ShardingSphereJDBCScalingDataSourceConfiguration source =
+                (ShardingSphereJDBCScalingDataSourceConfiguration) scalingConfiguration.getRuleConfiguration().getSource().toTypedDataSourceConfiguration();
+        ShardingSphereJDBCScalingDataSourceConfiguration target =
+                (ShardingSphereJDBCScalingDataSourceConfiguration) scalingConfiguration.getRuleConfiguration().getTarget().toTypedDataSourceConfiguration();
         List<String> result = new ArrayList<>();
-        Set<String> modifiedDataSources = getModifiedDataSources(oldConfiguration, newConfiguration);
-        Map<String, ShardingTableRuleConfiguration> oldShardingRuleConfigurationMap = getShardingRuleConfigurationMap(oldConfiguration);
-        Map<String, ShardingTableRuleConfiguration> newShardingRuleConfigurationMap = getShardingRuleConfigurationMap(newConfiguration);
+        Set<String> modifiedDataSources = getModifiedDataSources(source.getDataSource(), target.getDataSource());
+        Map<String, ShardingTableRuleConfiguration> oldShardingRuleConfigurationMap = getShardingRuleConfigurationMap(source.getRule());
+        Map<String, ShardingTableRuleConfiguration> newShardingRuleConfigurationMap = getShardingRuleConfigurationMap(target.getRule());
         newShardingRuleConfigurationMap.keySet().forEach(each -> {
             if (!oldShardingRuleConfigurationMap.containsKey(each)) {
                 return;
@@ -110,50 +150,6 @@ public final class ProxyConfigurationUtil {
         return oldShardingRuleConfiguration.getTables().stream().collect(Collectors.toMap(ShardingTableRuleConfiguration::getLogicTable, Function.identity()));
     }
     
-    /**
-     * Yaml proxy configuration transform to {@code ScalingConfiguration}.
-     *
-     * @param oldConfiguration old yaml proxy configuration
-     * @param newConfiguration new yaml proxy configuration
-     * @param scalingActualDataNodes scaling actual data nodes
-     * @return {@code ScalingConfiguration} instance
-     */
-    public static ScalingConfiguration toScalingConfiguration(final String oldConfiguration, final String newConfiguration, final List<String> scalingActualDataNodes) {
-        ScalingConfiguration scalingConfiguration = new ScalingConfiguration();
-        RuleConfiguration ruleConfiguration = new RuleConfiguration();
-        ruleConfiguration.setSource(toDataSourceConf(oldConfiguration));
-        ruleConfiguration.setTarget(toDataSourceConf(newConfiguration));
-        scalingConfiguration.setRuleConfiguration(ruleConfiguration);
-        JobConfiguration jobConfiguration = new JobConfiguration();
-        jobConfiguration.setShardingTables(groupByDataSource(scalingActualDataNodes));
-        scalingConfiguration.setJobConfiguration(jobConfiguration);
-        return scalingConfiguration;
-    }
-    
-    private static RuleConfiguration.DataSourceConf toDataSourceConf(final String configuration) {
-        return toDataSourceConf(toScalingDataSourceConfiguration(configuration));
-    }
-    
-    private static RuleConfiguration.DataSourceConf toDataSourceConf(final ScalingDataSourceConfiguration configuration) {
-        RuleConfiguration.DataSourceConf dataSourceConf = new RuleConfiguration.DataSourceConf();
-        if (configuration instanceof JDBCScalingDataSourceConfiguration) {
-            dataSourceConf.setType("jdbc");
-        } else if (configuration instanceof ShardingSphereJDBCScalingDataSourceConfiguration) {
-            dataSourceConf.setType("shardingSphereJdbc");
-        }
-        dataSourceConf.setParameter(new Gson().toJsonTree(configuration));
-        return dataSourceConf;
-    }
-    
-    private static ScalingDataSourceConfiguration toScalingDataSourceConfiguration(final String configuration) {
-        YamlProxyRuleConfiguration proxyRuleConfiguration = YamlEngine.unmarshal(configuration, YamlProxyRuleConfiguration.class);
-        YamlDataSourceConfigurationWrap dataSourceConfigurationWrap = new YamlDataSourceConfigurationWrap();
-        Map<String, YamlDataSourceConfiguration> dataSources = proxyRuleConfiguration.getDataSources().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> toYamlDataSourceConfiguration(proxyRuleConfiguration, entry.getValue())));
-        dataSourceConfigurationWrap.setDataSources(dataSources);
-        return new ShardingSphereJDBCScalingDataSourceConfiguration(YamlEngine.marshal(dataSourceConfigurationWrap), YamlEngine.marshal(proxyRuleConfiguration));
-    }
-    
     private static String[] groupByDataSource(final List<String> actualDataNodeList) {
         List<String> result = new ArrayList<>();
         Multimap<String, String> multiMap = getNodeMultiMap(actualDataNodeList);
@@ -168,16 +164,16 @@ public final class ProxyConfigurationUtil {
     }
     
     private static Multimap<String, String> getNodeMultiMap(final List<String> actualDataNodeList) {
-        Multimap<String, String> multiMap = HashMultimap.create();
+        Multimap<String, String> result = HashMultimap.create();
         for (String actualDataNodes : actualDataNodeList) {
             for (String actualDataNode : actualDataNodes.split(",")) {
                 String[] nodeArray = split(actualDataNode);
                 for (String dataSource : new InlineExpressionParser(nodeArray[0]).splitAndEvaluate()) {
-                    multiMap.put(dataSource, nodeArray[1]);
+                    result.put(dataSource, nodeArray[1]);
                 }
             }
         }
-        return multiMap;
+        return result;
     }
     
     private static String[] split(final String actualDataNode) {
@@ -199,8 +195,9 @@ public final class ProxyConfigurationUtil {
     private static YamlDataSourceConfiguration toYamlDataSourceConfiguration(final YamlProxyRuleConfiguration proxyRuleConfiguration, final YamlDataSourceParameter yamlDataSourceParameter) {
         YamlDataSourceConfiguration result = new YamlDataSourceConfiguration();
         result.setDataSourceClassName("com.zaxxer.hikari.HikariDataSource");
-        Map<String, Object> props = new HashMap<>(proxyRuleConfiguration.getDataSourceCommon());
+        Map<String, Object> props = new HashMap<>();
         props.putAll(ReflectionUtils.getFieldMap(yamlDataSourceParameter));
+        props.putAll(proxyRuleConfiguration.getDataSourceCommon());
         result.setProps(props);
         return result;
     }

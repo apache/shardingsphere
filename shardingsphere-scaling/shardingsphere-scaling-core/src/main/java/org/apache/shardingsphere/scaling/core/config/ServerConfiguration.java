@@ -37,5 +37,5 @@ public final class ServerConfiguration implements YamlConfiguration {
     
     private int workerThread = 30;
     
-    private YamlGovernanceConfiguration resumeBreakPoint;
+    private YamlGovernanceConfiguration distributedScalingService;
 }

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Scaling job service.
@@ -40,29 +41,29 @@ public interface ScalingJobService {
     /**
      * Check new yaml proxy configuration if should scaling.
      *
-     * @param oldConfiguration old yaml proxy configuration
-     * @param newConfiguration new yaml proxy configuration
+     * @param oldYamlProxyConfiguration old yaml proxy configuration
+     * @param newYamlProxyConfiguration new yaml proxy configuration
      * @return if should scaling
      */
-    boolean shouldScaling(String oldConfiguration, String newConfiguration);
+    boolean shouldScaling(String oldYamlProxyConfiguration, String newYamlProxyConfiguration);
     
     /**
      * Start scaling job.
      *
      * @param scalingConfiguration scaling job configuration
-     * @return scaling job id
+     * @return scaling job
      */
-    long start(ScalingConfiguration scalingConfiguration);
+    Optional<ShardingScalingJob> start(ScalingConfiguration scalingConfiguration);
     
     
     /**
      * Start scaling job if it should scaling.
      *
-     * @param oldConfiguration old yaml proxy configuration
-     * @param newConfiguration new yaml proxy configuration
-     * @return scaling job id, -1 will be returned if current configuration do not have to scaling
+     * @param oldYamlProxyConfiguration old yaml proxy configuration
+     * @param newYamlProxyConfiguration new yaml proxy configuration
+     * @return scaling job
      */
-    long start(String oldConfiguration, String newConfiguration);
+    Optional<ShardingScalingJob> start(String oldYamlProxyConfiguration, String newYamlProxyConfiguration);
     
     /**
      * Stop a job.

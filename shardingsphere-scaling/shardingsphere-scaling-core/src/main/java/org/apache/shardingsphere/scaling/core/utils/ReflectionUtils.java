@@ -37,7 +37,8 @@ public final class ReflectionUtils {
     @SneakyThrows(ReflectiveOperationException.class)
     public static Map<String, Object> getFieldMap(final Object object) {
         Map<String, Object> result = new HashMap<>();
-        for (Field field : object.getClass().getFields()) {
+        for (Field field : object.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
             result.put(field.getName(), field.get(object));
         }
         return result;

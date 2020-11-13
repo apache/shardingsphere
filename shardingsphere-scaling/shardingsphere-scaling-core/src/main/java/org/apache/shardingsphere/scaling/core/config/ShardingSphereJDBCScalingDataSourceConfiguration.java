@@ -17,12 +17,18 @@
 
 package org.apache.shardingsphere.scaling.core.config;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.annotations.Expose;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.scaling.core.utils.ConfigurationYamlConverter;
+
+import java.util.Map;
 
 /**
  * ShardingSphere-JDBC scaling data source configuration.
@@ -32,8 +38,12 @@ import org.apache.shardingsphere.scaling.core.utils.ConfigurationYamlConverter;
 @EqualsAndHashCode(exclude = "databaseType")
 public final class ShardingSphereJDBCScalingDataSourceConfiguration implements ScalingDataSourceConfiguration {
     
+    private static final Gson GSON = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+    
+    @Expose
     private String dataSource;
     
+    @Expose
     private String rule;
     
     private DatabaseType databaseType;
@@ -47,9 +57,18 @@ public final class ShardingSphereJDBCScalingDataSourceConfiguration implements S
     @Override
     public DatabaseType getDatabaseType() {
         if (null == databaseType) {
-            databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(
-                    ConfigurationYamlConverter.loadDataSourceConfigurations(dataSource).values().iterator().next().getProps().get("jdbcUrl").toString());
+            Map<String, Object> props = ConfigurationYamlConverter.loadDataSourceConfigurations(dataSource).values().iterator().next().getProps();
+            databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(props.getOrDefault("url", props.get("jdbcUrl")).toString());
         }
         return databaseType;
+    }
+    
+    /**
+     * To json tree.
+     *
+     * @return json element
+     */
+    public JsonElement toJsonTree() {
+        return GSON.toJsonTree(this);
     }
 }

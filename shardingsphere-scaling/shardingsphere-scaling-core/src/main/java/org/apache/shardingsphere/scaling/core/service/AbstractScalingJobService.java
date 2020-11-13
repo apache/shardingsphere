@@ -19,11 +19,12 @@ package org.apache.shardingsphere.scaling.core.service;
 
 import org.apache.shardingsphere.scaling.core.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.utils.ProxyConfigurationUtil;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Abstract scaling job service.
@@ -31,17 +32,21 @@ import java.util.Map;
 public abstract class AbstractScalingJobService implements ScalingJobService {
     
     @Override
-    public boolean shouldScaling(final String oldConfiguration, final String newConfiguration) {
-        return !ProxyConfigurationUtil.getShouldScalingActualDataNodes(oldConfiguration, newConfiguration).isEmpty();
+    public boolean shouldScaling(final String oldYamlProxyConfiguration, final String newYamlProxyConfiguration) {
+        return shouldScaling(ProxyConfigurationUtil.toScalingConfiguration(oldYamlProxyConfiguration, newYamlProxyConfiguration));
+    }
+    
+    private boolean shouldScaling(final ScalingConfiguration scalingConfiguration) {
+        return scalingConfiguration.getJobConfiguration().getShardingTables().length > 0;
     }
     
     @Override
-    public long start(final String oldConfiguration, final String newConfiguration) {
-        List<String> scalingActualDataNodes = ProxyConfigurationUtil.getShouldScalingActualDataNodes(oldConfiguration, newConfiguration);
-        if (scalingActualDataNodes.isEmpty()) {
-            return -1;
+    public Optional<ShardingScalingJob> start(final String oldYamlProxyConfiguration, final String newYamlProxyConfiguration) {
+        ScalingConfiguration scalingConfiguration = ProxyConfigurationUtil.toScalingConfiguration(oldYamlProxyConfiguration, newYamlProxyConfiguration);
+        if (!shouldScaling(scalingConfiguration)) {
+            return Optional.empty();
         }
-        return start(ProxyConfigurationUtil.toScalingConfiguration(oldConfiguration, newConfiguration, scalingActualDataNodes));
+        return start(scalingConfiguration);
     }
     
     @Override

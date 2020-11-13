@@ -38,6 +38,7 @@ import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -47,38 +48,38 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
     
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
     
-    private static RegistryRepository registryRepository = RegistryRepositoryHolder.REGISTRY_REPOSITORY;
+    private static final RegistryRepository REGISTRY_REPOSITORY = RegistryRepositoryHolder.getInstance();
     
     @Override
     public List<ShardingScalingJob> listJobs() {
-        return registryRepository.getChildrenKeys(ScalingConstant.SCALING_LISTENER).stream().map(each -> getJob(Long.parseLong(each))).collect(Collectors.toList());
+        return REGISTRY_REPOSITORY.getChildrenKeys(ScalingConstant.SCALING_LISTENER).stream().map(each -> getJob(Long.parseLong(each))).collect(Collectors.toList());
     }
     
     @Override
-    public long start(final ScalingConfiguration scalingConfiguration) {
+    public Optional<ShardingScalingJob> start(final ScalingConfiguration scalingConfiguration) {
         ShardingScalingJob shardingScalingJob = new ShardingScalingJob();
-        registryRepository.persist(ScalingTaskUtil.assemblingPath(shardingScalingJob.getJobId(), ScalingConstant.CONFIG), new Gson().toJson(scalingConfiguration));
-        registryRepository.persist(ScalingTaskUtil.assemblingPath(shardingScalingJob.getJobId(), ScalingConstant.STATUS), shardingScalingJob.getStatus());
-        return shardingScalingJob.getJobId();
+        REGISTRY_REPOSITORY.persist(ScalingTaskUtil.assemblingPath(shardingScalingJob.getJobId(), ScalingConstant.CONFIG), new Gson().toJson(scalingConfiguration));
+        REGISTRY_REPOSITORY.persist(ScalingTaskUtil.assemblingPath(shardingScalingJob.getJobId(), ScalingConstant.STATUS), shardingScalingJob.getStatus());
+        return Optional.of(shardingScalingJob);
     }
     
     @Override
     public void stop(final long jobId) {
-        registryRepository.persist(ScalingTaskUtil.assemblingPath(jobId, ScalingConstant.STATUS), SyncTaskControlStatus.STOPPING.name());
+        REGISTRY_REPOSITORY.persist(ScalingTaskUtil.assemblingPath(jobId, ScalingConstant.STATUS), SyncTaskControlStatus.STOPPING.name());
     }
     
     @Override
     public ShardingScalingJob getJob(final long jobId) {
         ShardingScalingJob result = new ShardingScalingJob();
-        result.setScalingConfiguration(GSON.fromJson(registryRepository.get(ScalingTaskUtil.assemblingPath(jobId, ScalingConstant.CONFIG)), ScalingConfiguration.class));
-        result.setStatus(registryRepository.get(ScalingTaskUtil.assemblingPath(jobId, ScalingConstant.STATUS)));
+        result.setScalingConfiguration(GSON.fromJson(REGISTRY_REPOSITORY.get(ScalingTaskUtil.assemblingPath(jobId, ScalingConstant.CONFIG)), ScalingConfiguration.class));
+        result.setStatus(REGISTRY_REPOSITORY.get(ScalingTaskUtil.assemblingPath(jobId, ScalingConstant.STATUS)));
         return result;
     }
     
     @Override
     public ScalingJobProgress getProgress(final long jobId) {
-        ScalingJobProgress result = new ScalingJobProgress(jobId, registryRepository.get(ScalingTaskUtil.assemblingPath(jobId, ScalingConstant.STATUS)));
-        List<String> shardingItems = registryRepository.getChildrenKeys(ScalingTaskUtil.assemblingPath(jobId, ScalingConstant.POSITION));
+        ScalingJobProgress result = new ScalingJobProgress(jobId, REGISTRY_REPOSITORY.get(ScalingTaskUtil.assemblingPath(jobId, ScalingConstant.STATUS)));
+        List<String> shardingItems = REGISTRY_REPOSITORY.getChildrenKeys(ScalingTaskUtil.assemblingPath(jobId, ScalingConstant.POSITION));
         for (String each : shardingItems) {
             result.getInventoryDataSyncTaskProgress().put(each, getInventoryDataSyncTaskProgress(jobId, each));
             result.getIncrementalDataSyncTaskProgress().put(each, getIncrementalDataSyncTaskProgress(jobId, each));
@@ -88,14 +89,14 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
     
     private List<SyncProgress> getInventoryDataSyncTaskProgress(final long jobId, final String shardingItem) {
         InventoryPositionGroup inventoryPositionGroup = InventoryPositionGroup.fromJson(
-                registryRepository.get(ScalingTaskUtil.assemblingPath(jobId, ScalingConstant.POSITION, shardingItem, ScalingConstant.INVENTORY)));
+                REGISTRY_REPOSITORY.get(ScalingTaskUtil.assemblingPath(jobId, ScalingConstant.POSITION, shardingItem, ScalingConstant.INVENTORY)));
         List<SyncProgress> result = inventoryPositionGroup.getUnfinished().keySet().stream().map(each -> new InventoryDataSyncTaskProgress(each, false)).collect(Collectors.toList());
-        result.addAll(inventoryPositionGroup.getFinished().stream().map(each -> new InventoryDataSyncTaskProgress(each, false)).collect(Collectors.toList()));
+        result.addAll(inventoryPositionGroup.getFinished().stream().map(each -> new InventoryDataSyncTaskProgress(each, true)).collect(Collectors.toList()));
         return result;
     }
     
     private List<SyncProgress> getIncrementalDataSyncTaskProgress(final long jobId, final String shardingItem) {
-        JsonObject jsonObject = GSON.fromJson(registryRepository.get(ScalingTaskUtil.assemblingPath(jobId, ScalingConstant.POSITION, shardingItem, ScalingConstant.INCREMENTAL)), JsonObject.class);
+        JsonObject jsonObject = GSON.fromJson(REGISTRY_REPOSITORY.get(ScalingTaskUtil.assemblingPath(jobId, ScalingConstant.POSITION, shardingItem, ScalingConstant.INCREMENTAL)), JsonObject.class);
         return jsonObject.entrySet().stream()
                 .map(entry -> new IncrementalDataSyncTaskProgress(entry.getKey(), entry.getValue().getAsJsonObject().get(ScalingConstant.DELAY).getAsLong(), null))
                 .collect(Collectors.toList());
@@ -108,6 +109,6 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
     
     @Override
     public void remove(final long jobId) {
-        registryRepository.delete(ScalingTaskUtil.assemblingPath(jobId));
+        REGISTRY_REPOSITORY.delete(ScalingTaskUtil.assemblingPath(jobId));
     }
 }

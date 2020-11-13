@@ -31,6 +31,7 @@ import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -50,17 +51,16 @@ public final class StandaloneScalingJobService extends AbstractScalingJobService
     }
     
     @Override
-    public long start(final ScalingConfiguration scalingConfiguration) {
+    public Optional<ShardingScalingJob> start(final ScalingConfiguration scalingConfiguration) {
         ShardingScalingJob shardingScalingJob = new ShardingScalingJob(scalingConfiguration);
         scalingJobMap.put(shardingScalingJob.getJobId(), shardingScalingJob);
         shardingScalingJobPreparer.prepare(shardingScalingJob);
-        if (SyncTaskControlStatus.PREPARING_FAILURE.name().equals(shardingScalingJob.getStatus())) {
-            return shardingScalingJob.getJobId();
+        if (!SyncTaskControlStatus.PREPARING_FAILURE.name().equals(shardingScalingJob.getStatus())) {
+            ScalingTaskScheduler scalingTaskScheduler = new ScalingTaskScheduler(shardingScalingJob);
+            scalingTaskScheduler.start();
+            scalingTaskSchedulerMap.put(shardingScalingJob.getJobId(), scalingTaskScheduler);
         }
-        ScalingTaskScheduler scalingTaskScheduler = new ScalingTaskScheduler(shardingScalingJob);
-        scalingTaskScheduler.start();
-        scalingTaskSchedulerMap.put(shardingScalingJob.getJobId(), scalingTaskScheduler);
-        return shardingScalingJob.getJobId();
+        return Optional.of(shardingScalingJob);
     }
     
     @Override
