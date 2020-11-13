@@ -107,14 +107,14 @@ import java.util.List;
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisitor<ASTNode> {
-
+    
     private int currentParameterIndex;
-
+    
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
         return new ParameterMarkerValue(currentParameterIndex++);
     }
-
+    
     @Override
     public final ASTNode visitLiterals(final LiteralsContext ctx) {
         if (null != ctx.stringLiterals()) {
@@ -137,56 +137,56 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         throw new IllegalStateException("Literals must have string, number, dateTime, hex, bit, boolean or null.");
     }
-
+    
     @Override
     public final ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
         return new StringLiteralValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitNumberLiterals(final NumberLiteralsContext ctx) {
         return new NumberLiteralValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitHexadecimalLiterals(final HexadecimalLiteralsContext ctx) {
         // TODO deal with hexadecimalLiterals
         return new OtherLiteralValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitBitValueLiterals(final BitValueLiteralsContext ctx) {
         // TODO deal with bitValueLiterals
         return new OtherLiteralValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitBooleanLiterals(final BooleanLiteralsContext ctx) {
         return new BooleanLiteralValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitNullValueLiterals(final NullValueLiteralsContext ctx) {
         // TODO deal with nullValueLiterals
         return new OtherLiteralValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitIdentifier(final IdentifierContext ctx) {
         UnreservedWordContext unreservedWord = ctx.unreservedWord();
         return null != unreservedWord ? visit(unreservedWord) : new IdentifierValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitUnreservedWord(final UnreservedWordContext ctx) {
         return new IdentifierValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return visit(ctx.identifier());
     }
-
+    
     @Override
     public final ASTNode visitTableName(final TableNameContext ctx) {
         SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name())));
@@ -196,7 +196,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitColumnName(final ColumnNameContext ctx) {
         ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
@@ -206,12 +206,12 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitIndexName(final IndexNameContext ctx) {
         return new IndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
-
+    
     @Override
     public final ASTNode visitTableNames(final TableNamesContext ctx) {
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
@@ -220,7 +220,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitColumnNames(final ColumnNamesContext ctx) {
         CollectionValue<ColumnSegment> result = new CollectionValue<>();
@@ -229,7 +229,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitExpr(final ExprContext ctx) {
         if (null != ctx.booleanPrimary()) {
@@ -247,7 +247,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)));
     }
-
+    
     @Override
     public final ASTNode visitBooleanPrimary(final BooleanPrimaryContext ctx) {
         if (null != ctx.IS()) {
@@ -263,7 +263,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         return visit(ctx.predicate());
     }
-
+    
     private ASTNode createCompareSegment(final BooleanPrimaryContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
         ExpressionSegment right;
@@ -276,7 +276,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
-
+    
     @Override
     public final ASTNode visitPredicate(final PredicateContext ctx) {
         if (null != ctx.IN()) {
@@ -290,7 +290,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         return visit(ctx.bitExpr(0));
     }
-
+    
     private InExpression createInSegment(final PredicateContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment right;
@@ -306,7 +306,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         boolean not = null != ctx.NOT();
         return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not);
     }
-
+    
     private BinaryOperationExpression createBinaryOperationExpressionFromLike(final PredicateContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ListExpression right = new ListExpression(ctx.simpleExpr(0).start.getStartIndex(), ctx.simpleExpr().get(ctx.simpleExpr().size() - 1).stop.getStopIndex());
@@ -317,7 +317,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
-
+    
     private BetweenExpression createBetweenSegment(final PredicateContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
@@ -325,7 +325,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         boolean not = null != ctx.NOT();
         return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not);
     }
-
+    
     @Override
     public final ASTNode visitBitExpr(final BitExprContext ctx) {
         if (null != ctx.simpleExpr()) {
@@ -337,7 +337,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
-
+    
     private ASTNode createExpressionSegment(final ASTNode astNode, final ParserRuleContext context) {
         if (astNode instanceof StringLiteralValue) {
             return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((StringLiteralValue) astNode).getValue());
@@ -359,7 +359,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         return astNode;
     }
-
+    
     @Override
     public final ASTNode visitSimpleExpr(final SimpleExprContext ctx) {
         if (null != ctx.subquery()) {
@@ -379,7 +379,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitFunctionCall(final FunctionCallContext ctx) {
         if (null != ctx.aggregationFunction()) {
@@ -393,14 +393,14 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction or specialFunction.");
     }
-
+    
     @Override
     public final ASTNode visitAggregationFunction(final AggregationFunctionContext ctx) {
         String aggregationType = ctx.aggregationFunctionName().getText();
         return AggregationType.isAggregationType(aggregationType)
                 ? createAggregationSegment(ctx, aggregationType) : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
-
+    
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
         String innerExpression = ctx.start.getInputStream().getText(new Interval(ctx.LP_().getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
@@ -409,7 +409,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
     }
-
+    
     private String getDistinctExpression(final AggregationFunctionContext ctx) {
         StringBuilder result = new StringBuilder();
         for (int i = 3; i < ctx.getChildCount() - 1; i++) {
@@ -417,7 +417,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         return result.toString();
     }
-
+    
     @Override
     public final ASTNode visitSpecialFunction(final SpecialFunctionContext ctx) {
         if (null != ctx.castFunction()) {
@@ -425,25 +425,25 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
         return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitCharFunction(final CharFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
         Collection<String> dataTypeNames = new LinkedList<>();
@@ -452,14 +452,14 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         return new KeywordValue(Joiner.on(" ").join(dataTypeNames));
     }
-
+    
     // TODO :FIXME, sql case id: insert_with_str_to_date
     private void calculateParameterCount(final Collection<ExprContext> exprContexts) {
         for (ExprContext each : exprContexts) {
             visit(each);
         }
     }
-
+    
     @Override
     public final ASTNode visitOrderByClause(final OrderByClauseContext ctx) {
         Collection<OrderByItemSegment> items = new LinkedList<>();
@@ -468,7 +468,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         return new OrderBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
     }
-
+    
     @Override
     public final ASTNode visitOrderByItem(final OrderByItemContext ctx) {
         OrderDirection orderDirection = null != ctx.DESC() ? OrderDirection.DESC : OrderDirection.ASC;
@@ -482,7 +482,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         return new ExpressionOrderByItemSegment(ctx.expr().getStart().getStartIndex(), ctx.expr().getStop().getStopIndex(), ctx.expr().getText(), orderDirection);
     }
-
+    
     @Override
     public final ASTNode visitDataType(final DataTypeContext ctx) {
         DataTypeSegment result = new DataTypeSegment();
@@ -495,7 +495,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitDataTypeLength(final DataTypeLengthContext ctx) {
         DataTypeLengthSegment result = new DataTypeLengthSegment();
