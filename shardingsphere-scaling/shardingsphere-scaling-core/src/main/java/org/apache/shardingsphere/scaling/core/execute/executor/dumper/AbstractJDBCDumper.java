@@ -94,7 +94,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
                 record.setType(ScalingConstant.INSERT);
                 record.setTableName(inventoryDumperConfiguration.getTableNameMap().get(inventoryDumperConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                    record.addColumn(new Column(metaData.getColumnName(i), readValue(rs, i), true, tableMetaData.isPrimaryKey(i)));
+                    record.addColumn(new Column(metaData.getColumnName(i), readValue(rs, i), true, tableMetaData.isPrimaryKey(i - 1)));
                 }
                 pushRecord(record);
             }

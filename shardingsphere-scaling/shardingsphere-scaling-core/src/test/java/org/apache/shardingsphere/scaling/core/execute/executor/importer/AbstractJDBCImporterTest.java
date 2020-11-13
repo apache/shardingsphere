@@ -19,8 +19,8 @@ package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -103,12 +104,12 @@ public final class AbstractJDBCImporterTest {
         DataRecord insertRecord = getDataRecord("INSERT");
         when(sqlBuilder.buildInsertSQL(insertRecord)).thenReturn(INSERT_SQL);
         when(connection.prepareStatement(INSERT_SQL)).thenReturn(preparedStatement);
-        when(channel.fetchRecords(100, 3)).thenReturn(mockRecords(insertRecord));
+        when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(insertRecord));
         jdbcImporter.run();
         verify(preparedStatement).setObject(1, 1);
         verify(preparedStatement).setObject(2, 10);
         verify(preparedStatement).setObject(3, "INSERT");
-        verify(preparedStatement).execute();
+        verify(preparedStatement).addBatch();
     }
     
     @Test
@@ -116,11 +117,11 @@ public final class AbstractJDBCImporterTest {
         DataRecord deleteRecord = getDataRecord("DELETE");
         when(sqlBuilder.buildDeleteSQL(deleteRecord, mockConditionColumns(deleteRecord))).thenReturn(DELETE_SQL);
         when(connection.prepareStatement(DELETE_SQL)).thenReturn(preparedStatement);
-        when(channel.fetchRecords(100, 3)).thenReturn(mockRecords(deleteRecord));
+        when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(deleteRecord));
         jdbcImporter.run();
         verify(preparedStatement).setObject(1, 1);
         verify(preparedStatement).setObject(2, 10);
-        verify(preparedStatement).execute();
+        verify(preparedStatement).addBatch();
     }
     
     @Test
@@ -128,7 +129,7 @@ public final class AbstractJDBCImporterTest {
         DataRecord updateRecord = getDataRecord("UPDATE");
         when(sqlBuilder.buildUpdateSQL(updateRecord, mockConditionColumns(updateRecord))).thenReturn(UPDATE_SQL);
         when(connection.prepareStatement(UPDATE_SQL)).thenReturn(preparedStatement);
-        when(channel.fetchRecords(100, 3)).thenReturn(mockRecords(updateRecord));
+        when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(updateRecord));
         jdbcImporter.run();
         verify(preparedStatement).setObject(1, 10);
         verify(preparedStatement).setObject(2, "UPDATE");
@@ -142,7 +143,7 @@ public final class AbstractJDBCImporterTest {
         DataRecord updateRecord = getUpdatePrimaryKeyDataRecord();
         when(sqlBuilder.buildUpdateSQL(updateRecord, mockConditionColumns(updateRecord))).thenReturn(UPDATE_SQL);
         when(connection.prepareStatement(UPDATE_SQL)).thenReturn(preparedStatement);
-        when(channel.fetchRecords(100, 3)).thenReturn(mockRecords(updateRecord));
+        when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(updateRecord));
         jdbcImporter.run();
         InOrder inOrder = inOrder(preparedStatement);
         inOrder.verify(preparedStatement).setObject(1, 2);
