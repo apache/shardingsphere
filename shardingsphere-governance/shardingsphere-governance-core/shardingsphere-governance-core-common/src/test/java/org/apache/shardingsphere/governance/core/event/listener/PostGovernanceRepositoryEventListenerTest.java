@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.event.listener;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,10 +55,10 @@ public final class PostGovernanceRepositoryEventListenerTest {
         };
         doAnswer(invocationOnMock -> {
             DataChangedEventListener listener = (DataChangedEventListener) invocationOnMock.getArguments()[1];
-            listener.onChange(new DataChangedEvent("test", "value", ChangedType.UPDATED));
+            listener.onChange(new DataChangedEvent("test", "value", Type.UPDATED));
             return mock(DataChangedEventListener.class);
         }).when(governanceRepository).watch(anyString(), any(DataChangedEventListener.class));
-        postEventListener.watch(ChangedType.UPDATED);
+        postEventListener.watch(Type.UPDATED);
         verify(governanceRepository).watch(eq("test"), any());
     }
     
@@ -73,10 +73,10 @@ public final class PostGovernanceRepositoryEventListenerTest {
         };
         doAnswer(invocationOnMock -> {
             DataChangedEventListener listener = (DataChangedEventListener) invocationOnMock.getArguments()[1];
-            listener.onChange(new DataChangedEvent("test", "value", ChangedType.UPDATED));
+            listener.onChange(new DataChangedEvent("test", "value", Type.UPDATED));
             return mock(DataChangedEventListener.class);
         }).when(governanceRepository).watch(anyString(), any(DataChangedEventListener.class));
-        postEventListener.watch(ChangedType.UPDATED, ChangedType.DELETED);
+        postEventListener.watch(Type.UPDATED, Type.DELETED);
         verify(governanceRepository).watch(eq("test"), any());
         verify(governanceRepository).watch(eq("dev"), any());
     }

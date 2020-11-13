@@ -44,7 +44,7 @@ import org.apache.shardingsphere.scaling.mysql.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.WriteRowsEvent;
 import org.apache.shardingsphere.scaling.mysql.client.ConnectInfo;
 import org.apache.shardingsphere.scaling.mysql.client.MySQLClient;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
@@ -117,7 +117,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
     }
     
     private void handleWriteRowsEvent(final WriteRowsEvent event) {
-        PhysicalTableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
+        TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
         for (Serializable[] each : event.getAfterRows()) {
             DataRecord record = createDataRecord(event, each.length);
             record.setType(ScalingConstant.INSERT);
@@ -129,7 +129,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
     }
     
     private void handleUpdateRowsEvent(final UpdateRowsEvent event) {
-        PhysicalTableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
+        TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
         for (int i = 0; i < event.getBeforeRows().size(); i++) {
             Serializable[] beforeValues = event.getBeforeRows().get(i);
             Serializable[] afterValues = event.getAfterRows().get(i);
@@ -138,14 +138,17 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor<Bin
             for (int j = 0; j < beforeValues.length; j++) {
                 Object oldValue = beforeValues[j];
                 Object newValue = afterValues[j];
-                record.addColumn(new Column(tableMetaData.getColumnMetaData(j).getName(), newValue, !Objects.equals(newValue, oldValue), tableMetaData.isPrimaryKey(j)));
+                boolean updated = !Objects.equals(newValue, oldValue);
+                record.addColumn(new Column(tableMetaData.getColumnMetaData(j).getName(),
+                        (tableMetaData.isPrimaryKey(j) && updated) ? oldValue : null,
+                        newValue, updated, tableMetaData.isPrimaryKey(j)));
             }
             pushRecord(record);
         }
     }
     
     private void handleDeleteRowsEvent(final DeleteRowsEvent event) {
-        PhysicalTableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
+        TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
         for (Serializable[] each : event.getBeforeRows()) {
             DataRecord record = createDataRecord(event, each.length);
             record.setType(ScalingConstant.DELETE);

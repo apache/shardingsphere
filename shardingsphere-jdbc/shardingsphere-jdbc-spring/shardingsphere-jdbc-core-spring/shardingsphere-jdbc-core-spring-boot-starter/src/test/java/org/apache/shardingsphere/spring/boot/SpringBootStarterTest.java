@@ -71,7 +71,7 @@ public class SpringBootStarterTest {
     
     @Test
     public void assertRules() {
-        Collection<ShardingSphereRule> rules = dataSource.getSchemaContexts().getDefaultSchema().getRules();
+        Collection<ShardingSphereRule> rules = dataSource.getMetaDataContexts().getDefaultMetaData().getRuleMetaData().getRules();
         assertThat(rules.size(), is(4));
         for (ShardingSphereRule each : rules) {
             if (each instanceof ShardingRule) {
@@ -134,7 +134,7 @@ public class SpringBootStarterTest {
     
     @Test
     public void assertProperties() {
-        assertTrue(dataSource.getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
-        assertThat(dataSource.getSchemaContexts().getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(10));
+        assertTrue(dataSource.getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertThat(dataSource.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(10));
     }
 }

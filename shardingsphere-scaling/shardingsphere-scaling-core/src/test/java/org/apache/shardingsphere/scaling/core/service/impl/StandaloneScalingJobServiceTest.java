@@ -92,7 +92,7 @@ public final class StandaloneScalingJobServiceTest {
         long jobId = scalingJobService.start(mockScalingConfiguration());
         ScalingJobProgress progress = scalingJobService.getProgress(jobId);
         assertThat(progress.getIncrementalDataSyncTaskProgress().size(), is(1));
-        assertThat(progress.getInventoryDataSyncTaskProgress().size(), is(0));
+        assertThat(progress.getInventoryDataSyncTaskProgress().size(), is(1));
         ReflectionUtil.setFieldValue(ResumeBreakPointManagerFactory.class, null, "clazz", FakeResumeBreakPointManager.class);
     }
     

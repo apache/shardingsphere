@@ -23,7 +23,7 @@ import org.apache.shardingsphere.driver.governance.internal.datasource.Governanc
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.spring.boot.governance.registry.TestGovernanceRepository;
 import org.apache.shardingsphere.spring.boot.governance.util.EmbedTestingServer;
 import org.junit.BeforeClass;
@@ -67,8 +67,8 @@ public class GovernanceSpringBootRegistryEncryptTest {
         String dataSource = readYAML(DATA_SOURCE_FILE);
         String encryptRule = readYAML(ENCRYPT_RULE_FILE);
         TestGovernanceRepository repository = new TestGovernanceRepository();
-        repository.persist("/schemas/logic_db/datasource", dataSource);
-        repository.persist("/schemas/logic_db/rule", encryptRule);
+        repository.persist("/metadata/logic_db/datasource", dataSource);
+        repository.persist("/metadata/logic_db/rule", encryptRule);
         repository.persist("/props", ConfigurationPropertyKey.SQL_SHOW.getKey() + ": 'true'\n");
         repository.persist("/states/datanodes", "");
     }
@@ -76,13 +76,13 @@ public class GovernanceSpringBootRegistryEncryptTest {
     @Test
     public void assertWithEncryptDataSource() throws NoSuchFieldException, IllegalAccessException {
         assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
-        Field field = GovernanceShardingSphereDataSource.class.getDeclaredField("schemaContexts");
+        Field field = GovernanceShardingSphereDataSource.class.getDeclaredField("metaDataContexts");
         field.setAccessible(true);
-        SchemaContexts schemaContexts = (SchemaContexts) field.get(dataSource);
-        BasicDataSource embedDataSource = (BasicDataSource) schemaContexts.getDefaultSchema().getDataSources().values().iterator().next();
+        MetaDataContexts metaDataContexts = (MetaDataContexts) field.get(dataSource);
+        BasicDataSource embedDataSource = (BasicDataSource) metaDataContexts.getDefaultMetaData().getResource().getDataSources().values().iterator().next();
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
-        EncryptRuleConfiguration config = (EncryptRuleConfiguration) schemaContexts.getDefaultSchema().getConfigurations().iterator().next();
+        EncryptRuleConfiguration config = (EncryptRuleConfiguration) metaDataContexts.getDefaultMetaData().getRuleMetaData().getConfigurations().iterator().next();
         assertThat(config.getEncryptors().size(), is(1));
         ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig = config.getEncryptors().get("order_encrypt");
         assertThat(encryptAlgorithmConfig, instanceOf(ShardingSphereAlgorithmConfiguration.class));

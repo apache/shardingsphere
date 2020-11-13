@@ -81,7 +81,7 @@ public final class MySQLErrPacketFactory {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_TABLE_EXISTS_ERROR, ((TableExistsException) cause).getTableName());
         }
         if (cause instanceof NoSuchTableException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_SUCH_TABLE, ((NoSuchTableException) cause).getDatabaseName(), ((NoSuchTableException) cause).getTableName());
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_SUCH_TABLE, ((NoSuchTableException) cause).getTableName());
         }
         if (cause instanceof CircuitBreakException) {
             return new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE);

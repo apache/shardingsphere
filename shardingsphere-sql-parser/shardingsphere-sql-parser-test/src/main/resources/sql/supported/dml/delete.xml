@@ -30,4 +30,6 @@
     <sql-case id="delete_with_output_clause_column_shorthand" value="DELETE FROM t_order OUTPUT DELETED.* WHERE order_id = ?" db-types="SQLServer" />
     <sql-case id="delete_with_top" value="DELETE TOP(10) FROM t_order WHERE order_id = ?" db-types="SQLServer" />
     <sql-case id="delete_with_top_percent" value="DELETE TOP(10) PERCENT FROM t_order WHERE order_id = ?" db-types="SQLServer" />
+    <sql-case id="delete_with_with_clause" value="WITH cte (order_id, user_id) AS (SELECT order_id, user_id FROM t_order) DELETE t_order FROM cte WHERE t_order.order_id = cte.order_id" db-types="SQLServer" />
+    <sql-case id="delete_without_columns_with_with_clause" value="WITH cte AS (SELECT order_id, user_id FROM t_order) DELETE t_order FROM cte WHERE t_order.order_id = cte.order_id" db-types="SQLServer" />
 </sql-cases>

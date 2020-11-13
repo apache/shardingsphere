@@ -34,3 +34,6 @@ github:
     - mysql
     - postgresql
     - middleware
+  features:
+    issues: true
+    projects: true

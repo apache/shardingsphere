@@ -29,11 +29,20 @@ public final class Column {
     
     private final String name;
     
+    /**
+     * Value are available only when the primary key column is updated.
+     */
+    private final Object oldValue;
+    
     private final Object value;
     
     private final boolean updated;
     
     private final boolean primaryKey;
+    
+    public Column(final String name, final Object value, final boolean updated, final boolean primaryKey) {
+        this(name, null, value, updated, primaryKey);
+    }
     
     @Override
     public String toString() {

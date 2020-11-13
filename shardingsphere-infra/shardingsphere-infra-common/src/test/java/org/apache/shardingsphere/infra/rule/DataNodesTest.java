@@ -19,10 +19,10 @@ package org.apache.shardingsphere.infra.rule;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.rule.fixture.TestDataSourceRoutedRule;
 import org.apache.shardingsphere.infra.rule.fixture.TestShardingRule;
 import org.apache.shardingsphere.infra.rule.fixture.TestShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.fixture.TestTableRule;
+import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class DataNodesTest {
     
@@ -82,7 +84,8 @@ public final class DataNodesTest {
         List<TestTableRule> tableRules = Arrays.asList(tableRule1, tableRule2);
         ShardingSphereRule rule1 = new TestShardingRule(tableRules);
         Map<String, Collection<String>> dataSourceMapper = Collections.singletonMap(logicDataSourceName, replicaDataSourceNames);
-        TestDataSourceRoutedRule rule2 = new TestDataSourceRoutedRule(dataSourceMapper);
+        DataSourceContainedRule rule2 = mock(DataSourceContainedRule.class);
+        when(rule2.getDataSourceMapper()).thenReturn(dataSourceMapper);
         return new DataNodes(Arrays.asList(rule1, rule2));
     }
     

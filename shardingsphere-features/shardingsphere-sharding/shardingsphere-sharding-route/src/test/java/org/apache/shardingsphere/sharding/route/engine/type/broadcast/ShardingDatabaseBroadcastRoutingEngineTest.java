@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -24,12 +25,16 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 
 public final class ShardingDatabaseBroadcastRoutingEngineTest {
     
@@ -38,12 +43,19 @@ public final class ShardingDatabaseBroadcastRoutingEngineTest {
     @Test
     public void assertRoute() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}"));
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..2}"));
         RouteContext routeContext = new RouteContext();
-        shardingDatabaseBroadcastRoutingEngine.route(routeContext, new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1")));
+        shardingDatabaseBroadcastRoutingEngine.route(routeContext, new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap()));
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(2));
-        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds0"));
-        assertThat(routeUnits.get(1).getDataSourceMapper().getActualName(), is("ds1"));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
+        assertThat(routeUnits.get(1).getDataSourceMapper().getActualName(), is("ds_1"));
+    }
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>(2, 1);
+        result.put("ds_0", mock(DataSource.class, RETURNS_DEEP_STUBS));
+        result.put("ds_1", mock(DataSource.class, RETURNS_DEEP_STUBS));
+        return result;
     }
 }

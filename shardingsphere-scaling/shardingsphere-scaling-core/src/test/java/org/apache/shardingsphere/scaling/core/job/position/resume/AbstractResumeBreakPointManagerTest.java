@@ -41,7 +41,7 @@ public final class AbstractResumeBreakPointManagerTest {
     
     private final String incrementalPosition = "{\"ds0\":{},\"ds1\":{}}";
     
-    private final String inventoryPosition = "{\"unfinished\":{\"ds0.t_order_1#0\":[0,100],\"ds0.t_order_2\":[],\"ds1.t_order_1#0\":[0,200]},\"finished\":[\"ds0.t_order_1#1\"]}";
+    private final String inventoryPosition = "{\"unfinished\":{\"ds1.t_order_1#0\":[0,200],\"ds0.t_order_1#0\":[0,100],\"ds0.t_order_2\":[]},\"finished\":[\"ds0.t_order_1#1\"]}";
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {

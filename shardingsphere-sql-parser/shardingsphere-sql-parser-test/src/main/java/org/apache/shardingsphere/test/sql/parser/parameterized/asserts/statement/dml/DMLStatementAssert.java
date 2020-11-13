@@ -21,32 +21,35 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dml.impl.DeleteStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dml.impl.InsertStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dml.impl.UpdateStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dml.impl.InsertStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dml.impl.CallStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.UpdateStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CallStatementTestCase;
 
 /**
  * DML statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DMLStatementAssert {
-    
+
     /**
      * Assert DML statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual DML statement
-     * @param expected expected parser result
+     * @param actual        actual DML statement
+     * @param expected      expected parser result
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DMLStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof SelectStatement) {
@@ -57,6 +60,8 @@ public final class DMLStatementAssert {
             DeleteStatementAssert.assertIs(assertContext, (DeleteStatement) actual, (DeleteStatementTestCase) expected);
         } else if (actual instanceof InsertStatement) {
             InsertStatementAssert.assertIs(assertContext, (InsertStatement) actual, (InsertStatementTestCase) expected);
+        } else if (actual instanceof CallStatement) {
+            CallStatementAssert.assertIs(assertContext, (CallStatement) actual, (CallStatementTestCase) expected);
         }
     }
 }

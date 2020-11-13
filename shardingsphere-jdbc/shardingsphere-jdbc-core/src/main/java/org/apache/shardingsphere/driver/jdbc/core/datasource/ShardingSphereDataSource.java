@@ -23,8 +23,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
-import org.apache.shardingsphere.infra.context.schema.SchemaContextsBuilder;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -48,13 +48,13 @@ import java.util.Properties;
 @Getter
 public final class ShardingSphereDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
-    private final SchemaContexts schemaContexts;
+    private final MetaDataContexts metaDataContexts;
     
     private final TransactionContexts transactionContexts;
     
     public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
         DatabaseType databaseType = createDatabaseType(dataSourceMap);
-        schemaContexts = new SchemaContextsBuilder(
+        metaDataContexts = new MetaDataContextsBuilder(
                 databaseType, Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, configurations), props).build();
         transactionContexts = createTransactionContexts(databaseType, dataSourceMap);
     }
@@ -71,7 +71,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private DatabaseType createDatabaseType(final DataSource dataSource) throws SQLException {
         if (dataSource instanceof ShardingSphereDataSource) {
-            return ((ShardingSphereDataSource) dataSource).schemaContexts.getDatabaseType();
+            return ((ShardingSphereDataSource) dataSource).metaDataContexts.getDatabaseType();
         }
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
@@ -86,7 +86,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     @Override
     public ShardingSphereConnection getConnection() {
-        return new ShardingSphereConnection(getDataSourceMap(), schemaContexts, transactionContexts, TransactionTypeHolder.get());
+        return new ShardingSphereConnection(getDataSourceMap(), metaDataContexts, transactionContexts, TransactionTypeHolder.get());
     }
     
     @Override
@@ -100,7 +100,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
      * @return data sources
      */
     public Map<String, DataSource> getDataSourceMap() {
-        return schemaContexts.getDefaultSchema().getDataSources();
+        return metaDataContexts.getDefaultMetaData().getResource().getDataSources();
     }
     
     @Override
@@ -118,7 +118,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
         for (String each : dataSourceNames) {
             close(getDataSourceMap().get(each));
         }
-        schemaContexts.close();
+        metaDataContexts.close();
     }
     
     private void close(final DataSource dataSource) throws Exception {

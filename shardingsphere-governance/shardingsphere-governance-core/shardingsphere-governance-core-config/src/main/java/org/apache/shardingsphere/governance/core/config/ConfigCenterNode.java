@@ -34,13 +34,13 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public final class ConfigCenterNode {
     
-    private static final String SCHEMAS_NODE = "schemas";
+    private static final String METADATA_NODE = "metadata";
     
     private static final String DATA_SOURCE_NODE = "datasource";
     
     private static final String RULE_NODE = "rule";
     
-    private static final String TABLE_NODE = "table";
+    private static final String SCHEMA_NODE = "schema";
     
     private static final String AUTHENTICATION_NODE = "authentication";
     
@@ -51,12 +51,12 @@ public final class ConfigCenterNode {
     private static final String PATH_SEPARATOR = "/";
     
     /**
-     * Get schemas path.
+     * Get metadata node path.
      *
-     * @return schemas path
+     * @return metadata node path
      */
-    public String getSchemasPath() {
-        return Joiner.on(PATH_SEPARATOR).join("", SCHEMAS_NODE);
+    public String getMetadataNodePath() {
+        return Joiner.on(PATH_SEPARATOR).join("", METADATA_NODE);
     }
     
     /**
@@ -66,7 +66,7 @@ public final class ConfigCenterNode {
      * @return schema name path
      */
     public String getSchemaNamePath(final String schemaName) {
-        return Joiner.on(PATH_SEPARATOR).join("", SCHEMAS_NODE, schemaName);
+        return Joiner.on(PATH_SEPARATOR).join("", METADATA_NODE, schemaName);
     }
     
     /**
@@ -90,13 +90,13 @@ public final class ConfigCenterNode {
     }
     
     /**
-     * Get table path.
+     * Get schema path.
      * 
      * @param schemaName schema name
-     * @return table path
+     * @return schema path
      */
-    public String getTablePath(final String schemaName) {
-        return getFullPath(schemaName, TABLE_NODE);
+    public String getSchemaPath(final String schemaName) {
+        return getFullPath(schemaName, SCHEMA_NODE);
     }
     
     /**
@@ -118,7 +118,7 @@ public final class ConfigCenterNode {
     }
     
     private String getFullPath(final String schemaName, final String node) {
-        return Joiner.on(PATH_SEPARATOR).join("", SCHEMAS_NODE, schemaName, node);
+        return Joiner.on(PATH_SEPARATOR).join("", METADATA_NODE, schemaName, node);
     }
     
     private String getFullPath(final String node) {
@@ -132,7 +132,7 @@ public final class ConfigCenterNode {
      * @return schema name
      */
     public String getSchemaName(final String configurationNodeFullPath) {
-        Pattern pattern = Pattern.compile(getSchemasPath() + "/(\\w+)" + "(/datasource|/rule)?", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetadataNodePath() + "/(\\w+)" + "(/datasource|/rule)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(configurationNodeFullPath);
         return matcher.find() ? matcher.group(1) : "";
     }
@@ -154,12 +154,12 @@ public final class ConfigCenterNode {
      * @return config paths list.
      */
     public Collection<String> getAllSchemaConfigPaths(final Collection<String> schemaNames) {
-        Collection<String> result = new ArrayList<>(Collections.singletonList(getSchemasPath()));
+        Collection<String> result = new ArrayList<>(Collections.singletonList(getMetadataNodePath()));
         for (String schemaName : schemaNames) {
             result.add(getSchemaNamePath(schemaName));
             result.add(getRulePath(schemaName));
             result.add(getDataSourcePath(schemaName));
-            result.add(getTablePath(schemaName));
+            result.add(getSchemaPath(schemaName));
         }
         return result;
     }

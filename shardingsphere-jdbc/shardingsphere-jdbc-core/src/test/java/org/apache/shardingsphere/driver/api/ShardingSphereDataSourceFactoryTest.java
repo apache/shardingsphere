@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -37,6 +36,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,7 +47,7 @@ public final class ShardingSphereDataSourceFactoryTest {
         Properties props = new Properties();
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource(
                 getDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), props);
-        assertThat(dataSource.getSchemaContexts().getProps().getProps(), is(props));
+        assertThat(dataSource.getMetaDataContexts().getProps().getProps(), is(props));
     }
     
     private Map<String, DataSource> getDataSourceMap() throws SQLException {
@@ -61,7 +61,7 @@ public final class ShardingSphereDataSourceFactoryTest {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery(Mockito.anyString())).thenReturn(resultSet);
+        when(statement.executeQuery(anyString())).thenReturn(resultSet);
         when(statement.getConnection()).thenReturn(connection);
         when(statement.getConnection().getMetaData().getTables(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);

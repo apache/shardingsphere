@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
@@ -59,14 +59,14 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
     @Override
     protected MergedResult createMergedResult() {
         Map<String, HintShowTableStatusResult> results = new HashMap<>();
-        ShardingSphereSchema schema = ProxyContext.getInstance().getSchema(backendConnection.getSchemaName());
-        if (null == schema) {
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
+        if (null == metaData) {
             throw new NoDatabaseSelectedException();
         }
-        if (!schema.isComplete()) {
+        if (!metaData.isComplete()) {
             throw new RuleNotExistsException();
         }
-        Collection<String> tableNames = schema.getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames();
+        Collection<String> tableNames = metaData.getSchema().getAllTableNames();
         for (String each : tableNames) {
             if (HintManager.isDatabaseShardingOnly()) {
                 fillShardingValues(results, each, HintManager.getDatabaseShardingValues(), Collections.emptyList());

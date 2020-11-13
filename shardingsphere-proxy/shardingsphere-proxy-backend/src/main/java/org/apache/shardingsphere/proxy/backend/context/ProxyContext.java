@@ -19,9 +19,9 @@ package org.apache.shardingsphere.proxy.backend.context;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
-import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
@@ -43,13 +43,13 @@ public final class ProxyContext {
     
     private final JDBCBackendDataSource backendDataSource;
     
-    private SchemaContexts schemaContexts;
+    private MetaDataContexts metaDataContexts;
     
     private TransactionContexts transactionContexts;
     
     private ProxyContext() {
         backendDataSource = new JDBCBackendDataSource();
-        schemaContexts = new StandardSchemaContexts();
+        metaDataContexts = new StandardMetaDataContexts();
         transactionContexts = new StandardTransactionContexts();
     }
     
@@ -63,13 +63,13 @@ public final class ProxyContext {
     }
     
     /**
-     * Initialize proxy schema contexts.
+     * Initialize proxy meta data contexts.
      *
-     * @param schemaContexts schema contexts
+     * @param metaDataContexts meta data contexts
      * @param transactionContexts transaction manager engine contexts
      */
-    public void init(final SchemaContexts schemaContexts, final TransactionContexts transactionContexts) {
-        this.schemaContexts = schemaContexts;
+    public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts) {
+        this.metaDataContexts = metaDataContexts;
         this.transactionContexts = transactionContexts;
     }
     
@@ -80,17 +80,17 @@ public final class ProxyContext {
      * @return schema exists or not
      */
     public boolean schemaExists(final String schemaName) {
-        return schemaContexts.getSchemas().containsKey(schemaName);
+        return metaDataContexts.getMetaDataMap().containsKey(schemaName);
     }
     
     /**
-     * Get schema.
+     * Get meta data.
      *
      * @param schemaName schema name
-     * @return schema
+     * @return meta data
      */
-    public ShardingSphereSchema getSchema(final String schemaName) {
-        return Strings.isNullOrEmpty(schemaName) ? null : schemaContexts.getSchemas().get(schemaName);
+    public ShardingSphereMetaData getMetaData(final String schemaName) {
+        return Strings.isNullOrEmpty(schemaName) ? null : metaDataContexts.getMetaDataMap().get(schemaName);
     }
     
     /**
@@ -99,7 +99,7 @@ public final class ProxyContext {
      * @return all schema names
      */
     public List<String> getAllSchemaNames() {
-        return new ArrayList<>(schemaContexts.getSchemas().keySet());
+        return new ArrayList<>(metaDataContexts.getMetaDataMap().keySet());
     }
     
     /**
@@ -112,7 +112,7 @@ public final class ProxyContext {
         if (schemaNames.isEmpty()) {
             return Optional.empty();
         }
-        Map<String, DataSource> dataSources = Objects.requireNonNull(getSchema(schemaNames.get(0))).getDataSources();
+        Map<String, DataSource> dataSources = Objects.requireNonNull(getMetaData(schemaNames.get(0))).getResource().getDataSources();
         return dataSources.values().stream().findFirst();
     }
 }
