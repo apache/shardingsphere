@@ -22,10 +22,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeColumnContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterTableDropContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ModifyColumnContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableElementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterEventContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterFunctionContext;
@@ -34,9 +31,11 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterLo
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterServerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterTableDropContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CaseStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CompoundStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateDatabaseContext;
@@ -63,16 +62,23 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropTri
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FlowControlStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IfStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KeyListWithExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KeyPartContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KeyPartsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoopStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ModifyColumnContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PlaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReferenceDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RepeatStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RoutineBodyContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableConstraintDefContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableElementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ValidStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhileStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FieldDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterListContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
@@ -239,7 +245,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         return result;
     }
 
-    private ColumnDefinitionSegment generateColumnDefinitionSegment(final ColumnSegment column, final MySQLStatementParser.FieldDefinitionContext ctx) {
+    private ColumnDefinitionSegment generateColumnDefinitionSegment(final ColumnSegment column, final FieldDefinitionContext ctx) {
         DataTypeSegment dataTypeSegment = (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = isPrimaryKey(ctx);
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(
@@ -248,13 +254,13 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
 
     @Override
-    public ASTNode visitAlterList(final MySQLStatementParser.AlterListContext ctx) {
+    public ASTNode visitAlterList(final AlterListContext ctx) {
         CollectionValue<AlterDefinitionSegment> result = new CollectionValue<>();
         if (ctx.alterListItem().isEmpty()) {
             return result;
         }
         for (MySQLStatementParser.AlterListItemContext each : ctx.alterListItem()) {
-            if (each instanceof MySQLStatementParser.AddColumnContext) {
+            if (each instanceof AddColumnContext) {
                 result.getValue().add((AddColumnDefinitionSegment) visit(each));
             }
             if (each instanceof ChangeColumnContext) {
@@ -266,7 +272,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
                 }
                 result.getValue().add(modifyColumnDefinition);
             }
-            if (each instanceof MySQLStatementParser.ModifyColumnContext) {
+            if (each instanceof ModifyColumnContext) {
                 ColumnSegment column = new ColumnSegment(((ModifyColumnContext) each).columnInternalRef.start.getStartIndex(), ((ModifyColumnContext) each).columnInternalRef.stop.getStopIndex(),
                         (IdentifierValue) visit(((ModifyColumnContext) each).columnInternalRef));
                 ModifyColumnDefinitionSegment modifyColumnDefinition = new ModifyColumnDefinitionSegment(
@@ -277,7 +283,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
                 }
                 result.getValue().add(modifyColumnDefinition);
             }
-            if (each instanceof MySQLStatementParser.AlterTableDropContext) {
+            if (each instanceof AlterTableDropContext) {
                 AlterTableDropContext alterTableDrop = (AlterTableDropContext) each;
                 if (null == alterTableDrop.KEY() && null == alterTableDrop.CHECK() && null == alterTableDrop.CONSTRAINT() && null == alterTableDrop.keyOrIndex()) {
                     ColumnSegment column = new ColumnSegment(alterTableDrop.columnInternalRef.start.getStartIndex(), alterTableDrop.columnInternalRef.stop.getStopIndex(),
@@ -290,7 +296,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
 
     @Override
-    public ASTNode visitAddColumn(final MySQLStatementParser.AddColumnContext ctx) {
+    public ASTNode visitAddColumn(final AddColumnContext ctx) {
         Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
         if (null != ctx.columnDefinition()) {
             columnDefinitions.add((ColumnDefinitionSegment) visit(ctx.columnDefinition()));
@@ -329,7 +335,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         return result;
     }
     
-    private boolean isPrimaryKey(final MySQLStatementParser.FieldDefinitionContext ctx) {
+    private boolean isPrimaryKey(final FieldDefinitionContext ctx) {
         for (MySQLStatementParser.ColumnAttributeContext each : ctx.columnAttribute()) {
             if (null != each.KEY() && null == each.UNIQUE()) {
                 return true;
@@ -339,7 +345,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
     
     @Override
-    public ASTNode visitTableConstraintDef(final MySQLStatementParser.TableConstraintDefContext ctx) {
+    public ASTNode visitTableConstraintDef(final TableConstraintDefContext ctx) {
         ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         if (null != ctx.KEY() && null != ctx.PRIMARY()) {
             result.getPrimaryKeyColumns().addAll(getKeyColumnsFromKeyListWithExpression(ctx.keyListWithExpression()));
@@ -357,7 +363,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         return result;
     }
 
-    private Collection<ColumnSegment> getKeyColumnsFromKeyListWithExpression(final MySQLStatementParser.KeyListWithExpressionContext ctx) {
+    private Collection<ColumnSegment> getKeyColumnsFromKeyListWithExpression(final KeyListWithExpressionContext ctx) {
         Collection<ColumnSegment> result = new LinkedList<>();
         for (MySQLStatementParser.KeyPartWithExpressionContext each : ctx.keyPartWithExpression()) {
             if (null != each.keyPart()) {
@@ -373,7 +379,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
     
     @Override
-    public ASTNode visitPlace(final MySQLStatementParser.PlaceContext ctx) {
+    public ASTNode visitPlace(final PlaceContext ctx) {
         ColumnSegment columnName = null;
         if (null != ctx.columnName()) {
             columnName = (ColumnSegment) visit(ctx.columnName());
