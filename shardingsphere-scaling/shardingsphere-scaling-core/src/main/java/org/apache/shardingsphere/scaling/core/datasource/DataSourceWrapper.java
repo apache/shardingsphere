@@ -81,7 +81,7 @@ public final class DataSourceWrapper implements DataSource, AutoCloseable {
     
     @Override
     public void close() throws SQLException {
-        if (dataSource == null) {
+        if (null == dataSource) {
             return;
         }
         if (dataSource instanceof AutoCloseable) {

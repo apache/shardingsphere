@@ -74,7 +74,7 @@ public final class ScalingConfigurationUtil {
         try (FileReader fileReader = new FileReader(ScalingConfigurationUtil.class.getResource(configFile).getFile());
              BufferedReader bufferedReader = new BufferedReader(fileReader)) {
             String line;
-            while ((line = bufferedReader.readLine()) != null) {
+            while (null != (line = bufferedReader.readLine())) {
                 result.append(line).append(System.lineSeparator());
             }
             return result.toString();

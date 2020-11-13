@@ -70,11 +70,11 @@ public final class ShardingScalingJob {
     }
     
     private static void initIdAutoIncreaseGenerator() {
-        if (idAutoIncreaseGenerator != null) {
+        if (null != idAutoIncreaseGenerator) {
             return;
         }
         synchronized (ShardingScalingJob.class) {
-            if (idAutoIncreaseGenerator != null) {
+            if (null != idAutoIncreaseGenerator) {
                 return;
             }
             idAutoIncreaseGenerator = new SnowflakeKeyGenerateAlgorithm();
