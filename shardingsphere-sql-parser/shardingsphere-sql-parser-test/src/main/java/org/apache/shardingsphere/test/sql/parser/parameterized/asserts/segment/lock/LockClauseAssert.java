@@ -29,8 +29,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -53,10 +51,6 @@ public final class LockClauseAssert {
             assertTrue(assertContext.getText("lock tables should not exist."), expectedTables.isEmpty());
             return;
         }
-        assertThat(assertContext.getText("lock tables size should be the same."),
-                actualTables.size(), is(expectedTables.size()));
-        for (int i = 0; i < actualTables.size(); i++) {
-            TableAssert.assertIs(assertContext, actualTables.get(i), expectedTables.get(i));
-        }
+        TableAssert.assertIs(assertContext, actualTables, expectedTables);
     }
 }
