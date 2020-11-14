@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
 import javax.sql.XADataSource;
 import javax.transaction.TransactionManager;
-import java.util.Properties;
 
 /**
  * XA transaction manager.

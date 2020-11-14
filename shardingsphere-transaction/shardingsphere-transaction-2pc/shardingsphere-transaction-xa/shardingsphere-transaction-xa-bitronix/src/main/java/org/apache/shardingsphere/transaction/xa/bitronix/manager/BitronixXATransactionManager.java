@@ -80,7 +80,7 @@ public final class BitronixXATransactionManager implements XATransactionManager 
     }
     
     @Override
-    public void setProps(Properties props) {
+    public void setProps(final Properties props) {
         
     }
 }
