@@ -87,7 +87,7 @@ public final class NarayanaXATransactionManager implements XATransactionManager 
     }
     
     @Override
-    public void setProps(Properties props) {
+    public void setProps(final Properties props) {
         
     }
 }
