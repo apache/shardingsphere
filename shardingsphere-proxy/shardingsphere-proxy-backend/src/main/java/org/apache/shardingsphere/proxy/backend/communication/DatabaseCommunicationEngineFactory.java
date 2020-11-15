@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
@@ -61,9 +62,10 @@ public final class DatabaseCommunicationEngineFactory {
      * @return text protocol backend handler
      */
     public DatabaseCommunicationEngine newTextProtocolInstance(final SQLStatement sqlStatement, final String sql, final BackendConnection backendConnection) {
-        LogicSQL logicSQL = createLogicSQL(sqlStatement, sql, Collections.emptyList(), backendConnection);
-        return new JDBCDatabaseCommunicationEngine(
-                logicSQL, ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()), new JDBCExecuteEngine(backendConnection, new StatementAccessor()));
+        ShardingSphereMetaData metaData = getMetaData(backendConnection);
+        LogicSQL logicSQL = createLogicSQL(sqlStatement, sql, Collections.emptyList(), metaData);
+        JDBCExecuteEngine jdbcExecuteEngine = new JDBCExecuteEngine(backendConnection, new StatementAccessor());
+        return new JDBCDatabaseCommunicationEngine(logicSQL, metaData, jdbcExecuteEngine);
     }
     
     /**
@@ -76,13 +78,19 @@ public final class DatabaseCommunicationEngineFactory {
      * @return binary protocol backend handler
      */
     public DatabaseCommunicationEngine newBinaryProtocolInstance(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
-        LogicSQL logicSQL = createLogicSQL(sqlStatement, sql, new ArrayList<>(parameters), backendConnection);
-        return new JDBCDatabaseCommunicationEngine(
-                logicSQL, ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()), new JDBCExecuteEngine(backendConnection, new PreparedStatementAccessor()));
+        ShardingSphereMetaData metaData = getMetaData(backendConnection);
+        LogicSQL logicSQL = createLogicSQL(sqlStatement, sql, new ArrayList<>(parameters), metaData);
+        JDBCExecuteEngine jdbcExecuteEngine = new JDBCExecuteEngine(backendConnection, new PreparedStatementAccessor());
+        return new JDBCDatabaseCommunicationEngine(logicSQL, metaData, jdbcExecuteEngine);
     }
     
-    private LogicSQL createLogicSQL(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
+    private ShardingSphereMetaData getMetaData(final BackendConnection backendConnection) {
+        ShardingSphereMetaData result = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
+        Preconditions.checkNotNull(result);
+        return result;
+    }
+    
+    private LogicSQL createLogicSQL(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final ShardingSphereMetaData metaData) {
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchema(), parameters, sqlStatement);
         return new LogicSQL(sqlStatementContext, sql, parameters);
     }
