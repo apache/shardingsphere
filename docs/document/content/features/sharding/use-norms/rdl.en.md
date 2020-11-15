@@ -45,16 +45,19 @@ t_item=mod(item_id, 2)
 ## A common scenario for RDL
 
 ### Pre-work
+
 1. Start the service of MySQL instances 
 2. Create MySQL databases (Viewed as the resources for ShardingProxy)
 3. Create a role or user with creating privileges for ShardingProxy
 4. Start the service of Zookeeper (For persisting configuration)
 
 ### Initialize ShardingProxy
+
 1. Add `governance` and `authentication` setting item to the `server.yaml`  (Please refer to the example in this file)
 2. Start the ShardingProxy ([Instruction](/en/quick-start/shardingsphere-proxy-quick-start/))
 
 ### Create Sharding DBs and Tables
+
 1. Connect to ShardingProxy
 2. Create a sharding database
 
@@ -120,6 +123,7 @@ DROP DATABASE sharding_db
 ```
 
 ### Notices
+
 1. Currently, `DROP DB` only removes` the logic sharding schema` instead of removing the actual databases in MySQL instance (**TODO**).
 2. `DROP TABLE` will drop `the logic sharding table` and `the corresponding actual tables` in MySQL instance together.
 3. `CREATE DB` just create the logic sharding schema rather than create the actual databases in MySQL instance (**TODO**).
