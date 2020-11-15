@@ -90,7 +90,7 @@ public final class AbstractJDBCImporterTest {
         jdbcImporter = new AbstractJDBCImporter(getImporterConfiguration(), dataSourceManager) {
             
             @Override
-            protected AbstractSQLBuilder createSQLBuilder() {
+            protected AbstractSQLBuilder createSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
                 return sqlBuilder;
             }
         };

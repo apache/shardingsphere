@@ -36,15 +36,15 @@ public class DataRecordMerger {
     
     /**
      * Merge data record.
-     * insert + insert -> exception
-     * update + insert -> exception
-     * delete + insert -> insert
-     * insert + update -> insert
-     * update + update -> update
-     * delete + update -> exception
-     * insert + delete -> delete
-     * update + delete -> delete
-     * delete + delete -> exception
+     * insert + insert -&gt; exception
+     * update + insert -&gt; exception
+     * delete + insert -&gt; insert
+     * insert + update -&gt; insert
+     * update + update -&gt; update
+     * delete + update -&gt; exception
+     * insert + delete -&gt; delete
+     * update + delete -&gt; delete
+     * delete + delete -&gt; exception
      *
      * @param dataRecords data records
      * @return merged data records

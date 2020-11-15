@@ -15,28 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql;
-
-import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractJDBCImporter;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
+package org.apache.shardingsphere.scaling.core.utils;
 
 import java.util.Map;
 import java.util.Set;
 
 /**
- * postgreSQL importer.
+ * Sharding columns util.
  */
-public final class PostgreSQLImporter extends AbstractJDBCImporter {
+public final class ShardingColumnsUtil {
     
-    public PostgreSQLImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
-        super(importerConfig, dataSourceManager);
-    }
-    
-    @Override
-    protected AbstractSQLBuilder createSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
-        return new PostgreSQLSQLBuilder(shardingColumnsMap);
+    /**
+     * Is Sharding column.
+     *
+     * @param shardingColumnsMap sharding columns map
+     * @param tableName table name
+     * @param columnName column name
+     * @return boolean
+     */
+    public static boolean isShardingColumn(final Map<String, Set<String>> shardingColumnsMap,
+                                           final String tableName, final String columnName) {
+        return shardingColumnsMap.containsKey(tableName)
+                && shardingColumnsMap.get(tableName).contains(columnName);
     }
 }
-

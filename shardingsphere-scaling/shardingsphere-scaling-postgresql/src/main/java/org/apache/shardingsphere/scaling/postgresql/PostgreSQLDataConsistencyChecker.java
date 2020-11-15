@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.postgresql;
 
+import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.check.AbstractDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
@@ -41,6 +42,6 @@ public final class PostgreSQLDataConsistencyChecker extends AbstractDataConsiste
     
     @Override
     protected AbstractSQLBuilder getSqlBuilder() {
-        return new PostgreSQLSQLBuilder();
+        return new PostgreSQLSQLBuilder(Maps.newHashMap());
     }
 }

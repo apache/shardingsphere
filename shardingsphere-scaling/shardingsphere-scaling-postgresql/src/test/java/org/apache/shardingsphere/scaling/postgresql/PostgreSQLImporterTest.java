@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.postgresql;
 
+import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
@@ -43,7 +44,7 @@ public final class PostgreSQLImporterTest {
     @Test
     public void assertCreateSQLBuilder() {
         PostgreSQLImporter postgreSQLImporter = new PostgreSQLImporter(importerConfig, dataSourceManager);
-        String insertSQL = postgreSQLImporter.createSQLBuilder().buildInsertSQL(mockDataRecord());
+        String insertSQL = postgreSQLImporter.createSQLBuilder(Maps.newHashMap()).buildInsertSQL(mockDataRecord());
         assertThat(insertSQL, is("INSERT INTO \"t_order\"(\"id\",\"name\") VALUES(?,?) ON CONFLICT (id) DO NOTHING"));
     }
     
