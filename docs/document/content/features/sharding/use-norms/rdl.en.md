@@ -19,8 +19,8 @@ ds_key=host_name:host_port:db_name:user_name:pwd
 
 // Example
 CREATE datasources (
-ds0=127.0.0.1:3306:demo_ds_2:root:pwd, 
-ds1=127.0.0.1:3306:demo_ds_3:root:pwd)
+ds0=127.0.0.1:3306:demo_ds_0:root:pwd, 
+ds1=127.0.0.1:3306:demo_ds_1:root:pwd)
 ```
 - `CREATE SHARDINGRULE` to create sharding rule made by table rules
 ```sql
