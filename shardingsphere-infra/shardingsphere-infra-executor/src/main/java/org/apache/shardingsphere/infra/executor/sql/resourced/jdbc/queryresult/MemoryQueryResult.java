@@ -114,12 +114,7 @@ public final class MemoryQueryResult implements QueryResult {
                 return resultSet.getObject(columnIndex);
         }
     }
-
-    @Override
-    public ResultSetMetaData getResultSetMetaData() {
-        return resultSetMetaData;
-    }
-
+    
     @Override
     public boolean next() {
         if (rows.hasNext()) {
@@ -173,5 +168,10 @@ public final class MemoryQueryResult implements QueryResult {
     @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
         return resultSetMetaData.getColumnLabel(columnIndex);
+    }
+    
+    @Override
+    public String getColumnTypeName(final int columnIndex) throws SQLException {
+        return resultSetMetaData.getColumnTypeName(columnIndex);
     }
 }
