@@ -15,39 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication;
+package org.apache.shardingsphere.scaling.core.utils;
 
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
+import lombok.SneakyThrows;
 
-import java.sql.SQLException;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Database communication engine.
+ * Reflection utils.
  */
-public interface DatabaseCommunicationEngine {
+public final class ReflectionUtils {
     
     /**
-     * Execute to database.
+     * Get field map.
      *
-     * @return backend response
-     * @throws SQLException SQL exception
+     * @param object object
+     * @return field map
      */
-    BackendResponse execute() throws SQLException;
-    
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
-     * @throws SQLException SQL exception
-     */
-    boolean next() throws SQLException;
-    
-    /**
-     * Get query data.
-     *
-     * @return query data
-     * @throws SQLException SQL exception
-     */
-    QueryData getQueryData() throws SQLException;
+    @SneakyThrows(ReflectiveOperationException.class)
+    public static Map<String, Object> getFieldMap(final Object object) {
+        Map<String, Object> result = new HashMap<>();
+        for (Field field : object.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
+            result.put(field.getName(), field.get(object));
+        }
+        return result;
+    }
 }

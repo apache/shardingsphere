@@ -36,6 +36,7 @@ public class DataRecordMerger {
     
     /**
      * Merge data record.
+     * <pre>
      * insert + insert -&gt; exception
      * update + insert -&gt; exception
      * delete + insert -&gt; insert
@@ -45,6 +46,7 @@ public class DataRecordMerger {
      * insert + delete -&gt; delete
      * update + delete -&gt; delete
      * delete + delete -&gt; exception
+     * </pre>
      *
      * @param dataRecords data records
      * @return merged data records

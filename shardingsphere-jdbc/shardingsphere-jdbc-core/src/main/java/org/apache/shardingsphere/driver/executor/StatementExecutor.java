@@ -132,7 +132,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
             }
         };
         List<Integer> results = getSqlExecutor().execute(inputGroups, sqlExecutorCallback);
-        refreshTableMetaData(getMetaDataContexts().getDefaultMetaData(), sqlStatementContext.getSqlStatement(), routeUnits);
+        refreshSchema(getMetaDataContexts().getDefaultMetaData(), sqlStatementContext.getSqlStatement(), routeUnits);
         if (isNeedAccumulate(getMetaDataContexts().getDefaultMetaData().getRuleMetaData().getRules().stream().filter(
             rule -> rule instanceof DataNodeContainedRule).collect(Collectors.toList()), sqlStatementContext)) {
             return accumulate(results);

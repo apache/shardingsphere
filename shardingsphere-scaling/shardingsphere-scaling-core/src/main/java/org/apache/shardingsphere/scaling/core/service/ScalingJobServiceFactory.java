@@ -15,39 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication;
+package org.apache.shardingsphere.scaling.core.service;
 
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.scaling.core.service.impl.DistributedScalingJobService;
+import org.apache.shardingsphere.scaling.core.service.impl.StandaloneScalingJobService;
 
 /**
- * Database communication engine.
+ * Scaling job service factory.
  */
-public interface DatabaseCommunicationEngine {
+public final class ScalingJobServiceFactory {
     
     /**
-     * Execute to database.
+     * Get instance of {@code ScalingJobService}.
      *
-     * @return backend response
-     * @throws SQLException SQL exception
+     * @return scaling job service
      */
-    BackendResponse execute() throws SQLException;
-    
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
-     * @throws SQLException SQL exception
-     */
-    boolean next() throws SQLException;
-    
-    /**
-     * Get query data.
-     *
-     * @return query data
-     * @throws SQLException SQL exception
-     */
-    QueryData getQueryData() throws SQLException;
+    public static ScalingJobService getInstance() {
+        return RegistryRepositoryHolder.isAvailable() ? new DistributedScalingJobService() : new StandaloneScalingJobService();
+    }
 }

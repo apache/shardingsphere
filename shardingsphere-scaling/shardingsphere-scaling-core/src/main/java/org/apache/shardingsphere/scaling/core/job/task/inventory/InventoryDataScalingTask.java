@@ -30,21 +30,14 @@ import org.apache.shardingsphere.scaling.core.execute.executor.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.DumperFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.ImporterFactory;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
-import org.apache.shardingsphere.scaling.core.utils.RdbmsConfigurationUtil;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Table slice execute task.
@@ -57,10 +50,6 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
     private final ImporterConfiguration importerConfig;
     
     private final DataSourceManager dataSourceManager;
-    
-    private long estimatedRows;
-    
-    private final AtomicLong syncedRows = new AtomicLong();
     
     private Dumper dumper;
     
@@ -84,7 +73,6 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
     
     @Override
     public void start() {
-        getEstimatedRows();
         instanceDumper();
         Importer importer = ImporterFactory.newInstance(importerConfig, dataSourceManager);
         instanceChannel(importer);
@@ -105,35 +93,14 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
         dataSourceManager.close();
     }
     
-    private void getEstimatedRows() {
-        DataSource dataSource = dataSourceManager.getDataSource(inventoryDumperConfig.getDataSourceConfiguration());
-        try (Connection connection = dataSource.getConnection()) {
-            ResultSet resultSet = connection.prepareStatement(String.format("SELECT COUNT(*) FROM %s %s",
-                    inventoryDumperConfig.getTableName(),
-                    RdbmsConfigurationUtil.getWhereCondition(inventoryDumperConfig)))
-                    .executeQuery();
-            resultSet.next();
-            estimatedRows = resultSet.getInt(1);
-        } catch (final SQLException ex) {
-            throw new SyncTaskExecuteException("get estimated rows error.", ex);
-        }
-    }
-    
     private void instanceDumper() {
         dumper = DumperFactory.newInstanceJdbcDumper(inventoryDumperConfig, dataSourceManager);
     }
     
     private void instanceChannel(final Importer importer) {
         MemoryChannel channel = new MemoryChannel(records -> {
-            int count = 0;
-            for (Record record : records) {
-                if (record instanceof DataRecord) {
-                    count++;
-                } else if (record instanceof FinishedRecord && record.getPosition() instanceof InventoryPosition) {
-                    getPositionManager().setPosition((InventoryPosition) record.getPosition());
-                }
-            }
-            syncedRows.addAndGet(count);
+            Optional<Record> record = records.stream().filter(each -> each.getPosition() instanceof InventoryPosition).reduce((a, b) -> b);
+            record.ifPresent(value -> getPositionManager().setPosition((InventoryPosition) value.getPosition()));
         });
         dumper.setChannel(channel);
         importer.setChannel(channel);
@@ -158,6 +125,6 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
     
     @Override
     public SyncProgress getProgress() {
-        return new InventoryDataSyncTaskProgress(getTaskId(), estimatedRows, syncedRows.get());
+        return new InventoryDataSyncTaskProgress(getTaskId(), getPositionManager().getPosition().isFinished());
     }
 }

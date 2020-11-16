@@ -40,6 +40,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,6 +50,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Sync configuration Util.
@@ -65,14 +67,15 @@ public final class SyncConfigurationUtil {
     public static Collection<SyncConfiguration> toSyncConfigurations(final ScalingConfiguration scalingConfig) {
         Collection<SyncConfiguration> result = new LinkedList<>();
         ShardingSphereJDBCScalingDataSourceConfiguration sourceConfig = getSourceConfiguration(scalingConfig);
+        ShardingRuleConfiguration shardingRuleConfig = ConfigurationYamlConverter.loadShardingRuleConfiguration(sourceConfig.getRule());
         Map<String, DataSourceConfiguration> sourceDataSource = ConfigurationYamlConverter.loadDataSourceConfigurations(sourceConfig.getDataSource());
-        ShardingRuleConfiguration sourceRule = ConfigurationYamlConverter.loadShardingRuleConfiguration(sourceConfig.getRule());
-        Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDataSource.keySet());
+        Map<String, DataSource> dataSourceMap = sourceDataSource.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().createDataSource()));
+        Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(new ShardingRule(shardingRuleConfig, sourceConfig.getDatabaseType(), dataSourceMap));
         Optional<ShardingRuleConfiguration> targetRule = getTargetRuleConfiguration(scalingConfig);
         filterByShardingDataSourceTables(dataSourceTableNameMap, scalingConfig.getJobConfiguration());
         for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
             DumperConfiguration dumperConfig = createDumperConfiguration(entry.getKey(), sourceDataSource.get(entry.getKey()), entry.getValue());
-            ImporterConfiguration importerConfig = createImporterConfiguration(scalingConfig, targetRule.orElse(sourceRule));
+            ImporterConfiguration importerConfig = createImporterConfiguration(scalingConfig, targetRule.orElse(shardingRuleConfig));
             importerConfig.setRetryTimes(scalingConfig.getJobConfiguration().getRetryTimes());
             result.add(new SyncConfiguration(scalingConfig.getJobConfiguration().getConcurrency(), dumperConfig, importerConfig));
         }
@@ -127,9 +130,7 @@ public final class SyncConfigurationUtil {
         return result;
     }
     
-    private static Map<String, Map<String, String>> toDataSourceTableNameMap(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
-        // TODO FIXME with correct database type and data source map
-        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, null, Collections.emptyMap());
+    private static Map<String, Map<String, String>> toDataSourceTableNameMap(final ShardingRule shardingRule) {
         Map<String, Map<String, String>> result = new HashMap<>();
         for (TableRule each : shardingRule.getTableRules()) {
             mergeDataSourceTableNameMap(result, toDataSourceTableNameMap(each));

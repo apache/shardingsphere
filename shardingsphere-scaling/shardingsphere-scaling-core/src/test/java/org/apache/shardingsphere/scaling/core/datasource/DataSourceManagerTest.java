@@ -22,7 +22,6 @@ import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -35,8 +34,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-@Ignore
-// TODO FIXME with correct database type and data source map
 public final class DataSourceManagerTest {
     
     private List<SyncConfiguration> syncConfigurations;

@@ -21,4 +21,11 @@ package org.apache.shardingsphere.scaling.core.job.position;
  * Incremental position interface.
  */
 public interface IncrementalPosition extends Position {
+    
+    /**
+     * Get incremental sync task delay millisecond.
+     *
+     * @return incremental sync delay
+     */
+    long getDelay();
 }

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.scaling.core.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -66,7 +65,7 @@ public final class MySQLDataConsistencyChecker extends AbstractDataConsistencyCh
         try (DataSourceWrapper sourceDataSource = getSourceDataSource();
              DataSourceWrapper targetDataSource = getTargetDataSource()) {
             return getColumns(actualTableName).stream().allMatch(each -> sumCrc32(sourceDataSource, logicTableName, each) == sumCrc32(targetDataSource, logicTableName, each));
-        } catch (final IOException ex) {
+        } catch (final SQLException ex) {
             throw new DataCheckFailException(String.format("table %s data check failed.", logicTableName), ex);
         }
     }
@@ -79,7 +78,7 @@ public final class MySQLDataConsistencyChecker extends AbstractDataConsistencyCh
             while (resultSet.next()) {
                 result.add(resultSet.getString(4));
             }
-        } catch (final SQLException | IOException ex) {
+        } catch (final SQLException ex) {
             throw new DataCheckFailException("get columns failed.", ex);
         }
         return result;

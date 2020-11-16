@@ -33,10 +33,7 @@ public final class JobConfiguration {
     
     private int retryTimes = 3;
     
-    private String jobName;
-    
     private String[] shardingTables;
     
     private int shardingItem;
-    
 }
