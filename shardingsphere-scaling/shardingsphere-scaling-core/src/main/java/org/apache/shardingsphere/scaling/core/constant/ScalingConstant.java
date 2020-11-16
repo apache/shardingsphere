@@ -40,4 +40,39 @@ public final class ScalingConstant {
      * Delete flag.
      */
     public static final String DELETE = "DELETE";
+    
+    /**
+     * Scaling listener.
+     */
+    public static final String SCALING_LISTENER = "__scaling_listener";
+    
+    /**
+     * Status.
+     */
+    public static final String STATUS = "status";
+    
+    /**
+     * Config.
+     */
+    public static final String CONFIG = "config";
+    
+    /**
+     * Position.
+     */
+    public static final String POSITION = "position";
+    
+    /**
+     * Incremental.
+     */
+    public static final String INCREMENTAL = "incremental";
+    
+    /**
+     * Inventory.
+     */
+    public static final String INVENTORY = "inventory";
+    
+    /**
+     * Delay.
+     */
+    public static final String DELAY = "delay";
 }

@@ -23,6 +23,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 
 /**
  * Resume from break-point manager factory.
@@ -35,7 +36,7 @@ public final class ResumeBreakPointManagerFactory {
     static {
         ShardingSphereServiceLoader.register(RegistryRepository.class);
         ShardingSphereServiceLoader.register(ConfigurationRepository.class);
-        if (RepositoryResumeBreakPointManager.isAvailable()) {
+        if (RegistryRepositoryHolder.isAvailable()) {
             clazz = RepositoryResumeBreakPointManager.class;
         }
     }

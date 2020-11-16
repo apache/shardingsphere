@@ -30,7 +30,5 @@ public final class InventoryDataSyncTaskProgress implements SyncProgress {
     
     private final String id;
     
-    private final long estimatedRows;
-    
-    private final long syncedRows;
+    private final boolean finished;
 }

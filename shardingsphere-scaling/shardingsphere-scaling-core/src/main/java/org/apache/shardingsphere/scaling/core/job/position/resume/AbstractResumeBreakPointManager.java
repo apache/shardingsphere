@@ -21,8 +21,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -30,17 +28,13 @@ import org.apache.shardingsphere.scaling.core.job.position.FinishedInventoryPosi
 import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionManager;
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderInventoryPosition;
+import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionGroup;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManagerFactory;
-import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 
 import java.io.Closeable;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -52,10 +46,6 @@ import java.util.stream.Collectors;
 public abstract class AbstractResumeBreakPointManager implements ResumeBreakPointManager, Closeable {
     
     private static final Gson GSON = new Gson();
-    
-    private static final String UNFINISHED = "unfinished";
-    
-    private static final String FINISHED = "finished";
     
     private final Map<String, PositionManager<InventoryPosition>> inventoryPositionManagerMap = Maps.newConcurrentMap();
     
@@ -72,12 +62,12 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
             return;
         }
         log.info("resume inventory position from {} = {}", taskPath, data);
-        InventoryPositions inventoryPositions = InventoryPositions.fromJson(data);
-        Map<String, InventoryPosition> unfinished = inventoryPositions.getUnfinished();
+        InventoryPositionGroup inventoryPositionGroup = InventoryPositionGroup.fromJson(data);
+        Map<String, InventoryPosition> unfinished = inventoryPositionGroup.getUnfinished();
         for (Entry<String, InventoryPosition> entry : unfinished.entrySet()) {
             inventoryPositionManagerMap.put(entry.getKey(), new InventoryPositionManager<>(entry.getValue()));
         }
-        for (String each : inventoryPositions.getFinished()) {
+        for (String each : inventoryPositionGroup.getFinished()) {
             inventoryPositionManagerMap.put(each, new InventoryPositionManager<>(new FinishedInventoryPosition()));
         }
     }
@@ -94,63 +84,24 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
     }
     
     protected final String getInventoryPositionData() {
-        JsonObject result = new JsonObject();
-        JsonObject unfinished = new JsonObject();
-        Set<String> finished = Sets.newHashSet();
+        InventoryPositionGroup result = new InventoryPositionGroup();
+        result.setUnfinished(Maps.newHashMap());
+        result.setFinished(Sets.newHashSet());
         for (Entry<String, PositionManager<InventoryPosition>> entry : inventoryPositionManagerMap.entrySet()) {
-            if (entry.getValue().getPosition() instanceof FinishedInventoryPosition) {
-                finished.add(entry.getKey());
+            if (entry.getValue().getPosition().isFinished()) {
+                result.getFinished().add(entry.getKey());
                 continue;
             }
-            unfinished.add(entry.getKey(), entry.getValue().getPosition().toJson());
+            result.getUnfinished().put(entry.getKey(), entry.getValue().getPosition());
         }
-        result.add(UNFINISHED, unfinished);
-        result.add(FINISHED, GSON.toJsonTree(finished));
-        return result.toString();
+        return result.toJson();
     }
     
     protected final String getIncrementalPositionData() {
-        JsonObject result = new JsonObject();
-        for (Entry<String, PositionManager<IncrementalPosition>> entry : incrementalPositionManagerMap.entrySet()) {
-            result.add(entry.getKey(), entry.getValue().getPosition().toJson());
-        }
-        return result.toString();
+        return GSON.toJson(incrementalPositionManagerMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getPosition().toJson())));
     }
     
     @Override
     public void close() {
-    }
-    
-    @Getter
-    @Setter
-    private static final class InventoryPositions {
-        
-        private Map<String, InventoryPosition> unfinished;
-        
-        private Set<String> finished;
-        
-        /**
-         * Transform inventory position from json to object.
-         *
-         * @param data json data
-         * @return inventory position
-         */
-        public static InventoryPositions fromJson(final String data) {
-            InventoryPositions result = new InventoryPositions();
-            JsonObject json = JsonParser.parseString(data).getAsJsonObject();
-            Map<String, Object> unfinished = GSON.<Map<String, Object>>fromJson(json.getAsJsonObject(UNFINISHED), Map.class);
-            result.setUnfinished(unfinished.entrySet().stream().collect(Collectors.toMap(Entry::getKey, 
-                entry -> fromJson(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
-            result.setFinished(GSON.<Set<String>>fromJson(json.getAsJsonArray(FINISHED), Set.class));
-            return result;
-        }
-        
-        private static InventoryPosition fromJson(final Object json) {
-            List<Double> values = GSON.<List<Double>>fromJson(json.toString(), List.class);
-            if (2 == values.size()) {
-                return new PrimaryKeyPosition(values.get(0).longValue(), values.get(1).longValue());
-            }
-            return new PlaceholderInventoryPosition();
-        }
     }
 }

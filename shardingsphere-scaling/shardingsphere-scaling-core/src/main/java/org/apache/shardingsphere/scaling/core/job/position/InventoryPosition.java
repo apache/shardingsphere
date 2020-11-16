@@ -21,4 +21,11 @@ package org.apache.shardingsphere.scaling.core.job.position;
  * Inventory position interface.
  */
 public interface InventoryPosition extends Position {
+    
+    /**
+     * If inventory sync task is finished.
+     *
+     * @return finish or not
+     */
+    boolean isFinished();
 }

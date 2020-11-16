@@ -79,7 +79,7 @@ public final class MySQLPositionManagerTest {
     @Test
     public void assertUpdateCurrentPosition() {
         MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(dataSource);
-        BinlogPosition expected = new BinlogPosition(LOG_FILE_NAME, LOG_POSITION, SERVER_ID);
+        BinlogPosition expected = new BinlogPosition(LOG_FILE_NAME, LOG_POSITION, SERVER_ID, 0);
         mysqlPositionManager.setPosition(expected);
         assertThat(mysqlPositionManager.getPosition(), is(expected));
     }

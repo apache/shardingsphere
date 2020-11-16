@@ -34,4 +34,9 @@ public final class PlaceholderIncrementalPosition implements IncrementalPosition
     public int compareTo(final Position o) {
         return 0;
     }
+    
+    @Override
+    public long getDelay() {
+        return 0;
+    }
 }
