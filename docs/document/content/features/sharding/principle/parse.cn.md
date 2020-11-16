@@ -46,6 +46,7 @@ ShardingSphere 的 SQL 解析器经历了 3 代产品的更新迭代。
 ### 功能点
 
 * 提供独立的SQL解析功能
+* 可以非常方便的对语法规则进行扩充和修改(使用了`ANTLR`)
 * 支持多种方言的SQL解析
 
 | 数据库    | 支持状态 |
@@ -57,8 +58,6 @@ ShardingSphere 的 SQL 解析器经历了 3 代产品的更新迭代。
 |SQL92     |支持     |
 * 提供SQL格式化功能（开发中）
 * 提供SQL模板话功能（开发中）
-### 优点
-由于使用了 `ANTLR`， 可以非常方便的对语法规则进行扩充和修改
 
 ### API使用
 
@@ -69,7 +68,7 @@ ShardingSphere 的 SQL 解析器经历了 3 代产品的更新迭代。
     <artifactId>shardingsphere-sql-parser-engine</artifactId>
     <version>${project.version}</version>
 </dependency>
-// 根据需要引入指定方言的解析模块（以MySQL为例）
+// 根据需要引入指定方言的解析模块（以MySQL为例）,可以添加所有支持的方言，也可以只添加使用到的
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere-sql-parser-mysql</artifactId>
@@ -82,5 +81,38 @@ ShardingSphere 的 SQL 解析器经历了 3 代产品的更新迭代。
 1. 获取语法树
 
 ```
-ParseTree tree = new SQLParserEngine(databaseType).parse(sql, false)
+/**
+     * databaseType type:String 可能值 MySQL,Oracle，PostgreSQL，SQL92，SQLServer
+     * sql type:String 解析的SQL
+     * useCache type:boolean 是否使用缓存
+     * @return parse tree
+     */
+ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache); 
+```
+
+2. 获取SQLStatement
+
+```
+/**
+     * databaseType type:String 可能值 MySQL,Oracle，PostgreSQL，SQL92，SQLServer
+     * useCache type:boolean 是否使用缓存
+     * @return SQLStatement
+     */
+ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache); 
+SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "STATEMENT");
+SQLStatement sqlFormarted = sqlVisitorEngine.visit(tree);
+
+```
+
+3. SQL 格式化
+
+```
+/**
+     * databaseType type:String 可能值 MySQL,Oracle，PostgreSQL，SQL92，SQLServer
+     * useCache type:boolean 是否使用缓存
+     * @return 格式化后的SQL
+     */
+ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache); 
+SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "FORMAT");
+String sqlFormarted = sqlVisitorEngine.visit(tree);
 ```

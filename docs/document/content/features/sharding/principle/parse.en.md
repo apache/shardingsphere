@@ -38,6 +38,7 @@ The third generation of SQL parsing engine begins from 3.0.x version. ShardingSp
 ### Features
 
 * Independent SQL parsing engine
+* The syntax rules can be easily expanded and modified (using `ANTLR`)
 * Support multiple dialects
 
 | DB    | Status |
@@ -51,9 +52,6 @@ The third generation of SQL parsing engine begins from 3.0.x version. ShardingSp
 * SQL format (developing)
 * SQL parameterize (developing)
 
-### Advantages
-The syntax rules can be easily expanded and modified by using `ANTLR`
-
 ### API Usage
 
 Maven config
@@ -63,7 +61,7 @@ Maven config
     <artifactId>shardingsphere-sql-parser-engine</artifactId>
     <version>${project.version}</version>
 </dependency>
-// According to the needs, introduce the parsing module of the specified dialect (take MySQL as an example)
+// According to the needs, introduce the parsing module of the specified dialect (take MySQL as an example), you can add all the supported dialects, or just what you need
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere-sql-parser-mysql</artifactId>
@@ -76,5 +74,38 @@ demo:
 1. Get AST
 
 ```
-ParseTree tree = new SQLParserEngine(databaseType).parse(sql, false)
+/**
+     * databaseType type:String values: MySQL,Oracle，PostgreSQL，SQL92，SQLServer
+     * sql type:String SQL to be parsed
+     * useCache type:boolean whether use cache
+     * @return parse tree
+     */
+ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache)
+```
+
+2. GET SQLStatement
+
+```
+/**
+     * databaseType type:String values: MySQL,Oracle，PostgreSQL，SQL92，SQLServer
+     * useCache type:boolean whether use cache
+     * @return SQLStatement
+     */
+ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache); 
+SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "STATEMENT");
+SQLStatement sqlFormarted = sqlVisitorEngine.visit(tree);
+
+```
+
+3. SQL 格式化
+
+```
+/**
+     * databaseType type:String values: MySQL,Oracle，PostgreSQL，SQL92，SQLServer
+     * useCache type:boolean whether use cache
+     * @return Formarted SQL
+     */
+ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache); 
+SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "FORMAT");
+String sqlFormarted = sqlVisitorEngine.visit(tree);
 ```
