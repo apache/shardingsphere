@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
@@ -68,9 +67,6 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
             throw new InvalidShardingCTLFormatException(sql);
         }
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
-        if (null == metaData) {
-            throw new NoDatabaseSelectedException();
-        }
         if (!metaData.isComplete()) {
             throw new RuleNotExistsException();
         }

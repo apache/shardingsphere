@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
+import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 
@@ -30,7 +31,6 @@ import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -84,13 +84,16 @@ public final class ProxyContext {
     }
     
     /**
-     * Get meta data.
+     * Get ShardingSphere meta data.
      *
      * @param schemaName schema name
-     * @return meta data
+     * @return ShardingSphere meta data
      */
     public ShardingSphereMetaData getMetaData(final String schemaName) {
-        return Strings.isNullOrEmpty(schemaName) ? null : metaDataContexts.getMetaDataMap().get(schemaName);
+        if (Strings.isNullOrEmpty(schemaName) || !metaDataContexts.getMetaDataMap().containsKey(schemaName)) {
+            throw new NoDatabaseSelectedException();
+        }
+        return metaDataContexts.getMetaDataMap().get(schemaName);
     }
     
     /**
@@ -112,7 +115,7 @@ public final class ProxyContext {
         if (schemaNames.isEmpty()) {
             return Optional.empty();
         }
-        Map<String, DataSource> dataSources = Objects.requireNonNull(getMetaData(schemaNames.get(0))).getResource().getDataSources();
+        Map<String, DataSource> dataSources = getMetaData(schemaNames.get(0)).getResource().getDataSources();
         return dataSources.values().stream().findFirst();
     }
 }

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.jdbc.test.MockedDataSource;
+import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Test;
 
@@ -86,6 +87,26 @@ public final class ProxyContextTest {
         assertFalse(ProxyContext.getInstance().schemaExists("schema_2"));
     }
     
+    @Test(expected = NoDatabaseSelectedException.class)
+    public void assertGetSchemaWithNull() {
+        assertNull(ProxyContext.getInstance().getMetaData(null));
+    }
+    
+    @Test(expected = NoDatabaseSelectedException.class)
+    public void assertGetSchemaWithEmptyString() {
+        assertNull(ProxyContext.getInstance().getMetaData(""));
+    }
+    
+    @Test(expected = NoDatabaseSelectedException.class)
+    public void assertGetSchemaWhenNotExisted() throws NoSuchFieldException, IllegalAccessException {
+        Map<String, ShardingSphereMetaData> metaDataMap = mockMetaDataMap(Collections.emptyMap());
+        Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
+        metaDataContexts.setAccessible(true);
+        metaDataContexts.set(ProxyContext.getInstance(),
+                new StandardMetaDataContexts(metaDataMap, mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        ProxyContext.getInstance().getMetaData("schema1");
+    }
+    
     @Test
     public void assertGetSchema() throws NoSuchFieldException, IllegalAccessException {
         Map<String, ShardingSphereMetaData> metaDataMap = mockMetaDataMap(Collections.emptyMap());
@@ -93,9 +114,6 @@ public final class ProxyContextTest {
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(),
                 new StandardMetaDataContexts(metaDataMap, mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
-        assertNull(ProxyContext.getInstance().getMetaData(null));
-        assertNull(ProxyContext.getInstance().getMetaData(""));
-        assertNull(ProxyContext.getInstance().getMetaData("schema1"));
         assertThat(metaDataMap.get("schema"), is(ProxyContext.getInstance().getMetaData("schema")));
     }
     
