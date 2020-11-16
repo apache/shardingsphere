@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
+import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,11 +41,6 @@ public final class RepositoryResumeBreakPointManagerTest {
         repositoryResumeBreakPointManager = new RepositoryResumeBreakPointManager("H2", "/base");
     }
     
-    @After
-    public void tearDown() {
-        repositoryResumeBreakPointManager.close();
-    }
-    
     @Test
     public void assertPersistIncrementalPosition() {
         repositoryResumeBreakPointManager.persistIncrementalPosition();
@@ -56,7 +53,14 @@ public final class RepositoryResumeBreakPointManagerTest {
         assertThat(RegistryRepositoryHolder.getInstance().get("/base/inventory"), is("{\"unfinished\":{},\"finished\":[]}"));
     }
     
+    @After
+    public void tearDown() {
+        repositoryResumeBreakPointManager.close();
+        resetRegistryRepositoryAvailable();
+    }
+    
     private ServerConfiguration mockServerConfiguration() {
+        resetRegistryRepositoryAvailable();
         YamlGovernanceConfiguration distributedScalingService = new YamlGovernanceConfiguration();
         distributedScalingService.setName("test");
         YamlGovernanceCenterConfiguration registryCenter = new YamlGovernanceCenterConfiguration();
@@ -66,5 +70,10 @@ public final class RepositoryResumeBreakPointManagerTest {
         ServerConfiguration result = new ServerConfiguration();
         result.setDistributedScalingService(distributedScalingService);
         return result;
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void resetRegistryRepositoryAvailable() {
+        ReflectionUtil.setFieldValue(RegistryRepositoryHolder.class, null, "available", null);
     }
 }
