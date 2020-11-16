@@ -153,6 +153,6 @@ The vote result is available here:
 (vote link here)
 
 Thank you，
-（PMC）
+（initiator)
 ```
 
