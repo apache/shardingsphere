@@ -25,6 +25,6 @@
     <sql-case id="select_into_out_file_with_fields" value="SELECT * FROM t_order LIMIT ? INTO OUTFILE '/tmp/tmp.txt'  FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '&quot;'" db-types="MySQL"/>
     <sql-case id="select_into_out_file_with_fields_and_escaped" value="SELECT user_id, status FROM t_order LIMIT ? INTO OUTFILE '/tmp/tmp.txt'  FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '&quot;', ESCAPED BY '\'" db-types="MySQL"/>
     <sql-case id="select_into_out_file_with_lines" value="SELECT * FROM t_order LIMIT ? INTO OUTFILE '/tmp/tmp.txt'  LINES TERMINATED BY '\n'" db-types="MySQL"/>
-    <sql-case id="select_into_with_lock_after_into" value="SELECT status FROM t_order WHERE order_id = ? INTO @var1 FOR UPDATE " db-types="MySQL" lock-clause="true"/>
-    <sql-case id="select_into_with_lock_before_into" value="SELECT status FROM t_order WHERE order_id = ? FOR UPDATE INTO @var1" db-types="MySQL" lock-clause="true"/>
+    <sql-case id="select_into_with_lock_after_into" value="SELECT status FROM t_order WHERE order_id = ? INTO @var1 FOR UPDATE " db-types="MySQL"/>
+    <sql-case id="select_into_with_lock_before_into" value="SELECT status FROM t_order WHERE order_id = ? FOR UPDATE INTO @var1" db-types="MySQL"/>
 </sql-cases>

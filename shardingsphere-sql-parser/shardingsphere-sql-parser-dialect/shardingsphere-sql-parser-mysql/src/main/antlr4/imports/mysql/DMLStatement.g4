@@ -359,8 +359,7 @@ selectIntoExpression
     ;
 
 lockClause
-    : FOR lockStrength lockedRowAction?
-    | FOR lockStrength
+    : FOR lockStrength tableLockingList? lockedRowAction?
     | LOCK IN SHARE MODE
     ;
 

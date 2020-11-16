@@ -161,6 +161,7 @@
                 </predicate>
             </and-predicate>
         </where>
+        <lock start-index="57" stop-index="66"/>
     </select>
 
     <select sql-case-id="select_into_with_lock_before_into" parameters="1">
@@ -182,5 +183,6 @@
                 </predicate>
             </and-predicate>
         </where>
+        <lock start-index="46" stop-index="55"/>
     </select>
 </sql-parser-test-cases>

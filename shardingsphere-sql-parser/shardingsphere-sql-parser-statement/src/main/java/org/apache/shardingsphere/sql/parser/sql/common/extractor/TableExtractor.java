@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
@@ -47,6 +48,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -80,6 +82,9 @@ public final class TableExtractor {
         }
         if (selectStatement.getOrderBy().isPresent()) {
             extractTablesFromOrderByItems(selectStatement.getOrderBy().get().getOrderByItems());
+        }
+        if (SelectStatementHandler.getLockSegment(selectStatement).isPresent()) {
+            extractTablesFromLock(SelectStatementHandler.getLockSegment(selectStatement).get());
         }
     }
     
@@ -172,6 +177,12 @@ public final class TableExtractor {
                     rewriteTables.add(new SimpleTableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
                 }
             }
+        }
+    }
+
+    private void extractTablesFromLock(final LockSegment lockSegment) {
+        if (null != lockSegment.getForTables()) {
+            rewriteTables.addAll(lockSegment.getForTables());
         }
     }
     

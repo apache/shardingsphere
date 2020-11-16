@@ -545,7 +545,17 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
 
     @Override
     public ASTNode visitLockClauseList(final LockClauseListContext ctx) {
-        return new LockSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        LockSegment lockSegment = new LockSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        List<SimpleTableSegment> forTables = new LinkedList<>();
+        for (MySQLStatementParser.LockClauseContext each : ctx.lockClause()) {
+            if (null != each.tableLockingList()) {
+                forTables.addAll(generateTablesFromTableAliasRefList(each.tableLockingList().tableAliasRefList()));
+            }
+        }
+        if (!forTables.isEmpty()) {
+            lockSegment.setForTables(forTables);
+        }
+        return lockSegment;
     }
 
     @Override
