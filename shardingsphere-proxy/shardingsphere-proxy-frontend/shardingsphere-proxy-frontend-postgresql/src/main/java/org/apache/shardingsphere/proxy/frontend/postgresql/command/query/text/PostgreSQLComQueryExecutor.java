@@ -39,7 +39,6 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFa
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -75,8 +74,8 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
         return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
     }
     
-    private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponse queryResponse) {
-        List<PostgreSQLColumnDescription> columnDescriptions = getPostgreSQLColumnDescriptions(queryResponse);
+    private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponse queryResponse) throws SQLException {
+        Collection<PostgreSQLColumnDescription> columnDescriptions = createColumnDescriptions(queryResponse);
         if (columnDescriptions.isEmpty()) {
             responseType = ResponseType.QUERY;
         }
@@ -86,13 +85,13 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
         return Optional.of(new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions));
     }
     
-    private List<PostgreSQLColumnDescription> getPostgreSQLColumnDescriptions(final QueryResponse queryResponse) {
-        List<PostgreSQLColumnDescription> result = new LinkedList<>();
+    private Collection<PostgreSQLColumnDescription> createColumnDescriptions(final QueryResponse queryResponse) throws SQLException {
+        Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
         List<QueryResult> queryResults = queryResponse.getQueryResults();
-        ResultSetMetaData resultSetMetaData = queryResults.isEmpty() ? null : queryResults.get(0).getResultSetMetaData();
         int columnIndex = 0;
         for (QueryHeader each : queryResponse.getQueryHeaders()) {
-            result.add(new PostgreSQLColumnDescription(each.getColumnName(), ++columnIndex, each.getColumnType(), each.getColumnLength(), resultSetMetaData));
+            String columnTypeName = queryResults.isEmpty() ? null : queryResults.get(0).getColumnTypeName(columnIndex + 1);
+            result.add(new PostgreSQLColumnDescription(each.getColumnName(), ++columnIndex, each.getColumnType(), each.getColumnLength(), columnTypeName));
         }
         return result;
     }

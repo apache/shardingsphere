@@ -51,15 +51,15 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
     
     @Override
     public BackendResponse execute() throws SQLException {
+        QueryResponse result = createQueryResponse(backendConnection.getSchemaName());
         if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
-            return getDefaultQueryResponse(backendConnection.getSchemaName());
+            return result;
         }
-        // TODO Get all tables from meta data
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);
         return databaseCommunicationEngine.execute();
     }
     
-    private QueryResponse getDefaultQueryResponse(final String schemaName) {
+    private QueryResponse createQueryResponse(final String schemaName) {
         String column = String.format("Tables_in_%s", schemaName);
         return new QueryResponse(Collections.singletonList(new QueryHeader(schemaName, "", column, column, 64, Types.VARCHAR, 0, false, false, false, false)));
     }
