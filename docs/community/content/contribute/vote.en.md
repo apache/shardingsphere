@@ -146,3 +146,13 @@ Thanks for your contributions.
 
 **12. New Committer updates [Team](/en/team/) list.**
 
+**13. Add one more step in a PMC voting process, send an email to board@apache.org. **
+```
+The Apache ShardingSphere project proposes to invite (nominee) to join the PMC.
+The vote result is available here:
+(vote link here)
+
+Thank you，
+（initiator)
+```
+
