@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.postgresql;
 
+import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
@@ -30,7 +31,7 @@ public final class PostgreSQLSqlBuilderTest {
     
     @Test
     public void assertBuildInsertSQL() {
-        String actual = new PostgreSQLSQLBuilder().buildInsertSQL(mockDataRecord());
+        String actual = new PostgreSQLSQLBuilder(Maps.newHashMap()).buildInsertSQL(mockDataRecord());
         assertThat(actual, is("INSERT INTO \"t_order\"(\"id\",\"name\") VALUES(?,?) ON CONFLICT (id) DO NOTHING"));
     }
     

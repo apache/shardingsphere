@@ -22,10 +22,17 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
 
+import java.util.Map;
+import java.util.Set;
+
 /**
  * PostgreSQL SQL builder.
  */
 public final class PostgreSQLSQLBuilder extends AbstractSQLBuilder {
+    
+    public PostgreSQLSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
+        super(shardingColumnsMap);
+    }
     
     @Override
     public String getLeftIdentifierQuoteString() {

@@ -39,6 +39,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -61,15 +63,16 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     protected AbstractJDBCImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
-        sqlBuilder = createSQLBuilder();
+        sqlBuilder = createSQLBuilder(importerConfig.getShardingColumnsMap());
     }
     
     /**
      * Create SQL builder.
      *
+     * @param shardingColumnsMap sharding columns map
      * @return SQL builder
      */
-    protected abstract AbstractSQLBuilder createSQLBuilder();
+    protected abstract AbstractSQLBuilder createSQLBuilder(Map<String, Set<String>> shardingColumnsMap);
     
     @Override
     public final void start() {
