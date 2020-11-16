@@ -105,11 +105,7 @@ singleTableClause
     ;
 
 multipleTablesClause
-    : multipleTableNames FROM tableReferences | FROM multipleTableNames USING tableReferences
-    ;
-
-multipleTableNames
-    : tableIdentOptWild (COMMA_ tableIdentOptWild)*
+    : tableAliasRefList FROM tableReferences | FROM tableAliasRefList USING tableReferences
     ;
 
 select
@@ -389,5 +385,5 @@ tableIdentOptWild
     ;
 
 tableAliasRefList
-    : tableIdentOptWild+
+    : tableIdentOptWild (COMMA_ tableIdentOptWild)*
     ;
