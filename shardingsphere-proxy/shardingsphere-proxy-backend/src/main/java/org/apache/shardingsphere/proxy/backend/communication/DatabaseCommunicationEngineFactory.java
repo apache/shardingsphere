@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.communication;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
@@ -62,7 +61,7 @@ public final class DatabaseCommunicationEngineFactory {
      * @return text protocol backend handler
      */
     public DatabaseCommunicationEngine newTextProtocolInstance(final SQLStatement sqlStatement, final String sql, final BackendConnection backendConnection) {
-        ShardingSphereMetaData metaData = getMetaData(backendConnection);
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
         LogicSQL logicSQL = createLogicSQL(sqlStatement, sql, Collections.emptyList(), metaData);
         JDBCExecuteEngine jdbcExecuteEngine = new JDBCExecuteEngine(backendConnection, new StatementAccessor());
         return new JDBCDatabaseCommunicationEngine(logicSQL, metaData, jdbcExecuteEngine);
@@ -78,16 +77,10 @@ public final class DatabaseCommunicationEngineFactory {
      * @return binary protocol backend handler
      */
     public DatabaseCommunicationEngine newBinaryProtocolInstance(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
-        ShardingSphereMetaData metaData = getMetaData(backendConnection);
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
         LogicSQL logicSQL = createLogicSQL(sqlStatement, sql, new ArrayList<>(parameters), metaData);
         JDBCExecuteEngine jdbcExecuteEngine = new JDBCExecuteEngine(backendConnection, new PreparedStatementAccessor());
         return new JDBCDatabaseCommunicationEngine(logicSQL, metaData, jdbcExecuteEngine);
-    }
-    
-    private ShardingSphereMetaData getMetaData(final BackendConnection backendConnection) {
-        ShardingSphereMetaData result = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
-        Preconditions.checkNotNull(result);
-        return result;
     }
     
     private LogicSQL createLogicSQL(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final ShardingSphereMetaData metaData) {
