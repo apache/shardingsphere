@@ -63,7 +63,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAssi
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SingleTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NumberLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableAliasRefListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableFactorContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableReferencesContext;
@@ -90,6 +89,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprCon
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BooleanPrimaryContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PredicateContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectWithIntoContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BitExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
@@ -560,6 +561,18 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         if (null != ctx.limitClause()) {
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
+        }
+        return result;
+    }
+
+    @Override
+    public ASTNode visitSelectWithInto(final SelectWithIntoContext ctx) {
+        if (null != ctx.selectWithInto()) {
+            return visit(ctx.selectWithInto());
+        }
+        MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.queryExpression());
+        if (null != ctx.lockClauseList()) {
+            result.setLock((LockSegment) visit(ctx.lockClauseList()));
         }
         return result;
     }
@@ -1049,11 +1062,11 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         DeleteMultiTableSegment result = new DeleteMultiTableSegment();
         TableSegment relateTableSource = (TableSegment) visit(ctx.tableReferences());
         result.setRelationTable(relateTableSource);
-        result.setActualDeleteTables(generateTablesFromTableMultipleTableNames(ctx.tableAliasRefList()));
+        result.setActualDeleteTables(generateTablesFromTableMultipleTableNames(ctx.multipleTableNames()));
         return result;
     }
     
-    private List<SimpleTableSegment> generateTablesFromTableMultipleTableNames(final TableAliasRefListContext ctx) {
+    private List<SimpleTableSegment> generateTablesFromTableMultipleTableNames(final MultipleTableNamesContext ctx) {
         List<SimpleTableSegment> result = new LinkedList<>();
         for (MySQLStatementParser.TableIdentOptWildContext each : ctx.tableIdentOptWild()) {
             result.add((SimpleTableSegment) visit(each.tableName()));
@@ -1070,6 +1083,8 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             if (null != ctx.lockClauseList()) {
                 result.setLock((LockSegment) visit(ctx.lockClauseList()));
             }
+        } else if (null != ctx.selectWithInto()) {
+            result = (MySQLSelectStatement) visit(ctx.selectWithInto());
         } else {
             result = (MySQLSelectStatement) visit(ctx.getChild(0));
         }
