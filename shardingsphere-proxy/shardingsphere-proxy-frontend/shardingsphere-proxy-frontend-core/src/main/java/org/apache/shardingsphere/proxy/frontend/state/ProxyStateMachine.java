@@ -22,6 +22,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
+import org.apache.shardingsphere.proxy.frontend.state.impl.CircuitBreakProxyState;
+import org.apache.shardingsphere.proxy.frontend.state.impl.LockProxyState;
 import org.apache.shardingsphere.proxy.frontend.state.impl.OKProxyState;
 
 import java.util.Map;
@@ -40,6 +42,8 @@ public final class ProxyStateMachine {
     
     static {
         PROXY_STATE_MAP.put(ProxyStateType.OK, new OKProxyState());
+        PROXY_STATE_MAP.put(ProxyStateType.LOCK, new LockProxyState());
+        PROXY_STATE_MAP.put(ProxyStateType.CIRCUIT_BREAK, new CircuitBreakProxyState());
         CURRENT_STATE.set(PROXY_STATE_MAP.get(ProxyStateType.OK));
     }
     
