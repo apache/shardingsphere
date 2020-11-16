@@ -23,7 +23,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Row description packet for PostgreSQL.
@@ -37,7 +37,7 @@ public final class PostgreSQLRowDescriptionPacket implements PostgreSQLPacket {
     @Getter
     private final int fieldCount;
     
-    private final List<PostgreSQLColumnDescription> columnDescriptions;
+    private final Collection<PostgreSQLColumnDescription> columnDescriptions;
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
