@@ -18,7 +18,7 @@
 
 <sql-cases>
     <sql-case id="select_lock_with_lock_in" value="SELECT * FROM t_order WHERE order_id = ? LOCK IN SHARE MODE" db-types="MySQL"/>
-    <sql-case id="select_lock_with_for_update" value="SELECT * FROM t_order WHERE order_id = ? FOR UPDATE" db-types="MySQL"/>
+    <sql-case id="select_lock_with_for_update" value="SELECT * FROM t_order WHERE order_id = ? FOR UPDATE" db-types="MySQL,Oracle,PostgreSQL"/>
     <sql-case id="select_lock_with_for_share" value="SELECT * FROM t_order WHERE order_id = ? FOR SHARE" db-types="MySQL"/>
     <sql-case id="select_lock_with_nowait" value="SELECT * FROM t_order WHERE order_id = ? FOR UPDATE NOWAIT" db-types="MySQL"/>
     <sql-case id="select_lock_with_skip_locked" value="SELECT * FROM t_order WHERE order_id = ? FOR UPDATE SKIP LOCKED" db-types="MySQL"/>
