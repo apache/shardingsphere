@@ -23,7 +23,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
@@ -246,10 +245,10 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     @Override
     public String visitExpr(final ExprContext ctx) {
         if (null != ctx.logicalOperator()) {
-            MySQLStatementParser.ExprContext left = ctx.expr(0);
+            ExprContext left = ctx.expr(0);
             visit(left);
             formartPrintln();
-            MySQLStatementParser.ExprContext right = ctx.expr(1);
+            ExprContext right = ctx.expr(1);
             formartPrint(ctx.logicalOperator().getText());
             visit(right);
         } else if (null != ctx.notOperator()) {
