@@ -181,9 +181,7 @@ public final class TableExtractor {
     }
 
     private void extractTablesFromLock(final LockSegment lockSegment) {
-        if (null != lockSegment.getForTables()) {
-            rewriteTables.addAll(lockSegment.getForTables());
-        }
+        rewriteTables.addAll(lockSegment.getTables());
     }
     
     /**

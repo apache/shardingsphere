@@ -45,9 +45,9 @@ public final class LockClauseAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final LockSegment actual, final ExpectedLockClause expected) {
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
-        List<SimpleTableSegment> actualTables = actual.getForTables();
+        List<SimpleTableSegment> actualTables = actual.getTables();
         List<ExpectedSimpleTable> expectedTables = expected.getTables();
-        if (null == actualTables) {
+        if (actualTables.isEmpty()) {
             assertTrue(assertContext.getText("lock tables should not exist."), expectedTables.isEmpty());
             return;
         }

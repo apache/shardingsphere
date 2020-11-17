@@ -26,8 +26,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -55,10 +53,8 @@ public class TableExtractorTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         LockSegment lockSegment = new LockSegment(108, 154);
         selectStatement.setLock(lockSegment);
-        List<SimpleTableSegment> tables = new LinkedList<>();
-        lockSegment.setForTables(tables);
-        tables.add(new SimpleTableSegment(122, 128, new IdentifierValue("t_order")));
-        tables.add(new SimpleTableSegment(143, 154, new IdentifierValue("t_order_item")));
+        lockSegment.getTables().add(new SimpleTableSegment(122, 128, new IdentifierValue("t_order")));
+        lockSegment.getTables().add(new SimpleTableSegment(143, 154, new IdentifierValue("t_order_item")));
         tableExtractor.extractTablesFromSelect(selectStatement);
         assertNotNull(tableExtractor.getRewriteTables());
         assertEquals(2, tableExtractor.getRewriteTables().size());
@@ -67,15 +63,15 @@ public class TableExtractorTest {
         assertTableSegment(tableSegmentIterator.next(), 143, 154, "t_order_item");
     }
 
-    private void assertTableSegment(final SimpleTableSegment tableSegment,
-                                    final int startIndex, final int stopIndex, final String tableName) {
-        assertEquals(startIndex, tableSegment.getStartIndex());
-        assertEquals(stopIndex, tableSegment.getStopIndex());
-        Optional<String> actualTableName = Optional.ofNullable(tableSegment.getTableName())
+    private void assertTableSegment(final SimpleTableSegment actual,
+                                    final int expectedStartIndex, final int expectedStopIndex, final String expectedTableName) {
+        assertEquals(expectedStartIndex, actual.getStartIndex());
+        assertEquals(expectedStopIndex, actual.getStopIndex());
+        Optional<String> actualTableName = Optional.ofNullable(actual.getTableName())
                                                     .map(TableNameSegment::getIdentifier)
                                                     .map(IdentifierValue::getValue);
         assertTrue(actualTableName.isPresent());
-        assertEquals(tableName, actualTableName.get());
+        assertEquals(expectedTableName, actualTableName.get());
     }
 
 }
