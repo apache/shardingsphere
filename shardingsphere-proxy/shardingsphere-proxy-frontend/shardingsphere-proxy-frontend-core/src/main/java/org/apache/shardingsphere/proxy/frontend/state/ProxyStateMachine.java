@@ -62,9 +62,9 @@ public final class ProxyStateMachine {
     }
     
     /**
-     * Switch proxy state.
+     * Switch runtime state.
      * 
-     * @param type proxy state type
+     * @param type runtime state type
      */
     public static void switchState(final RuntimeStateType type) {
         CURRENT_STATE.set(PROXY_STATE_MAP.get(type));
