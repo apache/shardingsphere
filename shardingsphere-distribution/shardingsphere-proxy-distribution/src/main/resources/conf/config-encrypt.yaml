@@ -24,7 +24,8 @@
 #
 #schemaName: encrypt_db
 #
-#dataSourceCommon:
+#dataSource:
+#  url: jdbc:postgresql://127.0.0.1:5432/demo_ds?serverTimezone=UTC&useSSL=false
 #  username: postgresql
 #  password: postgresql
 #  connectionTimeoutMilliseconds: 30000
@@ -33,9 +34,6 @@
 #  maxPoolSize: 50
 #  minPoolSize: 1
 #  maintenanceIntervalMilliseconds: 30000
-#
-#dataSource:
-#  url: jdbc:postgresql://127.0.0.1:5432/demo_ds?serverTimezone=UTC&useSSL=false
 #
 #rules:
 #- !ENCRYPT
@@ -65,7 +63,8 @@
 #
 #schemaName: encrypt_db
 #
-#dataSourceCommon:
+#dataSource:
+#  url: jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false
 #  username: root
 #  password:
 #  connectionTimeoutMilliseconds: 30000
@@ -74,9 +73,6 @@
 #  maxPoolSize: 50
 #  minPoolSize: 1
 #  maintenanceIntervalMilliseconds: 30000
-#
-#dataSource:
-#  url: jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false
 #
 #rules:
 #- !ENCRYPT
