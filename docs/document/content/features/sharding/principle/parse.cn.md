@@ -100,6 +100,6 @@ ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache);
  */
 ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache); 
 SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "STATEMENT");
-SQLStatement sqlFormarted = sqlVisitorEngine.visit(tree);
+SQLStatement sqlStatement = sqlVisitorEngine.visit(tree);
 
 ```
