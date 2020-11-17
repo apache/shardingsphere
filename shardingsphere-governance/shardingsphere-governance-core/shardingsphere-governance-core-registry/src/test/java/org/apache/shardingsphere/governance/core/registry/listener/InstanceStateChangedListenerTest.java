@@ -49,14 +49,14 @@ public final class InstanceStateChangedListenerTest {
     
     @Test
     public void assertCreateGovernanceEventWhenEnabled() {
-        Optional<GovernanceEvent> actual = instanceStateChangedListener.createGovernanceEvent(new DataChangedEvent("/test_ds", "", Type.UPDATED));
+        Optional<Object> actual = instanceStateChangedListener.createEvent(new DataChangedEvent("/test_ds", "", Type.UPDATED));
         assertTrue(actual.isPresent());
         assertFalse(((CircuitStateChangedEvent) actual.get()).isCircuitBreak());
     }
     
     @Test
     public void assertCreateGovernanceEventWhenDisabled() {
-        Optional<GovernanceEvent> actual = instanceStateChangedListener.createGovernanceEvent(new DataChangedEvent("/test_ds", RegistryCenterNodeStatus.DISABLED.name(), Type.UPDATED));
+        Optional<Object> actual = instanceStateChangedListener.createEvent(new DataChangedEvent("/test_ds", RegistryCenterNodeStatus.DISABLED.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
         assertTrue(((CircuitStateChangedEvent) actual.get()).isCircuitBreak());
     }

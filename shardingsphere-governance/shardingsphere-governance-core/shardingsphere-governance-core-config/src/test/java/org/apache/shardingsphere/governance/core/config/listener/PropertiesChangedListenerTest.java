@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.config.listener;
 
-import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.model.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
@@ -52,7 +51,7 @@ public final class PropertiesChangedListenerTest {
     
     @Test
     public void assertCreateGovernanceEvent() {
-        Optional<GovernanceEvent> actual = propertiesChangedListener.createGovernanceEvent(new DataChangedEvent("test", PROPERTIES_YAML, Type.UPDATED));
+        Optional<Object> actual = propertiesChangedListener.createEvent(new DataChangedEvent("test", PROPERTIES_YAML, Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((PropertiesChangedEvent) actual.get()).getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(true));
         assertThat(((PropertiesChangedEvent) actual.get()).getProps().get(ConfigurationPropertyKey.ACCEPTOR_SIZE.getKey()), is(16));

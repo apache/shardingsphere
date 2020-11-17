@@ -49,7 +49,7 @@ public final class PostGovernanceRepositoryEventListenerTest {
         PostGovernanceRepositoryEventListener postEventListener = new PostGovernanceRepositoryEventListener(governanceRepository, Collections.singletonList("test")) {
             
             @Override
-            protected Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+            protected Optional<Object> createEvent(final DataChangedEvent event) {
                 return Optional.of(mock(GovernanceEvent.class));
             }
         };
@@ -67,7 +67,7 @@ public final class PostGovernanceRepositoryEventListenerTest {
         PostGovernanceRepositoryEventListener postEventListener = new PostGovernanceRepositoryEventListener(governanceRepository, Arrays.asList("test", "dev")) {
             
             @Override
-            protected Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+            protected Optional<Object> createEvent(final DataChangedEvent event) {
                 return Optional.of(mock(GovernanceEvent.class));
             }
         };

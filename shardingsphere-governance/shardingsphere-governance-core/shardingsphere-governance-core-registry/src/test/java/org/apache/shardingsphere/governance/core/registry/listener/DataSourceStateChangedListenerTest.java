@@ -51,7 +51,7 @@ public final class DataSourceStateChangedListenerTest {
     
     @Test
     public void assertCreateGovernanceEvent() {
-        Optional<GovernanceEvent> actual = dataSourceStateChangedListener.createGovernanceEvent(
+        Optional<Object> actual = dataSourceStateChangedListener.createEvent(
                 new DataChangedEvent("/states/datanodes/replica_query_db/replica_ds_0", "disabled", Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((DisabledStateChangedEvent) actual.get()).getGovernanceSchema().getSchemaName(), is(new GovernanceSchema("replica_query_db", "replica_ds_0").getSchemaName()));

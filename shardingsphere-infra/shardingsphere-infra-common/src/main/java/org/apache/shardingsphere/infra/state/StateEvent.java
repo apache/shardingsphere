@@ -17,39 +17,17 @@
 
 package org.apache.shardingsphere.infra.state;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-import java.util.concurrent.atomic.AtomicReference;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * State machine.
+ * State event.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StateMachine {
+@RequiredArgsConstructor
+@Getter
+public final class StateEvent {
     
-    private static final AtomicReference<StateType> CURRENT_STATE = new AtomicReference<>(StateType.OK);
+    private final StateType type;
     
-    /**
-     * Switch state.
-     *
-     * @param event state event
-     */
-    public static void switchState(final StateEvent event) {
-        if (StateType.CIRCUIT_BREAK == event.getType() && event.isOn()) {
-            CURRENT_STATE.set(StateType.CIRCUIT_BREAK);
-            return;
-        }
-        // TODO check lock state
-        CURRENT_STATE.set(StateType.OK);
-    }
-    
-    /**
-     * Get current state.
-     * 
-     * @return current state
-     */
-    public static StateType getCurrentState() {
-        return CURRENT_STATE.get();
-    }
+    private final boolean on;
 }
