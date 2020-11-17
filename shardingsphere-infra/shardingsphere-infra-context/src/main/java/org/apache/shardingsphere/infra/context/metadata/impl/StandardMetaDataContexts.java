@@ -49,16 +49,9 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     
     private final DatabaseType databaseType;
     
-    private final boolean isCircuitBreak;
-    
     public StandardMetaDataContexts() {
         // TODO MySQLDatabaseType is invalid because it can not update again
-        this(new HashMap<>(), null, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType(), false);
-    }
-    
-    public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap, final ExecutorKernel executorKernel,
-                                    final Authentication authentication, final ConfigurationProperties props, final DatabaseType databaseType) {
-        this(metaDataMap, executorKernel, authentication, props, databaseType, false);
+        this(new HashMap<>(), null, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType());
     }
     
     @Override

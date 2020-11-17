@@ -32,7 +32,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -47,7 +46,6 @@ public final class MetaDataContextsBuilderTest {
         assertTrue(actual.getMetaDataMap().isEmpty());
         assertTrue(actual.getAuthentication().getUsers().isEmpty());
         assertTrue(actual.getProps().getProps().isEmpty());
-        assertFalse(actual.isCircuitBreak());
     }
     
     @Test
@@ -63,7 +61,6 @@ public final class MetaDataContextsBuilderTest {
         assertTrue(actual.getAuthentication().getUsers().isEmpty());
         assertThat(actual.getProps().getProps().size(), CoreMatchers.is(1));
         assertThat(actual.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), CoreMatchers.is(1));
-        assertFalse(actual.isCircuitBreak());
     }
     
     @Test
@@ -79,7 +76,6 @@ public final class MetaDataContextsBuilderTest {
         assertTrue(actual.getAuthentication().getUsers().isEmpty());
         assertThat(actual.getProps().getProps().size(), CoreMatchers.is(1));
         assertThat(actual.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), CoreMatchers.is(1));
-        assertFalse(actual.isCircuitBreak());
     }
     
     private void assertRules(final MetaDataContexts actual) {

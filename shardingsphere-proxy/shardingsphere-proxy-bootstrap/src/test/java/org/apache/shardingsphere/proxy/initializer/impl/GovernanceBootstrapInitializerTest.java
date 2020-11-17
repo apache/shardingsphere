@@ -216,7 +216,6 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         assertThat(actualMetaDataContexts.getDefaultMetaData(), is(metaDataContexts.getDefaultMetaData()));
         assertThat(actualMetaDataContexts.getAuthentication(), is(metaDataContexts.getAuthentication()));
         assertThat(actualMetaDataContexts.getProps(), is(metaDataContexts.getProps()));
-        assertThat(actualMetaDataContexts.isCircuitBreak(), is(metaDataContexts.isCircuitBreak()));
     }
     
     @Test

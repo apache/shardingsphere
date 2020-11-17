@@ -27,7 +27,6 @@ import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurat
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 import org.apache.shardingsphere.infra.auth.Authentication;
@@ -144,11 +143,6 @@ public final class GovernanceMetaDataContextsTest {
     }
     
     @Test
-    public void assertIsCircuitBreak() {
-        assertFalse(governanceMetaDataContexts.isCircuitBreak());
-    }
-    
-    @Test
     public void assertSchemaAdd() throws SQLException {
         MetaDataAddedEvent event = new MetaDataAddedEvent("schema_add", new HashMap<>(), new LinkedList<>());
         when(configCenter.loadDataSourceConfigurations("schema_add")).thenReturn(getDataSourceConfigurations());
@@ -234,12 +228,5 @@ public final class GovernanceMetaDataContextsTest {
         result.put("ds_1", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         result.put("ds_2", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         return result;
-    }
-    
-    @Test
-    public void assertCircuitStateChanged() {
-        CircuitStateChangedEvent event = new CircuitStateChangedEvent(true);
-        governanceMetaDataContexts.renew(event);
-        assertTrue(governanceMetaDataContexts.isCircuitBreak());
     }
 }

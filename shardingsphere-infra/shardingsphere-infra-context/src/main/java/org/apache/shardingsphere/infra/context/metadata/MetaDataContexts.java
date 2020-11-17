@@ -72,11 +72,4 @@ public interface MetaDataContexts extends Closeable {
      * @return configuration properties
      */
     ConfigurationProperties getProps();
-    
-    /**
-     * Is circuit break or not.
-     * 
-     * @return is circuit break or not
-     */
-    boolean isCircuitBreak();
 }
