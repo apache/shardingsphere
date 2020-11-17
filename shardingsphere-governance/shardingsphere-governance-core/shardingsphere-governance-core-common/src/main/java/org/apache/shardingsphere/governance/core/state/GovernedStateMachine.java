@@ -15,30 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.state;
+package org.apache.shardingsphere.governance.core.state;
 
-import org.junit.After;
-import org.junit.Test;
+import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
+import org.apache.shardingsphere.infra.state.StateEvent;
+import org.apache.shardingsphere.infra.state.StateMachine;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class StateMachineTest {
+/**
+ * Governed state machine.
+ */
+public final class GovernedStateMachine {
     
-    @Test
-    public void assertSwitchStateWithCircuitBreakOn() {
-        StateMachine.switchState(new StateEvent(StateType.CIRCUIT_BREAK, true));
-        assertThat(StateMachine.getCurrentState(), is(StateType.CIRCUIT_BREAK));
+    /**
+     * Start up governed state machine.
+     */
+    public static void startUp() {
+        GovernanceEventBus.getInstance().register(new GovernedStateMachine());
     }
     
-    @Test
-    public void assertSwitchStateWithCircuitBreakOff() {
-        StateMachine.switchState(new StateEvent(StateType.CIRCUIT_BREAK, false));
-        assertThat(StateMachine.getCurrentState(), is(StateType.OK));
-    }
-    
-    @After
-    public void reset() {
-        StateMachine.switchState(new StateEvent(StateType.OK, true));
+    /**
+     * Switch state.
+     *
+     * @param event state event
+     */
+    @Subscribe
+    public void switchState(final StateEvent event) {
+        StateMachine.switchState(event);
     }
 }

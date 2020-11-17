@@ -17,28 +17,17 @@
 
 package org.apache.shardingsphere.infra.state;
 
-import org.junit.After;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class StateMachineTest {
+/**
+ * State event.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class StateEvent {
     
-    @Test
-    public void assertSwitchStateWithCircuitBreakOn() {
-        StateMachine.switchState(new StateEvent(StateType.CIRCUIT_BREAK, true));
-        assertThat(StateMachine.getCurrentState(), is(StateType.CIRCUIT_BREAK));
-    }
+    private final StateType type;
     
-    @Test
-    public void assertSwitchStateWithCircuitBreakOff() {
-        StateMachine.switchState(new StateEvent(StateType.CIRCUIT_BREAK, false));
-        assertThat(StateMachine.getCurrentState(), is(StateType.OK));
-    }
-    
-    @After
-    public void reset() {
-        StateMachine.switchState(new StateEvent(StateType.OK, true));
-    }
+    private final boolean on;
 }

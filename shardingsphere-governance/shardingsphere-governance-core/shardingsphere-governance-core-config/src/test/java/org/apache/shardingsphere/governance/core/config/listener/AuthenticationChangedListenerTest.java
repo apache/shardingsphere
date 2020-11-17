@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.config.listener;
 
-import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.model.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
@@ -52,7 +51,7 @@ public final class AuthenticationChangedListenerTest {
     
     @Test
     public void assertCreateGovernanceEvent() {
-        Optional<GovernanceEvent> actual = authenticationChangedListener.createGovernanceEvent(new DataChangedEvent("test", AUTHENTICATION_YAML, Type.UPDATED));
+        Optional<Object> actual = authenticationChangedListener.createEvent(new DataChangedEvent("test", AUTHENTICATION_YAML, Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((AuthenticationChangedEvent) actual.get()).getAuthentication().getUsers().get("root1").getPassword(), is("root1"));
     }

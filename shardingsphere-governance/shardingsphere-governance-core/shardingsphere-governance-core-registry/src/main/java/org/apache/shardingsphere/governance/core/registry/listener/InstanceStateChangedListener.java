@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener;
 
-import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
@@ -39,7 +38,7 @@ public final class InstanceStateChangedListener extends PostGovernanceRepository
     }
     
     @Override
-    protected Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+    protected Optional<Object> createEvent(final DataChangedEvent event) {
         return Optional.of(new CircuitStateChangedEvent(RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue())));
     }
 }

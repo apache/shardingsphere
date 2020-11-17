@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
+import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 
 import java.util.Collection;
 import java.util.stream.Collectors;

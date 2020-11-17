@@ -17,13 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.state.impl;
 
-import com.google.common.eventbus.Subscribe;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
-import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
-import org.apache.shardingsphere.infra.state.StateMachine;
-import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
@@ -36,29 +31,10 @@ import java.util.Optional;
  */
 public final class CircuitBreakProxyState implements ProxyState {
     
-    public CircuitBreakProxyState() {
-        GovernanceEventBus.getInstance().register(this);
-    }
-    
     @Override
     public void execute(final ChannelHandlerContext context, final Object message, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final BackendConnection backendConnection) {
         context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(new CircuitBreakException()));
         Optional<DatabasePacket<?>> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket();
         databasePacket.ifPresent(context::writeAndFlush);
-    }
-    
-    /**
-     * Renew circuit breaker state.
-     *
-     * @param event circuit state changed event
-     */
-    @Subscribe
-    public synchronized void renew(final CircuitStateChangedEvent event) {
-        if (event.isCircuitBreak()) {
-            StateMachine.switchState(StateType.CIRCUIT_BREAK);
-        } else {
-            // TODO check previous state, maybe lock
-            StateMachine.switchState(StateType.OK);
-        }
     }
 }

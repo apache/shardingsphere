@@ -32,11 +32,16 @@ public final class StateMachine {
     
     /**
      * Switch state.
-     * 
-     * @param type state type
+     *
+     * @param event state event
      */
-    public static void switchState(final StateType type) {
-        CURRENT_STATE.set(type);
+    public static void switchState(final StateEvent event) {
+        if (StateType.CIRCUIT_BREAK == event.getType() && event.isOn()) {
+            CURRENT_STATE.set(StateType.CIRCUIT_BREAK);
+            return;
+        }
+        // TODO check lock state
+        CURRENT_STATE.set(StateType.OK);
     }
     
     /**
