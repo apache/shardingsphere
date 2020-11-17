@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.state;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.state.StateMachine;
+import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
@@ -32,10 +32,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Proxy state machine.
+ * Proxy state context.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProxyStateMachine {
+public final class ProxyStateContext {
     
     private static final Map<StateType, ProxyState> PROXY_STATE_MAP = new ConcurrentHashMap<>(3, 1);
     
@@ -55,6 +55,6 @@ public final class ProxyStateMachine {
      */
     public static void execute(final ChannelHandlerContext context, final Object message, 
                                final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final BackendConnection backendConnection) {
-        PROXY_STATE_MAP.get(StateMachine.getCurrentState()).execute(context, message, databaseProtocolFrontendEngine, backendConnection);
+        PROXY_STATE_MAP.get(StateContext.getCurrentState()).execute(context, message, databaseProtocolFrontendEngine, backendConnection);
     }
 }
