@@ -59,9 +59,7 @@ public class TableExtractorTest {
         lockSegment.setForTables(tables);
         tables.add(new SimpleTableSegment(122, 128, new IdentifierValue("t_order")));
         tables.add(new SimpleTableSegment(143, 154, new IdentifierValue("t_order_item")));
-
         tableExtractor.extractTablesFromSelect(selectStatement);
-
         assertNotNull(tableExtractor.getRewriteTables());
         assertEquals(2, tableExtractor.getRewriteTables().size());
         Iterator<SimpleTableSegment> tableSegmentIterator = tableExtractor.getRewriteTables().iterator();
