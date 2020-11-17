@@ -32,14 +32,14 @@ import java.util.Optional;
 /**
  * Terminal state changed listener.
  */
-public final class TerminalStateChangedListener extends PostGovernanceRepositoryEventListener {
+public final class TerminalStateChangedListener extends PostGovernanceRepositoryEventListener<StateEvent> {
     
     public TerminalStateChangedListener(final RegistryRepository registryRepository) {
         super(registryRepository, Collections.singleton(new RegistryCenterNode().getProxyNodePath(GovernanceInstance.getInstance().getInstanceId())));
     }
     
     @Override
-    protected Optional<Object> createEvent(final DataChangedEvent event) {
+    protected Optional<StateEvent> createEvent(final DataChangedEvent event) {
         return Optional.of(new StateEvent(StateType.CIRCUIT_BREAK, RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue())));
     }
 }

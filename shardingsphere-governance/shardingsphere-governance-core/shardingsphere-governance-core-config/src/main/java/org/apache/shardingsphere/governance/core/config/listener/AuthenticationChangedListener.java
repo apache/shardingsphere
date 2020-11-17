@@ -19,6 +19,7 @@ package org.apache.shardingsphere.governance.core.config.listener;
 
 import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
 import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
+import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.model.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
@@ -32,14 +33,14 @@ import java.util.Optional;
 /**
  * Authentication changed listener.
  */
-public final class AuthenticationChangedListener extends PostGovernanceRepositoryEventListener {
+public final class AuthenticationChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
     public AuthenticationChangedListener(final ConfigurationRepository configurationRepository) {
         super(configurationRepository, Collections.singletonList(new ConfigCenterNode().getAuthenticationPath()));
     }
     
     @Override
-    protected Optional<Object> createEvent(final DataChangedEvent event) {
+    protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
         return Optional.of(new AuthenticationChangedEvent(new AuthenticationYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlAuthenticationConfiguration.class))));
     }
 }
