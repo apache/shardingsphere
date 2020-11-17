@@ -17,28 +17,39 @@
 
 package org.apache.shardingsphere.infra.state;
 
-import org.junit.After;
-import org.junit.Test;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.concurrent.atomic.AtomicReference;
 
-public final class StateMachineTest {
+/**
+ * State context.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class StateContext {
     
-    @Test
-    public void assertSwitchStateWithCircuitBreakOn() {
-        StateMachine.switchState(new StateEvent(StateType.CIRCUIT_BREAK, true));
-        assertThat(StateMachine.getCurrentState(), is(StateType.CIRCUIT_BREAK));
+    private static final AtomicReference<StateType> CURRENT_STATE = new AtomicReference<>(StateType.OK);
+    
+    /**
+     * Switch state.
+     *
+     * @param event state event
+     */
+    public static void switchState(final StateEvent event) {
+        if (StateType.CIRCUIT_BREAK == event.getType() && event.isOn()) {
+            CURRENT_STATE.set(StateType.CIRCUIT_BREAK);
+            return;
+        }
+        // TODO check lock state
+        CURRENT_STATE.set(StateType.OK);
     }
     
-    @Test
-    public void assertSwitchStateWithCircuitBreakOff() {
-        StateMachine.switchState(new StateEvent(StateType.CIRCUIT_BREAK, false));
-        assertThat(StateMachine.getCurrentState(), is(StateType.OK));
-    }
-    
-    @After
-    public void reset() {
-        StateMachine.switchState(new StateEvent(StateType.OK, true));
+    /**
+     * Get current state.
+     * 
+     * @return current state
+     */
+    public static StateType getCurrentState() {
+        return CURRENT_STATE.get();
     }
 }

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.executor.ChannelThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
-import org.apache.shardingsphere.proxy.frontend.state.ProxyStateMachine;
+import org.apache.shardingsphere.proxy.frontend.state.ProxyStateContext;
 import org.apache.shardingsphere.replicaquery.route.engine.impl.PrimaryVisitedManager;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -62,7 +62,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             authorized = auth(context, (ByteBuf) message);
             return;
         }
-        ProxyStateMachine.execute(context, message, databaseProtocolFrontendEngine, backendConnection);
+        ProxyStateContext.execute(context, message, databaseProtocolFrontendEngine, backendConnection);
     }
     
     private boolean auth(final ChannelHandlerContext context, final ByteBuf message) {

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.state;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.infra.state.StateEvent;
-import org.apache.shardingsphere.infra.state.StateMachine;
+import org.apache.shardingsphere.infra.state.StateContext;
 
 /**
  * Governed state machine.
@@ -41,6 +41,6 @@ public final class GovernedStateMachine {
      */
     @Subscribe
     public void switchState(final StateEvent event) {
-        StateMachine.switchState(event);
+        StateContext.switchState(event);
     }
 }
