@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.state;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.state.StateMachine;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.proxy.frontend.state.impl.OKProxyState;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Proxy state machine.
@@ -39,13 +39,10 @@ public final class ProxyStateMachine {
     
     private static final Map<StateType, ProxyState> PROXY_STATE_MAP = new ConcurrentHashMap<>(3, 1);
     
-    private static final AtomicReference<ProxyState> CURRENT_STATE = new AtomicReference<>();
-    
     static {
         PROXY_STATE_MAP.put(StateType.OK, new OKProxyState());
         PROXY_STATE_MAP.put(StateType.LOCK, new LockProxyState());
         PROXY_STATE_MAP.put(StateType.CIRCUIT_BREAK, new CircuitBreakProxyState());
-        CURRENT_STATE.set(PROXY_STATE_MAP.get(StateType.OK));
     }
     
     /**
@@ -58,15 +55,6 @@ public final class ProxyStateMachine {
      */
     public static void execute(final ChannelHandlerContext context, final Object message, 
                                final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final BackendConnection backendConnection) {
-        CURRENT_STATE.get().execute(context, message, databaseProtocolFrontendEngine, backendConnection);
-    }
-    
-    /**
-     * Switch state.
-     * 
-     * @param type state type
-     */
-    public static void switchState(final StateType type) {
-        CURRENT_STATE.set(PROXY_STATE_MAP.get(type));
+        PROXY_STATE_MAP.get(StateMachine.getCurrentState()).execute(context, message, databaseProtocolFrontendEngine, backendConnection);
     }
 }
