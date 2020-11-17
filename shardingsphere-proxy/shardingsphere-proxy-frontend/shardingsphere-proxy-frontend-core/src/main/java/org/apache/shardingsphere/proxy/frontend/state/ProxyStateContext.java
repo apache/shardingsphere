@@ -37,12 +37,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyStateContext {
     
-    private static final Map<StateType, ProxyState> PROXY_STATE_MAP = new ConcurrentHashMap<>(3, 1);
+    private static final Map<StateType, ProxyState> STATE_MAP = new ConcurrentHashMap<>(3, 1);
     
     static {
-        PROXY_STATE_MAP.put(StateType.OK, new OKProxyState());
-        PROXY_STATE_MAP.put(StateType.LOCK, new LockProxyState());
-        PROXY_STATE_MAP.put(StateType.CIRCUIT_BREAK, new CircuitBreakProxyState());
+        STATE_MAP.put(StateType.OK, new OKProxyState());
+        STATE_MAP.put(StateType.LOCK, new LockProxyState());
+        STATE_MAP.put(StateType.CIRCUIT_BREAK, new CircuitBreakProxyState());
     }
     
     /**
@@ -55,6 +55,6 @@ public final class ProxyStateContext {
      */
     public static void execute(final ChannelHandlerContext context, final Object message, 
                                final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final BackendConnection backendConnection) {
-        PROXY_STATE_MAP.get(StateContext.getCurrentState()).execute(context, message, databaseProtocolFrontendEngine, backendConnection);
+        STATE_MAP.get(StateContext.getCurrentState()).execute(context, message, databaseProtocolFrontendEngine, backendConnection);
     }
 }
