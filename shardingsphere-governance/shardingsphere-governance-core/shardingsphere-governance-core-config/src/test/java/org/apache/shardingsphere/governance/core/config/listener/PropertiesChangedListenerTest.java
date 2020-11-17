@@ -50,7 +50,7 @@ public final class PropertiesChangedListenerTest {
     }
     
     @Test
-    public void assertCreateGovernanceEvent() {
+    public void assertCreateEvent() {
         Optional<Object> actual = propertiesChangedListener.createEvent(new DataChangedEvent("test", PROPERTIES_YAML, Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((PropertiesChangedEvent) actual.get()).getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(true));
