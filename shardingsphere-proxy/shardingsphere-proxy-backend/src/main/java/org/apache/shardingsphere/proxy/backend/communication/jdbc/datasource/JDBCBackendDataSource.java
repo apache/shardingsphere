@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.proxy.backend.communication.BackendDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -59,7 +60,8 @@ public final class JDBCBackendDataSource implements BackendDataSource {
      * @throws SQLException SQL exception
      */
     public List<Connection> getConnections(final String schemaName, final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return getConnections(schemaName, dataSourceName, connectionSize, connectionMode, TransactionType.LOCAL);
+        TransactionType transactionType = TransactionType.valueOf(ProxyContext.getInstance().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE));
+        return getConnections(schemaName, dataSourceName, connectionSize, connectionMode, transactionType);
     }
     
     /**
