@@ -12,23 +12,12 @@ ShardingSphere-JDBC provides official Spring Boot Starter to make convenient for
 ```properties
 spring.shardingsphere.datasource.names= # Data source name, multiple data sources are separated by commas
 
-spring.shardingsphere.datasource.common.type= # Database connection pool type name
-spring.shardingsphere.datasource.common.driver-class-name= # Database driver class name
-spring.shardingsphere.datasource.common.username= # Database username
-spring.shardingsphere.datasource.common.password= # Database password
-spring.shardingsphere.datasource.common.xxx= # Other properties of database connection pool
-
 spring.shardingsphere.datasource.<datasource-name>.url= # Database URL connection
-```
-
-## Override Data Source Common Configuration
-```properties
-spring.shardingsphere.datasource.<datasource-name>.url= # Database URL connection
-spring.shardingsphere.datasource.<datasource-name>.type= # Database connection pool type name，Override common type property
-spring.shardingsphere.datasource.<datasource-name>.driver-class-name= # Database driver class name，Override common driver-class-name property
-spring.shardingsphere.datasource.<datasource-name>.username= # Database username ，Override common username property
-spring.shardingsphere.datasource.<datasource-name>.password= # Database password ，Override common password property
-spring.shardingsphere.datasource.<data-source-name>.xxx= # Other properties of database connection pool ，Override common other property
+spring.shardingsphere.datasource.<datasource-name>.type= # Database connection pool type name
+spring.shardingsphere.datasource.<datasource-name>.driver-class-name= # Database driver class name
+spring.shardingsphere.datasource.<datasource-name>.username= # Database username
+spring.shardingsphere.datasource.<datasource-name>.password= # Database password
+spring.shardingsphere.datasource.<datasource-name>.xxx= # Other properties of database connection pool
 ```
 
 ## Rule Configuration
