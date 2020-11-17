@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.state;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.state.RuntimeStateType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.impl.CircuitBreakProxyState;
@@ -36,15 +37,15 @@ import java.util.concurrent.atomic.AtomicReference;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyStateMachine {
     
-    private static final Map<ProxyStateType, ProxyState> PROXY_STATE_MAP = new ConcurrentHashMap<>(3, 1);
+    private static final Map<RuntimeStateType, ProxyState> PROXY_STATE_MAP = new ConcurrentHashMap<>(3, 1);
     
     private static final AtomicReference<ProxyState> CURRENT_STATE = new AtomicReference<>();
     
     static {
-        PROXY_STATE_MAP.put(ProxyStateType.OK, new OKProxyState());
-        PROXY_STATE_MAP.put(ProxyStateType.LOCK, new LockProxyState());
-        PROXY_STATE_MAP.put(ProxyStateType.CIRCUIT_BREAK, new CircuitBreakProxyState());
-        CURRENT_STATE.set(PROXY_STATE_MAP.get(ProxyStateType.OK));
+        PROXY_STATE_MAP.put(RuntimeStateType.OK, new OKProxyState());
+        PROXY_STATE_MAP.put(RuntimeStateType.LOCK, new LockProxyState());
+        PROXY_STATE_MAP.put(RuntimeStateType.CIRCUIT_BREAK, new CircuitBreakProxyState());
+        CURRENT_STATE.set(PROXY_STATE_MAP.get(RuntimeStateType.OK));
     }
     
     /**
@@ -65,7 +66,7 @@ public final class ProxyStateMachine {
      * 
      * @param type proxy state type
      */
-    public static void switchState(final ProxyStateType type) {
+    public static void switchState(final RuntimeStateType type) {
         CURRENT_STATE.set(PROXY_STATE_MAP.get(type));
     }
 }

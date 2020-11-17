@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.state;
+package org.apache.shardingsphere.infra.state;
 
 /**
- * Proxy state type.
+ * Runtime state type.
  */
-public enum ProxyStateType {
+public enum RuntimeStateType {
     
     OK, LOCK, CIRCUIT_BREAK
 }

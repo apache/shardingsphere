@@ -22,12 +22,12 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
+import org.apache.shardingsphere.infra.state.RuntimeStateType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyState;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyStateMachine;
-import org.apache.shardingsphere.proxy.frontend.state.ProxyStateType;
 
 import java.util.Optional;
 
@@ -55,10 +55,10 @@ public final class CircuitBreakProxyState implements ProxyState {
     @Subscribe
     public synchronized void renew(final CircuitStateChangedEvent event) {
         if (event.isCircuitBreak()) {
-            ProxyStateMachine.switchState(ProxyStateType.CIRCUIT_BREAK);
+            ProxyStateMachine.switchState(RuntimeStateType.CIRCUIT_BREAK);
         } else {
             // TODO check previous state, maybe lock
-            ProxyStateMachine.switchState(ProxyStateType.OK);
+            ProxyStateMachine.switchState(RuntimeStateType.OK);
         }
     }
 }
