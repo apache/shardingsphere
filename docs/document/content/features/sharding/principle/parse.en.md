@@ -71,41 +71,27 @@ Maven config
 
 demo:
 
-1. Get AST
+- Get AST
 
 ```
 /**
-     * databaseType type:String values: MySQL,Oracle，PostgreSQL，SQL92，SQLServer
-     * sql type:String SQL to be parsed
-     * useCache type:boolean whether use cache
-     * @return parse tree
-     */
+ * databaseType type:String values: MySQL,Oracle，PostgreSQL，SQL92，SQLServer
+ * sql type:String SQL to be parsed
+ * useCache type:boolean whether use cache
+ * @return parse tree
+ */
 ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache)
 ```
 
-2. GET SQLStatement
+- GET SQLStatement
 
 ```
 /**
-     * databaseType type:String values: MySQL,Oracle，PostgreSQL，SQL92，SQLServer
-     * useCache type:boolean whether use cache
-     * @return SQLStatement
-     */
+ * databaseType type:String values: MySQL,Oracle，PostgreSQL，SQL92，SQLServer
+ * useCache type:boolean whether use cache
+ * @return SQLStatement
+ */
 ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache); 
 SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "STATEMENT");
 SQLStatement sqlFormarted = sqlVisitorEngine.visit(tree);
-
-```
-
-3. SQL 格式化
-
-```
-/**
-     * databaseType type:String values: MySQL,Oracle，PostgreSQL，SQL92，SQLServer
-     * useCache type:boolean whether use cache
-     * @return Formarted SQL
-     */
-ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache); 
-SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "FORMAT");
-String sqlFormarted = sqlVisitorEngine.visit(tree);
 ```
