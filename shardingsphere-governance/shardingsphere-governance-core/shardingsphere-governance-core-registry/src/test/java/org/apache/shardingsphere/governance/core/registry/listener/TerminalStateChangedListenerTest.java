@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.governance.core.registry.listener;
 
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
-import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.infra.state.StateEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,29 +34,29 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class InstanceStateChangedListenerTest {
+public final class TerminalStateChangedListenerTest {
     
-    private InstanceStateChangedListener instanceStateChangedListener;
+    private TerminalStateChangedListener terminalStateChangedListener;
     
     @Mock
     private RegistryRepository registryRepository;
     
     @Before
     public void setUp() {
-        instanceStateChangedListener = new InstanceStateChangedListener(registryRepository);
+        terminalStateChangedListener = new TerminalStateChangedListener(registryRepository);
     }
     
     @Test
-    public void assertCreateGovernanceEventWhenEnabled() {
-        Optional<Object> actual = instanceStateChangedListener.createEvent(new DataChangedEvent("/test_ds", "", Type.UPDATED));
+    public void assertCreateEventWhenEnabled() {
+        Optional<Object> actual = terminalStateChangedListener.createEvent(new DataChangedEvent("/test_ds", "", Type.UPDATED));
         assertTrue(actual.isPresent());
-        assertFalse(((CircuitStateChangedEvent) actual.get()).isCircuitBreak());
+        assertFalse(((StateEvent) actual.get()).isOn());
     }
     
     @Test
-    public void assertCreateGovernanceEventWhenDisabled() {
-        Optional<Object> actual = instanceStateChangedListener.createEvent(new DataChangedEvent("/test_ds", RegistryCenterNodeStatus.DISABLED.name(), Type.UPDATED));
+    public void assertCreateEventWhenDisabled() {
+        Optional<Object> actual = terminalStateChangedListener.createEvent(new DataChangedEvent("/test_ds", RegistryCenterNodeStatus.DISABLED.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
-        assertTrue(((CircuitStateChangedEvent) actual.get()).isCircuitBreak());
+        assertTrue(((StateEvent) actual.get()).isOn());
     }
 }

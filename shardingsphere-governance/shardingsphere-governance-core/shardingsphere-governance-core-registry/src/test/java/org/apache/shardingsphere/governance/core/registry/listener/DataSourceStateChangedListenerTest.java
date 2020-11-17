@@ -49,7 +49,7 @@ public final class DataSourceStateChangedListenerTest {
     }
     
     @Test
-    public void assertCreateGovernanceEvent() {
+    public void assertCreateEvent() {
         Optional<Object> actual = dataSourceStateChangedListener.createEvent(
                 new DataChangedEvent("/states/datanodes/replica_query_db/replica_ds_0", "disabled", Type.UPDATED));
         assertTrue(actual.isPresent());
