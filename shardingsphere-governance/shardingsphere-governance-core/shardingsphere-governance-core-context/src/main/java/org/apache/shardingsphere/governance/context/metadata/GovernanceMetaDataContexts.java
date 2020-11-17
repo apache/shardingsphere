@@ -23,13 +23,12 @@ import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 import org.apache.shardingsphere.governance.core.event.model.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
+import org.apache.shardingsphere.governance.core.event.model.props.PropertiesChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
-import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 import org.apache.shardingsphere.infra.auth.Authentication;
@@ -135,11 +134,6 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     @Override
     public ConfigurationProperties getProps() {
         return metaDataContexts.getProps();
-    }
-    
-    @Override
-    public boolean isCircuitBreak() {
-        return metaDataContexts.isCircuitBreak();
     }
     
     @Override
@@ -268,17 +262,6 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
                 ((StatusContainedRule) each).updateRuleStatus(new DataSourceNameDisabledEvent(governanceSchema.getDataSourceName(), event.isDisabled()));
             }
         }
-    }
-    
-    /**
-     * Renew circuit breaker state.
-     *
-     * @param event circuit state changed event
-     */
-    @Subscribe
-    public synchronized void renew(final CircuitStateChangedEvent event) {
-        metaDataContexts = new StandardMetaDataContexts(metaDataContexts.getMetaDataMap(), 
-                metaDataContexts.getExecutorKernel(), metaDataContexts.getAuthentication(), metaDataContexts.getProps(), metaDataContexts.getDatabaseType(), event.isCircuitBreak());
     }
     
     private ShardingSphereMetaData createAddedMetaData(final MetaDataAddedEvent event) throws SQLException {
