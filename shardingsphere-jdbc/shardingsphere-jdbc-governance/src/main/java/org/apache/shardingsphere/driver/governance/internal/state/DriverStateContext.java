@@ -39,12 +39,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DriverStateContext {
     
-    private static final Map<StateType, DriverState> STATE_MAP = new ConcurrentHashMap<>(3, 1);
+    private static final Map<StateType, DriverState> STATES = new ConcurrentHashMap<>(3, 1);
     
     static {
-        STATE_MAP.put(StateType.OK, new OKDriverState());
-        STATE_MAP.put(StateType.LOCK, new LockDriverState());
-        STATE_MAP.put(StateType.CIRCUIT_BREAK, new CircuitBreakDriverState());
+        STATES.put(StateType.OK, new OKDriverState());
+        STATES.put(StateType.LOCK, new LockDriverState());
+        STATES.put(StateType.CIRCUIT_BREAK, new CircuitBreakDriverState());
     }
     
     /**
@@ -58,6 +58,6 @@ public final class DriverStateContext {
      */
     public static Connection getConnection(final Map<String, DataSource> dataSourceMap, 
                                            final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
-        return STATE_MAP.get(StateContext.getCurrentState()).getConnection(dataSourceMap, metaDataContexts, transactionContexts, transactionType);
+        return STATES.get(StateContext.getCurrentState()).getConnection(dataSourceMap, metaDataContexts, transactionContexts, transactionType);
     }
 }
