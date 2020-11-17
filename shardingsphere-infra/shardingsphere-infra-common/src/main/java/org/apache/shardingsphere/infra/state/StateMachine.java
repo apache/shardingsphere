@@ -15,12 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.state;
+package org.apache.shardingsphere.infra.state;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Proxy state type.
+ * State machine.
  */
-public enum ProxyStateType {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class StateMachine {
     
-    OK, LOCK, CIRCUIT_BREAK
+    private static final AtomicReference<StateType> CURRENT_STATE = new AtomicReference<>(StateType.OK);
+    
+    /**
+     * Switch state.
+     * 
+     * @param type state type
+     */
+    public static void switchState(final StateType type) {
+        CURRENT_STATE.set(type);
+    }
+    
+    /**
+     * Get current state.
+     * 
+     * @return current state
+     */
+    public static StateType getCurrentState() {
+        return CURRENT_STATE.get();
+    }
 }
