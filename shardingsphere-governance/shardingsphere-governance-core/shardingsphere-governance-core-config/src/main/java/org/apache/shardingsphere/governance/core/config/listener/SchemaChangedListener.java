@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 /**
  * Schema changed listener.
  */
-public final class SchemaChangedListener extends PostGovernanceRepositoryEventListener {
+public final class SchemaChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
     private final ConfigCenterNode configurationNode;
     
@@ -65,7 +65,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     }
     
     @Override
-    protected Optional<Object> createEvent(final DataChangedEvent event) {
+    protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
         // TODO Consider removing the following one.
         if (configurationNode.getMetadataNodePath().equals(event.getKey())) {
             return createSchemaNamesUpdatedEvent(event.getValue());
@@ -87,7 +87,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
         return Optional.empty();
     }
     
-    private Optional<Object> createSchemaNamesUpdatedEvent(final String schemaNames) {
+    private Optional<GovernanceEvent> createSchemaNamesUpdatedEvent(final String schemaNames) {
         Collection<String> persistedSchemaNames = configurationNode.splitSchemaName(schemaNames);
         Set<String> addedSchemaNames = SetUtils.difference(new HashSet<>(persistedSchemaNames), new HashSet<>(existedSchemaNames));
         if (!addedSchemaNames.isEmpty()) {

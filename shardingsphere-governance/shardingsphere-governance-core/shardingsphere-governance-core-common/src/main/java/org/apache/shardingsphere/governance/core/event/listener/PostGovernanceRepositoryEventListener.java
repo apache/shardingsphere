@@ -29,9 +29,11 @@ import java.util.Optional;
 
 /**
  * Post governance repository event listener.
+ * 
+ * @param <T> type of event
  */
 @RequiredArgsConstructor
-public abstract class PostGovernanceRepositoryEventListener implements GovernanceListener {
+public abstract class PostGovernanceRepositoryEventListener<T> implements GovernanceListener {
     
     private final GovernanceRepository governanceRepository;
     
@@ -48,11 +50,11 @@ public abstract class PostGovernanceRepositoryEventListener implements Governanc
     private void watch(final String watchKey, final Collection<Type> types) {
         governanceRepository.watch(watchKey, dataChangedEvent -> {
             if (types.contains(dataChangedEvent.getType())) {
-                Optional<Object> event = createEvent(dataChangedEvent);
+                Optional<T> event = createEvent(dataChangedEvent);
                 event.ifPresent(GovernanceEventBus.getInstance()::post);
             }
         });
     }
     
-    protected abstract Optional<Object> createEvent(DataChangedEvent event);
+    protected abstract Optional<T> createEvent(DataChangedEvent event);
 }
