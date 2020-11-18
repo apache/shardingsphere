@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult;
 
-import java.sql.Array;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
@@ -45,12 +45,7 @@ public final class StreamQueryResult implements QueryResult {
         resultSetMetaData = resultSet.getMetaData();
         this.resultSet = resultSet;
     }
-
-    @Override
-    public ResultSetMetaData getResultSetMetaData() {
-        return resultSetMetaData;
-    }
-
+    
     @Override
     public boolean next() throws SQLException {
         return resultSet.next();
@@ -142,5 +137,10 @@ public final class StreamQueryResult implements QueryResult {
     @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
         return resultSetMetaData.getColumnLabel(columnIndex);
+    }
+    
+    @Override
+    public String getColumnTypeName(final int columnIndex) throws SQLException {
+        return resultSetMetaData.getColumnTypeName(columnIndex);
     }
 }

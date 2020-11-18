@@ -17,15 +17,19 @@
 
 package org.apache.shardingsphere.sql.parser.core.parser;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
+
+import java.util.Optional;
 
 /**
  * SQL parser executor.
@@ -33,34 +37,56 @@ import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 @RequiredArgsConstructor
 public final class SQLParserExecutor {
     
-    private final String databaseTypeName;
+    private final String databaseType;
     
-    private final String sql;
+    private final Cache<String, ParseTree> cache = CacheBuilder.newBuilder().softValues().initialCapacity(2000).maximumSize(65535).build();
     
     /**
-     * Execute to parse SQL.
+     * Parse SQL.
      *
-     * @return AST node
+     * @param sql SQL to be parsed
+     * @param useCache whether use cache
+     * @return parse tree
      */
-    public ParseASTNode execute() {
-        ParseASTNode result = twoPhaseParse();
-        if (result.getRootNode() instanceof ErrorNode) {
-            throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
+    public ParseTree parse(final String sql, final boolean useCache) {
+        if (!useCache) {
+            return parse(sql);
         }
+        return parseAndCacheParseTree(sql);
+    }
+    
+    private ParseTree parse(final String sql) {
+        ParseASTNode result = twoPhaseParse(sql);
+        if (result.getRootNode() instanceof ErrorNode) {
+            throw new SQLParsingException("Unsupported SQL of `%s`", sql);
+        }
+        return result.getRootNode();
+    }
+    
+    private ParseTree parseAndCacheParseTree(final String sql) {
+        Optional<ParseTree> parseTree = Optional.ofNullable(cache.getIfPresent(sql));
+        if (parseTree.isPresent()) {
+            return parseTree.get();
+        }
+        ParseTree result = parse(sql);
+        cache.put(sql, result);
         return result;
     }
     
-    private ParseASTNode twoPhaseParse() {
-        SQLParser sqlParser = SQLParserFactory.newInstance(databaseTypeName, sql);
+    private ParseASTNode twoPhaseParse(final String sql) {
+        SQLParser sqlParser = SQLParserFactory.newInstance(databaseType, sql);
         try {
-            ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
-            ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
+            setPredictionMode((Parser) sqlParser, PredictionMode.SLL);
             return (ParseASTNode) sqlParser.parse();
         } catch (final ParseCancellationException ex) {
             ((Parser) sqlParser).reset();
-            ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
-            ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.LL);
+            setPredictionMode((Parser) sqlParser, PredictionMode.LL);
             return (ParseASTNode) sqlParser.parse();
         }
+    }
+    
+    private void setPredictionMode(final Parser sqlParser, final PredictionMode mode) {
+        sqlParser.setErrorHandler(new BailErrorStrategy());
+        sqlParser.getInterpreter().setPredictionMode(mode);
     }
 }

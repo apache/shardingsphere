@@ -28,6 +28,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.g
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.limit.LimitClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.orderby.OrderByClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.projection.ProjectionAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.where.WhereClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 
@@ -55,11 +56,23 @@ public final class SelectStatementAssert {
         assertGroupByClause(assertContext, actual, expected);
         assertOrderByClause(assertContext, actual, expected);
         assertLimitClause(assertContext, actual, expected);
+        assertTable(assertContext, actual, expected);
 //        TODO support table assert
     }
     
     private static void assertProjection(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        if (null == actual.getProjections() && 0 == expected.getProjections().getSize()) {
+            return;
+        }
         ProjectionAssert.assertIs(assertContext, actual.getProjections(), expected.getProjections());
+    }
+
+    private static void assertTable(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        if (null != expected.getFrom()) {
+            TableAssert.assertIs(assertContext, actual.getFrom(), expected.getFrom());
+        } else {
+            assertFalse(assertContext.getText("Actual from should not exist."), null != actual.getFrom());
+        }
     }
     
     private static void assertWhereClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {

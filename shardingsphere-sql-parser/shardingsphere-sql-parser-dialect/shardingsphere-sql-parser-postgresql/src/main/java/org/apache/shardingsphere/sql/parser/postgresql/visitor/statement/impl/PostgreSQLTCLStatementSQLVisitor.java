@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetTransactionContext;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLRollbackStatement;
@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl
 /**
  * TCL Statement SQL visitor for PostgreSQL.
  */
-public final class PostgreSQLTCLStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements TCLStatementSQLVisitor {
+public final class PostgreSQLTCLStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements TCLSQLVisitor, SQLStatementVisitor {
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {

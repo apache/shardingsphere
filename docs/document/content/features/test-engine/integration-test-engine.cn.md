@@ -1,5 +1,5 @@
 +++
-pre = "<b>3.10.2. </b>"
+pre = "<b>3.9.2. </b>"
 title = "整合测试引擎"
 weight = 2
 +++
@@ -33,7 +33,7 @@ Junit 中的 `Parameterized` 会聚合起所有的测试数据，并将测试数
 run.additional.cases=false
 
 # 分片策略，可指定多种策略
-sharding.rule.type=db,tbl,dbtbl_with_primary_replica_replication,primary_replica_replication
+sharding.rule.type=db,tbl,dbtbl_with_replica_query,replica_query
 
 # 要测试的数据库，可以指定多种数据库(H2,MySQL,Oracle,SQLServer,PostgreSQL)
 databases=MySQL,PostgreSQL

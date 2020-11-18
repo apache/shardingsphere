@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.event.listener;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,37 +46,38 @@ public final class PostGovernanceRepositoryEventListenerTest {
     
     @Test
     public void assertWatch() {
-        PostGovernanceRepositoryEventListener postEventListener = new PostGovernanceRepositoryEventListener(governanceRepository, Collections.singletonList("test")) {
+        PostGovernanceRepositoryEventListener<GovernanceEvent> postEventListener = new PostGovernanceRepositoryEventListener<GovernanceEvent>(
+                governanceRepository, Collections.singletonList("test")) {
             
             @Override
-            protected Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+            protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
                 return Optional.of(mock(GovernanceEvent.class));
             }
         };
         doAnswer(invocationOnMock -> {
             DataChangedEventListener listener = (DataChangedEventListener) invocationOnMock.getArguments()[1];
-            listener.onChange(new DataChangedEvent("test", "value", ChangedType.UPDATED));
+            listener.onChange(new DataChangedEvent("test", "value", Type.UPDATED));
             return mock(DataChangedEventListener.class);
         }).when(governanceRepository).watch(anyString(), any(DataChangedEventListener.class));
-        postEventListener.watch(ChangedType.UPDATED);
+        postEventListener.watch(Type.UPDATED);
         verify(governanceRepository).watch(eq("test"), any());
     }
     
     @Test
     public void assertWatchMultipleKey() {
-        PostGovernanceRepositoryEventListener postEventListener = new PostGovernanceRepositoryEventListener(governanceRepository, Arrays.asList("test", "dev")) {
+        PostGovernanceRepositoryEventListener<GovernanceEvent> postEventListener = new PostGovernanceRepositoryEventListener<GovernanceEvent>(governanceRepository, Arrays.asList("test", "dev")) {
             
             @Override
-            protected Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+            protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
                 return Optional.of(mock(GovernanceEvent.class));
             }
         };
         doAnswer(invocationOnMock -> {
             DataChangedEventListener listener = (DataChangedEventListener) invocationOnMock.getArguments()[1];
-            listener.onChange(new DataChangedEvent("test", "value", ChangedType.UPDATED));
+            listener.onChange(new DataChangedEvent("test", "value", Type.UPDATED));
             return mock(DataChangedEventListener.class);
         }).when(governanceRepository).watch(anyString(), any(DataChangedEventListener.class));
-        postEventListener.watch(ChangedType.UPDATED, ChangedType.DELETED);
+        postEventListener.watch(Type.UPDATED, Type.DELETED);
         verify(governanceRepository).watch(eq("test"), any());
         verify(governanceRepository).watch(eq("dev"), any());
     }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -39,14 +39,14 @@ public final class ShardingCreateFunctionStatementValidator extends ShardingDDLS
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateFunctionStatement> sqlStatementContext, 
-                            final List<Object> parameters, final ShardingSphereMetaData metaData) {
+                            final List<Object> parameters, final ShardingSphereSchema schema) {
         Optional<RoutineBodySegment> routineBodySegment = CreateFunctionStatementHandler.getRoutineBodySegment(sqlStatementContext.getSqlStatement());
         routineBodySegment.ifPresent(routineBody -> {
             TableExtractor extractor = new TableExtractor();
             Collection<SimpleTableSegment> existTables = extractor.extractExistTableFromRoutineBody(routineBody);
-            validateShardingTable(metaData, existTables);
-            validateTableExist(metaData, existTables);
-            validateTableNotExist(metaData, extractor.extractNotExistTableFromRoutineBody(routineBody));
+            validateShardingTable(schema, existTables);
+            validateTableExist(schema, existTables);
+            validateTableNotExist(schema, extractor.extractNotExistTableFromRoutineBody(routineBody));
         });
     }
     

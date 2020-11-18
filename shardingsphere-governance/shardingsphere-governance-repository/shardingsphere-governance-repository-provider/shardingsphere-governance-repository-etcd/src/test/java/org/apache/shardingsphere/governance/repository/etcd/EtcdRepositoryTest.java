@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.repository.etcd;
 
-import com.google.common.base.Charsets;
+import java.nio.charset.StandardCharsets;
 import com.google.protobuf.ByteString;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
@@ -130,7 +130,7 @@ public final class EtcdRepositoryTest {
     @Test
     public void assertGetKey() {
         repository.get("key");
-        verify(kv).get(ByteSequence.from("key", Charsets.UTF_8));
+        verify(kv).get(ByteSequence.from("key", StandardCharsets.UTF_8));
         verify(getResponse).getKvs();
     }
     
@@ -200,7 +200,7 @@ public final class EtcdRepositoryTest {
     @Test
     public void assertDelete() {
         repository.delete("key");
-        verify(kv).delete(ByteSequence.from("key", Charsets.UTF_8));
+        verify(kv).delete(ByteSequence.from("key", StandardCharsets.UTF_8));
     }
     
     @Test

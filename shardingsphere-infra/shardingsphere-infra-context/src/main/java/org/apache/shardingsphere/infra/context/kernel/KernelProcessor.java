@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 
 import java.util.Collection;
@@ -41,18 +41,18 @@ public final class KernelProcessor {
      * Generate execution context.
      *
      * @param logicSQL logic SQL
-     * @param schema ShardingSphere schema
+     * @param metaData ShardingSphere meta data
      * @param props configuration properties
      * @return execution context
      */
-    public ExecutionContext generateExecutionContext(final LogicSQL logicSQL, final ShardingSphereSchema schema, final ConfigurationProperties props) {
-        Collection<ShardingSphereRule> rules = schema.getRules();
-        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(props, rules);
+    public ExecutionContext generateExecutionContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ConfigurationProperties props) {
+        Collection<ShardingSphereRule> rules = metaData.getRuleMetaData().getRules();
+        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(rules, props);
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
-        RouteContext routeContext = sqlRouteEngine.route(logicSQL, schema);
-        SQLRewriteEntry rewriteEntry = new SQLRewriteEntry(schema.getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData(), props, rules);
+        RouteContext routeContext = sqlRouteEngine.route(logicSQL, metaData);
+        SQLRewriteEntry rewriteEntry = new SQLRewriteEntry(metaData.getSchema(), props, rules);
         SQLRewriteResult rewriteResult = rewriteEntry.rewrite(logicSQL.getSql(), logicSQL.getParameters(), sqlStatementContext, routeContext);
-        Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(schema.getMetaData(), rewriteResult, sqlStatementContext);
+        Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(metaData, rewriteResult, sqlStatementContext);
         return new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
     }
 }

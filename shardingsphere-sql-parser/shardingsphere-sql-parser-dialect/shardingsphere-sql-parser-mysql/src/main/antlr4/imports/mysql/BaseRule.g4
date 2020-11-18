@@ -49,7 +49,7 @@ customKeyword
 literals
     : stringLiterals
     | numberLiterals
-    | dateTimeLiterals
+    | temporalLiterals
     | hexadecimalLiterals
     | bitValueLiterals
     | booleanLiterals
@@ -57,24 +57,23 @@ literals
     ;
 
 stringLiterals
-    : characterSetName? STRING_ collateClause?
+    : (UNDERSCORE_CHARSET? STRING_ | NCHAR_TEXT) STRING_* collateClause?
     ;
 
 numberLiterals
-   : MINUS_? NUMBER_
+   : NUMBER_
    ;
 
-dateTimeLiterals
-    : (DATE | TIME | TIMESTAMP) STRING_
-    | LBE_ identifier STRING_ RBE_
+temporalLiterals
+    : (DATE | TIME | TIMESTAMP) SINGLE_QUOTED_TEXT
     ;
 
 hexadecimalLiterals
-    : characterSetName? HEX_DIGIT_ collateClause?
+    : UNDERSCORE_CHARSET? HEX_DIGIT_ collateClause?
     ;
 
 bitValueLiterals
-    : characterSetName? BIT_NUM_ collateClause?
+    : UNDERSCORE_CHARSET? BIT_NUM_ collateClause?
     ;
 
 booleanLiterals
@@ -85,12 +84,8 @@ nullValueLiterals
     : NULL
     ;
 
-characterSetName
-    : IDENTIFIER_
-    ;
-
-collationName_
-   : IDENTIFIER_
+collationName
+   : identifier | STRING_ | BINARY
    ;
 
 identifier
@@ -102,7 +97,7 @@ unreservedWord
     | ASCII | AT | ATTRIBUTE | AUTOEXTEND_SIZE | AUTO_INCREMENT | AVG
     | AVG_ROW_LENGTH | BACKUP | BEGIN | BINLOG | BIT | BLOCK | BOOL | BOOLEAN | BTREE | BUCKETS | BYTE
     | CACHE | CASCADED | CATALOG_NAME | CHAIN | CHANGED | CHANNEL | CHARSET | CHECKSUM | CIPHER | CLASS_ORIGIN
-    | CLIENT | CLONE | CLOSE | COALESCE | CODE | COLLATION | COLUMNS | COLUMN_FORMAT | COMMENT | COMMIT | COMMITTED
+    | CLIENT | CLONE | CLOSE | COALESCE | CODE | COLLATION | COLUMNS | COLUMN_FORMAT | COLUMN_NAME | COMMENT | COMMIT | COMMITTED
     | COMPACT | COMPLETION | COMPONENT | COMPRESSED | COMPRESSION | CONCURRENT | CONNECTION | CONSISTENT
     | CONSTRAINT_CATALOG | CONSTRAINT_NAME | CONSTRAINT_SCHEMA | CONTAINS | CONTEXT | CPU | CURRENT | CURSOR_NAME
     | DATA | DATAFILE | DATE | DATETIME | DAY | DEFAULT_AUTH | DEFINER | DEFINITION | DEALLOCATE | DELAY_KEY_WRITE
@@ -146,7 +141,7 @@ unreservedWord
     | TIMESTAMPDIFF | TLS | TRANSACTION | TRIGGERS | TRUNCATE | TYPE | TYPES | UNBOUNDED | UNCOMMITTED | UNDEFINED
     | UNDOFILE | UNDO_BUFFER_SIZE | UNICODE | UNINSTALL | UNKNOWN | UNTIL
     | UPGRADE | USER | USER_RESOURCES | USE_FRM | VALIDATION | VALUE | VARIABLES | VCPU | VIEW | VISIBLE
-    | WAIT | WARNINGS | WEEK | WEIGHT_STRING | WITHOUT | WORK | WRAPPER | X509 | XA | XID | XML | YEAR
+    | WAIT | WARNINGS | WEEK | WEIGHT_STRING | WITHOUT | WORK | WRAPPER | X509 | XA | XID | XML | YEAR | COLUMN_NAME
     ;
 
 variable
@@ -164,7 +159,7 @@ internalVariableName
     ;
 
 setExprOrDefault
-    : expr | DEFAULT | ALL | BINARY | ROW | SYSTEM
+    : expr | DEFAULT | ALL | ON | BINARY | ROW | SYSTEM
     ;
 
 schemaName
@@ -173,6 +168,10 @@ schemaName
 
 schemaNames
     : schemaName (COMMA_ schemaName)*
+    ;
+
+charsetName
+    : identifier | BINARY | DEFAULT
     ;
 
 schemaPairs
@@ -189,6 +188,7 @@ tableName
 
 columnName
     : (owner DOT_)? name
+    | identifier DOT_ identifier DOT_ identifier
     ;
 
 indexName
@@ -296,11 +296,11 @@ logName
     ;
 
 roleName
-    : (STRING_ | IDENTIFIER_) AT_ (STRING_ IDENTIFIER_) | IDENTIFIER_
+    : (STRING_ | IDENTIFIER_) AT_ (STRING_ | IDENTIFIER_) | IDENTIFIER_
     ;
 
-engineName
-    : IDENTIFIER_
+engineRef
+    : STRING_ | identifier
     ;
 
 triggerName
@@ -317,6 +317,14 @@ userOrRole
 
 partitionName
     : IDENTIFIER_
+    ;
+
+identifierList
+    : identifier (COMMA_ identifier)*
+    ;
+
+allOrPartitionNameList
+    : ALL | identifierList
     ;
 
 triggerEvent
@@ -421,11 +429,7 @@ overClause
     ;
 
 windowSpecification
-    : identifier? partitionClause? orderByClause? frameClause?
-    ;
-
-partitionClause
-    : PARTITION BY expr (COMMA_ expr)*
+    : LP_ identifier? (PARTITION BY expr (COMMA_ expr)*)? orderByClause? frameClause? RP_
     ;
 
 frameClause
@@ -458,7 +462,31 @@ groupConcatFunction
     ;
 
 windowFunction
-    : identifier LP_ expr (COMMA_ expr)* RP_ overClause
+    : funcName = (ROW_NUMBER | RANK | DENSE_RANK | CUME_DIST | PERCENT_RANK) LP_ RP_ windowingClause
+    | funcName = NTILE (simpleExpr) windowingClause
+    | funcName = (LEAD | LAG) LP_ expr leadLagInfo? RP_ nullTreatment? windowingClause
+    | funcName = (FIRST_VALUE | LAST_VALUE) LP_ expr RP_ nullTreatment? windowingClause
+    | funcName = NTH_VALUE LP_ expr COMMA_ simpleExpr RP_ (FROM (FIRST | LAST))? nullTreatment? windowingClause
+    ;
+
+windowingClause
+    : OVER (windowName=identifier | windowSpecification)
+    ;
+
+leadLagInfo
+    : COMMA_ (NUMBER_ | QUESTION_) (COMMA_ expr)?
+    ;
+
+nullTreatment
+    : (RESPECT | IGNORE) NULLS
+    ;
+
+checkType
+    : FOR UPGRADE | QUICK | FAST | MEDIUM | EXTENDED | CHANGED
+    ;
+
+repairType
+    : QUICK | EXTENDED | USE_FRM
     ;
 
 castFunction
@@ -466,8 +494,28 @@ castFunction
     ;
 
 convertFunction
-    : CONVERT LP_ expr COMMA_ dataType RP_
-    | CONVERT LP_ expr USING identifier RP_ 
+    : CONVERT LP_ expr COMMA_ castType RP_
+    | CONVERT LP_ expr USING charsetName RP_
+    ;
+    
+castType
+    : BINARY fieldLength?
+    | CHAR fieldLength? charsetWithOptBinary?
+    | nchar fieldLength?
+    | SIGNED INT?
+    | UNSIGNED INT?
+    | DATE
+    | TIME typeDatetimePrecision?
+    | DATETIME typeDatetimePrecision?
+    | DECIMAL (fieldLength | precision)?
+    | JSON
+    | REAL
+    | DOUBLE PRECISION
+    | FLOAT precision?
+    ;
+
+nchar
+    : NCHAR | NATIONAL CHAR
     ;
 
 positionFunction
@@ -504,7 +552,7 @@ levelClause
     ;
 
 levelInWeightListElement
-    : NUMBER_ (ASC | DESC)? REVERSE?
+    : NUMBER_ direction? REVERSE?
     ;
 
 regularFunction
@@ -513,7 +561,7 @@ regularFunction
     ;
     
 shorthandRegularFunction
-    : CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | LAST_DAY | LOCALTIME | LOCALTIMESTAMP
+    : CURRENT_DATE | CURRENT_TIME (LP_ NUMBER_? RP_)? | CURRENT_TIMESTAMP | LAST_DAY | LOCALTIME | LOCALTIMESTAMP
     ;
   
 completeRegularFunction
@@ -578,23 +626,128 @@ orderByClause
     ;
 
 orderByItem
-    : (columnName | numberLiterals | expr) (ASC | DESC)?
+    : (columnName | numberLiterals | expr) direction?
     ;
 
 dataType
-    : dataTypeName dataTypeLength? characterSet? collateClause? (UNSIGNED | SIGNED)? ZEROFILL? | dataTypeName collectionOptions characterSet? collateClause?
+    : dataTypeName = (INTEGER | INT | TINYINT | SMALLINT | MIDDLEINT | MEDIUMINT | BIGINT) fieldLength? fieldOptions?
+    | (dataTypeName = REAL | dataTypeName = DOUBLE PRECISION?) precision? fieldOptions?
+    | dataTypeName = (FLOAT | DECIMAL | NUMERIC | FIXED) (fieldLength | precision)? fieldOptions?
+    | dataTypeName = BIT fieldLength?
+    | dataTypeName = (BOOL | BOOLEAN)
+    | dataTypeName = CHAR fieldLength? charsetWithOptBinary?
+    | nchar fieldLength? BINARY?
+    | dataTypeName = BINARY fieldLength?
+    | (dataTypeName = CHAR VARYING | dataTypeName = VARCHAR) fieldLength charsetWithOptBinary?
+    | (dataTypeName = NATIONAL VARCHAR | dataTypeName = NVARCHAR | dataTypeName = NCHAR VARCHAR | dataTypeName = NATIONAL CHAR VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
+    | dataTypeName = VARBINARY fieldLength?
+    | dataTypeName = YEAR fieldLength? fieldOptions?
+    | dataTypeName = DATE
+    | dataTypeName = TIME typeDatetimePrecision?
+    | dataTypeName = TIMESTAMP typeDatetimePrecision?
+    | dataTypeName = DATETIME typeDatetimePrecision?
+    | dataTypeName = TINYBLOB
+    | dataTypeName = BLOB fieldLength?
+    | dataTypeName = (MEDIUMBLOB | LONGBLOB)
+    | dataTypeName = LONG VARBINARY
+    | dataTypeName = LONG (CHAR VARYING | VARCHAR)? charsetWithOptBinary?
+    | dataTypeName = TINYTEXT charsetWithOptBinary?
+    | dataTypeName = TEXT fieldLength? charsetWithOptBinary?
+    | dataTypeName = MEDIUMTEXT charsetWithOptBinary?
+    | dataTypeName = LONGTEXT charsetWithOptBinary?
+    | dataTypeName = ENUM stringList charsetWithOptBinary?
+    | dataTypeName = SET stringList charsetWithOptBinary?
+    | dataTypeName = (SERIAL | JSON | GEOMETRY | GEOMETRYCOLLECTION | POINT | MULTIPOINT | LINESTRING | MULTILINESTRING | POLYGON | MULTIPOLYGON)
     ;
 
-dataTypeName
-    : INTEGER | INT | SMALLINT | TINYINT | MEDIUMINT | BIGINT | DECIMAL| NUMERIC | FLOAT | DOUBLE | BIT | BOOL | BOOLEAN
-    | DEC | DATE | DATETIME | TIMESTAMP | TIME | YEAR | CHAR | VARCHAR | BINARY | VARBINARY | TINYBLOB | TINYTEXT | BLOB
-    | TEXT | MEDIUMBLOB | MEDIUMTEXT | LONGBLOB | LONGTEXT | ENUM | SET | GEOMETRY | POINT | LINESTRING | POLYGON
-    | MULTIPOINT | MULTILINESTRING | MULTIPOLYGON | GEOMETRYCOLLECTION | JSON | UNSIGNED | SIGNED | CHARACTER VARYING
-    | FIXED | FLOAT4 | FLOAT8 | INT1 | INT2 | INT3 | INT4 | INT8 | LONG VARBINARY | LONG VARCHAR | LONG | MIDDLEINT
+stringList
+    : LP_ textString (COMMA_ textString)* RP_
     ;
 
-dataTypeLength
-    : LP_ NUMBER_ (COMMA_ NUMBER_)? RP_
+textString
+    : STRING_
+    | HEX_DIGIT_
+    | BIT_NUM_
+    ;
+
+fieldOptions
+    : (UNSIGNED | SIGNED | ZEROFILL)+
+    ;
+    
+precision
+    : LP_ NUMBER_ COMMA_ NUMBER_ RP_
+    ;
+
+typeDatetimePrecision
+    : LP_ NUMBER_ RP_
+    ;
+    
+charsetWithOptBinary
+    : ascii
+    | unicode
+    | BYTE
+    | charset charsetName BINARY?
+    | BINARY (charset charsetName)?
+    ;
+    
+ascii
+    : ASCII BINARY?
+    | BINARY ASCII
+    ;
+
+unicode
+    : UNICODE BINARY?
+    | BINARY UNICODE
+    ;
+    
+charset
+    : (CHAR | CHARACTER) SET
+    | CHARSET
+    ;
+
+defaultCollation
+    : DEFAULT? COLLATE EQ_? collationName
+    ;
+
+defaultEncryption
+    : DEFAULT? ENCRYPTION EQ_? STRING_
+    ;
+
+defaultCharset
+    : DEFAULT? charset EQ_? charsetName
+    ;
+
+signedLiteral
+    : literals
+    | (PLUS_ | MINUS_) numberLiterals
+    ;
+
+now
+    : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP) (LP_ NUMBER_? RP_)?
+    ;
+
+columnFormat
+    : FIXED
+    | DYNAMIC
+    | DEFAULT
+    ;
+
+storageMedia
+    : DISK
+    | MEMORY
+    | DEFAULT
+    ;
+
+direction
+    : ASC | DESC
+    ;
+
+keyOrIndex
+    : KEY | INDEX
+    ;
+
+fieldLength
+    : LP_ length=NUMBER_ RP_
     ;
 
 collectionOptions
@@ -602,11 +755,11 @@ collectionOptions
     ;
 
 characterSet
-    : (CHARSET | CHAR SET | CHARACTER SET) EQ_? ignoredIdentifier
+    : charset EQ_? charsetName
     ;
 
 collateClause
-    : COLLATE EQ_? (STRING_ | ignoredIdentifier)
+    : COLLATE EQ_? collationName
     ;
 
 ignoredIdentifier
@@ -647,4 +800,13 @@ cursorName
     
 conditionName
     : identifier
+    ;
+
+unionOption
+    : ALL | DISTINCT
+    ;
+
+noWriteToBinLog
+    : LOCAL
+    | NO_WRITE_TO_BINLOG
     ;

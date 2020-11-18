@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.web;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -41,8 +42,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -54,7 +53,7 @@ public final class HttpServerHandlerTest {
     
     private static final Gson GSON = new Gson();
     
-    private final HttpServerHandler httpServerHandler = new HttpServerHandler();
+    private HttpServerHandler httpServerHandler;
     
     @Mock
     private ChannelHandlerContext channelHandlerContext;
@@ -64,8 +63,11 @@ public final class HttpServerHandlerTest {
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
-        ScalingContext.getInstance().init(new ServerConfiguration());
-        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "taskExecuteEngine", mock(ShardingScalingExecuteEngine.class));
+        if (null == ScalingContext.getInstance().getServerConfig()) {
+            ScalingContext.getInstance().init(new ServerConfiguration());
+            ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "taskExecuteEngine", mock(ShardingScalingExecuteEngine.class));
+        }
+        httpServerHandler = new HttpServerHandler();
     }
     
     @Test
@@ -98,8 +100,8 @@ public final class HttpServerHandlerTest {
     
     @Test
     public void assertChannelReadProgressSuccess() {
-        startScalingJob("/config.json");
-        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/scaling/job/progress/1");
+        long jobId = startScalingJob("/config.json");
+        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/scaling/job/progress/" + jobId);
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
         ArgumentCaptor<FullHttpResponse> argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
         verify(channelHandlerContext, times(2)).writeAndFlush(argumentCaptor.capture());
@@ -109,13 +111,11 @@ public final class HttpServerHandlerTest {
     
     @Test
     public void assertChannelReadStop() {
-        Map<String, Integer> map = new HashMap<>();
-        map.put("id", 1);
-        ByteBuf byteBuf = Unpooled.copiedBuffer(GSON.toJson(map), CharsetUtil.UTF_8);
-        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/scaling/job/stop", byteBuf);
+        long jobId = startScalingJob("/config.json");
+        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/scaling/job/stop/" + jobId);
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
         ArgumentCaptor<FullHttpResponse> argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
-        verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
+        verify(channelHandlerContext, times(2)).writeAndFlush(argumentCaptor.capture());
         FullHttpResponse fullHttpResponse = argumentCaptor.getValue();
         assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("{\"success\":true"));
     }
@@ -158,9 +158,14 @@ public final class HttpServerHandlerTest {
     }
     
     @SneakyThrows(IOException.class)
-    private void startScalingJob(final String configFile) {
+    private long startScalingJob(final String configFile) {
         ByteBuf byteBuf = Unpooled.copiedBuffer(GSON.toJson(ScalingConfigurationUtil.initConfig(configFile)), CharsetUtil.UTF_8);
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/scaling/job/start", byteBuf);
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
+        ArgumentCaptor<FullHttpResponse> argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
+        verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
+        FullHttpResponse fullHttpResponse = argumentCaptor.getValue();
+        JsonObject jsonObject = new Gson().fromJson(fullHttpResponse.content().toString(CharsetUtil.UTF_8), JsonObject.class);
+        return jsonObject.get("model").getAsJsonObject().get("jobId").getAsLong();
     }
 }

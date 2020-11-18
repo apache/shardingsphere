@@ -84,7 +84,7 @@ public final class ShardingSphereDataSourceTest {
     }
     
     @Test
-    public void assertGetDatabaseProductNameForPrimaryReplicaReplication() throws SQLException {
+    public void assertGetDatabaseProductNameForReplicaQuery() throws SQLException {
         DataSource dataSource1 = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         DataSource primaryDataSource = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         DataSource replicaDataSource = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("H2"));
@@ -99,7 +99,7 @@ public final class ShardingSphereDataSourceTest {
     
     private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {
         try {
-            assertThat(createShardingSphereDataSource(dataSourceMap).getSchemaContexts().getDatabaseType(),
+            assertThat(createShardingSphereDataSource(dataSourceMap).getMetaDataContexts().getDatabaseType(),
                     instanceOf(H2DatabaseType.class));
         } finally {
             for (Connection each : connections) {

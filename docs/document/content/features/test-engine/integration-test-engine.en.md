@@ -1,5 +1,5 @@
 +++
-pre = "<b>3.10.2. </b>"
+pre = "<b>3.9.2. </b>"
 title = "Integration Test Engine"
 weight = 2
 +++
@@ -32,7 +32,7 @@ Firstly, setup configuration file `/shardingsphere-test-suite/src/test/resources
 run.additional.cases=false
 
 # sharding rule, could define multiple rules
-sharding.rule.type=db,tbl,dbtbl_with_primary_replica_replication,primary_replica_replication
+sharding.rule.type=db,tbl,dbtbl_with_replica_query_,replica_query_
 
 # database type, could define multiple databases(H2,MySQL,Oracle,SQLServer,PostgreSQL)
 databases=MySQL,PostgreSQL

@@ -154,11 +154,11 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithNoSuchTableException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new NoSuchTableException("ds_0", "table_name"));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new NoSuchTableException("table_name"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1146));
         assertThat(actual.getSqlState(), is("42S02"));
-        assertThat(actual.getErrorMessage(), is("Table 'ds_0.table_name' doesn't exist"));
+        assertThat(actual.getErrorMessage(), is("Table 'table_name' doesn't exist"));
     }
     
     @Test

@@ -28,7 +28,7 @@ Aiming at reasonably making full use of the computation and storage capacity of 
 As the cornerstone of many enterprises, relational database still takes a huge market share. Therefore, at current stage, we prefer to focus on its increment instead of a total overturn.
 
 Apache ShardingSphere begins to focus on pluggable architecture from version 5.x, features can be embedded into project flexibility.
-Currently, the features such as data sharding, primary-replica replication, consensus replication, data encrypt, shadow test, and SQL dialects / database protocols such as MySQL, PostgreSQL, SQLServer, Oracle supported are all weaved by plugins.
+Currently, the features such as data sharding, replica query, data encrypt, shadow test, and SQL dialects / database protocols such as MySQL, PostgreSQL, SQLServer, Oracle supported are all weaved by plugins.
 Developers can customize their own ShardingSphere systems just like building lego blocks. There are lots of SPI extensions for Apache ShardingSphere now and increasing continuously.
 
 ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top Level Project on April 16, 2020.
@@ -53,7 +53,7 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 
 ### ShardingSphere-Proxy
 
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.cgi?path=shardingsphere/4.1.1/apache-shardingsphere-4.1.1-sharding-proxy-bin.tar.gz)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.cgi?path=shardingsphere/5.0.0-alpha/apache-shardingsphere-5.0.0-alpha-sharding-proxy-bin.tar.gz)
 [![Docker Pulls](https://img.shields.io/docker/pulls/shardingsphere/sharding-proxy.svg)](https://store.docker.com/community/images/shardingsphere/sharding-proxy)
 
 ShardingSphere-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
@@ -101,7 +101,7 @@ Architects can adjust the system architecture to the most applicable one to curr
 ### Data Sharding
 
 * Database sharding & Table sharding
-* Primary-replica replication
+* Replica query
 * Sharding strategy customization
 * Centre-less Distributed primary key
 

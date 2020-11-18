@@ -18,11 +18,21 @@
 package org.apache.shardingsphere.scaling.mysql;
 
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
+import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
+import org.apache.shardingsphere.scaling.core.utils.ShardingColumnsUtil;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * MySQL SQL builder.
  */
 public final class MySQLSQLBuilder extends AbstractSQLBuilder {
+    
+    public MySQLSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
+        super(shardingColumnsMap);
+    }
     
     @Override
     public String getLeftIdentifierQuoteString() {
@@ -32,6 +42,25 @@ public final class MySQLSQLBuilder extends AbstractSQLBuilder {
     @Override
     public String getRightIdentifierQuoteString() {
         return "`";
+    }
+    
+    @Override
+    public String buildInsertSQL(final DataRecord dataRecord) {
+        return super.buildInsertSQL(dataRecord) + buildDuplicateUpdateSQL(dataRecord);
+    }
+    
+    private String buildDuplicateUpdateSQL(final DataRecord dataRecord) {
+        StringBuilder result = new StringBuilder(" ON DUPLICATE KEY UPDATE ");
+        for (int i = 0; i < dataRecord.getColumnCount(); i++) {
+            Column column = dataRecord.getColumn(i);
+            if (column.isPrimaryKey() || ShardingColumnsUtil.isShardingColumn(
+                    getShardingColumnsMap(), dataRecord.getTableName(), column.getName())) {
+                continue;
+            }
+            result.append(quote(column.getName())).append("=VALUES(").append(quote(column.getName())).append("),");
+        }
+        result.setLength(result.length() - 1);
+        return result.toString();
     }
     
     /**

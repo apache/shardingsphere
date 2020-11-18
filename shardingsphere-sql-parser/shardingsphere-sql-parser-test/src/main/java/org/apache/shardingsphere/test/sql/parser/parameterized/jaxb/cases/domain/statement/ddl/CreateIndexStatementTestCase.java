@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedIndex;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -36,5 +36,5 @@ public final class CreateIndexStatementTestCase extends SQLParserTestCase {
     private ExpectedIndex index;
     
     @XmlElement
-    private ExpectedSimpleTable table;
+    private ExpectedTable table;
 }

@@ -33,7 +33,7 @@ public final class BackendExecutorContext {
     private static final BackendExecutorContext INSTANCE = new BackendExecutorContext();
     
     private final ExecutorKernel executorKernel = 
-            new ExecutorKernel(ProxyContext.getInstance().getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
+            new ExecutorKernel(ProxyContext.getInstance().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
     
     /**
      * Get executor context instance.

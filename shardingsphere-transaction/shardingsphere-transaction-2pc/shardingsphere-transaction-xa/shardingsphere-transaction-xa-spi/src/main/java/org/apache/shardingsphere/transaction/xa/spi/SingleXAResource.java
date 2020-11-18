@@ -36,13 +36,13 @@ public final class SingleXAResource implements XAResource {
     private final XAResource delegate;
     
     @Override
-    public void commit(final Xid xid, final boolean b) throws XAException {
-        delegate.commit(xid, b);
+    public void commit(final Xid xid, final boolean onePhase) throws XAException {
+        delegate.commit(xid, onePhase);
     }
     
     @Override
-    public void end(final Xid xid, final int i) throws XAException {
-        delegate.end(xid, i);
+    public void end(final Xid xid, final int flags) throws XAException {
+        delegate.end(xid, flags);
     }
     
     @Override
@@ -67,8 +67,8 @@ public final class SingleXAResource implements XAResource {
     }
     
     @Override
-    public Xid[] recover(final int i) throws XAException {
-        return delegate.recover(i);
+    public Xid[] recover(final int flags) throws XAException {
+        return delegate.recover(flags);
     }
     
     @Override
@@ -77,12 +77,12 @@ public final class SingleXAResource implements XAResource {
     }
     
     @Override
-    public boolean setTransactionTimeout(final int i) throws XAException {
-        return delegate.setTransactionTimeout(i);
+    public boolean setTransactionTimeout(final int timeout) throws XAException {
+        return delegate.setTransactionTimeout(timeout);
     }
     
     @Override
-    public void start(final Xid xid, final int i) throws XAException {
-        delegate.start(xid, i);
+    public void start(final Xid xid, final int flags) throws XAException {
+        delegate.start(xid, flags);
     }
 }

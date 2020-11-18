@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.merge.dql;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -34,7 +34,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class EncryptAlgorithmMetaData {
     
-    private final PhysicalSchemaMetaData schemaMetaData;
+    private final ShardingSphereSchema schema;
     
     private final EncryptRule encryptRule;
     
@@ -58,7 +58,7 @@ public final class EncryptAlgorithmMetaData {
         Projection projection = expandProjections.get(columnIndex - 1);
         if (projection instanceof ColumnProjection) {
             String columnName = ((ColumnProjection) projection).getName();
-            Optional<String> tableName = selectStatementContext.getTablesContext().findTableName((ColumnProjection) projection, schemaMetaData);
+            Optional<String> tableName = selectStatementContext.getTablesContext().findTableName((ColumnProjection) projection, schema);
             return tableName.isPresent() ? findEncryptor(tableName.get(), columnName) : findEncryptor(columnName);
         }
         return Optional.empty();

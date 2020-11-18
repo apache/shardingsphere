@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.tcl.SQL92CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.tcl.SQL92RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.tcl.SQL92SetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementSQLVisitor;
 
 /**
  * TCL Statement SQL visitor for SQL92.
  */
-public final class SQL92TCLStatementSQLVisitor extends SQL92StatementSQLVisitor implements TCLStatementSQLVisitor {
+public final class SQL92TCLStatementSQLVisitor extends SQL92StatementSQLVisitor implements TCLSQLVisitor, SQLStatementVisitor {
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {

@@ -17,49 +17,63 @@
 
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.verify;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class RepositoryResumeBreakPointManagerTest {
-    
-    @Mock
-    private RegistryRepository registryRepository;
     
     private RepositoryResumeBreakPointManager repositoryResumeBreakPointManager;
     
     @Before
-    public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        ScalingContext.getInstance().init(new ServerConfiguration());
-        ReflectionUtil.setFieldValue(RepositoryResumeBreakPointManager.class, null, "registryRepository", registryRepository);
+    public void setUp() {
+        ScalingContext.getInstance().init(mockServerConfiguration());
         repositoryResumeBreakPointManager = new RepositoryResumeBreakPointManager("H2", "/base");
-    }
-    
-    @After
-    public void tearDown() {
-        repositoryResumeBreakPointManager.close();
     }
     
     @Test
     public void assertPersistIncrementalPosition() {
         repositoryResumeBreakPointManager.persistIncrementalPosition();
-        verify(registryRepository, atLeastOnce()).persist("/base/incremental", "{}");
+        assertThat(RegistryRepositoryHolder.getInstance().get("/base/incremental"), is("{}"));
     }
     
     @Test
     public void assertPersistInventoryPosition() {
         repositoryResumeBreakPointManager.persistInventoryPosition();
-        verify(registryRepository, atLeastOnce()).persist("/base/inventory", "{\"unfinished\":{},\"finished\":[]}");
+        assertThat(RegistryRepositoryHolder.getInstance().get("/base/inventory"), is("{\"unfinished\":{},\"finished\":[]}"));
+    }
+    
+    @After
+    public void tearDown() {
+        repositoryResumeBreakPointManager.close();
+        resetRegistryRepositoryAvailable();
+    }
+    
+    private ServerConfiguration mockServerConfiguration() {
+        resetRegistryRepositoryAvailable();
+        YamlGovernanceConfiguration distributedScalingService = new YamlGovernanceConfiguration();
+        distributedScalingService.setName("test");
+        YamlGovernanceCenterConfiguration registryCenter = new YamlGovernanceCenterConfiguration();
+        registryCenter.setType("REG_FIXTURE");
+        registryCenter.setServerLists("");
+        distributedScalingService.setRegistryCenter(registryCenter);
+        ServerConfiguration result = new ServerConfiguration();
+        result.setDistributedScalingService(distributedScalingService);
+        return result;
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void resetRegistryRepositoryAvailable() {
+        ReflectionUtil.setFieldValue(RegistryRepositoryHolder.class, null, "available", null);
     }
 }

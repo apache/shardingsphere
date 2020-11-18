@@ -74,6 +74,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.UpdateStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CallStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.BeginTransactionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.CommitStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.RollbackStatementTestCase;
@@ -276,6 +277,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-view")
     private final List<DropViewStatementTestCase> dropViewTestCase = new LinkedList<>();
+
+    @XmlElement(name = "call")
+    private final List<CallStatementTestCase> callProcedureTestCase = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -344,6 +348,7 @@ public final class SQLParserTestCases {
         putAll(dropProcedureTestCase, result);
         putAll(dropFunctionTestCase, result);
         putAll(dropDatabaseTestCase, result);
+        putAll(callProcedureTestCase, result);
         return result;
     }
     

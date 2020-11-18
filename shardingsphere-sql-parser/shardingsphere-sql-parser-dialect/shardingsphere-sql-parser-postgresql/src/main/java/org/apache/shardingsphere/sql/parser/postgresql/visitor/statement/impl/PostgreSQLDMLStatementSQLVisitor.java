@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AliasClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AttrNameContext;
@@ -63,7 +64,6 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Up
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WhereOrCurrentClauseContext;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
@@ -118,7 +118,7 @@ import java.util.List;
 /**
  * DML Statement SQL visitor for PostgreSQL.
  */
-public final class PostgreSQLDMLStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements DMLStatementSQLVisitor {
+public final class PostgreSQLDMLStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
@@ -395,8 +395,8 @@ public final class PostgreSQLDMLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitTargetList(final TargetListContext ctx) {
         ProjectionsSegment result = new ProjectionsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         if (null != ctx.targetList()) {
-            ProjectionsSegment projecs = (ProjectionsSegment) visit(ctx.targetList());
-            result.getProjections().addAll(projecs.getProjections());
+            ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.targetList());
+            result.getProjections().addAll(projections.getProjections());
         }
         ProjectionSegment projection = (ProjectionSegment) visit(ctx.targetEl());
         result.getProjections().add(projection);

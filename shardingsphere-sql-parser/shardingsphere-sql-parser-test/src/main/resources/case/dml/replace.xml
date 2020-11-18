@@ -841,11 +841,9 @@
             <column name="status" start-index="41" stop-index="46" />
         </columns>
         <select>
-            <table-reference>
-                <table-factor>
-                    <table name="t_order" start-index="87" stop-index="93" />
-                </table-factor>
-            </table-reference>
+            <from>
+                <simple-table name="t_order" start-index="87" stop-index="93" />
+            </from>
             <projections start-index="56" stop-index="80">
                 <column-projection name="order_id" start-index="56" stop-index="63" />
                 <column-projection name="user_id" start-index="66" stop-index="72" />
@@ -870,11 +868,9 @@
         <table name="t_order" start-index="13" stop-index="19" />
         <columns start-index="20" stop-index="20" />
         <select>
-            <table-reference>
-                <table-factor>
-                    <table name="t_order" start-index="59" stop-index="65" />
-                </table-factor>
-            </table-reference>
+            <from>
+                <simple-table name="t_order" start-index="59" stop-index="65" />
+            </from>
             <projections start-index="28" stop-index="52">
                 <column-projection name="order_id" start-index="28" stop-index="35" />
                 <column-projection name="user_id" start-index="38" stop-index="44" />
@@ -905,11 +901,14 @@
             <column name="creation_date" start-index="62" stop-index="74" />
         </columns>
         <select>
-            <table-reference>
-                <table-factor>
-                    <table name="t_order_item" start-index="140" stop-index="151" />
-                </table-factor>
-            </table-reference>
+<!--            <table-reference>-->
+<!--                <table-factor>-->
+<!--                    <table name="t_order_item" start-index="140" stop-index="151" />-->
+<!--                </table-factor>-->
+<!--            </table-reference>-->
+            <from>
+                <simple-table name="t_order_item" start-index="140" stop-index="151" />
+            </from>
             <projections start-index="84" stop-index="133">
                 <column-projection name="item_id" start-index="84" stop-index="90" />
                 <column-projection name="order_id" start-index="93" stop-index="100" />
@@ -941,11 +940,9 @@
             <column name="creation_date" start-index="53" stop-index="65" />
         </columns>
         <select>
-            <table-reference>
-                <table-factor>
-                    <table name="t_order_item" start-index="122" stop-index="133" />
-                </table-factor>
-            </table-reference>
+            <from>
+                <simple-table name="t_order_item" start-index="122" stop-index="133" />
+            </from>
             <projections start-index="75" stop-index="115">
                 <column-projection name="order_id" start-index="75" stop-index="82" />
                 <column-projection name="user_id" start-index="85" stop-index="91" />

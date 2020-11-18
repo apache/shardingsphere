@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.utils;
 
-import org.apache.shardingsphere.scaling.core.job.position.FinishedInventoryPosition;
+import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTask;
@@ -42,6 +42,20 @@ public final class ScalingTaskUtil {
     }
     
     private static Predicate<ScalingTask<InventoryPosition>> getFinishPredicate() {
-        return each -> ((InventoryDataScalingTask) each).getPositionManager().getPosition() instanceof FinishedInventoryPosition;
+        return each -> ((InventoryDataScalingTask) each).getPositionManager().getPosition().isFinished();
+    }
+    
+    /**
+     * Assembling scaling listener path.
+     *
+     * @param paths sub paths.
+     * @return path.
+     */
+    public static String assemblingPath(final Object... paths) {
+        StringBuilder result = new StringBuilder(ScalingConstant.SCALING_LISTENER);
+        for (Object each : paths) {
+            result.append("/").append(each);
+        }
+        return result.toString();
     }
 }

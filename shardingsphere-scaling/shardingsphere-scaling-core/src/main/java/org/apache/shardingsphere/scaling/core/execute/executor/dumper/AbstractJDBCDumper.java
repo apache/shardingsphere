@@ -39,7 +39,7 @@ import org.apache.shardingsphere.scaling.core.job.position.PlaceholderInventoryP
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
 import org.apache.shardingsphere.scaling.core.utils.RdbmsConfigurationUtil;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -58,7 +58,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     
     private final DataSourceManager dataSourceManager;
     
-    private final PhysicalTableMetaData tableMetaData;
+    private final TableMetaData tableMetaData;
     
     @Setter
     private Channel channel;
@@ -72,7 +72,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
         tableMetaData = createTableMetaData();
     }
     
-    private PhysicalTableMetaData createTableMetaData() {
+    private TableMetaData createTableMetaData() {
         MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(inventoryDumperConfiguration.getDataSourceConfiguration()));
         return metaDataManager.getTableMetaData(inventoryDumperConfiguration.getTableName());
     }
@@ -94,7 +94,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
                 record.setType(ScalingConstant.INSERT);
                 record.setTableName(inventoryDumperConfiguration.getTableNameMap().get(inventoryDumperConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                    record.addColumn(new Column(metaData.getColumnName(i), readValue(rs, i), true, tableMetaData.isPrimaryKey(i)));
+                    record.addColumn(new Column(metaData.getColumnName(i), readValue(rs, i), true, tableMetaData.isPrimaryKey(i - 1)));
                 }
                 pushRecord(record);
             }

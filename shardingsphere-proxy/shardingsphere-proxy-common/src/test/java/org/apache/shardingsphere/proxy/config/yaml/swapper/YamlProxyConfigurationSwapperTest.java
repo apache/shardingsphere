@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.auth.yaml.config.YamlProxyUserConfigurati
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-import org.apache.shardingsphere.replication.primaryreplica.api.config.PrimaryReplicaReplicationRuleConfiguration;
-import org.apache.shardingsphere.replication.primaryreplica.yaml.config.YamlPrimaryReplicaReplicationRuleConfiguration;
+import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
+import org.apache.shardingsphere.replicaquery.yaml.config.YamlReplicaQueryRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
@@ -91,7 +91,7 @@ public final class YamlProxyConfigurationSwapperTest {
         assertThat(ruleConfigs.size(), is(1));
         RuleConfiguration ruleConfig = ruleConfigs.iterator().next();
         assertNotNull(ruleConfig);
-        assertThat(ruleConfig, instanceOf(PrimaryReplicaReplicationRuleConfiguration.class));
+        assertThat(ruleConfig, instanceOf(ReplicaQueryRuleConfiguration.class));
     }
     
     private void assertProxyConfigurationProps(final ProxyConfiguration proxyConfig) {
@@ -134,7 +134,7 @@ public final class YamlProxyConfigurationSwapperTest {
     
     private void prepareRules(final YamlProxyRuleConfiguration yamlProxyRuleConfig) {
         Collection<YamlRuleConfiguration> rules = new LinkedList<>();
-        YamlRuleConfiguration testRuleConfig = new YamlPrimaryReplicaReplicationRuleConfiguration();
+        YamlRuleConfiguration testRuleConfig = new YamlReplicaQueryRuleConfiguration();
         rules.add(testRuleConfig);
         when(yamlProxyRuleConfig.getRules()).thenReturn(rules);
     }

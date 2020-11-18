@@ -20,7 +20,7 @@ blockQueueSize: 10000
 pushTimeout: 1000
 workerThread: 30
 
-#resumeBreakPoint:
+#distributedScalingService:
 #  name: scalingJob
 #  registryCenter:
 #    type: ZooKeeper

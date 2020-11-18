@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.TCLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TransactionCharacteristicContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ScopeContext;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AutoCommitValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SavepointContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ScopeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAutoCommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TransactionCharacteristicContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.tcl.AutoCommitSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
@@ -40,7 +40,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQ
 /**
  * TCL Statement SQL visitor for MySQL.
  */
-public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor implements TCLStatementSQLVisitor {
+public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor implements TCLSQLVisitor, SQLStatementVisitor {
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {

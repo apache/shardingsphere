@@ -21,8 +21,8 @@ ds_key=host_name:host_port:db_name:user_name:pwd
 
 // Example
 CREATE datasources (
-ds0=127.0.0.1:3306:demo_ds_2:root:pwd, 
-ds1=127.0.0.1:3306:demo_ds_3:root:pwd)
+ds0=127.0.0.1:3306:demo_ds_0:root:pwd, 
+ds1=127.0.0.1:3306:demo_ds_1:root:pwd)
 ```
 - `CREATE SHARDINGRULE`，用于配置分片规则。
 ```sql
@@ -47,16 +47,19 @@ t_item=mod(item_id, 2)
 ## RDL使用实战
 
 ### 前置工作
+
 1. Start the service of MySQL instances 
 2. Create MySQL databases (Viewed as the resources for ShardingProxy)
 3. Create a role or user with creating privileges for ShardingProxy
 4. Start the service of Zookeeper (For persisting configuration)
 
 ### 启动ShardingProxy
+
 1. Add `governance` and `authentication` setting item to the `server.yaml`  (Please refer to the example in this file)
 2. Start the ShardingProxy ([Instruction](/en/quick-start/shardingsphere-proxy-quick-start/))
 
 ### 创建分布式数据库和分片表
+
 1. 连接到ShardingProxy
 2. 创建分布式数据库
 
@@ -122,6 +125,7 @@ DROP DATABASE sharding_db
 ```
 
 ### 注意
+
 1. 当前, `DROP DB`只会移除`逻辑的分布式数据库`，不会删除用户真实的数据库 (**TODO**)。
 2. `DROP TABLE`会将逻辑分片表和数据库中真实的表全部删除。
 3. `CREATE DB`只会创建`逻辑的分布式数据库`，所以需要用户提前创建好真实的数据库（**TODO**）。

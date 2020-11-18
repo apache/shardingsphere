@@ -17,55 +17,45 @@
 
 package org.apache.shardingsphere.infra.route.engine;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.route.SQLRouter;
-import org.apache.shardingsphere.infra.route.UnconfiguredSchemaSQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.engine.impl.AllSQLRouteExecutor;
+import org.apache.shardingsphere.infra.route.engine.impl.PartialSQLRouteExecutor;
 import org.apache.shardingsphere.infra.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * SQL route engine.
  */
+@RequiredArgsConstructor
 public final class SQLRouteEngine {
     
-    static {
-        ShardingSphereServiceLoader.register(SQLRouter.class);
-    }
+    private final Collection<ShardingSphereRule> rules;
     
     private final ConfigurationProperties props;
     
-    @SuppressWarnings("rawtypes")
-    private final Map<ShardingSphereRule, SQLRouter> routers;
-    
-    private final SPIRoutingHook routingHook;
-    
-    public SQLRouteEngine(final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
-        this.props = props;
-        routers = OrderedSPIRegistry.getRegisteredServices(rules, SQLRouter.class);
-        routingHook = new SPIRoutingHook();
-    }
+    private final SPIRoutingHook routingHook = new SPIRoutingHook();
     
     /**
      * Route SQL.
      *
      * @param logicSQL logic SQL
-     * @param schema ShardingSphere schema
+     * @param metaData ShardingSphere meta data
      * @return route context
      */
-    public RouteContext route(final LogicSQL logicSQL, final ShardingSphereSchema schema) {
+    public RouteContext route(final LogicSQL logicSQL, final ShardingSphereMetaData metaData) {
         routingHook.start(logicSQL.getSql());
         try {
-            RouteContext result = doRoute(logicSQL, schema);
-            routingHook.finishSuccess(result, schema.getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData());
+            SQLRouteExecutor executor = isNeedAllSchemas(logicSQL.getSqlStatementContext().getSqlStatement()) ? new AllSQLRouteExecutor() : new PartialSQLRouteExecutor(rules, props);
+            RouteContext result = executor.route(logicSQL, metaData);
+            routingHook.finishSuccess(result, metaData.getSchema());
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
@@ -75,17 +65,8 @@ public final class SQLRouteEngine {
         }
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private RouteContext doRoute(final LogicSQL logicSQL, final ShardingSphereSchema schema) {
-        RouteContext result = new RouteContext();
-        for (Entry<ShardingSphereRule, SQLRouter> entry : routers.entrySet()) {
-            if (result.getRouteUnits().isEmpty()) {
-                result = entry.getValue().createRouteContext(logicSQL, schema, entry.getKey(), props);
-            } else {
-                entry.getValue().decorateRouteContext(result, logicSQL, schema, entry.getKey(), props);
-            }
-        }
-        new UnconfiguredSchemaSQLRouter().decorate(result, logicSQL, schema);
-        return result;
+    // TODO use dynamic config to judge UnconfiguredSchema
+    private boolean isNeedAllSchemas(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof MySQLShowTablesStatement;
     }
 }

@@ -146,3 +146,15 @@ Thanks for your contributions.
 
 **12. 新Commiter更新[提交者名单](/cn/team/)。**
 
+**13. 如果进行PMC选举，需额外增加一个步骤。由投票发起人发邮件到 board@apache.org。**
+
+```
+The Apache ShardingSphere project proposes to invite (提名者) to join the PMC.
+The vote result is available here:
+(投票详情链接)
+
+Thank you，
+（发起人）
+```
+
+

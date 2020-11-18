@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
+import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
@@ -42,8 +43,8 @@ public final class MySQLImporterTest {
     @Test
     public void assertCreateSqlBuilder() {
         MySQLImporter mySQLImporter = new MySQLImporter(importerConfig, dataSourceManager);
-        String insertSQL = mySQLImporter.createSQLBuilder().buildInsertSQL(mockDataRecord());
-        assertThat(insertSQL, is("INSERT INTO `t_order`(`id`,`name`) VALUES(?,?)"));
+        String insertSQL = mySQLImporter.createSQLBuilder(Maps.newHashMap()).buildInsertSQL(mockDataRecord());
+        assertThat(insertSQL, is("INSERT INTO `t_order`(`id`,`name`) VALUES(?,?) ON DUPLICATE KEY UPDATE `name`=VALUES(`name`)"));
     }
     
     private DataRecord mockDataRecord() {

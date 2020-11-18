@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentValueContext;
@@ -86,7 +87,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL9
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementSQLVisitor;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -96,7 +96,7 @@ import java.util.List;
 /**
  * DML Statement SQL visitor for SQL92.
  */
-public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor implements DMLStatementSQLVisitor {
+public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {

@@ -86,7 +86,7 @@
     </dml-test-case>
     
     <dml-test-case sql="INSERT INTO t_order_item values(?, ?, 'insert', '2017-08-08')">
-        <assertion sharding-rule-type="dbtbl_with_primary_replica_replication" parameters="1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />
+        <assertion sharding-rule-type="dbtbl_with_replica_query" parameters="1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />
         <!-- TODO add gen column on create table -->
         <!--<assertion parameters="1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />-->
     </dml-test-case>
@@ -116,7 +116,7 @@
     </dml-test-case>
     
     <!--<dml-test-case sql="INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (?, ?, 'insert', '2017-08-08'), (?, ?, 'insert', '2017-08-08')">-->
-        <!--<assertion sharding-rule-type="dbtbl_with_primary_replica_replication" parameters="1:int, 1:int, 2:int, 2:int" expected-data-file="batch_insert_without_generate_key_column.xml" />-->
+        <!--<assertion sharding-rule-type="dbtbl_with_replica_query" parameters="1:int, 1:int, 2:int, 2:int" expected-data-file="batch_insert_without_generate_key_column.xml" />-->
         <!--&lt;!&ndash; TODO add gen column on create table &ndash;&gt;-->
         <!--&lt;!&ndash;<assertion parameters="1:int, 1:int, 2:int, 2:int" expected-data-file="batch_insert_without_generate_key_column.xml" />&ndash;&gt;-->
     <!--</dml-test-case>-->

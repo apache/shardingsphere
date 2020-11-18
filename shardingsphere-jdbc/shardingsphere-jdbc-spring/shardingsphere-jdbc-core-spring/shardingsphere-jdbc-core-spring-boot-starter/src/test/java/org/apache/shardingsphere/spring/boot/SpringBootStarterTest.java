@@ -21,13 +21,14 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.replication.primaryreplica.algorithm.RandomReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.replication.primaryreplica.rule.PrimaryReplicaReplicationDataSourceRule;
-import org.apache.shardingsphere.replication.primaryreplica.rule.PrimaryReplicaReplicationRule;
+import org.apache.shardingsphere.replicaquery.algorithm.RandomReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryDataSourceRule;
+import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryRule;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -71,13 +72,13 @@ public class SpringBootStarterTest {
     
     @Test
     public void assertRules() {
-        Collection<ShardingSphereRule> rules = dataSource.getSchemaContexts().getDefaultSchema().getRules();
+        Collection<ShardingSphereRule> rules = dataSource.getMetaDataContexts().getDefaultMetaData().getRuleMetaData().getRules();
         assertThat(rules.size(), is(4));
         for (ShardingSphereRule each : rules) {
             if (each instanceof ShardingRule) {
                 assertShardingRule((ShardingRule) each);
-            } else if (each instanceof PrimaryReplicaReplicationRule) {
-                assertPrimaryReplicaReplicationRule((PrimaryReplicaReplicationRule) each);
+            } else if (each instanceof ReplicaQueryRule) {
+                assertReplicaQueryRule((ReplicaQueryRule) each);
             } else if (each instanceof EncryptRule) {
                 assertEncryptRule((EncryptRule) each);
             } else if (each instanceof ShadowRule) {
@@ -106,9 +107,9 @@ public class SpringBootStarterTest {
         assertThat(tableRule.getDatasourceToTablesMap(), is(ImmutableMap.of("ds_1", Sets.newHashSet("t_order_0", "t_order_1"), "ds_0", Sets.newHashSet("t_order_0", "t_order_1"))));
     }
     
-    private void assertPrimaryReplicaReplicationRule(final PrimaryReplicaReplicationRule rule) {
+    private void assertReplicaQueryRule(final ReplicaQueryRule rule) {
         assertThat(rule.getDataSourceMapper(), is(Collections.singletonMap("pr_ds", Arrays.asList("primary_ds", "replica_ds_0", "replica_ds_1"))));
-        PrimaryReplicaReplicationDataSourceRule dataSourceRule = rule.getSingleDataSourceRule();
+        ReplicaQueryDataSourceRule dataSourceRule = rule.getSingleDataSourceRule();
         assertNotNull(dataSourceRule);
         assertThat(dataSourceRule.getName(), is("pr_ds"));
         assertThat(dataSourceRule.getPrimaryDataSourceName(), is("primary_ds"));
@@ -118,13 +119,15 @@ public class SpringBootStarterTest {
     }
     
     private void assertEncryptRule(final EncryptRule rule) {
-        assertThat(rule.getEncryptTableNames(), is(Sets.newLinkedHashSet(Collections.singletonList("t_order"))));
+        assertTrue(rule.findEncryptTable("t_order").isPresent());
+        EncryptTable table = rule.findEncryptTable("t_order").get();
+        assertThat(table.getLogicColumn("pwd_cipher"), is("pwd"));
+        assertThat(table.getPlainColumns(), is(Collections.singletonList("pwd_plain")));
+        assertThat(table.getAssistedQueryColumns(), is(Collections.singletonList("pwd_assisted_query_cipher")));
         assertThat(rule.getCipherColumn("t_order", "pwd"), is("pwd_cipher"));
         assertThat(rule.getAssistedQueryColumns("t_order"), is(Collections.singletonList("pwd_assisted_query_cipher")));
         assertThat(rule.getLogicAndCipherColumns("t_order"), is(Collections.singletonMap("pwd", "pwd_cipher")));
-        assertThat(rule.getLogicColumnOfCipher("t_order", "pwd_cipher"), is("pwd"));
         assertThat(rule.getEncryptValues("t_order", "pwd", Collections.singletonList("pwd_plain")), is(Collections.singletonList("V/RkV1+dVv80Y3csT3cR4g==")));
-        assertThat(rule.getAssistedQueryAndPlainColumns("t_order"), is(Arrays.asList("pwd_assisted_query_cipher", "pwd_plain")));
     }
     
     private void assertShadowRule(final ShadowRule rule) {
@@ -134,7 +137,7 @@ public class SpringBootStarterTest {
     
     @Test
     public void assertProperties() {
-        assertTrue(dataSource.getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
-        assertThat(dataSource.getSchemaContexts().getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(10));
+        assertTrue(dataSource.getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertThat(dataSource.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(10));
     }
 }

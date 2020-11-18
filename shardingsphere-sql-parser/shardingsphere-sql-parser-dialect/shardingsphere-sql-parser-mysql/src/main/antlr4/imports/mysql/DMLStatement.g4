@@ -28,7 +28,7 @@ insertSpecification
     ;
 
 insertValuesClause
-    : columnNames? (VALUES | VALUE) (assignmentValues (COMMA_ assignmentValues)* | rowConstructorList) valueReference?
+    : (LP_ RP_ | columnNames)? (VALUES | VALUE) (assignmentValues (COMMA_ assignmentValues)* | rowConstructorList) valueReference?
     ;
 
 insertSelectClause
@@ -105,15 +105,47 @@ singleTableClause
     ;
 
 multipleTablesClause
-    : multipleTableNames FROM tableReferences | FROM multipleTableNames USING tableReferences
+    : tableAliasRefList FROM tableReferences | FROM tableAliasRefList USING tableReferences
     ;
 
 multipleTableNames
     : tableName DOT_ASTERISK_? (COMMA_ tableName DOT_ASTERISK_?)*
     ;
 
-select 
-    : withClause? unionClause
+select
+    : queryExpression lockClauseList?
+    | queryExpressionParens
+    | selectWithInto
+    ;
+
+selectWithInto
+    : LP_ selectWithInto RP_
+    | queryExpression selectIntoExpression lockClauseList?
+    | queryExpression lockClauseList selectIntoExpression
+    ;
+
+queryExpression
+    : withClause? (queryExpressionBody | queryExpressionParens) orderByClause? limitClause?
+    ;
+
+queryExpressionBody
+    : queryPrimary
+    | queryExpressionParens UNION unionOption? (queryPrimary | queryExpressionParens)
+    | queryExpressionBody UNION unionOption? (queryPrimary | queryExpressionParens)
+    ;
+
+queryExpressionParens
+    : LP_ (queryExpressionParens | queryExpression lockClauseList?) RP_
+    ;
+
+queryPrimary
+    : querySpecification
+    | tableValueConstructor
+    | explicitTable
+    ;
+
+querySpecification
+    : SELECT selectSpecification* projections selectIntoExpression? fromClause? whereClause? groupByClause? havingClause? windowClause?
     ;
 
 call
@@ -177,12 +209,12 @@ loadXmlStatement
       (setAssignmentsClause)?
     ;
 
-tableStatement
-    : TABLE tableName (ORDER BY columnName)? (LIMIT NUMBER_ (OFFSET NUMBER_)?)?
+explicitTable
+    : TABLE tableName
     ;
 
-valuesStatement
-    : VALUES rowConstructorList (ORDER BY columnDesignator)? (LIMIT BY NUMBER_)?
+tableValueConstructor
+    : VALUES rowConstructorList
     ;
 
 columnDesignator
@@ -199,14 +231,6 @@ withClause
 
 cteClause
     : ignoredIdentifier columnNames? AS subquery
-    ;
-
-unionClause
-    : selectClause (UNION (ALL | DISTINCT)? selectClause)*
-    ;
-
-selectClause
-    : LP_? SELECT selectSpecification* projections selectIntoExpression? fromClause? whereClause? groupByClause? havingClause? windowClause? orderByClause? limitClause? selectIntoExpression? lockClause? RP_?
     ;
 
 selectSpecification
@@ -234,19 +258,19 @@ qualifiedShorthand
     ;
 
 fromClause
-    : FROM tableReferences
+    : FROM (DUAL | tableReferences)
     ;
 
 tableReferences
-    : escapedTableReference (COMMA_ escapedTableReference)*
+    : tableReference (COMMA_ tableReference)*
     ;
 
 escapedTableReference
-    : tableReference  | LBE_ OJ tableReference RBE_
+    : tableFactor joinedTable*
     ;
 
 tableReference
-    : tableFactor joinedTable*
+    : (tableFactor | LBE_ OJ escapedTableReference RBE_) joinedTable*
     ;
 
 tableFactor
@@ -266,9 +290,23 @@ indexHint
     ;
 
 joinedTable
-    : ((INNER | CROSS)? JOIN | STRAIGHT_JOIN) tableFactor joinSpecification?
-    | (LEFT | RIGHT) OUTER? JOIN tableFactor joinSpecification
-    | NATURAL (INNER | (LEFT | RIGHT) (OUTER))? JOIN tableFactor
+    : innerJoinType tableReference joinSpecification?
+    | outerJoinType tableReference joinSpecification
+    | naturalJoinType tableFactor
+    ;
+
+innerJoinType
+    : (INNER | CROSS)? JOIN
+    | STRAIGHT_JOIN
+    ;
+
+outerJoinType
+    : (LEFT | RIGHT) OUTER? JOIN
+    ;
+
+naturalJoinType
+    : NATURAL INNER? JOIN
+    | NATURAL (LEFT | RIGHT) OUTER? JOIN
     ;
 
 joinSpecification
@@ -308,7 +346,7 @@ windowItem
     ;
 
 subquery
-    : LP_ unionClause RP_
+    : queryExpressionParens
     ;
 
 selectLinesInto
@@ -325,5 +363,31 @@ selectIntoExpression
     ;
 
 lockClause
-    : FOR UPDATE | LOCK IN SHARE MODE
+    : FOR lockStrength lockedRowAction?
+    | FOR lockStrength
+    | LOCK IN SHARE MODE
+    ;
+
+lockClauseList
+    : lockClause+
+    ;
+
+lockStrength
+    : UPDATE | SHARE
+    ;
+
+lockedRowAction
+    : SKIP_SYMBOL LOCKED | NOWAIT
+    ;
+
+tableLockingList
+    : OF tableAliasRefList
+    ;
+
+tableIdentOptWild
+    : tableName DOT_ASTERISK_?
+    ;
+
+tableAliasRefList
+    : tableIdentOptWild+
     ;

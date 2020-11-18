@@ -17,17 +17,20 @@
 
 package org.apache.shardingsphere.sharding.rule.builder;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 public final class ShardingRuleBuilderTest {
@@ -36,10 +39,13 @@ public final class ShardingRuleBuilderTest {
         ShardingSphereServiceLoader.register(ShardingSphereRuleBuilder.class);
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuild() {
         ShardingRuleConfiguration ruleConfig = mock(ShardingRuleConfiguration.class);
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
-        assertThat(builder.build(ruleConfig, Collections.singletonList("name")), instanceOf(ShardingRule.class));
+        ((ShardingRuleBuilder) builder).setDatabaseType(mock(DatabaseType.class));
+        ((ShardingRuleBuilder) builder).setDataSourceMap(Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)));
+        assertThat(builder.build(ruleConfig), instanceOf(ShardingRule.class));
     }
 }

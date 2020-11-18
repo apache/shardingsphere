@@ -17,8 +17,17 @@
 
 package org.apache.shardingsphere.governance.repository.zookeeper;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.curator.framework.CuratorFramework;
@@ -34,24 +43,13 @@ import org.apache.shardingsphere.governance.repository.api.ConfigurationReposito
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.governance.repository.zookeeper.handler.CuratorZookeeperExceptionHandler;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Governance repository of ZooKeeper.
@@ -90,7 +88,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
             builder.connectionTimeoutMs(operationTimeoutMilliseconds);
         }
         if (!Strings.isNullOrEmpty(digest)) {
-            builder.authorization(ZookeeperPropertyKey.DIGEST.getKey(), digest.getBytes(Charsets.UTF_8))
+            builder.authorization(ZookeeperPropertyKey.DIGEST.getKey(), digest.getBytes(StandardCharsets.UTF_8))
                 .aclProvider(new ACLProvider() {
                     
                     @Override
@@ -129,7 +127,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         }
         Optional<ChildData> resultInCache = cache.get(key);
         if (resultInCache.isPresent()) {
-            return null == resultInCache.get().getData() ? null : new String(resultInCache.get().getData(), Charsets.UTF_8);
+            return null == resultInCache.get().getData() ? null : new String(resultInCache.get().getData(), StandardCharsets.UTF_8);
         }
         return getDirectly(key);
     }
@@ -156,7 +154,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     public void persist(final String key, final String value) {
         try {
             if (!isExisted(key)) {
-                client.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(key, value.getBytes(Charsets.UTF_8));
+                client.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(key, value.getBytes(StandardCharsets.UTF_8));
             } else {
                 update(key, value);
             }
@@ -180,7 +178,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     
     private String getDirectly(final String key) {
         try {
-            return new String(client.getData().forPath(key), Charsets.UTF_8);
+            return new String(client.getData().forPath(key), StandardCharsets.UTF_8);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -206,7 +204,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
             if (isExisted(key)) {
                 client.delete().deletingChildrenIfNeeded().forPath(key);
             }
-            client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(key, value.getBytes(Charsets.UTF_8));
+            client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(key, value.getBytes(StandardCharsets.UTF_8));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -237,9 +235,9 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         cache.listenable().addListener((type, oldData, data) -> {
             String eventPath = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getPath() : data.getPath();
             byte[] eventDataByte = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getData() : data.getData();
-            DataChangedEvent.ChangedType changedType = getChangedType(type);
-            if (ChangedType.IGNORED != changedType) {
-                listener.onChange(new DataChangedEvent(eventPath, null == eventDataByte ? null : new String(eventDataByte, Charsets.UTF_8), changedType));
+            Type changedType = getChangedType(type);
+            if (Type.IGNORED != changedType) {
+                listener.onChange(new DataChangedEvent(eventPath, null == eventDataByte ? null : new String(eventDataByte, StandardCharsets.UTF_8), changedType));
             }
         });
     }
@@ -256,16 +254,16 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         caches.put(cachePath + PATH_SEPARATOR, cache);
     }
     
-    private ChangedType getChangedType(final CuratorCacheListener.Type type) {
+    private Type getChangedType(final CuratorCacheListener.Type type) {
         switch (type) {
             case NODE_CREATED:
-                return ChangedType.ADDED;
+                return Type.ADDED;
             case NODE_CHANGED:
-                return ChangedType.UPDATED;
+                return Type.UPDATED;
             case NODE_DELETED:
-                return ChangedType.DELETED;
+                return Type.DELETED;
             default:
-                return ChangedType.IGNORED;
+                return Type.IGNORED;
         }
     }
     

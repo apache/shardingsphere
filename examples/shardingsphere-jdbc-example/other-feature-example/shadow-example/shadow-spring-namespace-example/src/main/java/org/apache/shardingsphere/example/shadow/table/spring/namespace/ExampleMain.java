@@ -28,7 +28,7 @@ public final class ExampleMain {
     
     private static final String CONFIG_FILE = "META-INF/application-shadow-databases.xml";
 //    private static final String CONFIG_FILE = "META-INF/application-sharding-shadow-databases.xml";
-//    private static final String CONFIG_FILE = "META-INF/application-primary-replica-replication-shadow-databases.xml";
+//    private static final String CONFIG_FILE = "META-INF/application-replica-query-shadow-databases.xml";
 //    private static final String CONFIG_FILE = "META-INF/application-encrypt-shadow-databases.xml";
     
     public static void main(final String[] args) throws SQLException {

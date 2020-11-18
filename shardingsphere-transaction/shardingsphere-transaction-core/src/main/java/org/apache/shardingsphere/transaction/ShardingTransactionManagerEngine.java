@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction;
 
 import com.google.common.base.Preconditions;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
@@ -28,7 +29,6 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ServiceLoader;
@@ -69,11 +69,7 @@ public final class ShardingTransactionManagerEngine {
     }
     
     private Collection<ResourceDataSource> getResourceDataSources(final Map<String, DataSource> dataSourceMap) {
-        List<ResourceDataSource> result = new LinkedList<>();
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.add(new ResourceDataSource(entry.getKey(), entry.getValue()));
-        }
-        return result;
+        return dataSourceMap.entrySet().stream().map(entry -> new ResourceDataSource(entry.getKey(), entry.getValue())).collect(Collectors.toCollection(LinkedList::new));
     }
     
     /**

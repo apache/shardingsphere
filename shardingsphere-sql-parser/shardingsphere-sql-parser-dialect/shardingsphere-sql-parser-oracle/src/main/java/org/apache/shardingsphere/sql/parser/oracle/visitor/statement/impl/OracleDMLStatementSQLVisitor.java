@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValueContext;
@@ -52,7 +53,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableR
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WhereClauseContext;
-import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
@@ -99,7 +99,7 @@ import java.util.List;
 /**
  * DML Statement SQL visitor for Oracle.
  */
-public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisitor implements DMLStatementSQLVisitor {
+public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {

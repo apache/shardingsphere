@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.event.listener;
 
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
 /**
  * Governance listener.
@@ -27,7 +27,7 @@ public interface GovernanceListener {
     /**
      * Start to watch.
      * 
-     * @param watchedChangedTypes watched data change types
+     * @param types watched data change types
      */
-    void watch(ChangedType... watchedChangedTypes);
+    void watch(Type... types);
 }

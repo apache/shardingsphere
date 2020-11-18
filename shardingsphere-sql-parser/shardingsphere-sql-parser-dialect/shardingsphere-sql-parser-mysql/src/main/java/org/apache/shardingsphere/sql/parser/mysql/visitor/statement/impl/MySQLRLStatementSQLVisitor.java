@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.RLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeMasterToContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StartSlaveContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StopSlaveContext;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLChangeMasterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLStartSlaveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLStopSlaveStatement;
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQL
 /**
  * RL Statement SQL visitor for MySQL.
  */
-public final class MySQLRLStatementSQLVisitor extends MySQLStatementSQLVisitor implements RLStatementSQLVisitor {
+public final class MySQLRLStatementSQLVisitor extends MySQLStatementSQLVisitor implements RLSQLVisitor, SQLStatementVisitor {
     
     @Override public ASTNode visitChangeMasterTo(final ChangeMasterToContext ctx) {
         return new MySQLChangeMasterStatement();

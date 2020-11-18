@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteRe
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,14 +40,14 @@ import static org.mockito.Mockito.mock;
 public final class SQLRewriteEntryTest {
     
     @Mock
-    private PhysicalSchemaMetaData metaData;
+    private ShardingSphereSchema schema;
     
     @Mock
     private ConfigurationProperties props;
     
     @Test
     public void assertRewriteForGenericSQLRewriteResult() {
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(metaData, props, Collections.emptyList());
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(schema, props, Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         GenericSQLRewriteResult sqlRewriteResult = (GenericSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), mock(SQLStatementContext.class), routeContext);
         assertThat(sqlRewriteResult.getSqlRewriteUnit().getSql(), is("SELECT ?"));
@@ -56,7 +56,7 @@ public final class SQLRewriteEntryTest {
     
     @Test
     public void assertRewriteForRouteSQLRewriteResult() {
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(metaData, props, Collections.emptyList());
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(schema, props, Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().addAll(Arrays.asList(mock(RouteUnit.class), mock(RouteUnit.class)));
         RouteSQLRewriteResult sqlRewriteResult = (RouteSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), mock(SQLStatementContext.class), routeContext);

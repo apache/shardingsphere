@@ -19,11 +19,15 @@ package org.apache.shardingsphere.scaling.core.job.position;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import lombok.Getter;
 
 /**
  * Placeholder inventory position.
  */
+@Getter
 public final class PlaceholderInventoryPosition implements InventoryPosition {
+    
+    private final boolean finished = false;
     
     @Override
     public JsonElement toJson() {

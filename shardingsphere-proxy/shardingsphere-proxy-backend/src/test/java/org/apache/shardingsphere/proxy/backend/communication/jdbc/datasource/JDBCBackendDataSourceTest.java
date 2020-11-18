@@ -21,11 +21,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.fixture.CallTimeRecordDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
@@ -65,23 +65,23 @@ public final class JDBCBackendDataSourceTest {
     
     @Before
     public void setUp() {
-        setSchemaContexts();
+        setMetaDataContexts();
         setTransactionContexts();
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setSchemaContexts() {
-        Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
-        schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxyContext.getInstance(), 
-                new StandardSchemaContexts(createSchemas(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+    private void setMetaDataContexts() {
+        Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
+        metaDataContexts.setAccessible(true);
+        metaDataContexts.set(ProxyContext.getInstance(), 
+                new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
-    private Map<String, ShardingSphereSchema> createSchemas() {
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
-        when(schema.getName()).thenReturn("schema");
-        when(schema.getDataSources()).thenReturn(mockDataSources(2));
-        return Collections.singletonMap("schema", schema);
+    private Map<String, ShardingSphereMetaData> createMetaDataMap() {
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(metaData.getName()).thenReturn("schema");
+        when(metaData.getResource().getDataSources()).thenReturn(mockDataSources(2));
+        return Collections.singletonMap("schema", metaData);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -134,7 +134,7 @@ public final class JDBCBackendDataSourceTest {
             try {
                 actual.addAll(each.get());
             } catch (final InterruptedException | ExecutionException ex) {
-                assertThat(ex.getMessage(), containsString("Could't get 6 connections one time, partition succeed connection(5) have released!"));
+                assertThat(ex.getMessage(), containsString("Can not get 6 connections one time, partition succeed connection(5) have released!"));
             }
         }
         assertTrue(actual.isEmpty());

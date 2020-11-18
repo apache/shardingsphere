@@ -26,13 +26,13 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
-//FIXME main class could not terminal after execute.
 public final class ExampleMain {
     
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases-tables.yaml"));
         ExampleExecuteTemplate.run(getExampleService(dataSource));
         ExampleExecuteTemplate.runFailure(getExampleService(dataSource));
+        System.exit(1);
     }
     
     private static File getFile(final String fileName) {

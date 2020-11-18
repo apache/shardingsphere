@@ -18,11 +18,9 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="select_with_expression">
-        <table-reference>
-            <table-factor>
-                <table name="t_order" alias="o" start-index="38" stop-index="49" />
-            </table-factor>
-        </table-reference>
+        <from>
+            <simple-table name="t_order" alias="o" start-index="38" stop-index="49" />
+        </from>
         <projections start-index="7" stop-index="31">
             <!-- TODO check expression-projection's stop-index whether include alias -->
             <expression-projection alias="exp" start-index="7" stop-index="31" />
@@ -35,11 +33,9 @@
     </select>
 
     <select sql-case-id="select_with_date_function">
-        <table-reference>
-            <table-factor>
-                <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="69" />
-            </table-factor>
-        </table-reference>
+        <from>
+            <simple-table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="69" />
+        </from>
         <projections start-index="7" stop-index="44">
             <expression-projection alias="creation_date" start-index="7" stop-index="44" />
         </projections>
@@ -49,11 +45,9 @@
     </select>
 
     <select sql-case-id="select_with_regexp" parameters="'init', 1, 2">
-        <table-reference>
-            <table-factor>
-                <table name="t_order_item" alias="t" start-index="14" stop-index="27" />
-            </table-factor>
-        </table-reference>
+        <from>
+            <simple-table name="t_order_item" alias="t" start-index="14" stop-index="27" />
+        </from>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -90,14 +84,14 @@
             </column-projection>
             <expression-projection start-index="33" stop-index="124" alias="stateName" />
         </projections>
-        <table-reference>
-            <table-factor>
-                <table start-index="135" stop-index="143" name="t_order" alias="t" />
-            </table-factor>
+        <from>
             <join-table>
-                <table-factor>
-                    <table start-index="155" stop-index="171" name="t_order_item" alias="o" />
-                </table-factor>
+                <left>
+                    <simple-table start-index="135" stop-index="143" name="t_order" alias="t" />
+                </left>
+                <right>
+                    <simple-table start-index="155" stop-index="171" name="t_order_item" alias="o" />
+                </right>
                 <joinSpecification>
                     <and-predicate>
                         <predicate start-index="176" stop-index="197">
@@ -111,7 +105,7 @@
                     </and-predicate>
                 </joinSpecification>
             </join-table>
-        </table-reference>
+        </from>
         <where start-index="198" stop-index="219">
             <and-predicate>
                 <predicate start-index="205" stop-index="219" >

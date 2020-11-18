@@ -21,12 +21,12 @@ import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -82,7 +82,7 @@ public final class BackendConnectionTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        setSchemaContexts();
+        setMetaDataContexts();
         setTransactionContexts();
         setBackendDataSource();
         backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
@@ -97,18 +97,18 @@ public final class BackendConnectionTest {
         field.set(ProxyContext.getInstance(), datasource);
     }
     
-    private void setSchemaContexts() throws ReflectiveOperationException {
-        Field field = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
+    private void setMetaDataContexts() throws ReflectiveOperationException {
+        Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         field.setAccessible(true);
         field.set(ProxyContext.getInstance(), 
-                new StandardSchemaContexts(createSchemas(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
-    private Map<String, ShardingSphereSchema> createSchemas() {
-        Map<String, ShardingSphereSchema> result = new HashMap<>(10);
+    private Map<String, ShardingSphereMetaData> createMetaDataMap() {
+        Map<String, ShardingSphereMetaData> result = new HashMap<>(10);
         for (int i = 0; i < 10; i++) {
             String name = String.format(SCHEMA_PATTERN, i);
-            result.put(name, mock(ShardingSphereSchema.class));
+            result.put(name, mock(ShardingSphereMetaData.class));
         }
         return result;
     }

@@ -39,6 +39,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-governance-core-facade</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-context</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -49,7 +54,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-primary-replica-replication-common</artifactId>
+            <artifactId>shardingsphere-replica-query-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -59,9 +64,10 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-rdl-parser-binder</artifactId>
+            <artifactId>shardingsphere-ha-common</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>

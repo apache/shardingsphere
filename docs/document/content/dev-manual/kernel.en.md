@@ -45,16 +45,15 @@ chapter = true
 
 ## SQLRouter
 
-| *SPI Name*           | *Description*                                   |
-| -------------------- | ----------------------------------------------- |
-| SQLRouter            | Used to process routing results                 |
+| *SPI Name*                    | *Description*                                         |
+| ----------------------------- | ----------------------------------------------------- |
+| SQLRouter                     | Used to process routing results                       |
 
-| *Implementation Class*             | *Description*                                               |
-| ---------------------------------- | ----------------------------------------------------------- |
-| ShardingSQLRouter                  | Used to process sharding routing results                    |
-| PrimaryReplicaReplicationSQLRouter | Used to process primary-replica replication routing results |
-| ConsensusReplicationSQLRouter      | Used to process consensus replication routing results       |
-| ShadowRouteSQLRouter               | Used to process shadow database routing results             |
+| *Implementation Class*        | *Description*                                         |
+| ----------------------------- | ----------------------------------------------------- |
+| ShardingSQLRouter             | Used to process sharding routing results              |
+| ReplicaQuerySQLRouter         | Used to process replica query routing results         |
+| ShadowRouteSQLRouter          | Used to process shadow database routing results       |
 
 ## SQLRewriteContextDecorator
 
@@ -67,16 +66,6 @@ chapter = true
 | ShardingSQLRewriteContextDecorator | Used to process sharding SQL rewrite results   |
 | EncryptSQLRewriteContextDecorator  | Used to process encryption SQL rewrite results |
 | ShadowSQLRewriteContextDecorator   | Used to process shadow SQL rewrite results     |
-
-## ExecuteGroupDecorator
-
-| *SPI Name*                   | *Description*                          |
-| ---------------------------- | -------------------------------------- |
-| ExecuteGroupDecorator        | Used by update data nodes group result |
-
-| *Implementation Class*                    | *Description*                                  |
-| ----------------------------------------- | ---------------------------------------------- |
-| ConsensusReplicationExecuteGroupDecorator | Used by consensus replication data nodes group |
 
 ## SQLExecutionHook
 

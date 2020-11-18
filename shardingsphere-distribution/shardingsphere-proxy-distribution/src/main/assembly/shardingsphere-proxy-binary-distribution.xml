@@ -27,6 +27,19 @@
     <fileSets>
         <fileSet>
             <directory>src/main/resources/bin</directory>
+            <lineEnding>unix</lineEnding>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>0755</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/bin</directory>
+            <lineEnding>windows</lineEnding>
+            <includes>
+                <include>*.bat</include>
+            </includes>
             <outputDirectory>bin</outputDirectory>
             <fileMode>0755</fileMode>
         </fileSet>

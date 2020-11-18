@@ -17,24 +17,30 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DoStatementContext;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLCallStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDoStatement;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DML Statement SQL visitor for MySQL.
  */
-public final class MySQLDMLStatementSQLVisitor extends MySQLStatementSQLVisitor implements DMLStatementSQLVisitor {
-    
+public final class MySQLDMLStatementSQLVisitor extends MySQLStatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
+
     @Override
     public ASTNode visitCall(final CallContext ctx) {
-        return new MySQLCallStatement();
+        List<ExpressionSegment> parameters = new ArrayList<>();
+        ctx.expr().forEach(each -> parameters.add((ExpressionSegment) visit(each)));
+        return new MySQLCallStatement(ctx.identifier().getText(), parameters);
     }
-    
+
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
         return new MySQLDoStatement();

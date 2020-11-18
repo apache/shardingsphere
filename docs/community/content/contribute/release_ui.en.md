@@ -147,8 +147,8 @@ cp -f ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-d
 **4. Generate sign files**
 
 ```shell
-shasum -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip >> apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip.sha512
-shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz.sha512
+shasum -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip > apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip.sha512
+shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz > apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.gz.sha512
 ```
 **5. Commit to Apache SVN**
 
@@ -205,10 +205,10 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.
 **Compare release source with github tag**
 
 ```
-curl -Lo tag-shardingsphere-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere-ui/archive/shardingsphere-ui-${RELEASE.VERSION}.zip
-unzip tag-shardingsphere-ui-${RELEASE.VERSION}.zip
+curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere-ui/archive/${RELEASE.VERSION}.zip
+unzip tag-${RELEASE.VERSION}.zip
 unzip apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip
-diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src/ shardingsphere-shardingsphere-ui-${RELEASE.VERSION}/
+diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src shardingsphere-shardingsphere-ui-${RELEASE.VERSION}
 ```
 
 **Check source package**
@@ -270,7 +270,7 @@ The release candidates:
 https://dist.apache.org/repos/dist/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}/
 
 Git tag for the release:
-https://github.com/apache/shardingsphere-ui/tree/shardingsphere-ui-${RELEASE.VERSION}/
+https://github.com/apache/shardingsphere-ui/tree/${RELEASE.VERSION}/
 
 Release Commit ID:
 https://github.com/apache/shardingsphere-ui/commit/xxxxxxxxxxxxxxxxxxxxxxx
@@ -356,7 +356,47 @@ git push --delete origin ${RELEASE.VERSION}-release
 git branch -d ${RELEASE.VERSION}-release
 ```
 
-**3. Update the download page**
+**3. Docker Release**
+
+3.1 Preparation
+
+Install and start docker service
+
+3.2 Compile Docker Image
+
+```shell
+git checkout ${RELEASE.VERSION}
+cd ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/
+mvn clean package -Prelease,docker
+```
+
+3.3 Tag the local Docker Image
+
+Check the image ID through `docker images`, for example: e9ea51023687
+
+```shell
+docker tag e9ea51023687 apache/shardingsphere-ui:latest
+docker tag e9ea51023687 apache/shardingsphere-ui:${RELEASE.VERSION}
+```
+
+3.4 Publish Docker Image
+
+```shell
+docker push apache/shardingsphere-ui:latest
+docker push apache/shardingsphere-ui:${RELEASE_VERSION}
+```
+
+3.5 Confirm the successful release
+
+Login [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-ui/) to check whether there are published images
+
+**4. Publish release in GitHub**
+
+Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere-ui/releases)'s `shardingsphere-ui-${RELEASE_VERSION}` version
+
+Edit version number and release notes, click `Publish release`
+
+**5. Update the download page**
 
 https://shardingsphere.apache.org/document/current/en/downloads/
 
@@ -366,13 +406,9 @@ GPG signatures and hashes (SHA* etc) should use URL start with `https://download
 
 Keep one latest versions in `Latest releases`. Incubating stage versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
 
-## Publish release in GitHub
+**6. Announce release completed by email**
 
-Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere-ui/releases)'s `shardingsphere-ui-${RELEASE_VERSION}` version
-
-Edit version number and release notes, click `Publish release`
-
-## Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
+Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
 
 Announcement e-mail template:
 

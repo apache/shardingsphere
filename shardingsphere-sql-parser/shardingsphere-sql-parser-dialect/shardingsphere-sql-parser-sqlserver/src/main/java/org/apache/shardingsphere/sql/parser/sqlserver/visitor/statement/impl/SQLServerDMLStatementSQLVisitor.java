@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.impl.DMLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentContext;
@@ -113,7 +114,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerUpdateStatement;
-import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementSQLVisitor;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -123,7 +123,7 @@ import java.util.List;
 /**
  * DML Statement SQL visitor for SQLServer.
  */
-public final class SQLServerDMLStatementSQLVisitor extends SQLServerStatementSQLVisitor implements DMLStatementSQLVisitor {
+public final class SQLServerDMLStatementSQLVisitor extends SQLServerStatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
@@ -296,6 +296,9 @@ public final class SQLServerDMLStatementSQLVisitor extends SQLServerStatementSQL
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         SQLServerDeleteStatement result = new SQLServerDeleteStatement();
+        if (null != ctx.withClause()) {
+            result.setWithSegment((WithSegment) visit(ctx.withClause()));
+        }
         if (null != ctx.multipleTablesClause()) {
             result.setTableSegment((TableSegment) visit(ctx.multipleTablesClause()));
         } else {

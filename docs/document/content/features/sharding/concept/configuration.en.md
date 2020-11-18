@@ -5,7 +5,7 @@ weight = 3
 
 ## Sharding Rule
 
-The main entrance for Sharding rules includes the configurations of data source, tables, binding tables and primary-replica replication.
+The main entrance for Sharding rules includes the configurations of data source, tables, binding tables and replica query.
 
 ## Data Sources Configuration
 

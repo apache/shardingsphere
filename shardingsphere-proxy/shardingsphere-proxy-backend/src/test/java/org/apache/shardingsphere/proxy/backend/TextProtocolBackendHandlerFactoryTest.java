@@ -70,10 +70,10 @@ public final class TextProtocolBackendHandlerFactoryTest {
     private void setTransactionContexts() {
         Field transactionContexts = ProxyContext.getInstance().getClass().getDeclaredField("transactionContexts");
         transactionContexts.setAccessible(true);
-        transactionContexts.set(ProxyContext.getInstance(), createSchemaContext());
+        transactionContexts.set(ProxyContext.getInstance(), createTransactionContexts());
     }
     
-    private TransactionContexts createSchemaContext() {
+    private TransactionContexts createTransactionContexts() {
         TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
         when(result.getEngines().get("schema")).thenReturn(new ShardingTransactionManagerEngine());
         return result;

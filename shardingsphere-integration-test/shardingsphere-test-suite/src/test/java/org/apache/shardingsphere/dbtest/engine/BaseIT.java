@@ -159,7 +159,7 @@ public abstract class BaseIT {
     @After
     public void tearDown() {
         if (dataSource instanceof ShardingSphereDataSource) {
-            ((ShardingSphereDataSource) dataSource).getSchemaContexts().getExecutorKernel().close();
+            ((ShardingSphereDataSource) dataSource).getMetaDataContexts().getExecutorKernel().close();
         }
     }
     

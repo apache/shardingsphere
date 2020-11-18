@@ -45,16 +45,15 @@ chapter = true
 
 ## SQLRouter
 
-| *SPI 名称*                | *详细说明*              |
-| ------------------------- | --------------------- |
-| SQLRouter                 | 用于处理路由结果        |
+| *SPI 名称*                   | *详细说明*                 |
+| ---------------------------- | ------------------------- |
+| SQLRouter                    | 用于处理路由结果            |
 
-| *已知实现类*                        | *详细说明*                |
-| ---------------------------------- | ------------------------ |
-| ShardingSQLRouter                  | 用于处理分片路由结果       |
-| PrimaryReplicaReplicationSQLRouter | 用于处理读写分离路由结果    |
-| ConsensusReplicationSQLRouter      | 用于处理强一致多副本路由结果 |
-| ShadowSQLRouter                    | 用于处理影子库路由结果      |
+| *已知实现类*                   | *详细说明*                |
+| ----------------------------- | ------------------------ |
+| ShardingSQLRouter             | 用于处理分片路由结果       |
+| ReplicaQuerySQLRouter         | 用于处理读写分离路由结果    |
+| ShadowSQLRouter               | 用于处理影子库路由结果      |
 
 ## SQLRewriteContextDecorator
 
@@ -67,16 +66,6 @@ chapter = true
 | ShardingSQLRewriteContextDecorator | 用于处理分片 SQL 改写结果   |
 | EncryptSQLRewriteContextDecorator  | 用于处理加密 SQL 改写结果   |
 | ShadowSQLRewriteContextDecorator   | 用于处理影子库 SQL 改写结果 |
-
-## ExecuteGroupDecorator
-
-| *SPI 名称*                   | *详细说明*             |
-| ---------------------------- | --------------------- |
-| ExecuteGroupDecorator        | 用于修改数据节点分组结果 |
-
-| *已知实现类*                               | *详细说明*                |
-| ----------------------------------------- | ------------------------ |
-| ConsensusReplicationExecuteGroupDecorator | 用于强一致多副本数据节点分组 |
 
 ## SQLExecutionHook
 

@@ -19,11 +19,15 @@ package org.apache.shardingsphere.scaling.core.job.position;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import lombok.Getter;
 
 /**
  * Finished inventory position.
  */
+@Getter
 public final class FinishedInventoryPosition implements InventoryPosition {
+    
+    private final boolean finished = true;
     
     @Override
     public JsonElement toJson() {

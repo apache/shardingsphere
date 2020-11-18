@@ -1,5 +1,5 @@
 +++
-pre = "<b>3.10.5. </b>"
+pre = "<b>3.9.5. </b>"
 title = "性能测试"
 weight = 5
 +++
@@ -130,7 +130,7 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-primaryReplicaReplicationRule:
+replicaQueryRule:
   name: pr_ds
   primaryDataSourceName: primary_ds
   replicaDataSourceNames:
@@ -227,7 +227,7 @@ shardingRule:
   defaultDataSourceName: primary_ds_1
   defaultTableStrategy:
     none:
-  primaryReplicaReplicationRules:
+  replicaQueryRules:
     pr_ds_0:
       primaryDataSourceName: primary_ds_0
       replicaDataSourceNames:

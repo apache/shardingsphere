@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.governance.core.event.listener;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
 
 import java.util.Arrays;
@@ -30,30 +29,32 @@ import java.util.Optional;
 
 /**
  * Post governance repository event listener.
+ * 
+ * @param <T> type of event
  */
 @RequiredArgsConstructor
-public abstract class PostGovernanceRepositoryEventListener implements GovernanceListener {
+public abstract class PostGovernanceRepositoryEventListener<T> implements GovernanceListener {
     
     private final GovernanceRepository governanceRepository;
     
     private final Collection<String> watchKeys;
     
     @Override
-    public final void watch(final ChangedType... changedTypes) {
-        Collection<ChangedType> watchedChangedTypeList = Arrays.asList(changedTypes);
+    public final void watch(final Type... types) {
+        Collection<Type> typeList = Arrays.asList(types);
         for (String watchKey : watchKeys) {
-            watch(watchKey, watchedChangedTypeList);
+            watch(watchKey, typeList);
         }
     }
     
-    private void watch(final String watchKey, final Collection<ChangedType> changedTypes) {
+    private void watch(final String watchKey, final Collection<Type> types) {
         governanceRepository.watch(watchKey, dataChangedEvent -> {
-            if (changedTypes.contains(dataChangedEvent.getChangedType())) {
-                Optional<GovernanceEvent> event = createGovernanceEvent(dataChangedEvent);
+            if (types.contains(dataChangedEvent.getType())) {
+                Optional<T> event = createEvent(dataChangedEvent);
                 event.ifPresent(GovernanceEventBus.getInstance()::post);
             }
         });
     }
     
-    protected abstract Optional<GovernanceEvent> createGovernanceEvent(DataChangedEvent event);
+    protected abstract Optional<T> createEvent(DataChangedEvent event);
 }
