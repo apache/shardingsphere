@@ -27,12 +27,12 @@ import java.util.Collection;
  */
 public final class RegistryListenerManager {
     
-    private final InstanceStateChangedListener instanceStateChangedListener;
+    private final TerminalStateChangedListener terminalStateChangedListener;
     
     private final DataSourceStateChangedListener dataSourceStateChangedListener;
     
     public RegistryListenerManager(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
-        instanceStateChangedListener = new InstanceStateChangedListener(registryRepository);
+        terminalStateChangedListener = new TerminalStateChangedListener(registryRepository);
         dataSourceStateChangedListener = new DataSourceStateChangedListener(registryRepository, schemaNames);
     }
     
@@ -40,7 +40,7 @@ public final class RegistryListenerManager {
      * Initialize all state changed listeners.
      */
     public void initListeners() {
-        instanceStateChangedListener.watch(Type.UPDATED);
+        terminalStateChangedListener.watch(Type.UPDATED);
         dataSourceStateChangedListener.watch(Type.UPDATED, Type.DELETED, Type.ADDED);
     }
 }

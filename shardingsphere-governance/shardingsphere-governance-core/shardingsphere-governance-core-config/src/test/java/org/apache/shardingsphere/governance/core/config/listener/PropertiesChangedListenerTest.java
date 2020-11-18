@@ -51,8 +51,8 @@ public final class PropertiesChangedListenerTest {
     }
     
     @Test
-    public void assertCreateGovernanceEvent() {
-        Optional<GovernanceEvent> actual = propertiesChangedListener.createGovernanceEvent(new DataChangedEvent("test", PROPERTIES_YAML, Type.UPDATED));
+    public void assertCreateEvent() {
+        Optional<GovernanceEvent> actual = propertiesChangedListener.createEvent(new DataChangedEvent("test", PROPERTIES_YAML, Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((PropertiesChangedEvent) actual.get()).getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(true));
         assertThat(((PropertiesChangedEvent) actual.get()).getProps().get(ConfigurationPropertyKey.ACCEPTOR_SIZE.getKey()), is(16));

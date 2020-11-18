@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult;
+package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.jdbc;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,27 +37,26 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Query result for memory loading.
+ * JDBC query result for memory loading.
  */
-public final class MemoryQueryResult implements QueryResult {
-    
-    private final ResultSetMetaData resultSetMetaData;
+public final class MemoryJDBCQueryResult extends AbstractJDBCQueryResult {
     
     private final Iterator<List<Object>> rows;
     
     private List<Object> currentRow;
     
-    public MemoryQueryResult(final ResultSet resultSet) throws SQLException {
-        resultSetMetaData = resultSet.getMetaData();
-        rows = getRows(resultSet);
+    public MemoryJDBCQueryResult(final ResultSet resultSet) throws SQLException {
+        super(resultSet.getMetaData());
+        rows = loadRows(resultSet);
     }
     
-    private Iterator<List<Object>> getRows(final ResultSet resultSet) throws SQLException {
+    private Iterator<List<Object>> loadRows(final ResultSet resultSet) throws SQLException {
         Collection<List<Object>> result = new LinkedList<>();
+        int columnCount = getColumnCount();
         while (resultSet.next()) {
-            List<Object> rowData = new ArrayList<>(resultSet.getMetaData().getColumnCount());
-            for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
-                Object rowValue = getRowValue(resultSet, columnIndex);
+            List<Object> rowData = new ArrayList<>(columnCount);
+            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+                Object rowValue = loadRowValue(resultSet, columnIndex);
                 rowData.add(resultSet.wasNull() ? null : rowValue);
             }
             result.add(rowData);
@@ -66,7 +64,8 @@ public final class MemoryQueryResult implements QueryResult {
         return result.iterator();
     }
     
-    private Object getRowValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+    @SuppressWarnings("ReturnOfNull")
+    private Object loadRowValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
         switch (metaData.getColumnType(columnIndex)) {
             case Types.BOOLEAN:
@@ -153,25 +152,5 @@ public final class MemoryQueryResult implements QueryResult {
     @Override
     public boolean wasNull() {
         return null == currentRow;
-    }
-    
-    @Override
-    public int getColumnCount() throws SQLException {
-        return resultSetMetaData.getColumnCount();
-    }
-    
-    @Override
-    public String getColumnName(final int columnIndex) throws SQLException {
-        return resultSetMetaData.getColumnName(columnIndex);
-    }
-    
-    @Override
-    public String getColumnLabel(final int columnIndex) throws SQLException {
-        return resultSetMetaData.getColumnLabel(columnIndex);
-    }
-    
-    @Override
-    public String getColumnTypeName(final int columnIndex) throws SQLException {
-        return resultSetMetaData.getColumnTypeName(columnIndex);
     }
 }

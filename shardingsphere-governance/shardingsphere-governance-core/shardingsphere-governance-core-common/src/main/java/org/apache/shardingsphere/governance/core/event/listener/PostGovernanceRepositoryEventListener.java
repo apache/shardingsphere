@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.core.event.listener;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
@@ -30,9 +29,11 @@ import java.util.Optional;
 
 /**
  * Post governance repository event listener.
+ * 
+ * @param <T> type of event
  */
 @RequiredArgsConstructor
-public abstract class PostGovernanceRepositoryEventListener implements GovernanceListener {
+public abstract class PostGovernanceRepositoryEventListener<T> implements GovernanceListener {
     
     private final GovernanceRepository governanceRepository;
     
@@ -49,11 +50,11 @@ public abstract class PostGovernanceRepositoryEventListener implements Governanc
     private void watch(final String watchKey, final Collection<Type> types) {
         governanceRepository.watch(watchKey, dataChangedEvent -> {
             if (types.contains(dataChangedEvent.getType())) {
-                Optional<GovernanceEvent> event = createGovernanceEvent(dataChangedEvent);
+                Optional<T> event = createEvent(dataChangedEvent);
                 event.ifPresent(GovernanceEventBus.getInstance()::post);
             }
         });
     }
     
-    protected abstract Optional<GovernanceEvent> createGovernanceEvent(DataChangedEvent event);
+    protected abstract Optional<T> createEvent(DataChangedEvent event);
 }

@@ -20,6 +20,8 @@ package org.apache.shardingsphere.proxy.frontend.state;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.state.StateContext;
+import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.impl.CircuitBreakProxyState;
@@ -28,23 +30,19 @@ import org.apache.shardingsphere.proxy.frontend.state.impl.OKProxyState;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Proxy state machine.
+ * Proxy state context.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProxyStateMachine {
+public final class ProxyStateContext {
     
-    private static final Map<ProxyStateType, ProxyState> PROXY_STATE_MAP = new ConcurrentHashMap<>(3, 1);
-    
-    private static final AtomicReference<ProxyState> CURRENT_STATE = new AtomicReference<>();
+    private static final Map<StateType, ProxyState> STATES = new ConcurrentHashMap<>(3, 1);
     
     static {
-        PROXY_STATE_MAP.put(ProxyStateType.OK, new OKProxyState());
-        PROXY_STATE_MAP.put(ProxyStateType.LOCK, new LockProxyState());
-        PROXY_STATE_MAP.put(ProxyStateType.CIRCUIT_BREAK, new CircuitBreakProxyState());
-        CURRENT_STATE.set(PROXY_STATE_MAP.get(ProxyStateType.OK));
+        STATES.put(StateType.OK, new OKProxyState());
+        STATES.put(StateType.LOCK, new LockProxyState());
+        STATES.put(StateType.CIRCUIT_BREAK, new CircuitBreakProxyState());
     }
     
     /**
@@ -57,15 +55,6 @@ public final class ProxyStateMachine {
      */
     public static void execute(final ChannelHandlerContext context, final Object message, 
                                final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final BackendConnection backendConnection) {
-        CURRENT_STATE.get().execute(context, message, databaseProtocolFrontendEngine, backendConnection);
-    }
-    
-    /**
-     * Switch proxy state.
-     * 
-     * @param type proxy state type
-     */
-    public static void switchState(final ProxyStateType type) {
-        CURRENT_STATE.set(PROXY_STATE_MAP.get(type));
+        STATES.get(StateContext.getCurrentState()).execute(context, message, databaseProtocolFrontendEngine, backendConnection);
     }
 }

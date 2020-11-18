@@ -51,8 +51,8 @@ public final class AuthenticationChangedListenerTest {
     }
     
     @Test
-    public void assertCreateGovernanceEvent() {
-        Optional<GovernanceEvent> actual = authenticationChangedListener.createGovernanceEvent(new DataChangedEvent("test", AUTHENTICATION_YAML, Type.UPDATED));
+    public void assertCreateEvent() {
+        Optional<GovernanceEvent> actual = authenticationChangedListener.createEvent(new DataChangedEvent("test", AUTHENTICATION_YAML, Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((AuthenticationChangedEvent) actual.get()).getAuthentication().getUsers().get("root1").getPassword(), is("root1"));
     }

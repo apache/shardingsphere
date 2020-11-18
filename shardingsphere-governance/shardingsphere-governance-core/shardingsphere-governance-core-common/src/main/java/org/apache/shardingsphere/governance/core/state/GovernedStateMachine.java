@@ -15,18 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.event;
+package org.apache.shardingsphere.governance.core.state;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
+import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
+import org.apache.shardingsphere.infra.state.StateEvent;
+import org.apache.shardingsphere.infra.state.StateContext;
 
 /**
- * Circuit state event.
+ * Governed state machine.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CircuitStateChangedEvent implements GovernanceEvent {
+public final class GovernedStateMachine {
     
-    private final boolean isCircuitBreak;
+    /**
+     * Start up governed state machine.
+     */
+    public static void startUp() {
+        GovernanceEventBus.getInstance().register(new GovernedStateMachine());
+    }
+    
+    /**
+     * Switch state.
+     *
+     * @param event state event
+     */
+    @Subscribe
+    public void switchState(final StateEvent event) {
+        StateContext.switchState(event);
+    }
 }
