@@ -361,18 +361,6 @@ public final class MemoryJDBCQueryResultTest {
         assertTrue(queryResult.wasNull());
     }
     
-    @Test
-    public void assertGetColumnCount() throws SQLException {
-        MemoryJDBCQueryResult queryResult = new MemoryJDBCQueryResult(getResultSet());
-        assertThat(queryResult.getColumnCount(), is(1));
-    }
-    
-    @Test
-    public void assertGetColumnLabel() throws SQLException {
-        MemoryJDBCQueryResult queryResult = new MemoryJDBCQueryResult(getResultSet());
-        assertThat(queryResult.getColumnLabel(1), is("order_id"));
-    }
-    
     private ResultSet getResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true).thenReturn(false);

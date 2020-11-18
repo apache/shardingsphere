@@ -247,18 +247,6 @@ public final class StreamJDBCQueryResultTest {
         assertTrue(queryResult.wasNull());
     }
     
-    @Test
-    public void assertGetColumnCount() throws SQLException {
-        StreamJDBCQueryResult queryResult = new StreamJDBCQueryResult(getResultSet());
-        assertThat(queryResult.getColumnCount(), is(1));
-    }
-    
-    @Test
-    public void assertGetColumnLabel() throws SQLException {
-        StreamJDBCQueryResult queryResult = new StreamJDBCQueryResult(getResultSet());
-        assertThat(queryResult.getColumnLabel(1), is("order_id"));
-    }
-    
     private ResultSet getResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true).thenReturn(false);
