@@ -28,7 +28,6 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -57,7 +56,7 @@ public final class ShowTablesBackendHandlerTest {
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getUsername()).thenReturn("root");
-        tablesBackendHandler = new ShowTablesBackendHandler("show tables", mock(SQLStatement.class), backendConnection);
+        tablesBackendHandler = new ShowTablesBackendHandler(backendConnection);
         Map<String, ShardingSphereMetaData> metaDataMap = getMetaDataMap();
         when(backendConnection.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
