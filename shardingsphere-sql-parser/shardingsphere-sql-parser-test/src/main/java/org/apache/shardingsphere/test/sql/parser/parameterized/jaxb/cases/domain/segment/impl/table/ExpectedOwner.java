@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
 /**
- * Expected index.
+ * Expected owner.
  */
 @Getter
 @Setter
-public final class ExpectedIndex extends AbstractExpectedIdentifierSQLSegment {
+public final class ExpectedOwner extends AbstractExpectedIdentifierSQLSegment {
 }

@@ -15,16 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 
-/**
- * Expected index.
- */
-@Getter
+import javax.xml.bind.annotation.XmlElement;
+
 @Setter
-public final class ExpectedIndex extends AbstractExpectedIdentifierSQLSegment {
+@Getter
+public class ExpectedBinaryOperationExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
+    @XmlElement(name = "left")
+    private ExpectedExpression left;
+
+    @XmlElement(name = "operator")
+    private String operator;
+
+    @XmlElement(name = "right")
+    private ExpectedExpression right;
 }

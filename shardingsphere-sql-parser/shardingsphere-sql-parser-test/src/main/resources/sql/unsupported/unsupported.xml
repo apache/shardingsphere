@@ -30,4 +30,9 @@
     <!--<sql-case id="assertInsertWithAll" value="INSERT ALL INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2" db-types="Oracle" />-->
     <!--<sql-case id="assertInsertWithFirst" value="INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2" db-types="Oracle" />-->
     <!--<sql-case id="assertDeleteTableAlias" value="DELETE ALIAS_XXX FROM TABLES_XXX AS ALIAS_XXX" db-types="MySQL,Oracle,SQLServer"/>-->
+    <!--<sql-case id="assertSelectWithCaseWithParameterMarker" value="SELECT * FROM t_order WHERE CASE WHEN order_id &gt; ? THEN 'true' ELSE 'false' END" db-types="MySQL"/>-->
+    <!--<sql-case id="assertSelectWithOrSign" value="SELECT * FROM t_order WHERE t_order.order_id = ? || ? = t_order.order_id" db-types="MySQL"/>-->
+    <!--<sql-case id="assertSelectWithMatchAgainstWithParameterMarker" value="SELECT * FROM TABLE_XXX WHERE MATCH(TABLE_XXX.COLUMN_XXX) AGAINST (? IN NATURAL LANGUAGE MODE)" db-types="MySQL" />-->
+    <!--<sql-case id="assertSelectLikeConcatWithParameterMarker" value="SELECT * FROM TABLE_XXX WHERE COLUMN_XXX LIKE CONCAT('%%', ?, '%%')" />-->
+    <!--<sql-case id="assertSelectGeographyWithParameterMarker" value="SELECT * FROM t_order WHERE rule BETWEEN ?::jsonb AND ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND order_id = ?" db-types="PostgreSQL" />-->
 </sql-cases>

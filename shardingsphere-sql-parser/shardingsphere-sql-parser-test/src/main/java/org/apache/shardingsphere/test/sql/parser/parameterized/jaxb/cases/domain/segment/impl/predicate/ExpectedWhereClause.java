@@ -20,12 +20,11 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.ExpectedExpression;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Expected where clause.
@@ -34,7 +33,7 @@ import java.util.List;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedWhereClause extends AbstractExpectedSQLSegment {
-    
-    @XmlElement(name = "and-predicate")
-    private final List<ExpectedAndPredicate> andPredicates = new LinkedList<>();
+
+    @XmlElement(name = "expr")
+    private ExpectedExpression expr;
 }

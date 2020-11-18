@@ -15,34 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.index;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.owner;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedIndex;
-
-import static org.junit.Assert.assertNotNull;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedOwner;
 
 /**
- * Index assert.
+ * Owner assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class IndexAssert {
+public final class OwnerAssert {
     
     /**
-     * Assert actual column segment is correct with expected column.
+     * Assert actual owner segment is correct with expected owner.
      *
      * @param assertContext assert context
-     * @param actual actual index segment
-     * @param expected expected index
+     * @param actual actual owner segment
+     * @param expected expected owner
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final IndexSegment actual, final ExpectedIndex expected) {
-        assertNotNull(assertContext.getText("Index should exist."), expected);
-        IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "Index");
+    public static void assertIs(final SQLCaseAssertContext assertContext, final OwnerSegment actual, final ExpectedOwner expected) {
+        IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "Owner");
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }
