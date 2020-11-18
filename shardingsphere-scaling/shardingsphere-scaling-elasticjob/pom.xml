@@ -28,10 +28,6 @@
     <artifactId>shardingsphere-scaling-elasticjob</artifactId>
     <name>${project.artifactId}</name>
 
-    <properties>
-        <elasticjob.version>3.0.0-beta</elasticjob.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -59,5 +55,4 @@
             <version>${logback.version}</version>
         </dependency>
     </dependencies>
-
 </project>
