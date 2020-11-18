@@ -37,7 +37,7 @@ public final class AbstractJDBCQueryResultTest {
     public void setUp() throws SQLException {
         queryResult = new AbstractJDBCQueryResultFixture(mockResultSetMetaData());
     }
-
+    
     private ResultSetMetaData mockResultSetMetaData() throws SQLException {
         ResultSetMetaData result = mock(ResultSetMetaData.class);
         when(result.getColumnCount()).thenReturn(1);
