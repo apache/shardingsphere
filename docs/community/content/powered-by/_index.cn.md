@@ -77,7 +77,7 @@ chapter = true
     <li><a href="http://www.dtchuxing.com/" rel="nofollow">公交云</a></li>
     <li><a href="http://www.ushareit.com/" rel="nofollow">茄子快传</a></li>
     <li><a href="https://www.xforceplus.com/" rel="nofollow">上海云砺信息科技有限公司</a></li>
-    <li><a href="https://aifanfan.baidu.com/ " rel="nofollow">baidu 爱番番</a></li>
+    <li><a href="https://aifanfan.baidu.com/ " rel="nofollow">百度爱番番</a></li>
 </ul>
 
 ### 出行
