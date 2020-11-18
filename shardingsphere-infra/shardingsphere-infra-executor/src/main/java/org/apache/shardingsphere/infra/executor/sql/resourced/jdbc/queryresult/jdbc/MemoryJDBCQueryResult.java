@@ -47,15 +47,16 @@ public final class MemoryJDBCQueryResult extends AbstractJDBCQueryResult {
     
     public MemoryJDBCQueryResult(final ResultSet resultSet) throws SQLException {
         super(resultSet.getMetaData());
-        rows = getRows(resultSet);
+        rows = loadRows(resultSet);
     }
     
-    private Iterator<List<Object>> getRows(final ResultSet resultSet) throws SQLException {
+    private Iterator<List<Object>> loadRows(final ResultSet resultSet) throws SQLException {
         Collection<List<Object>> result = new LinkedList<>();
+        int columnCount = getColumnCount();
         while (resultSet.next()) {
-            List<Object> rowData = new ArrayList<>(resultSet.getMetaData().getColumnCount());
-            for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
-                Object rowValue = getRowValue(resultSet, columnIndex);
+            List<Object> rowData = new ArrayList<>(columnCount);
+            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+                Object rowValue = loadRowValue(resultSet, columnIndex);
                 rowData.add(resultSet.wasNull() ? null : rowValue);
             }
             result.add(rowData);
@@ -63,7 +64,8 @@ public final class MemoryJDBCQueryResult extends AbstractJDBCQueryResult {
         return result.iterator();
     }
     
-    private Object getRowValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+    @SuppressWarnings("ReturnOfNull")
+    private Object loadRowValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
         switch (metaData.getColumnType(columnIndex)) {
             case Types.BOOLEAN:

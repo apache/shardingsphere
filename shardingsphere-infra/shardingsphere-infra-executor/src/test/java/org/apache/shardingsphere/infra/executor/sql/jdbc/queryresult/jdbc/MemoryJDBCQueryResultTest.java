@@ -52,14 +52,14 @@ public final class MemoryJDBCQueryResultTest {
     
     @Test(expected = SQLException.class)
     public void assertConstructorWithSqlException() throws SQLException {
-        ResultSet resultSet = getResultSet();
+        ResultSet resultSet = mockResultSet();
         when(resultSet.next()).thenThrow(new SQLException(""));
         new MemoryJDBCQueryResult(resultSet);
     }
     
     @Test
     public void assertNext() throws SQLException {
-        MemoryJDBCQueryResult queryResult = new MemoryJDBCQueryResult(getResultSet());
+        MemoryJDBCQueryResult queryResult = new MemoryJDBCQueryResult(mockResultSet());
         assertTrue(queryResult.next());
         assertFalse(queryResult.next());
     }
@@ -330,14 +330,14 @@ public final class MemoryJDBCQueryResultTest {
     
     @Test
     public void assertGetCalendarValue() throws SQLException {
-        MemoryJDBCQueryResult queryResult = new MemoryJDBCQueryResult(getResultSet());
+        MemoryJDBCQueryResult queryResult = new MemoryJDBCQueryResult(mockResultSet());
         queryResult.next();
         assertThat(queryResult.getCalendarValue(1, Integer.class, Calendar.getInstance()), Is.is(1));
     }
     
     @Test
     public void assertGetInputStream() throws SQLException, IOException {
-        MemoryJDBCQueryResult queryResult = new MemoryJDBCQueryResult(getResultSet());
+        MemoryJDBCQueryResult queryResult = new MemoryJDBCQueryResult(mockResultSet());
         queryResult.next();
         InputStream inputStream = queryResult.getInputStream(1, "Unicode");
         assertThat(inputStream.read(), is(getInputStream(1).read()));
@@ -354,30 +354,27 @@ public final class MemoryJDBCQueryResultTest {
     
     @Test
     public void assertWasNull() throws SQLException {
-        MemoryJDBCQueryResult queryResult = new MemoryJDBCQueryResult(getResultSet());
+        MemoryJDBCQueryResult queryResult = new MemoryJDBCQueryResult(mockResultSet());
         queryResult.next();
         assertFalse(queryResult.wasNull());
         queryResult.next();
         assertTrue(queryResult.wasNull());
     }
     
-    private ResultSet getResultSet() throws SQLException {
+    private ResultSet mockResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true).thenReturn(false);
         when(result.getInt(1)).thenReturn(1);
         when(result.wasNull()).thenReturn(false);
-        doReturn(getResultSetMetaData()).when(result).getMetaData();
+        doReturn(mockResultSetMetaData()).when(result).getMetaData();
         return result;
     }
     
-    private ResultSetMetaData getResultSetMetaData() throws SQLException {
+    private ResultSetMetaData mockResultSetMetaData() throws SQLException {
         ResultSetMetaData result = mock(ResultSetMetaData.class);
         when(result.getColumnCount()).thenReturn(1);
-        when(result.getColumnLabel(1)).thenReturn("order_id");
-        when(result.getColumnName(1)).thenReturn("order_id");
         when(result.getColumnType(1)).thenReturn(Types.INTEGER);
         when(result.isSigned(1)).thenReturn(true);
-        when(result.isCaseSensitive(1)).thenReturn(false);
         return result;
     }
 }
