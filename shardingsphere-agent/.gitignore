@@ -1,0 +1,40 @@
+# maven ignore
+target/
+*.class
+*.jar
+*.war
+*.zip
+*.tar
+*.tar.gz
+
+# maven plugin ignore
+release.properties
+cobertura.ser
+*.gpg
+
+# eclipse ignore
+.settings/
+.project
+.classpath
+
+# idea ignore
+.idea/
+*.ipr
+*.iml
+*.iws
+
+# temp ignore
+logs/
+*.log
+*.doc
+*.cache
+*.diff
+*.patch
+*.tmp
+
+# system ignore
+.DS_Store
+Thumbs.db
+
+# antlr ignore
+src/main/antlr4/imports/**/gen/
