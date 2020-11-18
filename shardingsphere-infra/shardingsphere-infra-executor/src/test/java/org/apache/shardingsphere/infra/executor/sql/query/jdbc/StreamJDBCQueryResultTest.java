@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.jdbc.queryresult;
+package org.apache.shardingsphere.infra.executor.sql.query.jdbc;
 
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.StreamJDBCQueryResult;
 import org.junit.Test;
 
 import java.math.BigDecimal;

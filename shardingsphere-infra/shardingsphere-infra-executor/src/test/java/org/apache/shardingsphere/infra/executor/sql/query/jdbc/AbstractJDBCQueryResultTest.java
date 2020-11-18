@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.jdbc.queryresult;
+package org.apache.shardingsphere.infra.executor.sql.query.jdbc;
 
-import org.apache.shardingsphere.infra.executor.sql.jdbc.queryresult.fixture.AbstractJDBCQueryResultFixture;
+import org.apache.shardingsphere.infra.executor.sql.query.jdbc.fixture.AbstractJDBCQueryResultFixture;
 import org.junit.Before;
 import org.junit.Test;
 

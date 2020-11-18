@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.merge.dql;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.Test;
 
