@@ -43,6 +43,7 @@ import org.apache.shardingsphere.scaling.elasticjob.util.ElasticJobUtils;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -97,6 +98,10 @@ public final class ElasticJobScalingWorker implements ScalingWorker {
     }
     
     private String getJobId(final String key) {
+        Matcher matcher = CONFIG_PATTERN.matcher(key);
+        if (matcher.matches()) {
+            return matcher.group(1);
+        }
         return key.split("/")[2];
     }
     
