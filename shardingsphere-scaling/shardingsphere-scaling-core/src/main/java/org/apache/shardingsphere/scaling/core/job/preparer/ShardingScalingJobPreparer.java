@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.core.job.preparer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.scaling.core.job.task.SyncTaskFactory;
 import org.apache.shardingsphere.scaling.core.schedule.SyncTaskControlStatus;
 import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.check.DataConsistencyCheckerFactory;
+import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -83,7 +85,8 @@ public final class ShardingScalingJobPreparer {
     }
     
     private ResumeBreakPointManager getResumeBreakPointManager(final String databaseType, final ShardingScalingJob shardingScalingJob) {
-        return ResumeBreakPointManagerFactory.newInstance(databaseType, String.format("/%s/position/%d", shardingScalingJob.getJobId(), shardingScalingJob.getShardingItem()));
+        return ResumeBreakPointManagerFactory.newInstance(databaseType,
+                ScalingTaskUtil.getScalingListenerPath(shardingScalingJob.getJobId(), ScalingConstant.POSITION, shardingScalingJob.getShardingItem()));
     }
     
     private void checkDataSources(final String databaseType, final DataSourceManager dataSourceManager) {

@@ -97,7 +97,7 @@ public final class ElasticJobScalingWorker implements ScalingWorker {
     }
     
     private String getJobId(final String key) {
-        return key.split("/")[3];
+        return key.split("/")[2];
     }
     
     private Optional<ScalingConfiguration> getScalingConfiguration(final DataChangedEvent event) {
@@ -164,7 +164,7 @@ public final class ElasticJobScalingWorker implements ScalingWorker {
         private final OneOffJobBootstrap jobBootstrap;
         
         private boolean running;
-    
+        
         private JobBootstrapWrapper(final String jobId, final ScalingConfiguration scalingConfiguration) {
             jobBootstrap = new OneOffJobBootstrap(registryCenter, new ScalingElasticJob(), createJobConfiguration(jobId, scalingConfiguration));
             running = scalingConfiguration.getJobConfiguration().isRunning();

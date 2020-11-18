@@ -27,6 +27,8 @@ import lombok.Setter;
 @Getter
 public final class JobConfiguration {
     
+    private Long jobId;
+    
     private int concurrency = 3;
     
     private int retryTimes = 3;

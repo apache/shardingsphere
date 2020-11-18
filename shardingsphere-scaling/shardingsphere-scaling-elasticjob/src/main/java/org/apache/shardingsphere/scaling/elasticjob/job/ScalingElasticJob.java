@@ -53,6 +53,7 @@ public final class ScalingElasticJob implements SimpleJob {
     private void startJob(final ScalingConfiguration scalingConfiguration, final ShardingContext shardingContext) {
         log.info("start job: {} - {}", shardingContext.getJobName(), shardingContext.getShardingItem());
         scalingConfiguration.getJobConfiguration().setShardingItem(shardingContext.getShardingItem());
+        scalingConfiguration.getJobConfiguration().setJobId(Long.valueOf(shardingContext.getJobName()));
         shardingScalingJob = SCALING_JOB_SERVICE.start(scalingConfiguration).orElse(null);
     }
     

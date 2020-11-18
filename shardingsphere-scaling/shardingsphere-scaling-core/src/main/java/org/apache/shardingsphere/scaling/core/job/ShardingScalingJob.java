@@ -65,6 +65,7 @@ public final class ShardingScalingJob {
     public ShardingScalingJob(final ScalingConfiguration scalingConfig) {
         this();
         scalingConfiguration = scalingConfig;
+        jobId = null != scalingConfig.getJobConfiguration().getJobId() ? scalingConfig.getJobConfiguration().getJobId() : jobId;
         shardingItem = scalingConfig.getJobConfiguration().getShardingItem();
         syncConfigurations.addAll(SyncConfigurationUtil.toSyncConfigurations(scalingConfig));
     }

@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
 import java.util.Collection;
@@ -43,7 +44,10 @@ public final class InventoryDataScalingTaskGroup extends AbstractShardingScaling
     public void start() {
         super.start();
         for (ScalingTask<InventoryPosition> each : scalingTasks) {
-            each.start();
+            PositionManager<InventoryPosition> positionManager = each.getPositionManager();
+            if (null != positionManager && null != positionManager.getPosition() && !positionManager.getPosition().isFinished()) {
+                each.start();
+            }
         }
     }
     
