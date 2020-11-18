@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling;
+package org.apache.shardingsphere.scaling.utils;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.junit.Test;
 
+import java.io.IOException;
+
 import static org.junit.Assert.assertNotNull;
 
-public final class WorkerBootstrapTest {
+public final class ScalingConfigUtilTest {
     
     @Test
-    public void assertMain() {
-        WorkerBootstrap.main(null);
+    @SneakyThrows(IOException.class)
+    public void assertInitScalingConfig() {
+        ScalingConfigUtil.initScalingConfig();
         assertNotNull(ScalingContext.getInstance().getServerConfig());
     }
 }

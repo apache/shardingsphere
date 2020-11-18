@@ -46,7 +46,7 @@ public final class WorkerBootstrap {
         ScalingConfigUtil.initScalingConfig();
         Optional<String> type = ScalingWorkerLoader.initScalingWorker();
         if (!type.isPresent()) {
-            log.warn("None worker found.");
+            log.error("None worker found.");
             return;
         }
         log.info("Worker type: {}", type.get());
