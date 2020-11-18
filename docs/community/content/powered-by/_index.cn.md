@@ -36,7 +36,6 @@ chapter = true
     <li><a href="https://www.ktjr.com/" rel="nofollow">开通金融</a></li>
     <li><a href="https://www.tansun.com/" rel="nofollow">天阳宏业</a></li>
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360数科</a></li>
-    
 </ul>
 
 ### 电子商务
@@ -185,7 +184,6 @@ chapter = true
     <li><a href="http://www.jtkjbike.com/" rel="nofollow">金通科技集团</a></li>
     <li><a href="http://www.iotlead.com/" rel="nofollow">广州理德物联网科技有限公司</a></li>
      <li><a href=" http://tcslwxwl.cn.b2b168.com/" rel="nofollow">神州商龙科技股份有限公司 </a></li>
-    
 </ul>
 
 ### 软件开发及服务
@@ -217,7 +215,6 @@ chapter = true
     <li><a href="http://www.aicmonitor.com/" rel="nofollow">航天智控</a></li>
     <li><a href="http://www.dzzd.com" rel="nofollow">玺信阳光</a></li>
     <li><a href="https://www.garfiel-tech.com/" rel="nofollow">北京加菲猫科技有限公司</a></li>
-      
 </ul>
 
 ### 医疗与健康
