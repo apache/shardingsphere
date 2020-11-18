@@ -533,7 +533,7 @@ createTableOption
     | option = MIN_ROWS EQ_? NUMBER_
     | option = AVG_ROW_LENGTH EQ_? NUMBER_
     | option = PASSWORD EQ_? STRING_
-    | option = COMMENT EQ_? STRING
+    | option = COMMENT EQ_? STRING_
     | option = COMPRESSION EQ_? textString
     | option = ENCRYPTION EQ_? textString
     | option = AUTO_INCREMENT EQ_? NUMBER_

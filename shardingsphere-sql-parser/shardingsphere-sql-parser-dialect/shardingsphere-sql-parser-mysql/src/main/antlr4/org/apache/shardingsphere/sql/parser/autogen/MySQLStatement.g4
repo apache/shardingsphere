@@ -85,5 +85,7 @@ execute
     | showCreateProcedure
     | showCreateView
     | showCreateUser
-    ) SEMI_?
+    | analyzeTable
+    | renameTable
+    ) (SEMI_ EOF? | EOF)
     ;
