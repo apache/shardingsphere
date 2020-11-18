@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult;
+package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.jdbc;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -40,16 +39,14 @@ import java.util.List;
 /**
  * Query result for memory loading.
  */
-public final class MemoryQueryResult implements QueryResult {
-    
-    private final ResultSetMetaData resultSetMetaData;
+public final class MemoryQueryResult extends AbstractJDBCQueryResult {
     
     private final Iterator<List<Object>> rows;
     
     private List<Object> currentRow;
     
     public MemoryQueryResult(final ResultSet resultSet) throws SQLException {
-        resultSetMetaData = resultSet.getMetaData();
+        super(resultSet.getMetaData());
         rows = getRows(resultSet);
     }
     
@@ -153,25 +150,5 @@ public final class MemoryQueryResult implements QueryResult {
     @Override
     public boolean wasNull() {
         return null == currentRow;
-    }
-    
-    @Override
-    public int getColumnCount() throws SQLException {
-        return resultSetMetaData.getColumnCount();
-    }
-    
-    @Override
-    public String getColumnName(final int columnIndex) throws SQLException {
-        return resultSetMetaData.getColumnName(columnIndex);
-    }
-    
-    @Override
-    public String getColumnLabel(final int columnIndex) throws SQLException {
-        return resultSetMetaData.getColumnLabel(columnIndex);
-    }
-    
-    @Override
-    public String getColumnTypeName(final int columnIndex) throws SQLException {
-        return resultSetMetaData.getColumnTypeName(columnIndex);
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.jdbc.queryresult;
 
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.MemoryQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.jdbc.MemoryQueryResult;
 import org.hamcrest.core.Is;
 import org.junit.Test;
 

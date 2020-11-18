@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.jdbc.queryresult;
 
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.StreamQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.jdbc.StreamQueryResult;
 import org.junit.Test;
 
 import java.math.BigDecimal;

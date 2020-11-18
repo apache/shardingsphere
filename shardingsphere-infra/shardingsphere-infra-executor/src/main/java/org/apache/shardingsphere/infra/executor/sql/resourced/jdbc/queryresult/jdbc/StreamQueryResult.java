@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult;
-
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.jdbc;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -26,7 +24,6 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -35,14 +32,12 @@ import java.util.Calendar;
 /**
  * Query result for stream loading.
  */
-public final class StreamQueryResult implements QueryResult {
-    
-    private final ResultSetMetaData resultSetMetaData;
+public final class StreamQueryResult extends AbstractJDBCQueryResult {
     
     private final ResultSet resultSet;
     
     public StreamQueryResult(final ResultSet resultSet) throws SQLException {
-        resultSetMetaData = resultSet.getMetaData();
+        super(resultSet.getMetaData());
         this.resultSet = resultSet;
     }
     
@@ -122,25 +117,5 @@ public final class StreamQueryResult implements QueryResult {
     @Override
     public boolean wasNull() throws SQLException {
         return resultSet.wasNull();
-    }
-    
-    @Override
-    public int getColumnCount() throws SQLException {
-        return resultSetMetaData.getColumnCount();
-    }
-    
-    @Override
-    public String getColumnName(final int columnIndex) throws SQLException {
-        return resultSetMetaData.getColumnName(columnIndex);
-    }
-    
-    @Override
-    public String getColumnLabel(final int columnIndex) throws SQLException {
-        return resultSetMetaData.getColumnLabel(columnIndex);
-    }
-    
-    @Override
-    public String getColumnTypeName(final int columnIndex) throws SQLException {
-        return resultSetMetaData.getColumnTypeName(columnIndex);
     }
 }
