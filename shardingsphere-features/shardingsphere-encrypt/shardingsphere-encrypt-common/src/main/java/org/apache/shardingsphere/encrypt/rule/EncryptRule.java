@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -107,15 +106,6 @@ public final class EncryptRule implements TableContainedRule {
     }
     
     /**
-     * Get encrypt table names.
-     *
-     * @return encrypt table names
-     */
-    public Collection<String> getEncryptTableNames() {
-        return tables.keySet();
-    }
-    
-    /**
      * Find encrypt table.
      * 
      * @param logicTable logic table
@@ -151,17 +141,6 @@ public final class EncryptRule implements TableContainedRule {
     }
     
     /**
-     * Is cipher column or not.
-     *
-     * @param tableName table name
-     * @param columnName column name
-     * @return cipher column or not
-     */
-    public boolean isCipherColumn(final String tableName, final String columnName) {
-        return tables.containsKey(tableName) && tables.get(tableName).isCipherColumn(columnName);
-    }
-    
-    /**
      * Get cipher column.
      *
      * @param logicTable logic table name
@@ -170,17 +149,6 @@ public final class EncryptRule implements TableContainedRule {
      */
     public String getCipherColumn(final String logicTable, final String logicColumn) {
         return tables.get(logicTable).getCipherColumn(logicColumn);
-    }
-    
-    /**
-     * Get logic column of cipher column.
-     *
-     * @param logicTable logic table
-     * @param cipherColumn cipher column
-     * @return logic column
-     */
-    public String getLogicColumnOfCipher(final String logicTable, final String cipherColumn) {
-        return tables.get(logicTable).getLogicColumn(cipherColumn);
     }
     
     /**
@@ -226,25 +194,7 @@ public final class EncryptRule implements TableContainedRule {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
         Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptAlgorithm,
                 String.format("Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn));
-        return originalValues.stream().map(input -> null == input
-                ? null : ((QueryAssistedEncryptAlgorithm) encryptor.get()).queryAssistedEncrypt(input.toString())).collect(Collectors.toList());
-    }
-    
-    /**
-     * Get assisted query and plain columns.
-     *
-     * @param logicTable logic table name
-     * @return assisted query and plain columns
-     */
-    public Collection<String> getAssistedQueryAndPlainColumns(final String logicTable) {
-        Collection<String> result = new LinkedList<>();
-        result.addAll(getAssistedQueryColumns(logicTable));
-        result.addAll(getPlainColumns(logicTable));
-        return result;
-    }
-    
-    private Collection<String> getPlainColumns(final String logicTable) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getPlainColumns() : Collections.emptyList();
+        return originalValues.stream().map(input -> null == input ? null : ((QueryAssistedEncryptAlgorithm) encryptor.get()).queryAssistedEncrypt(input.toString())).collect(Collectors.toList());
     }
     
     /**

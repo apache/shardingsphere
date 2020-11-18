@@ -46,10 +46,11 @@ public final class PostGovernanceRepositoryEventListenerTest {
     
     @Test
     public void assertWatch() {
-        PostGovernanceRepositoryEventListener postEventListener = new PostGovernanceRepositoryEventListener(governanceRepository, Collections.singletonList("test")) {
+        PostGovernanceRepositoryEventListener<GovernanceEvent> postEventListener = new PostGovernanceRepositoryEventListener<GovernanceEvent>(
+                governanceRepository, Collections.singletonList("test")) {
             
             @Override
-            protected Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+            protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
                 return Optional.of(mock(GovernanceEvent.class));
             }
         };
@@ -64,10 +65,10 @@ public final class PostGovernanceRepositoryEventListenerTest {
     
     @Test
     public void assertWatchMultipleKey() {
-        PostGovernanceRepositoryEventListener postEventListener = new PostGovernanceRepositoryEventListener(governanceRepository, Arrays.asList("test", "dev")) {
+        PostGovernanceRepositoryEventListener<GovernanceEvent> postEventListener = new PostGovernanceRepositoryEventListener<GovernanceEvent>(governanceRepository, Arrays.asList("test", "dev")) {
             
             @Override
-            protected Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+            protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
                 return Optional.of(mock(GovernanceEvent.class));
             }
         };

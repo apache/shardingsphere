@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.event;
+package org.apache.shardingsphere.scaling.core.service;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
+import org.apache.shardingsphere.scaling.core.service.impl.DistributedScalingJobService;
+import org.apache.shardingsphere.scaling.core.service.impl.StandaloneScalingJobService;
 
 /**
- * Circuit state event.
+ * Scaling job service factory.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CircuitStateChangedEvent implements GovernanceEvent {
+public final class ScalingJobServiceFactory {
     
-    private final boolean isCircuitBreak;
+    /**
+     * Get instance of {@code ScalingJobService}.
+     *
+     * @return scaling job service
+     */
+    public static ScalingJobService getInstance() {
+        return RegistryRepositoryHolder.isAvailable() ? new DistributedScalingJobService() : new StandaloneScalingJobService();
+    }
 }

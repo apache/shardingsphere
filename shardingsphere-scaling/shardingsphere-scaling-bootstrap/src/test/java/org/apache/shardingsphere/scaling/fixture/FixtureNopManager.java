@@ -37,6 +37,11 @@ public final class FixtureNopManager extends BasePositionManager<IncrementalPosi
         
         return new IncrementalPosition() {
             @Override
+            public long getDelay() {
+                return 0;
+            }
+    
+            @Override
             public int compareTo(final Position o) {
                 return 0;
             }

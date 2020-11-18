@@ -17,29 +17,29 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener;
 
-import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
-import org.apache.shardingsphere.governance.core.registry.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.infra.state.StateEvent;
+import org.apache.shardingsphere.infra.state.StateType;
 
 import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Instance state changed listener.
+ * Terminal state changed listener.
  */
-public final class InstanceStateChangedListener extends PostGovernanceRepositoryEventListener {
+public final class TerminalStateChangedListener extends PostGovernanceRepositoryEventListener<StateEvent> {
     
-    public InstanceStateChangedListener(final RegistryRepository registryRepository) {
+    public TerminalStateChangedListener(final RegistryRepository registryRepository) {
         super(registryRepository, Collections.singleton(new RegistryCenterNode().getProxyNodePath(GovernanceInstance.getInstance().getInstanceId())));
     }
     
     @Override
-    protected Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return Optional.of(new CircuitStateChangedEvent(RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue())));
+    protected Optional<StateEvent> createEvent(final DataChangedEvent event) {
+        return Optional.of(new StateEvent(StateType.CIRCUIT_BREAK, RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue())));
     }
 }

@@ -17,7 +17,8 @@
 
 schemaName: encrypt_db
 
-dataSourceCommon:
+dataSource:
+  url: jdbc:mysql://127.0.0.1:3306/encrypt_ds
   username: root
   password:
   connectionTimeoutMilliseconds: 30000
@@ -26,9 +27,6 @@ dataSourceCommon:
   maxPoolSize: 50
   minPoolSize: 1
   maintenanceIntervalMilliseconds: 30000
-  
-dataSource:
-  url: jdbc:mysql://127.0.0.1:3306/encrypt_ds
 
 rules:
 - !ENCRYPT

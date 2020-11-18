@@ -46,7 +46,7 @@ public final class EncryptRuleTest {
         AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
                 Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", new TestEncryptAlgorithm()));
         EncryptRule actual = new EncryptRule(ruleConfig);
-        assertThat(actual.getEncryptTableNames(), is(Collections.singleton("t_encrypt")));
+        assertTrue(actual.findEncryptTable("t_encrypt").isPresent());
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -65,11 +65,6 @@ public final class EncryptRuleTest {
         AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
                 Collections.singleton(tableConfig), ImmutableMap.of("invalid_encryptor", new TestEncryptAlgorithm()));
         new EncryptRule(ruleConfig);
-    }
-    
-    @Test
-    public void assertGetEncryptTableNames() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).getEncryptTableNames().isEmpty());
     }
     
     @Test
@@ -96,11 +91,6 @@ public final class EncryptRuleTest {
     }
     
     @Test
-    public void assertIsCipherColumn() {
-        assertTrue(new EncryptRule(createEncryptRuleConfiguration()).isCipherColumn("t_encrypt", "pwd_cipher"));
-    }
-    
-    @Test
     public void assertGetCipherColumnWhenEncryptColumnExist() {
         assertThat(new EncryptRule(createEncryptRuleConfiguration()).getCipherColumn("t_encrypt", "pwd"), is("pwd_cipher"));
     }
@@ -108,11 +98,6 @@ public final class EncryptRuleTest {
     @Test(expected = NullPointerException.class)
     public void assertGetCipherColumnWhenNoEncryptColumn() {
         new EncryptRule(createEncryptRuleConfiguration()).getCipherColumn("t_encrypt", "pwd_cipher");
-    }
-    
-    @Test
-    public void assertGetLogicColumnOfCipher() {
-        assertThat(new EncryptRule(createEncryptRuleConfiguration()).getLogicColumnOfCipher("t_encrypt", "pwd_cipher"), is("pwd"));
     }
     
     @Test
@@ -136,11 +121,6 @@ public final class EncryptRuleTest {
     @Test
     public void assertGetAssistedQueryColumns() {
         assertTrue(new EncryptRule(createEncryptRuleConfiguration()).getAssistedQueryColumns("t_encrypt").isEmpty());
-    }
-    
-    @Test
-    public void assertGetAssistedQueryAndPlainColumns() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).getAssistedQueryAndPlainColumns("t_encrypt").isEmpty());
     }
     
     @Test

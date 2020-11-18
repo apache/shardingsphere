@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
@@ -36,7 +37,7 @@ public class AbstractSqlBuilderTest {
     
     @Before
     public void setUp() {
-        sqlBuilder = new AbstractSQLBuilder() {
+        sqlBuilder = new AbstractSQLBuilder(Maps.newHashMap()) {
             
             @Override
             protected String getLeftIdentifierQuoteString() {

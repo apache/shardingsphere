@@ -29,6 +29,5 @@
     <!--<sql-case id="assertSelectWithModelIn" value="SELECT order_id_value,order_item_id_value FROM (select 1001 as order_id_value, 100001 as order_item_id_value from dual) MODEL RETURN UPDATED ROWS DIMENSION BY(order_item_id_value) MEASURES(order_id_value) RULES(order_id_value[1] = 10001)" db-types="Oracle" />-->
     <!--<sql-case id="assertInsertWithAll" value="INSERT ALL INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2" db-types="Oracle" />-->
     <!--<sql-case id="assertInsertWithFirst" value="INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2" db-types="Oracle" />-->
-    <!--<sql-case id="assertDeleteMultipleTable" value="DELETE TABLE_XXX1, TABLE_xxx2 FROM TABLE_XXX1 JOIN TABLE_XXX2" db-types="MySQL" />-->
-    <!--<sql-case id="assertDeleteMultipleTableWithUsing" value="DELETE FROM TABLE_XXX1, TABLE_xxx2 USING TABLE_XXX1 JOIN TABLE_XXX2" db-types="MySQL" />-->
+    <!--<sql-case id="assertDeleteTableAlias" value="DELETE ALIAS_XXX FROM TABLES_XXX AS ALIAS_XXX" db-types="MySQL,Oracle,SQLServer"/>-->
 </sql-cases>

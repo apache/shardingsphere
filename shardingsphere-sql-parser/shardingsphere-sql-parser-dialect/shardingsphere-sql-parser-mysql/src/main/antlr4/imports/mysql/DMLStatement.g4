@@ -108,10 +108,6 @@ multipleTablesClause
     : tableAliasRefList FROM tableReferences | FROM tableAliasRefList USING tableReferences
     ;
 
-multipleTableNames
-    : tableName DOT_ASTERISK_? (COMMA_ tableName DOT_ASTERISK_?)*
-    ;
-
 select
     : queryExpression lockClauseList?
     | queryExpressionParens
@@ -363,8 +359,7 @@ selectIntoExpression
     ;
 
 lockClause
-    : FOR lockStrength lockedRowAction?
-    | FOR lockStrength
+    : FOR lockStrength tableLockingList? lockedRowAction?
     | LOCK IN SHARE MODE
     ;
 
@@ -389,5 +384,5 @@ tableIdentOptWild
     ;
 
 tableAliasRefList
-    : tableIdentOptWild+
+    : tableIdentOptWild (COMMA_ tableIdentOptWild)*
     ;

@@ -36,7 +36,7 @@ public final class RegistryListenerManagerTest {
     private RegistryRepository registryRepository;
     
     @Mock
-    private InstanceStateChangedListener instanceStateChangedListener;
+    private TerminalStateChangedListener terminalStateChangedListener;
     
     @Mock
     private DataSourceStateChangedListener dataSourceStateChangedListener;
@@ -44,10 +44,10 @@ public final class RegistryListenerManagerTest {
     @Test
     public void assertInitListeners() {
         RegistryListenerManager actual = new RegistryListenerManager(registryRepository, Arrays.asList("sharding_db", "replica_query_db", "encrypt_db"));
-        FieldUtil.setField(actual, "instanceStateChangedListener", instanceStateChangedListener);
+        FieldUtil.setField(actual, "terminalStateChangedListener", terminalStateChangedListener);
         FieldUtil.setField(actual, "dataSourceStateChangedListener", dataSourceStateChangedListener);
         actual.initListeners();
-        verify(instanceStateChangedListener).watch(Type.UPDATED);
+        verify(terminalStateChangedListener).watch(Type.UPDATED);
         verify(dataSourceStateChangedListener).watch(Type.UPDATED, Type.DELETED, Type.ADDED);
     }
 }

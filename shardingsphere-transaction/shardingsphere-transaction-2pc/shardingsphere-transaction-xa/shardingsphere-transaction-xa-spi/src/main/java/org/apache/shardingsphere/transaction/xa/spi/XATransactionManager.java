@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.transaction.xa.spi;
 
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+
 import javax.sql.XADataSource;
 import javax.transaction.TransactionManager;
 
 /**
  * XA transaction manager.
  */
-public interface XATransactionManager extends AutoCloseable {
+public interface XATransactionManager extends AutoCloseable, TypedSPI {
     
     /**
      * Initialize XA transaction manager.

@@ -29,6 +29,7 @@ import javax.sql.XADataSource;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
+import java.util.Properties;
 
 /**
  * Bitronix sharding transaction manager.
@@ -66,5 +67,20 @@ public final class BitronixXATransactionManager implements XATransactionManager 
     @Override
     public void close() {
         bitronixTransactionManager.shutdown();
+    }
+    
+    @Override
+    public String getType() {
+        return "bitronix";
+    }
+    
+    @Override
+    public Properties getProps() {
+        return null;
+    }
+    
+    @Override
+    public void setProps(final Properties props) {
+        
     }
 }

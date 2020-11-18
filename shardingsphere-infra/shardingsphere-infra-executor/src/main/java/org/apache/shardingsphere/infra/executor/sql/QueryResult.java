@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.executor.sql;
 
 import java.io.InputStream;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Calendar;
 
@@ -26,13 +25,6 @@ import java.util.Calendar;
  * Query result form SQL.
  */
 public interface QueryResult {
-    
-    /**
-     * Get JDBC ResultSetMetaData.
-     *
-     * @return JDBC ResultSetMetaData
-     */
-    ResultSetMetaData getResultSetMetaData();
     
     /**
      * iterate next data.
@@ -106,4 +98,13 @@ public interface QueryResult {
      * @throws SQLException SQL Exception
      */
     String getColumnLabel(int columnIndex) throws SQLException;
+    
+    /**
+     * Get column type name.
+     * 
+     * @param columnIndex column index
+     * @return column type name
+     * @throws SQLException SQL Exception
+     */
+    String getColumnTypeName(int columnIndex) throws SQLException;
 }

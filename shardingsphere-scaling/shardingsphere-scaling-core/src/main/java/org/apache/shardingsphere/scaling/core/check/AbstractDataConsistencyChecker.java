@@ -27,7 +27,6 @@ import org.apache.shardingsphere.scaling.core.execute.executor.importer.Abstract
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -60,7 +59,7 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
             long sourceCount = count(sourceDataSource, table);
             long targetCount = count(targetDataSource, table);
             return new DataConsistencyCheckResult(sourceCount, targetCount);
-        } catch (final IOException ex) {
+        } catch (final SQLException ex) {
             throw new DataCheckFailException(String.format("table %s count check failed.", table), ex);
         }
     }

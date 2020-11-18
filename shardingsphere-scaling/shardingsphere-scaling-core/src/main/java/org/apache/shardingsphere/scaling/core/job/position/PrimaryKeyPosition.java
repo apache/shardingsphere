@@ -35,6 +35,8 @@ public final class PrimaryKeyPosition implements InventoryPosition {
     
     private static final Gson GSON = new Gson();
     
+    private final boolean finished = false;
+    
     private long beginValue;
     
     private long endValue;

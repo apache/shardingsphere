@@ -62,9 +62,9 @@ public final class TableMetaDataBuilder {
             if (entry.getKey() instanceof TableContainedRule) {
                 TableContainedRule rule = (TableContainedRule) entry.getKey();
                 RuleBasedTableMetaDataBuilder loader = entry.getValue();
-                Optional<TableMetaData> tableMetaData = loader.load(tableName, materials.getDatabaseType(), materials.getDataSourceMap(), dataNodes, rule, materials.getProps());
-                if (tableMetaData.isPresent()) {
-                    return tableMetaData;
+                Optional<TableMetaData> result = loader.load(tableName, materials.getDatabaseType(), materials.getDataSourceMap(), dataNodes, rule, materials.getProps());
+                if (result.isPresent()) {
+                    return result;
                 }
             }
         }
