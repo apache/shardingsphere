@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.jdbc.queryresult.jdbc;
+package org.apache.shardingsphere.infra.executor.sql.query.jdbc;
 
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.jdbc.MemoryJDBCQueryResult;
 import org.hamcrest.core.Is;
 import org.junit.Test;
 

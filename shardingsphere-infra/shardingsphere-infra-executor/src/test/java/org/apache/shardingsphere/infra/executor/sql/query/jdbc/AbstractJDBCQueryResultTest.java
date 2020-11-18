@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.jdbc.queryresult.jdbc;
+package org.apache.shardingsphere.infra.executor.sql.query.jdbc;
 
-import org.apache.shardingsphere.infra.executor.sql.jdbc.queryresult.jdbc.fixture.AbstractJDBCQueryResultFixture;
+import org.apache.shardingsphere.infra.executor.sql.query.jdbc.fixture.AbstractJDBCQueryResultFixture;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,7 +37,7 @@ public final class AbstractJDBCQueryResultTest {
     public void setUp() throws SQLException {
         queryResult = new AbstractJDBCQueryResultFixture(mockResultSetMetaData());
     }
-
+    
     private ResultSetMetaData mockResultSetMetaData() throws SQLException {
         ResultSetMetaData result = mock(ResultSetMetaData.class);
         when(result.getColumnCount()).thenReturn(1);
