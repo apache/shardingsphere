@@ -26,7 +26,6 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -36,7 +35,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -252,16 +250,6 @@ public final class StreamJDBCQueryResultTest {
         when(result.next()).thenReturn(true).thenReturn(false);
         when(result.getInt(1)).thenReturn(1);
         when(result.wasNull()).thenReturn(false).thenReturn(true);
-        doReturn(getResultSetMetaData()).when(result).getMetaData();
-        return result;
-    }
-    
-    private ResultSetMetaData getResultSetMetaData() throws SQLException {
-        ResultSetMetaData result = mock(ResultSetMetaData.class);
-        when(result.getColumnCount()).thenReturn(1);
-        when(result.getColumnLabel(1)).thenReturn("order_id");
-        when(result.getColumnName(1)).thenReturn("order_id");
-        when(result.isCaseSensitive(1)).thenReturn(false);
         return result;
     }
 }
