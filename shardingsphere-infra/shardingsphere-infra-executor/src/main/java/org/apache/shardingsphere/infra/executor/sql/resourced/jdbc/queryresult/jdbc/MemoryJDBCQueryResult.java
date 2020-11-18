@@ -37,15 +37,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Query result for memory loading.
+ * JDBC query result for memory loading.
  */
-public final class MemoryQueryResult extends AbstractJDBCQueryResult {
+public final class MemoryJDBCQueryResult extends AbstractJDBCQueryResult {
     
     private final Iterator<List<Object>> rows;
     
     private List<Object> currentRow;
     
-    public MemoryQueryResult(final ResultSet resultSet) throws SQLException {
+    public MemoryJDBCQueryResult(final ResultSet resultSet) throws SQLException {
         super(resultSet.getMetaData());
         rows = getRows(resultSet);
     }

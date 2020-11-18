@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.Exe
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.update.ExecuteUpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.impl.DefaultSQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.jdbc.MemoryQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.jdbc.StreamQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.jdbc.MemoryJDBCQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.jdbc.StreamJDBCQueryResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.JDBCAccessor;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -118,7 +118,7 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     }
     
     private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
-        return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
+        return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamJDBCQueryResult(resultSet) : new MemoryJDBCQueryResult(resultSet);
     }
     
     private long getGeneratedKey(final Statement statement) throws SQLException {
