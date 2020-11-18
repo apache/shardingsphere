@@ -139,10 +139,6 @@ alterUserList
     : alterUserEntry (COMMA_ alterUserEntry)*
     ;
 
-alterUserTail
-    : alterUserList
-    ;
-
 dropUser
     : DROP USER (IF EXISTS)? userName (COMMA_ userName)*
     ;
