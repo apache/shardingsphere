@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.Exec
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.impl.DefaultSQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.jdbc.MemoryJDBCQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.jdbc.StreamJDBCQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.MemoryJDBCQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.StreamJDBCQueryResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;

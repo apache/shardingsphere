@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.jdbc;
+package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult;
 
 import lombok.SneakyThrows;
 
