@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.lock;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 
+import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Lock segment.
+ * Expected lock clause.
  */
-
-@RequiredArgsConstructor
 @Getter
-public final class LockSegment implements SQLSegment {
+@Setter
+public final class ExpectedLockClause extends AbstractExpectedSQLSegment {
 
-    private final int startIndex;
-
-    private final int stopIndex;
-
-    private List<SimpleTableSegment> tables = new LinkedList<>();
+    @XmlElement(name = "table")
+    private final List<ExpectedSimpleTable> tables = new LinkedList<>();
 }

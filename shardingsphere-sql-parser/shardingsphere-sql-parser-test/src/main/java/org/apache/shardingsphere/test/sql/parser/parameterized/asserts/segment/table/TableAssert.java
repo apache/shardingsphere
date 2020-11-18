@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
@@ -64,10 +63,9 @@ public final class TableAssert {
             assertIs(assertContext, (SimpleTableSegment) actual, expected.getSimpleTable());
         } else if (actual instanceof SubqueryTableSegment) {
             assertIs(assertContext, (SubqueryTableSegment) actual, expected.getSubqueryTable());
-        } else if (actual instanceof DeleteMultiTableSegment) {
-            return;
         } else {
-            return;
+            throw new UnsupportedOperationException(
+                    String.format("Unsupported table segment type `%s`.", actual.getClass()));
         }
     }
 
@@ -131,6 +129,21 @@ public final class TableAssert {
         for (SimpleTableSegment each : actual) {
             assertIs(assertContext, each, expected.get(count));
             count++;
+        }
+    }
+
+    /**
+     * Assert actual simple table segments with expected simple tables.
+     *
+     * @param assertContext assert context
+     * @param actualTables actual simple tables
+     * @param expectedTables expected simple tables
+     */
+    public static void assertIs(final SQLCaseAssertContext assertContext, final List<SimpleTableSegment> actualTables, final List<ExpectedSimpleTable> expectedTables) {
+        assertThat(assertContext.getText("tables size should be the same."),
+                actualTables.size(), is(expectedTables.size()));
+        for (int i = 0; i < actualTables.size(); i++) {
+            assertIs(assertContext, actualTables.get(i), expectedTables.get(i));
         }
     }
 
