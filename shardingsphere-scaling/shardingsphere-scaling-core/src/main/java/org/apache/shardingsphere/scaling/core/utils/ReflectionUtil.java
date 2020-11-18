@@ -15,25 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.scaling.core.utils;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.SneakyThrows;
+
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Job configuration.
+ * Reflection utils.
  */
-@Setter
-@Getter
-public final class JobConfiguration {
+public final class ReflectionUtil {
     
-    private int concurrency = 3;
-    
-    private int retryTimes = 3;
-    
-    private String[] shardingTables;
-    
-    private int shardingItem;
-    
-    private boolean running = true;
+    /**
+     * Get field map.
+     *
+     * @param object object
+     * @return field map
+     */
+    @SneakyThrows(ReflectiveOperationException.class)
+    public static Map<String, Object> getFieldMap(final Object object) {
+        Map<String, Object> result = new HashMap<>();
+        for (Field field : object.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
+            Object value = field.get(object);
+            if (null != value) {
+                result.put(field.getName(), value);
+            }
+        }
+        return result;
+    }
 }

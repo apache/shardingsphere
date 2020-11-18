@@ -49,10 +49,8 @@ public final class HttpServerInitializerTest {
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
-        if (null == ScalingContext.getInstance().getServerConfig()) {
-            ScalingContext.getInstance().init(new ServerConfiguration());
-            ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "taskExecuteEngine", mock(ShardingScalingExecuteEngine.class));
-        }
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", new ServerConfiguration());
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "taskExecuteEngine", mock(ShardingScalingExecuteEngine.class));
         when(socketChannel.pipeline()).thenReturn(channelPipeline);
     }
     

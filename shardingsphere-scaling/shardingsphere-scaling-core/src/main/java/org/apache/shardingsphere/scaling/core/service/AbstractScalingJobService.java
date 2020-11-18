@@ -22,6 +22,7 @@ import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.utils.ProxyConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil;
 
 import java.util.Map;
 import java.util.Optional;
@@ -33,7 +34,9 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
     
     @Override
     public boolean shouldScaling(final String oldYamlProxyConfiguration, final String newYamlProxyConfiguration) {
-        return shouldScaling(ProxyConfigurationUtil.toScalingConfiguration(oldYamlProxyConfiguration, newYamlProxyConfiguration));
+        ScalingConfiguration scalingConfiguration = ProxyConfigurationUtil.toScalingConfiguration(oldYamlProxyConfiguration, newYamlProxyConfiguration);
+        SyncConfigurationUtil.fillInShardingTables(scalingConfiguration);
+        return shouldScaling(scalingConfiguration);
     }
     
     private boolean shouldScaling(final ScalingConfiguration scalingConfiguration) {
@@ -43,6 +46,7 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
     @Override
     public Optional<ShardingScalingJob> start(final String oldYamlProxyConfiguration, final String newYamlProxyConfiguration) {
         ScalingConfiguration scalingConfiguration = ProxyConfigurationUtil.toScalingConfiguration(oldYamlProxyConfiguration, newYamlProxyConfiguration);
+        SyncConfigurationUtil.fillInShardingTables(scalingConfiguration);
         if (!shouldScaling(scalingConfiguration)) {
             return Optional.empty();
         }

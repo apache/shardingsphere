@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.scaling.core.config;
 
-import org.apache.shardingsphere.scaling.core.execute.engine.ShardingScalingExecuteEngine;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.scaling.core.execute.engine.ShardingScalingExecuteEngine;
 
 /**
  * ShardingSphere-Scaling context.

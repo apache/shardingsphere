@@ -44,6 +44,11 @@
             <artifactId>shardingsphere-scaling-postgresql</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-scaling-elasticjob</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     
         <dependency>
             <groupId>org.yaml</groupId>

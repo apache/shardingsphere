@@ -67,7 +67,7 @@ public final class ScalingConfigurationUtil {
      *
      * @param configFile config file
      * @return config string
-     * @throws IOException IO Exception
+     * @throws IOException IO exception
      */
     public static String getConfig(final String configFile) throws IOException {
         StringBuilder result = new StringBuilder();

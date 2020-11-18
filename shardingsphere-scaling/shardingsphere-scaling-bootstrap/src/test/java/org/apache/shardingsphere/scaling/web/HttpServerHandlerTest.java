@@ -63,10 +63,8 @@ public final class HttpServerHandlerTest {
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
-        if (null == ScalingContext.getInstance().getServerConfig()) {
-            ScalingContext.getInstance().init(new ServerConfiguration());
-            ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "taskExecuteEngine", mock(ShardingScalingExecuteEngine.class));
-        }
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", new ServerConfiguration());
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "taskExecuteEngine", mock(ShardingScalingExecuteEngine.class));
         httpServerHandler = new HttpServerHandler();
     }
     
@@ -118,6 +116,27 @@ public final class HttpServerHandlerTest {
         verify(channelHandlerContext, times(2)).writeAndFlush(argumentCaptor.capture());
         FullHttpResponse fullHttpResponse = argumentCaptor.getValue();
         assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("{\"success\":true"));
+    }
+    
+    @Test
+    public void assertCheckJob() {
+        long jobId = startScalingJob("/config.json");
+        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/scaling/job/check/" + jobId);
+        httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
+        ArgumentCaptor<FullHttpResponse> argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
+        verify(channelHandlerContext, times(2)).writeAndFlush(argumentCaptor.capture());
+        FullHttpResponse fullHttpResponse = argumentCaptor.getValue();
+        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("{\"success\":true"));
+    }
+    
+    @Test
+    public void assertCheckJobFail() {
+        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/scaling/job/check/9");
+        httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
+        ArgumentCaptor<FullHttpResponse> argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
+        verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
+        FullHttpResponse fullHttpResponse = argumentCaptor.getValue();
+        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("Can't find scaling job id 9"));
     }
     
     @Test

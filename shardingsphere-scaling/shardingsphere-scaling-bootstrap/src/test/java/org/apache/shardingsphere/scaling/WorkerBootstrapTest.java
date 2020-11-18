@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.scaling;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
+import org.junit.Test;
 
-/**
- * Job configuration.
- */
-@Setter
-@Getter
-public final class JobConfiguration {
+import static org.junit.Assert.assertNotNull;
+
+public final class WorkerBootstrapTest {
     
-    private int concurrency = 3;
-    
-    private int retryTimes = 3;
-    
-    private String[] shardingTables;
-    
-    private int shardingItem;
-    
-    private boolean running = true;
+    @Test
+    public void assertMain() {
+        WorkerBootstrap.main(null);
+        assertNotNull(ScalingContext.getInstance().getServerConfig());
+    }
 }

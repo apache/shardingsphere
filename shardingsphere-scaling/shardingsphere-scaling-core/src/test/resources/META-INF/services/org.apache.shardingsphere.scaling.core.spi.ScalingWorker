@@ -15,13 +15,4 @@
 # limitations under the License.
 #
 
-port: 8888
-blockQueueSize: 10000
-pushTimeout: 1000
-workerThread: 30
-
-#distributedScalingService:
-#  name: ScalingJob
-#  registryCenter:
-#    type: ZooKeeper
-#    serverLists: localhost:2181
+org.apache.shardingsphere.scaling.core.fixture.FixtureScalingWorker

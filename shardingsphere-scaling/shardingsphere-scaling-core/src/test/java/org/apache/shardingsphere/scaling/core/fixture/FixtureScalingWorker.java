@@ -15,32 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.utils;
+package org.apache.shardingsphere.scaling.core.fixture;
 
-import lombok.SneakyThrows;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.scaling.core.spi.ScalingWorker;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * Reflection utils.
- */
-public final class ReflectionUtils {
+public final class FixtureScalingWorker implements ScalingWorker {
     
-    /**
-     * Get field map.
-     *
-     * @param object object
-     * @return field map
-     */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static Map<String, Object> getFieldMap(final Object object) {
-        Map<String, Object> result = new HashMap<>();
-        for (Field field : object.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-            result.put(field.getName(), field.get(object));
-        }
-        return result;
+    @Override
+    public String getType() {
+        return "Fixture";
+    }
+    
+    @Override
+    public void init(final GovernanceConfiguration governanceConfiguration) {
     }
 }

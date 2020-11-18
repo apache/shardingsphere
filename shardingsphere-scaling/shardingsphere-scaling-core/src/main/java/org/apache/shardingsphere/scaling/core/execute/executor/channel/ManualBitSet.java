@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.channel;
 
-import lombok.NoArgsConstructor;
-
 import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +24,6 @@ import java.util.List;
 /**
  * Manual BitSet.
  */
-@NoArgsConstructor
 public final class ManualBitSet {
     
     private static final int BIT_SET_SIZE = 1024;
