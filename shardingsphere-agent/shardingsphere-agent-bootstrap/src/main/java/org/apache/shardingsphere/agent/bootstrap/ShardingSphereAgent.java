@@ -18,8 +18,8 @@
 
 package org.apache.shardingsphere.agent.bootstrap;
 
+import java.io.IOException;
 import java.lang.instrument.Instrumentation;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.AgentConfigurationLoader;
 import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
@@ -34,9 +34,9 @@ public class ShardingSphereAgent {
      *
      * @param agentArgs agent args
      * @param instrumentation instrumentation
+     * @throws IOException IOException
      */
-    @SneakyThrows
-    public static void premain(final String agentArgs, final Instrumentation instrumentation) {
+    public static void premain(final String agentArgs, final Instrumentation instrumentation) throws IOException {
         AgentConfiguration agentConfiguration = AgentConfigurationLoader.load();
         SingletonHolder.INSTANCE.put(agentConfiguration);
     }
