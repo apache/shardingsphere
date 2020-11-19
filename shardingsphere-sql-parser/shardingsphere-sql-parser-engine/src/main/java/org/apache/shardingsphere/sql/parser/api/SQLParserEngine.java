@@ -17,12 +17,21 @@
 
 package org.apache.shardingsphere.sql.parser.api;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.Parser;
+import org.antlr.v4.runtime.atn.PredictionMode;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.core.parser.SQLParserFactory;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Optional;
 
 /**
  * SQL parser engine.
@@ -30,9 +39,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public final class SQLParserEngine {
     
-    private static final Map<String, SQLParserExecutor> EXECUTORS = new ConcurrentHashMap<>();
-    
     private final String databaseType;
+    
+    private final Cache<String, ParseTree> cache = CacheBuilder.newBuilder().softValues().initialCapacity(2000).maximumSize(65535).build();
     
     /**
      * Parse SQL.
@@ -42,7 +51,44 @@ public final class SQLParserEngine {
      * @return parse tree
      */
     public ParseTree parse(final String sql, final boolean useCache) {
-        SQLParserExecutor executor = EXECUTORS.containsKey(databaseType) ? EXECUTORS.get(databaseType) : EXECUTORS.computeIfAbsent(databaseType, SQLParserExecutor::new);
-        return executor.parse(sql, useCache);
+        if (!useCache) {
+            return parse(sql);
+        }
+        return parseAndCacheParseTree(sql);
+    }
+    
+    private ParseTree parse(final String sql) {
+        ParseASTNode result = twoPhaseParse(sql);
+        if (result.getRootNode() instanceof ErrorNode) {
+            throw new SQLParsingException("Unsupported SQL of `%s`", sql);
+        }
+        return result.getRootNode();
+    }
+    
+    private ParseTree parseAndCacheParseTree(final String sql) {
+        Optional<ParseTree> parseTree = Optional.ofNullable(cache.getIfPresent(sql));
+        if (parseTree.isPresent()) {
+            return parseTree.get();
+        }
+        ParseTree result = parse(sql);
+        cache.put(sql, result);
+        return result;
+    }
+    
+    private ParseASTNode twoPhaseParse(final String sql) {
+        SQLParser sqlParser = SQLParserFactory.newInstance(databaseType, sql);
+        try {
+            setPredictionMode((Parser) sqlParser, PredictionMode.SLL);
+            return (ParseASTNode) sqlParser.parse();
+        } catch (final ParseCancellationException ex) {
+            ((Parser) sqlParser).reset();
+            setPredictionMode((Parser) sqlParser, PredictionMode.LL);
+            return (ParseASTNode) sqlParser.parse();
+        }
+    }
+    
+    private void setPredictionMode(final Parser sqlParser, final PredictionMode mode) {
+        sqlParser.setErrorHandler(new BailErrorStrategy());
+        sqlParser.getInterpreter().setPredictionMode(mode);
     }
 }
