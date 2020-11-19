@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.mysql.binlog;
 
-import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
