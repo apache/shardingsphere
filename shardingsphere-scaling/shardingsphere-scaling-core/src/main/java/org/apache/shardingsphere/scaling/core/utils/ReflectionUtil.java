@@ -20,6 +20,8 @@ package org.apache.shardingsphere.scaling.core.utils;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,5 +47,81 @@ public final class ReflectionUtil {
             }
         }
         return result;
+    }
+    
+    /**
+     * Set value into target object field.
+     *
+     * @param target target object
+     * @param fieldName field name
+     * @param value new value
+     * @throws NoSuchFieldException no such field exception
+     * @throws IllegalAccessException illegal access exception
+     */
+    public static void setFieldValueIntoClass(final Object target, final String fieldName, final Object value) throws NoSuchFieldException, IllegalAccessException {
+        Field field = getFieldFromClass(target.getClass(), fieldName, true);
+        field.set(target, value);
+    }
+    
+    /**
+     * Get field value from instance target object.
+     *
+     * @param target target object
+     * @param fieldName field name
+     * @param valueClass expected value class
+     * @param <T> expected value class
+     * @return target filed value
+     * @throws NoSuchFieldException no such field exception
+     * @throws IllegalAccessException illegal access exception
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getFieldValueFromClass(final Object target, final String fieldName, final Class<T> valueClass) throws NoSuchFieldException, IllegalAccessException {
+        Field field = getFieldFromClass(target.getClass(), fieldName, true);
+        Object value = field.get(target);
+        if (null == value) {
+            return null;
+        }
+        if (value.getClass().isAssignableFrom(value.getClass())) {
+            return (T) value;
+        }
+        throw new ClassCastException("field " + fieldName + " is " + target.getClass().getName() + " can cast to " + valueClass.getName());
+    }
+    
+    /**
+     * Get field from class.
+     *
+     * @param targetClass target class
+     * @param fieldName field name
+     * @param isDeclared is declared
+     * @return {@link Field}
+     * @throws NoSuchFieldException no such field exception
+     */
+    public static Field getFieldFromClass(final Class<?> targetClass, final String fieldName, final boolean isDeclared) throws NoSuchFieldException {
+        Field targetField;
+        if (isDeclared) {
+            targetField = targetClass.getDeclaredField(fieldName);
+        } else {
+            targetField = targetClass.getField(fieldName);
+        }
+        targetField.setAccessible(true);
+        return targetField;
+    }
+    
+    /**
+     * Invoke method.
+     *
+     * @param target target object
+     * @param methodName method name
+     * @param parameterTypes parameter types
+     * @param parameterValues parameter values
+     * @throws NoSuchMethodException no such field exception
+     * @throws InvocationTargetException invocation target exception
+     * @throws IllegalAccessException illegal access exception
+     */
+    public static void invokeMethod(final Object target, final String methodName, final Class<?>[] parameterTypes, final Object[] parameterValues)
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method method = target.getClass().getDeclaredMethod(methodName, parameterTypes);
+        method.setAccessible(true);
+        method.invoke(target, parameterValues);
     }
 }

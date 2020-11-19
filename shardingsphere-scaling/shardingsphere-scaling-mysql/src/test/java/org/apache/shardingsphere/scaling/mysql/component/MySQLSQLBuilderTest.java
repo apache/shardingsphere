@@ -19,7 +19,6 @@ package org.apache.shardingsphere.scaling.mysql.component;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
@@ -32,8 +31,7 @@ import static org.junit.Assert.assertThat;
 
 public final class MySQLSQLBuilderTest {
     
-    private AbstractSQLBuilder sqlBuilder = new MySQLSQLBuilder(ImmutableMap.<String, Set<String>>builder()
-            .put("t2", Sets.newHashSet("sc")).build());
+    private final MySQLSQLBuilder sqlBuilder = new MySQLSQLBuilder(ImmutableMap.<String, Set<String>>builder().put("t2", Sets.newHashSet("sc")).build());
     
     @Test
     public void assertBuildInsertSQL() {
@@ -45,6 +43,12 @@ public final class MySQLSQLBuilderTest {
     public void assertBuildInsertSQLHasShardingColumn() {
         String actual = sqlBuilder.buildInsertSQL(mockDataRecord("t2"));
         assertThat(actual, is("INSERT INTO `t2`(`id`,`sc`,`c1`,`c2`,`c3`) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE `c1`=VALUES(`c1`),`c2`=VALUES(`c2`),`c3`=VALUES(`c3`)"));
+    }
+    
+    @Test
+    public void assertBuildSumCrc32SQL() {
+        String actual = sqlBuilder.buildSumCrc32SQL("t2", "id");
+        assertThat(actual, is("SELECT SUM(CRC32(`id`)) from `t2`"));
     }
     
     private DataRecord mockDataRecord(final String tableName) {

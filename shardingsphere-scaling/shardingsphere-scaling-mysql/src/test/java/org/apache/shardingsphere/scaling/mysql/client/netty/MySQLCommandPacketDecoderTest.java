@@ -23,8 +23,8 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
+import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.apache.shardingsphere.scaling.mysql.client.InternalResultSet;
-import org.apache.shardingsphere.scaling.utils.ReflectionUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -97,7 +97,7 @@ public final class MySQLCommandPacketDecoderTest {
     public void assertDecodeOkPacket() throws NoSuchFieldException, IllegalAccessException {
         MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
         List<Object> actual = new ArrayList<>();
-        ReflectionUtil.setFieldValueToClass(commandPacketDecoder, "auth", true);
+        ReflectionUtil.setFieldValueIntoClass(commandPacketDecoder, "auth", true);
         commandPacketDecoder.decode(null, mockOkPacket(), actual);
         assertPacketByType(actual, MySQLOKPacket.class);
     }
@@ -112,7 +112,7 @@ public final class MySQLCommandPacketDecoderTest {
     public void assertDecodeErrPacket() throws NoSuchFieldException, IllegalAccessException {
         MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
         List<Object> actual = new ArrayList<>();
-        ReflectionUtil.setFieldValueToClass(commandPacketDecoder, "auth", true);
+        ReflectionUtil.setFieldValueIntoClass(commandPacketDecoder, "auth", true);
         commandPacketDecoder.decode(null, mockErrPacket(), actual);
         assertPacketByType(actual, MySQLErrPacket.class);
     }
@@ -127,7 +127,7 @@ public final class MySQLCommandPacketDecoderTest {
     public void assertDecodeQueryCommPacket() throws NoSuchFieldException, IllegalAccessException {
         MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
         List<Object> actual = new ArrayList<>();
-        ReflectionUtil.setFieldValueToClass(commandPacketDecoder, "auth", true);
+        ReflectionUtil.setFieldValueIntoClass(commandPacketDecoder, "auth", true);
         commandPacketDecoder.decode(null, mockEmptyResultSetPacket(), actual);
         commandPacketDecoder.decode(null, mockFieldDefinition41Packet(), actual);
         commandPacketDecoder.decode(null, mockEofPacket(), actual);
@@ -158,7 +158,7 @@ public final class MySQLCommandPacketDecoderTest {
         return byteBuf;
     }
     
-    private void assertPacketByType(final List<Object> actual, final Class clazz) {
+    private void assertPacketByType(final List<Object> actual, final Class<?> clazz) {
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(clazz));
     }

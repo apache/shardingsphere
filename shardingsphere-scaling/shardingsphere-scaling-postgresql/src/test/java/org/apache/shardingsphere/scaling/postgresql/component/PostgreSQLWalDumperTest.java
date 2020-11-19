@@ -23,7 +23,7 @@ import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.MemoryChannel;
-import org.apache.shardingsphere.scaling.postgresql.utils.ReflectionUtil;
+import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.apache.shardingsphere.scaling.postgresql.wal.LogicalReplication;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
 import org.junit.Before;
@@ -82,7 +82,7 @@ public final class PostgreSQLWalDumperTest {
     @Test
     public void assertStart() throws SQLException, NoSuchFieldException, IllegalAccessException {
         try {
-            ReflectionUtil.setFieldValueToClass(postgreSQLWalDumper, "logicalReplication", logicalReplication);
+            ReflectionUtil.setFieldValueIntoClass(postgreSQLWalDumper, "logicalReplication", logicalReplication);
             when(logicalReplication.createPgConnection(jdbcDataSourceConfig)).thenReturn(pgConnection);
             when(pgConnection.unwrap(PgConnection.class)).thenReturn(pgConnection);
             when(pgConnection.getTimestampUtils()).thenReturn(null);
