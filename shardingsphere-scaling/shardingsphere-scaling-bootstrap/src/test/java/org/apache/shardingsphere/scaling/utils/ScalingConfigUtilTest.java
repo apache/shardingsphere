@@ -15,32 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.utils;
+package org.apache.shardingsphere.scaling.utils;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
+import org.junit.Test;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
 
-/**
- * Reflection utils.
- */
-public final class ReflectionUtils {
+import static org.junit.Assert.assertNotNull;
+
+public final class ScalingConfigUtilTest {
     
-    /**
-     * Get field map.
-     *
-     * @param object object
-     * @return field map
-     */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static Map<String, Object> getFieldMap(final Object object) {
-        Map<String, Object> result = new HashMap<>();
-        for (Field field : object.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-            result.put(field.getName(), field.get(object));
-        }
-        return result;
+    @Test
+    @SneakyThrows(IOException.class)
+    public void assertInitScalingConfig() {
+        ScalingConfigUtil.initScalingConfig();
+        assertNotNull(ScalingContext.getInstance().getServerConfig());
     }
 }

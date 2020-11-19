@@ -25,7 +25,7 @@ set CLASS_PATH="..\conf;.;..;..\lib\*"
 
 echo The classpath is %CLASS_PATH%
 
-set MAIN_CLASS=org.apache.shardingsphere.scaling.Bootstrap
+set MAIN_CLASS=org.apache.shardingsphere.scaling.WorkerBootstrap
 
 set JAVA_OPTS="-Djava.awt.headless=true -Djava.net.preferIPv4Stack=true"
 

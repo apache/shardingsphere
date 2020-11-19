@@ -103,6 +103,8 @@
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
         <prometheus-java-client.version>0.6.0</prometheus-java-client.version>
 
+        <elasticjob.version>3.0.0-beta</elasticjob.version>
+
         <!-- Plugin versions -->
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>

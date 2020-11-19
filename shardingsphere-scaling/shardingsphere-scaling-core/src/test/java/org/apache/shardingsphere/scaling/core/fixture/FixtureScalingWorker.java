@@ -15,27 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.scaling.core.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.scaling.core.spi.ScalingWorker;
 
-/**
- * Job configuration.
- */
-@Setter
-@Getter
-public final class JobConfiguration {
+public final class FixtureScalingWorker implements ScalingWorker {
     
-    private Long jobId;
+    @Override
+    public String getType() {
+        return "Fixture";
+    }
     
-    private int concurrency = 3;
-    
-    private int retryTimes = 3;
-    
-    private String[] shardingTables;
-    
-    private int shardingItem;
-    
-    private boolean running = true;
+    @Override
+    public void init(final GovernanceConfiguration governanceConfiguration) {
+    }
 }

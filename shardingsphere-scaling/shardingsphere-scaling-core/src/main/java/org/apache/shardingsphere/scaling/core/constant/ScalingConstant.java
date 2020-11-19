@@ -42,14 +42,9 @@ public final class ScalingConstant {
     public static final String DELETE = "DELETE";
     
     /**
-     * Scaling listener.
+     * Scaling listener path.
      */
-    public static final String SCALING_LISTENER = "__scaling_listener";
-    
-    /**
-     * Status.
-     */
-    public static final String STATUS = "status";
+    public static final String SCALING_LISTENER_PATH = "/__scaling_listener";
     
     /**
      * Config.

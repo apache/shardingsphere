@@ -46,13 +46,13 @@ public final class ScalingTaskUtil {
     }
     
     /**
-     * Assembling scaling listener path.
+     * Get scaling listener path.
      *
      * @param paths sub paths.
      * @return path.
      */
-    public static String assemblingPath(final Object... paths) {
-        StringBuilder result = new StringBuilder(ScalingConstant.SCALING_LISTENER);
+    public static String getScalingListenerPath(final Object... paths) {
+        StringBuilder result = new StringBuilder(ScalingConstant.SCALING_LISTENER_PATH);
         for (Object each : paths) {
             result.append("/").append(each);
         }

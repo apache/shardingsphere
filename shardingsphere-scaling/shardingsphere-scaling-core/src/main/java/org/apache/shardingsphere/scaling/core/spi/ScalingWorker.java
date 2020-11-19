@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.scaling.core.spi;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 
 /**
- * Job configuration.
+ * Scaling worker.
  */
-@Setter
-@Getter
-public final class JobConfiguration {
+public interface ScalingWorker {
     
-    private Long jobId;
+    /**
+     * Get type.
+     *
+     * @return type of scaling worker.
+     */
+    String getType();
     
-    private int concurrency = 3;
-    
-    private int retryTimes = 3;
-    
-    private String[] shardingTables;
-    
-    private int shardingItem;
-    
-    private boolean running = true;
+    /**
+     * Init scaling worker.
+     *
+     * @param governanceConfiguration governance configuration
+     */
+    void init(GovernanceConfiguration governanceConfiguration);
 }
