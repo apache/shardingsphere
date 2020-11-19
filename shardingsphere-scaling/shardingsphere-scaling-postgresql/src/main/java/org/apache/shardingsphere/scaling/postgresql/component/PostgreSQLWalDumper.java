@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql;
+package org.apache.shardingsphere.scaling.postgresql.component;
 
 import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;

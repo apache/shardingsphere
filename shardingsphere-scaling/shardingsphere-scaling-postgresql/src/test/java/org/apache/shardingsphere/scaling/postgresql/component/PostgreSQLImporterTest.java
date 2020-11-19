@@ -15,24 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql;
+package org.apache.shardingsphere.scaling.postgresql.component;
 
 import com.google.common.collect.Maps;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
+import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.postgresql.replication.LogSequenceNumber;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class PostgreSQLSqlBuilderTest {
+@RunWith(MockitoJUnitRunner.class)
+public final class PostgreSQLImporterTest {
+    
+    @Mock
+    private ImporterConfiguration importerConfig;
+    
+    @Mock
+    private DataSourceManager dataSourceManager;
     
     @Test
-    public void assertBuildInsertSQL() {
-        String actual = new PostgreSQLSQLBuilder(Maps.newHashMap()).buildInsertSQL(mockDataRecord());
-        assertThat(actual, is("INSERT INTO \"t_order\"(\"id\",\"name\") VALUES(?,?) ON CONFLICT (id) DO NOTHING"));
+    public void assertCreateSQLBuilder() {
+        PostgreSQLImporter postgreSQLImporter = new PostgreSQLImporter(importerConfig, dataSourceManager);
+        String insertSQL = postgreSQLImporter.createSQLBuilder(Maps.newHashMap()).buildInsertSQL(mockDataRecord());
+        assertThat(insertSQL, is("INSERT INTO \"t_order\"(\"id\",\"name\") VALUES(?,?) ON CONFLICT (id) DO NOTHING"));
     }
     
     private DataRecord mockDataRecord() {

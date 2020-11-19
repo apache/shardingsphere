@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.spi;
+package org.apache.shardingsphere.scaling.postgresql;
 
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
-import org.apache.shardingsphere.scaling.postgresql.PostgreSQLDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.postgresql.PostgreSQLDataSourceChecker;
-import org.apache.shardingsphere.scaling.postgresql.PostgreSQLImporter;
-import org.apache.shardingsphere.scaling.postgresql.PostgreSQLJdbcDumper;
-import org.apache.shardingsphere.scaling.postgresql.PostgreSQLPositionManager;
-import org.apache.shardingsphere.scaling.postgresql.PostgreSQLScalingEntry;
-import org.apache.shardingsphere.scaling.postgresql.PostgreSQLWalDumper;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLDataSourceChecker;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLImporter;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLJdbcDumper;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLPositionManager;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLWalDumper;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ScalingEntryLoaderTest {
+public final class PostgreSQLScalingEntryTest {
     
     @Test
     public void assertGetScalingEntryByDatabaseType() {

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql;
+package org.apache.shardingsphere.scaling.postgresql.component;
 
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.check.AbstractDataConsistencyChecker;
