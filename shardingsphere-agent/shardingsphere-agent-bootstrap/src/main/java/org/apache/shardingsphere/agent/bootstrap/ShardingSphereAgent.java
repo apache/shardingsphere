@@ -34,7 +34,7 @@ public class ShardingSphereAgent {
      *
      * @param agentArgs agent args
      * @param instrumentation instrumentation
-     * @throws IOException IOException
+     * @throws IOException IO exception
      */
     public static void premain(final String agentArgs, final Instrumentation instrumentation) throws IOException {
         AgentConfiguration agentConfiguration = AgentConfigurationLoader.load();
