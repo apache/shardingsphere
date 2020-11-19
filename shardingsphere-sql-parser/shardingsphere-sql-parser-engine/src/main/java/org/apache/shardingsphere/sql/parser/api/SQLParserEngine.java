@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.api;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.atn.PredictionMode;
@@ -36,12 +35,21 @@ import java.util.Optional;
 /**
  * SQL parser engine.
  */
-@RequiredArgsConstructor
 public final class SQLParserEngine {
     
     private final String databaseType;
     
-    private final Cache<String, ParseTree> cache = CacheBuilder.newBuilder().softValues().initialCapacity(2000).maximumSize(65535).build();
+    private final Cache<String, ParseTree> cache;
+    
+    public SQLParserEngine(final String databaseType) {
+        this(databaseType, new CacheOption(128, 1024L, 4));
+    }
+    
+    public SQLParserEngine(final String databaseType, final CacheOption cacheOption) {
+        this.databaseType = databaseType;
+        cache = CacheBuilder.newBuilder().softValues()
+                .initialCapacity(cacheOption.getInitialCapacity()).maximumSize(cacheOption.getMaximumSize()).concurrencyLevel(cacheOption.getConcurrencyLevel()).build();
+    }
     
     /**
      * Parse SQL.
