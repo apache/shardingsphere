@@ -26,11 +26,11 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -72,7 +72,7 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     }
     
     @Override
-    public QueryData getQueryData() throws SQLException {
-        return databaseCommunicationEngine.getQueryData();
+    public List<Object> getRowData() throws SQLException {
+        return databaseCommunicationEngine.getQueryData().getData();
     }
 }

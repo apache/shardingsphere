@@ -71,9 +71,9 @@ public final class ShardingCTLExplainBackendHandlerTest {
     }
     
     @Test
-    public void assertQueryData() {
+    public void assertGetRowData() {
         handler.execute();
         assertTrue(handler.next());
-        assertThat(handler.getQueryData().getData().get(1), is("select 1"));
+        assertThat(handler.getRowData().get(1), is("select 1"));
     }
 }

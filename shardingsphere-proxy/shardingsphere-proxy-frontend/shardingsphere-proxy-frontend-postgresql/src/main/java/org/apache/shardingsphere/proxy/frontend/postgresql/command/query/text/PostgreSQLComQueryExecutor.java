@@ -102,6 +102,6 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     @Override
     public PostgreSQLPacket getQueryData() throws SQLException {
-        return new PostgreSQLDataRowPacket(textProtocolBackendHandler.getQueryData().getData());
+        return new PostgreSQLDataRowPacket(textProtocolBackendHandler.getRowData());
     }
 }

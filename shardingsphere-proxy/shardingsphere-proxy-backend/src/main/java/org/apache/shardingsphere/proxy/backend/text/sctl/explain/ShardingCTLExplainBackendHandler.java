@@ -31,7 +31,6 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
@@ -92,14 +91,11 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
     }
     
     @Override
-    public QueryData getQueryData() {
+    public List<Object> getRowData() {
         ExecutionUnit executionUnit = executionUnits.next();
         List<Object> row = new ArrayList<>(queryHeaders.size());
         row.add(executionUnit.getDataSourceName());
         row.add(executionUnit.getSqlUnit().getSql());
-        List<Integer> columnTypes = new ArrayList<>(queryHeaders.size());
-        columnTypes.add(queryHeaders.get(0).getColumnType());
-        columnTypes.add(queryHeaders.get(1).getColumnType());
-        return new QueryData(columnTypes, row);
+        return row;
     }
 }
