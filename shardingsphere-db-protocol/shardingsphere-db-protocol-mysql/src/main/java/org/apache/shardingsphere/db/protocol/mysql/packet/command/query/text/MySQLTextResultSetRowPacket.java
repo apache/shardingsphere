@@ -25,7 +25,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Text result set row packet for MySQL.
@@ -40,7 +40,7 @@ public final class MySQLTextResultSetRowPacket implements MySQLPacket {
     
     private final int sequenceId;
     
-    private final List<Object> data;
+    private final Collection<Object> data;
     
     public MySQLTextResultSetRowPacket(final MySQLPacketPayload payload, final int columnCount) {
         sequenceId = payload.readInt1();
