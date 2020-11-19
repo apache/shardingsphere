@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.Que
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
@@ -76,19 +75,10 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
     }
     
     @Override
-    public QueryData getQueryData() throws SQLException {
-        List<QueryHeader> queryHeaders = queryResponse.getQueryHeaders();
-        List<Object> row = new ArrayList<>(queryHeaders.size());
-        for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {
-            row.add(queryResponse.getQueryResults().get(0).getValue(columnIndex, Object.class));
-        }
-        return new QueryData(getColumnTypes(queryHeaders), row);
-    }
-    
-    private List<Integer> getColumnTypes(final List<QueryHeader> queryHeaders) {
-        List<Integer> result = new ArrayList<>(queryHeaders.size());
-        for (QueryHeader each : queryHeaders) {
-            result.add(each.getColumnType());
+    public List<Object> getRowData() throws SQLException {
+        List<Object> result = new ArrayList<>(queryResponse.getQueryHeaders().size());
+        for (int columnIndex = 1; columnIndex <= queryResponse.getQueryHeaders().size(); columnIndex++) {
+            result.add(queryResponse.getQueryResults().get(0).getValue(columnIndex, Object.class));
         }
         return result;
     }

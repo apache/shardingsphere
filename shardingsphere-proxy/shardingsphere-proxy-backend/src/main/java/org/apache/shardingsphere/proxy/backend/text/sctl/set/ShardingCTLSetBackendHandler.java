@@ -20,13 +20,13 @@ package org.apache.shardingsphere.proxy.backend.text.sctl.set;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -70,7 +70,7 @@ public final class ShardingCTLSetBackendHandler implements TextProtocolBackendHa
     }
     
     @Override
-    public QueryData getQueryData() {
+    public List<Object> getRowData() {
         return null;
     }
 }
