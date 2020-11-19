@@ -31,7 +31,7 @@ import java.util.Collection;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class AbstractSqlBuilderTest {
+public final class AbstractSqlBuilderTest {
     
     private AbstractSQLBuilder sqlBuilder;
     

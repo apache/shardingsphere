@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.core.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -78,6 +79,7 @@ public final class ProxyConfigurationUtil {
         return YamlEngine.marshal(result);
     }
     
+    @SneakyThrows(IllegalAccessException.class)
     private static YamlDataSourceConfiguration toYamlDataSourceConfiguration(final YamlProxyRuleConfiguration proxyRuleConfiguration, final YamlDataSourceParameter yamlDataSourceParameter) {
         YamlDataSourceConfiguration result = new YamlDataSourceConfiguration();
         result.setDataSourceClassName("com.zaxxer.hikari.HikariDataSource");

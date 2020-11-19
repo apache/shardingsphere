@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 
-public class DataSourceFactoryTest {
+public final class DataSourceFactoryTest {
     
     @Test
     public void assertNewJDBCInstance() {

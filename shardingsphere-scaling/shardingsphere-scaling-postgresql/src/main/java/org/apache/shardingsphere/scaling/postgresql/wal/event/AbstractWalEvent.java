@@ -26,7 +26,7 @@ import org.postgresql.replication.LogSequenceNumber;
  */
 @Setter
 @Getter
-public class AbstractWalEvent {
+public abstract class AbstractWalEvent {
     
     private LogSequenceNumber logSequenceNumber;
 }

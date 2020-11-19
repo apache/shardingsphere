@@ -19,8 +19,8 @@ package org.apache.shardingsphere.scaling.core.datasource;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,7 +54,7 @@ public final class DataSourceManagerTest {
     @Test
     public void assertClose() throws NoSuchFieldException, IllegalAccessException {
         DataSourceManager dataSourceManager = new DataSourceManager(syncConfigurations);
-        Map<?, ?> cachedDataSources = ReflectionUtil.getFieldValueFromClass(dataSourceManager, "cachedDataSources", Map.class);
+        Map<?, ?> cachedDataSources = ReflectionUtil.getFieldValue(dataSourceManager, "cachedDataSources", Map.class);
         assertNotNull(cachedDataSources);
         assertThat(cachedDataSources.size(), is(2));
         dataSourceManager.close();

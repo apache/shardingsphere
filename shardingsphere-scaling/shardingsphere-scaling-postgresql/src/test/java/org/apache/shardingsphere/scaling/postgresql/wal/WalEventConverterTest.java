@@ -111,7 +111,8 @@ public final class WalEventConverterTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertConvertFailure() {
-        walEventConverter.convert(new AbstractRowEvent());
+        walEventConverter.convert(new AbstractRowEvent() {
+        });
     }
     
     private AbstractRowEvent mockWriteRowEvent() {

@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.scaling.elasticjob.util;
 
 import com.google.common.base.Strings;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
@@ -28,6 +30,7 @@ import java.util.Properties;
 /**
  * Elastic job utils.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ElasticJobUtils {
     
     /**

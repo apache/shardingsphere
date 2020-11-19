@@ -31,8 +31,8 @@ import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalDa
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataSyncTaskProgress;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 import org.junit.After;
 import org.junit.Before;
@@ -152,7 +152,7 @@ public final class DistributedScalingJobServiceTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void resetRegistryRepositoryAvailable() {
-        ReflectionUtil.setFieldValue(RegistryRepositoryHolder.class, null, "available", null);
+        ReflectionUtil.setStaticFieldValue(RegistryRepositoryHolder.class, "available", null);
     }
     
     @SneakyThrows(IOException.class)

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
-public class FixtureShardingSphereJDBCConfiguration {
+public final class FixtureShardingSphereJDBCConfiguration {
     
     public static final String DATA_SOURCE = "dataSources:\n ds_0:\n  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  props:\n    "
             + "jdbcUrl: jdbc:h2:mem:test_db_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL\n    username: root\n    password: 'password'\n    "
