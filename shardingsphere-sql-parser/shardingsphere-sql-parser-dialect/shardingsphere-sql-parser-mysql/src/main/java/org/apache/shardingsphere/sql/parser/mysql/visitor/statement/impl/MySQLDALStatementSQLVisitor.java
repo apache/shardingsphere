@@ -39,6 +39,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetName
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowBinaryLogsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowBinlogEventsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCharacterSetContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCollationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowColumnsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateEventContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateFunctionContext;
@@ -53,6 +55,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowOth
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTablesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowVariablesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWarningsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UninstallPluginContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
@@ -287,7 +290,22 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitShowOther(final ShowOtherContext ctx) {
         return new MySQLShowOtherStatement();
     }
-    
+
+    @Override
+    public ASTNode visitShowVariables(final ShowVariablesContext ctx) {
+        return new MySQLShowOtherStatement();
+    }
+
+    @Override
+    public ASTNode visitShowCharacterSet(final ShowCharacterSetContext ctx) {
+        return new MySQLShowOtherStatement();
+    }
+
+    @Override
+    public ASTNode visitShowCollation(final ShowCollationContext ctx) {
+        return new MySQLShowOtherStatement();
+    }
+
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         MySQLSetStatement result = new MySQLSetStatement();

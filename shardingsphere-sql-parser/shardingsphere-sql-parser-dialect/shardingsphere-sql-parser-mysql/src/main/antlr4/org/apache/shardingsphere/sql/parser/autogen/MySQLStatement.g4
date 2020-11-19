@@ -67,13 +67,7 @@ execute
     | setPassword
     | use
     | explain
-    | showDatabases
-    | showTables
-    | showTableStatus
-    | showColumns
-    | showIndex
-    | showCreateTable
-    | showOther
+    | show
     | setVariable
     | setName
     | setCharacter
@@ -81,10 +75,6 @@ execute
     | changeMasterTo
     | startSlave
     | stopSlave
-    | showCreateFunction
-    | showCreateProcedure
-    | showCreateView
-    | showCreateUser
     | analyzeTable
     | renameTable
     ) (SEMI_ EOF? | EOF)

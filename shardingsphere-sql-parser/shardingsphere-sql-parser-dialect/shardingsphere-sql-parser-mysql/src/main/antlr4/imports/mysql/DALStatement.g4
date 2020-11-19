@@ -387,3 +387,46 @@ explainableStatement
 formatName
     : TRADITIONAL | JSON | TREE
     ;
+
+show
+    : showDatabases
+    | showTables
+    | showTableStatus
+    | showBinaryLogs
+    | showColumns
+    | showIndex
+    | showCreateDatabase
+    | showCreateTable
+    | showBinlogEvents
+    | showCharacterSet
+    | showCollation
+    | showCreateEvent
+    | showCreateFunction
+    | showCreateProcedure
+    | showCreateTrigger
+    | showCreateUser
+    | showCreateView
+    | showEngine
+    | showEngines
+    | showErrors
+    | showEvents
+    | showFunctionCode
+    | showFunctionStatus
+    | showGrant
+    | showMasterStatus
+    | showPlugins
+    | showOpenTables
+    | showPrivileges
+    | showProcedureCode
+    | showProcesslist
+    | showProfile
+    | showProcedureStatus
+    | showProfiles
+    | showSlavehost
+    | showSlaveStatus
+    | showRelaylogEvent
+    | showStatus
+    | showTrriggers
+    | showWarnings
+    | showVariables
+    ;
