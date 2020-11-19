@@ -33,6 +33,7 @@ public final class ReflectionUtil {
      *
      * @param object object
      * @return field map
+     * @throws IllegalAccessException illegal access exception
      */
     public static Map<String, Object> getFieldMap(final Object object) throws IllegalAccessException {
         Map<String, Object> result = new HashMap<>();

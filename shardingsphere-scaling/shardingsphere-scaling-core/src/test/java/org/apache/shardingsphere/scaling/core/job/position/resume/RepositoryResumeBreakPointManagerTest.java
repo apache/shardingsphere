@@ -74,6 +74,6 @@ public final class RepositoryResumeBreakPointManagerTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void resetRegistryRepositoryAvailable() {
-        ReflectionUtil.setStaticFieldValue(RegistryRepositoryHolder.class,  "available", null);
+        ReflectionUtil.setStaticFieldValue(RegistryRepositoryHolder.class, "available", null);
     }
 }
