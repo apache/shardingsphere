@@ -141,7 +141,7 @@ After using resultSet.getObject(int index), for TimeStamp oracle, the system wil
 
 Answer:
 
-When using `Proxool` to configure multiple data sources, each one of them should be configured with alias. It is because `Proxool` would check whether existing alias is included in the connection pool or not when acquiring connections, so without alias, each connection will be acquired from the same data source.
+When using `Proxool` to configure multiple data sources, each one of them should be configured with alias. It is because `Proxool` would check whether existing alias is included in the connection pool or not when acquiring connections, so without alias, each connection will be acquired from the same data source. 
 
 The followings are core codes from ProxoolDataSource getConnection method in `Proxool`:
 
