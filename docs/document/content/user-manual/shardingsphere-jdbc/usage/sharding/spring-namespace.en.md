@@ -43,32 +43,48 @@ weight = 4
     
     <!-- Configure database sharding strategy -->
     <sharding:sharding-algorithm id="dbShardingAlgorithm" type="INLINE">
-        <properties>
-            <prop key="algorithm-expression">ds$->{user_id % 2}</prop>
-        </properties>
+           <props>
+               <prop key="algorithm-expression">ds$->{user_id % 2}</prop>
+           </props>
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="dbStrategy" sharding-column="user_id" algorithm-ref="dbShardingAlgorithm" />
-    
+       
     <!-- Configure table sharding strategy -->
     <sharding:sharding-algorithm id="tableShardingAlgorithm" type="INLINE">
-        <properties>
-            <prop key="algorithm-expression">t_order$->{order_id % 2}</prop>
-        </properties>
+           <props>
+               <prop key="algorithm-expression">t_order$->{order_id % 2}</prop>
+           </props>
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="tableStrategy" sharding-column="user_id" algorithm-ref="tableShardingAlgorithm" />
-    
+   
+    <!-- Configure distributed key-generate strategy -->
+    <sharding:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
+              <props>
+                  <prop key="worker-id">123</prop>
+              </props>
+    </sharding:key-generate-algorithm>   
+    <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
+   
+    <!-- Configure sharding rule -->
+    <sharding:rule id="shardingRule">
+           <sharding:table-rules>
+               <sharding:table-rule logic-table="t_order" actual-data-nodes="ds${0..1}.t_order_${0..1}" database-strategy-ref="dbStrategy" table-strategy-ref="tableStrategy" key-generate-strategy-ref="orderKeyGenerator" />
+           </sharding:table-rules>
+           <sharding:binding-table-rules>
+               <sharding:binding-table-rule logic-tables="t_order,t_order_item"/>
+           </sharding:binding-table-rules>
+           <sharding:broadcast-table-rules>
+               <sharding:broadcast-table-rule table="t_address"/>
+           </sharding:broadcast-table-rules>
+    </sharding:rule>
+       
     <!-- Configure ShardingSphereDataSource -->
-    <sharding:data-source id="shardingDataSource">
-        <!-- Configure sharding rule -->
-        <sharding:sharding-rule data-source-names="ds0,ds1">
-            <sharding:table-rules>
-                <!-- Configure t_order table rule -->
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds$->{0..1}.t_order$->{0..1}" database-strategy-ref="dbStrategy" table-strategy-ref="tableStrategy" />
-                <!-- Omit t_order_item table rule configuration ... -->
-                <!-- ... -->
-            </sharding:table-rules>
-        </sharding:sharding-rule>
-    </sharding:data-source>
+    <shardingsphere:data-source id="shardingDataSource" data-source-names="ds0,ds1" rule-refs="shardingRule">
+           <props>
+               <prop key="sql-show">false</prop>
+           </props>
+    </shardingsphere:data-source>     
+
 </beans>
 ```
 
