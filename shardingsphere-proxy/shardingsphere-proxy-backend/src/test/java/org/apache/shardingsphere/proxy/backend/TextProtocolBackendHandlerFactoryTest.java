@@ -168,7 +168,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
     
     @Test
     public void assertNewInstanceWithShow() {
-        String sql = "SHOW VARIABLES LIKE %x%";
+        String sql = "SHOW VARIABLES LIKE '%x%'";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(UnicastBackendHandler.class));
         sql = "SHOW VARIABLES WHERE Variable_name ='language'";

@@ -144,6 +144,10 @@ unreservedWord
     | WAIT | WARNINGS | WEEK | WEIGHT_STRING | WITHOUT | WORK | WRAPPER | X509 | XA | XID | XML | YEAR | COLUMN_NAME
     ;
 
+textOrIdentifier
+    : identifier | STRING_
+    ;
+
 variable
     : (AT_? AT_)? scope? DOT_? internalVariableName
     ;
@@ -195,10 +199,12 @@ indexName
     : identifier
     ;
 
+userIdentifierOrText
+    : textOrIdentifier (AT_ textOrIdentifier)?
+    ;
+
 userName
-    : STRING_  AT_ STRING_
-    | identifier
-    | STRING_
+    : userIdentifierOrText | CURRENT_USER (LP_ RP_)?
     ;
 
 eventName
@@ -668,6 +674,10 @@ textString
     : STRING_
     | HEX_DIGIT_
     | BIT_NUM_
+    ;
+
+textStringHash
+    : STRING_ | HEX_DIGIT_
     ;
 
 fieldOptions
