@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.mysql;
+package org.apache.shardingsphere.scaling.mysql.component;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

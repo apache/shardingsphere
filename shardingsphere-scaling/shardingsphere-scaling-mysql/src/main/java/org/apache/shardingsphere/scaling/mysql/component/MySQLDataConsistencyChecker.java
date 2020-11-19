@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.mysql;
+package org.apache.shardingsphere.scaling.mysql.component;
 
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.check.AbstractDataConsistencyChecker;

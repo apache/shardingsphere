@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.mysql;
+package org.apache.shardingsphere.scaling.mysql.component;
 
 import com.google.gson.Gson;
 import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;

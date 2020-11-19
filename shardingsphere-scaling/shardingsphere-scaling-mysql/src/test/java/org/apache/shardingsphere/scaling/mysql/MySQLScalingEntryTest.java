@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.mysql.spi;
+package org.apache.shardingsphere.scaling.mysql;
 
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
-import org.apache.shardingsphere.scaling.mysql.MySQLBinlogDumper;
-import org.apache.shardingsphere.scaling.mysql.MySQLDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.mysql.MySQLDataSourceChecker;
-import org.apache.shardingsphere.scaling.mysql.MySQLImporter;
-import org.apache.shardingsphere.scaling.mysql.MySQLJdbcDumper;
-import org.apache.shardingsphere.scaling.mysql.MySQLPositionManager;
-import org.apache.shardingsphere.scaling.mysql.MySQLScalingEntry;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLBinlogDumper;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLDataSourceChecker;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLImporter;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLJdbcDumper;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLPositionManager;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ScalingEntryLoaderTest {
+public final class MySQLScalingEntryTest {
     
     @Test
     public void assertGetScalingEntryByDatabaseType() {

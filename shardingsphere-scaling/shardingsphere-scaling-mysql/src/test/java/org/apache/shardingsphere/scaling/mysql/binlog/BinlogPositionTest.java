@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.mysql;
+package org.apache.shardingsphere.scaling.mysql.binlog;
 
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.junit.Test;

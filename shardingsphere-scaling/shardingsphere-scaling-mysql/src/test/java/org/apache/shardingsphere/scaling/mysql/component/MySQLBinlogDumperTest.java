@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.mysql;
+package org.apache.shardingsphere.scaling.mysql.component;
 
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.map.HashedMap;
