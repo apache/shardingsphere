@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Text protocol backend handler.
@@ -49,5 +49,5 @@ public interface TextProtocolBackendHandler {
      * @return row data
      * @throws SQLException SQL exception
      */
-    List<Object> getRowData() throws SQLException;
+    Collection<Object> getRowData() throws SQLException;
 }
