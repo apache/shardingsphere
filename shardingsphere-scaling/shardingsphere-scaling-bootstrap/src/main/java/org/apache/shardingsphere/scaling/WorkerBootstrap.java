@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.spi.ScalingWorkerLoader;
-import org.apache.shardingsphere.scaling.utils.ScalingConfigUtil;
+import org.apache.shardingsphere.scaling.util.ScalingConfigUtil;
 
 import java.util.Optional;
 

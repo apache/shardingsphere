@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.utils;
+package org.apache.shardingsphere.scaling.util;
 
 import org.apache.shardingsphere.scaling.web.entity.ResponseCode;
 import org.apache.shardingsphere.scaling.web.entity.ResponseContent;

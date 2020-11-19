@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.utils;
+package org.apache.shardingsphere.scaling.util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.Resources;

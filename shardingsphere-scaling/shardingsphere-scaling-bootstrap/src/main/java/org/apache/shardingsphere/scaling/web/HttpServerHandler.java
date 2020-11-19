@@ -39,7 +39,7 @@ import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundExcept
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobServiceFactory;
-import org.apache.shardingsphere.scaling.utils.ResponseContentUtil;
+import org.apache.shardingsphere.scaling.util.ResponseContentUtil;
 
 import java.util.List;
 import java.util.Optional;

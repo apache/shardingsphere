@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.utils;
+package org.apache.shardingsphere.scaling.util;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
