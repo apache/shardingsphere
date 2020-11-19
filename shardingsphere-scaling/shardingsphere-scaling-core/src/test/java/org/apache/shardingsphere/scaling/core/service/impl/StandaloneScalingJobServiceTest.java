@@ -33,8 +33,8 @@ import org.apache.shardingsphere.scaling.core.job.position.resume.IncrementalPos
 import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManagerFactory;
 import org.apache.shardingsphere.scaling.core.schedule.SyncTaskControlStatus;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -93,14 +93,14 @@ public final class StandaloneScalingJobServiceTest {
     
     @Test
     public void assertIncrementalDataTasksOnly() throws NoSuchFieldException, IllegalAccessException {
-        ReflectionUtil.setFieldValue(ResumeBreakPointManagerFactory.class, null, "clazz", IncrementalPositionResumeBreakPointManager.class);
+        ReflectionUtil.setStaticFieldValue(ResumeBreakPointManagerFactory.class, "clazz", IncrementalPositionResumeBreakPointManager.class);
         Optional<ShardingScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
         assertTrue(shardingScalingJob.isPresent());
         long jobId = shardingScalingJob.get().getJobId();
         ScalingJobProgress progress = scalingJobService.getProgress(jobId);
         assertThat(progress.getIncrementalDataSyncTaskProgress().size(), is(1));
         assertThat(progress.getInventoryDataSyncTaskProgress().size(), is(1));
-        ReflectionUtil.setFieldValue(ResumeBreakPointManagerFactory.class, null, "clazz", FakeResumeBreakPointManager.class);
+        ReflectionUtil.setStaticFieldValue(ResumeBreakPointManagerFactory.class, "clazz", FakeResumeBreakPointManager.class);
     }
     
     @Test

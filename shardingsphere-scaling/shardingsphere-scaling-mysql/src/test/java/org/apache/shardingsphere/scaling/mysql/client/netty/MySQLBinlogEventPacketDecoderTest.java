@@ -57,7 +57,7 @@ public final class MySQLBinlogEventPacketDecoderTest {
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         binlogEventPacketDecoder = new MySQLBinlogEventPacketDecoder(4);
-        binlogContext = ReflectionUtil.getFieldValueFromClass(binlogEventPacketDecoder, "binlogContext", BinlogContext.class);
+        binlogContext = ReflectionUtil.getFieldValue(binlogEventPacketDecoder, "binlogContext", BinlogContext.class);
     }
     
     @Test(expected = RuntimeException.class)

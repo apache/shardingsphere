@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.utils;
 
-import lombok.SneakyThrows;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -36,8 +34,7 @@ public final class ReflectionUtil {
      * @param object object
      * @return field map
      */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static Map<String, Object> getFieldMap(final Object object) {
+    public static Map<String, Object> getFieldMap(final Object object) throws IllegalAccessException {
         Map<String, Object> result = new HashMap<>();
         for (Field field : object.getClass().getDeclaredFields()) {
             field.setAccessible(true);
@@ -58,9 +55,40 @@ public final class ReflectionUtil {
      * @throws NoSuchFieldException no such field exception
      * @throws IllegalAccessException illegal access exception
      */
-    public static void setFieldValueIntoClass(final Object target, final String fieldName, final Object value) throws NoSuchFieldException, IllegalAccessException {
-        Field field = getFieldFromClass(target.getClass(), fieldName, true);
+    public static void setFieldValue(final Object target, final String fieldName, final Object value) throws NoSuchFieldException, IllegalAccessException {
+        Field field = getField(target.getClass(), fieldName, true);
         field.set(target, value);
+    }
+    
+    /**
+     * Set field value into target object.
+     *
+     * @param targetClass target class
+     * @param targetObject target object
+     * @param fieldName field name
+     * @param value target filed value
+     * @throws NoSuchFieldException no such field exception
+     * @throws IllegalAccessException illegal access exception
+     */
+    public static void setFieldValue(final Class<?> targetClass, final Object targetObject, final String fieldName, final Object value) throws NoSuchFieldException, IllegalAccessException {
+        Field field = getField(targetClass, fieldName, true);
+        field.setAccessible(true);
+        field.set(targetObject, value);
+    }
+    
+    /**
+     * Set static field value.
+     *
+     * @param targetClass target class
+     * @param fieldName field name
+     * @param value new value
+     * @throws NoSuchFieldException no such field exception
+     * @throws IllegalAccessException illegal access exception
+     */
+    public static void setStaticFieldValue(final Class<?> targetClass, final String fieldName, final Object value) throws NoSuchFieldException, IllegalAccessException {
+        Field field = getField(targetClass, fieldName, true);
+        field.setAccessible(true);
+        field.set(null, value);
     }
     
     /**
@@ -75,8 +103,8 @@ public final class ReflectionUtil {
      * @throws IllegalAccessException illegal access exception
      */
     @SuppressWarnings("unchecked")
-    public static <T> T getFieldValueFromClass(final Object target, final String fieldName, final Class<T> valueClass) throws NoSuchFieldException, IllegalAccessException {
-        Field field = getFieldFromClass(target.getClass(), fieldName, true);
+    public static <T> T getFieldValue(final Object target, final String fieldName, final Class<T> valueClass) throws NoSuchFieldException, IllegalAccessException {
+        Field field = getField(target.getClass(), fieldName, true);
         Object value = field.get(target);
         if (null == value) {
             return null;
@@ -96,7 +124,7 @@ public final class ReflectionUtil {
      * @return {@link Field}
      * @throws NoSuchFieldException no such field exception
      */
-    public static Field getFieldFromClass(final Class<?> targetClass, final String fieldName, final boolean isDeclared) throws NoSuchFieldException {
+    public static Field getField(final Class<?> targetClass, final String fieldName, final boolean isDeclared) throws NoSuchFieldException {
         Field targetField;
         if (isDeclared) {
             targetField = targetClass.getDeclaredField(fieldName);

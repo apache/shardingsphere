@@ -25,7 +25,7 @@ import org.apache.shardingsphere.scaling.core.job.position.PlaceholderIncrementa
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderInventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
+import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +50,7 @@ public final class AbstractResumeBreakPointManagerTest {
             @Override
             public void persistInventoryPosition() {
             }
-    
+            
             @Override
             public void persistIncrementalPosition() {
             }

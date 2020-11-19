@@ -82,7 +82,7 @@ public final class PostgreSQLWalDumperTest {
     @Test
     public void assertStart() throws SQLException, NoSuchFieldException, IllegalAccessException {
         try {
-            ReflectionUtil.setFieldValueIntoClass(postgreSQLWalDumper, "logicalReplication", logicalReplication);
+            ReflectionUtil.setFieldValue(postgreSQLWalDumper, "logicalReplication", logicalReplication);
             when(logicalReplication.createPgConnection(jdbcDataSourceConfig)).thenReturn(pgConnection);
             when(pgConnection.unwrap(PgConnection.class)).thenReturn(pgConnection);
             when(pgConnection.getTimestampUtils()).thenReturn(null);

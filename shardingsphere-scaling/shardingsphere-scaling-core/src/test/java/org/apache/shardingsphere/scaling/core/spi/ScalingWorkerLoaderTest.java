@@ -22,7 +22,7 @@ import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCente
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
+import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;

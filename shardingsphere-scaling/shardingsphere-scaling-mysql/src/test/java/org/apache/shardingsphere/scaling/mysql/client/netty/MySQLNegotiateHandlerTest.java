@@ -77,7 +77,7 @@ public final class MySQLNegotiateHandlerTest {
         handshakePacket.setAuthPluginName(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION);
         mysqlNegotiateHandler.channelRead(channelHandlerContext, handshakePacket);
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLHandshakeResponse41Packet.class));
-        ServerInfo serverInfo = ReflectionUtil.getFieldValueFromClass(mysqlNegotiateHandler, "serverInfo", ServerInfo.class);
+        ServerInfo serverInfo = ReflectionUtil.getFieldValue(mysqlNegotiateHandler, "serverInfo", ServerInfo.class);
         assertNotNull(serverInfo);
         assertThat(serverInfo.getServerVersion().getMajor(), is(8));
         assertThat(serverInfo.getServerVersion().getMinor(), is(0));
@@ -88,7 +88,7 @@ public final class MySQLNegotiateHandlerTest {
     public void assertChannelReadOkPacket() throws NoSuchFieldException, IllegalAccessException {
         MySQLOKPacket okPacket = new MySQLOKPacket(0);
         ServerInfo serverInfo = new ServerInfo();
-        ReflectionUtil.setFieldValueIntoClass(mysqlNegotiateHandler, "serverInfo", serverInfo);
+        ReflectionUtil.setFieldValue(mysqlNegotiateHandler, "serverInfo", serverInfo);
         mysqlNegotiateHandler.channelRead(channelHandlerContext, okPacket);
         verify(pipeline).remove(mysqlNegotiateHandler);
         verify(authResultCallback).setSuccess(serverInfo);
