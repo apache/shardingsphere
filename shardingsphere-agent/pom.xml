@@ -43,8 +43,6 @@
         <maven.version.range>[3.0.4,)</maven.version.range>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
-
-        <!--dependencies third party-->
         <bytebuddy.version>1.10.16</bytebuddy.version>
         <guava.version>29.0-jre</guava.version>
         <gson.version>2.8.6</gson.version>
@@ -57,8 +55,6 @@
         <mockito.version>2.7.21</mockito.version>
         <logback.version>1.2.0</logback.version>
         <prometheus-java-client.version>0.6.0</prometheus-java-client.version>
-
-        <!-- Plugin versions -->
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
