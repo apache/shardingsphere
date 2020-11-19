@@ -13,31 +13,42 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.bootstrap;
+package org.apache.shardingsphere.agent.core.utils;
 
-import java.io.IOException;
-import java.lang.instrument.Instrumentation;
-import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.config.AgentConfigurationLoader;
-import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * ShardingSphere agent.
+ * Singleton holder.
  */
-public class ShardingSphereAgent {
-    
+public enum SingletonHolder {
+
     /**
-     * Premain for instrumentation.
-     *
-     * @param agentArgs agent args
-     * @param instrumentation instrumentation
-     * @throws IOException IO exception
+     * Instance singleton.
      */
-    public static void premain(final String agentArgs, final Instrumentation instrumentation) throws IOException {
-        AgentConfiguration agentConfiguration = AgentConfigurationLoader.load();
-        SingletonHolder.INSTANCE.put(agentConfiguration);
+    INSTANCE;
+    
+    private static final Map<String, Object> SINGLES = new ConcurrentHashMap<>();
+
+    /**
+     * Put entity object.
+     *
+     * @param entity entity object
+     */
+    public void put(final Object entity) {
+        SINGLES.put(entity.getClass().getName(), entity);
+    }
+
+    /**
+     * Get object.
+     *
+     * @param <T> type parameter
+     * @param clazz clazz
+     * @return object
+     */
+    public <T> T get(final Class<T> clazz) {
+        return (T) SINGLES.get(clazz.getName());
     }
 }

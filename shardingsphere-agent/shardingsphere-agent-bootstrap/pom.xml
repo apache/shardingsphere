@@ -34,6 +34,14 @@
         <can.retransform.classes>true</can.retransform.classes>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-agent-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <finalName>shardingsphere-agent</finalName>
         <plugins>
