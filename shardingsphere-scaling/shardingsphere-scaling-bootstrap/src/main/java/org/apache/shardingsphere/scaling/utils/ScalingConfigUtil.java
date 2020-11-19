@@ -19,6 +19,8 @@ package org.apache.shardingsphere.scaling.utils;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.Resources;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -30,6 +32,7 @@ import java.io.IOException;
 /**
  * Scaling config util.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class ScalingConfigUtil {
     

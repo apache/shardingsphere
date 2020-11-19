@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.execute.executor.importer;
+package org.apache.shardingsphere.scaling.core.exception;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 
 @RequiredArgsConstructor
-public class UnexpectedDataRecordOrder extends RuntimeException {
+public final class UnexpectedDataRecordOrderException extends RuntimeException {
     
     private final DataRecord beforeDataRecord;
     

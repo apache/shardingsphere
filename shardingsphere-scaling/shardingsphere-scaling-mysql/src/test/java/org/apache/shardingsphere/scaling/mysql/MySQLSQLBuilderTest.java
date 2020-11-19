@@ -30,7 +30,7 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class MySQLSQLBuilderTest {
+public final class MySQLSQLBuilderTest {
     
     private AbstractSQLBuilder sqlBuilder = new MySQLSQLBuilder(ImmutableMap.<String, Set<String>>builder()
             .put("t2", Sets.newHashSet("sc")).build());

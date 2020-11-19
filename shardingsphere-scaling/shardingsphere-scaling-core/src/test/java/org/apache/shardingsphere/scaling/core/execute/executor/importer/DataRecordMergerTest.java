@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
+import org.apache.shardingsphere.scaling.core.exception.UnexpectedDataRecordOrderException;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.GroupedDataRecord;
@@ -33,7 +34,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
-public class DataRecordMergerTest {
+public final class DataRecordMergerTest {
     
     private final DataRecordMerger dataRecordMerger = new DataRecordMerger();
     
@@ -43,14 +44,14 @@ public class DataRecordMergerTest {
     
     private Collection<DataRecord> actual;
     
-    @Test(expected = UnexpectedDataRecordOrder.class)
+    @Test(expected = UnexpectedDataRecordOrderException.class)
     public void assertInsertBeforeInsert() {
         beforeDataRecord = mockInsertDataRecord(1, 1, 1);
         afterDataRecord = mockInsertDataRecord(1, 1, 1);
         actual = dataRecordMerger.merge(Lists.newArrayList(beforeDataRecord, afterDataRecord));
     }
     
-    @Test(expected = UnexpectedDataRecordOrder.class)
+    @Test(expected = UnexpectedDataRecordOrderException.class)
     public void assertUpdateBeforeInsert() {
         beforeDataRecord = mockUpdateDataRecord(1, 2, 2);
         afterDataRecord = mockInsertDataRecord(1, 1, 1);
@@ -196,7 +197,7 @@ public class DataRecordMergerTest {
         assertThat(dataRecord.getColumn(2).getValue(), is(1));
     }
     
-    @Test(expected = UnexpectedDataRecordOrder.class)
+    @Test(expected = UnexpectedDataRecordOrderException.class)
     public void assertDeleteBeforeDelete() {
         beforeDataRecord = mockDeleteDataRecord(1, 1, 1);
         afterDataRecord = mockDeleteDataRecord(1, 1, 1);
