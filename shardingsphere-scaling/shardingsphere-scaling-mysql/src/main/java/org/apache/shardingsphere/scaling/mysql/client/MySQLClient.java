@@ -160,7 +160,7 @@ public final class MySQLClient {
             return 0;
         }
         InternalResultSet resultSet = executeQuery("SELECT @@GLOBAL.BINLOG_CHECKSUM");
-        String checksumType = resultSet.getFieldValues().get(0).getData().get(0).toString();
+        String checksumType = resultSet.getFieldValues().get(0).getData().iterator().next().toString();
         switch (checksumType) {
             case "None":
                 return 0;
