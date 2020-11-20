@@ -70,7 +70,7 @@ public final class InventoryDataScalingTaskTest {
     @Test(expected = SyncTaskExecuteException.class)
     public void assertStartWithGetEstimatedRowsFailure() {
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(syncConfig.getDumperConfiguration());
-        inventoryDumperConfig.setSourceTable("t_non_exist");
+        inventoryDumperConfig.setTableName("t_non_exist");
         InventoryDataScalingTask inventoryDataSyncTask = new InventoryDataScalingTask(inventoryDumperConfig, syncConfig.getImporterConfiguration(), dataSourceManager);
         inventoryDataSyncTask.start();
     }
@@ -79,7 +79,7 @@ public final class InventoryDataScalingTaskTest {
     public void assertGetProgress() throws SQLException {
         initTableData(syncConfig.getDumperConfiguration());
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(syncConfig.getDumperConfiguration());
-        inventoryDumperConfig.setSourceTable("t_order");
+        inventoryDumperConfig.setTableName("t_order");
         inventoryDumperConfig.setPositionManager(syncConfig.getDumperConfiguration().getPositionManager());
         InventoryDataScalingTask inventoryDataSyncTask = new InventoryDataScalingTask(inventoryDumperConfig, syncConfig.getImporterConfiguration(), dataSourceManager);
         inventoryDataSyncTask.start();

@@ -83,8 +83,7 @@ public final class InventoryDataTaskSplitter {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         dumperConfig.getTableNameMap().forEach((key, value) -> {
             InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(dumperConfig);
-            inventoryDumperConfig.setSourceTable(key);
-            inventoryDumperConfig.setTargetTable(value);
+            inventoryDumperConfig.setTableName(key);
             inventoryDumperConfig.setPositionManager(new PositionManager(new PlaceholderPosition()));
             result.add(inventoryDumperConfig);
         });
@@ -92,23 +91,23 @@ public final class InventoryDataTaskSplitter {
     }
     
     private boolean isSpiltByPrimaryKeyRange(final InventoryDumperConfiguration inventoryDumperConfig, final MetaDataManager metaDataManager) {
-        TableMetaData tableMetaData = metaDataManager.getTableMetaData(inventoryDumperConfig.getSourceTable());
+        TableMetaData tableMetaData = metaDataManager.getTableMetaData(inventoryDumperConfig.getTableName());
         if (null == tableMetaData) {
-            log.warn("Can't split range for table {}, reason: can not get table metadata ", inventoryDumperConfig.getSourceTable());
+            log.warn("Can't split range for table {}, reason: can not get table metadata ", inventoryDumperConfig.getTableName());
             return false;
         }
         List<String> primaryKeys = tableMetaData.getPrimaryKeyColumns();
         if (null == primaryKeys || primaryKeys.isEmpty()) {
-            log.warn("Can't split range for table {}, reason: no primary key", inventoryDumperConfig.getSourceTable());
+            log.warn("Can't split range for table {}, reason: no primary key", inventoryDumperConfig.getTableName());
             return false;
         }
         if (primaryKeys.size() > 1) {
-            log.warn("Can't split range for table {}, reason: primary key is union primary", inventoryDumperConfig.getSourceTable());
+            log.warn("Can't split range for table {}, reason: primary key is union primary", inventoryDumperConfig.getTableName());
             return false;
         }
         int index = tableMetaData.findColumnIndex(primaryKeys.get(0));
         if (isNotIntegerPrimary(tableMetaData.getColumnMetaData(index).getDataType())) {
-            log.warn("Can't split range for table {}, reason: primary key is not integer number", inventoryDumperConfig.getSourceTable());
+            log.warn("Can't split range for table {}, reason: primary key is not integer number", inventoryDumperConfig.getTableName());
             return false;
         }
         return true;
@@ -121,11 +120,11 @@ public final class InventoryDataTaskSplitter {
     private Collection<InventoryDumperConfiguration> splitByPrimaryKeyRange(final int concurrency, final InventoryDumperConfiguration inventoryDumperConfig,
                                                                             final MetaDataManager metaDataManager, final DataSource dataSource) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
-        String tableName = inventoryDumperConfig.getSourceTable();
+        String tableName = inventoryDumperConfig.getTableName();
         String primaryKey = metaDataManager.getTableMetaData(tableName).getPrimaryKeyColumns().get(0);
         inventoryDumperConfig.setPrimaryKey(primaryKey);
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement(String.format("SELECT MIN(%s),MAX(%s) FROM %s LIMIT 1", primaryKey, primaryKey, inventoryDumperConfig.getSourceTable()));
+            PreparedStatement ps = connection.prepareStatement(String.format("SELECT MIN(%s),MAX(%s) FROM %s LIMIT 1", primaryKey, primaryKey, inventoryDumperConfig.getTableName()));
             ResultSet rs = ps.executeQuery();
             rs.next();
             long min = rs.getLong(1);
@@ -141,11 +140,11 @@ public final class InventoryDataTaskSplitter {
                 }
                 splitDumperConfig.setSpiltNum(i);
                 splitDumperConfig.setPrimaryKey(primaryKey);
-                splitDumperConfig.setSourceTable(tableName);
+                splitDumperConfig.setTableName(tableName);
                 result.add(splitDumperConfig);
             }
         } catch (final SQLException ex) {
-            throw new PrepareFailedException(String.format("Split task for table %s by primary key %s error", inventoryDumperConfig.getSourceTable(), primaryKey), ex);
+            throw new PrepareFailedException(String.format("Split task for table %s by primary key %s error", inventoryDumperConfig.getTableName(), primaryKey), ex);
         }
         return result;
     }

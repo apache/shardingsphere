@@ -61,7 +61,7 @@ public final class MySQLJdbcDumperTest {
         DumperConfiguration dumperConfig = mockDumperConfiguration();
         initTableData(dumperConfig);
         InventoryDumperConfiguration result = new InventoryDumperConfiguration(dumperConfig);
-        result.setSourceTable("t_order");
+        result.setTableName("t_order");
         return result;
     }
     

@@ -27,9 +27,7 @@ import lombok.Setter;
 @Setter
 public final class InventoryDumperConfiguration extends DumperConfiguration {
     
-    private String sourceTable;
-    
-    private String targetTable;
+    private String tableName;
     
     private String primaryKey;
     
