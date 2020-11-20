@@ -58,7 +58,7 @@
                         </goals>
                         <configuration>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
-                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                             <createSourcesJar>true</createSourcesJar>
                             <shadeSourcesContent>true</shadeSourcesContent>
                             <transformers>
