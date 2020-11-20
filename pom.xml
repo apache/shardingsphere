@@ -102,7 +102,6 @@
         <postgresql.version>42.2.5</postgresql.version>
         <mssql.version>6.1.7.jre8-preview</mssql.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
-        <prometheus-java-client.version>0.6.0</prometheus-java-client.version>
         <bytebuddy.version>1.10.16</bytebuddy.version>
 
         <elasticjob.version>3.0.0-beta</elasticjob.version>
@@ -139,7 +138,6 @@
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
         <maven.deploy.skip>false</maven.deploy.skip>
-        <argLine>-Xmx1024m -XX:MaxMetaspaceSize=256m</argLine>
     </properties>
     
     <dependencyManagement>
@@ -214,17 +212,6 @@
                 <version>${commons-collections4.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>io.prometheus</groupId>
-                <artifactId>simpleclient</artifactId>
-                <version>${prometheus-java-client.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.prometheus</groupId>
-                <artifactId>simpleclient_httpserver</artifactId>
-                <version>${prometheus-java-client.version}</version>
-            </dependency>
-            
             <dependency>
                 <groupId>javax.transaction</groupId>
                 <artifactId>jta</artifactId>
