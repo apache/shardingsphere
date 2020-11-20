@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.kernel;
 
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -81,15 +80,15 @@ public final class ExecutorKernel implements AutoCloseable {
     private <I, O> List<O> serialExecute(final Iterator<InputGroup<I>> inputGroups, final ExecutorCallback<I, O> firstCallback, final ExecutorCallback<I, O> callback) throws SQLException {
         InputGroup<I> firstInputs = inputGroups.next();
         List<O> result = new LinkedList<>(syncExecute(firstInputs, null == firstCallback ? callback : firstCallback));
-        for (InputGroup<I> each : Lists.newArrayList(inputGroups)) {
-            result.addAll(syncExecute(each, callback));
+        while (inputGroups.hasNext()) {
+            result.addAll(syncExecute(inputGroups.next(), callback));
         }
         return result;
     }
     
     private <I, O> List<O> parallelExecute(final Iterator<InputGroup<I>> inputGroups, final ExecutorCallback<I, O> firstCallback, final ExecutorCallback<I, O> callback) throws SQLException {
         InputGroup<I> firstInputs = inputGroups.next();
-        Collection<ListenableFuture<Collection<O>>> restResultFutures = asyncExecute(Lists.newArrayList(inputGroups), callback);
+        Collection<ListenableFuture<Collection<O>>> restResultFutures = asyncExecute(inputGroups, callback);
         return getGroupResults(syncExecute(firstInputs, null == firstCallback ? callback : firstCallback), restResultFutures);
     }
     
@@ -97,10 +96,10 @@ public final class ExecutorKernel implements AutoCloseable {
         return callback.execute(inputGroup.getInputs(), true, ExecutorDataMap.getValue());
     }
     
-    private <I, O> Collection<ListenableFuture<Collection<O>>> asyncExecute(final List<InputGroup<I>> inputGroups, final ExecutorCallback<I, O> callback) {
+    private <I, O> Collection<ListenableFuture<Collection<O>>> asyncExecute(final Iterator<InputGroup<I>> inputGroups, final ExecutorCallback<I, O> callback) {
         Collection<ListenableFuture<Collection<O>>> result = new LinkedList<>();
-        for (InputGroup<I> each : inputGroups) {
-            result.add(asyncExecute(each, callback));
+        while (inputGroups.hasNext()) {
+            result.add(asyncExecute(inputGroups.next(), callback));
         }
         return result;
     }
