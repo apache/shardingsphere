@@ -26,8 +26,6 @@ import static org.junit.Assert.assertTrue;
 
 public final class PrimaryKeyPositionTest {
     
-    public static final Gson GSON = new Gson();
-    
     @Test
     public void assertCompareTo() {
         PrimaryKeyPosition position1 = new PrimaryKeyPosition(1, 100);
@@ -38,7 +36,7 @@ public final class PrimaryKeyPositionTest {
     
     @Test
     public void assertFormJson() {
-        PrimaryKeyPosition position = GSON.fromJson("[1,100]", PrimaryKeyPosition.class);
+        PrimaryKeyPosition position = new Gson().fromJson("[1,100]", PrimaryKeyPosition.class);
         assertThat(position.getBeginValue(), is(1L));
         assertThat(position.getEndValue(), is(100L));
     }

@@ -39,8 +39,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLPositionManagerTest {
     
-    private static final Gson GSON = new Gson();
-    
     private static final String LOG_FILE_NAME = "binlog-000001";
     
     private static final long LOG_POSITION = 4L;
@@ -73,7 +71,7 @@ public final class MySQLPositionManagerTest {
     
     @Test
     public void assertInitPositionByJson() {
-        MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(GSON.toJson(new BinlogPosition(LOG_FILE_NAME, LOG_POSITION)));
+        MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(new Gson().toJson(new BinlogPosition(LOG_FILE_NAME, LOG_POSITION)));
         BinlogPosition actual = mysqlPositionManager.getPosition();
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));
         assertThat(actual.getPosition(), is(LOG_POSITION));

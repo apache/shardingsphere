@@ -51,8 +51,6 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public final class HttpServerHandlerTest {
     
-    private static final Gson GSON = new Gson();
-    
     private HttpServerHandler httpServerHandler;
     
     @Mock
@@ -178,7 +176,7 @@ public final class HttpServerHandlerTest {
     
     @SneakyThrows(IOException.class)
     private long startScalingJob(final String configFile) {
-        ByteBuf byteBuf = Unpooled.copiedBuffer(GSON.toJson(ScalingConfigurationUtil.initConfig(configFile)), CharsetUtil.UTF_8);
+        ByteBuf byteBuf = Unpooled.copiedBuffer(new Gson().toJson(ScalingConfigurationUtil.initConfig(configFile)), CharsetUtil.UTF_8);
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/scaling/job/start", byteBuf);
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
         ArgumentCaptor<FullHttpResponse> argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);

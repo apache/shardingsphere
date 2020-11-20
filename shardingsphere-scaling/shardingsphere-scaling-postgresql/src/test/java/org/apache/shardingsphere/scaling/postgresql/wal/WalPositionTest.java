@@ -43,7 +43,6 @@ public final class WalPositionTest {
     
     @Test
     public void assertFromJson() {
-//        WalPosition walPosition = GSON.fromJson("{\"logSequenceNumber\":100,\"delay\":1}", WalPosition.class);
         WalPosition walPosition = GSON.fromJson("{\"logSequenceNumber\":{\"value\":100},\"delay\":0}", WalPosition.class);
         assertThat(walPosition.getLogSequenceNumber().asLong(), is(100L));
         assertThat(walPosition.getDelay(), is(0L));

@@ -25,8 +25,6 @@ import static org.junit.Assert.assertThat;
 
 public final class BinlogPositionTest {
     
-    private static final Gson GSON = new Gson();
-    
     @Test
     public void assertCompareTo() {
         int position = 10;
@@ -45,6 +43,6 @@ public final class BinlogPositionTest {
     @Test
     public void assertToJson() {
         BinlogPosition binlogPosition = new BinlogPosition("mysql-bin.000001", 4);
-        assertThat(GSON.toJson(binlogPosition), is("{\"filename\":\"mysql-bin.000001\",\"position\":4,\"delay\":0}"));
+        assertThat(new Gson().toJson(binlogPosition), is("{\"filename\":\"mysql-bin.000001\",\"position\":4,\"delay\":0}"));
     }
 }

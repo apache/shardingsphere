@@ -34,15 +34,13 @@ import java.sql.SQLException;
  */
 public final class MySQLPositionManager extends PositionManager {
     
-    private static final Gson GSON = new Gson();
-    
     public MySQLPositionManager(final DataSource dataSource) {
         super(dataSource);
         initPosition();
     }
     
     public MySQLPositionManager(final String position) {
-        super(GSON.fromJson(position, BinlogPosition.class));
+        super(new Gson().fromJson(position, BinlogPosition.class));
     }
     
     @Override
