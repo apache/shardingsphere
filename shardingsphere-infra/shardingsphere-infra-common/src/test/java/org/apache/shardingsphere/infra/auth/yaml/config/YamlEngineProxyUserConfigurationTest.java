@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.auth.yaml.config;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -38,14 +39,14 @@ public final class YamlEngineProxyUserConfigurationTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertUnmarshalMap() {
-        Map<String, Object> actual = (Map<String, Object>) YamlEngine.unmarshal("password: pwd\nauthorizedSchemas: db1");
+        Map<String, Object> actual = (Map<String, Object>) YamlEngine.unmarshal("password: pwd\nauthorizedSchemas: db1", Collections.emptyList());
         assertThat(actual.get("password").toString(), is("pwd"));
         assertThat(actual.get("authorizedSchemas").toString(), is("db1"));
     }
     
     @Test
     public void assertUnmarshalProperties() {
-        Properties actual = YamlEngine.unmarshalProperties("password: pwd\nauthorizedSchemas: db1");
+        Properties actual = YamlEngine.unmarshalProperties("password: pwd\nauthorizedSchemas: db1", Collections.singletonList(Properties.class));
         assertThat(actual.getProperty("authorizedSchemas"), is("db1"));
         assertThat(actual.getProperty("password"), is("pwd"));
     }
