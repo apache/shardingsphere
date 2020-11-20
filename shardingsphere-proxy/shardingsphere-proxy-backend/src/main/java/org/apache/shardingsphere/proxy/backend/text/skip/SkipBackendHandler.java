@@ -27,17 +27,17 @@ import java.util.Collection;
  * Skip backend handler.
  */
 public final class SkipBackendHandler implements TextProtocolBackendHandler {
-
+    
     @Override
     public BackendResponse execute() {
         return new UpdateResponse();
     }
-
+    
     @Override
     public boolean next() {
         return false;
     }
-
+    
     @Override
     public Collection<Object> getRowData() {
         return null;
