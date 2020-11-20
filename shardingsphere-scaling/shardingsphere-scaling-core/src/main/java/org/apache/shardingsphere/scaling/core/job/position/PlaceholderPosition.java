@@ -42,14 +42,10 @@ public final class PlaceholderPosition implements Position<PlaceholderPosition> 
         
         @Override
         public void write(final JsonWriter out, final PlaceholderPosition value) throws IOException {
-            if (null == value) {
-                out.nullValue();
-            } else {
-                out.beginArray();
-                out.endArray();
-            }
+            out.beginArray();
+            out.endArray();
         }
-    
+        
         @Override
         public PlaceholderPosition read(final JsonReader in) throws IOException {
             in.beginArray();

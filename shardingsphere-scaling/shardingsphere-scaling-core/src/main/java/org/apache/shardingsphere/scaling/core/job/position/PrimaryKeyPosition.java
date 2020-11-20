@@ -21,24 +21,22 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 
 /**
  * Use primary key as position.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
-@Setter
 @JsonAdapter(PrimaryKeyPosition.PositionTypeAdapter.class)
 public final class PrimaryKeyPosition implements Position<PrimaryKeyPosition> {
     
-    private long beginValue;
+    private final long beginValue;
     
-    private long endValue;
+    private final long endValue;
     
     @Override
     public int compareTo(final PrimaryKeyPosition position) {
@@ -55,14 +53,10 @@ public final class PrimaryKeyPosition implements Position<PrimaryKeyPosition> {
         
         @Override
         public void write(final JsonWriter out, final PrimaryKeyPosition value) throws IOException {
-            if (null == value) {
-                out.nullValue();
-            } else {
-                out.beginArray();
-                out.value(value.getBeginValue());
-                out.value(value.getEndValue());
-                out.endArray();
-            }
+            out.beginArray();
+            out.value(value.getBeginValue());
+            out.value(value.getEndValue());
+            out.endArray();
         }
         
         @Override
