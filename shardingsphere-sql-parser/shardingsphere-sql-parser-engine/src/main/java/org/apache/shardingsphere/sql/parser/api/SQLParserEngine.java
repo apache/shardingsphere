@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.api;
 
 import com.google.common.cache.LoadingCache;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.cache.ParseTreeCacheBuilder;
+import org.apache.shardingsphere.sql.parser.core.cache.ParseTreeCacheBuilder;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
 
 /**
