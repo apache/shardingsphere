@@ -23,7 +23,6 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-
 public final class PlaceholderPositionTest {
     
     public static final Gson GSON = new Gson();
@@ -38,6 +37,6 @@ public final class PlaceholderPositionTest {
     @Test
     public void assertTypeAdapter() {
         PlaceholderPosition position = GSON.fromJson("[]", PlaceholderPosition.class);
-        assertThat(new Gson().toJson(position), is("[]"));
+        assertThat(GSON.toJson(position), is("[]"));
     }
 }
