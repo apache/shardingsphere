@@ -75,11 +75,11 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
     }
     
     protected DataSourceWrapper getSourceDataSource() throws SQLException {
-        return new DataSourceWrapper(shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getSource().unwrap().toDataSource());
+        return shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getSource().unwrap().toDataSource();
     }
     
     protected DataSourceWrapper getTargetDataSource() throws SQLException {
-        return new DataSourceWrapper(shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getTarget().unwrap().toDataSource());
+        return shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getTarget().unwrap().toDataSource();
     }
     
     protected abstract AbstractSQLBuilder getSqlBuilder();
