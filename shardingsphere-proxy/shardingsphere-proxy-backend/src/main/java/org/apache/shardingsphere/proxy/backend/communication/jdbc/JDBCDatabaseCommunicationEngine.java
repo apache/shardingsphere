@@ -153,14 +153,6 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {
             row.add(mergedResult.getValue(columnIndex, Object.class));
         }
-        return new QueryData(getColumnTypes(queryHeaders), row);
-    }
-    
-    private List<Integer> getColumnTypes(final List<QueryHeader> queryHeaders) {
-        List<Integer> result = new ArrayList<>(queryHeaders.size());
-        for (QueryHeader each : queryHeaders) {
-            result.add(each.getColumnType());
-        }
-        return result;
+        return new QueryData(queryHeaders.stream().map(QueryHeader::getColumnType).collect(Collectors.toList()), row);
     }
 }
