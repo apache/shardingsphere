@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
 import org.apache.shardingsphere.scaling.core.fixture.FixtureNopManager;
-import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 
 import java.util.HashMap;
@@ -36,7 +35,7 @@ public final class IncrementalPositionResumeBreakPointManager extends AbstractRe
     }
     
     @Override
-    public Map<String, PositionManager<InventoryPosition>> getInventoryPositionManagerMap() {
+    public Map<String, PositionManager> getInventoryPositionManagerMap() {
         return new HashMap<>(1, 1);
     }
     

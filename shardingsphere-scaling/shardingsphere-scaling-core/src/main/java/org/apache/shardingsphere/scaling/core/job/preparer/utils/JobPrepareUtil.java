@@ -20,7 +20,6 @@ package org.apache.shardingsphere.scaling.core.job.preparer.utils;
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
 import java.util.List;
@@ -38,7 +37,7 @@ public final class JobPrepareUtil {
      * @param allInventoryDataTasks all inventory data tasks
      * @return task group list
      */
-    public static List<List<ScalingTask<InventoryPosition>>> groupInventoryDataTasks(final int taskNumber, final List<ScalingTask<InventoryPosition>> allInventoryDataTasks) {
+    public static List<List<ScalingTask>> groupInventoryDataTasks(final int taskNumber, final List<ScalingTask> allInventoryDataTasks) {
         return Lists.partition(allInventoryDataTasks, taskNumber);
     }
 }

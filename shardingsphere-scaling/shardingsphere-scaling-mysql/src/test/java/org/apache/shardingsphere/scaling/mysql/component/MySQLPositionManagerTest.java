@@ -70,7 +70,7 @@ public final class MySQLPositionManagerTest {
     
     @Test
     public void assertInitPositionByJson() {
-        MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(new BinlogPosition(LOG_FILE_NAME, LOG_POSITION).toJson().toString());
+        MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(new BinlogPosition(LOG_FILE_NAME, LOG_POSITION).toString());
         BinlogPosition actual = mysqlPositionManager.getPosition();
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));
         assertThat(actual.getPosition(), is(LOG_POSITION));

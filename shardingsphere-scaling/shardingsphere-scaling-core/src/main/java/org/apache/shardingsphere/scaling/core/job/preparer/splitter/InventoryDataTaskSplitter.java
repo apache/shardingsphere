@@ -18,20 +18,19 @@
 package org.apache.shardingsphere.scaling.core.job.preparer.splitter;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
-import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
-import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionManager;
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderInventoryPosition;
+import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultSyncTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.SyncTaskFactory;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -58,8 +57,8 @@ public final class InventoryDataTaskSplitter {
      * @param dataSourceManager data source manager
      * @return split inventory data task
      */
-    public Collection<ScalingTask<InventoryPosition>> splitInventoryData(final SyncConfiguration syncConfig, final DataSourceManager dataSourceManager) {
-        Collection<ScalingTask<InventoryPosition>> result = new LinkedList<>();
+    public Collection<ScalingTask> splitInventoryData(final SyncConfiguration syncConfig, final DataSourceManager dataSourceManager) {
+        Collection<ScalingTask> result = new LinkedList<>();
         for (InventoryDumperConfiguration each : splitDumperConfiguration(syncConfig.getConcurrency(), syncConfig.getDumperConfiguration(), dataSourceManager)) {
             result.add(syncTaskFactory.createInventoryDataSyncTask(each, syncConfig.getImporterConfiguration()));
         }
@@ -85,7 +84,7 @@ public final class InventoryDataTaskSplitter {
         for (String each : dumperConfig.getTableNameMap().keySet()) {
             InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(dumperConfig);
             inventoryDumperConfig.setTableName(each);
-            inventoryDumperConfig.setPositionManager(new InventoryPositionManager<>(new PlaceholderInventoryPosition()));
+            inventoryDumperConfig.setPositionManager(new BasePositionManager(new PlaceholderPosition()));
             result.add(inventoryDumperConfig);
         }
         return result;
@@ -134,10 +133,10 @@ public final class InventoryDataTaskSplitter {
             for (int i = 0; i < concurrency && min <= max; i++) {
                 InventoryDumperConfiguration splitDumperConfig = new InventoryDumperConfiguration(inventoryDumperConfig);
                 if (i < concurrency - 1) {
-                    splitDumperConfig.setPositionManager(new InventoryPositionManager<>(new PrimaryKeyPosition(min, min + step)));
+                    splitDumperConfig.setPositionManager(new BasePositionManager(new PrimaryKeyPosition(min, min + step)));
                     min += step + 1;
                 } else {
-                    splitDumperConfig.setPositionManager(new InventoryPositionManager<>(new PrimaryKeyPosition(min, max)));
+                    splitDumperConfig.setPositionManager(new BasePositionManager(new PrimaryKeyPosition(min, max)));
                 }
                 splitDumperConfig.setSpiltNum(i);
                 splitDumperConfig.setPrimaryKey(primaryKey);

@@ -24,14 +24,12 @@ import lombok.Setter;
 
 /**
  * Base position manager.
- *
- * @param <T> Position
  */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class BasePositionManager<T extends Position> implements PositionManager<T> {
+public class BasePositionManager implements PositionManager {
     
-    private T position;
+    private Position<?> position;
 }

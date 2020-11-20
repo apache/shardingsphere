@@ -40,7 +40,7 @@ public final class InventoryPositionGroup {
     
     private static final String FINISHED = "finished";
     
-    private Map<String, InventoryPosition> unfinished;
+    private Map<String, Position<?>> unfinished;
     
     private Set<String> finished;
     
@@ -59,12 +59,12 @@ public final class InventoryPositionGroup {
         return result;
     }
     
-    private static InventoryPosition fromJson(final Object json) {
+    private static Position<?> fromJson(final Object json) {
         List<Double> values = GSON.<List<Double>>fromJson(json.toString(), List.class);
         if (2 == values.size()) {
             return new PrimaryKeyPosition(values.get(0).longValue(), values.get(1).longValue());
         }
-        return new PlaceholderInventoryPosition();
+        return new PlaceholderPosition();
     }
     
     /**
@@ -74,7 +74,7 @@ public final class InventoryPositionGroup {
      */
     public String toJson() {
         JsonObject result = new JsonObject();
-        result.add(UNFINISHED, GSON.toJsonTree(unfinished.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().toJson()))));
+        result.add(UNFINISHED, GSON.toJsonTree(unfinished));
         result.add(FINISHED, GSON.toJsonTree(finished));
         return GSON.toJson(result);
     }

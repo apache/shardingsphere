@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.scaling.postgresql.wal;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.postgresql.replication.LogSequenceNumber;
 
@@ -32,7 +30,7 @@ import org.postgresql.replication.LogSequenceNumber;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
-public final class WalPosition implements IncrementalPosition {
+public final class WalPosition implements Position<WalPosition> {
     
     private static final Gson GSON = new Gson();
     
@@ -41,17 +39,15 @@ public final class WalPosition implements IncrementalPosition {
     private long delay;
     
     @Override
-    public int compareTo(final Position position) {
+    public int compareTo(final WalPosition position) {
         if (null == position) {
             return 1;
         }
-        long o1 = logSequenceNumber.asLong();
-        long o2 = ((WalPosition) position).logSequenceNumber.asLong();
-        return Long.compare(o1, o2);
+        return Long.compare(logSequenceNumber.asLong(), position.logSequenceNumber.asLong());
     }
     
     @Override
-    public JsonElement toJson() {
-        return GSON.toJsonTree(logSequenceNumber.asLong());
+    public String toString() {
+        return String.valueOf(logSequenceNumber.asLong());
     }
 }

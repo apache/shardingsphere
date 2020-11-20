@@ -32,7 +32,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.ImporterFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
-import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
+import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ import java.util.concurrent.Future;
  * Incremental data execute task.
  */
 @Slf4j
-public final class IncrementalDataScalingTask extends AbstractShardingScalingExecutor<IncrementalPosition> implements ScalingTask<IncrementalPosition> {
+public final class IncrementalDataScalingTask extends AbstractShardingScalingExecutor implements ScalingTask {
     
     private final int concurrency;
     
@@ -59,7 +59,6 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     
     private long delayMillisecond = Long.MAX_VALUE;
     
-    @SuppressWarnings("unchecked")
     public IncrementalDataScalingTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig) {
         this.concurrency = concurrency;
         this.dumperConfig = dumperConfig;
@@ -102,8 +101,8 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     private void instanceChannel(final Collection<Importer> importers) {
         DistributionChannel channel = new DistributionChannel(importers.size(), records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
-            if (lastHandledRecord.getPosition() instanceof IncrementalPosition) {
-                getPositionManager().setPosition((IncrementalPosition) lastHandledRecord.getPosition());
+            if (!(lastHandledRecord.getPosition() instanceof NopPosition)) {
+                getPositionManager().setPosition(lastHandledRecord.getPosition());
             }
             delayMillisecond = System.currentTimeMillis() - lastHandledRecord.getCommitTime();
         });

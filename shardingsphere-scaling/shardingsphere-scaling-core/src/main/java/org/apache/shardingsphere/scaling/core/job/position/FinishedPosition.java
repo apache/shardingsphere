@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.scaling.core.job.position;
 
 /**
- * Incremental position interface.
+ * Finished inventory position.
  */
-public interface IncrementalPosition extends Position {
+public final class FinishedPosition implements Position<FinishedPosition> {
     
-    /**
-     * Get incremental sync task delay millisecond.
-     *
-     * @return incremental sync delay
-     */
-    long getDelay();
+    @Override
+    public int compareTo(final FinishedPosition position) {
+        return 0;
+    }
 }

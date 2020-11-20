@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
+import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.JDBCDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
-import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
-import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 
 public final class FixtureH2ScalingEntry implements ScalingEntry {
     
@@ -39,7 +38,7 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends PositionManager<IncrementalPosition>> getPositionManager() {
+    public Class<? extends PositionManager> getPositionManager() {
         return FixtureNopManager.class;
     }
     

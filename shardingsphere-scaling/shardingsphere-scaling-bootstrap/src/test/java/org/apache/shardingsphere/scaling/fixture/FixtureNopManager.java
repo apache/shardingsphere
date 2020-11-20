@@ -17,39 +17,22 @@
 
 package org.apache.shardingsphere.scaling.fixture;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
-import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
+import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 
 import javax.sql.DataSource;
 
 @RequiredArgsConstructor
-public final class FixtureNopManager extends BasePositionManager<IncrementalPosition> implements PositionManager<IncrementalPosition> {
+public final class FixtureNopManager extends BasePositionManager implements PositionManager {
     
     private final DataSource dataSource;
     
     @Override
-    public IncrementalPosition getPosition() {
+    public Position getPosition() {
         
-        return new IncrementalPosition() {
-            @Override
-            public long getDelay() {
-                return 0;
-            }
-    
-            @Override
-            public int compareTo(final Position position) {
-                return 0;
-            }
-            
-            @Override
-            public JsonElement toJson() {
-                return new JsonObject();
-            }
-        };
+        return new NopPosition();
     }
 }

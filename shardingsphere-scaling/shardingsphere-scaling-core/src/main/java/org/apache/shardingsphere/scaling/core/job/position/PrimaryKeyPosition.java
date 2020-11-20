@@ -24,6 +24,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Arrays;
+
 /**
  * Use primary key as position.
  */
@@ -31,26 +33,22 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public final class PrimaryKeyPosition implements InventoryPosition {
-    
-    private static final Gson GSON = new Gson();
-    
-    private final boolean finished = false;
+public final class PrimaryKeyPosition implements Position<PrimaryKeyPosition> {
     
     private long beginValue;
     
     private long endValue;
     
     @Override
-    public int compareTo(final Position position) {
+    public int compareTo(final PrimaryKeyPosition position) {
         if (null == position) {
             return 1;
         }
-        return Long.compare(beginValue, ((PrimaryKeyPosition) position).beginValue);
+        return Long.compare(beginValue, position.beginValue);
     }
     
     @Override
-    public JsonElement toJson() {
-        return GSON.toJsonTree(new long[]{beginValue, endValue});
+    public String toString() {
+        return Arrays.toString(new long[]{beginValue, endValue});
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.mysql.component;
 
 import com.google.gson.Gson;
 import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 
 import javax.sql.DataSource;
@@ -30,7 +31,7 @@ import java.sql.SQLException;
 /**
  * MySQL position manager, based on binlog mechanism.
  */
-public final class MySQLPositionManager extends BasePositionManager<BinlogPosition> {
+public final class MySQLPositionManager extends BasePositionManager {
     
     private static final Gson GSON = new Gson();
     
@@ -46,12 +47,12 @@ public final class MySQLPositionManager extends BasePositionManager<BinlogPositi
     
     @Override
     public BinlogPosition getPosition() {
-        BinlogPosition position = super.getPosition();
+        Position<?> position = super.getPosition();
         if (null != position) {
-            return position;
+            return (BinlogPosition) position;
         }
         initPosition();
-        return super.getPosition();
+        return (BinlogPosition) super.getPosition();
     }
     
     private void initPosition() {

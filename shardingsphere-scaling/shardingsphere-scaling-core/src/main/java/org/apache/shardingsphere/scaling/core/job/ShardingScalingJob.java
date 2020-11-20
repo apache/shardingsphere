@@ -22,8 +22,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
-import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.schedule.SyncTaskControlStatus;
 import org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil;
@@ -47,9 +45,9 @@ public final class ShardingScalingJob {
     
     private final transient List<SyncConfiguration> syncConfigurations = new LinkedList<>();
     
-    private final transient List<ScalingTask<InventoryPosition>> inventoryDataTasks = new LinkedList<>();
+    private final transient List<ScalingTask> inventoryDataTasks = new LinkedList<>();
     
-    private final transient List<ScalingTask<IncrementalPosition>> incrementalDataTasks = new LinkedList<>();
+    private final transient List<ScalingTask> incrementalDataTasks = new LinkedList<>();
     
     private transient ScalingConfiguration scalingConfiguration;
     

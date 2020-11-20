@@ -22,19 +22,19 @@ package org.apache.shardingsphere.scaling.core.job.position;
  * Such as mysql binlog, postgreSQL wal.
  * Or use primary key as position.
  */
-public interface PositionManager<T extends Position> {
+public interface PositionManager {
     
     /**
      * Get position.
      *
      * @return position
      */
-    T getPosition();
+    Position<?> getPosition();
     
     /**
      * Set Position.
      *
      * @param position position.
      */
-    void setPosition(T position);
+    void setPosition(Position<?> position);
 }

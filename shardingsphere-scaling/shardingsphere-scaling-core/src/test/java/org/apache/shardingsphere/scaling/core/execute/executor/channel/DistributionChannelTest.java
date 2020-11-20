@@ -116,18 +116,13 @@ public final class DistributionChannelTest {
     
     @AllArgsConstructor
     @Getter
-    private static final class IntPosition implements Position {
+    private static final class IntPosition implements Position<IntPosition> {
         
         private final int id;
         
         @Override
-        public int compareTo(final Position position) {
+        public int compareTo(final IntPosition position) {
             return id - ((IntPosition) position).id;
-        }
-        
-        @Override
-        public JsonElement toJson() {
-            return null;
         }
     }
 }

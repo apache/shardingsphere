@@ -30,7 +30,6 @@ import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLImporter
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLJdbcDumper;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLPositionManager;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLWalDumper;
-import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
 
 /**
  * PostgreSQL scaling entry.
@@ -48,7 +47,7 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends PositionManager<WalPosition>> getPositionManager() {
+    public Class<? extends PositionManager> getPositionManager() {
         return PostgreSQLPositionManager.class;
     }
     

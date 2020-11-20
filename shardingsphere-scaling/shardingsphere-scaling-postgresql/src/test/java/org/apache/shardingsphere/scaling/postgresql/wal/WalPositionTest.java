@@ -35,6 +35,6 @@ public final class WalPositionTest {
     @Test
     public void assertToJson() {
         WalPosition walPosition = new WalPosition(LogSequenceNumber.valueOf(100L));
-        assertThat(walPosition.toJson().toString(), is("100"));
+        assertThat(walPosition.toString(), is("100"));
     }
 }

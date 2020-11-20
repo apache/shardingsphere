@@ -23,15 +23,10 @@ import com.google.gson.JsonObject;
 /**
  * Nop position.
  */
-public final class NopPosition implements Position {
+public final class NopPosition implements Position<NopPosition> {
     
     @Override
-    public int compareTo(final Position position) {
+    public int compareTo(final NopPosition position) {
         return 0;
-    }
-    
-    @Override
-    public JsonElement toJson() {
-        return new JsonObject();
     }
 }
