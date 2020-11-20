@@ -32,7 +32,6 @@ import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Show databases backend handler.
@@ -65,7 +64,7 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     }
     
     @Override
-    public List<Object> getRowData() throws SQLException {
+    public Collection<Object> getRowData() throws SQLException {
         return Collections.singletonList(mergedResult.getValue(1, Object.class));
     }
 }
