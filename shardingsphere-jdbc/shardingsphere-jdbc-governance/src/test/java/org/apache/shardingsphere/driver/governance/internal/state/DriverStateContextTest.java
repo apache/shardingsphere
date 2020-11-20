@@ -25,30 +25,39 @@ import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Collections;
 
-public class DriverStateContextTest {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+
+public final class DriverStateContextTest {
+    
+    @Before
+    @After
+    public void reset() {
+        StateContext.switchState(new StateEvent(StateType.OK, true));
+    }
     
     @Test
-    public void assertGetConnection() {
-        Connection actual1 = DriverStateContext.getConnection(
+    public void assertGetConnectionWithOkState() {
+        Connection actual = DriverStateContext.getConnection(
                 Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)), mock(MetaDataContexts.class), mock(TransactionContexts.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
-        assertThat(actual1, instanceOf(ShardingSphereConnection.class));
+        assertThat(actual, instanceOf(ShardingSphereConnection.class));
+    }
+    
+    @Test
+    public void assertGetConnectionWithCircuitBreakState() {
         StateContext.switchState(new StateEvent(StateType.CIRCUIT_BREAK, true));
-        Connection actual2 = DriverStateContext.getConnection(
-                Collections.emptyMap(), mock(MetaDataContexts.class), mock(TransactionContexts.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
-        assertThat(actual2, instanceOf(CircuitBreakerConnection.class));
-        StateContext.switchState(new StateEvent(StateType.CIRCUIT_BREAK, false));
-        Connection actual3 = DriverStateContext.getConnection(
+        Connection actual = DriverStateContext.getConnection(
                 Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)), mock(MetaDataContexts.class), mock(TransactionContexts.class, RETURNS_DEEP_STUBS), TransactionType.LOCAL);
-        assertThat(actual3, instanceOf(ShardingSphereConnection.class));
+        assertThat(actual, instanceOf(CircuitBreakerConnection.class));
     }
 }
