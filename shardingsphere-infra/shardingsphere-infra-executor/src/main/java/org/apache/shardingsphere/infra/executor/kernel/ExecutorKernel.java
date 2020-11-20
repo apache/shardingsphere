@@ -75,23 +75,21 @@ public final class ExecutorKernel implements AutoCloseable {
         if (inputGroups.isEmpty()) {
             return Collections.emptyList();
         }
-        return serial ? serialExecute(inputGroups, firstCallback, callback) : parallelExecute(inputGroups, firstCallback, callback);
+        return serial ? serialExecute(inputGroups.iterator(), firstCallback, callback) : parallelExecute(inputGroups.iterator(), firstCallback, callback);
     }
     
-    private <I, O> List<O> serialExecute(final Collection<InputGroup<I>> inputGroups, final ExecutorCallback<I, O> firstCallback, final ExecutorCallback<I, O> callback) throws SQLException {
-        Iterator<InputGroup<I>> inputGroupsIterator = inputGroups.iterator();
-        InputGroup<I> firstInputs = inputGroupsIterator.next();
+    private <I, O> List<O> serialExecute(final Iterator<InputGroup<I>> inputGroups, final ExecutorCallback<I, O> firstCallback, final ExecutorCallback<I, O> callback) throws SQLException {
+        InputGroup<I> firstInputs = inputGroups.next();
         List<O> result = new LinkedList<>(syncExecute(firstInputs, null == firstCallback ? callback : firstCallback));
-        for (InputGroup<I> each : Lists.newArrayList(inputGroupsIterator)) {
+        for (InputGroup<I> each : Lists.newArrayList(inputGroups)) {
             result.addAll(syncExecute(each, callback));
         }
         return result;
     }
     
-    private <I, O> List<O> parallelExecute(final Collection<InputGroup<I>> inputGroups, final ExecutorCallback<I, O> firstCallback, final ExecutorCallback<I, O> callback) throws SQLException {
-        Iterator<InputGroup<I>> inputGroupsIterator = inputGroups.iterator();
-        InputGroup<I> firstInputs = inputGroupsIterator.next();
-        Collection<ListenableFuture<Collection<O>>> restResultFutures = asyncExecute(Lists.newArrayList(inputGroupsIterator), callback);
+    private <I, O> List<O> parallelExecute(final Iterator<InputGroup<I>> inputGroups, final ExecutorCallback<I, O> firstCallback, final ExecutorCallback<I, O> callback) throws SQLException {
+        InputGroup<I> firstInputs = inputGroups.next();
+        Collection<ListenableFuture<Collection<O>>> restResultFutures = asyncExecute(Lists.newArrayList(inputGroups), callback);
         return getGroupResults(syncExecute(firstInputs, null == firstCallback ? callback : firstCallback), restResultFutures);
     }
     
