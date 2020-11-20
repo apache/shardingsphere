@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.cache;
+package org.apache.shardingsphere.sql.parser.core.cache;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
