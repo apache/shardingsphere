@@ -24,6 +24,7 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.scaling.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.utils.ConfigurationYamlConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
@@ -70,9 +71,9 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements DataSour
     }
     
     @Override
-    public DataSource toDataSource() throws SQLException {
+    public DataSourceWrapper toDataSource() throws SQLException {
         Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(ConfigurationYamlConverter.loadDataSourceConfigurations(dataSource));
         ShardingRuleConfiguration ruleConfig = ConfigurationYamlConverter.loadShardingRuleConfiguration(rule);
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Lists.newArrayList(ruleConfig), null);
+        return new DataSourceWrapper(ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Lists.newArrayList(ruleConfig), null));
     }
 }

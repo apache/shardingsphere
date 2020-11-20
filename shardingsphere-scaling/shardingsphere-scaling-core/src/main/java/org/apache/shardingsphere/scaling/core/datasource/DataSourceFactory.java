@@ -35,6 +35,6 @@ public final class DataSourceFactory {
      */
     @SneakyThrows(SQLException.class)
     public DataSourceWrapper newInstance(final DataSourceConfiguration dataSourceConfig) {
-        return new DataSourceWrapper(dataSourceConfig.toDataSource());
+        return dataSourceConfig.toDataSource();
     }
 }

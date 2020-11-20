@@ -23,8 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-
-import javax.sql.DataSource;
+import org.apache.shardingsphere.scaling.core.datasource.DataSourceWrapper;
 
 /**
  * Standard JDBC data source configuration.
@@ -68,11 +67,11 @@ public final class StandardJDBCDataSourceConfiguration implements DataSourceConf
     }
     
     @Override
-    public DataSource toDataSource() {
-        HikariDataSource result = new HikariDataSource();
-        result.setJdbcUrl(jdbcUrl);
-        result.setUsername(username);
-        result.setPassword(password);
-        return result;
+    public DataSourceWrapper toDataSource() {
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setJdbcUrl(jdbcUrl);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
+        return new DataSourceWrapper(dataSource);
     }
 }
