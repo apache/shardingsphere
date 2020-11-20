@@ -21,25 +21,25 @@ import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Skip backend handler.
  */
 public final class SkipBackendHandler implements TextProtocolBackendHandler {
-    
+
     @Override
     public BackendResponse execute() {
         return new UpdateResponse();
     }
-    
+
     @Override
     public boolean next() {
         return false;
     }
-    
+
     @Override
-    public List<Object> getRowData() {
+    public Collection<Object> getRowData() {
         return null;
     }
 }
