@@ -82,7 +82,7 @@ public final class QueryHeaderBuilder {
         }
         String columnLabel = resultSetMetaData.getColumnLabel(columnIndex);
         int columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
-        Integer columnType = resultSetMetaData.getColumnType(columnIndex);
+        int columnType = resultSetMetaData.getColumnType(columnIndex);
         int decimals = resultSetMetaData.getScale(columnIndex);
         boolean signed = resultSetMetaData.isSigned(columnIndex);
         boolean notNull = resultSetMetaData.isNullable(columnIndex) == ResultSetMetaData.columnNoNulls;

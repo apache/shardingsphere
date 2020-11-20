@@ -39,9 +39,8 @@ import org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder.Resp
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * COM_STMT_EXECUTE command executor for MySQL.
@@ -88,14 +87,6 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     @Override
     public MySQLPacket getQueryData() throws SQLException {
         QueryData queryData = databaseCommunicationEngine.getQueryData();
-        return new MySQLBinaryResultSetRowPacket(++currentSequenceId, queryData.getData(), getMySQLColumnTypes(queryData));
-    }
-    
-    private List<MySQLColumnType> getMySQLColumnTypes(final QueryData queryData) {
-        List<MySQLColumnType> result = new ArrayList<>(queryData.getColumnTypes().size());
-        for (int i = 0; i < queryData.getColumnTypes().size(); i++) {
-            result.add(MySQLColumnType.valueOfJDBCType(queryData.getColumnTypes().get(i)));
-        }
-        return result;
+        return new MySQLBinaryResultSetRowPacket(++currentSequenceId, queryData.getData(), queryData.getColumnTypes().stream().map(MySQLColumnType::valueOfJDBCType).collect(Collectors.toList()));
     }
 }

@@ -37,7 +37,7 @@ public final class QueryHeader {
     
     private final int columnLength;
     
-    private final Integer columnType;
+    private final int columnType;
     
     private final int decimals;
     
