@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Properties changed listener.
@@ -39,6 +40,6 @@ public final class PropertiesChangedListener extends PostGovernanceRepositoryEve
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        return Optional.of(new PropertiesChangedEvent(YamlEngine.unmarshalProperties(event.getValue())));
+        return Optional.of(new PropertiesChangedEvent(YamlEngine.unmarshalProperties(event.getValue(), Collections.singletonList(Properties.class))));
     }
 }

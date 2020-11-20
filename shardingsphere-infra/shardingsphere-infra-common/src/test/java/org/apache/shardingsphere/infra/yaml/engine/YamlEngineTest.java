@@ -19,12 +19,17 @@ package org.apache.shardingsphere.infra.yaml.engine;
 
 import org.apache.shardingsphere.infra.yaml.swapper.fixture.FixtureYamlRuleConfiguration;
 import org.junit.Test;
+import org.yaml.snakeyaml.constructor.ConstructorException;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -68,13 +73,13 @@ public final class YamlEngineTest {
     @Test
     @SuppressWarnings("unchecked")
     public void assertUnmarshalWithYamlContent() {
-        Map<String, Object> actual = (Map<String, Object>) YamlEngine.unmarshal("name: test");
+        Map<String, Object> actual = (Map<String, Object>) YamlEngine.unmarshal("name: test", Collections.emptyList());
         assertThat(actual.get("name").toString(), is("test"));
     }
     
     @Test
     public void assertUnmarshalProperties() {
-        Properties actual = YamlEngine.unmarshalProperties("password: pwd\nauthorizedSchemas: db1");
+        Properties actual = YamlEngine.unmarshalProperties("password: pwd\nauthorizedSchemas: db1", Collections.singletonList(Properties.class));
         assertThat(actual.getProperty("authorizedSchemas"), is("db1"));
         assertThat(actual.getProperty("password"), is("pwd"));
     }
@@ -84,5 +89,19 @@ public final class YamlEngineTest {
         FixtureYamlRuleConfiguration actual = new FixtureYamlRuleConfiguration();
         actual.setName("test");
         assertThat(YamlEngine.marshal(actual), is("name: test\n"));
+    }
+    
+    @Test(expected = ConstructorException.class)
+    public void assertUnmarshalMapWithIllegalClasses() {
+        YamlEngine.unmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", Collections.<Class<?>>emptyList());
+    }
+    
+    @Test
+    public void assertUnmarshalMapWithAcceptClasses() {
+        Collection<Class<?>> acceptClasses = new LinkedList<>();
+        acceptClasses.add(URLClassLoader.class);
+        acceptClasses.add(URL.class);
+        Map<String, URLClassLoader> actual = (Map) YamlEngine.unmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", acceptClasses);
+        assertThat(actual.get("url").getClass().getName(), is(URLClassLoader.class.getName()));
     }
 }

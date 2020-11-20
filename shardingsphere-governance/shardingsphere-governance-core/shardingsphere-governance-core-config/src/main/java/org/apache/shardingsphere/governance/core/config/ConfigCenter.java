@@ -53,6 +53,7 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -301,7 +302,7 @@ public final class ConfigCenter {
      * @return properties
      */
     public Properties loadProperties() {
-        return YamlEngine.unmarshalProperties(repository.get(node.getPropsPath()));
+        return YamlEngine.unmarshalProperties(repository.get(node.getPropsPath()), Collections.singletonList(Properties.class));
     }
     
     /**
