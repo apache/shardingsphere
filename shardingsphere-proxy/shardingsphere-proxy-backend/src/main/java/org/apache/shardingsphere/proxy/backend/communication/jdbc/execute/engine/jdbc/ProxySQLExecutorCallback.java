@@ -52,13 +52,13 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     private final BackendConnection backendConnection;
     
     private final JDBCAccessor accessor;
-
+    
     private final boolean isReturnGeneratedKeys;
     
     private final boolean fetchMetaData;
     
     private boolean hasMetaData;
-
+    
     public ProxySQLExecutorCallback(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext, 
                                     final BackendConnection backendConnection, final JDBCAccessor accessor,
                                     final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
