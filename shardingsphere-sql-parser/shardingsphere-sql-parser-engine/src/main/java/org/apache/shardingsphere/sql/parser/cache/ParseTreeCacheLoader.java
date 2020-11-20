@@ -15,39 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api;
+package org.apache.shardingsphere.sql.parser.cache;
 
-import com.google.common.cache.LoadingCache;
+import com.google.common.cache.CacheLoader;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.cache.ParseTreeCacheBuilder;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 /**
- * SQL parser engine.
+ * Parse tree cache loader.
  */
-public final class SQLParserEngine {
+public final class ParseTreeCacheLoader extends CacheLoader<String, ParseTree> {
     
     private final SQLParserExecutor sqlParserExecutor;
     
-    private final LoadingCache<String, ParseTree> parseTreeCache;
-    
-    public SQLParserEngine(final String databaseType) {
-        this(databaseType, new CacheOption(128, 1024L, 4));
-    }
-    
-    public SQLParserEngine(final String databaseType, final CacheOption cacheOption) {
+    public ParseTreeCacheLoader(final String databaseType) {
         sqlParserExecutor = new SQLParserExecutor(databaseType);
-        parseTreeCache = ParseTreeCacheBuilder.build(cacheOption, databaseType);
     }
     
-    /**
-     * Parse SQL.
-     *
-     * @param sql SQL to be parsed
-     * @param useCache whether use cache
-     * @return parse tree
-     */
-    public ParseTree parse(final String sql, final boolean useCache) {
-        return useCache ? parseTreeCache.getUnchecked(sql) : sqlParserExecutor.parse(sql);
+    @ParametersAreNonnullByDefault
+    @Override
+    public ParseTree load(final String key) {
+        return sqlParserExecutor.parse(key);
     }
 }
