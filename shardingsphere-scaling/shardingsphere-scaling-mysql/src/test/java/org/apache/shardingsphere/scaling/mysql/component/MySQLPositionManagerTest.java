@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.mysql.component;
 
+import com.google.gson.Gson;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,7 +71,7 @@ public final class MySQLPositionManagerTest {
     
     @Test
     public void assertInitPositionByJson() {
-        MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(new BinlogPosition(LOG_FILE_NAME, LOG_POSITION).toJson().toString());
+        MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(new Gson().toJson(new BinlogPosition(LOG_FILE_NAME, LOG_POSITION)));
         BinlogPosition actual = mysqlPositionManager.getPosition();
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));
         assertThat(actual.getPosition(), is(LOG_POSITION));

@@ -15,36 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.wal;
+package org.apache.shardingsphere.scaling.core.job.position;
 
 import com.google.gson.Gson;
 import org.junit.Test;
-import org.postgresql.replication.LogSequenceNumber;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-public final class WalPositionTest {
-    
-    private static final Gson GSON = new Gson();
+public final class PrimaryKeyPositionTest {
     
     @Test
     public void assertCompareTo() {
-        WalPosition walPosition = new WalPosition(LogSequenceNumber.valueOf(100L));
-        assertThat(walPosition.compareTo(null), is(1));
-        assertThat(walPosition.compareTo(new WalPosition(LogSequenceNumber.valueOf(100L))), is(0));
+        PrimaryKeyPosition position1 = new PrimaryKeyPosition(1, 100);
+        PrimaryKeyPosition position2 = new PrimaryKeyPosition(101, 200);
+        assertThat(position1.compareTo(null), is(1));
+        assertTrue(position1.compareTo(position2) < 0);
+    }
+    
+    @Test
+    public void assertFormJson() {
+        PrimaryKeyPosition position = new Gson().fromJson("[1,100]", PrimaryKeyPosition.class);
+        assertThat(position.getBeginValue(), is(1L));
+        assertThat(position.getEndValue(), is(100L));
     }
     
     @Test
     public void assertToJson() {
-        WalPosition walPosition = new WalPosition(LogSequenceNumber.valueOf(100L));
-        assertThat(GSON.toJson(walPosition), is("{\"logSequenceNumber\":{\"value\":100},\"delay\":0}"));
-    }
-    
-    @Test
-    public void assertFromJson() {
-        WalPosition walPosition = GSON.fromJson("{\"logSequenceNumber\":{\"value\":100},\"delay\":0}", WalPosition.class);
-        assertThat(walPosition.getLogSequenceNumber().asLong(), is(100L));
-        assertThat(walPosition.getDelay(), is(0L));
+        PrimaryKeyPosition position = new PrimaryKeyPosition(1, 100);
+        assertThat(new Gson().toJson(position), is("[1,100]"));
     }
 }

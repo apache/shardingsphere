@@ -15,27 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.scaling.core.fixture;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import lombok.Getter;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 
-/**
- * Finished inventory position.
- */
-@Getter
-public final class FinishedInventoryPosition implements InventoryPosition {
+import javax.sql.DataSource;
+
+public final class FixturePositionManager extends PositionManager {
     
-    private final boolean finished = true;
-    
-    @Override
-    public JsonElement toJson() {
-        return new JsonObject();
+    public FixturePositionManager(final DataSource dataSource) {
+        super(new PlaceholderPosition());
     }
     
-    @Override
-    public int compareTo(final Position o) {
-        return 0;
+    public FixturePositionManager(final String position) {
+        super(new PlaceholderPosition());
     }
 }

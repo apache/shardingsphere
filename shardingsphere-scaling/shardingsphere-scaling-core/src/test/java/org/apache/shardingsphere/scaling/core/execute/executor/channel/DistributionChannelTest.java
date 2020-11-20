@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.channel;
 
-import com.google.gson.JsonElement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -27,7 +26,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.PlaceholderRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,7 +64,7 @@ public final class DistributionChannelTest {
     
     @Test
     public void assertBroadcastFinishedRecord() {
-        execute(records -> assertThat(records.size(), is(2)), 2, new FinishedRecord(new NopPosition()));
+        execute(records -> assertThat(records.size(), is(2)), 2, new FinishedRecord(new PlaceholderPosition()));
     }
     
     @SneakyThrows(InterruptedException.class)
@@ -116,18 +115,13 @@ public final class DistributionChannelTest {
     
     @AllArgsConstructor
     @Getter
-    private static final class IntPosition implements Position {
+    private static final class IntPosition implements Position<IntPosition> {
         
         private final int id;
         
         @Override
-        public int compareTo(final Position position) {
-            return id - ((IntPosition) position).id;
-        }
-        
-        @Override
-        public JsonElement toJson() {
-            return null;
+        public int compareTo(final IntPosition position) {
+            return id - position.id;
         }
     }
 }

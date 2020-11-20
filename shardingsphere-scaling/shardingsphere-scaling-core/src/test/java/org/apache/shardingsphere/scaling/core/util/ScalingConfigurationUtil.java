@@ -35,8 +35,6 @@ import java.io.InputStreamReader;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ScalingConfigurationUtil {
     
-    private static final Gson GSON = new Gson();
-    
     /**
      * Init job config.
      *
@@ -47,7 +45,7 @@ public final class ScalingConfigurationUtil {
     public static ScalingConfiguration initConfig(final String configFile) throws IOException {
         try (InputStream fileInputStream = ScalingConfigurationUtil.class.getResourceAsStream(configFile);
              InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream)) {
-            return GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
+            return new Gson().fromJson(inputStreamReader, ScalingConfiguration.class);
         }
     }
     

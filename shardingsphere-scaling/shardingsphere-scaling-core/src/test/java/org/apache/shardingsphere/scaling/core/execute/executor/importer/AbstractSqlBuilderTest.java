@@ -22,7 +22,7 @@ import com.google.common.collect.Sets;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
-import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -88,7 +88,7 @@ public final class AbstractSqlBuilderTest {
     }
     
     private DataRecord mockDataRecord(final String tableName) {
-        DataRecord result = new DataRecord(new NopPosition(), 4);
+        DataRecord result = new DataRecord(new PlaceholderPosition(), 4);
         result.setTableName(tableName);
         result.addColumn(new Column("id", "", false, true));
         result.addColumn(new Column("sc", "", false, false));

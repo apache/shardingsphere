@@ -19,13 +19,12 @@ package org.apache.shardingsphere.scaling.core.job.task;
 
 import org.apache.shardingsphere.scaling.core.execute.executor.ShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 
 /**
  * Sync task interface.
  */
-public interface ScalingTask<T extends Position> extends ShardingScalingExecutor {
+public interface ScalingTask extends ShardingScalingExecutor {
     
     /**
      * Get synchronize progress.
@@ -39,7 +38,7 @@ public interface ScalingTask<T extends Position> extends ShardingScalingExecutor
      *
      * @return position manager
      */
-    PositionManager<T> getPositionManager();
+    PositionManager getPositionManager();
     
     /**
      * Get task id.

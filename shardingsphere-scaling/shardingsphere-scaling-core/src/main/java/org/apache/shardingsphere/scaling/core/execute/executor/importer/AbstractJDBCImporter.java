@@ -32,7 +32,6 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRe
 import org.apache.shardingsphere.scaling.core.execute.executor.record.GroupedDataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
-import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -47,7 +46,7 @@ import java.util.stream.Collectors;
  * Abstract JDBC importer implementation.
  */
 @Slf4j
-public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecutor<IncrementalPosition> implements Importer {
+public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecutor implements Importer {
     
     private static final DataRecordMerger MERGER = new DataRecordMerger();
     

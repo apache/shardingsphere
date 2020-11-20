@@ -21,50 +21,36 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 
 /**
- * Use primary key as position.
+ * Placeholder position.
  */
-@RequiredArgsConstructor
-@Getter
-@JsonAdapter(PrimaryKeyPosition.PositionTypeAdapter.class)
-public final class PrimaryKeyPosition implements Position<PrimaryKeyPosition> {
-    
-    private final long beginValue;
-    
-    private final long endValue;
+@JsonAdapter(PlaceholderPosition.PositionTypeAdapter.class)
+public final class PlaceholderPosition implements Position<PlaceholderPosition> {
     
     @Override
-    public int compareTo(final PrimaryKeyPosition position) {
-        if (null == position) {
-            return 1;
-        }
-        return Long.compare(beginValue, position.beginValue);
+    public int compareTo(final PlaceholderPosition position) {
+        return 1;
     }
     
     /**
      * Position type adapter.
      */
-    public static class PositionTypeAdapter extends TypeAdapter<PrimaryKeyPosition> {
+    public static class PositionTypeAdapter extends TypeAdapter<PlaceholderPosition> {
         
         @Override
-        public void write(final JsonWriter out, final PrimaryKeyPosition value) throws IOException {
+        public void write(final JsonWriter out, final PlaceholderPosition value) throws IOException {
             out.beginArray();
-            out.value(value.getBeginValue());
-            out.value(value.getEndValue());
             out.endArray();
         }
         
         @Override
-        public PrimaryKeyPosition read(final JsonReader in) throws IOException {
+        public PlaceholderPosition read(final JsonReader in) throws IOException {
             in.beginArray();
-            PrimaryKeyPosition position = new PrimaryKeyPosition(in.nextLong(), in.nextLong());
             in.endArray();
-            return position;
+            return new PlaceholderPosition();
         }
     }
 }

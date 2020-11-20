@@ -17,21 +17,26 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.Gson;
+import org.junit.Test;
 
-/**
- * Nop position.
- */
-public final class NopPosition implements Position {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class PlaceholderPositionTest {
     
-    @Override
-    public int compareTo(final Position position) {
-        return 0;
+    public static final Gson GSON = new Gson();
+    
+    @Test
+    public void assertCompareTo() {
+        PlaceholderPosition position1 = new PlaceholderPosition();
+        PlaceholderPosition position2 = new PlaceholderPosition();
+        assertThat(position1.compareTo(position2), is(1));
     }
     
-    @Override
-    public JsonElement toJson() {
-        return new JsonObject();
+    @Test
+    public void assertTypeAdapter() {
+        PlaceholderPosition position = GSON.fromJson("[]", PlaceholderPosition.class);
+        assertThat(GSON.toJson(position), is("[]"));
     }
 }
