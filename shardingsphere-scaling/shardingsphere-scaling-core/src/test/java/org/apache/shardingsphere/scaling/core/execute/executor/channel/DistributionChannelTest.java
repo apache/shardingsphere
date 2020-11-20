@@ -26,7 +26,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.PlaceholderRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,7 +64,7 @@ public final class DistributionChannelTest {
     
     @Test
     public void assertBroadcastFinishedRecord() {
-        execute(records -> assertThat(records.size(), is(2)), 2, new FinishedRecord(new NopPosition()));
+        execute(records -> assertThat(records.size(), is(2)), 2, new FinishedRecord(new PlaceholderPosition()));
     }
     
     @SneakyThrows(InterruptedException.class)

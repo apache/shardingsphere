@@ -34,7 +34,6 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
-import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
@@ -104,7 +103,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
             channel.close();
             throw new SyncTaskExecuteException(ex);
         } finally {
-            pushRecord(new FinishedRecord(new NopPosition()));
+            pushRecord(new FinishedRecord(new PlaceholderPosition()));
         }
     }
     

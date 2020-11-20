@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.record;
 
-import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -31,11 +31,11 @@ public final class DataRecordTest {
     
     @Test
     public void assertKeyEqual() {
-        beforeDataRecord = new DataRecord(new NopPosition(), 2);
+        beforeDataRecord = new DataRecord(new PlaceholderPosition(), 2);
         beforeDataRecord.setTableName("t1");
         beforeDataRecord.addColumn(new Column("id", 1, true, true));
         beforeDataRecord.addColumn(new Column("name", "1", true, false));
-        afterDataRecord = new DataRecord(new NopPosition(), 2);
+        afterDataRecord = new DataRecord(new PlaceholderPosition(), 2);
         afterDataRecord.setTableName("t1");
         afterDataRecord.addColumn(new Column("id", 1, true, true));
         afterDataRecord.addColumn(new Column("name", "2", true, false));
@@ -44,11 +44,11 @@ public final class DataRecordTest {
     
     @Test
     public void assertOldKeyEqual() {
-        beforeDataRecord = new DataRecord(new NopPosition(), 2);
+        beforeDataRecord = new DataRecord(new PlaceholderPosition(), 2);
         beforeDataRecord.setTableName("t1");
         beforeDataRecord.addColumn(new Column("id", 1, true, true));
         beforeDataRecord.addColumn(new Column("name", "1", true, false));
-        afterDataRecord = new DataRecord(new NopPosition(), 2);
+        afterDataRecord = new DataRecord(new PlaceholderPosition(), 2);
         afterDataRecord.setTableName("t1");
         afterDataRecord.addColumn(new Column("id", 1, 2, true, true));
         afterDataRecord.addColumn(new Column("name", "2", true, false));

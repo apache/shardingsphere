@@ -33,7 +33,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
-import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
 import java.util.Optional;
@@ -99,7 +99,7 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
     
     private void instanceChannel(final Importer importer) {
         MemoryChannel channel = new MemoryChannel(records -> {
-            Optional<Record> record = records.stream().filter(each -> !(each.getPosition() instanceof NopPosition)).reduce((a, b) -> b);
+            Optional<Record> record = records.stream().filter(each -> !(each.getPosition() instanceof PlaceholderPosition)).reduce((a, b) -> b);
             record.ifPresent(value -> getPositionManager().setPosition(value.getPosition()));
         });
         dumper.setChannel(channel);

@@ -32,7 +32,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.ImporterFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
-import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
 import java.util.ArrayList;
@@ -101,7 +101,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     private void instanceChannel(final Collection<Importer> importers) {
         DistributionChannel channel = new DistributionChannel(importers.size(), records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
-            if (!(lastHandledRecord.getPosition() instanceof NopPosition)) {
+            if (!(lastHandledRecord.getPosition() instanceof PlaceholderPosition)) {
                 getPositionManager().setPosition(lastHandledRecord.getPosition());
             }
             delayMillisecond = System.currentTimeMillis() - lastHandledRecord.getCommitTime();

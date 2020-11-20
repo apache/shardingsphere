@@ -32,7 +32,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.PlaceholderRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.metadata.JdbcUri;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
@@ -94,7 +94,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
                 handleEvent(uri, event);
             }
         }
-        pushRecord(new FinishedRecord(new NopPosition()));
+        pushRecord(new FinishedRecord(new PlaceholderPosition()));
     }
     
     private void handleEvent(final JdbcUri uri, final AbstractBinlogEvent event) {

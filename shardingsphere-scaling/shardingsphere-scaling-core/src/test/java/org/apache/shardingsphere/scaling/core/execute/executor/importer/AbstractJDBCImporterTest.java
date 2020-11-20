@@ -28,7 +28,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
-import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -155,7 +155,7 @@ public final class AbstractJDBCImporterTest {
     }
     
     private DataRecord getUpdatePrimaryKeyDataRecord() {
-        DataRecord result = new DataRecord(new NopPosition(), 3);
+        DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
         result.setTableName(TABLE_NAME);
         result.setType("UPDATE");
         result.addColumn(new Column("id", 1, 2, true, true));
@@ -171,12 +171,12 @@ public final class AbstractJDBCImporterTest {
     private List<Record> mockRecords(final DataRecord dataRecord) {
         List<Record> result = new LinkedList<>();
         result.add(dataRecord);
-        result.add(new FinishedRecord(new NopPosition()));
+        result.add(new FinishedRecord(new PlaceholderPosition()));
         return result;
     }
     
     private DataRecord getDataRecord(final String recordType) {
-        DataRecord result = new DataRecord(new NopPosition(), 3);
+        DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
         result.setTableName(TABLE_NAME);
         result.setType(recordType);
         result.addColumn(new Column("id", 1, false, true));

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
-import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 
 import javax.sql.DataSource;
@@ -25,10 +25,10 @@ import javax.sql.DataSource;
 public final class FixturePositionManager extends PositionManager {
     
     public FixturePositionManager(final DataSource dataSource) {
-        super(new NopPosition());
+        super(new PlaceholderPosition());
     }
     
     public FixturePositionManager(final String position) {
-        super(new NopPosition());
+        super(new PlaceholderPosition());
     }
 }

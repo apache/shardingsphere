@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
-import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 
 import java.util.HashMap;
@@ -26,7 +26,7 @@ import java.util.Map;
 public final class IncrementalPositionResumeBreakPointManager extends AbstractResumeBreakPointManager {
     
     public IncrementalPositionResumeBreakPointManager(final String databaseType, final String taskPath) {
-        getIncrementalPositionManagerMap().put("ds_0", new PositionManager(new NopPosition()));
+        getIncrementalPositionManagerMap().put("ds_0", new PositionManager(new PlaceholderPosition()));
     }
     
     @Override
