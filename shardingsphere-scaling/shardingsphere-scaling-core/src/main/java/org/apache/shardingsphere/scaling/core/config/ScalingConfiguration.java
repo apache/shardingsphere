@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.core.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.config.rule.RuleConfiguration;
 
 /**
  * Scaling configuration.

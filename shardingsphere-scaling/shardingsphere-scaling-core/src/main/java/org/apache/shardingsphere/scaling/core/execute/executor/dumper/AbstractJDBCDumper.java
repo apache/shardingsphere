@@ -23,7 +23,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.rule.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
@@ -63,7 +63,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     private Channel channel;
     
     protected AbstractJDBCDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
-        if (!JDBCScalingDataSourceConfiguration.class.equals(inventoryDumperConfig.getDataSourceConfiguration().getClass())) {
+        if (!StandardJDBCDataSourceConfiguration.class.equals(inventoryDumperConfig.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("AbstractJDBCDumper only support JDBCDataSourceConfiguration");
         }
         inventoryDumperConfiguration = inventoryDumperConfig;
@@ -73,7 +73,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     
     private TableMetaData createTableMetaData() {
         MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(inventoryDumperConfiguration.getDataSourceConfiguration()));
-        return metaDataManager.getTableMetaData(inventoryDumperConfiguration.getTableName());
+        return metaDataManager.getTableMetaData(inventoryDumperConfiguration.getSourceTable());
     }
     
     @Override
@@ -84,14 +84,14 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     
     private void dump() {
         try (Connection conn = dataSourceManager.getDataSource(inventoryDumperConfiguration.getDataSourceConfiguration()).getConnection()) {
-            String sql = String.format("SELECT * FROM %s %s", inventoryDumperConfiguration.getTableName(), RdbmsConfigurationUtil.getWhereCondition(inventoryDumperConfiguration));
+            String sql = String.format("SELECT * FROM %s %s", inventoryDumperConfiguration.getSourceTable(), RdbmsConfigurationUtil.getWhereCondition(inventoryDumperConfiguration));
             PreparedStatement ps = createPreparedStatement(conn, sql);
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
             while (isRunning() && rs.next()) {
                 DataRecord record = new DataRecord(newPosition(rs), metaData.getColumnCount());
                 record.setType(ScalingConstant.INSERT);
-                record.setTableName(inventoryDumperConfiguration.getTableNameMap().get(inventoryDumperConfiguration.getTableName()));
+                record.setTableName(inventoryDumperConfiguration.getTargetTable());
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
                     record.addColumn(new Column(metaData.getColumnName(i), readValue(rs, i), true, tableMetaData.isPrimaryKey(i - 1)));
                 }

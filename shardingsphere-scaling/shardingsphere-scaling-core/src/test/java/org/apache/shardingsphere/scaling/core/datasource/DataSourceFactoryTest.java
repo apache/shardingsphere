@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.datasource;
 
-import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ShardingSphereJDBCScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.rule.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.rule.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.fixture.FixtureShardingSphereJDBCConfiguration;
 import org.junit.Test;
 
@@ -28,7 +28,7 @@ public final class DataSourceFactoryTest {
     
     @Test
     public void assertNewJDBCInstance() {
-        JDBCScalingDataSourceConfiguration config = new JDBCScalingDataSourceConfiguration(
+        StandardJDBCDataSourceConfiguration config = new StandardJDBCDataSourceConfiguration(
                 "jdbc:h2:mem:test_db_2;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "password");
         DataSourceWrapper actual = new DataSourceFactory().newInstance(config);
         assertNotNull(actual);
@@ -36,7 +36,7 @@ public final class DataSourceFactoryTest {
     
     @Test
     public void assertNewShardingSphereJDBCInstance() {
-        ShardingSphereJDBCScalingDataSourceConfiguration config = new ShardingSphereJDBCScalingDataSourceConfiguration(
+        ShardingSphereJDBCDataSourceConfiguration config = new ShardingSphereJDBCDataSourceConfiguration(
                 FixtureShardingSphereJDBCConfiguration.DATA_SOURCE, FixtureShardingSphereJDBCConfiguration.RULE);
         DataSourceWrapper actual = new DataSourceFactory().newInstance(config);
         assertNotNull(actual);

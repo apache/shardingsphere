@@ -25,14 +25,13 @@ import com.google.common.collect.Sets;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.rule.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ShardingSphereJDBCScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.rule.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.rule.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.metadata.JdbcUri;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
@@ -73,9 +72,9 @@ public final class SyncConfigurationUtil {
      */
     public static Collection<SyncConfiguration> toSyncConfigurations(final ScalingConfiguration scalingConfig) {
         Collection<SyncConfiguration> result = new LinkedList<>();
-        ShardingSphereJDBCScalingDataSourceConfiguration sourceConfig = getSourceConfiguration(scalingConfig);
+        ShardingSphereJDBCDataSourceConfiguration sourceConfig = getSourceConfiguration(scalingConfig);
         ShardingRuleConfiguration shardingRuleConfig = ConfigurationYamlConverter.loadShardingRuleConfiguration(sourceConfig.getRule());
-        Map<String, DataSourceConfiguration> sourceDataSource = ConfigurationYamlConverter.loadDataSourceConfigurations(sourceConfig.getDataSource());
+        Map<String, org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration> sourceDataSource = ConfigurationYamlConverter.loadDataSourceConfigurations(sourceConfig.getDataSource());
         Map<String, DataSource> dataSourceMap = sourceDataSource.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().createDataSource()));
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(new ShardingRule(shardingRuleConfig, sourceConfig.getDatabaseType(), dataSourceMap));
         Optional<ShardingRuleConfiguration> targetRule = getTargetRuleConfiguration(scalingConfig);
@@ -89,16 +88,16 @@ public final class SyncConfigurationUtil {
         return result;
     }
     
-    private static ShardingSphereJDBCScalingDataSourceConfiguration getSourceConfiguration(final ScalingConfiguration scalingConfig) {
-        ScalingDataSourceConfiguration result = scalingConfig.getRuleConfiguration().getSource().toTypedDataSourceConfiguration();
-        Preconditions.checkArgument(result instanceof ShardingSphereJDBCScalingDataSourceConfiguration, "Only support ShardingSphere source data source.");
-        return (ShardingSphereJDBCScalingDataSourceConfiguration) result;
+    private static ShardingSphereJDBCDataSourceConfiguration getSourceConfiguration(final ScalingConfiguration scalingConfig) {
+        DataSourceConfiguration result = scalingConfig.getRuleConfiguration().getSource().unwrap();
+        Preconditions.checkArgument(result instanceof ShardingSphereJDBCDataSourceConfiguration, "Only support ShardingSphere source data source.");
+        return (ShardingSphereJDBCDataSourceConfiguration) result;
     }
     
     private static Optional<ShardingRuleConfiguration> getTargetRuleConfiguration(final ScalingConfiguration scalingConfig) {
-        ScalingDataSourceConfiguration dataSourceConfig = scalingConfig.getRuleConfiguration().getTarget().toTypedDataSourceConfiguration();
-        if (dataSourceConfig instanceof ShardingSphereJDBCScalingDataSourceConfiguration) {
-            return Optional.of(ConfigurationYamlConverter.loadShardingRuleConfiguration(((ShardingSphereJDBCScalingDataSourceConfiguration) dataSourceConfig).getRule()));
+        DataSourceConfiguration dataSourceConfig = scalingConfig.getRuleConfiguration().getTarget().unwrap();
+        if (dataSourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration) {
+            return Optional.of(ConfigurationYamlConverter.loadShardingRuleConfiguration(((ShardingSphereJDBCDataSourceConfiguration) dataSourceConfig).getRule()));
         }
         return Optional.empty();
     }
@@ -177,11 +176,12 @@ public final class SyncConfigurationUtil {
         }
     }
     
-    private static DumperConfiguration createDumperConfiguration(final String dataSourceName, final DataSourceConfiguration dataSourceConfig, final Map<String, String> tableMap) {
+    private static DumperConfiguration createDumperConfiguration(
+            final String dataSourceName, final org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration dataSourceConfig, final Map<String, String> tableMap) {
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceName(dataSourceName);
         Map<String, Object> dataSourceProperties = dataSourceConfig.getProps();
-        JDBCScalingDataSourceConfiguration dumperDataSourceConfig = new JDBCScalingDataSourceConfiguration(
+        StandardJDBCDataSourceConfiguration dumperDataSourceConfig = new StandardJDBCDataSourceConfiguration(
                 dataSourceProperties.containsKey("jdbcUrl") ? dataSourceProperties.get("jdbcUrl").toString() : dataSourceProperties.get("url").toString(),
                 dataSourceProperties.get("username").toString(), dataSourceProperties.get("password").toString());
         result.setDataSourceConfiguration(dumperDataSourceConfig);
@@ -191,7 +191,7 @@ public final class SyncConfigurationUtil {
     
     private static ImporterConfiguration createImporterConfiguration(final ScalingConfiguration scalingConfig, final ShardingRuleConfiguration shardingRuleConfig) {
         ImporterConfiguration result = new ImporterConfiguration();
-        result.setDataSourceConfiguration(scalingConfig.getRuleConfiguration().getTarget().toTypedDataSourceConfiguration());
+        result.setDataSourceConfiguration(scalingConfig.getRuleConfiguration().getTarget().unwrap());
         result.setShardingColumnsMap(toShardingColumnsMap(shardingRuleConfig));
         return result;
     }
@@ -230,15 +230,15 @@ public final class SyncConfigurationUtil {
     }
     
     private static List<String> getShouldScalingActualDataNodes(final ScalingConfiguration scalingConfiguration) {
-        ScalingDataSourceConfiguration sourceConfiguration = scalingConfiguration.getRuleConfiguration().getSource().toTypedDataSourceConfiguration();
-        Preconditions.checkState(sourceConfiguration instanceof ShardingSphereJDBCScalingDataSourceConfiguration,
+        DataSourceConfiguration sourceConfiguration = scalingConfiguration.getRuleConfiguration().getSource().unwrap();
+        Preconditions.checkState(sourceConfiguration instanceof ShardingSphereJDBCDataSourceConfiguration,
                 "Only ShardingSphereJdbc type of source ScalingDataSourceConfiguration is supported.");
-        ShardingSphereJDBCScalingDataSourceConfiguration source = (ShardingSphereJDBCScalingDataSourceConfiguration) sourceConfiguration;
-        if (!(scalingConfiguration.getRuleConfiguration().getTarget().toTypedDataSourceConfiguration() instanceof ShardingSphereJDBCScalingDataSourceConfiguration)) {
+        ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfiguration;
+        if (!(scalingConfiguration.getRuleConfiguration().getTarget().unwrap() instanceof ShardingSphereJDBCDataSourceConfiguration)) {
             return getShardingRuleConfigurationMap(source.getRule()).values().stream().map(ShardingTableRuleConfiguration::getActualDataNodes).collect(Collectors.toList());
         }
-        ShardingSphereJDBCScalingDataSourceConfiguration target =
-                (ShardingSphereJDBCScalingDataSourceConfiguration) scalingConfiguration.getRuleConfiguration().getTarget().toTypedDataSourceConfiguration();
+        ShardingSphereJDBCDataSourceConfiguration target =
+                (ShardingSphereJDBCDataSourceConfiguration) scalingConfiguration.getRuleConfiguration().getTarget().unwrap();
         List<String> result = new ArrayList<>();
         Set<String> modifiedDataSources = getModifiedDataSources(source.getDataSource(), target.getDataSource());
         Map<String, ShardingTableRuleConfiguration> oldShardingRuleConfigurationMap = getShardingRuleConfigurationMap(source.getRule());

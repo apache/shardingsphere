@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.postgresql.component;
 
 import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.rule.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
@@ -57,7 +57,7 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor i
     
     public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final WalPosition position) {
         walPosition = position;
-        if (!JDBCScalingDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfiguration().getClass())) {
+        if (!StandardJDBCDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("PostgreSQLWalDumper only support JDBCDataSourceConfiguration");
         }
         this.dumperConfig = dumperConfig;
@@ -72,7 +72,7 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor i
     
     private void dump() {
         try {
-            Connection pgConnection = logicalReplication.createPgConnection((JDBCScalingDataSourceConfiguration) dumperConfig.getDataSourceConfiguration());
+            Connection pgConnection = logicalReplication.createPgConnection((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfiguration());
             DecodingPlugin decodingPlugin = new TestDecodingPlugin(pgConnection.unwrap(PgConnection.class).getTimestampUtils());
             PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionManager.SLOT_NAME, walPosition.getLogSequenceNumber());
             while (isRunning()) {

@@ -82,12 +82,12 @@ public final class SyncPositionResumer {
                                                                          final MetaDataManager metaDataManager, final Entry<String, PositionManager> entry) {
         String[] splitTable = entry.getKey().split("#");
         InventoryDumperConfiguration result = new InventoryDumperConfiguration(dumperConfig);
-        result.setTableName(splitTable[0].split("\\.")[1]);
+        result.setSourceTable(splitTable[0].split("\\.")[1]);
         result.setPositionManager(entry.getValue());
         if (2 == splitTable.length) {
             result.setSpiltNum(Integer.parseInt(splitTable[1]));
         }
-        result.setPrimaryKey(metaDataManager.getTableMetaData(result.getTableName()).getPrimaryKeyColumns().get(0));
+        result.setPrimaryKey(metaDataManager.getTableMetaData(result.getSourceTable()).getPrimaryKeyColumns().get(0));
         return result;
     }
     

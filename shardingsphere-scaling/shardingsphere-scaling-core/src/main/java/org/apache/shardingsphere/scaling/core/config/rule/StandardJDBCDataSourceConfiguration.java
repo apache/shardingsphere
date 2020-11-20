@@ -15,60 +15,64 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.scaling.core.config.rule;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.annotations.Expose;
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.scaling.core.utils.ConfigurationYamlConverter;
 
-import java.util.Map;
+import javax.sql.DataSource;
 
 /**
- * ShardingSphere-JDBC scaling data source configuration.
+ * Standard JDBC data source configuration.
  */
 @Getter
 @Setter
 @EqualsAndHashCode(exclude = "databaseType")
-public final class ShardingSphereJDBCScalingDataSourceConfiguration implements ScalingDataSourceConfiguration {
+public final class StandardJDBCDataSourceConfiguration implements DataSourceConfiguration {
     
-    private static final Gson GSON = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+    /**
+     * Config type.
+     */
+    public static final String CONFIG_TYPE = "JDBC";
     
-    @Expose
-    private String dataSource;
+    private String jdbcUrl;
     
-    @Expose
-    private String rule;
+    private String username;
     
-    private DatabaseType databaseType;
+    private String password;
     
-    public ShardingSphereJDBCScalingDataSourceConfiguration(final String dataSource, final String rule) {
-        this.dataSource = dataSource;
-        this.rule = rule;
+    private transient DatabaseType databaseType;
+    
+    public StandardJDBCDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
+        this.jdbcUrl = jdbcUrl;
+        this.username = username;
+        this.password = password;
         databaseType = getDatabaseType();
+    }
+    
+    @Override
+    public String getConfigType() {
+        return CONFIG_TYPE;
     }
     
     @Override
     public DatabaseType getDatabaseType() {
         if (null == databaseType) {
-            Map<String, Object> props = ConfigurationYamlConverter.loadDataSourceConfigurations(dataSource).values().iterator().next().getProps();
-            databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(props.getOrDefault("url", props.get("jdbcUrl")).toString());
+            databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl);
         }
         return databaseType;
     }
     
-    /**
-     * To json tree.
-     *
-     * @return json element
-     */
-    public JsonElement toJsonTree() {
-        return GSON.toJsonTree(this);
+    @Override
+    public DataSource toDataSource() {
+        HikariDataSource result = new HikariDataSource();
+        result.setJdbcUrl(jdbcUrl);
+        result.setUsername(username);
+        result.setPassword(password);
+        return result;
     }
 }

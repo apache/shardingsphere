@@ -125,7 +125,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
             try {
                 doFlush(dataSource, buffer);
                 return true;
-            } catch (SQLException ex) {
+            } catch (final SQLException ex) {
                 log.error("flush failed: ", ex);
             }
         } while (isRunning() && retryTimes-- > 0);

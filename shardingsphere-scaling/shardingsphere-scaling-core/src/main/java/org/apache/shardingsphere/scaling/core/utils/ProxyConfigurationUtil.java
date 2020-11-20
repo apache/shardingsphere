@@ -26,9 +26,10 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ShardingSphereJDBCScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.rule.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.scaling.core.config.rule.ShardingSphereJDBCDataSourceConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,25 +51,14 @@ public final class ProxyConfigurationUtil {
      */
     public static ScalingConfiguration toScalingConfiguration(final String oldYamlProxyConfiguration, final String newYamlProxyConfiguration) {
         ScalingConfiguration result = new ScalingConfiguration();
-        RuleConfiguration ruleConfiguration = new RuleConfiguration();
-        ruleConfiguration.setSource(toDataSourceConf(oldYamlProxyConfiguration));
-        ruleConfiguration.setTarget(toDataSourceConf(newYamlProxyConfiguration));
-        result.setRuleConfiguration(ruleConfiguration);
+        result.setRuleConfiguration(new RuleConfiguration(toDataSourceConfiguration(oldYamlProxyConfiguration), toDataSourceConfiguration(newYamlProxyConfiguration)));
         result.setJobConfiguration(new JobConfiguration());
         return result;
     }
     
-    private static RuleConfiguration.DataSourceConf toDataSourceConf(final String yamlProxyConfiguration) {
-        RuleConfiguration.DataSourceConf result = new RuleConfiguration.DataSourceConf();
-        ShardingSphereJDBCScalingDataSourceConfiguration scalingDataSourceConfiguration = toScalingDataSourceConfiguration(yamlProxyConfiguration);
-        result.setType("shardingSphereJdbc");
-        result.setParameter(scalingDataSourceConfiguration.toJsonTree());
-        return result;
-    }
-    
-    private static ShardingSphereJDBCScalingDataSourceConfiguration toScalingDataSourceConfiguration(final String yamlProxyConfiguration) {
+    private static DataSourceConfiguration toDataSourceConfiguration(final String yamlProxyConfiguration) {
         YamlProxyRuleConfiguration proxyRuleConfiguration = YamlEngine.unmarshal(yamlProxyConfiguration, YamlProxyRuleConfiguration.class);
-        return new ShardingSphereJDBCScalingDataSourceConfiguration(getDataSourceConfiguration(proxyRuleConfiguration), getRuleConfiguration(proxyRuleConfiguration));
+        return new ShardingSphereJDBCDataSourceConfiguration(getDataSourceConfiguration(proxyRuleConfiguration), getRuleConfiguration(proxyRuleConfiguration));
     }
     
     private static String getDataSourceConfiguration(final YamlProxyRuleConfiguration proxyRuleConfiguration) {

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.core.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.config.rule.DataSourceConfiguration;
 
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +31,7 @@ import java.util.Set;
 @Getter
 public final class ImporterConfiguration {
     
-    private ScalingDataSourceConfiguration dataSourceConfiguration;
+    private DataSourceConfiguration dataSourceConfiguration;
     
     private Map<String, Set<String>> shardingColumnsMap;
     

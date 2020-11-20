@@ -56,7 +56,7 @@ public final class WorkerBootstrap {
     private static synchronized void wait0() {
         try {
             WorkerBootstrap.class.wait();
-        } catch (InterruptedException ignored) {
+        } catch (final InterruptedException ignored) {
         }
     }
 }

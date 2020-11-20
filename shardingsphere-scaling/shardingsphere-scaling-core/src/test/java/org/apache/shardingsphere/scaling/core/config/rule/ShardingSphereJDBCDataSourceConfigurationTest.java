@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.scaling.core.config.rule;
 
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.scaling.core.fixture.FixtureShardingSphereJDBCConfiguration;
@@ -24,11 +24,11 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingSphereJDBCScalingDataSourceConfigurationTest {
+public final class ShardingSphereJDBCDataSourceConfigurationTest {
     
     @Test
     public void assertShardingSphereJDBCDataSourceConfigurationDatabaseType() {
-        ShardingSphereJDBCScalingDataSourceConfiguration config = new ShardingSphereJDBCScalingDataSourceConfiguration(
+        ShardingSphereJDBCDataSourceConfiguration config = new ShardingSphereJDBCDataSourceConfiguration(
                 FixtureShardingSphereJDBCConfiguration.DATA_SOURCE, FixtureShardingSphereJDBCConfiguration.RULE);
         assertThat(config.getDatabaseType(), instanceOf(H2DatabaseType.class));
     }

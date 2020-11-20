@@ -20,13 +20,12 @@ package org.apache.shardingsphere.scaling.core.job.preparer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.check.DataConsistencyCheckerFactory;
-import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.scaling.core.config.rule.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManagerFactory;
 import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManager;
 import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManagerFactory;
@@ -41,7 +40,7 @@ import org.apache.shardingsphere.scaling.core.job.task.SyncTaskFactory;
 import org.apache.shardingsphere.scaling.core.schedule.SyncTaskControlStatus;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 
-import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -76,7 +75,7 @@ public final class ShardingScalingJobPreparer {
                 syncPositionResumer.persistPosition(shardingScalingJob, resumeBreakPointManager);
             }
             shardingScalingJob.setDataConsistencyChecker(initDataConsistencyChecker(databaseType, shardingScalingJob));
-        } catch (final PrepareFailedException ex) {
+        } catch (final PrepareFailedException | SQLException ex) {
             log.error("Preparing sharding scaling job {} failed", shardingScalingJob.getJobId(), ex);
             shardingScalingJob.setStatus(SyncTaskControlStatus.PREPARING_FAILURE.name());
         }
@@ -104,18 +103,12 @@ public final class ShardingScalingJobPreparer {
         }
     }
     
-    private void initIncrementalDataTasks(final String databaseType, final ShardingScalingJob shardingScalingJob, final DataSourceManager dataSourceManager) {
+    private void initIncrementalDataTasks(final String databaseType, final ShardingScalingJob shardingScalingJob, final DataSourceManager dataSourceManager) throws SQLException {
         for (SyncConfiguration each : shardingScalingJob.getSyncConfigurations()) {
-            ScalingDataSourceConfiguration dataSourceConfig = each.getDumperConfiguration().getDataSourceConfiguration();
-            each.getDumperConfiguration().setPositionManager(initPositionManager(databaseType, dataSourceManager.getDataSource(dataSourceConfig)));
+            DataSourceConfiguration dataSourceConfig = each.getDumperConfiguration().getDataSourceConfiguration();
+            each.getDumperConfiguration().setPositionManager(PositionManagerFactory.newInstance(databaseType, dataSourceManager.getDataSource(dataSourceConfig)));
             shardingScalingJob.getIncrementalDataTasks().add(syncTaskFactory.createIncrementalDataSyncTask(each.getConcurrency(), each.getDumperConfiguration(), each.getImporterConfiguration()));
         }
-    }
-    
-    private PositionManager initPositionManager(final String databaseType, final DataSource dataSource) {
-        PositionManager result = PositionManagerFactory.newInstance(databaseType, dataSource);
-        result.getPosition();
-        return result;
     }
     
     private DataConsistencyChecker initDataConsistencyChecker(final String databaseType, final ShardingScalingJob shardingScalingJob) {
