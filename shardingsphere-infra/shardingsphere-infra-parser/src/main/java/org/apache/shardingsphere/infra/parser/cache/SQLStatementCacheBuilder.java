@@ -15,36 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.parser.sql;
+package org.apache.shardingsphere.infra.parser.cache;
 
+import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
-import org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheBuilder;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * SQL statement parser engine.
+ * SQL statement cache builder.
  */
-public final class SQLStatementParserEngine {
-    
-    private final SQLStatementParserExecutor sqlStatementParserExecutor;
-    
-    private final LoadingCache<String, SQLStatement> sqlStatementCache;
-    
-    public SQLStatementParserEngine(final String databaseType) {
-        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType);
-        // TODO use props to configure cache option
-        sqlStatementCache = SQLStatementCacheBuilder.build(new CacheOption(2000, 65535L, 4), databaseType);
-    }
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SQLStatementCacheBuilder {
     
     /**
-     * Parse to SQL statement.
+     * Build SQL statement cache.
      *
-     * @param sql SQL to be parsed
-     * @param useCache whether use cache
-     * @return SQL statement
+     * @param option cache option
+     * @param databaseType database type
+     * @return built SQL statement cache
      */
-    public SQLStatement parse(final String sql, final boolean useCache) {
-        return useCache ? sqlStatementCache.getUnchecked(sql) : sqlStatementParserExecutor.parse(sql);
+    public static LoadingCache<String, SQLStatement> build(final CacheOption option, final String databaseType) {
+        return CacheBuilder.newBuilder().softValues()
+                .initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize()).concurrencyLevel(option.getConcurrencyLevel()).build(new SQLStatementCacheLoader(databaseType));
     }
 }

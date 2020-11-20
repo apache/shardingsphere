@@ -17,34 +17,31 @@
 
 package org.apache.shardingsphere.infra.parser.sql;
 
-import com.google.common.cache.LoadingCache;
-import org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheBuilder;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * SQL statement parser engine.
+ * SQL statement parser executor.
  */
-public final class SQLStatementParserEngine {
+public final class SQLStatementParserExecutor {
     
-    private final SQLStatementParserExecutor sqlStatementParserExecutor;
+    private final SQLParserEngine parserEngine;
     
-    private final LoadingCache<String, SQLStatement> sqlStatementCache;
+    private final SQLVisitorEngine visitorEngine;
     
-    public SQLStatementParserEngine(final String databaseType) {
-        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType);
-        // TODO use props to configure cache option
-        sqlStatementCache = SQLStatementCacheBuilder.build(new CacheOption(2000, 65535L, 4), databaseType);
+    public SQLStatementParserExecutor(final String databaseType) {
+        parserEngine = new SQLParserEngine(databaseType);
+        visitorEngine = new SQLVisitorEngine(databaseType, "STATEMENT");
     }
     
     /**
      * Parse to SQL statement.
      *
      * @param sql SQL to be parsed
-     * @param useCache whether use cache
      * @return SQL statement
      */
-    public SQLStatement parse(final String sql, final boolean useCache) {
-        return useCache ? sqlStatementCache.getUnchecked(sql) : sqlStatementParserExecutor.parse(sql);
+    public SQLStatement parse(final String sql) {
+        return visitorEngine.visit(parserEngine.parse(sql, false));
     }
 }

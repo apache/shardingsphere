@@ -36,7 +36,7 @@ public final class ParseTreeCacheLoader extends CacheLoader<String, ParseTree> {
     
     @ParametersAreNonnullByDefault
     @Override
-    public ParseTree load(final String key) {
-        return sqlParserExecutor.parse(key);
+    public ParseTree load(final String sql) {
+        return sqlParserExecutor.parse(sql);
     }
 }

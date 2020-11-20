@@ -15,36 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.parser.sql;
+package org.apache.shardingsphere.infra.parser.cache;
 
-import com.google.common.cache.LoadingCache;
-import org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheBuilder;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import com.google.common.cache.CacheLoader;
+import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 /**
- * SQL statement parser engine.
+ * SQL statement cache loader.
  */
-public final class SQLStatementParserEngine {
+public final class SQLStatementCacheLoader extends CacheLoader<String, SQLStatement> {
     
     private final SQLStatementParserExecutor sqlStatementParserExecutor;
     
-    private final LoadingCache<String, SQLStatement> sqlStatementCache;
-    
-    public SQLStatementParserEngine(final String databaseType) {
+    public SQLStatementCacheLoader(final String databaseType) {
         sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType);
-        // TODO use props to configure cache option
-        sqlStatementCache = SQLStatementCacheBuilder.build(new CacheOption(2000, 65535L, 4), databaseType);
     }
     
-    /**
-     * Parse to SQL statement.
-     *
-     * @param sql SQL to be parsed
-     * @param useCache whether use cache
-     * @return SQL statement
-     */
-    public SQLStatement parse(final String sql, final boolean useCache) {
-        return useCache ? sqlStatementCache.getUnchecked(sql) : sqlStatementParserExecutor.parse(sql);
+    @ParametersAreNonnullByDefault
+    @Override
+    public SQLStatement load(final String sql) {
+        return sqlStatementParserExecutor.parse(sql);
     }
 }
