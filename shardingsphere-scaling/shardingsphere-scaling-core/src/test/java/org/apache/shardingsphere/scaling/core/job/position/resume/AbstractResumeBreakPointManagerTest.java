@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
-import com.google.gson.Gson;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
@@ -33,8 +32,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class AbstractResumeBreakPointManagerTest {
-    
-    private static final Gson GSON = new Gson();
     
     private AbstractResumeBreakPointManager resumeBreakPointManager;
     
@@ -97,7 +94,6 @@ public final class AbstractResumeBreakPointManagerTest {
     public void assertPlaceholderPositionJson() {
         resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new PositionManager(new PlaceholderPosition()));
         assertThat(resumeBreakPointManager.getInventoryPositionData(), is("{\"unfinished\":{\"ds0.t_order_1#0\":[]},\"finished\":[]}"));
-        assertThat(GSON.toJson(new PlaceholderPosition()), is("[]"));
     }
     
     @Test

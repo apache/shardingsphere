@@ -25,7 +25,6 @@ import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfigurat
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
 import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultSyncTaskFactory;
 import org.junit.After;
@@ -62,7 +61,6 @@ public final class IncrementalDataScalingTaskTest {
         assertTrue(progress instanceof IncrementalDataSyncTaskProgress);
         assertThat(((IncrementalDataSyncTaskProgress) progress).getId(), is("ds0"));
         assertThat(((IncrementalDataSyncTaskProgress) progress).getDelayMillisecond(), is(Long.MAX_VALUE));
-        assertTrue(((IncrementalDataSyncTaskProgress) progress).getPosition() instanceof Position);
     }
     
     @After
