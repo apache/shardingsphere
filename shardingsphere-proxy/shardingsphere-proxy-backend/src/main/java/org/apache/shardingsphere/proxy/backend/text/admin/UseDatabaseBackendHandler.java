@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Use database backend handler.
@@ -62,7 +61,7 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     }
     
     @Override
-    public List<Object> getRowData() {
+    public Collection<Object> getRowData() {
         return null;
     }
 }
