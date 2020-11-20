@@ -24,7 +24,6 @@ import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionGroup;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
@@ -64,10 +63,10 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
         InventoryPositionGroup inventoryPositionGroup = InventoryPositionGroup.fromJson(data);
         Map<String, Position<?>> unfinished = inventoryPositionGroup.getUnfinished();
         for (Entry<String, Position<?>> entry : unfinished.entrySet()) {
-            inventoryPositionManagerMap.put(entry.getKey(), new BasePositionManager(entry.getValue()));
+            inventoryPositionManagerMap.put(entry.getKey(), new PositionManager(entry.getValue()));
         }
         for (String each : inventoryPositionGroup.getFinished()) {
-            inventoryPositionManagerMap.put(each, new BasePositionManager(new FinishedPosition()));
+            inventoryPositionManagerMap.put(each, new PositionManager(new FinishedPosition()));
         }
     }
     

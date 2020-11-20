@@ -27,7 +27,7 @@ import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
-import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.junit.After;
 import org.junit.Before;
@@ -100,7 +100,7 @@ public final class InventoryDataScalingTaskTest {
         ScalingDataSourceConfiguration dataSourceConfig = new JDBCScalingDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceConfiguration(dataSourceConfig);
-        result.setPositionManager(new BasePositionManager(new PrimaryKeyPosition(1, 100)));
+        result.setPositionManager(new PositionManager(new PrimaryKeyPosition(1, 100)));
         result.setTableNameMap(Collections.emptyMap());
         return result;
     }

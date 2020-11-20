@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
-import com.google.gson.JsonElement;
-
 /**
  * Position interface.
  */

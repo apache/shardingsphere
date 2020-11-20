@@ -17,22 +17,23 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Arrays;
+import java.io.IOException;
 
 /**
  * Use primary key as position.
  */
-@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@JsonAdapter(PrimaryKeyPosition.PositionTypeAdapter.class)
 public final class PrimaryKeyPosition implements Position<PrimaryKeyPosition> {
     
     private long beginValue;
@@ -47,8 +48,29 @@ public final class PrimaryKeyPosition implements Position<PrimaryKeyPosition> {
         return Long.compare(beginValue, position.beginValue);
     }
     
-    @Override
-    public String toString() {
-        return Arrays.toString(new long[]{beginValue, endValue});
+    /**
+     * Position type adapter.
+     */
+    public static class PositionTypeAdapter extends TypeAdapter<PrimaryKeyPosition> {
+        
+        @Override
+        public void write(final JsonWriter out, final PrimaryKeyPosition value) throws IOException {
+            if (null == value) {
+                out.nullValue();
+            } else {
+                out.beginArray();
+                out.value(value.getBeginValue());
+                out.value(value.getEndValue());
+                out.endArray();
+            }
+        }
+        
+        @Override
+        public PrimaryKeyPosition read(final JsonReader in) throws IOException {
+            in.beginArray();
+            PrimaryKeyPosition position = new PrimaryKeyPosition(in.nextLong(), in.nextLong());
+            in.endArray();
+            return position;
+        }
     }
 }

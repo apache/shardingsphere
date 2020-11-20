@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.scaling.mysql.component;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
-import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 
 import javax.sql.DataSource;
@@ -29,37 +30,33 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * MySQL position manager, based on binlog mechanism.
+ * MySQL binlog position manager.
  */
-public final class MySQLPositionManager extends BasePositionManager {
+public final class MySQLPositionManager extends PositionManager {
     
     private static final Gson GSON = new Gson();
     
-    private DataSource dataSource;
-    
     public MySQLPositionManager(final DataSource dataSource) {
-        this.dataSource = dataSource;
+        super(dataSource);
+        initPosition();
     }
     
     public MySQLPositionManager(final String position) {
-        setPosition(GSON.fromJson(position, BinlogPosition.class));
+        super(GSON.fromJson(position, BinlogPosition.class));
     }
     
     @Override
     public BinlogPosition getPosition() {
         Position<?> position = super.getPosition();
-        if (null != position) {
-            return (BinlogPosition) position;
-        }
-        initPosition();
-        return (BinlogPosition) super.getPosition();
+        Preconditions.checkState(null != position, "Unknown position.");
+        return (BinlogPosition) position;
     }
     
     private void initPosition() {
-        try (Connection connection = dataSource.getConnection()) {
-            BinlogPosition binlogPosition = getBinlogPosition(connection);
-            binlogPosition.setServerId(getServerId(connection));
-            setPosition(binlogPosition);
+        try (Connection connection = getDataSource().getConnection()) {
+            BinlogPosition position = getBinlogPosition(connection);
+            position.setServerId(getServerId(connection));
+            setPosition(position);
         } catch (final SQLException ex) {
             throw new RuntimeException("init position failed.", ex);
         }

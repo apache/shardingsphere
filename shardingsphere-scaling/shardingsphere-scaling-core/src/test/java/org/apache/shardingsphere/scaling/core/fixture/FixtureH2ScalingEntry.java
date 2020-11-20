@@ -39,7 +39,7 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     
     @Override
     public Class<? extends PositionManager> getPositionManager() {
-        return FixtureNopManager.class;
+        return FixturePositionManager.class;
     }
     
     @Override

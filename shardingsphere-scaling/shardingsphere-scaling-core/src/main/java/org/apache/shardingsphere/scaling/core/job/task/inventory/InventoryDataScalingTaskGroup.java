@@ -45,7 +45,7 @@ public final class InventoryDataScalingTaskGroup extends AbstractShardingScaling
         super.start();
         for (ScalingTask each : scalingTasks) {
             PositionManager positionManager = each.getPositionManager();
-            if (null != positionManager && null != positionManager.getPosition() && !(positionManager.getPosition() instanceof FinishedPosition)) {
+            if (null != positionManager && !(positionManager.getPosition() instanceof FinishedPosition)) {
                 each.start();
             }
         }

@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.fixture;
+package org.apache.shardingsphere.scaling.core.fixture;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 
 import javax.sql.DataSource;
 
-@RequiredArgsConstructor
-public final class FixtureNopManager extends BasePositionManager implements PositionManager {
+public final class FixturePositionManager extends PositionManager {
     
-    private final DataSource dataSource;
+    public FixturePositionManager(final DataSource dataSource) {
+        super(new NopPosition());
+    }
     
-    @Override
-    public Position getPosition() {
-        
-        return new NopPosition();
+    public FixturePositionManager(final String position) {
+        super(new NopPosition());
     }
 }

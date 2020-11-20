@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.channel;
 
-import com.google.gson.JsonElement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -122,7 +121,7 @@ public final class DistributionChannelTest {
         
         @Override
         public int compareTo(final IntPosition position) {
-            return id - ((IntPosition) position).id;
+            return id - position.id;
         }
     }
 }

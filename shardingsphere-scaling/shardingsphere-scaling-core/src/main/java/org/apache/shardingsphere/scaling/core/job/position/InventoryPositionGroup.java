@@ -18,53 +18,38 @@
 package org.apache.shardingsphere.scaling.core.job.position;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.io.IOException;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+/**
+ * Inventory position group.
+ */
 @Getter
 @Setter
 public final class InventoryPositionGroup {
     
-    private static final Gson GSON = new Gson();
-    
-    private static final String UNFINISHED = "unfinished";
-    
-    private static final String FINISHED = "finished";
+    private static final Gson GSON = new GsonBuilder().registerTypeHierarchyAdapter(Position.class, new PositionTypeAdapter()).create();
     
     private Map<String, Position<?>> unfinished;
     
     private Set<String> finished;
     
     /**
-     * Transform inventory position from json to object.
+     * init {@code InventoryPositionGroup} from json.
      *
-     * @param data json data
-     * @return inventory position
+     * @param json data
+     * @return Inventory position group
      */
-    public static InventoryPositionGroup fromJson(final String data) {
-        InventoryPositionGroup result = new InventoryPositionGroup();
-        JsonObject json = JsonParser.parseString(data).getAsJsonObject();
-        Map<String, Object> unfinished = GSON.<Map<String, Object>>fromJson(json.getAsJsonObject(UNFINISHED), Map.class);
-        result.setUnfinished(unfinished.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> fromJson(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
-        result.setFinished(GSON.<Set<String>>fromJson(json.getAsJsonArray(FINISHED), Set.class));
-        return result;
-    }
-    
-    private static Position<?> fromJson(final Object json) {
-        List<Double> values = GSON.<List<Double>>fromJson(json.toString(), List.class);
-        if (2 == values.size()) {
-            return new PrimaryKeyPosition(values.get(0).longValue(), values.get(1).longValue());
-        }
-        return new PlaceholderPosition();
+    public static InventoryPositionGroup fromJson(final String json) {
+        return GSON.fromJson(json, InventoryPositionGroup.class);
     }
     
     /**
@@ -73,9 +58,26 @@ public final class InventoryPositionGroup {
      * @return json string
      */
     public String toJson() {
-        JsonObject result = new JsonObject();
-        result.add(UNFINISHED, GSON.toJsonTree(unfinished));
-        result.add(FINISHED, GSON.toJsonTree(finished));
-        return GSON.toJson(result);
+        return GSON.toJson(this);
+    }
+    
+    private static class PositionTypeAdapter extends TypeAdapter<Position<?>> {
+        
+        @Override
+        public void write(final JsonWriter out, final Position<?> value) throws IOException {
+            if (value instanceof PrimaryKeyPosition) {
+                new PrimaryKeyPosition.PositionTypeAdapter().write(out, (PrimaryKeyPosition) value);
+            } else if (value instanceof PlaceholderPosition) {
+                new PlaceholderPosition.PositionTypeAdapter().write(out, (PlaceholderPosition) value);
+            }
+        }
+        
+        @Override
+        public Position<?> read(final JsonReader in) throws IOException {
+            in.beginArray();
+            Position<?> result = in.hasNext() ? new PrimaryKeyPosition(in.nextLong(), in.nextLong()) : new PlaceholderPosition();
+            in.endArray();
+            return result;
+        }
     }
 }

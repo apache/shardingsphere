@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.scaling.postgresql.component;
 
-import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
 import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.util.PSQLException;
@@ -30,9 +31,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * PostgreSQL position manager.
+ * PostgreSQL wal position manager.
  */
-public final class PostgreSQLPositionManager extends BasePositionManager {
+public final class PostgreSQLPositionManager extends PositionManager {
     
     public static final String SLOT_NAME = "sharding_scaling";
     
@@ -40,28 +41,24 @@ public final class PostgreSQLPositionManager extends BasePositionManager {
     
     public static final String DUPLICATE_OBJECT_ERROR_CODE = "42710";
     
-    private DataSource dataSource;
-    
     public PostgreSQLPositionManager(final DataSource dataSource) {
-        this.dataSource = dataSource;
+        super(dataSource);
+        initPosition();
     }
     
     public PostgreSQLPositionManager(final String position) {
-        setPosition(new WalPosition(LogSequenceNumber.valueOf(Long.parseLong(position))));
+        super(new WalPosition(LogSequenceNumber.valueOf(Long.parseLong(position))));
     }
     
     @Override
     public WalPosition getPosition() {
         Position<?> position = super.getPosition();
-        if (null != position) {
-            return (WalPosition) position;
-        }
-        initPosition();
-        return (WalPosition) super.getPosition();
+        Preconditions.checkState(null != position, "Unknown position.");
+        return (WalPosition) position;
     }
     
     private void initPosition() {
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = getDataSource().getConnection()) {
             // Need to create slot first, hold oldest wal event.
             createIfNotExists(connection);
             setPosition(getWalPosition(connection));

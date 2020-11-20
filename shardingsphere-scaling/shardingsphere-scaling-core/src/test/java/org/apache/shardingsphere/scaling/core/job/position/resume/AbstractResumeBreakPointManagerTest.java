@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
-import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
+import com.google.gson.Gson;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
@@ -34,9 +34,11 @@ import static org.junit.Assert.assertThat;
 
 public final class AbstractResumeBreakPointManagerTest {
     
+    private static final Gson GSON = new Gson();
+    
     private AbstractResumeBreakPointManager resumeBreakPointManager;
     
-    private final String incrementalPosition = "{\"ds0\":{},\"ds1\":{}}";
+    private final String incrementalPosition = "{\"ds0\":[],\"ds1\":[]}";
     
     private final String inventoryPosition = "{\"unfinished\":{\"ds1.t_order_1#0\":[0,200],\"ds0.t_order_1#0\":[0,100],\"ds0.t_order_2\":[]},\"finished\":[\"ds0.t_order_1#1\"]}";
     
@@ -80,37 +82,36 @@ public final class AbstractResumeBreakPointManagerTest {
     
     @Test
     public void assertGetIncrementalPositionData() {
-        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0", new BasePositionManager(new PlaceholderPosition()));
-        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds1", new BasePositionManager(new PlaceholderPosition()));
+        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0", new PositionManager(new PlaceholderPosition()));
+        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds1", new PositionManager(new PlaceholderPosition()));
         assertThat(resumeBreakPointManager.getIncrementalPositionData(), is(incrementalPosition));
     }
     
     @Test
     public void assertPrimaryKeyPositionJson() {
-        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new BasePositionManager(new PrimaryKeyPosition(0L, 100L)));
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new PositionManager(new PrimaryKeyPosition(0L, 100L)));
         assertThat(resumeBreakPointManager.getInventoryPositionData(), is("{\"unfinished\":{\"ds0.t_order_1#0\":[0,100]},\"finished\":[]}"));
     }
     
     @Test
     public void assertPlaceholderPositionJson() {
-        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new BasePositionManager(new PlaceholderPosition()));
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new PositionManager(new PlaceholderPosition()));
         assertThat(resumeBreakPointManager.getInventoryPositionData(), is("{\"unfinished\":{\"ds0.t_order_1#0\":[]},\"finished\":[]}"));
-        assertThat(new PlaceholderPosition().toString(), is("[]"));
+        assertThat(GSON.toJson(new PlaceholderPosition()), is("[]"));
     }
     
     @Test
     public void assertFinishedPositionJson() {
-        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new BasePositionManager(new FinishedPosition()));
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new PositionManager(new FinishedPosition()));
         assertThat(resumeBreakPointManager.getInventoryPositionData(), is("{\"unfinished\":{},\"finished\":[\"ds0.t_order_1#0\"]}"));
-        assertThat(new FinishedPosition().toString(), is("{}"));
     }
     
     @Test
     public void assertGetInventoryPositionData() {
-        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new BasePositionManager(new PrimaryKeyPosition(0L, 100L)));
-        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#1", new BasePositionManager(new FinishedPosition()));
-        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_2", new BasePositionManager(new PlaceholderPosition()));
-        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds1.t_order_1#0", new BasePositionManager(new PrimaryKeyPosition(0L, 200L)));
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new PositionManager(new PrimaryKeyPosition(0L, 100L)));
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#1", new PositionManager(new FinishedPosition()));
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_2", new PositionManager(new PlaceholderPosition()));
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds1.t_order_1#0", new PositionManager(new PrimaryKeyPosition(0L, 200L)));
         assertThat(resumeBreakPointManager.getInventoryPositionData(), is(inventoryPosition));
     }
     

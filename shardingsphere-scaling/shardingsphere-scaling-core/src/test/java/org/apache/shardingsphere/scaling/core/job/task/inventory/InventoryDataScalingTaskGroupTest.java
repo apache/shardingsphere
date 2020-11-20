@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.job.task.inventory;
 
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
-import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.junit.After;
@@ -56,7 +56,7 @@ public final class InventoryDataScalingTaskGroupTest {
     
     @Test
     public void assertStart() {
-        when(scalingTask.getPositionManager()).thenReturn(new BasePositionManager(new NopPosition()));
+        when(scalingTask.getPositionManager()).thenReturn(new PositionManager(new NopPosition()));
         InventoryDataScalingTaskGroup inventoryDataSyncTaskGroup = new InventoryDataScalingTaskGroup(Collections.singletonList(scalingTask));
         inventoryDataSyncTaskGroup.start();
         verify(scalingTask).start();

@@ -74,8 +74,7 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor i
         try {
             Connection pgConnection = logicalReplication.createPgConnection((JDBCScalingDataSourceConfiguration) dumperConfig.getDataSourceConfiguration());
             DecodingPlugin decodingPlugin = new TestDecodingPlugin(pgConnection.unwrap(PgConnection.class).getTimestampUtils());
-            PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection,
-                    PostgreSQLPositionManager.SLOT_NAME, walPosition.getLogSequenceNumber());
+            PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionManager.SLOT_NAME, walPosition.getLogSequenceNumber());
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
                 if (null == message) {

@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 /**
  * Nop position.
  */

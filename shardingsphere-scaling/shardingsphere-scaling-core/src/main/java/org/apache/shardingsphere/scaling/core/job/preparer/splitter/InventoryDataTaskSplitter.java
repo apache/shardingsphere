@@ -24,7 +24,7 @@ import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguratio
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
-import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultSyncTaskFactory;
@@ -84,7 +84,7 @@ public final class InventoryDataTaskSplitter {
         for (String each : dumperConfig.getTableNameMap().keySet()) {
             InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(dumperConfig);
             inventoryDumperConfig.setTableName(each);
-            inventoryDumperConfig.setPositionManager(new BasePositionManager(new PlaceholderPosition()));
+            inventoryDumperConfig.setPositionManager(new PositionManager(new PlaceholderPosition()));
             result.add(inventoryDumperConfig);
         }
         return result;
@@ -133,10 +133,10 @@ public final class InventoryDataTaskSplitter {
             for (int i = 0; i < concurrency && min <= max; i++) {
                 InventoryDumperConfiguration splitDumperConfig = new InventoryDumperConfiguration(inventoryDumperConfig);
                 if (i < concurrency - 1) {
-                    splitDumperConfig.setPositionManager(new BasePositionManager(new PrimaryKeyPosition(min, min + step)));
+                    splitDumperConfig.setPositionManager(new PositionManager(new PrimaryKeyPosition(min, min + step)));
                     min += step + 1;
                 } else {
-                    splitDumperConfig.setPositionManager(new BasePositionManager(new PrimaryKeyPosition(min, max)));
+                    splitDumperConfig.setPositionManager(new PositionManager(new PrimaryKeyPosition(min, max)));
                 }
                 splitDumperConfig.setSpiltNum(i);
                 splitDumperConfig.setPrimaryKey(primaryKey);

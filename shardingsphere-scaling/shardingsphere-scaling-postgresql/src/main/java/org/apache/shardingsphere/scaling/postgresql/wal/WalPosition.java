@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.scaling.postgresql.wal;
 
-import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.postgresql.replication.LogSequenceNumber;
 
@@ -30,9 +30,8 @@ import org.postgresql.replication.LogSequenceNumber;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 public final class WalPosition implements Position<WalPosition> {
-    
-    private static final Gson GSON = new Gson();
     
     private final LogSequenceNumber logSequenceNumber;
     
@@ -44,10 +43,5 @@ public final class WalPosition implements Position<WalPosition> {
             return 1;
         }
         return Long.compare(logSequenceNumber.asLong(), position.logSequenceNumber.asLong());
-    }
-    
-    @Override
-    public String toString() {
-        return String.valueOf(logSequenceNumber.asLong());
     }
 }

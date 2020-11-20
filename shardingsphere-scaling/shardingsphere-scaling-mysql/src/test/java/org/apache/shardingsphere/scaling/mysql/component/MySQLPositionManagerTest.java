@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.mysql.component;
 
+import com.google.gson.Gson;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +38,8 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLPositionManagerTest {
+    
+    private static final Gson GSON = new Gson();
     
     private static final String LOG_FILE_NAME = "binlog-000001";
     
@@ -70,7 +73,7 @@ public final class MySQLPositionManagerTest {
     
     @Test
     public void assertInitPositionByJson() {
-        MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(new BinlogPosition(LOG_FILE_NAME, LOG_POSITION).toString());
+        MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(GSON.toJson(new BinlogPosition(LOG_FILE_NAME, LOG_POSITION)));
         BinlogPosition actual = mysqlPositionManager.getPosition();
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));
         assertThat(actual.getPosition(), is(LOG_POSITION));
