@@ -34,7 +34,6 @@ public class DumperConfiguration {
     
     private ScalingDataSourceConfiguration dataSourceConfiguration;
     
-    @SuppressWarnings("rawtypes")
     private PositionManager positionManager;
     
     private Map<String, String> tableNameMap;
