@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JDBCExecutionConnection;
 import org.apache.shardingsphere.infra.executor.sql.resourced.group.ResourceManagedExecuteGroupEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;

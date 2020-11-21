@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection;
 
 import org.apache.shardingsphere.infra.executor.sql.resourced.ExecutionConnection;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementOption;
 
 import java.sql.Connection;
 import java.sql.Statement;
