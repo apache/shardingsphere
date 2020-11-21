@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.driver;
+package org.apache.shardingsphere.infra.executor.sql.execute;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.SQLExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 
 /**
- * Resource managed execute unit.
- * 
- * @param <T> type of storage resource
+ * SQL execution unit.
  */
-public interface ResourceManagedExecuteUnit<T> extends SQLExecutionUnit {
+public interface SQLExecutionUnit {
     
     /**
-     * Get storage resource.
-     * 
-     * @return storage resource
+     * Get execution unit.
+     *
+     * @return execution unit
      */
-    T getStorageResource();
+    ExecutionUnit getExecutionUnit();
+    
+    /**
+     * Get connection mode.
+     *
+     * @return connection mode
+     */
+    ConnectionMode getConnectionMode();
 }
