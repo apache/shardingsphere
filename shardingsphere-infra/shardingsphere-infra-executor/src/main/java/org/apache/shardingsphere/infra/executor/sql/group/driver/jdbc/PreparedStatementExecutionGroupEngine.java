@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JDBCExecutionConnection;
-import org.apache.shardingsphere.infra.executor.sql.group.driver.ResourceManagedExecutionGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.group.driver.DriverExecutionGroupEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.sql.Connection;
@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * Execution group engine for prepared statement.
  */
-public final class PreparedStatementExecutionGroupEngine extends ResourceManagedExecutionGroupEngine<StatementExecuteUnit, JDBCExecutionConnection, Connection, StatementOption> {
+public final class PreparedStatementExecutionGroupEngine extends DriverExecutionGroupEngine<StatementExecuteUnit, JDBCExecutionConnection, Connection, StatementOption> {
     
     public PreparedStatementExecutionGroupEngine(final int maxConnectionsSizePerQuery,
                                                  final JDBCExecutionConnection executionConnection, final StatementOption option, final Collection<ShardingSphereRule> rules) {

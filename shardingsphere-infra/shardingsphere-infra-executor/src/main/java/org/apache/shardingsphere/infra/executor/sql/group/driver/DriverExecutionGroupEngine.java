@@ -33,21 +33,21 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Resource managed execution group engine.
+ * Driver execution group engine.
  * 
  * @param <T> type of storage resource execute unit
  * @param <E> type of execution connection
  * @param <C> type of resource connection
  * @param <O> type of storage resource option
  */
-public abstract class ResourceManagedExecutionGroupEngine
+public abstract class DriverExecutionGroupEngine
         <T extends ResourceManagedExecuteUnit<?>, E extends ExecutionConnection<C, ?, O>, C, O extends StorageResourceOption> extends AbstractExecutionGroupEngine<T> {
     
     private final E executionConnection;
     
     private final O option;
     
-    protected ResourceManagedExecutionGroupEngine(final int maxConnectionsSizePerQuery, final E executionConnection, final O option, final Collection<ShardingSphereRule> rules) {
+    protected DriverExecutionGroupEngine(final int maxConnectionsSizePerQuery, final E executionConnection, final O option, final Collection<ShardingSphereRule> rules) {
         super(maxConnectionsSizePerQuery, rules);
         this.executionConnection = executionConnection;
         this.option = option;
