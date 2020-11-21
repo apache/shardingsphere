@@ -50,7 +50,7 @@ public final class StatementExecutionGroupEngineTest {
     @Test
     public void assertGetExecutionUnitGroupForOneShardMemoryStrictly() throws SQLException {
         groupEngine = new StatementExecutionGroupEngine(
-                2, mockExecutionConnection(1, ConnectionMode.MEMORY_STRICTLY), new StatementOption(true), Collections.singletonList(mock(ShardingSphereRule.class)));
+                2, mockExecutorJDBCManager(1, ConnectionMode.MEMORY_STRICTLY), new StatementOption(true), Collections.singletonList(mock(ShardingSphereRule.class)));
         Collection<ExecutionGroup<JDBCExecutionUnit>> actual = groupEngine.group(mock(RouteContext.class), mockShardRouteUnit(1, 1));
         assertThat(actual.size(), is(1));
         for (ExecutionGroup<JDBCExecutionUnit> each : actual) {
@@ -61,7 +61,7 @@ public final class StatementExecutionGroupEngineTest {
     @Test
     public void assertGetExecutionUnitGroupForMultiShardConnectionStrictly() throws SQLException {
         groupEngine = new StatementExecutionGroupEngine(
-                1, mockExecutionConnection(1, ConnectionMode.CONNECTION_STRICTLY), new StatementOption(true), Collections.singletonList(mock(ShardingSphereRule.class)));
+                1, mockExecutorJDBCManager(1, ConnectionMode.CONNECTION_STRICTLY), new StatementOption(true), Collections.singletonList(mock(ShardingSphereRule.class)));
         Collection<ExecutionGroup<JDBCExecutionUnit>> actual = groupEngine.group(mock(RouteContext.class), mockShardRouteUnit(10, 2));
         assertThat(actual.size(), is(10));
         for (ExecutionGroup<JDBCExecutionUnit> each : actual) {
@@ -69,7 +69,7 @@ public final class StatementExecutionGroupEngineTest {
         }
     }
     
-    private ExecutorJDBCManager mockExecutionConnection(final int size, final ConnectionMode connectionMode) throws SQLException {
+    private ExecutorJDBCManager mockExecutorJDBCManager(final int size, final ConnectionMode connectionMode) throws SQLException {
         List<Connection> connections = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             connections.add(mock(Connection.class));
