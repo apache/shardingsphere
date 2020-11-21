@@ -28,7 +28,7 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Backend handler with query.
@@ -61,7 +61,7 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     }
     
     @Override
-    public List<Object> getRowData() throws SQLException {
+    public Collection<Object> getRowData() throws SQLException {
         return databaseCommunicationEngine.getQueryData().getData();
     }
 }
