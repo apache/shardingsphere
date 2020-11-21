@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.kernel.impl;
+package org.apache.shardingsphere.infra.executor.kernel.thread;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -27,28 +27,28 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * ShardingSphere executor service.
+ * Executor service manager.
  */
 @Getter
-public final class ShardingSphereExecutorService {
+public final class ExecutorServiceManager {
     
     private static final String DEFAULT_NAME_FORMAT = "%d";
     
-    private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(ShardingSphereThreadFactoryBuilder.build("Executor-Engine-Closer"));
+    private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(ExecutorThreadFactoryBuilder.build("Executor-Engine-Closer"));
     
     private final ListeningExecutorService executorService;
     
-    public ShardingSphereExecutorService(final int executorSize) {
+    public ExecutorServiceManager(final int executorSize) {
         this(executorSize, DEFAULT_NAME_FORMAT);
     }
     
-    public ShardingSphereExecutorService(final int executorSize, final String nameFormat) {
+    public ExecutorServiceManager(final int executorSize, final String nameFormat) {
         executorService = MoreExecutors.listeningDecorator(getExecutorService(executorSize, nameFormat));
         MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
     }
     
     private ExecutorService getExecutorService(final int executorSize, final String nameFormat) {
-        ThreadFactory threadFactory = ShardingSphereThreadFactoryBuilder.build(nameFormat);
+        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build(nameFormat);
         return 0 == executorSize ? Executors.newCachedThreadPool(threadFactory) : Executors.newFixedThreadPool(executorSize, threadFactory);
     }
     
