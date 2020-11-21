@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.infra.executor.sql.group.resourced;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.group.AbstractExecutionGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.group.SQLUintGroupResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.ExecutionConnection;
 import org.apache.shardingsphere.infra.executor.sql.resourced.ResourceManagedExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.StorageResourceOption;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.sql.SQLException;
@@ -44,15 +44,12 @@ import java.util.List;
 public abstract class ResourceManagedExecutionGroupEngine
         <U extends ResourceManagedExecuteUnit, E extends ExecutionConnection<C, ?, O>, C, O extends StorageResourceOption> extends AbstractExecutionGroupEngine<U> {
     
-    private final int maxConnectionsSizePerQuery;
-    
     private final E executionConnection;
     
     private final O option;
     
     protected ResourceManagedExecutionGroupEngine(final int maxConnectionsSizePerQuery, final E executionConnection, final O option, final Collection<ShardingSphereRule> rules) {
-        super(rules);
-        this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
+        super(maxConnectionsSizePerQuery, rules);
         this.executionConnection = executionConnection;
         this.option = option;
     }
@@ -60,13 +57,11 @@ public abstract class ResourceManagedExecutionGroupEngine
     @Override
     protected final List<ExecutionGroup<U>> group(final String dataSourceName, final List<SQLUnit> sqlUnits) throws SQLException {
         List<ExecutionGroup<U>> result = new LinkedList<>();
-        int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
-        List<List<SQLUnit>> sqlUnitPartitions = Lists.partition(sqlUnits, desiredPartitionSize);
-        ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
-        List<C> connections = executionConnection.getConnections(dataSourceName, sqlUnitPartitions.size(), connectionMode);
+        SQLUintGroupResult sqlUintGroupResult = createSQLUintGroupResult(sqlUnits);
+        List<C> connections = executionConnection.getConnections(dataSourceName, sqlUintGroupResult.getSqlUnitGroups().size(), sqlUintGroupResult.getConnectionMode());
         int count = 0;
-        for (List<SQLUnit> each : sqlUnitPartitions) {
-            result.add(createSQLExecutionGroup(dataSourceName, each, connections.get(count++), connectionMode));
+        for (List<SQLUnit> each : sqlUintGroupResult.getSqlUnitGroups()) {
+            result.add(createSQLExecutionGroup(dataSourceName, each, connections.get(count++), sqlUintGroupResult.getConnectionMode()));
         }
         return result;
     }

@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.infra.executor.sql.group;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
+import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -44,10 +46,13 @@ public abstract class AbstractExecutionGroupEngine<T> implements ExecutionGroupE
         ShardingSphereServiceLoader.register(ExecutionGroupDecorator.class);
     }
     
+    private final int maxConnectionsSizePerQuery;
+    
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, ExecutionGroupDecorator> decorators;
     
-    protected AbstractExecutionGroupEngine(final Collection<ShardingSphereRule> rules) {
+    protected AbstractExecutionGroupEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
+        this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
         decorators = OrderedSPIRegistry.getRegisteredServices(rules, ExecutionGroupDecorator.class);
     }
     
@@ -71,6 +76,13 @@ public abstract class AbstractExecutionGroupEngine<T> implements ExecutionGroupE
             result.get(each.getDataSourceName()).add(each.getSqlUnit());
         }
         return result;
+    }
+    
+    protected final SQLUintGroupResult createSQLUintGroupResult(final List<SQLUnit> sqlUnits) {
+        int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
+        List<List<SQLUnit>> sqlUnitPartitions = Lists.partition(sqlUnits, desiredPartitionSize);
+        ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
+        return new SQLUintGroupResult(sqlUnitPartitions, connectionMode);
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
