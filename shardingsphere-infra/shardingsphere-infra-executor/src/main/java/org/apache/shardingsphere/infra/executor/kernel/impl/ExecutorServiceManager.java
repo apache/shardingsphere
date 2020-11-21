@@ -27,10 +27,10 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * ShardingSphere executor service.
+ * Executor service manager.
  */
 @Getter
-public final class ShardingSphereExecutorService {
+public final class ExecutorServiceManager {
     
     private static final String DEFAULT_NAME_FORMAT = "%d";
     
@@ -38,11 +38,11 @@ public final class ShardingSphereExecutorService {
     
     private final ListeningExecutorService executorService;
     
-    public ShardingSphereExecutorService(final int executorSize) {
+    public ExecutorServiceManager(final int executorSize) {
         this(executorSize, DEFAULT_NAME_FORMAT);
     }
     
-    public ShardingSphereExecutorService(final int executorSize, final String nameFormat) {
+    public ExecutorServiceManager(final int executorSize, final String nameFormat) {
         executorService = MoreExecutors.listeningDecorator(getExecutorService(executorSize, nameFormat));
         MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
     }

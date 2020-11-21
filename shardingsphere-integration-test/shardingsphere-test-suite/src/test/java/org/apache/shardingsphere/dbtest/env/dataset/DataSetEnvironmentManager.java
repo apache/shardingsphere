@@ -28,7 +28,7 @@ import org.apache.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.executor.kernel.impl.ShardingSphereExecutorService;
+import org.apache.shardingsphere.infra.executor.kernel.impl.ExecutorServiceManager;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 
 import javax.sql.DataSource;
@@ -53,7 +53,7 @@ import java.util.concurrent.Callable;
  */
 public final class DataSetEnvironmentManager {
     
-    private static final ShardingSphereExecutorService SHARDING_SPHERE_EXECUTOR_SERVICE = new ShardingSphereExecutorService(20);
+    private static final ExecutorServiceManager EXECUTOR_SERVICE_MANAGER = new ExecutorServiceManager(20);
     
     private final DataSet dataSet;
     
@@ -105,7 +105,7 @@ public final class DataSetEnvironmentManager {
             insertTasks.add(new InsertTask(dataSourceMap.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
         }
         try {
-            SHARDING_SPHERE_EXECUTOR_SERVICE.getExecutorService().invokeAll(insertTasks);
+            EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(insertTasks);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -144,7 +144,7 @@ public final class DataSetEnvironmentManager {
             deleteTasks.add(new DeleteTask(dataSourceMap.get(entry.getKey()), entry.getValue()));
         }
         try {
-            SHARDING_SPHERE_EXECUTOR_SERVICE.getExecutorService().invokeAll(deleteTasks);
+            EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(deleteTasks);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
