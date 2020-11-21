@@ -28,7 +28,7 @@ import org.apache.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.executor.kernel.impl.ExecutorServiceManager;
+import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 
 import javax.sql.DataSource;

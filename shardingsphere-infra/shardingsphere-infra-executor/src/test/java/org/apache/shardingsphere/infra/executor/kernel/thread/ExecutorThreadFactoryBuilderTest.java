@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.kernel.impl;
+package org.apache.shardingsphere.infra.executor.kernel.thread;
 
 import org.junit.Test;
 

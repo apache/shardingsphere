@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.executor;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.executor.kernel.impl.ExecutorServiceManager;
+import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 /**

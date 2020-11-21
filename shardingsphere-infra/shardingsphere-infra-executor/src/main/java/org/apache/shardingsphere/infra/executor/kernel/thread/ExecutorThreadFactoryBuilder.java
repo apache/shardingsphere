@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.kernel.impl;
+package org.apache.shardingsphere.infra.executor.kernel.thread;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.AccessLevel;

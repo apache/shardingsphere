@@ -24,7 +24,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.kernel.impl.ExecutorThreadFactoryBuilder;
+import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.scaling.core.execute.executor.ShardingScalingExecutor;
 
 import javax.annotation.ParametersAreNonnullByDefault;
