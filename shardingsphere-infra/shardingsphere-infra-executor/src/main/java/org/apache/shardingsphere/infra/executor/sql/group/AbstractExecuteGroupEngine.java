@@ -55,10 +55,12 @@ public abstract class AbstractExecuteGroupEngine<T> implements ExecuteGroupEngin
     public final Collection<InputGroup<T>> group(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits) throws SQLException {
         Collection<InputGroup<T>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : aggregateSQLUnitGroups(executionUnits).entrySet()) {
-            result.addAll(generateSQLExecuteGroups(entry.getKey(), entry.getValue()));
+            result.addAll(group(entry.getKey(), entry.getValue()));
         }
         return decorate(routeContext, result);
     }
+    
+    protected abstract List<InputGroup<T>> group(String dataSourceName, List<SQLUnit> sqlUnits) throws SQLException;
     
     private Map<String, List<SQLUnit>> aggregateSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
         Map<String, List<SQLUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1);
@@ -70,8 +72,6 @@ public abstract class AbstractExecuteGroupEngine<T> implements ExecuteGroupEngin
         }
         return result;
     }
-    
-    protected abstract List<InputGroup<T>> generateSQLExecuteGroups(String dataSourceName, List<SQLUnit> sqlUnits) throws SQLException;
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private Collection<InputGroup<T>> decorate(final RouteContext routeContext, final Collection<InputGroup<T>> inputGroups) {
