@@ -34,7 +34,7 @@ public final class RawSQLExecuteUnit {
     private final ExecutionUnit executionUnit;
     
     private final ConnectionMode connectionMode;
-
+    
     @Setter
     private RawGroup rawGroup;
 }
