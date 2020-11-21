@@ -60,12 +60,17 @@ public abstract class AbstractExecutionGroupEngine<T> implements ExecutionGroupE
     public final Collection<ExecutionGroup<T>> group(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits) throws SQLException {
         Collection<ExecutionGroup<T>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : aggregateSQLUnitGroups(executionUnits).entrySet()) {
-            result.addAll(group(entry.getKey(), createSQLUintGroupResult(entry.getValue())));
+            List<SQLUnit> sqlUnits = entry.getValue();
+            int desiredPartitionSize = Math.max(
+                    0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
+            List<List<SQLUnit>> sqlUnitGroups = Lists.partition(sqlUnits, desiredPartitionSize);
+            ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
+            result.addAll(group(entry.getKey(), sqlUnitGroups, connectionMode));
         }
         return decorate(routeContext, result);
     }
     
-    protected abstract List<ExecutionGroup<T>> group(String dataSourceName, SQLUintGroupResult sqlUintGroupResult) throws SQLException;
+    protected abstract List<ExecutionGroup<T>> group(String dataSourceName, List<List<SQLUnit>> sqlUnitGroups, ConnectionMode connectionMode) throws SQLException;
     
     private Map<String, List<SQLUnit>> aggregateSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
         Map<String, List<SQLUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1);
@@ -76,13 +81,6 @@ public abstract class AbstractExecutionGroupEngine<T> implements ExecutionGroupE
             result.get(each.getDataSourceName()).add(each.getSqlUnit());
         }
         return result;
-    }
-    
-    protected final SQLUintGroupResult createSQLUintGroupResult(final List<SQLUnit> sqlUnits) {
-        int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
-        List<List<SQLUnit>> sqlUnitPartitions = Lists.partition(sqlUnits, desiredPartitionSize);
-        ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
-        return new SQLUintGroupResult(sqlUnitPartitions, connectionMode);
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})

@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.group.AbstractExecutionGroupEngine;
-import org.apache.shardingsphere.infra.executor.sql.group.SQLUintGroupResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.ExecutionConnection;
 import org.apache.shardingsphere.infra.executor.sql.resourced.ResourceManagedExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.StorageResourceOption;
@@ -55,12 +54,12 @@ public abstract class ResourceManagedExecutionGroupEngine
     }
     
     @Override
-    protected final List<ExecutionGroup<U>> group(final String dataSourceName, final SQLUintGroupResult sqlUintGroupResult) throws SQLException {
+    protected final List<ExecutionGroup<U>> group(final String dataSourceName, final List<List<SQLUnit>> sqlUnitGroups, final ConnectionMode connectionMode) throws SQLException {
         List<ExecutionGroup<U>> result = new LinkedList<>();
-        List<C> connections = executionConnection.getConnections(dataSourceName, sqlUintGroupResult.getSqlUnitGroups().size(), sqlUintGroupResult.getConnectionMode());
+        List<C> connections = executionConnection.getConnections(dataSourceName, sqlUnitGroups.size(), connectionMode);
         int count = 0;
-        for (List<SQLUnit> each : sqlUintGroupResult.getSqlUnitGroups()) {
-            result.add(createSQLExecutionGroup(dataSourceName, each, connections.get(count++), sqlUintGroupResult.getConnectionMode()));
+        for (List<SQLUnit> each : sqlUnitGroups) {
+            result.add(createSQLExecutionGroup(dataSourceName, each, connections.get(count++), connectionMode));
         }
         return result;
     }
