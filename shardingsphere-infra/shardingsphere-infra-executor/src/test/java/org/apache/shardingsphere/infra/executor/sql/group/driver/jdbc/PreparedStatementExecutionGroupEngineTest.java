@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.StatementOption;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.connection.JDBCExecutorManager;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.connection.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.Test;
@@ -71,12 +71,12 @@ public final class PreparedStatementExecutionGroupEngineTest {
         }
     }
     
-    private JDBCExecutorManager mockExecutionConnection(final int size, final ConnectionMode connectionMode) throws SQLException {
+    private ExecutorJDBCManager mockExecutionConnection(final int size, final ConnectionMode connectionMode) throws SQLException {
         List<Connection> connections = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             connections.add(mock(Connection.class));
         }
-        JDBCExecutorManager result = mock(JDBCExecutorManager.class);
+        ExecutorJDBCManager result = mock(ExecutorJDBCManager.class);
         when(result.getConnections(anyString(), eq(size), eq(connectionMode))).thenReturn(connections);
         return result;
     }

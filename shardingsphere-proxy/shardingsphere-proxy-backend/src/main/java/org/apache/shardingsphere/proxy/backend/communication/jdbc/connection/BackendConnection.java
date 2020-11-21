@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParamet
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.connection.JDBCExecutorManager;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.connection.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -52,7 +52,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Backend connection.
  */
 @Getter
-public final class BackendConnection implements JDBCExecutorManager {
+public final class BackendConnection implements ExecutorJDBCManager {
     
     static {
         ShardingSphereServiceLoader.register(StatementMemoryStrictlyFetchSizeSetter.class);

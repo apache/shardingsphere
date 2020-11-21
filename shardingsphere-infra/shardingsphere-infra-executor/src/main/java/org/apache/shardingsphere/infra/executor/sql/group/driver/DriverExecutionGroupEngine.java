@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.group.AbstractExecutionGroupEngine;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.DriverExecutorManager;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.ExecutorDriverManager;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.DriverExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.StorageResourceOption;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -41,22 +41,22 @@ import java.util.List;
  * @param <O> type of storage resource option
  */
 public abstract class DriverExecutionGroupEngine
-        <T extends DriverExecutionUnit<?>, M extends DriverExecutorManager<C, ?, O>, C, O extends StorageResourceOption> extends AbstractExecutionGroupEngine<T> {
+        <T extends DriverExecutionUnit<?>, M extends ExecutorDriverManager<C, ?, O>, C, O extends StorageResourceOption> extends AbstractExecutionGroupEngine<T> {
     
-    private final M executorManager;
+    private final M executorDriverManager;
     
     private final O option;
     
-    protected DriverExecutionGroupEngine(final int maxConnectionsSizePerQuery, final M executorManager, final O option, final Collection<ShardingSphereRule> rules) {
+    protected DriverExecutionGroupEngine(final int maxConnectionsSizePerQuery, final M executorDriverManager, final O option, final Collection<ShardingSphereRule> rules) {
         super(maxConnectionsSizePerQuery, rules);
-        this.executorManager = executorManager;
+        this.executorDriverManager = executorDriverManager;
         this.option = option;
     }
     
     @Override
     protected final List<ExecutionGroup<T>> group(final String dataSourceName, final List<List<SQLUnit>> sqlUnitGroups, final ConnectionMode connectionMode) throws SQLException {
         List<ExecutionGroup<T>> result = new LinkedList<>();
-        List<C> connections = executorManager.getConnections(dataSourceName, sqlUnitGroups.size(), connectionMode);
+        List<C> connections = executorDriverManager.getConnections(dataSourceName, sqlUnitGroups.size(), connectionMode);
         int count = 0;
         for (List<SQLUnit> each : sqlUnitGroups) {
             result.add(createExecutionGroup(dataSourceName, each, connections.get(count++), connectionMode));
@@ -67,7 +67,7 @@ public abstract class DriverExecutionGroupEngine
     private ExecutionGroup<T> createExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnits, final C connection, final ConnectionMode connectionMode) throws SQLException {
         List<T> result = new LinkedList<>();
         for (SQLUnit each : sqlUnits) {
-            result.add(createDriverSQLExecutionUnit(new ExecutionUnit(dataSourceName, each), executorManager, connection, connectionMode, option));
+            result.add(createDriverSQLExecutionUnit(new ExecutionUnit(dataSourceName, each), executorDriverManager, connection, connectionMode, option));
         }
         return new ExecutionGroup<>(result);
     }

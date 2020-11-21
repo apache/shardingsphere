@@ -23,13 +23,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Driver executor manager.
+ * Executor driver manager.
  * 
  * @param <C> type of resource connection
  * @param <R> type of storage resource
  * @param <O> type of storage resource option
  */
-public interface DriverExecutorManager<C, R, O> {
+public interface ExecutorDriverManager<C, R, O> {
     
     /**
      * Get connections.
