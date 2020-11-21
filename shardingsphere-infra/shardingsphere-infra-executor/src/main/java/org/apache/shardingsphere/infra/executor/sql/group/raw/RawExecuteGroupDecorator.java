@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.raw.group;
+package org.apache.shardingsphere.infra.executor.sql.group.raw;
 
 import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupDecorator;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
