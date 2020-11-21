@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.raw.execute;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class RawJDBCExecutor {
     
-    private final ExecutorKernel executorKernel;
+    private final ExecutorEngine executorEngine;
     
     private final boolean serial;
     
@@ -99,7 +99,7 @@ public final class RawJDBCExecutor {
     @SuppressWarnings("unchecked")
     private <T> List<T> doExecute(final Collection<ExecutionGroup<RawSQLExecuteUnit>> executionGroups, final RawSQLExecutorCallback callback) throws SQLException {
         try {
-            return executorKernel.execute((Collection) executionGroups, null, callback, serial);
+            return executorEngine.execute((Collection) executionGroups, null, callback, serial);
         } catch (final SQLException ex) {
             ExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();

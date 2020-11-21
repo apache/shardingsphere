@@ -35,14 +35,14 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Executor kernel.
+ * Executor engine.
  */
 @Getter
-public final class ExecutorKernel implements AutoCloseable {
+public final class ExecutorEngine implements AutoCloseable {
     
     private final ExecutorServiceManager executorServiceManager;
     
-    public ExecutorKernel(final int executorSize) {
+    public ExecutorEngine(final int executorSize) {
         executorServiceManager = new ExecutorServiceManager(executorSize);
     }
     

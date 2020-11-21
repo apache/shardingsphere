@@ -61,7 +61,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     public void setUp() throws SQLException {
         super.setUp();
         ShardingSphereConnection connection = getConnection();
-        actual = spy(new PreparedStatementExecutor(connection.getDataSourceMap(), connection.getMetaDataContexts(), new SQLExecutor(getExecutorKernel(), false)));
+        actual = spy(new PreparedStatementExecutor(connection.getDataSourceMap(), connection.getMetaDataContexts(), new SQLExecutor(getExecutorEngine(), false)));
     }
     
     @Test

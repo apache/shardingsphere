@@ -33,9 +33,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class ExecutorKernelTest {
+public final class ExecutorEngineTest {
     
-    private final ExecutorKernel executorKernel = new ExecutorKernel(10);
+    private final ExecutorEngine executorEngine = new ExecutorEngine(10);
     
     private final CountDownLatch latch = new CountDownLatch(4);
     
@@ -54,7 +54,7 @@ public final class ExecutorKernelTest {
     
     @After
     public void tearDown() {
-        executorKernel.close();
+        executorEngine.close();
     }
     
     private Collection<ExecutionGroup<Object>> createMockedExecutionGroups(final int groupSize, final int unitSize) {
@@ -75,21 +75,21 @@ public final class ExecutorKernelTest {
     
     @Test
     public void assertParallelExecuteWithoutFirstCallback() throws SQLException, InterruptedException {
-        List<String> actual = executorKernel.execute(executionGroups, callback);
+        List<String> actual = executorEngine.execute(executionGroups, callback);
         latch.await();
         assertThat(actual.size(), is(4));
     }
     
     @Test
     public void assertParallelExecuteWithFirstCallback() throws SQLException, InterruptedException {
-        List<String> actual = executorKernel.execute(executionGroups, firstCallback, callback, false);
+        List<String> actual = executorEngine.execute(executionGroups, firstCallback, callback, false);
         latch.await();
         assertThat(actual.size(), is(4));
     }
     
     @Test
     public void assertSerialExecute() throws SQLException, InterruptedException {
-        List<String> actual = executorKernel.execute(executionGroups, firstCallback, callback, true);
+        List<String> actual = executorEngine.execute(executionGroups, firstCallback, callback, true);
         latch.await();
         assertThat(actual.size(), is(4));
     }
@@ -97,7 +97,7 @@ public final class ExecutorKernelTest {
     @Test
     public void assertExecutionGroupIsEmpty() throws SQLException {
         CountDownLatch latch = new CountDownLatch(1);
-        List<String> actual = executorKernel.execute(new LinkedList<>(), new ExecutorCallbackFixture(latch));
+        List<String> actual = executorEngine.execute(new LinkedList<>(), new ExecutorCallbackFixture(latch));
         latch.countDown();
         assertThat(actual.size(), is(0));
     }

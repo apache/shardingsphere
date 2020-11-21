@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
 
@@ -33,7 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class SQLExecutor {
     
-    private final ExecutorKernel executorKernel;
+    private final ExecutorEngine executorEngine;
     
     private final boolean serial;
     
@@ -63,7 +63,7 @@ public final class SQLExecutor {
     public <T> List<T> execute(final Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups, 
                                final SQLExecutorCallback<T> firstCallback, final SQLExecutorCallback<T> callback) throws SQLException {
         try {
-            return executorKernel.execute(executionGroups, firstCallback, callback, serial);
+            return executorEngine.execute(executionGroups, firstCallback, callback, serial);
         } catch (final SQLException ex) {
             ExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();

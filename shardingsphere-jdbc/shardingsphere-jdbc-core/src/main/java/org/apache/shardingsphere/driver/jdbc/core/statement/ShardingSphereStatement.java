@@ -111,8 +111,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         metaDataContexts = connection.getMetaDataContexts();
         statements = new LinkedList<>();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
-        statementExecutor = new StatementExecutor(connection.getDataSourceMap(), metaDataContexts, new SQLExecutor(metaDataContexts.getExecutorKernel(), connection.isHoldTransaction()));
-        rawExecutor = new RawJDBCExecutor(metaDataContexts.getExecutorKernel(), connection.isHoldTransaction());
+        statementExecutor = new StatementExecutor(connection.getDataSourceMap(), metaDataContexts, new SQLExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction()));
+        rawExecutor = new RawJDBCExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction());
         kernelProcessor = new KernelProcessor();
     }
     

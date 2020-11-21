@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.context.metadata;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.io.Closeable;
@@ -53,11 +53,11 @@ public interface MetaDataContexts extends Closeable {
     ShardingSphereMetaData getDefaultMetaData();
     
     /**
-     * Get executor kernel.
+     * Get executor engine.
      * 
-     * @return executor kernel
+     * @return executor engine
      */
-    ExecutorKernel getExecutorKernel();
+    ExecutorEngine getExecutorEngine();
     
     /**
      * Get authentication.

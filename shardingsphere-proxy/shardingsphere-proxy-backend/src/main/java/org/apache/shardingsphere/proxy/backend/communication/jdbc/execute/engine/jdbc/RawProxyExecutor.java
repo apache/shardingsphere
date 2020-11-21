@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.RawSQLExecutorCallback;
@@ -37,7 +37,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class RawProxyExecutor {
     
-    private final ExecutorKernel executorKernel;
+    private final ExecutorEngine executorEngine;
     
     private final boolean serial;
     
@@ -68,7 +68,7 @@ public final class RawProxyExecutor {
     private <T> List<T> doExecute(final Collection<ExecutionGroup<RawSQLExecuteUnit>> executionGroups, 
                                   final RawSQLExecutorCallback firstCallback, final RawSQLExecutorCallback callback) throws SQLException {
         try {
-            return executorKernel.execute((Collection) executionGroups, firstCallback, callback, serial);
+            return executorEngine.execute((Collection) executionGroups, firstCallback, callback, serial);
         } catch (final SQLException ex) {
             ExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();
