@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group;
+package org.apache.shardingsphere.infra.executor.sql.group.resourced.jdbc;
 
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JDBCExecutionConnection;
-import org.apache.shardingsphere.infra.executor.sql.resourced.group.ResourceManagedExecuteGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.group.resourced.ResourceManagedExecutionGroupEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.sql.Connection;
@@ -30,12 +31,12 @@ import java.sql.Statement;
 import java.util.Collection;
 
 /**
- * Execute group engine for statement.
+ * Execution group engine for statement.
  */
-public final class StatementExecuteGroupEngine extends ResourceManagedExecuteGroupEngine<StatementExecuteUnit, JDBCExecutionConnection, Connection, StatementOption> {
+public final class StatementExecutionGroupEngine extends ResourceManagedExecutionGroupEngine<StatementExecuteUnit, JDBCExecutionConnection, Connection, StatementOption> {
     
-    public StatementExecuteGroupEngine(final int maxConnectionsSizePerQuery,
-                                       final JDBCExecutionConnection executionConnection, final StatementOption option, final Collection<ShardingSphereRule> rules) {
+    public StatementExecutionGroupEngine(final int maxConnectionsSizePerQuery,
+                                         final JDBCExecutionConnection executionConnection, final StatementOption option, final Collection<ShardingSphereRule> rules) {
         super(maxConnectionsSizePerQuery, executionConnection, option, rules);
     }
     

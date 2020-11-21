@@ -20,25 +20,25 @@ package org.apache.shardingsphere.infra.executor.sql.group;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
-import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 
 import java.util.Collection;
 
 /**
- * Execute group decorator.
+ * Execution group decorator.
  * 
  * @param <T> type of input value
  * @param <R> type of ShardingSphere rule
  */
-public interface ExecuteGroupDecorator<T, R extends ShardingSphereRule> extends OrderedSPI<R> {
+public interface ExecutionGroupDecorator<T, R extends ShardingSphereRule> extends OrderedSPI<R> {
     
     /**
-     * Decorate input groups.
+     * Decorate execution groups.
      * 
      * @param routeContext route context
      * @param rule ShardingSphere rule
-     * @param inputGroups input groups to be decorated
-     * @return decorated input groups.
+     * @param executionGroups execution groups to be decorated
+     * @return decorated execution groups
      */
-    Collection<InputGroup<T>> decorate(RouteContext routeContext, R rule, Collection<InputGroup<T>> inputGroups);
+    Collection<ExecutionGroup<T>> decorate(RouteContext routeContext, R rule, Collection<ExecutionGroup<T>> executionGroups);
 }

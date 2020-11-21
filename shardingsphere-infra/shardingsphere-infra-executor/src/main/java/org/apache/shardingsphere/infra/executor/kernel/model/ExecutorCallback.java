@@ -15,29 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.group;
-
-import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
+package org.apache.shardingsphere.infra.executor.kernel.model;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
 
 /**
- * Execute group engine.
+ * Grouped callback.
  * 
- * @param <T> type of input value
+ * @param <I> type of input value
+ * @param <O> type of output value
  */
-public interface ExecuteGroupEngine<T> {
+public interface ExecutorCallback<I, O> {
     
     /**
-     * Generate execution input groups.
-     *
-     * @param routeContext route context
-     * @param executionUnits execution units
-     * @return execution input groups
-     * @throws SQLException SQL exception
+     * Execute.
+     * 
+     * @param inputs input values
+     * @param isTrunkThread is execution in trunk thread
+     * @param dataMap data map
+     * @return execution results
+     * @throws SQLException throw when execute failure
      */
-    Collection<InputGroup<T>> generate(RouteContext routeContext, Collection<ExecutionUnit> executionUnits) throws SQLException;
+    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread, Map<String, Object> dataMap) throws SQLException;
 }

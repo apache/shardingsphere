@@ -87,11 +87,11 @@ Here is the new interaction:
 
 It's a correct procedure at the first sight: for the first message, it's PreparedStatement which has question mark within SELECT; for the second message, MySQL points out to get ready for JDBC; for the third message, JDBC sets user_id=10; for the fourth message, MySQL returns query result; for the fifth message, why does JDBC send PreparedStatement once more?
 
-Each query should transfers its value of parameter through ExecuteStatement in expectation, then it takes effect of one precompiled and more preformation.
+Each query should transfer its value of parameter through ExecuteStatement in expectation, then it takes effect of one precompiled and more preformation.
 
 If "precompiled" every time, there is no difference with normal query in addition to cost of two passing message: Response(prepareok) and ExecuteStatement(parameter=10). Here is the performance issue.
 
-It should be something wrong if precompiled doesn't work. I read source code of JDBC in order to work it out, and find an important settting - cachePrepStmts. What will happen to set it:
+It should be something wrong if precompiled doesn't work. I read source code of JDBC in order to work it out, and find an important setting - cachePrepStmts. What will happen to set it:
 
 ```
 jdbc:mysql://127.0.0.1:3306/demo_ds?
@@ -128,7 +128,7 @@ The image above shows interaction between Client and Proxy-MySQL when finishing 
 
 #### 2. Configuration optimization of Hikari 
 
-During initialization, Proxy will configure a Hikari pool for each pythsical database. According to sharding rule, SQL is route to real database, and get results through Hikari connection, Proxy conflates result and return it to client in the end. What's the size of database pool? As opinions vary, i'll give the final conclusion today.    
+During initialization, Proxy will configure a Hikari pool for each physical database. According to sharding rule, SQL is route to real database, and get results through Hikari connection, Proxy conflates result and return it to client in the end. What's the size of database pool? As opinions vary, I'll give the final conclusion today.    
 
 Out of expectation, you will find it's not question about maximum in the opposite of minimum! Will you feel surprise that serial is faster than parallel when triggering a task?
 

@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.kernel;
+package org.apache.shardingsphere.infra.executor.kernel.model;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Input group.
- *
- * @param <T> type of input value
+ * Executor data map for thread local even cross multiple threads.
  */
-@RequiredArgsConstructor
-@Getter
-public final class InputGroup<T> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ExecutorDataMap {
     
-    private final List<T> inputs;
+    private static final ThreadLocal<Map<String, Object>> DATA_MAP = ThreadLocal.withInitial(LinkedHashMap::new);
+    
+    /**
+     * Get value.
+     *
+     * @return data map
+     */
+    public static Map<String, Object> getValue() {
+        return DATA_MAP.get();
+    }
 }

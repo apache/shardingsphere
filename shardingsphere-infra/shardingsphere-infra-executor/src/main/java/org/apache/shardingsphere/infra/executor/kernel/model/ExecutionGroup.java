@@ -15,16 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.raw.group;
+package org.apache.shardingsphere.infra.executor.kernel.model;
 
-import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupDecorator;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 /**
- * Raw execute group decorator.
+ * Execution group.
  *
- * @param <T> type of input value
- * @param <R> type of ShardingSphere rule
+ * @param <T> type of execution input value
  */
-public interface RawExecuteGroupDecorator<T, R extends ShardingSphereRule> extends ExecuteGroupDecorator<T, R> {
+@RequiredArgsConstructor
+@Getter
+public final class ExecutionGroup<T> {
+    
+    private final List<T> inputs;
 }

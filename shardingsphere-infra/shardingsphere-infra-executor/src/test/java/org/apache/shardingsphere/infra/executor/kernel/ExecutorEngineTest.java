@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.kernel;
 
 import org.apache.shardingsphere.infra.executor.kernel.fixture.ExecutorCallbackFixture;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,11 +35,11 @@ import static org.mockito.Mockito.mock;
 
 public final class ExecutorEngineTest {
     
-    private final ExecutorKernel executorEngine = new ExecutorKernel(10);
+    private final ExecutorEngine executorEngine = new ExecutorEngine(10);
     
     private final CountDownLatch latch = new CountDownLatch(4);
     
-    private Collection<InputGroup<Object>> inputGroups;
+    private Collection<ExecutionGroup<Object>> executionGroups;
     
     private ExecutorCallbackFixture firstCallback;
     
@@ -46,7 +47,7 @@ public final class ExecutorEngineTest {
     
     @Before
     public void setUp() {
-        inputGroups = createMockedInputGroups(2, 2);
+        executionGroups = createMockedExecutionGroups(2, 2);
         firstCallback = new ExecutorCallbackFixture(latch);
         callback = new ExecutorCallbackFixture(latch);
     }
@@ -56,10 +57,10 @@ public final class ExecutorEngineTest {
         executorEngine.close();
     }
     
-    private Collection<InputGroup<Object>> createMockedInputGroups(final int groupSize, final int unitSize) {
-        Collection<InputGroup<Object>> result = new LinkedList<>();
+    private Collection<ExecutionGroup<Object>> createMockedExecutionGroups(final int groupSize, final int unitSize) {
+        Collection<ExecutionGroup<Object>> result = new LinkedList<>();
         for (int i = 0; i < groupSize; i++) {
-            result.add(new InputGroup<>(createMockedInputs(unitSize)));
+            result.add(new ExecutionGroup<>(createMockedInputs(unitSize)));
         }
         return result;
     }
@@ -74,27 +75,27 @@ public final class ExecutorEngineTest {
     
     @Test
     public void assertParallelExecuteWithoutFirstCallback() throws SQLException, InterruptedException {
-        List<String> actual = executorEngine.execute(inputGroups, callback);
+        List<String> actual = executorEngine.execute(executionGroups, callback);
         latch.await();
         assertThat(actual.size(), is(4));
     }
     
     @Test
     public void assertParallelExecuteWithFirstCallback() throws SQLException, InterruptedException {
-        List<String> actual = executorEngine.execute(inputGroups, firstCallback, callback, false);
+        List<String> actual = executorEngine.execute(executionGroups, firstCallback, callback, false);
         latch.await();
         assertThat(actual.size(), is(4));
     }
     
     @Test
     public void assertSerialExecute() throws SQLException, InterruptedException {
-        List<String> actual = executorEngine.execute(inputGroups, firstCallback, callback, true);
+        List<String> actual = executorEngine.execute(executionGroups, firstCallback, callback, true);
         latch.await();
         assertThat(actual.size(), is(4));
     }
     
     @Test
-    public void assertInputGroupIsEmpty() throws SQLException {
+    public void assertExecutionGroupIsEmpty() throws SQLException {
         CountDownLatch latch = new CountDownLatch(1);
         List<String> actual = executorEngine.execute(new LinkedList<>(), new ExecutorCallbackFixture(latch));
         latch.countDown();

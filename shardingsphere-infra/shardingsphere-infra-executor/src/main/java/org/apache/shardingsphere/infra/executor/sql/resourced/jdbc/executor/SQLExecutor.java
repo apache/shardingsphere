@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
-import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
 
 import java.sql.SQLException;
@@ -33,36 +33,37 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class SQLExecutor {
     
-    private final ExecutorKernel executorKernel;
+    private final ExecutorEngine executorEngine;
     
     private final boolean serial;
     
     /**
      * Execute.
      *
-     * @param inputGroups input groups
+     * @param executionGroups execution groups
      * @param callback SQL execute callback
      * @param <T> class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public <T> List<T> execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLExecutorCallback<T> callback) throws SQLException {
-        return execute(inputGroups, null, callback);
+    public <T> List<T> execute(final Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups, final SQLExecutorCallback<T> callback) throws SQLException {
+        return execute(executionGroups, null, callback);
     }
     
     /**
      * Execute.
      *
-     * @param inputGroups input groups
+     * @param executionGroups execution groups
      * @param firstCallback first SQL execute callback
      * @param callback SQL execute callback
      * @param <T> class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public <T> List<T> execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLExecutorCallback<T> firstCallback, final SQLExecutorCallback<T> callback) throws SQLException {
+    public <T> List<T> execute(final Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups, 
+                               final SQLExecutorCallback<T> firstCallback, final SQLExecutorCallback<T> callback) throws SQLException {
         try {
-            return executorKernel.execute(inputGroups, firstCallback, callback, serial);
+            return executorEngine.execute(executionGroups, firstCallback, callback, serial);
         } catch (final SQLException ex) {
             ExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();

@@ -32,9 +32,9 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -75,8 +75,8 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
     }
     
     @Override
-    public List<Object> getRowData() throws SQLException {
-        List<Object> result = new ArrayList<>(queryResponse.getQueryHeaders().size());
+    public Collection<Object> getRowData() throws SQLException {
+        Collection<Object> result = new LinkedList<>();
         for (int columnIndex = 1; columnIndex <= queryResponse.getQueryHeaders().size(); columnIndex++) {
             result.add(queryResponse.getQueryResults().get(0).getValue(columnIndex, Object.class));
         }

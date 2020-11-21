@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.infra.executor.sql.group;
 
-import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
+import com.google.common.collect.Lists;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
+import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -34,31 +36,45 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Abstract execute group engine.
+ * Abstract execution group engine.
  * 
  * @param <T> type of input value
  */
-public abstract class AbstractExecuteGroupEngine<T> implements ExecuteGroupEngine<T> {
+public abstract class AbstractExecutionGroupEngine<T> implements ExecutionGroupEngine<T> {
     
     static {
-        ShardingSphereServiceLoader.register(ExecuteGroupDecorator.class);
+        ShardingSphereServiceLoader.register(ExecutionGroupDecorator.class);
     }
     
-    @SuppressWarnings("rawtypes")
-    private final Map<ShardingSphereRule, ExecuteGroupDecorator> decorators;
+    private final int maxConnectionsSizePerQuery;
     
-    protected AbstractExecuteGroupEngine(final Collection<ShardingSphereRule> rules) {
-        decorators = OrderedSPIRegistry.getRegisteredServices(rules, ExecuteGroupDecorator.class);
+    @SuppressWarnings("rawtypes")
+    private final Map<ShardingSphereRule, ExecutionGroupDecorator> decorators;
+    
+    protected AbstractExecutionGroupEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
+        this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
+        decorators = OrderedSPIRegistry.getRegisteredServices(rules, ExecutionGroupDecorator.class);
     }
     
     @Override
-    public final Collection<InputGroup<T>> generate(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits) throws SQLException {
-        Collection<InputGroup<T>> result = new LinkedList<>();
+    public final Collection<ExecutionGroup<T>> group(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits) throws SQLException {
+        Collection<ExecutionGroup<T>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : aggregateSQLUnitGroups(executionUnits).entrySet()) {
-            result.addAll(generateSQLExecuteGroups(entry.getKey(), entry.getValue()));
+            String dataSourceName = entry.getKey();
+            List<SQLUnit> sqlUnits = entry.getValue();
+            List<List<SQLUnit>> sqlUnitGroups = group(sqlUnits);
+            ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
+            result.addAll(group(dataSourceName, sqlUnitGroups, connectionMode));
         }
         return decorate(routeContext, result);
     }
+
+    private List<List<SQLUnit>> group(final List<SQLUnit> sqlUnits) {
+        int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
+        return Lists.partition(sqlUnits, desiredPartitionSize);
+    }
+
+    protected abstract List<ExecutionGroup<T>> group(String dataSourceName, List<List<SQLUnit>> sqlUnitGroups, ConnectionMode connectionMode) throws SQLException;
     
     private Map<String, List<SQLUnit>> aggregateSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
         Map<String, List<SQLUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1);
@@ -71,12 +87,10 @@ public abstract class AbstractExecuteGroupEngine<T> implements ExecuteGroupEngin
         return result;
     }
     
-    protected abstract List<InputGroup<T>> generateSQLExecuteGroups(String dataSourceName, List<SQLUnit> sqlUnits) throws SQLException;
-    
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<InputGroup<T>> decorate(final RouteContext routeContext, final Collection<InputGroup<T>> inputGroups) {
-        Collection<InputGroup<T>> result = inputGroups;
-        for (Entry<ShardingSphereRule, ExecuteGroupDecorator> each : decorators.entrySet()) {
+    private Collection<ExecutionGroup<T>> decorate(final RouteContext routeContext, final Collection<ExecutionGroup<T>> executionGroups) {
+        Collection<ExecutionGroup<T>> result = executionGroups;
+        for (Entry<ShardingSphereRule, ExecutionGroupDecorator> each : decorators.entrySet()) {
             result = each.getValue().decorate(routeContext, each.getKey(), result);
         }
         return result;
