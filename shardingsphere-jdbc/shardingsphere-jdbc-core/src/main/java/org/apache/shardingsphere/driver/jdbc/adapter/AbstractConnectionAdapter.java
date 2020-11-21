@@ -25,8 +25,8 @@ import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTempla
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JDBCExecutionConnection;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.executor.sql.execute.resourced.jdbc.connection.JDBCExecutionConnection;
+import org.apache.shardingsphere.infra.executor.sql.execute.resourced.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.hook.RootInvokeHook;
 import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.replicaquery.route.engine.impl.PrimaryVisitedManager;
@@ -153,11 +153,13 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     protected abstract Connection createConnection(String dataSourceName, DataSource dataSource) throws SQLException;
     
+    @SuppressWarnings("MagicConstant")
     @Override
     public final Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
         return connection.createStatement(option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
     }
-    
+
+    @SuppressWarnings("MagicConstant")
     @Override
     public final PreparedStatement createStorageResource(final String sql, final List<Object> parameters, 
                                                          final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
@@ -245,8 +247,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         }
         return true;
     }
-    
-    // ------- Consist with MySQL driver implementation -------
     
     @SuppressWarnings("ReturnOfNull")
     @Override

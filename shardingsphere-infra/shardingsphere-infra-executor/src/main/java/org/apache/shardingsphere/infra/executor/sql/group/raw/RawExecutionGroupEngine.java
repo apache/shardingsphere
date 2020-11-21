@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.group.AbstractExecutionGroupEngine;
-import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;

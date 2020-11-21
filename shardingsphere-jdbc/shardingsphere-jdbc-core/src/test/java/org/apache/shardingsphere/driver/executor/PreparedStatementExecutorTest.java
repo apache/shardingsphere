@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.resourced.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.resourced.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 

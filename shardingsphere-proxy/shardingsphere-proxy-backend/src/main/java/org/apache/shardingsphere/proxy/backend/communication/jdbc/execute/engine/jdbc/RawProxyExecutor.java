@@ -20,11 +20,11 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engin
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
-import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.RawSQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.update.ExecuteUpdateResult;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawSQLExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.callback.RawSQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.result.ExecuteResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.result.update.ExecuteUpdateResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.resourced.jdbc.executor.ExecutorExceptionHandler;
 
 import java.sql.SQLException;
 import java.util.Collection;
