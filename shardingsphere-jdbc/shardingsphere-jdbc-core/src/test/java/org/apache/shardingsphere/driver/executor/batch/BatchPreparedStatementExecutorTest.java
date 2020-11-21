@@ -68,7 +68,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     public void assertNoPreparedStatement() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[] {0, 0});
-        setExecuteGroups(Collections.singletonList(preparedStatement));
+        setInputGroups(Collections.singletonList(preparedStatement));
         assertThat(actual.executeBatch(sqlStatementContext), is(new int[] {0, 0}));
     }
     
@@ -76,7 +76,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     public void assertExecuteBatchForSinglePreparedStatementSuccess() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[] {10, 20});
-        setExecuteGroups(Collections.singletonList(preparedStatement));
+        setInputGroups(Collections.singletonList(preparedStatement));
         assertThat(actual.executeBatch(sqlStatementContext), is(new int[] {10, 20}));
         verify(preparedStatement).executeBatch();
     }
@@ -97,7 +97,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         PreparedStatement preparedStatement2 = getPreparedStatement();
         when(preparedStatement1.executeBatch()).thenReturn(new int[] {10, 20});
         when(preparedStatement2.executeBatch()).thenReturn(new int[] {20, 40});
-        setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2));
+        setInputGroups(Arrays.asList(preparedStatement1, preparedStatement2));
         assertThat(actual.executeBatch(sqlStatementContext), is(new int[] {30, 60}));
         verify(preparedStatement1).executeBatch();
         verify(preparedStatement2).executeBatch();
@@ -108,7 +108,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         PreparedStatement preparedStatement = getPreparedStatement();
         SQLException ex = new SQLException("");
         when(preparedStatement.executeBatch()).thenThrow(ex);
-        setExecuteGroups(Collections.singletonList(preparedStatement));
+        setInputGroups(Collections.singletonList(preparedStatement));
         assertThat(actual.executeBatch(sqlStatementContext), is(new int[] {0, 0}));
         verify(preparedStatement).executeBatch();
     }
@@ -120,16 +120,16 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         SQLException ex = new SQLException("");
         when(preparedStatement1.executeBatch()).thenThrow(ex);
         when(preparedStatement2.executeBatch()).thenThrow(ex);
-        setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2));
+        setInputGroups(Arrays.asList(preparedStatement1, preparedStatement2));
         assertThat(actual.executeBatch(sqlStatementContext), is(new int[] {0, 0}));
         verify(preparedStatement1).executeBatch();
         verify(preparedStatement2).executeBatch();
     }
     
-    private void setExecuteGroups(final List<PreparedStatement> preparedStatements) {
-        Collection<InputGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
+    private void setInputGroups(final List<PreparedStatement> preparedStatements) {
+        Collection<InputGroup<StatementExecuteUnit>> inputGroups = new LinkedList<>();
         List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
-        executeGroups.add(new InputGroup<>(preparedStatementExecuteUnits));
+        inputGroups.add(new InputGroup<>(preparedStatementExecuteUnits));
         Collection<BatchExecutionUnit> batchExecutionUnits = new LinkedList<>();
         for (PreparedStatement each : preparedStatements) {
             BatchExecutionUnit batchExecutionUnit = new BatchExecutionUnit(new ExecutionUnit("ds_0", new SQLUnit(SQL, Collections.singletonList(1))));
@@ -139,7 +139,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
             preparedStatementExecuteUnits.add(new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(SQL, Collections.singletonList(1))),
                     ConnectionMode.MEMORY_STRICTLY, each));
         }
-        setFields(executeGroups, batchExecutionUnits);
+        setFields(inputGroups, batchExecutionUnits);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

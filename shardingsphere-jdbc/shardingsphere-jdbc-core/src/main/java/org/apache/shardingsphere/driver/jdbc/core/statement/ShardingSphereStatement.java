@@ -45,10 +45,10 @@ import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.RawJDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.RawSQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.group.raw.RawExecuteGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.group.raw.RawExecutionGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
-import org.apache.shardingsphere.infra.executor.sql.group.resourced.jdbc.StatementExecuteGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.group.resourced.jdbc.StatementExecutionGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.query.jdbc.StreamJDBCQueryResult;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
@@ -314,13 +314,13 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private Collection<InputGroup<StatementExecuteUnit>> getInputGroups() throws SQLException {
         int maxConnectionsSizePerQuery = metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, connection, statementOption,
+        return new StatementExecutionGroupEngine(maxConnectionsSizePerQuery, connection, statementOption,
                 metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules()).group(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
     
     private Collection<InputGroup<RawSQLExecuteUnit>> getRawInputGroups() throws SQLException {
         int maxConnectionsSizePerQuery = metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new RawExecuteGroupEngine(maxConnectionsSizePerQuery, metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules())
+        return new RawExecutionGroupEngine(maxConnectionsSizePerQuery, metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules())
                 .group(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
     

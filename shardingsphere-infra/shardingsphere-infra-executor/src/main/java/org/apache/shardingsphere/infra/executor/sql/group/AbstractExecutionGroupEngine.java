@@ -34,21 +34,21 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Abstract execute group engine.
+ * Abstract execution group engine.
  * 
  * @param <T> type of input value
  */
-public abstract class AbstractExecuteGroupEngine<T> implements ExecuteGroupEngine<T> {
+public abstract class AbstractExecutionGroupEngine<T> implements ExecutionGroupEngine<T> {
     
     static {
-        ShardingSphereServiceLoader.register(ExecuteGroupDecorator.class);
+        ShardingSphereServiceLoader.register(ExecutionGroupDecorator.class);
     }
     
     @SuppressWarnings("rawtypes")
-    private final Map<ShardingSphereRule, ExecuteGroupDecorator> decorators;
+    private final Map<ShardingSphereRule, ExecutionGroupDecorator> decorators;
     
-    protected AbstractExecuteGroupEngine(final Collection<ShardingSphereRule> rules) {
-        decorators = OrderedSPIRegistry.getRegisteredServices(rules, ExecuteGroupDecorator.class);
+    protected AbstractExecutionGroupEngine(final Collection<ShardingSphereRule> rules) {
+        decorators = OrderedSPIRegistry.getRegisteredServices(rules, ExecutionGroupDecorator.class);
     }
     
     @Override
@@ -76,7 +76,7 @@ public abstract class AbstractExecuteGroupEngine<T> implements ExecuteGroupEngin
     @SuppressWarnings({"unchecked", "rawtypes"})
     private Collection<InputGroup<T>> decorate(final RouteContext routeContext, final Collection<InputGroup<T>> inputGroups) {
         Collection<InputGroup<T>> result = inputGroups;
-        for (Entry<ShardingSphereRule, ExecuteGroupDecorator> each : decorators.entrySet()) {
+        for (Entry<ShardingSphereRule, ExecutionGroupDecorator> each : decorators.entrySet()) {
             result = each.getValue().decorate(routeContext, each.getKey(), result);
         }
         return result;

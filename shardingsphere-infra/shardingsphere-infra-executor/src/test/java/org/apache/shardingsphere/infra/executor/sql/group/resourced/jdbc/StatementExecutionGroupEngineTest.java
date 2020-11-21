@@ -45,15 +45,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PreparedStatementExecuteGroupEngineTest {
+public final class StatementExecutionGroupEngineTest {
     
-    private PreparedStatementExecuteGroupEngine preparedStatementExecuteGroupEngine;
+    private StatementExecutionGroupEngine groupEngine;
     
     @Test
     public void assertGetExecuteUnitGroupForOneShardMemoryStrictly() throws SQLException {
-        preparedStatementExecuteGroupEngine = new PreparedStatementExecuteGroupEngine(
+        groupEngine = new StatementExecutionGroupEngine(
                 2, mockExecutionConnection(1, ConnectionMode.MEMORY_STRICTLY), new StatementOption(true), Collections.singletonList(mock(ShardingSphereRule.class)));
-        Collection<InputGroup<StatementExecuteUnit>> actual = preparedStatementExecuteGroupEngine.group(mock(RouteContext.class), mockShardRouteUnit(1, 1));
+        Collection<InputGroup<StatementExecuteUnit>> actual = groupEngine.group(mock(RouteContext.class), mockShardRouteUnit(1, 1));
         assertThat(actual.size(), is(1));
         for (InputGroup<StatementExecuteUnit> each : actual) {
             assertThat(each.getInputs().size(), is(1));
@@ -62,9 +62,9 @@ public final class PreparedStatementExecuteGroupEngineTest {
     
     @Test
     public void assertGetExecuteUnitGroupForMultiShardConnectionStrictly() throws SQLException {
-        preparedStatementExecuteGroupEngine = new PreparedStatementExecuteGroupEngine(
+        groupEngine = new StatementExecutionGroupEngine(
                 1, mockExecutionConnection(1, ConnectionMode.CONNECTION_STRICTLY), new StatementOption(true), Collections.singletonList(mock(ShardingSphereRule.class)));
-        Collection<InputGroup<StatementExecuteUnit>> actual = preparedStatementExecuteGroupEngine.group(mock(RouteContext.class), mockShardRouteUnit(10, 2));
+        Collection<InputGroup<StatementExecuteUnit>> actual = groupEngine.group(mock(RouteContext.class), mockShardRouteUnit(10, 2));
         assertThat(actual.size(), is(10));
         for (InputGroup<StatementExecuteUnit> each : actual) {
             assertThat(each.getInputs().size(), is(2));

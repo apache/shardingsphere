@@ -187,8 +187,8 @@ public final class BatchPreparedStatementExecutor {
                 .map(this::getParameterSets).orElse(Collections.emptyList());
     }
     
-    private Optional<StatementExecuteUnit> findStatementExecuteUnit(final Statement statement, final InputGroup<StatementExecuteUnit> executeGroup) {
-        return executeGroup.getInputs().stream().filter(each -> each.getStorageResource().equals(statement)).findFirst();
+    private Optional<StatementExecuteUnit> findStatementExecuteUnit(final Statement statement, final InputGroup<StatementExecuteUnit> inputGroup) {
+        return inputGroup.getInputs().stream().filter(each -> each.getStorageResource().equals(statement)).findFirst();
     }
     
     private List<List<Object>> getParameterSets(final StatementExecuteUnit executeUnit) {

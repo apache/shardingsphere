@@ -47,10 +47,10 @@ import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.RawJDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.RawSQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.group.raw.RawExecuteGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.group.raw.RawExecutionGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
-import org.apache.shardingsphere.infra.executor.sql.group.resourced.jdbc.PreparedStatementExecuteGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.group.resourced.jdbc.PreparedStatementExecutionGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.query.jdbc.StreamJDBCQueryResult;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
@@ -212,13 +212,13 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private Collection<InputGroup<StatementExecuteUnit>> getInputGroups() throws SQLException {
         int maxConnectionsSizePerQuery = metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, connection, statementOption,
+        return new PreparedStatementExecutionGroupEngine(maxConnectionsSizePerQuery, connection, statementOption,
                 metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules()).group(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
     
     private Collection<InputGroup<RawSQLExecuteUnit>> getRawInputGroups() throws SQLException {
         int maxConnectionsSizePerQuery = metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new RawExecuteGroupEngine(maxConnectionsSizePerQuery, metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules())
+        return new RawExecutionGroupEngine(maxConnectionsSizePerQuery, metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules())
                 .group(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
     
@@ -355,10 +355,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private void initBatchPreparedStatementExecutor() throws SQLException {
-        PreparedStatementExecuteGroupEngine executeGroupEngine = new PreparedStatementExecuteGroupEngine(
+        PreparedStatementExecutionGroupEngine groupEngine = new PreparedStatementExecutionGroupEngine(
                 metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 connection, statementOption, metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules());
-        batchPreparedStatementExecutor.init(executeGroupEngine.group(executionContext.getRouteContext(),
+        batchPreparedStatementExecutor.init(groupEngine.group(executionContext.getRouteContext(),
                 new ArrayList<>(batchPreparedStatementExecutor.getBatchExecutionUnits()).stream().map(BatchExecutionUnit::getExecutionUnit).collect(Collectors.toList())));
         setBatchParametersForStatements();
     }

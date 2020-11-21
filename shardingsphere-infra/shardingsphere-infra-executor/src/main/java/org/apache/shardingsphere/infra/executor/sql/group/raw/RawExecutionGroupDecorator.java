@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.infra.executor.sql.group.raw;
 
-import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupDecorator;
+import org.apache.shardingsphere.infra.executor.sql.group.ExecutionGroupDecorator;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * Raw execute group decorator.
+ * Raw execution group decorator.
  *
  * @param <T> type of input value
  * @param <R> type of ShardingSphere rule
  */
-public interface RawExecuteGroupDecorator<T, R extends ShardingSphereRule> extends ExecuteGroupDecorator<T, R> {
+public interface RawExecutionGroupDecorator<T, R extends ShardingSphereRule> extends ExecutionGroupDecorator<T, R> {
 }

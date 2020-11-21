@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.group.raw;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.group.AbstractExecuteGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.group.AbstractExecutionGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
@@ -31,13 +31,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Raw execute group engine.
+ * Raw execution group engine.
  */
-public final class RawExecuteGroupEngine extends AbstractExecuteGroupEngine<RawSQLExecuteUnit> {
+public final class RawExecutionGroupEngine extends AbstractExecutionGroupEngine<RawSQLExecuteUnit> {
     
     private final int maxConnectionsSizePerQuery;
     
-    public RawExecuteGroupEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
+    public RawExecutionGroupEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
         super(rules);
         this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
     }
@@ -49,12 +49,12 @@ public final class RawExecuteGroupEngine extends AbstractExecuteGroupEngine<RawS
         List<List<SQLUnit>> sqlUnitPartitions = Lists.partition(sqlUnits, desiredPartitionSize);
         ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
         for (List<SQLUnit> each : sqlUnitPartitions) {
-            result.add(generateSQLExecuteGroup(dataSourceName, each, connectionMode));
+            result.add(createSQLExecutionGroup(dataSourceName, each, connectionMode));
         }
         return result;
     }
     
-    private InputGroup<RawSQLExecuteUnit> generateSQLExecuteGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final ConnectionMode connectionMode) {
+    private InputGroup<RawSQLExecuteUnit> createSQLExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final ConnectionMode connectionMode) {
         List<RawSQLExecuteUnit> rawSQLExecuteUnits = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
             rawSQLExecuteUnits.add(new RawSQLExecuteUnit(new ExecutionUnit(dataSourceName, each), connectionMode));
