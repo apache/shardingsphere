@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.executor;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -86,7 +86,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(resultSet.getString(1)).thenReturn("value");
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(statement.executeQuery(DQL_SQL)).thenReturn(resultSet);
-        assertThat(actual.executeQuery(getInputGroups(Collections.singletonList(statement), true)).iterator().next().getValue(1, String.class), is("value"));
+        assertThat(actual.executeQuery(createExecutionGroups(Collections.singletonList(statement), true)).iterator().next().getValue(1, String.class), is("value"));
         verify(statement).executeQuery(DQL_SQL);
     }
     
@@ -108,7 +108,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(resultSet2.getInt(1)).thenReturn(2);
         when(statement1.executeQuery(DQL_SQL)).thenReturn(resultSet1);
         when(statement2.executeQuery(DQL_SQL)).thenReturn(resultSet2);
-        List<QueryResult> result = actual.executeQuery(getInputGroups(Arrays.asList(statement1, statement2), true));
+        List<QueryResult> result = actual.executeQuery(createExecutionGroups(Arrays.asList(statement1, statement2), true));
         assertThat(String.valueOf(result.get(0).getValue(1, int.class)), is("1"));
         assertThat(String.valueOf(result.get(1).getValue(1, int.class)), is("2"));
         verify(statement1).executeQuery(DQL_SQL);
@@ -120,7 +120,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = getStatement();
         SQLException ex = new SQLException("");
         when(statement.executeQuery(DQL_SQL)).thenThrow(ex);
-        assertThat(actual.executeQuery(getInputGroups(Collections.singletonList(statement), true)), is(Collections.singletonList((QueryResult) null)));
+        assertThat(actual.executeQuery(createExecutionGroups(Collections.singletonList(statement), true)), is(Collections.singletonList((QueryResult) null)));
         verify(statement).executeQuery(DQL_SQL);
     }
     
@@ -131,7 +131,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         SQLException ex = new SQLException("");
         when(statement1.executeQuery(DQL_SQL)).thenThrow(ex);
         when(statement2.executeQuery(DQL_SQL)).thenThrow(ex);
-        List<QueryResult> actualResultSets = actual.executeQuery(getInputGroups(Arrays.asList(statement1, statement2), true));
+        List<QueryResult> actualResultSets = actual.executeQuery(createExecutionGroups(Arrays.asList(statement1, statement2), true));
         assertThat(actualResultSets, is(Arrays.asList((QueryResult) null, null)));
         verify(statement1).executeQuery(DQL_SQL);
         verify(statement2).executeQuery(DQL_SQL);
@@ -141,7 +141,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void assertExecuteUpdateForSingleStatementSuccess() throws SQLException {
         Statement statement = getStatement();
         when(statement.executeUpdate(DML_SQL)).thenReturn(10);
-        assertThat(actual.executeUpdate(getInputGroups(Collections.singletonList(statement), false), createSQLStatementContext(), null), is(10));
+        assertThat(actual.executeUpdate(createExecutionGroups(Collections.singletonList(statement), false), createSQLStatementContext(), null), is(10));
         verify(statement).executeUpdate(DML_SQL);
     }
     
@@ -151,7 +151,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement2 = getStatement();
         when(statement1.executeUpdate(DML_SQL)).thenReturn(10);
         when(statement2.executeUpdate(DML_SQL)).thenReturn(20);
-        assertThat(actual.executeUpdate(getInputGroups(Arrays.asList(statement1, statement2), false), createSQLStatementContext(), null), is(30));
+        assertThat(actual.executeUpdate(createExecutionGroups(Arrays.asList(statement1, statement2), false), createSQLStatementContext(), null), is(30));
         verify(statement1).executeUpdate(DML_SQL);
         verify(statement2).executeUpdate(DML_SQL);
     }
@@ -161,7 +161,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = getStatement();
         SQLException ex = new SQLException("");
         when(statement.executeUpdate(DML_SQL)).thenThrow(ex);
-        assertThat(actual.executeUpdate(getInputGroups(Collections.singletonList(statement), false), createSQLStatementContext(), null), is(0));
+        assertThat(actual.executeUpdate(createExecutionGroups(Collections.singletonList(statement), false), createSQLStatementContext(), null), is(0));
         verify(statement).executeUpdate(DML_SQL);
     }
     
@@ -172,7 +172,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         SQLException ex = new SQLException("");
         when(statement1.executeUpdate(DML_SQL)).thenThrow(ex);
         when(statement2.executeUpdate(DML_SQL)).thenThrow(ex);
-        assertThat(actual.executeUpdate(getInputGroups(Arrays.asList(statement1, statement2), false), createSQLStatementContext(), null), is(0));
+        assertThat(actual.executeUpdate(createExecutionGroups(Arrays.asList(statement1, statement2), false), createSQLStatementContext(), null), is(0));
         verify(statement1).executeUpdate(DML_SQL);
         verify(statement2).executeUpdate(DML_SQL);
     }
@@ -181,7 +181,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void assertExecuteUpdateWithAutoGeneratedKeys() throws SQLException {
         Statement statement = getStatement();
         when(statement.executeUpdate(DML_SQL, Statement.NO_GENERATED_KEYS)).thenReturn(10);
-        assertThat(actual.executeUpdate(getInputGroups(Collections.singletonList(statement), false), createSQLStatementContext(), null, Statement.NO_GENERATED_KEYS), is(10));
+        assertThat(actual.executeUpdate(createExecutionGroups(Collections.singletonList(statement), false), createSQLStatementContext(), null, Statement.NO_GENERATED_KEYS), is(10));
         verify(statement).executeUpdate(DML_SQL, Statement.NO_GENERATED_KEYS);
     }
     
@@ -189,7 +189,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void assertExecuteUpdateWithColumnIndexes() throws SQLException {
         Statement statement = getStatement();
         when(statement.executeUpdate(DML_SQL, new int[] {1})).thenReturn(10);
-        assertThat(actual.executeUpdate(getInputGroups(Collections.singletonList(statement), false), createSQLStatementContext(), null, new int[] {1}), is(10));
+        assertThat(actual.executeUpdate(createExecutionGroups(Collections.singletonList(statement), false), createSQLStatementContext(), null, new int[] {1}), is(10));
         verify(statement).executeUpdate(DML_SQL, new int[] {1});
     }
     
@@ -207,7 +207,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void assertExecuteUpdateWithColumnNames() throws SQLException {
         Statement statement = getStatement();
         when(statement.executeUpdate(DML_SQL, new String[] {"col"})).thenReturn(10);
-        assertThat(actual.executeUpdate(getInputGroups(Collections.singletonList(statement), false), createSQLStatementContext(), null, new String[] {"col"}), is(10));
+        assertThat(actual.executeUpdate(createExecutionGroups(Collections.singletonList(statement), false), createSQLStatementContext(), null, new String[] {"col"}), is(10));
         verify(statement).executeUpdate(DML_SQL, new String[] {"col"});
     }
     
@@ -215,7 +215,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void assertExecuteForSingleStatementSuccessWithDML() throws SQLException {
         Statement statement = getStatement();
         when(statement.execute(DML_SQL)).thenReturn(false);
-        assertFalse(actual.execute(getInputGroups(Collections.singletonList(statement), false), mock(SQLStatement.class), null));
+        assertFalse(actual.execute(createExecutionGroups(Collections.singletonList(statement), false), mock(SQLStatement.class), null));
         verify(statement).execute(DML_SQL);
     }
     
@@ -225,7 +225,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement2 = getStatement();
         when(statement1.execute(DML_SQL)).thenReturn(false);
         when(statement2.execute(DML_SQL)).thenReturn(false);
-        assertFalse(actual.execute(getInputGroups(Arrays.asList(statement1, statement2), false), mock(SQLStatement.class), null));
+        assertFalse(actual.execute(createExecutionGroups(Arrays.asList(statement1, statement2), false), mock(SQLStatement.class), null));
         verify(statement1).execute(DML_SQL);
         verify(statement2).execute(DML_SQL);
     }
@@ -235,7 +235,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = getStatement();
         SQLException ex = new SQLException("");
         when(statement.execute(DML_SQL)).thenThrow(ex);
-        assertFalse(actual.execute(getInputGroups(Collections.singletonList(statement), false), mock(SQLStatement.class), null));
+        assertFalse(actual.execute(createExecutionGroups(Collections.singletonList(statement), false), mock(SQLStatement.class), null));
         verify(statement).execute(DML_SQL);
     }
     
@@ -246,7 +246,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         SQLException ex = new SQLException("");
         when(statement1.execute(DML_SQL)).thenThrow(ex);
         when(statement2.execute(DML_SQL)).thenThrow(ex);
-        assertFalse(actual.execute(getInputGroups(Arrays.asList(statement1, statement2), false), mock(SQLStatement.class), null));
+        assertFalse(actual.execute(createExecutionGroups(Arrays.asList(statement1, statement2), false), mock(SQLStatement.class), null));
         verify(statement1).execute(DML_SQL);
         verify(statement2).execute(DML_SQL);
     }
@@ -255,7 +255,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void assertExecuteForSingleStatementWithDQL() throws SQLException {
         Statement statement = getStatement();
         when(statement.execute(DQL_SQL)).thenReturn(true);
-        assertTrue(actual.execute(getInputGroups(Collections.singletonList(statement), true), mock(SQLStatement.class), null));
+        assertTrue(actual.execute(createExecutionGroups(Collections.singletonList(statement), true), mock(SQLStatement.class), null));
         verify(statement).execute(DQL_SQL);
     }
     
@@ -265,7 +265,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement2 = getStatement();
         when(statement1.execute(DQL_SQL)).thenReturn(true);
         when(statement2.execute(DQL_SQL)).thenReturn(true);
-        assertTrue(actual.execute(getInputGroups(Arrays.asList(statement1, statement2), true), mock(SQLStatement.class), null));
+        assertTrue(actual.execute(createExecutionGroups(Arrays.asList(statement1, statement2), true), mock(SQLStatement.class), null));
         verify(statement1).execute(DQL_SQL);
         verify(statement2).execute(DQL_SQL);
     }
@@ -274,7 +274,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void assertExecuteWithAutoGeneratedKeys() throws SQLException {
         Statement statement = getStatement();
         when(statement.execute(DML_SQL, Statement.NO_GENERATED_KEYS)).thenReturn(false);
-        assertFalse(actual.execute(getInputGroups(Collections.singletonList(statement), false), mock(SQLStatement.class), null, Statement.NO_GENERATED_KEYS));
+        assertFalse(actual.execute(createExecutionGroups(Collections.singletonList(statement), false), mock(SQLStatement.class), null, Statement.NO_GENERATED_KEYS));
         verify(statement).execute(DML_SQL, Statement.NO_GENERATED_KEYS);
     }
 
@@ -282,7 +282,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void assertExecuteWithColumnIndexes() throws SQLException {
         Statement statement = getStatement();
         when(statement.execute(DML_SQL, new int[] {1})).thenReturn(false);
-        assertFalse(actual.execute(getInputGroups(Collections.singletonList(statement), false), mock(SQLStatement.class), null, new int[] {1}));
+        assertFalse(actual.execute(createExecutionGroups(Collections.singletonList(statement), false), mock(SQLStatement.class), null, new int[] {1}));
         verify(statement).execute(DML_SQL, new int[] {1});
     }
     
@@ -290,7 +290,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void assertExecuteWithColumnNames() throws SQLException {
         Statement statement = getStatement();
         when(statement.execute(DML_SQL, new String[] {"col"})).thenReturn(false);
-        assertFalse(actual.execute(getInputGroups(Collections.singletonList(statement), false), mock(SQLStatement.class), null, new String[] {"col"}));
+        assertFalse(actual.execute(createExecutionGroups(Collections.singletonList(statement), false), mock(SQLStatement.class), null, new String[] {"col"}));
         verify(statement).execute(DML_SQL, new String[] {"col"});
     }
     
@@ -301,15 +301,15 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         SQLException ex = new SQLException("");
         when(statement.execute(DML_SQL)).thenThrow(ex);
         try {
-            assertFalse(actual.execute(getInputGroups(Collections.singletonList(statement), false), mock(SQLStatement.class), null));
+            assertFalse(actual.execute(createExecutionGroups(Collections.singletonList(statement), false), mock(SQLStatement.class), null));
         } catch (final SQLException ignored) {
         }
     }
     
-    private Collection<InputGroup<StatementExecuteUnit>> getInputGroups(final List<Statement> statements, final boolean isQuery) {
-        Collection<InputGroup<StatementExecuteUnit>> result = new LinkedList<>();
+    private Collection<ExecutionGroup<StatementExecuteUnit>> createExecutionGroups(final List<Statement> statements, final boolean isQuery) {
+        Collection<ExecutionGroup<StatementExecuteUnit>> result = new LinkedList<>();
         List<StatementExecuteUnit> statementExecuteUnits = new LinkedList<>();
-        result.add(new InputGroup<>(statementExecuteUnits));
+        result.add(new ExecutionGroup<>(statementExecuteUnits));
         for (Statement each : statements) {
             statementExecuteUnits.add(
                     new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList(1))), ConnectionMode.MEMORY_STRICTLY, each));

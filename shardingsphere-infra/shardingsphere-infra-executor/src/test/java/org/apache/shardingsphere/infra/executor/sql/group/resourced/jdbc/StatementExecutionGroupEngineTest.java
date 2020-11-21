@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.group.resourced.jdbc;
 
-import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
@@ -53,9 +53,9 @@ public final class StatementExecutionGroupEngineTest {
     public void assertGetExecuteUnitGroupForOneShardMemoryStrictly() throws SQLException {
         groupEngine = new StatementExecutionGroupEngine(
                 2, mockExecutionConnection(1, ConnectionMode.MEMORY_STRICTLY), new StatementOption(true), Collections.singletonList(mock(ShardingSphereRule.class)));
-        Collection<InputGroup<StatementExecuteUnit>> actual = groupEngine.group(mock(RouteContext.class), mockShardRouteUnit(1, 1));
+        Collection<ExecutionGroup<StatementExecuteUnit>> actual = groupEngine.group(mock(RouteContext.class), mockShardRouteUnit(1, 1));
         assertThat(actual.size(), is(1));
-        for (InputGroup<StatementExecuteUnit> each : actual) {
+        for (ExecutionGroup<StatementExecuteUnit> each : actual) {
             assertThat(each.getInputs().size(), is(1));
         }
     }
@@ -64,9 +64,9 @@ public final class StatementExecutionGroupEngineTest {
     public void assertGetExecuteUnitGroupForMultiShardConnectionStrictly() throws SQLException {
         groupEngine = new StatementExecutionGroupEngine(
                 1, mockExecutionConnection(1, ConnectionMode.CONNECTION_STRICTLY), new StatementOption(true), Collections.singletonList(mock(ShardingSphereRule.class)));
-        Collection<InputGroup<StatementExecuteUnit>> actual = groupEngine.group(mock(RouteContext.class), mockShardRouteUnit(10, 2));
+        Collection<ExecutionGroup<StatementExecuteUnit>> actual = groupEngine.group(mock(RouteContext.class), mockShardRouteUnit(10, 2));
         assertThat(actual.size(), is(10));
-        for (InputGroup<StatementExecuteUnit> each : actual) {
+        for (ExecutionGroup<StatementExecuteUnit> each : actual) {
             assertThat(each.getInputs().size(), is(2));
         }
     }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.executor;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
@@ -53,10 +53,10 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     }
     
     @Override
-    public List<QueryResult> executeQuery(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) throws SQLException {
+    public List<QueryResult> executeQuery(final Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<QueryResult> sqlExecutorCallback = createDefaultSQLExecutorCallbackWithQueryResult(isExceptionThrown);
-        return getSqlExecutor().execute(inputGroups, sqlExecutorCallback);
+        return getSqlExecutor().execute(executionGroups, sqlExecutorCallback);
     }
     
     private DefaultSQLExecutorCallback<QueryResult> createDefaultSQLExecutorCallbackWithQueryResult(final boolean isExceptionThrown) {
@@ -76,11 +76,11 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     }
     
     @Override
-    public int executeUpdate(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, 
+    public int executeUpdate(final Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups, 
                              final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<Integer> sqlExecutorCallback = createDefaultSQLExecutorCallbackWithInteger(isExceptionThrown);
-        List<Integer> results = getSqlExecutor().execute(inputGroups, sqlExecutorCallback);
+        List<Integer> results = getSqlExecutor().execute(executionGroups, sqlExecutorCallback);
         refreshSchema(getMetaDataContexts().getDefaultMetaData(), sqlStatementContext.getSqlStatement(), routeUnits);
         return isNeedAccumulate(getMetaDataContexts().getDefaultMetaData().getRuleMetaData().getRules().stream().filter(
             rule -> rule instanceof DataNodeContainedRule).collect(Collectors.toList()), sqlStatementContext) ? accumulate(results) : results.get(0);
@@ -97,10 +97,10 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     }
     
     @Override
-    public boolean execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
+    public boolean execute(final Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<Boolean> sqlExecutorCallback = createDefaultSQLExecutorCallbackWithBoolean(isExceptionThrown);
-        return executeAndRefreshMetaData(inputGroups, sqlStatement, routeUnits, sqlExecutorCallback);
+        return executeAndRefreshMetaData(executionGroups, sqlStatement, routeUnits, sqlExecutorCallback);
     }
     
     private DefaultSQLExecutorCallback<Boolean> createDefaultSQLExecutorCallbackWithBoolean(final boolean isExceptionThrown) {

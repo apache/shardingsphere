@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.group.resourced;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.group.AbstractExecutionGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.ExecutionConnection;
@@ -58,8 +58,8 @@ public abstract class ResourceManagedExecutionGroupEngine
     }
     
     @Override
-    protected final List<InputGroup<U>> group(final String dataSourceName, final List<SQLUnit> sqlUnits) throws SQLException {
-        List<InputGroup<U>> result = new LinkedList<>();
+    protected final List<ExecutionGroup<U>> group(final String dataSourceName, final List<SQLUnit> sqlUnits) throws SQLException {
+        List<ExecutionGroup<U>> result = new LinkedList<>();
         int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
         List<List<SQLUnit>> sqlUnitPartitions = Lists.partition(sqlUnits, desiredPartitionSize);
         ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
@@ -71,13 +71,13 @@ public abstract class ResourceManagedExecutionGroupEngine
         return result;
     }
     
-    private InputGroup<U> createSQLExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup,
-                                                  final C connection, final ConnectionMode connectionMode) throws SQLException {
+    private ExecutionGroup<U> createSQLExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup,
+                                                      final C connection, final ConnectionMode connectionMode) throws SQLException {
         List<U> result = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
             result.add(createStorageResourceExecuteUnit(new ExecutionUnit(dataSourceName, each), executionConnection, connection, connectionMode, option));
         }
-        return new InputGroup<>(result);
+        return new ExecutionGroup<>(result);
     }
     
     protected abstract U createStorageResourceExecuteUnit(ExecutionUnit executionUnit, E executionConnection, C connection, ConnectionMode connectionMode, O option) throws SQLException;

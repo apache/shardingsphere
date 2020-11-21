@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.group;
 
-import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -52,15 +52,15 @@ public abstract class AbstractExecutionGroupEngine<T> implements ExecutionGroupE
     }
     
     @Override
-    public final Collection<InputGroup<T>> group(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits) throws SQLException {
-        Collection<InputGroup<T>> result = new LinkedList<>();
+    public final Collection<ExecutionGroup<T>> group(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits) throws SQLException {
+        Collection<ExecutionGroup<T>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : aggregateSQLUnitGroups(executionUnits).entrySet()) {
             result.addAll(group(entry.getKey(), entry.getValue()));
         }
         return decorate(routeContext, result);
     }
     
-    protected abstract List<InputGroup<T>> group(String dataSourceName, List<SQLUnit> sqlUnits) throws SQLException;
+    protected abstract List<ExecutionGroup<T>> group(String dataSourceName, List<SQLUnit> sqlUnits) throws SQLException;
     
     private Map<String, List<SQLUnit>> aggregateSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
         Map<String, List<SQLUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1);
@@ -74,8 +74,8 @@ public abstract class AbstractExecutionGroupEngine<T> implements ExecutionGroupE
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<InputGroup<T>> decorate(final RouteContext routeContext, final Collection<InputGroup<T>> inputGroups) {
-        Collection<InputGroup<T>> result = inputGroups;
+    private Collection<ExecutionGroup<T>> decorate(final RouteContext routeContext, final Collection<ExecutionGroup<T>> executionGroups) {
+        Collection<ExecutionGroup<T>> result = executionGroups;
         for (Entry<ShardingSphereRule, ExecutionGroupDecorator> each : decorators.entrySet()) {
             result = each.getValue().decorate(routeContext, each.getKey(), result);
         }
