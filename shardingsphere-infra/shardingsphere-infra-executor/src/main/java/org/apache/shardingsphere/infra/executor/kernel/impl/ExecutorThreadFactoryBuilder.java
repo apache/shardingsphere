@@ -24,29 +24,29 @@ import lombok.NoArgsConstructor;
 import java.util.concurrent.ThreadFactory;
 
 /**
- * ShardingSphere thread factory builder.
+ * Executor thread factory builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereThreadFactoryBuilder {
+public final class ExecutorThreadFactoryBuilder {
     
     private static final String NAME_FORMAT_PREFIX = "ShardingSphere-";
     
     private static final String DEFAULT_EXECUTOR_NAME_FORMAT = NAME_FORMAT_PREFIX + "%d";
     
     /**
-     * Build default ShardingSphere thread factory.
+     * Build default thread factory.
      *
-     * @return default ShardingSphere thread factory
+     * @return default thread factory
      */
     public static ThreadFactory build() {
         return new ThreadFactoryBuilder().setDaemon(true).setNameFormat(DEFAULT_EXECUTOR_NAME_FORMAT).build();
     }
     
     /**
-     * Build ShardingSphere thread factory.
+     * Build thread factory with thread name format.
      * 
      * @param nameFormat thread name format
-     * @return ShardingSphere thread factory
+     * @return thread factory
      */
     public static ThreadFactory build(final String nameFormat) {
         return new ThreadFactoryBuilder().setDaemon(true).setNameFormat(NAME_FORMAT_PREFIX + nameFormat).build();

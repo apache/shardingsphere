@@ -34,7 +34,7 @@ public final class ExecutorServiceManager {
     
     private static final String DEFAULT_NAME_FORMAT = "%d";
     
-    private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(ShardingSphereThreadFactoryBuilder.build("Executor-Engine-Closer"));
+    private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(ExecutorThreadFactoryBuilder.build("Executor-Engine-Closer"));
     
     private final ListeningExecutorService executorService;
     
@@ -48,7 +48,7 @@ public final class ExecutorServiceManager {
     }
     
     private ExecutorService getExecutorService(final int executorSize, final String nameFormat) {
-        ThreadFactory threadFactory = ShardingSphereThreadFactoryBuilder.build(nameFormat);
+        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build(nameFormat);
         return 0 == executorSize ? Executors.newCachedThreadPool(threadFactory) : Executors.newFixedThreadPool(executorSize, threadFactory);
     }
     
