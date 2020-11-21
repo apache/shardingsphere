@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.executor;
 
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.JDBCExecutionUnit;
 
 /**
  * SQL executor callback.
  *
  * @param <T> class type of return value
  */
-public interface SQLExecutorCallback<T> extends ExecutorCallback<StatementExecuteUnit, T> {
+public interface SQLExecutorCallback<T> extends ExecutorCallback<JDBCExecutionUnit, T> {
 }

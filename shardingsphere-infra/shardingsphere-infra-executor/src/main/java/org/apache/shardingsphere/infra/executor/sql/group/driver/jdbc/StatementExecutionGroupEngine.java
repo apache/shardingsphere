@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.group.driver.jdbc;
 
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.connection.JDBCExecutionConnection;
 import org.apache.shardingsphere.infra.executor.sql.group.driver.DriverExecutionGroupEngine;
@@ -33,7 +33,7 @@ import java.util.Collection;
 /**
  * Execution group engine for statement.
  */
-public final class StatementExecutionGroupEngine extends DriverExecutionGroupEngine<StatementExecuteUnit, JDBCExecutionConnection, Connection, StatementOption> {
+public final class StatementExecutionGroupEngine extends DriverExecutionGroupEngine<JDBCExecutionUnit, JDBCExecutionConnection, Connection, StatementOption> {
     
     public StatementExecutionGroupEngine(final int maxConnectionsSizePerQuery,
                                          final JDBCExecutionConnection executionConnection, final StatementOption option, final Collection<ShardingSphereRule> rules) {
@@ -41,9 +41,9 @@ public final class StatementExecutionGroupEngine extends DriverExecutionGroupEng
     }
     
     @Override
-    protected StatementExecuteUnit createStorageResourceExecuteUnit(final ExecutionUnit executionUnit, final JDBCExecutionConnection executionConnection, final Connection connection, 
-                                                                    final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
-        return new StatementExecuteUnit(executionUnit, connectionMode, createStatement(executionConnection, connection, connectionMode, option));
+    protected JDBCExecutionUnit createDriverSQLExecutionUnit(final ExecutionUnit executionUnit, final JDBCExecutionConnection executionConnection, final Connection connection,
+                                                             final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
+        return new JDBCExecutionUnit(executionUnit, connectionMode, createStatement(executionConnection, connection, connectionMode, option));
     }
     
     private Statement createStatement(final JDBCExecutionConnection executionConnection, final Connection connection,

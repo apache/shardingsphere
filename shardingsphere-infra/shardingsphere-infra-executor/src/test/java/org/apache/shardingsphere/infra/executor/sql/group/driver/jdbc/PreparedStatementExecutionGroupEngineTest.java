@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.connection.JDBCExecutionConnection;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -50,23 +50,23 @@ public final class PreparedStatementExecutionGroupEngineTest {
     private PreparedStatementExecutionGroupEngine groupEngine;
     
     @Test
-    public void assertGetExecuteUnitGroupForOneShardMemoryStrictly() throws SQLException {
+    public void assertGetExecutionUnitGroupForOneShardMemoryStrictly() throws SQLException {
         groupEngine = new PreparedStatementExecutionGroupEngine(
                 2, mockExecutionConnection(1, ConnectionMode.MEMORY_STRICTLY), new StatementOption(true), Collections.singletonList(mock(ShardingSphereRule.class)));
-        Collection<ExecutionGroup<StatementExecuteUnit>> actual = groupEngine.group(mock(RouteContext.class), mockShardRouteUnit(1, 1));
+        Collection<ExecutionGroup<JDBCExecutionUnit>> actual = groupEngine.group(mock(RouteContext.class), mockShardRouteUnit(1, 1));
         assertThat(actual.size(), is(1));
-        for (ExecutionGroup<StatementExecuteUnit> each : actual) {
+        for (ExecutionGroup<JDBCExecutionUnit> each : actual) {
             assertThat(each.getInputs().size(), is(1));
         }
     }
     
     @Test
-    public void assertGetExecuteUnitGroupForMultiShardConnectionStrictly() throws SQLException {
+    public void assertGetExecutionUnitGroupForMultiShardConnectionStrictly() throws SQLException {
         groupEngine = new PreparedStatementExecutionGroupEngine(
                 1, mockExecutionConnection(1, ConnectionMode.CONNECTION_STRICTLY), new StatementOption(true), Collections.singletonList(mock(ShardingSphereRule.class)));
-        Collection<ExecutionGroup<StatementExecuteUnit>> actual = groupEngine.group(mock(RouteContext.class), mockShardRouteUnit(10, 2));
+        Collection<ExecutionGroup<JDBCExecutionUnit>> actual = groupEngine.group(mock(RouteContext.class), mockShardRouteUnit(10, 2));
         assertThat(actual.size(), is(10));
-        for (ExecutionGroup<StatementExecuteUnit> each : actual) {
+        for (ExecutionGroup<JDBCExecutionUnit> each : actual) {
             assertThat(each.getInputs().size(), is(2));
         }
     }

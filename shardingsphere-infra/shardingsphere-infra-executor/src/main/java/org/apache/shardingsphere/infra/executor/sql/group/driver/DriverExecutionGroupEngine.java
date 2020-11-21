@@ -67,10 +67,10 @@ public abstract class DriverExecutionGroupEngine
     private ExecutionGroup<T> createExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnits, final C connection, final ConnectionMode connectionMode) throws SQLException {
         List<T> result = new LinkedList<>();
         for (SQLUnit each : sqlUnits) {
-            result.add(createStorageResourceExecuteUnit(new ExecutionUnit(dataSourceName, each), executionConnection, connection, connectionMode, option));
+            result.add(createDriverSQLExecutionUnit(new ExecutionUnit(dataSourceName, each), executionConnection, connection, connectionMode, option));
         }
         return new ExecutionGroup<>(result);
     }
     
-    protected abstract T createStorageResourceExecuteUnit(ExecutionUnit executionUnit, E executionConnection, C connection, ConnectionMode connectionMode, O option) throws SQLException;
+    protected abstract T createDriverSQLExecutionUnit(ExecutionUnit executionUnit, E executionConnection, C connection, ConnectionMode connectionMode, O option) throws SQLException;
 }

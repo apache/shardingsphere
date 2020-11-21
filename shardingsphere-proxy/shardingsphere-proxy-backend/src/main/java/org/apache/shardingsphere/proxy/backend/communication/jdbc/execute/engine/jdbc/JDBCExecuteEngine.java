@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.result.E
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.executor.sql.group.raw.RawExecutionGroupEngine;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.StatementOption;
@@ -133,11 +133,11 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<ExecutionGroup<StatementExecuteUnit>> createExecutionGroups(final Collection<ExecutionUnit> executionUnits, final int maxConnectionsSizePerQuery, 
-                                                                                   final boolean isReturnGeneratedKeys, final RouteContext routeContext) throws SQLException {
+    private Collection<ExecutionGroup<JDBCExecutionUnit>> createExecutionGroups(final Collection<ExecutionUnit> executionUnits, final int maxConnectionsSizePerQuery,
+                                                                                final boolean isReturnGeneratedKeys, final RouteContext routeContext) throws SQLException {
         Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getRuleMetaData().getRules();
         ExecutionGroupEngine groupEngine = accessor.getExecutionGroupEngine(backendConnection, maxConnectionsSizePerQuery, new StatementOption(isReturnGeneratedKeys), rules);
-        return (Collection<ExecutionGroup<StatementExecuteUnit>>) groupEngine.group(routeContext, executionUnits);
+        return (Collection<ExecutionGroup<JDBCExecutionUnit>>) groupEngine.group(routeContext, executionUnits);
     }
     
     private Collection<ExecuteResult> executeWithUnmanagedResource(final ExecutionContext executionContext, final int maxConnectionsSizePerQuery) throws SQLException {

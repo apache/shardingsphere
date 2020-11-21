@@ -26,11 +26,11 @@ import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import java.sql.Statement;
 
 /**
- * Execute unit with JDBC statement.
+ * JDBC execution unit.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StatementExecuteUnit implements DriverExecutionUnit<Statement> {
+public final class JDBCExecutionUnit implements DriverExecutionUnit<Statement> {
     
     private final ExecutionUnit executionUnit;
     

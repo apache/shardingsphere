@@ -48,7 +48,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawSQLExecutionU
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.RawJDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.group.raw.RawExecutionGroupEngine;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.infra.executor.sql.group.driver.jdbc.PreparedStatementExecutionGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.StatementOption;
@@ -157,7 +157,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             executionContext = createExecutionContext();
             List<QueryResult> queryResults;
             if (ExecutorConstant.MANAGED_RESOURCE) {
-                Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups = createExecutionGroups();
+                Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
                 cacheStatements(executionGroups);
                 reply();
                 queryResults = preparedStatementExecutor.executeQuery(executionGroups);
@@ -179,7 +179,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             clearPrevious();
             executionContext = createExecutionContext();
             if (ExecutorConstant.MANAGED_RESOURCE) {
-                Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups = createExecutionGroups();
+                Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
                 cacheStatements(executionGroups);
                 reply();
                 return preparedStatementExecutor.executeUpdate(executionGroups, executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
@@ -197,7 +197,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             clearPrevious();
             executionContext = createExecutionContext();
             if (ExecutorConstant.MANAGED_RESOURCE) {
-                Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups = createExecutionGroups();
+                Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
                 cacheStatements(executionGroups);
                 reply();
                 return preparedStatementExecutor.execute(executionGroups, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getRouteContext().getRouteUnits());
@@ -210,7 +210,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
     }
     
-    private Collection<ExecutionGroup<StatementExecuteUnit>> createExecutionGroups() throws SQLException {
+    private Collection<ExecutionGroup<JDBCExecutionUnit>> createExecutionGroups() throws SQLException {
         int maxConnectionsSizePerQuery = metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new PreparedStatementExecutionGroupEngine(maxConnectionsSizePerQuery, connection, statementOption,
                 metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules()).group(executionContext.getRouteContext(), executionContext.getExecutionUnits());
@@ -287,9 +287,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         replayMethodForStatements();
     }
     
-    private void cacheStatements(final Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups) {
-        for (ExecutionGroup<StatementExecuteUnit> each : executionGroups) {
-            statements.addAll(each.getInputs().stream().map(statementExecuteUnit -> (PreparedStatement) statementExecuteUnit.getStorageResource()).collect(Collectors.toList()));
+    private void cacheStatements(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) {
+        for (ExecutionGroup<JDBCExecutionUnit> each : executionGroups) {
+            statements.addAll(each.getInputs().stream().map(jdbcExecutionUnit -> (PreparedStatement) jdbcExecutionUnit.getStorageResource()).collect(Collectors.toList()));
             parameterSets.addAll(each.getInputs().stream().map(input -> input.getExecutionUnit().getSqlUnit().getParameters()).collect(Collectors.toList()));
         }
     }
