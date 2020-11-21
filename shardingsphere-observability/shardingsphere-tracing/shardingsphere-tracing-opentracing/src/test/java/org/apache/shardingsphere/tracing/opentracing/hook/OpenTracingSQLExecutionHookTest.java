@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.executor.sql.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorDataMap;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;

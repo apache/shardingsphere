@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor;
 
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorCallback;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
 
 /**

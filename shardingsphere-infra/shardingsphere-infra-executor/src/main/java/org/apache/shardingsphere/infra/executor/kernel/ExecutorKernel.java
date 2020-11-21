@@ -20,6 +20,9 @@ package org.apache.shardingsphere.infra.executor.kernel;
 import com.google.common.util.concurrent.ListenableFuture;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
 
 import java.sql.SQLException;

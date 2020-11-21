@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.kernel;
 
 import org.apache.shardingsphere.infra.executor.kernel.fixture.ExecutorCallbackFixture;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
