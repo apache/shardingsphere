@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.resourced.jdbc.executor;
+package org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.executor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

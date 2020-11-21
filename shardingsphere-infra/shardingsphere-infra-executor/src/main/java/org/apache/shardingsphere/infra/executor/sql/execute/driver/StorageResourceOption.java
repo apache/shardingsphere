@@ -15,16 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.resourced.jdbc.connection;
-
-import org.apache.shardingsphere.infra.executor.sql.execute.resourced.ExecutionConnection;
-import org.apache.shardingsphere.infra.executor.sql.execute.resourced.jdbc.StatementOption;
-
-import java.sql.Connection;
-import java.sql.Statement;
+package org.apache.shardingsphere.infra.executor.sql.execute.driver;
 
 /**
- * Execution connection for JDBC.
+ * Storage resource option.
  */
-public interface JDBCExecutionConnection extends ExecutionConnection<Connection, Statement, StatementOption> {
+public interface StorageResourceOption {
 }

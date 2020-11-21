@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawSQLExecuteUni
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.result.update.ExecuteUpdateResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.resourced.jdbc.executor.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.executor.ExecutorExceptionHandler;
 
 import java.sql.SQLException;
 import java.util.Collection;
