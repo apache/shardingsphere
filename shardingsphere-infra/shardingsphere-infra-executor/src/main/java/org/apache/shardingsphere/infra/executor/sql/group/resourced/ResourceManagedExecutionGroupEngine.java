@@ -35,13 +35,13 @@ import java.util.List;
 /**
  * Resource managed execution group engine.
  * 
- * @param <U> type of storage resource execute unit
+ * @param <T> type of storage resource execute unit
  * @param <E> type of execution connection
  * @param <C> type of resource connection
  * @param <O> type of storage resource option
  */
 public abstract class ResourceManagedExecutionGroupEngine
-        <U extends ResourceManagedExecuteUnit, E extends ExecutionConnection<C, ?, O>, C, O extends StorageResourceOption> extends AbstractExecutionGroupEngine<U> {
+        <T extends ResourceManagedExecuteUnit<?>, E extends ExecutionConnection<C, ?, O>, C, O extends StorageResourceOption> extends AbstractExecutionGroupEngine<T> {
     
     private final E executionConnection;
     
@@ -54,8 +54,8 @@ public abstract class ResourceManagedExecutionGroupEngine
     }
     
     @Override
-    protected final List<ExecutionGroup<U>> group(final String dataSourceName, final List<List<SQLUnit>> sqlUnitGroups, final ConnectionMode connectionMode) throws SQLException {
-        List<ExecutionGroup<U>> result = new LinkedList<>();
+    protected final List<ExecutionGroup<T>> group(final String dataSourceName, final List<List<SQLUnit>> sqlUnitGroups, final ConnectionMode connectionMode) throws SQLException {
+        List<ExecutionGroup<T>> result = new LinkedList<>();
         List<C> connections = executionConnection.getConnections(dataSourceName, sqlUnitGroups.size(), connectionMode);
         int count = 0;
         for (List<SQLUnit> each : sqlUnitGroups) {
@@ -64,13 +64,13 @@ public abstract class ResourceManagedExecutionGroupEngine
         return result;
     }
     
-    private ExecutionGroup<U> createExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final C connection, final ConnectionMode connectionMode) throws SQLException {
-        List<U> result = new LinkedList<>();
-        for (SQLUnit each : sqlUnitGroup) {
+    private ExecutionGroup<T> createExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnits, final C connection, final ConnectionMode connectionMode) throws SQLException {
+        List<T> result = new LinkedList<>();
+        for (SQLUnit each : sqlUnits) {
             result.add(createStorageResourceExecuteUnit(new ExecutionUnit(dataSourceName, each), executionConnection, connection, connectionMode, option));
         }
         return new ExecutionGroup<>(result);
     }
     
-    protected abstract U createStorageResourceExecuteUnit(ExecutionUnit executionUnit, E executionConnection, C connection, ConnectionMode connectionMode, O option) throws SQLException;
+    protected abstract T createStorageResourceExecuteUnit(ExecutionUnit executionUnit, E executionConnection, C connection, ConnectionMode connectionMode, O option) throws SQLException;
 }
