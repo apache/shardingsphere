@@ -42,12 +42,12 @@ public final class RawExecutionGroupEngine extends AbstractExecutionGroupEngine<
     protected List<ExecutionGroup<RawSQLExecuteUnit>> group(final String dataSourceName, final List<List<SQLUnit>> sqlUnitGroups, final ConnectionMode connectionMode) {
         List<ExecutionGroup<RawSQLExecuteUnit>> result = new LinkedList<>();
         for (List<SQLUnit> each : sqlUnitGroups) {
-            result.add(createSQLExecutionGroup(dataSourceName, each, connectionMode));
+            result.add(createExecutionGroup(dataSourceName, each, connectionMode));
         }
         return result;
     }
     
-    private ExecutionGroup<RawSQLExecuteUnit> createSQLExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final ConnectionMode connectionMode) {
+    private ExecutionGroup<RawSQLExecuteUnit> createExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final ConnectionMode connectionMode) {
         List<RawSQLExecuteUnit> rawSQLExecuteUnits = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
             rawSQLExecuteUnits.add(new RawSQLExecuteUnit(new ExecutionUnit(dataSourceName, each), connectionMode));

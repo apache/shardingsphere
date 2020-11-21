@@ -59,13 +59,12 @@ public abstract class ResourceManagedExecutionGroupEngine
         List<C> connections = executionConnection.getConnections(dataSourceName, sqlUnitGroups.size(), connectionMode);
         int count = 0;
         for (List<SQLUnit> each : sqlUnitGroups) {
-            result.add(createSQLExecutionGroup(dataSourceName, each, connections.get(count++), connectionMode));
+            result.add(createExecutionGroup(dataSourceName, each, connections.get(count++), connectionMode));
         }
         return result;
     }
     
-    private ExecutionGroup<U> createSQLExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup,
-                                                      final C connection, final ConnectionMode connectionMode) throws SQLException {
+    private ExecutionGroup<U> createExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final C connection, final ConnectionMode connectionMode) throws SQLException {
         List<U> result = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
             result.add(createStorageResourceExecuteUnit(new ExecutionUnit(dataSourceName, each), executionConnection, connection, connectionMode, option));
