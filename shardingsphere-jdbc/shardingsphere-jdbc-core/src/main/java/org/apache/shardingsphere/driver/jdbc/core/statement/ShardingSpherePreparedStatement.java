@@ -213,13 +213,13 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private Collection<InputGroup<StatementExecuteUnit>> getInputGroups() throws SQLException {
         int maxConnectionsSizePerQuery = metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, connection, statementOption,
-                metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules()).generate(executionContext.getRouteContext(), executionContext.getExecutionUnits());
+                metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules()).group(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
     
     private Collection<InputGroup<RawSQLExecuteUnit>> getRawInputGroups() throws SQLException {
         int maxConnectionsSizePerQuery = metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new RawExecuteGroupEngine(maxConnectionsSizePerQuery, metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules())
-                .generate(executionContext.getRouteContext(), executionContext.getExecutionUnits());
+                .group(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
     
     @Override
@@ -358,7 +358,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         PreparedStatementExecuteGroupEngine executeGroupEngine = new PreparedStatementExecuteGroupEngine(
                 metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 connection, statementOption, metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules());
-        batchPreparedStatementExecutor.init(executeGroupEngine.generate(executionContext.getRouteContext(),
+        batchPreparedStatementExecutor.init(executeGroupEngine.group(executionContext.getRouteContext(),
                 new ArrayList<>(batchPreparedStatementExecutor.getBatchExecutionUnits()).stream().map(BatchExecutionUnit::getExecutionUnit).collect(Collectors.toList())));
         setBatchParametersForStatements();
     }

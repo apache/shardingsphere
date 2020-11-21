@@ -315,13 +315,13 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private Collection<InputGroup<StatementExecuteUnit>> getInputGroups() throws SQLException {
         int maxConnectionsSizePerQuery = metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, connection, statementOption,
-                metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules()).generate(executionContext.getRouteContext(), executionContext.getExecutionUnits());
+                metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules()).group(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
     
     private Collection<InputGroup<RawSQLExecuteUnit>> getRawInputGroups() throws SQLException {
         int maxConnectionsSizePerQuery = metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new RawExecuteGroupEngine(maxConnectionsSizePerQuery, metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules())
-                .generate(executionContext.getRouteContext(), executionContext.getExecutionUnits());
+                .group(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
     
     private void cacheStatements(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) {

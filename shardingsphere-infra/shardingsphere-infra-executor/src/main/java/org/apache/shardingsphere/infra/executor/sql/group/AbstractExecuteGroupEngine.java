@@ -52,7 +52,7 @@ public abstract class AbstractExecuteGroupEngine<T> implements ExecuteGroupEngin
     }
     
     @Override
-    public final Collection<InputGroup<T>> generate(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits) throws SQLException {
+    public final Collection<InputGroup<T>> group(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits) throws SQLException {
         Collection<InputGroup<T>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : aggregateSQLUnitGroups(executionUnits).entrySet()) {
             result.addAll(generateSQLExecuteGroups(entry.getKey(), entry.getValue()));
