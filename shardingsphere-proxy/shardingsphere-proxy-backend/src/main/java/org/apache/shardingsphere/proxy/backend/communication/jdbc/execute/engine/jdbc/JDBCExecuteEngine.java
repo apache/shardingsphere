@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.executor.sql.group.raw.RawExecutionGroupE
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.executor.SQLExecutor;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.executor.sql.group.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;

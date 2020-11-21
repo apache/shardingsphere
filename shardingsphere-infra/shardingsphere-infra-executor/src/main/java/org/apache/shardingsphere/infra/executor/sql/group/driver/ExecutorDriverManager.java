@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.driver;
+package org.apache.shardingsphere.infra.executor.sql.group.driver;
 
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 
