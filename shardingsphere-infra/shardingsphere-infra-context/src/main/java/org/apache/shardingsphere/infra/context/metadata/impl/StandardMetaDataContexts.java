@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.HashMap;
@@ -41,7 +41,7 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     
     private final Map<String, ShardingSphereMetaData> metaDataMap;
     
-    private final ExecutorKernel executorKernel;
+    private final ExecutorEngine executorEngine;
     
     private final Authentication authentication;
     
@@ -61,6 +61,6 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     
     @Override
     public void close() {
-        executorKernel.close();
+        executorEngine.close();
     }
 }

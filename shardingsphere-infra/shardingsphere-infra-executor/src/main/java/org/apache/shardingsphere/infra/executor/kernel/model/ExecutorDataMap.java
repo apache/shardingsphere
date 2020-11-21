@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.kernel;
+package org.apache.shardingsphere.infra.executor.kernel.model;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

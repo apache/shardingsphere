@@ -20,7 +20,10 @@ package org.apache.shardingsphere.infra.executor.kernel;
 import com.google.common.util.concurrent.ListenableFuture;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.executor.kernel.impl.ShardingSphereExecutorService;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
+import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -32,15 +35,15 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Executor kernel.
+ * Executor engine.
  */
 @Getter
-public final class ExecutorKernel implements AutoCloseable {
+public final class ExecutorEngine implements AutoCloseable {
     
-    private final ShardingSphereExecutorService executorService;
+    private final ExecutorServiceManager executorServiceManager;
     
-    public ExecutorKernel(final int executorSize) {
-        executorService = new ShardingSphereExecutorService(executorSize);
+    public ExecutorEngine(final int executorSize) {
+        executorServiceManager = new ExecutorServiceManager(executorSize);
     }
     
     /**
@@ -106,7 +109,7 @@ public final class ExecutorKernel implements AutoCloseable {
     
     private <I, O> ListenableFuture<Collection<O>> asyncExecute(final ExecutionGroup<I> executionGroup, final ExecutorCallback<I, O> callback) {
         Map<String, Object> dataMap = ExecutorDataMap.getValue();
-        return executorService.getExecutorService().submit(() -> callback.execute(executionGroup.getInputs(), false, dataMap));
+        return executorServiceManager.getExecutorService().submit(() -> callback.execute(executionGroup.getInputs(), false, dataMap));
     }
     
     private <O> List<O> getGroupResults(final Collection<O> firstResults, final Collection<ListenableFuture<Collection<O>>> restFutures) throws SQLException {
@@ -130,6 +133,6 @@ public final class ExecutorKernel implements AutoCloseable {
     
     @Override
     public void close() {
-        executorService.close();
+        executorServiceManager.close();
     }
 }

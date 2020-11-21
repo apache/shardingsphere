@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.kernel;
+package org.apache.shardingsphere.infra.executor.kernel.model;
 
 import java.sql.SQLException;
 import java.util.Collection;

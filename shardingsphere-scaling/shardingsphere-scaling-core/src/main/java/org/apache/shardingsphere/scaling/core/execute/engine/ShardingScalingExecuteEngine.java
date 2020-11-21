@@ -24,7 +24,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.kernel.impl.ShardingSphereThreadFactoryBuilder;
+import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.scaling.core.execute.executor.ShardingScalingExecutor;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -50,7 +50,7 @@ public final class ShardingScalingExecuteEngine {
      * @return sharding scaling execute engine instance
      */
     public static ShardingScalingExecuteEngine newCachedThreadInstance() {
-        return new ShardingScalingExecuteEngine(MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(ShardingSphereThreadFactoryBuilder.build(THREAD_NAME_FORMAT))));
+        return new ShardingScalingExecuteEngine(MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(ExecutorThreadFactoryBuilder.build(THREAD_NAME_FORMAT))));
     }
     
     /**
@@ -60,7 +60,7 @@ public final class ShardingScalingExecuteEngine {
      * @return sharding scaling execute engine instance
      */
     public static ShardingScalingExecuteEngine newFixedThreadInstance(final int threadNumber) {
-        return new ShardingScalingExecuteEngine(MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(threadNumber, ShardingSphereThreadFactoryBuilder.build(THREAD_NAME_FORMAT))));
+        return new ShardingScalingExecuteEngine(MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(threadNumber, ExecutorThreadFactoryBuilder.build(THREAD_NAME_FORMAT))));
     }
     
     /**

@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -106,7 +106,7 @@ public final class GovernanceMetaDataContextsTest {
         when(governanceFacade.getConfigCenter()).thenReturn(configCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
         governanceMetaDataContexts = new GovernanceMetaDataContexts(
-                new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorKernel.class), authentication, props, databaseType), governanceFacade);
+                new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), authentication, props, databaseType), governanceFacade);
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {

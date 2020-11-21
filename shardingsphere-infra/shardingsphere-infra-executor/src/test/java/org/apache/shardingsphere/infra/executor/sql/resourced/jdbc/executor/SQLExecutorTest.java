@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor;
 
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -36,7 +36,7 @@ public final class SQLExecutorTest {
     
     @Test
     public void assertExecute() throws SQLException {
-        ExecutorKernel kernel = mock(ExecutorKernel.class);
+        ExecutorEngine kernel = mock(ExecutorEngine.class);
         when(kernel.execute(anyCollection(), any(), any(), anyBoolean())).thenReturn(Collections.singletonList("test"));
         SQLExecutor sqlExecutor = new SQLExecutor(kernel, false);
         List<?> actual1 = sqlExecutor.execute(Collections.emptyList(), null);
@@ -48,7 +48,7 @@ public final class SQLExecutorTest {
     @Test
     public void assertExecuteSQLException() {
         try {
-            ExecutorKernel kernel = mock(ExecutorKernel.class);
+            ExecutorEngine kernel = mock(ExecutorEngine.class);
             when(kernel.execute(anyCollection(), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
             SQLExecutor sqlExecutor = new SQLExecutor(kernel, false);
             sqlExecutor.execute(Collections.emptyList(), null);
@@ -59,7 +59,7 @@ public final class SQLExecutorTest {
     
     @Test
     public void assertExecuteNotThrownSQLException() throws SQLException {
-        ExecutorKernel kernel = mock(ExecutorKernel.class);
+        ExecutorEngine kernel = mock(ExecutorEngine.class);
         when(kernel.execute(anyCollection(), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
         SQLExecutor sqlExecutor = new SQLExecutor(kernel, false);
         ExecutorExceptionHandler.setExceptionThrown(false);

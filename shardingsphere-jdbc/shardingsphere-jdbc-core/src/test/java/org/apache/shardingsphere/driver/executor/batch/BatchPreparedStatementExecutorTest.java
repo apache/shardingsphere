@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExec
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutionGroup;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.junit.Test;
 import org.mockito.Mock;
 
@@ -60,7 +60,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     @Override
     public void setUp() throws SQLException {
         super.setUp();
-        actual = spy(new BatchPreparedStatementExecutor(getConnection().getMetaDataContexts(), new SQLExecutor(getExecutorKernel(), false)));
+        actual = spy(new BatchPreparedStatementExecutor(getConnection().getMetaDataContexts(), new SQLExecutor(getExecutorEngine(), false)));
         when(sqlStatementContext.getTablesContext()).thenReturn(mock(TablesContext.class));
     }
     

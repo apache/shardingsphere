@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.group;
 
-import org.apache.shardingsphere.infra.executor.kernel.ExecutionGroup;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 
