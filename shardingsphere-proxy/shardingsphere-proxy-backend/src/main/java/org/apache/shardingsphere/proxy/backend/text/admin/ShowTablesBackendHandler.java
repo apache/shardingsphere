@@ -75,7 +75,7 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
     }
     
     @Override
-    public List<Object> getRowData() throws SQLException {
+    public Collection<Object> getRowData() throws SQLException {
         List<Object> result = new ArrayList<>(queryResponse.getQueryHeaders().size());
         for (int columnIndex = 1; columnIndex <= queryResponse.getQueryHeaders().size(); columnIndex++) {
             result.add(queryResponse.getQueryResults().get(0).getValue(columnIndex, Object.class));
