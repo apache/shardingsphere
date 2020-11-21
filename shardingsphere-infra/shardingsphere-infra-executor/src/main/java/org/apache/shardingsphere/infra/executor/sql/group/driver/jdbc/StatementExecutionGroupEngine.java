@@ -34,8 +34,8 @@ import java.util.Collection;
 public final class StatementExecutionGroupEngine extends DriverExecutionGroupEngine<JDBCExecutionUnit, ExecutorJDBCManager, Connection, StatementOption> {
     
     public StatementExecutionGroupEngine(final int maxConnectionsSizePerQuery,
-                                         final ExecutorJDBCManager executionConnection, final StatementOption option, final Collection<ShardingSphereRule> rules) {
-        super(maxConnectionsSizePerQuery, executionConnection, option, rules);
+                                         final ExecutorJDBCManager executorJDBCManager, final StatementOption option, final Collection<ShardingSphereRule> rules) {
+        super(maxConnectionsSizePerQuery, executorJDBCManager, option, rules);
     }
     
     @Override
@@ -44,8 +44,8 @@ public final class StatementExecutionGroupEngine extends DriverExecutionGroupEng
         return new JDBCExecutionUnit(executionUnit, connectionMode, createStatement(executorManager, connection, connectionMode, option));
     }
     
-    private Statement createStatement(final ExecutorJDBCManager executionConnection, final Connection connection,
+    private Statement createStatement(final ExecutorJDBCManager executorJDBCManager, final Connection connection,
                                       final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
-        return executionConnection.createStorageResource(connection, connectionMode, option);
+        return executorJDBCManager.createStorageResource(connection, connectionMode, option);
     }
 }

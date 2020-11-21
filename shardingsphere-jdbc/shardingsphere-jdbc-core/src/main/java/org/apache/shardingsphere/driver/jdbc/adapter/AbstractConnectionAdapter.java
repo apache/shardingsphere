@@ -17,44 +17,25 @@
 
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.group.driver.jdbc.ExecutorJDBCManager;
-import org.apache.shardingsphere.infra.executor.sql.group.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.hook.RootInvokeHook;
 import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.replicaquery.route.engine.impl.PrimaryVisitedManager;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 /**
  * Adapter for {@code Connection}.
  */
-public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection implements ExecutorJDBCManager {
-    
-    @Getter
-    private final Map<String, DataSource> dataSourceMap;
-    
-    @Getter
-    private final MetaDataContexts metaDataContexts;
+public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
     
     @Getter
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
@@ -62,11 +43,10 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Getter
     private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
+    @Getter
     private final ForceExecuteTemplate<Entry<String, Connection>> forceExecuteTemplateForClose = new ForceExecuteTemplate<>();
     
     private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
-    
-    private boolean autoCommit = true;
     
     private boolean readOnly;
     
@@ -74,123 +54,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
     
-    protected AbstractConnectionAdapter(final Map<String, DataSource> dataSourceMap, final MetaDataContexts metaDataContexts) {
-        this.dataSourceMap = dataSourceMap;
-        this.metaDataContexts = metaDataContexts;
+    protected AbstractConnectionAdapter() {
         rootInvokeHook.start();
-    }
-    
-    /**
-     * Get database connection.
-     *
-     * @param dataSourceName data source name
-     * @return database connection
-     * @throws SQLException SQL exception
-     */
-    public final Connection getConnection(final String dataSourceName) throws SQLException {
-        return getConnections(dataSourceName, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
-    }
-    
-    @Override
-    public final List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        DataSource dataSource = dataSourceMap.get(dataSourceName);
-        Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
-        Collection<Connection> connections;
-        synchronized (cachedConnections) {
-            connections = cachedConnections.get(dataSourceName);
-        }
-        List<Connection> result;
-        if (connections.size() >= connectionSize) {
-            result = new ArrayList<>(connections).subList(0, connectionSize);
-        } else if (!connections.isEmpty()) {
-            result = new ArrayList<>(connectionSize);
-            result.addAll(connections);
-            List<Connection> newConnections = createConnections(dataSourceName, dataSource, connectionSize - connections.size(), connectionMode);
-            result.addAll(newConnections);
-            synchronized (cachedConnections) {
-                cachedConnections.putAll(dataSourceName, newConnections);
-            }
-        } else {
-            result = new ArrayList<>(createConnections(dataSourceName, dataSource, connectionSize, connectionMode));
-            synchronized (cachedConnections) {
-                cachedConnections.putAll(dataSourceName, result);
-            }
-        }
-        return result;
-    }
-    
-    @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
-    private List<Connection> createConnections(final String dataSourceName, final DataSource dataSource, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        if (1 == connectionSize) {
-            Connection connection = createConnection(dataSourceName, dataSource);
-            replayMethodsInvocation(connection);
-            return Collections.singletonList(connection);
-        }
-        if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
-            return createConnections(dataSourceName, dataSource, connectionSize);
-        }
-        synchronized (dataSource) {
-            return createConnections(dataSourceName, dataSource, connectionSize);
-        }
-    }
-    
-    private List<Connection> createConnections(final String dataSourceName, final DataSource dataSource, final int connectionSize) throws SQLException {
-        List<Connection> result = new ArrayList<>(connectionSize);
-        for (int i = 0; i < connectionSize; i++) {
-            try {
-                Connection connection = createConnection(dataSourceName, dataSource);
-                replayMethodsInvocation(connection);
-                result.add(connection);
-            } catch (final SQLException ex) {
-                for (Connection each : result) {
-                    each.close();
-                }
-                throw new SQLException(String.format("Can not get %d connections one time, partition succeed connection(%d) have released!", connectionSize, result.size()), ex);
-            }
-        }
-        return result;
-    }
-    
-    protected abstract Connection createConnection(String dataSourceName, DataSource dataSource) throws SQLException;
-    
-    @SuppressWarnings("MagicConstant")
-    @Override
-    public final Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
-        return connection.createStatement(option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
-    }
-
-    @SuppressWarnings("MagicConstant")
-    @Override
-    public final PreparedStatement createStorageResource(final String sql, final List<Object> parameters, 
-                                                         final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
-        return option.isReturnGeneratedKeys() ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-                : connection.prepareStatement(sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
-    }
-    
-    @Override
-    public final boolean getAutoCommit() {
-        return autoCommit;
-    }
-    
-    @Override
-    public void setAutoCommit(final boolean autoCommit) throws SQLException {
-        this.autoCommit = autoCommit;
-        setAutoCommitForLocalTransaction(autoCommit);
-    }
-    
-    private void setAutoCommitForLocalTransaction(final boolean autoCommit) throws SQLException {
-        recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
-        forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setAutoCommit(autoCommit));
-    }
-    
-    @Override
-    public void commit() throws SQLException {
-        forceExecuteTemplate.execute(cachedConnections.values(), Connection::commit);
-    }
-    
-    @Override
-    public void rollback() throws SQLException {
-        forceExecuteTemplate.execute(cachedConnections.values(), Connection::rollback);
     }
     
     @Override
