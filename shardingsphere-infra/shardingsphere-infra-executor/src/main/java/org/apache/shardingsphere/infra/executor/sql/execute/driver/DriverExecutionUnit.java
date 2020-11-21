@@ -20,11 +20,11 @@ package org.apache.shardingsphere.infra.executor.sql.execute.driver;
 import org.apache.shardingsphere.infra.executor.sql.execute.SQLExecutionUnit;
 
 /**
- * Resource managed execute unit.
+ * Driver execution unit.
  * 
  * @param <T> type of storage resource
  */
-public interface ResourceManagedExecuteUnit<T> extends SQLExecutionUnit {
+public interface DriverExecutionUnit<T> extends SQLExecutionUnit {
     
     /**
      * Get storage resource.

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.group.AbstractExecutionGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.ExecutionConnection;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.ResourceManagedExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.DriverExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.StorageResourceOption;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
@@ -41,7 +41,7 @@ import java.util.List;
  * @param <O> type of storage resource option
  */
 public abstract class DriverExecutionGroupEngine
-        <T extends ResourceManagedExecuteUnit<?>, E extends ExecutionConnection<C, ?, O>, C, O extends StorageResourceOption> extends AbstractExecutionGroupEngine<T> {
+        <T extends DriverExecutionUnit<?>, E extends ExecutionConnection<C, ?, O>, C, O extends StorageResourceOption> extends AbstractExecutionGroupEngine<T> {
     
     private final E executionConnection;
     

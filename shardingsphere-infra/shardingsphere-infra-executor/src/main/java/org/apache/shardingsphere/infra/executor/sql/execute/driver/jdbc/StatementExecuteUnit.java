@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.ResourceManagedExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.DriverExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 
 import java.sql.Statement;
@@ -30,7 +30,7 @@ import java.sql.Statement;
  */
 @RequiredArgsConstructor
 @Getter
-public final class StatementExecuteUnit implements ResourceManagedExecuteUnit<Statement> {
+public final class StatementExecuteUnit implements DriverExecutionUnit<Statement> {
     
     private final ExecutionUnit executionUnit;
     
