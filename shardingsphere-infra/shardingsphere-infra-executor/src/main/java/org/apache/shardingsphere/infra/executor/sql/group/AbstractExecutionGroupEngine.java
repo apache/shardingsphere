@@ -60,16 +60,20 @@ public abstract class AbstractExecutionGroupEngine<T> implements ExecutionGroupE
     public final Collection<ExecutionGroup<T>> group(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits) throws SQLException {
         Collection<ExecutionGroup<T>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : aggregateSQLUnitGroups(executionUnits).entrySet()) {
+            String dataSourceName = entry.getKey();
             List<SQLUnit> sqlUnits = entry.getValue();
-            int desiredPartitionSize = Math.max(
-                    0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
-            List<List<SQLUnit>> sqlUnitGroups = Lists.partition(sqlUnits, desiredPartitionSize);
+            List<List<SQLUnit>> sqlUnitGroups = group(sqlUnits);
             ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
-            result.addAll(group(entry.getKey(), sqlUnitGroups, connectionMode));
+            result.addAll(group(dataSourceName, sqlUnitGroups, connectionMode));
         }
         return decorate(routeContext, result);
     }
-    
+
+    private List<List<SQLUnit>> group(final List<SQLUnit> sqlUnits) {
+        int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
+        return Lists.partition(sqlUnits, desiredPartitionSize);
+    }
+
     protected abstract List<ExecutionGroup<T>> group(String dataSourceName, List<List<SQLUnit>> sqlUnitGroups, ConnectionMode connectionMode) throws SQLException;
     
     private Map<String, List<SQLUnit>> aggregateSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
