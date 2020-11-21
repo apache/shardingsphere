@@ -33,5 +33,6 @@
         <module>shardingsphere-scaling-bootstrap</module>
         <module>shardingsphere-scaling-mysql</module>
         <module>shardingsphere-scaling-postgresql</module>
+        <module>shardingsphere-scaling-elasticjob</module>
     </modules>
 </project>

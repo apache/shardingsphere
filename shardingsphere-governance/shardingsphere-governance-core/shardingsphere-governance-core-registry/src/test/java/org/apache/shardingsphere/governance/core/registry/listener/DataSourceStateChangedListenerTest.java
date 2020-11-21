@@ -22,7 +22,7 @@ import org.apache.shardingsphere.governance.core.registry.event.DisabledStateCha
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,9 +50,9 @@ public final class DataSourceStateChangedListenerTest {
     }
     
     @Test
-    public void assertCreateGovernanceEvent() {
-        Optional<GovernanceEvent> actual = dataSourceStateChangedListener.createGovernanceEvent(
-                new DataChangedEvent("/states/datanodes/replica_query_db/replica_ds_0", "disabled", ChangedType.UPDATED));
+    public void assertCreateEvent() {
+        Optional<GovernanceEvent> actual = dataSourceStateChangedListener.createEvent(
+                new DataChangedEvent("/states/datanodes/replica_query_db/replica_ds_0", "disabled", Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((DisabledStateChangedEvent) actual.get()).getGovernanceSchema().getSchemaName(), is(new GovernanceSchema("replica_query_db", "replica_ds_0").getSchemaName()));
     }

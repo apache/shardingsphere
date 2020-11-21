@@ -111,16 +111,15 @@
     </delete>
 
     <delete sql-case-id="delete_with_alias" parameters="'init'">
-        <table name="o" start-index="7" stop-index="7" />
-        <table name="t_order" alias="o" start-index="14" stop-index="25" />
-        <where start-index="27" stop-index="40" literal-stop-index="46">
+        <table name="t_order" alias="o" start-index="12" stop-index="23" />
+        <where start-index="25" stop-index="38" literal-stop-index="44">
             <and-predicate>
-                <predicate start-index="33" stop-index="40" literal-stop-index="45">
-                    <column-left-value name="status" start-index="33" stop-index="38" />
+                <predicate start-index="31" stop-index="38" literal-stop-index="43">
+                    <column-left-value name="status" start-index="31" stop-index="36" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="40" stop-index="40" />
-                        <literal-expression value="init" start-index="40" stop-index="45" />
+                        <parameter-marker-expression value="0" start-index="38" stop-index="38" />
+                        <literal-expression value="init" start-index="38" stop-index="43" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
@@ -296,5 +295,112 @@
                 </predicate>
             </and-predicate>
         </where>
+    </delete>
+
+    <delete sql-case-id="delete_with_with_clause">
+        <with start-index="0" stop-index="70">
+            <common-table-expression name = "cte" start-index="5" stop-index="70">
+                <columns start-index="9" stop-index="27">
+                    <column name="order_id" start-index="10" stop-index="17"/>
+                    <column name="user_id" start-index="20" stop-index="26"/>
+                </columns>
+                <subquery-expression>
+                    <select>
+                        <from>
+                            <simple-table name="t_order" start-index="63" stop-index="69" />
+                        </from>
+                        <projections start-index="40" stop-index="56">
+                            <column-projection name="order_id" start-index="40" stop-index="47" />
+                            <column-projection name="user_id" start-index="50" stop-index="56" />
+                        </projections>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <table name="t_order" start-index="79" stop-index="85" />
+        <where start-index="96" stop-index="132">
+            <and-predicate>
+                <predicate start-index="96" stop-index="132">
+                    <column-left-value owner="t_order" name="order_id" start-index="110" stop-index="117" />
+                    <operator type="=" />
+                    <column-right-value owner="cte" name="order_id" start-index="125" stop-index="132" />
+                </predicate>
+            </and-predicate>
+        </where>
+    </delete>
+
+    <delete sql-case-id="delete_without_columns_with_with_clause">
+        <with start-index="0" stop-index="50">
+            <common-table-expression name="cte" start-index="5" stop-index="50">
+                <subquery-expression>
+                    <select>
+                        <from>
+                            <simple-table name="t_order" start-index="43" stop-index="49" />
+                        </from>
+                        <projections start-index="20" stop-index="36">
+                            <column-projection name="order_id" start-index="20" stop-index="27" />
+                            <column-projection name="user_id" start-index="30" stop-index="36" />
+                        </projections>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <table name="t_order" start-index="59" stop-index="65" />
+        <where start-index="76" stop-index="112">
+            <and-predicate>
+                <predicate start-index="82" stop-index="112">
+                    <column-left-value owner="t_order" name="order_id" start-index="90" stop-index="97" />
+                    <operator type="=" />
+                    <column-right-value owner="cte" name="order_id" start-index="105" stop-index="112" />
+                </predicate>
+            </and-predicate>
+        </where>
+    </delete>
+
+    <delete sql-case-id="delete_multi_tables" parameters="1">
+        <where start-index="56" stop-index="124">
+            <and-predicate>
+                <predicate start-index="62" stop-index="101">
+                    <column-left-value name="order_id" start-index="62" stop-index="77">
+                        <owner name="t_order" start-index="62" stop-index="68"/>
+                    </column-left-value>
+                    <operator type="="/>
+                    <column-right-value name="order_id" start-index="62" stop-index="77">
+                        <owner name="t_order" start-index="62" stop-index="68"/>
+                    </column-right-value>
+                </predicate>
+                <predicate start-index="107" stop-index="124">
+                    <column-left-value name="status" start-index="107" stop-index="120">
+                        <owner name="t_order" start-index="107" stop-index="113"/>
+                    </column-left-value>
+                    <operator type="="/>
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="124" stop-index="124"/>
+                        <literal-expression value="1" start-index="124" stop-index="124"/>
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <table name="t_order" start-index="7" stop-index="13"/>
+        <table name="t_order_item" start-index="16" stop-index="27"/>
+    </delete>
+
+    <delete sql-case-id="delete_multi_tables_with_using" parameters="1">
+        <where start-index="115" stop-index="138">
+            <and-predicate>
+                <predicate start-index="121" stop-index="138">
+                    <column-left-value name="status" start-index="121" stop-index="134">
+                        <owner name="t_order" start-index="121" stop-index="127"/>
+                    </column-left-value>
+                    <operator type="="/>
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="138" stop-index="138"/>
+                        <literal-expression value="1" start-index="138" stop-index="138"/>
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <table name="t_order" start-index="12" stop-index="18"/>
+        <table name="t_order_item" start-index="21" stop-index="32"/>
     </delete>
 </sql-parser-test-cases>

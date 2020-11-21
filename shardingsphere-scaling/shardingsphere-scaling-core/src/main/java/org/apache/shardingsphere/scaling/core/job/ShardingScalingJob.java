@@ -19,18 +19,16 @@ package org.apache.shardingsphere.scaling.core.job;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
-import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.schedule.SyncTaskControlStatus;
-import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil;
+import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Sharding scaling out job.
@@ -39,29 +37,47 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Setter
 public final class ShardingScalingJob {
     
-    private static final AtomicInteger ID_AUTO_INCREASE_GENERATOR = new AtomicInteger();
+    private static SnowflakeKeyGenerateAlgorithm idAutoIncreaseGenerator;
     
-    private final int jobId = ID_AUTO_INCREASE_GENERATOR.incrementAndGet();
-    
-    private final transient List<SyncConfiguration> syncConfigurations = new LinkedList<>();
-    
-    private final transient List<ScalingTask<InventoryPosition>> inventoryDataTasks = new LinkedList<>();
-    
-    private final transient List<ScalingTask<IncrementalPosition>> incrementalDataTasks = new LinkedList<>();
-    
-    private final transient ScalingConfiguration scalingConfiguration;
-    
-    private transient DataConsistencyChecker dataConsistencyChecker;
-    
-    private String jobName = "ScalingJob";
+    private long jobId;
     
     private int shardingItem;
     
+    private final transient List<SyncConfiguration> syncConfigurations = new LinkedList<>();
+    
+    private final transient List<ScalingTask> inventoryDataTasks = new LinkedList<>();
+    
+    private final transient List<ScalingTask> incrementalDataTasks = new LinkedList<>();
+    
+    private transient ScalingConfiguration scalingConfiguration;
+    
+    private transient DataConsistencyChecker dataConsistencyChecker;
+    
     private String status = SyncTaskControlStatus.RUNNING.name();
     
+    public ShardingScalingJob() {
+        initIdAutoIncreaseGenerator();
+        jobId = (Long) idAutoIncreaseGenerator.generateKey();
+    }
+    
     public ShardingScalingJob(final ScalingConfiguration scalingConfig) {
+        this();
         scalingConfiguration = scalingConfig;
-        jobName = Optional.ofNullable(scalingConfig.getJobConfiguration().getJobName()).orElse(jobName);
+        jobId = null != scalingConfig.getJobConfiguration().getJobId() ? scalingConfig.getJobConfiguration().getJobId() : jobId;
         shardingItem = scalingConfig.getJobConfiguration().getShardingItem();
+        syncConfigurations.addAll(SyncConfigurationUtil.toSyncConfigurations(scalingConfig));
+    }
+    
+    private static void initIdAutoIncreaseGenerator() {
+        if (null != idAutoIncreaseGenerator) {
+            return;
+        }
+        synchronized (ShardingScalingJob.class) {
+            if (null != idAutoIncreaseGenerator) {
+                return;
+            }
+            idAutoIncreaseGenerator = new SnowflakeKeyGenerateAlgorithm();
+            idAutoIncreaseGenerator.init();
+        }
     }
 }

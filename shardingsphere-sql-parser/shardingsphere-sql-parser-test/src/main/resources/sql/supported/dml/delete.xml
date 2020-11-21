@@ -22,7 +22,7 @@
     <sql-case id="delete_with_special_character_without_sharding_value" value="DELETE FROM `t_order` WHERE `status`='init'" db-types="MySQL" />
     <sql-case id="delete_with_special_comments_return_without_sharding_value" value="DELETE /*+ index(status) */ ONLY t_order WHERE status=1 RETURN * LOG ERRORS INTO TABLE_LOG" db-types="Oracle" />
     <sql-case id="delete_with_special_comments_returning_without_sharding_value" value="DELETE /*+ index(status) */ ONLY (t_order) WHERE status=1 RETURNING *" db-types="Oracle" />
-    <sql-case id="delete_with_alias" value="DELETE o FROM t_order AS o WHERE status=?" db-types="MySQL,Oracle,SQLServer"/>
+    <sql-case id="delete_with_alias" value="DELETE FROM t_order AS o WHERE status=?" db-types="MySQL,Oracle,SQLServer"/>
     <sql-case id="delete_with_order_by_row_count" value="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status=? ORDER BY order_id LIMIT ?" db-types="MySQL"/>
     <sql-case id="delete_with_output_clause" value="DELETE FROM t_order OUTPUT DELETED.order_id, DELETED.user_id INTO @MyTableVar (temp_order_id, temp_user_id) WHERE order_id = ?" db-types="SQLServer" />
     <sql-case id="delete_with_output_clause_without_output_table_columns" value="DELETE FROM t_order OUTPUT DELETED.order_id, DELETED.user_id INTO @MyTableVar WHERE order_id = ?" db-types="SQLServer" />
@@ -30,4 +30,8 @@
     <sql-case id="delete_with_output_clause_column_shorthand" value="DELETE FROM t_order OUTPUT DELETED.* WHERE order_id = ?" db-types="SQLServer" />
     <sql-case id="delete_with_top" value="DELETE TOP(10) FROM t_order WHERE order_id = ?" db-types="SQLServer" />
     <sql-case id="delete_with_top_percent" value="DELETE TOP(10) PERCENT FROM t_order WHERE order_id = ?" db-types="SQLServer" />
+    <sql-case id="delete_with_with_clause" value="WITH cte (order_id, user_id) AS (SELECT order_id, user_id FROM t_order) DELETE t_order FROM cte WHERE t_order.order_id = cte.order_id" db-types="SQLServer" />
+    <sql-case id="delete_without_columns_with_with_clause" value="WITH cte AS (SELECT order_id, user_id FROM t_order) DELETE t_order FROM cte WHERE t_order.order_id = cte.order_id" db-types="SQLServer" />
+    <sql-case id="delete_multi_tables" value="DELETE t_order, t_order_item from t_order, t_order_item where t_order.order_id = t_order_item.order_id and t_order.status = ?" db-types="MySQL"/>
+    <sql-case id="delete_multi_tables_with_using" value="DELETE from t_order, t_order_item using t_order left join t_order_item on t_order.order_id = t_order_item.order_id where t_order.status = ?" db-types="MySQL"/>
 </sql-cases>

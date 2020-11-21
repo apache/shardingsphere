@@ -17,14 +17,19 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
+import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.JDBCDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
-import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
-import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLBinlogDumper;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLDataSourceChecker;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLImporter;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLJdbcDumper;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLPositionManager;
 
 /**
  * MySQL scaling entry.
@@ -42,7 +47,7 @@ public final class MySQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends PositionManager<BinlogPosition>> getPositionManager() {
+    public Class<? extends PositionManager> getPositionManager() {
         return MySQLPositionManager.class;
     }
     

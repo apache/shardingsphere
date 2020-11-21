@@ -49,7 +49,7 @@ public final class DALBackendHandlerFactory {
             return new ShowDatabasesBackendHandler(backendConnection);
         }
         if (dalStatement instanceof MySQLShowTablesStatement) {
-            return new ShowTablesBackendHandler(sql, dalStatement, backendConnection);
+            return new ShowTablesBackendHandler(backendConnection);
         }
         if (dalStatement instanceof SetStatement) {
             return new BroadcastBackendHandler(sql, dalStatement, backendConnection);

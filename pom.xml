@@ -30,6 +30,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>shardingsphere-agent</module>
         <module>shardingsphere-sql-parser</module>
         <module>shardingsphere-distsql-parser</module>
         <module>shardingsphere-db-protocol</module>
@@ -102,7 +103,9 @@
         <postgresql.version>42.2.5</postgresql.version>
         <mssql.version>6.1.7.jre8-preview</mssql.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
-        <prometheus-java-client.version>0.6.0</prometheus-java-client.version>
+        <bytebuddy.version>1.10.16</bytebuddy.version>
+
+        <elasticjob.version>3.0.0-beta</elasticjob.version>
 
         <!-- Plugin versions -->
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
@@ -137,11 +140,15 @@
 
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
         <maven.deploy.skip>false</maven.deploy.skip>
-        <argLine>-Xmx1024m -XX:MaxMetaspaceSize=256m</argLine>
     </properties>
     
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>net.bytebuddy</groupId>
+                <artifactId>byte-buddy</artifactId>
+                <version>${bytebuddy.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
@@ -207,17 +214,6 @@
                 <version>${commons-collections4.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>io.prometheus</groupId>
-                <artifactId>simpleclient</artifactId>
-                <version>${prometheus-java-client.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.prometheus</groupId>
-                <artifactId>simpleclient_httpserver</artifactId>
-                <version>${prometheus-java-client.version}</version>
-            </dependency>
-            
             <dependency>
                 <groupId>javax.transaction</groupId>
                 <artifactId>jta</artifactId>
@@ -475,6 +471,12 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.j2objc</groupId>
+                    <artifactId>j2objc-annotations</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

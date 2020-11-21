@@ -25,7 +25,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class AbstractRowEvent extends AbstractWalEvent {
+public abstract class AbstractRowEvent extends AbstractWalEvent {
     
     private String schemaName;
     

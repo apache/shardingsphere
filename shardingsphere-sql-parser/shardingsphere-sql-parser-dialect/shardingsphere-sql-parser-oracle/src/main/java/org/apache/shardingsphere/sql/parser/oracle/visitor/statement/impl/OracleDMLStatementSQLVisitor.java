@@ -53,6 +53,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableR
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WhereClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LockClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
@@ -462,5 +463,10 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
         return visit(ctx.unionClause());
+    }
+
+    @Override
+    public ASTNode visitLockClause(final LockClauseContext ctx) {
+        return new LockSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
     }
 }

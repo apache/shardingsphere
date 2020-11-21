@@ -40,7 +40,8 @@ public final class UserExecutorGroup {
     private final ListeningExecutorService executorService;
     
     private UserExecutorGroup() {
-        shardingSphereExecutorService = new ShardingSphereExecutorService(PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.ACCEPTOR_SIZE), NAME_FORMAT);
+        shardingSphereExecutorService = new ShardingSphereExecutorService(
+                PROXY_SCHEMA_CONTEXTS.getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.ACCEPTOR_SIZE), NAME_FORMAT);
         executorService = shardingSphereExecutorService.getExecutorService();
     }
     

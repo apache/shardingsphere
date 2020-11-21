@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.merge.result.impl.memory;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
 
 import java.sql.SQLException;
 

@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.governance.core.config.listener;
 
+import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
+import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
+import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.event.model.auth.AuthenticationChangedEvent;
+import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.event.model.auth.AuthenticationChangedEvent;
-import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
-import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
-import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -33,14 +33,14 @@ import java.util.Optional;
 /**
  * Authentication changed listener.
  */
-public final class AuthenticationChangedListener extends PostGovernanceRepositoryEventListener {
+public final class AuthenticationChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
     public AuthenticationChangedListener(final ConfigurationRepository configurationRepository) {
         super(configurationRepository, Collections.singletonList(new ConfigCenterNode().getAuthenticationPath()));
     }
     
     @Override
-    protected Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+    protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
         return Optional.of(new AuthenticationChangedEvent(new AuthenticationYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlAuthenticationConfiguration.class))));
     }
 }

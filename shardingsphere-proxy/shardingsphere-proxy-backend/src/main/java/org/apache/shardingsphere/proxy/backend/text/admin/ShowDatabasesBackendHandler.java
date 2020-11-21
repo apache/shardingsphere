@@ -21,10 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 
@@ -52,7 +51,7 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     
     private Collection<Object> getSchemaNames() {
         Collection<Object> result = new LinkedList<>(ProxyContext.getInstance().getAllSchemaNames());
-        Collection<String> authorizedSchemas = ProxyContext.getInstance().getSchemaContexts().getAuthentication().getUsers().get(backendConnection.getUsername()).getAuthorizedSchemas();
+        Collection<String> authorizedSchemas = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getUsers().get(backendConnection.getUsername()).getAuthorizedSchemas();
         if (!authorizedSchemas.isEmpty()) {
             result.retainAll(authorizedSchemas);
         }
@@ -65,7 +64,7 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     }
     
     @Override
-    public QueryData getQueryData() throws SQLException {
-        return new QueryData(Collections.singletonList(Types.VARCHAR), Collections.singletonList(mergedResult.getValue(1, Object.class)));
+    public Collection<Object> getRowData() throws SQLException {
+        return Collections.singletonList(mergedResult.getValue(1, Object.class));
     }
 }

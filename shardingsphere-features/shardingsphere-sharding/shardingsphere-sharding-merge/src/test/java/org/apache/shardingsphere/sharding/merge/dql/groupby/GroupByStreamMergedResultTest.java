@@ -19,12 +19,12 @@ package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.column.PhysicalColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
@@ -60,13 +60,13 @@ public final class GroupByStreamMergedResultTest {
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()), createSelectStatementContext(), createSchemaMetaData());
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult()), createSelectStatementContext(), buildSchema());
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        QueryResult queryResult1 = createQueryResult();
+        QueryResult queryResult1 = mockQueryResult();
         when(queryResult1.next()).thenReturn(true, false);
         when(queryResult1.getValue(1, Object.class)).thenReturn(20);
         when(queryResult1.getValue(2, Object.class)).thenReturn(0);
@@ -74,8 +74,8 @@ public final class GroupByStreamMergedResultTest {
         when(queryResult1.getValue(4, Object.class)).thenReturn(new Date(0L));
         when(queryResult1.getValue(5, Object.class)).thenReturn(2);
         when(queryResult1.getValue(6, Object.class)).thenReturn(20);
-        QueryResult queryResult2 = createQueryResult();
-        QueryResult queryResult3 = createQueryResult();
+        QueryResult queryResult2 = mockQueryResult();
+        QueryResult queryResult3 = mockQueryResult();
         when(queryResult3.next()).thenReturn(true, true, false);
         when(queryResult3.getValue(1, Object.class)).thenReturn(20, 30);
         when(queryResult3.getValue(2, Object.class)).thenReturn(0);
@@ -84,7 +84,7 @@ public final class GroupByStreamMergedResultTest {
         when(queryResult3.getValue(5, Object.class)).thenReturn(2, 2, 3);
         when(queryResult3.getValue(6, Object.class)).thenReturn(20, 20, 30);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), createSchemaMetaData());
+        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), buildSchema());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(new BigDecimal(40)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
@@ -104,21 +104,21 @@ public final class GroupByStreamMergedResultTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        QueryResult queryResult1 = createQueryResult();
+        QueryResult queryResult1 = mockQueryResult();
         when(queryResult1.next()).thenReturn(true, false);
         when(queryResult1.getValue(1, Object.class)).thenReturn(20);
         when(queryResult1.getValue(2, Object.class)).thenReturn(0);
         when(queryResult1.getValue(3, Object.class)).thenReturn(2);
         when(queryResult1.getValue(5, Object.class)).thenReturn(2);
         when(queryResult1.getValue(6, Object.class)).thenReturn(20);
-        QueryResult queryResult2 = createQueryResult();
+        QueryResult queryResult2 = mockQueryResult();
         when(queryResult2.next()).thenReturn(true, true, true, false);
         when(queryResult2.getValue(1, Object.class)).thenReturn(20, 30, 30, 40);
         when(queryResult2.getValue(2, Object.class)).thenReturn(0);
         when(queryResult2.getValue(3, Object.class)).thenReturn(2, 2, 3, 3, 3, 4);
         when(queryResult2.getValue(5, Object.class)).thenReturn(2, 2, 3, 3, 3, 4);
         when(queryResult2.getValue(6, Object.class)).thenReturn(20, 20, 30, 30, 30, 40);
-        QueryResult queryResult3 = createQueryResult();
+        QueryResult queryResult3 = mockQueryResult();
         when(queryResult3.next()).thenReturn(true, true, false);
         when(queryResult3.getValue(1, Object.class)).thenReturn(10, 30);
         when(queryResult3.getValue(2, Object.class)).thenReturn(10);
@@ -126,7 +126,7 @@ public final class GroupByStreamMergedResultTest {
         when(queryResult3.getValue(5, Object.class)).thenReturn(1, 1, 3);
         when(queryResult3.getValue(6, Object.class)).thenReturn(10, 10, 30);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), createSchemaMetaData());
+        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), buildSchema());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(new BigDecimal(10)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
@@ -177,15 +177,15 @@ public final class GroupByStreamMergedResultTest {
                 projectionsContext, new PaginationContext(null, null, Collections.emptyList()));
     }
     
-    private PhysicalSchemaMetaData createSchemaMetaData() {
-        PhysicalColumnMetaData columnMetaData1 = new PhysicalColumnMetaData("col1", 0, "dataType", false, false, false);
-        PhysicalColumnMetaData columnMetaData2 = new PhysicalColumnMetaData("col2", 0, "dataType", false, false, false);
-        PhysicalColumnMetaData columnMetaData3 = new PhysicalColumnMetaData("col3", 0, "dataType", false, false, false);
-        PhysicalTableMetaData tableMetaData = new PhysicalTableMetaData(Arrays.asList(columnMetaData1, columnMetaData2, columnMetaData3), Collections.emptyList());
-        return new PhysicalSchemaMetaData(ImmutableMap.of("tbl", tableMetaData));
+    private ShardingSphereSchema buildSchema() {
+        ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", 0, "dataType", false, false, false);
+        ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", 0, "dataType", false, false, false);
+        ColumnMetaData columnMetaData3 = new ColumnMetaData("col3", 0, "dataType", false, false, false);
+        TableMetaData tableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2, columnMetaData3), Collections.emptyList());
+        return new ShardingSphereSchema(ImmutableMap.of("tbl", tableMetaData));
     }
     
-    private QueryResult createQueryResult() throws SQLException {
+    private QueryResult mockQueryResult() throws SQLException {
         QueryResult result = mock(QueryResult.class);
         when(result.getColumnCount()).thenReturn(6);
         when(result.getColumnLabel(1)).thenReturn("COUNT(*)");

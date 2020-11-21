@@ -17,14 +17,19 @@
 
 package org.apache.shardingsphere.scaling.postgresql;
 
+import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.JDBCDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
-import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
-import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLDataSourceChecker;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLImporter;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLJdbcDumper;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLPositionManager;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLWalDumper;
 
 /**
  * PostgreSQL scaling entry.
@@ -42,7 +47,7 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends PositionManager<WalPosition>> getPositionManager() {
+    public Class<? extends PositionManager> getPositionManager() {
         return PostgreSQLPositionManager.class;
     }
     

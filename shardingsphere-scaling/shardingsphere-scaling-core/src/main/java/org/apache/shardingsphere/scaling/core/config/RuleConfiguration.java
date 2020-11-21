@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.config;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,8 +39,8 @@ public final class RuleConfiguration {
         
         private String type;
         
-        private JsonObject parameter;
-    
+        private JsonElement parameter;
+        
         /**
          * Get typed data source configuration.
          *

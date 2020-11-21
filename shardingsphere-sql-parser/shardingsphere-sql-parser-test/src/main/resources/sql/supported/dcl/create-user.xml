@@ -29,12 +29,12 @@
     <sql-case id="create_local_user" value="CREATE USER 'user1'@'localhost' DEFAULT ROLE role1" db-types="MySQL" />
     <sql-case id="create_user_with_roles" value="CREATE USER user1 DEFAULT ROLE role1, role2" db-types="MySQL" />
     <sql-case id="create_user_with_password_default_role" value="CREATE USER user1 IDENTIFIED BY RANDOM password DEFAULT ROLE role1" db-types="MySQL" />
-    <sql-case id="create_user_with_resource_option" value="CREATE USER user1 DEFAULT ROLE role1 MAX_QUERIES_PER_HOUR 1" db-types="MySQL" />
-    <sql-case id="create_user_with_resource_options" value="CREATE USER user1 DEFAULT ROLE role1 MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1" db-types="MySQL" />
+    <sql-case id="create_user_with_resource_option" value="CREATE USER user1 DEFAULT ROLE role1 WITH MAX_QUERIES_PER_HOUR 1" db-types="MySQL" />
+    <sql-case id="create_user_with_resource_options" value="CREATE USER user1 DEFAULT ROLE role1 WITH MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1" db-types="MySQL" />
     <sql-case id="create_user_with_password_option" value="CREATE USER user1 DEFAULT ROLE role1 PASSWORD EXPIRE DEFAULT" db-types="MySQL,Oracle" />
     <sql-case id="create_user_with_password_options" value="CREATE USER user1 DEFAULT ROLE role1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT" db-types="MySQL" />
     <sql-case id="create_user_with_lock_option" value="CREATE USER user1 DEFAULT ROLE role1 ACCOUNT LOCK" db-types="MySQL,Oracle" />
-    <sql-case id="create_user_with_options" value="CREATE USER user1 DEFAULT ROLE role1 MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT ACCOUNT LOCK" db-types="MySQL" />
+    <sql-case id="create_user_with_options" value="CREATE USER user1 DEFAULT ROLE role1 WITH MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT ACCOUNT LOCK" db-types="MySQL" />
     <sql-case id="create_external_user" value="CREATE USER user1 IDENTIFIED EXTERNALLY" db-types="Oracle" />
     <sql-case id="create_global_user" value="CREATE USER user1 IDENTIFIED GLOBALLY" db-types="Oracle" />
     <sql-case id="create_user_with_password" value="CREATE USER user1 IDENTIFIED BY RANDOM password default role role1" db-types="H2,MySQL,PostgreSQL,Oracle,SQLServer" />

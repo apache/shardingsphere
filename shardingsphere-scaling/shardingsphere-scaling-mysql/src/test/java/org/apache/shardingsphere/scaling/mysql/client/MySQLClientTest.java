@@ -21,12 +21,11 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.concurrent.Promise;
-
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.scaling.utils.ReflectionUtil;
+import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,15 +64,15 @@ public final class MySQLClientTest {
         ServerInfo expected = new ServerInfo();
         mockChannelResponse(expected);
         mysqlClient.connect();
-        ServerInfo actual = ReflectionUtil.getFieldValueFromClass(mysqlClient, "serverInfo", ServerInfo.class);
+        ServerInfo actual = ReflectionUtil.getFieldValue(mysqlClient, "serverInfo", ServerInfo.class);
         assertThat(actual, is(expected));
     }
     
     @Test
     public void assertExecute() throws NoSuchFieldException, IllegalAccessException {
         mockChannelResponse(new MySQLOKPacket(0));
-        ReflectionUtil.setFieldValueToClass(mysqlClient, "channel", channel);
-        ReflectionUtil.setFieldValueToClass(mysqlClient, "eventLoopGroup", new NioEventLoopGroup(1));
+        ReflectionUtil.setFieldValue(mysqlClient, "channel", channel);
+        ReflectionUtil.setFieldValue(mysqlClient, "eventLoopGroup", new NioEventLoopGroup(1));
         assertTrue(mysqlClient.execute(""));
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComQueryPacket.class));
     }
@@ -81,10 +80,10 @@ public final class MySQLClientTest {
     @Test
     public void assertExecuteUpdate() throws NoSuchFieldException, IllegalAccessException {
         MySQLOKPacket expected = new MySQLOKPacket(0, 10, 0);
-        ReflectionUtil.setFieldValueToClass(expected, "affectedRows", 10);
+        ReflectionUtil.setFieldValue(expected, "affectedRows", 10);
         mockChannelResponse(expected);
-        ReflectionUtil.setFieldValueToClass(mysqlClient, "channel", channel);
-        ReflectionUtil.setFieldValueToClass(mysqlClient, "eventLoopGroup", new NioEventLoopGroup(1));
+        ReflectionUtil.setFieldValue(mysqlClient, "channel", channel);
+        ReflectionUtil.setFieldValue(mysqlClient, "eventLoopGroup", new NioEventLoopGroup(1));
         assertThat(mysqlClient.executeUpdate(""), is(10));
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComQueryPacket.class));
     }
@@ -93,8 +92,8 @@ public final class MySQLClientTest {
     public void assertExecuteQuery() throws NoSuchFieldException, IllegalAccessException {
         InternalResultSet expected = new InternalResultSet(null);
         mockChannelResponse(expected);
-        ReflectionUtil.setFieldValueToClass(mysqlClient, "channel", channel);
-        ReflectionUtil.setFieldValueToClass(mysqlClient, "eventLoopGroup", new NioEventLoopGroup(1));
+        ReflectionUtil.setFieldValue(mysqlClient, "channel", channel);
+        ReflectionUtil.setFieldValue(mysqlClient, "eventLoopGroup", new NioEventLoopGroup(1));
         assertThat(mysqlClient.executeQuery(""), is(expected));
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComQueryPacket.class));
     }
@@ -103,9 +102,9 @@ public final class MySQLClientTest {
     public void assertSubscribeBelow56Version() throws NoSuchFieldException, IllegalAccessException {
         ServerInfo serverInfo = new ServerInfo();
         serverInfo.setServerVersion(new ServerVersion("5.5.0-log"));
-        ReflectionUtil.setFieldValueToClass(mysqlClient, "serverInfo", serverInfo);
-        ReflectionUtil.setFieldValueToClass(mysqlClient, "channel", channel);
-        ReflectionUtil.setFieldValueToClass(mysqlClient, "eventLoopGroup", new NioEventLoopGroup(1));
+        ReflectionUtil.setFieldValue(mysqlClient, "serverInfo", serverInfo);
+        ReflectionUtil.setFieldValue(mysqlClient, "channel", channel);
+        ReflectionUtil.setFieldValue(mysqlClient, "eventLoopGroup", new NioEventLoopGroup(1));
         mockChannelResponse(new MySQLOKPacket(0));
         mysqlClient.subscribe("", 4L);
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComRegisterSlaveCommandPacket.class));
@@ -118,7 +117,7 @@ public final class MySQLClientTest {
             while (true) {
                 Promise<Object> responseCallback = null;
                 try {
-                    responseCallback = ReflectionUtil.getFieldValueFromClass(mysqlClient, "responseCallback", Promise.class);
+                    responseCallback = ReflectionUtil.getFieldValue(mysqlClient, "responseCallback", Promise.class);
                 } catch (final NoSuchFieldException ex) {
                     throw new RuntimeException(ex);
                 } catch (final IllegalAccessException ex) {

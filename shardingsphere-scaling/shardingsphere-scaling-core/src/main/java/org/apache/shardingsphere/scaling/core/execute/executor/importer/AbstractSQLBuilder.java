@@ -18,17 +18,23 @@
 package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 
 import com.google.common.collect.Collections2;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
  * Abstract SQL builder.
  */
+@RequiredArgsConstructor
 public abstract class AbstractSQLBuilder {
     
     private static final String INSERT_SQL_CACHE_KEY_PREFIX = "INSERT_";
@@ -38,6 +44,9 @@ public abstract class AbstractSQLBuilder {
     private static final String DELETE_SQL_CACHE_KEY_PREFIX = "DELETE_";
     
     private final ConcurrentMap<String, String> sqlCacheMap = new ConcurrentHashMap<>();
+    
+    @Getter(AccessLevel.PROTECTED)
+    private final Map<String, Set<String>> shardingColumnsMap;
     
     /**
      * Get left identifier quote string.

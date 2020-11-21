@@ -17,52 +17,38 @@
 
 package org.apache.shardingsphere.scaling.mysql.binlog;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.annotations.Expose;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
 
 /**
  * Binlog Position.
  */
-@AllArgsConstructor
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Setter
 @Getter
-public final class BinlogPosition implements IncrementalPosition {
+public final class BinlogPosition implements Position<BinlogPosition> {
     
-    private static final Gson GSON = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-    
-    @Expose
     private final String filename;
     
-    @Expose
     private final long position;
     
-    private long serverId;
+    private transient long serverId;
+    
+    private long delay;
     
     @Override
-    public int compareTo(final Position position) {
+    public int compareTo(final BinlogPosition position) {
         if (null == position) {
             return 1;
         }
-        long o1 = toLong();
-        long o2 = ((BinlogPosition) position).toLong();
-        return Long.compare(o1, o2);
+        return Long.compare(toLong(), position.toLong());
     }
     
     private long toLong() {
         return Long.parseLong(filename.substring(filename.lastIndexOf('.') + 1)) << 32 | position;
-    }
-    
-    @Override
-    public JsonElement toJson() {
-        return GSON.toJsonTree(this);
     }
 }

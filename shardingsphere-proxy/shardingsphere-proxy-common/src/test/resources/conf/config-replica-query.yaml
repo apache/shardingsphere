@@ -17,23 +17,37 @@
 
 schemaName: replica_query_db
 
-dataSourceCommon:
-  username: root
-  password:
-  connectionTimeoutMilliseconds: 30000
-  idleTimeoutMilliseconds: 60000
-  maxLifetimeMilliseconds: 1800000
-  maxPoolSize: 50
-  minPoolSize: 1
-  maintenanceIntervalMilliseconds: 30000
-
 dataSources:
   primary_ds:
     url: jdbc:mysql://127.0.0.1:3306/primary_ds
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
   replica_ds_0:
     url: jdbc:mysql://127.0.0.1:3306/replica_ds_0
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
   replica_ds_1:
     url: jdbc:mysql://127.0.0.1:3306/replica_ds_1
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
 
 rules:
 - !REPLICA_QUERY

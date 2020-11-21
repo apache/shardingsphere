@@ -39,6 +39,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetName
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowBinaryLogsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowBinlogEventsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCharacterSetContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCollationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowColumnsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateEventContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateFunctionContext;
@@ -53,6 +55,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowOth
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTablesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowVariablesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWarningsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UninstallPluginContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
@@ -287,7 +290,22 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitShowOther(final ShowOtherContext ctx) {
         return new MySQLShowOtherStatement();
     }
-    
+
+    @Override
+    public ASTNode visitShowVariables(final ShowVariablesContext ctx) {
+        return new MySQLShowOtherStatement();
+    }
+
+    @Override
+    public ASTNode visitShowCharacterSet(final ShowCharacterSetContext ctx) {
+        return new MySQLShowOtherStatement();
+    }
+
+    @Override
+    public ASTNode visitShowCollation(final ShowCollationContext ctx) {
+        return new MySQLShowOtherStatement();
+    }
+
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         MySQLSetStatement result = new MySQLSetStatement();
@@ -301,21 +319,21 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitSetName(final SetNameContext ctx) {
+        VariableAssignSegment characterSet = new VariableAssignSegment();
+        VariableSegment variable = new VariableSegment();
+        variable.setVariable("charset");
+        characterSet.setVariable(variable);
+        String assignValue = ctx.charsetName().getText();
+        characterSet.setAssignValue(assignValue);
         MySQLSetStatement result = new MySQLSetStatement();
-        if (null != ctx.characterSetName() || null != ctx.DEFAULT()) {
-            VariableAssignSegment characterSet = new VariableAssignSegment();
-            VariableSegment variable = new VariableSegment();
-            variable.setVariable("charset");
-            characterSet.setVariable(variable);
-            String assignValue = (null != ctx.DEFAULT()) ? ctx.DEFAULT().getText() : ctx.characterSetName().getText();
-            characterSet.setAssignValue(assignValue);
-        }
-        if (null != ctx.collationName_()) {
+        result.getVariableAssigns().add(characterSet);
+        if (null != ctx.collationName()) {
             VariableAssignSegment collation = new VariableAssignSegment();
-            VariableSegment variable = new VariableSegment();
-            variable.setVariable(ctx.COLLATE().getText());
-            collation.setVariable(variable);
-            collation.setAssignValue(ctx.collationName_().getText());
+            VariableSegment collationVariable = new VariableSegment();
+            collationVariable.setVariable(ctx.COLLATE().getText());
+            collation.setVariable(collationVariable);
+            collation.setAssignValue(ctx.collationName().getText());
+            result.getVariableAssigns().add(collation);
         }
         return result;
     }
@@ -327,7 +345,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         VariableSegment variable = new VariableSegment();
         String variableName = (null != ctx.CHARSET()) ? ctx.CHARSET().getText() : "charset";
         variable.setVariable(variableName);
-        String assignValue = (null != ctx.DEFAULT()) ? ctx.DEFAULT().getText() : ctx.characterSetName().getText();
+        String assignValue = (null != ctx.DEFAULT()) ? ctx.DEFAULT().getText() : ctx.charsetName().getText();
         characterSet.setAssignValue(assignValue);
         return result;
     }

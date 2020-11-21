@@ -23,10 +23,10 @@ import com.google.common.collect.Multimap;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JDBCExecutionConnection;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.hook.RootInvokeHook;
 import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.replicaquery.route.engine.impl.PrimaryVisitedManager;
@@ -54,7 +54,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     private final Map<String, DataSource> dataSourceMap;
     
     @Getter
-    private final SchemaContexts schemaContexts;
+    private final MetaDataContexts metaDataContexts;
     
     @Getter
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
@@ -74,9 +74,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
     
-    protected AbstractConnectionAdapter(final Map<String, DataSource> dataSourceMap, final SchemaContexts schemaContexts) {
+    protected AbstractConnectionAdapter(final Map<String, DataSource> dataSourceMap, final MetaDataContexts metaDataContexts) {
         this.dataSourceMap = dataSourceMap;
-        this.schemaContexts = schemaContexts;
+        this.metaDataContexts = metaDataContexts;
         rootInvokeHook.start();
     }
     

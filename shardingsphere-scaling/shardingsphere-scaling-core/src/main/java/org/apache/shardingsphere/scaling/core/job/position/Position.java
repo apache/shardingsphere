@@ -17,17 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
-import com.google.gson.JsonElement;
-
 /**
  * Position interface.
  */
-public interface Position extends Comparable<Position> {
-    
-    /**
-     * To json element.
-     *
-     * @return json element
-     */
-    JsonElement toJson();
+public interface Position<T> extends Comparable<T> {
 }

@@ -22,8 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLArrayColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnType;
 
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Types;
 
 /**
@@ -39,28 +37,18 @@ public final class PostgreSQLColumnDescription {
     
     private final int columnIndex;
     
-    private final int typeOID;
-    
     private final int columnLength;
+
+    private final int typeOID;
     
     private final int typeModifier = -1;
     
     private final int dataFormat = 0;
     
-    public PostgreSQLColumnDescription(final String columnName, final int columnIndex, final int columnType, final int columnLength, final ResultSetMetaData resultSetMetaData) {
+    public PostgreSQLColumnDescription(final String columnName, final int columnIndex, final int columnType, final int columnLength, final String columnTypeName) {
         this.columnName = columnName;
         this.columnIndex = columnIndex;
-        if (Types.ARRAY == columnType && null != resultSetMetaData) {
-            String columnTypeName = null;
-            try {
-                columnTypeName = resultSetMetaData.getColumnTypeName(columnIndex);
-            } catch (final SQLException ex) {
-                log.error("getColumnTypeName failed, columnName={}, columnIndex={}", columnName, columnIndex, ex);
-            }
-            typeOID = PostgreSQLArrayColumnType.getTypeOidByColumnTypeName(columnTypeName);
-        } else {
-            typeOID = PostgreSQLColumnType.valueOfJDBCType(columnType).getValue();
-        }
         this.columnLength = columnLength;
+        typeOID = Types.ARRAY == columnType ? PostgreSQLArrayColumnType.getTypeOidByColumnTypeName(columnTypeName) : PostgreSQLColumnType.valueOfJDBCType(columnType).getValue();
     }
 }

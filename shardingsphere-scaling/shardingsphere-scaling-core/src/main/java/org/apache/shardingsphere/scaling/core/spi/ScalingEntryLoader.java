@@ -47,9 +47,9 @@ public final class ScalingEntryLoader {
      * @return scaling entry for target database type
      */
     public static ScalingEntry getScalingEntryByDatabaseType(final String databaseType) {
-        if (!SCALING_ENTRY_MAP.containsKey(databaseType)) {
-            throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
+        if (SCALING_ENTRY_MAP.containsKey(databaseType)) {
+            return SCALING_ENTRY_MAP.get(databaseType);
         }
-        return SCALING_ENTRY_MAP.get(databaseType);
+        throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
     }
 }

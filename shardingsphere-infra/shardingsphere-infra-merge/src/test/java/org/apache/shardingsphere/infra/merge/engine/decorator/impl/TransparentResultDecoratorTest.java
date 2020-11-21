@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.infra.merge.engine.decorator.impl;
 
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -36,7 +35,7 @@ public final class TransparentResultDecoratorTest {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.next()).thenReturn(true);
         TransparentResultDecorator decorator = new TransparentResultDecorator();
-        MergedResult actual = decorator.decorate(queryResult, mock(SQLStatementContext.class), mock(PhysicalSchemaMetaData.class));
+        MergedResult actual = decorator.decorate(queryResult, mock(SQLStatementContext.class), new TransparentRule());
         assertTrue(actual.next());
     }
     
@@ -45,7 +44,7 @@ public final class TransparentResultDecoratorTest {
         MergedResult mergedResult = mock(MergedResult.class);
         when(mergedResult.next()).thenReturn(true);
         TransparentResultDecorator decorator = new TransparentResultDecorator();
-        MergedResult actual = decorator.decorate(mergedResult, mock(SQLStatementContext.class), mock(PhysicalSchemaMetaData.class));
+        MergedResult actual = decorator.decorate(mergedResult, mock(SQLStatementContext.class), new TransparentRule());
         assertTrue(actual.next());
     }
 }

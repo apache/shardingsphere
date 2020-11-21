@@ -22,8 +22,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
-import org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -34,7 +35,19 @@ import java.io.InputStreamReader;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ScalingConfigurationUtil {
     
-    private static final Gson GSON = new Gson();
+    /**
+     * Init job config.
+     *
+     * @param configFile config file
+     * @return ScalingConfiguration
+     * @throws IOException IO exception
+     */
+    public static ScalingConfiguration initConfig(final String configFile) throws IOException {
+        try (InputStream fileInputStream = ScalingConfigurationUtil.class.getResourceAsStream(configFile);
+             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream)) {
+            return new Gson().fromJson(inputStreamReader, ScalingConfiguration.class);
+        }
+    }
     
     /**
      * Init job from config file.
@@ -44,12 +57,25 @@ public final class ScalingConfigurationUtil {
      * @throws IOException IO exception
      */
     public static ShardingScalingJob initJob(final String configFile) throws IOException {
-        try (InputStream fileInputStream = ScalingConfigurationUtil.class.getResourceAsStream(configFile);
-             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream)) {
-            ScalingConfiguration scalingConfiguration = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
-            ShardingScalingJob shardingScalingJob = new ShardingScalingJob(scalingConfiguration);
-            shardingScalingJob.getSyncConfigurations().addAll(SyncConfigurationUtil.toSyncConfigurations(scalingConfiguration));
-            return shardingScalingJob;
+        return new ShardingScalingJob(initConfig(configFile));
+    }
+    
+    /**
+     * Get config by file.
+     *
+     * @param configFile config file
+     * @return config string
+     * @throws IOException IO exception
+     */
+    public static String getConfig(final String configFile) throws IOException {
+        StringBuilder result = new StringBuilder();
+        try (FileReader fileReader = new FileReader(ScalingConfigurationUtil.class.getResource(configFile).getFile());
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            String line;
+            while (null != (line = bufferedReader.readLine())) {
+                result.append(line).append(System.lineSeparator());
+            }
+            return result.toString();
         }
     }
 }

@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintCommand;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintComma
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintCommandExecutorFactory;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -47,7 +47,7 @@ public final class ShardingCTLHintBackendHandler implements TextProtocolBackendH
     @SuppressWarnings("unchecked")
     @Override
     public BackendResponse execute() {
-        if (!ProxyContext.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)) {
+        if (!ProxyContext.getInstance().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)) {
             throw new UnsupportedOperationException(String.format("%s should be true, please check your config", ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey()));
         }
         Optional<ShardingCTLHintStatement> shardingTCLStatement = new ShardingCTLHintParser(sql).doParse();
@@ -65,7 +65,7 @@ public final class ShardingCTLHintBackendHandler implements TextProtocolBackendH
     }
     
     @Override
-    public QueryData getQueryData() throws SQLException {
-        return hintCommandExecutor.getQueryData();
+    public List<Object> getRowData() throws SQLException {
+        return hintCommandExecutor.getQueryData().getData();
     }
 }

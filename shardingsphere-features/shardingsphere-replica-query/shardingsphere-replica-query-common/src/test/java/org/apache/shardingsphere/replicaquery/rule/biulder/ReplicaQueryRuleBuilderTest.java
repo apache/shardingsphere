@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.replicaquery.rule.biulder;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
@@ -46,6 +46,6 @@ public final class ReplicaQueryRuleBuilderTest {
                 "name", "primaryDataSourceName", Collections.singletonList("name"), "loadBalancerName");
         when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(dataSourceRuleConfig));
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
-        assertThat(builder.build(ruleConfig, Collections.emptyList()), instanceOf(ReplicaQueryRule.class));
+        assertThat(builder.build(ruleConfig), instanceOf(ReplicaQueryRule.class));
     }
 }

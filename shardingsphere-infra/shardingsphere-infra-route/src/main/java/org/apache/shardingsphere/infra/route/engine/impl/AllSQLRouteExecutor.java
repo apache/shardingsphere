@@ -18,15 +18,13 @@
 package org.apache.shardingsphere.infra.route.engine.impl;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteExecutor;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 
 /**
  * All SQL route executor.
@@ -34,18 +32,10 @@ import java.util.LinkedHashSet;
 public final class AllSQLRouteExecutor implements SQLRouteExecutor {
     
     @Override
-    public RouteContext route(final LogicSQL logicSQL, final ShardingSphereSchema schema) {
+    public RouteContext route(final LogicSQL logicSQL, final ShardingSphereMetaData metaData) {
         RouteContext result = new RouteContext();
-        for (String each : getAllDataSourceNames(schema)) {
+        for (String each : metaData.getResource().getDataSources().keySet()) {
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
-        }
-        return result;
-    }
-    
-    private Collection<String> getAllDataSourceNames(final ShardingSphereSchema schema) {
-        Collection<String> result = new LinkedHashSet<>();
-        for (Collection<String> each : schema.getMetaData().getTableAddressingMetaData().getTableDataSourceNamesMapper().values()) {
-            result.addAll(each);
         }
         return result;
     }

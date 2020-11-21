@@ -25,7 +25,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class RuleConfigurationTest {
+public final class RuleConfigurationTest {
     
     @Test
     public void assertToJDBConfiguration() {

@@ -21,7 +21,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
-import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
+import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
 import java.util.Collection;
@@ -31,25 +32,28 @@ import java.util.Collection;
  */
 @Slf4j
 @Getter
-public final class InventoryDataScalingTaskGroup extends AbstractShardingScalingExecutor<InventoryPosition> implements ScalingTask<InventoryPosition> {
+public final class InventoryDataScalingTaskGroup extends AbstractShardingScalingExecutor implements ScalingTask {
     
-    private final Collection<ScalingTask<InventoryPosition>> scalingTasks;
+    private final Collection<ScalingTask> scalingTasks;
     
-    public InventoryDataScalingTaskGroup(final Collection<ScalingTask<InventoryPosition>> inventoryDataScalingTasks) {
+    public InventoryDataScalingTaskGroup(final Collection<ScalingTask> inventoryDataScalingTasks) {
         scalingTasks = inventoryDataScalingTasks;
     }
     
     @Override
     public void start() {
         super.start();
-        for (ScalingTask<InventoryPosition> each : scalingTasks) {
-            each.start();
+        for (ScalingTask each : scalingTasks) {
+            PositionManager positionManager = each.getPositionManager();
+            if (null != positionManager && !(positionManager.getPosition() instanceof FinishedPosition)) {
+                each.start();
+            }
         }
     }
     
     @Override
     public void stop() {
-        for (ScalingTask<InventoryPosition> each : scalingTasks) {
+        for (ScalingTask each : scalingTasks) {
             each.stop();
         }
     }
@@ -57,7 +61,7 @@ public final class InventoryDataScalingTaskGroup extends AbstractShardingScaling
     @Override
     public SyncProgress getProgress() {
         InventoryDataSyncTaskProgressGroup result = new InventoryDataSyncTaskProgressGroup();
-        for (ScalingTask<InventoryPosition> each : scalingTasks) {
+        for (ScalingTask each : scalingTasks) {
             result.addSyncProgress(each.getProgress());
         }
         return result;

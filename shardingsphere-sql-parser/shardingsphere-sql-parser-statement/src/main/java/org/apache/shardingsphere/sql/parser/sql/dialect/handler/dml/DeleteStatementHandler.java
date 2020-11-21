@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -72,6 +73,19 @@ public final class DeleteStatementHandler implements SQLStatementHandler {
     public static Optional<OutputSegment> getOutputSegment(final DeleteStatement deleteStatement) {
         if (deleteStatement instanceof SQLServerStatement) {
             return ((SQLServerDeleteStatement) deleteStatement).getOutputSegment();
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Get with segment.
+     *
+     * @param deleteStatement delete statement
+     * @return with segment
+     */
+    public static Optional<WithSegment> getWithSegment(final DeleteStatement deleteStatement) {
+        if (deleteStatement instanceof SQLServerStatement) {
+            return ((SQLServerDeleteStatement) deleteStatement).getWithSegment();
         }
         return Optional.empty();
     }

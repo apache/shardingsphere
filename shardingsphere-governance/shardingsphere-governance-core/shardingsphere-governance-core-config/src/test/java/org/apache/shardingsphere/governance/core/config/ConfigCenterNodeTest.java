@@ -32,18 +32,13 @@ public final class ConfigCenterNodeTest {
     private final ConfigCenterNode configurationNode = new ConfigCenterNode();
     
     @Test
-    public void assertGetSchemaPath() {
-        assertThat(configurationNode.getRulePath(DefaultSchema.LOGIC_NAME), is("/schemas/logic_db/rule"));
-    }
-    
-    @Test
     public void assertGetDataSourcePath() {
-        assertThat(configurationNode.getDataSourcePath(DefaultSchema.LOGIC_NAME), is("/schemas/logic_db/datasource"));
+        assertThat(configurationNode.getDataSourcePath(DefaultSchema.LOGIC_NAME), is("/metadata/logic_db/datasource"));
     }
     
     @Test
     public void assertGetRulePath() {
-        assertThat(configurationNode.getRulePath(DefaultSchema.LOGIC_NAME), is("/schemas/logic_db/rule"));
+        assertThat(configurationNode.getRulePath(DefaultSchema.LOGIC_NAME), is("/metadata/logic_db/rule"));
     }
     
     @Test
@@ -58,27 +53,27 @@ public final class ConfigCenterNodeTest {
     
     @Test
     public void assertGetSchemaName() {
-        assertThat(configurationNode.getSchemaName("/schemas/logic_db/rule"), is(DefaultSchema.LOGIC_NAME));
+        assertThat(configurationNode.getSchemaName("/metadata/logic_db/rule"), is(DefaultSchema.LOGIC_NAME));
     }
     
     @Test
     public void assertGetAllSchemaConfigPaths() {
         Collection<String> actual = configurationNode.getAllSchemaConfigPaths(Collections.singletonList(DefaultSchema.LOGIC_NAME));
         assertThat(actual.size(), is(5));
-        assertThat(actual, hasItems("/schemas"));
-        assertThat(actual, hasItems("/schemas/logic_db"));
-        assertThat(actual, hasItems("/schemas/logic_db/rule"));
-        assertThat(actual, hasItems("/schemas/logic_db/datasource"));
-        assertThat(actual, hasItems("/schemas/logic_db/table"));
+        assertThat(actual, hasItems("/metadata"));
+        assertThat(actual, hasItems("/metadata/logic_db"));
+        assertThat(actual, hasItems("/metadata/logic_db/rule"));
+        assertThat(actual, hasItems("/metadata/logic_db/datasource"));
+        assertThat(actual, hasItems("/metadata/logic_db/schema"));
     }
     
     @Test
     public void assertGetSchemaNamePath() {
-        assertThat(configurationNode.getSchemaNamePath("sharding_db"), is("/schemas/sharding_db"));
+        assertThat(configurationNode.getSchemaNamePath("sharding_db"), is("/metadata/sharding_db"));
     }
     
     @Test
     public void assertGetTablePath() {
-        assertThat(configurationNode.getTablePath("sharding_db"), is("/schemas/sharding_db/table"));
+        assertThat(configurationNode.getSchemaPath("sharding_db"), is("/metadata/sharding_db/schema"));
     }
 }

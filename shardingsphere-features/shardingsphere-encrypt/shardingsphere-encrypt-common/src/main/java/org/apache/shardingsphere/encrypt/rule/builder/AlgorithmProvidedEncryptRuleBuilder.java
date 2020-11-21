@@ -20,9 +20,7 @@ package org.apache.shardingsphere.encrypt.rule.builder;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 
 /**
  * Algorithm provided encrypt rule builder.
@@ -30,7 +28,7 @@ import java.util.Collection;
 public final class AlgorithmProvidedEncryptRuleBuilder implements ShardingSphereRuleBuilder<EncryptRule, AlgorithmProvidedEncryptRuleConfiguration> {
     
     @Override
-    public EncryptRule build(final AlgorithmProvidedEncryptRuleConfiguration ruleConfig, final Collection<String> dataSourceNames) {
+    public EncryptRule build(final AlgorithmProvidedEncryptRuleConfiguration ruleConfig) {
         return new EncryptRule(ruleConfig);
     }
     

@@ -17,27 +17,21 @@
 
 package org.apache.shardingsphere.scaling.core.job.preparer.resumer;
 
-import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
-import org.apache.shardingsphere.scaling.core.job.position.BasePositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
-import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManager;
 import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManagerFactory;
+import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -47,31 +41,22 @@ import static org.mockito.Mockito.verify;
 
 public final class SyncPositionResumerTest {
     
-    private static final String DATA_SOURCE_URL = "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
-    
-    private static final String USERNAME = "root";
-    
-    private static final String PASSWORD = "password";
-    
     private ShardingScalingJob shardingScalingJob;
-    
-    private ResumeBreakPointManager resumeBreakPointManager;
     
     private SyncPositionResumer syncPositionResumer;
     
     @Before
     public void setUp() {
         ScalingContext.getInstance().init(new ServerConfiguration());
-        shardingScalingJob = new ShardingScalingJob(mockScalingConfiguration());
-        shardingScalingJob.getSyncConfigurations().add(mockSyncConfiguration());
-        resumeBreakPointManager = ResumeBreakPointManagerFactory.newInstance("MySQL", "/scalingTest/position/0");
+        shardingScalingJob = mockShardingScalingJob();
         syncPositionResumer = new SyncPositionResumer();
     }
     
     @Test
     public void assertResumePosition() {
-        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0", new InventoryPositionManager<>(new PrimaryKeyPosition(0, 100)));
-        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0.t_order", new BasePositionManager<>());
+        ResumeBreakPointManager resumeBreakPointManager = ResumeBreakPointManagerFactory.newInstance("MySQL", "/scalingTest/position/0");
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0", new PositionManager(new PrimaryKeyPosition(0, 100)));
+        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0.t_order", new PositionManager(new PlaceholderPosition()));
         syncPositionResumer.resumePosition(shardingScalingJob, new DataSourceManager(), resumeBreakPointManager);
         assertThat(shardingScalingJob.getIncrementalDataTasks().size(), is(1));
         assertTrue(shardingScalingJob.getInventoryDataTasks().isEmpty());
@@ -85,26 +70,8 @@ public final class SyncPositionResumerTest {
         verify(resumeBreakPointManager).persistInventoryPosition();
     }
     
-    private ScalingConfiguration mockScalingConfiguration() {
-        ScalingConfiguration result = new ScalingConfiguration();
-        result.setJobConfiguration(new JobConfiguration());
-        return result;
-    }
-    
-    private SyncConfiguration mockSyncConfiguration() {
-        DumperConfiguration dumperConfig = mockDumperConfig();
-        ImporterConfiguration importerConfig = new ImporterConfiguration();
-        return new SyncConfiguration(3, dumperConfig, importerConfig);
-    }
-    
-    private DumperConfiguration mockDumperConfig() {
-        ScalingDataSourceConfiguration dataSourceConfig = new JDBCScalingDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
-        DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceName("ds0");
-        result.setDataSourceConfiguration(dataSourceConfig);
-        Map<String, String> tableMap = new HashMap<>();
-        tableMap.put("t_order", "t_order");
-        result.setTableNameMap(tableMap);
-        return result;
+    @SneakyThrows(IOException.class)
+    private ShardingScalingJob mockShardingScalingJob() {
+        return ScalingConfigurationUtil.initJob("/config.json");
     }
 }

@@ -20,10 +20,8 @@ blockQueueSize: 10000
 pushTimeout: 1000
 workerThread: 30
 
-#resumeBreakPoint:
-#  name: scalingJob
+#distributedScalingService:
+#  name: ScalingJob
 #  registryCenter:
 #    type: ZooKeeper
 #    serverLists: localhost:2181
-#    props:
-#      retryIntervalMilliseconds: 10000

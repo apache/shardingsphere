@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.listener;
 
 import org.apache.shardingsphere.governance.core.registry.util.FieldUtil;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -36,7 +36,7 @@ public final class RegistryListenerManagerTest {
     private RegistryRepository registryRepository;
     
     @Mock
-    private InstanceStateChangedListener instanceStateChangedListener;
+    private TerminalStateChangedListener terminalStateChangedListener;
     
     @Mock
     private DataSourceStateChangedListener dataSourceStateChangedListener;
@@ -44,10 +44,10 @@ public final class RegistryListenerManagerTest {
     @Test
     public void assertInitListeners() {
         RegistryListenerManager actual = new RegistryListenerManager(registryRepository, Arrays.asList("sharding_db", "replica_query_db", "encrypt_db"));
-        FieldUtil.setField(actual, "instanceStateChangedListener", instanceStateChangedListener);
+        FieldUtil.setField(actual, "terminalStateChangedListener", terminalStateChangedListener);
         FieldUtil.setField(actual, "dataSourceStateChangedListener", dataSourceStateChangedListener);
         actual.initListeners();
-        verify(instanceStateChangedListener).watch(ChangedType.UPDATED);
-        verify(dataSourceStateChangedListener).watch(ChangedType.UPDATED, ChangedType.DELETED, ChangedType.ADDED);
+        verify(terminalStateChangedListener).watch(Type.UPDATED);
+        verify(dataSourceStateChangedListener).watch(Type.UPDATED, Type.DELETED, Type.ADDED);
     }
 }

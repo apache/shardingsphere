@@ -17,28 +17,29 @@
 
 package org.apache.shardingsphere.governance.core.config.listener;
 
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
+import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.model.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
-import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Properties changed listener.
  */
-public final class PropertiesChangedListener extends PostGovernanceRepositoryEventListener {
+public final class PropertiesChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
     public PropertiesChangedListener(final ConfigurationRepository configurationRepository) {
         super(configurationRepository, Collections.singletonList(new ConfigCenterNode().getPropsPath()));
     }
     
     @Override
-    protected Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return Optional.of(new PropertiesChangedEvent(YamlEngine.unmarshalProperties(event.getValue())));
+    protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
+        return Optional.of(new PropertiesChangedEvent(YamlEngine.unmarshalProperties(event.getValue(), Collections.singletonList(Properties.class))));
     }
 }

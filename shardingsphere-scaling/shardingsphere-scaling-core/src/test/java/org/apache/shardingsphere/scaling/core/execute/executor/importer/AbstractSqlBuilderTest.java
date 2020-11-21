@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
-import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,13 +31,13 @@ import java.util.Collection;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class AbstractSqlBuilderTest {
+public final class AbstractSqlBuilderTest {
     
     private AbstractSQLBuilder sqlBuilder;
     
     @Before
     public void setUp() {
-        sqlBuilder = new AbstractSQLBuilder() {
+        sqlBuilder = new AbstractSQLBuilder(Maps.newHashMap()) {
             
             @Override
             protected String getLeftIdentifierQuoteString() {
@@ -87,7 +88,7 @@ public class AbstractSqlBuilderTest {
     }
     
     private DataRecord mockDataRecord(final String tableName) {
-        DataRecord result = new DataRecord(new NopPosition(), 4);
+        DataRecord result = new DataRecord(new PlaceholderPosition(), 4);
         result.setTableName(tableName);
         result.addColumn(new Column("id", "", false, true));
         result.addColumn(new Column("sc", "", false, false));

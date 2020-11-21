@@ -28,7 +28,7 @@ insertSpecification
     ;
 
 insertValuesClause
-    : columnNames? (VALUES | VALUE) (assignmentValues (COMMA_ assignmentValues)* | rowConstructorList) valueReference?
+    : (LP_ RP_ | columnNames)? (VALUES | VALUE) (assignmentValues (COMMA_ assignmentValues)* | rowConstructorList) valueReference?
     ;
 
 insertSelectClause
@@ -108,10 +108,6 @@ multipleTablesClause
     : tableAliasRefList FROM tableReferences | FROM tableAliasRefList USING tableReferences
     ;
 
-multipleTableNames
-    : tableName DOT_ASTERISK_? (COMMA_ tableName DOT_ASTERISK_?)*
-    ;
-
 select
     : queryExpression lockClauseList?
     | queryExpressionParens
@@ -131,6 +127,7 @@ queryExpression
 queryExpressionBody
     : queryPrimary
     | queryExpressionParens UNION unionOption? (queryPrimary | queryExpressionParens)
+    | queryExpressionBody UNION unionOption? (queryPrimary | queryExpressionParens)
     ;
 
 queryExpressionParens
@@ -257,19 +254,19 @@ qualifiedShorthand
     ;
 
 fromClause
-    : FROM tableReferences
+    : FROM (DUAL | tableReferences)
     ;
 
 tableReferences
-    : escapedTableReference (COMMA_ escapedTableReference)*
+    : tableReference (COMMA_ tableReference)*
     ;
 
 escapedTableReference
-    : tableReference  | LBE_ OJ tableReference RBE_
+    : tableFactor joinedTable*
     ;
 
 tableReference
-    : tableFactor joinedTable*
+    : (tableFactor | LBE_ OJ escapedTableReference RBE_) joinedTable*
     ;
 
 tableFactor
@@ -289,9 +286,23 @@ indexHint
     ;
 
 joinedTable
-    : ((INNER | CROSS)? JOIN | STRAIGHT_JOIN) tableFactor joinSpecification?
-    | (LEFT | RIGHT) OUTER? JOIN tableFactor joinSpecification
-    | NATURAL (INNER | (LEFT | RIGHT) (OUTER))? JOIN tableFactor
+    : innerJoinType tableReference joinSpecification?
+    | outerJoinType tableReference joinSpecification
+    | naturalJoinType tableFactor
+    ;
+
+innerJoinType
+    : (INNER | CROSS)? JOIN
+    | STRAIGHT_JOIN
+    ;
+
+outerJoinType
+    : (LEFT | RIGHT) OUTER? JOIN
+    ;
+
+naturalJoinType
+    : NATURAL INNER? JOIN
+    | NATURAL (LEFT | RIGHT) OUTER? JOIN
     ;
 
 joinSpecification
@@ -348,8 +359,7 @@ selectIntoExpression
     ;
 
 lockClause
-    : FOR lockStrength lockedRowAction?
-    | FOR lockStrength
+    : FOR lockStrength tableLockingList? lockedRowAction?
     | LOCK IN SHARE MODE
     ;
 
@@ -374,5 +384,5 @@ tableIdentOptWild
     ;
 
 tableAliasRefList
-    : tableIdentOptWild+
+    : tableIdentOptWild (COMMA_ tableIdentOptWild)*
     ;

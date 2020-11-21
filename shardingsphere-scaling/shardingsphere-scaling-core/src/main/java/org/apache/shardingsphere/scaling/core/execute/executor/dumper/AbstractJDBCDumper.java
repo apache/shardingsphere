@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
@@ -32,14 +33,12 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.scaling.core.job.position.FinishedInventoryPosition;
-import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
-import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderInventoryPosition;
+import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
 import org.apache.shardingsphere.scaling.core.utils.RdbmsConfigurationUtil;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.table.PhysicalTableMetaData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -51,14 +50,14 @@ import java.sql.SQLException;
  * Abstract JDBC dumper implement.
  */
 @Slf4j
-public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor<InventoryPosition> implements JDBCDumper {
+public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor implements JDBCDumper {
     
     @Getter(AccessLevel.PROTECTED)
     private final InventoryDumperConfiguration inventoryDumperConfiguration;
     
     private final DataSourceManager dataSourceManager;
     
-    private final PhysicalTableMetaData tableMetaData;
+    private final TableMetaData tableMetaData;
     
     @Setter
     private Channel channel;
@@ -72,7 +71,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
         tableMetaData = createTableMetaData();
     }
     
-    private PhysicalTableMetaData createTableMetaData() {
+    private TableMetaData createTableMetaData() {
         MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(inventoryDumperConfiguration.getDataSourceConfiguration()));
         return metaDataManager.getTableMetaData(inventoryDumperConfiguration.getTableName());
     }
@@ -90,27 +89,27 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
             while (isRunning() && rs.next()) {
-                DataRecord record = new DataRecord(newInventoryPosition(rs), metaData.getColumnCount());
+                DataRecord record = new DataRecord(newPosition(rs), metaData.getColumnCount());
                 record.setType(ScalingConstant.INSERT);
                 record.setTableName(inventoryDumperConfiguration.getTableNameMap().get(inventoryDumperConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                    record.addColumn(new Column(metaData.getColumnName(i), readValue(rs, i), true, tableMetaData.isPrimaryKey(i)));
+                    record.addColumn(new Column(metaData.getColumnName(i), readValue(rs, i), true, tableMetaData.isPrimaryKey(i - 1)));
                 }
                 pushRecord(record);
             }
-            pushRecord(new FinishedRecord(new FinishedInventoryPosition()));
+            pushRecord(new FinishedRecord(new FinishedPosition()));
         } catch (final SQLException ex) {
             stop();
             channel.close();
             throw new SyncTaskExecuteException(ex);
         } finally {
-            pushRecord(new FinishedRecord(new NopPosition()));
+            pushRecord(new FinishedRecord(new PlaceholderPosition()));
         }
     }
     
-    private InventoryPosition newInventoryPosition(final ResultSet rs) throws SQLException {
+    private Position<?> newPosition(final ResultSet rs) throws SQLException {
         if (null == inventoryDumperConfiguration.getPrimaryKey()) {
-            return new PlaceholderInventoryPosition();
+            return new PlaceholderPosition();
         }
         return new PrimaryKeyPosition(rs.getLong(inventoryDumperConfiguration.getPrimaryKey()), ((PrimaryKeyPosition) inventoryDumperConfiguration.getPositionManager().getPosition()).getEndValue());
     }

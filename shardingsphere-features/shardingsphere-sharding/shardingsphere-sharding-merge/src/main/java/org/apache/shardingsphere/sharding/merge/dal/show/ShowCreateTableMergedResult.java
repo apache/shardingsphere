@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.merge.dal.show;
 
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 
 import java.sql.SQLException;
@@ -32,8 +32,8 @@ import java.util.List;
 public final class ShowCreateTableMergedResult extends LogicTablesMergedResult {
     
     public ShowCreateTableMergedResult(final ShardingRule shardingRule,
-                                       final SQLStatementContext sqlStatementContext, final PhysicalSchemaMetaData schemaMetaData, final List<QueryResult> queryResults) throws SQLException {
-        super(shardingRule, sqlStatementContext, schemaMetaData, queryResults);
+                                       final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
+        super(shardingRule, sqlStatementContext, schema, queryResults);
     }
     
     @Override

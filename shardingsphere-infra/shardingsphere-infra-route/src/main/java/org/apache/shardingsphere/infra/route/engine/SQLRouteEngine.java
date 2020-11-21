@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.route.engine.impl.AllSQLRouteExecutor;
 import org.apache.shardingsphere.infra.route.engine.impl.PartialSQLRouteExecutor;
 import org.apache.shardingsphere.infra.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
@@ -47,15 +47,15 @@ public final class SQLRouteEngine {
      * Route SQL.
      *
      * @param logicSQL logic SQL
-     * @param schema ShardingSphere schema
+     * @param metaData ShardingSphere meta data
      * @return route context
      */
-    public RouteContext route(final LogicSQL logicSQL, final ShardingSphereSchema schema) {
+    public RouteContext route(final LogicSQL logicSQL, final ShardingSphereMetaData metaData) {
         routingHook.start(logicSQL.getSql());
         try {
             SQLRouteExecutor executor = isNeedAllSchemas(logicSQL.getSqlStatementContext().getSqlStatement()) ? new AllSQLRouteExecutor() : new PartialSQLRouteExecutor(rules, props);
-            RouteContext result = executor.route(logicSQL, schema);
-            routingHook.finishSuccess(result, schema.getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData());
+            RouteContext result = executor.route(logicSQL, metaData);
+            routingHook.finishSuccess(result, metaData.getSchema());
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {

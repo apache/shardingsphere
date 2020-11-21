@@ -19,21 +19,30 @@ package org.apache.shardingsphere.scaling.core.job.task.inventory;
 
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class InventoryDataScalingTaskGroupTest {
     
     private DataSourceManager dataSourceManager;
+    
+    @Mock
+    private ScalingTask scalingTask;
     
     @Before
     public void setUp() {
@@ -47,7 +56,7 @@ public final class InventoryDataScalingTaskGroupTest {
     
     @Test
     public void assertStart() {
-        ScalingTask scalingTask = mock(ScalingTask.class);
+        when(scalingTask.getPositionManager()).thenReturn(new PositionManager(new PlaceholderPosition()));
         InventoryDataScalingTaskGroup inventoryDataSyncTaskGroup = new InventoryDataScalingTaskGroup(Collections.singletonList(scalingTask));
         inventoryDataSyncTaskGroup.start();
         verify(scalingTask).start();
@@ -55,7 +64,6 @@ public final class InventoryDataScalingTaskGroupTest {
     
     @Test
     public void assertStop() {
-        ScalingTask scalingTask = mock(ScalingTask.class);
         InventoryDataScalingTaskGroup inventoryDataSyncTaskGroup = new InventoryDataScalingTaskGroup(Collections.singletonList(scalingTask));
         inventoryDataSyncTaskGroup.stop();
         verify(scalingTask).stop();

@@ -17,22 +17,26 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.channel;
 
-import com.google.gson.JsonElement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.PlaceholderRecord;
-import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
-import org.apache.shardingsphere.scaling.core.utils.ThreadUtil;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -40,61 +44,84 @@ import static org.junit.Assert.assertTrue;
 
 public final class DistributionChannelTest {
     
-    private DistributionChannel distributionChannel;
-    
     @Before
     public void setUp() {
         ScalingContext.getInstance().init(new ServerConfiguration());
     }
     
     @Test
-    public void assertAckCallbackResultSortable() throws InterruptedException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        distributionChannel = new DistributionChannel(2, records -> {
-            assertThat(records.size(), is(2));
-            assertTrue(((IntPosition) records.get(0).getPosition()).getId() < ((IntPosition) records.get(1).getPosition()).getId());
-        });
-        distributionChannel.pushRecord(new PlaceholderRecord(new IntPosition(1)));
-        distributionChannel.pushRecord(new PlaceholderRecord(new IntPosition(2)));
-        fetchRecordsAndSleep(0);
-        fetchRecordsAndSleep(1);
-        ReflectionUtil.invokeMethod(distributionChannel, "ackRecords0");
-    }
-    
-    private void fetchRecordsAndSleep(final int millis) {
-        new Thread(() -> {
-            distributionChannel.fetchRecords(1, 0);
-            if (millis > 0) {
-                ThreadUtil.sleep(millis);
+    public void assertAckCallbackResultSortable() {
+        Record[] records = mockRecords();
+        AtomicInteger lastId = new AtomicInteger();
+        execute(ackRecords -> {
+            for (Record record : ackRecords) {
+                final int currentId = ((IntPosition) record.getPosition()).getId();
+                assertTrue(currentId > lastId.get());
+                lastId.set(currentId);
             }
-            distributionChannel.ack();
-        }).start();
+        }, countDataRecord(records), records);
     }
     
     @Test
-    public void assertBroadcastFinishedRecord() throws InterruptedException {
-        distributionChannel = new DistributionChannel(2, records -> assertThat(records.size(), is(2)));
-        distributionChannel.pushRecord(new FinishedRecord(new NopPosition()));
+    public void assertBroadcastFinishedRecord() {
+        execute(records -> assertThat(records.size(), is(2)), 2, new FinishedRecord(new PlaceholderPosition()));
     }
     
-    @After
-    public void tearDown() {
+    @SneakyThrows(InterruptedException.class)
+    private void execute(final AckCallback ackCallback, final int count, final Record... records) {
+        CountDownLatch countDownLatch = new CountDownLatch(count);
+        AtomicBoolean acknowledged = new AtomicBoolean();
+        DistributionChannel distributionChannel = new DistributionChannel(2, ackRecords -> {
+            ackCallback.onAck(ackRecords);
+            acknowledged.set(true);
+        });
+        fetchWithMultiThreading(distributionChannel, countDownLatch);
+        for (Record record : records) {
+            distributionChannel.pushRecord(record);
+        }
+        countDownLatch.await();
         distributionChannel.close();
+        assertTrue(acknowledged.get());
+    }
+    
+    private void fetchWithMultiThreading(final DistributionChannel distributionChannel, final CountDownLatch countDownLatch) {
+        for (int i = 0; i < 2; i++) {
+            new Thread(() -> {
+                while (true) {
+                    List<Record> records = distributionChannel.fetchRecords(100, 0);
+                    distributionChannel.ack();
+                    records.forEach(each -> countDownLatch.countDown());
+                }
+            }).start();
+        }
+    }
+    
+    private Record[] mockRecords() {
+        Record[] result = new Record[100];
+        Random random = new Random();
+        for (int i = 1; i <= result.length; i++) {
+            if (random.nextBoolean()) {
+                result[i - 1] = new DataRecord(new IntPosition(i), 0);
+            } else {
+                result[i - 1] = new PlaceholderRecord(new IntPosition(i));
+            }
+        }
+        return result;
+    }
+    
+    private int countDataRecord(final Record[] records) {
+        return (int) Arrays.stream(records).filter(each -> each instanceof DataRecord).count();
     }
     
     @AllArgsConstructor
     @Getter
-    private static class IntPosition implements Position {
+    private static final class IntPosition implements Position<IntPosition> {
         
         private final int id;
         
         @Override
-        public int compareTo(final Position position) {
-            return id - ((IntPosition) position).id;
-        }
-        
-        @Override
-        public JsonElement toJson() {
-            return null;
+        public int compareTo(final IntPosition position) {
+            return id - position.id;
         }
     }
 }
