@@ -20,6 +20,7 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -74,6 +75,6 @@ public final class ShardingCTLExplainBackendHandlerTest {
     public void assertGetRowData() {
         handler.execute();
         assertTrue(handler.next());
-        assertThat(handler.getRowData().get(1), is("select 1"));
+        assertThat(((List) handler.getRowData()).get(1), is("select 1"));
     }
 }
