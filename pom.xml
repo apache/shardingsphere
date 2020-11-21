@@ -84,7 +84,7 @@
         <nacos.client.verison>1.1.4</nacos.client.verison>
         <jetcd.version>0.5.0</jetcd.version>
         
-        <lombok.version>1.16.20</lombok.version>
+        <lombok.version>1.18.16</lombok.version>
         
         <springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
         <spring-boot.version>[1.5.20.RELEASE,2.0.0.M1)</spring-boot.version>
