@@ -22,9 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.group.AbstractExecutionGroupEngine;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.ExecutorDriverManager;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.DriverExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.StorageResourceOption;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.sql.SQLException;
