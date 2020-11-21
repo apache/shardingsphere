@@ -22,14 +22,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.route.context.RawGroup;
 
 /**
- * Raw SQL execute unit.
+ * Raw SQL execution unit.
  */
 @RequiredArgsConstructor
 @Getter
-public final class RawSQLExecuteUnit {
+public final class RawSQLExecutionUnit implements SQLExecutionUnit {
     
     private final ExecutionUnit executionUnit;
     

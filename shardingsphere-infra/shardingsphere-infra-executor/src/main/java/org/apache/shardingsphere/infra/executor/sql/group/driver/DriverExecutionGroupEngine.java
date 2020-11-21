@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.group.AbstractExecutionGroupEngine;
-import org.apache.shardingsphere.infra.executor.sql.execute.resourced.ExecutionConnection;
-import org.apache.shardingsphere.infra.executor.sql.execute.resourced.ResourceManagedExecuteUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.resourced.StorageResourceOption;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.ExecutorDriverManager;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.DriverExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.StorageResourceOption;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.sql.SQLException;
@@ -36,27 +36,27 @@ import java.util.List;
  * Driver execution group engine.
  * 
  * @param <T> type of storage resource execute unit
- * @param <E> type of execution connection
+ * @param <M> type of driver executor manager
  * @param <C> type of resource connection
  * @param <O> type of storage resource option
  */
 public abstract class DriverExecutionGroupEngine
-        <T extends ResourceManagedExecuteUnit<?>, E extends ExecutionConnection<C, ?, O>, C, O extends StorageResourceOption> extends AbstractExecutionGroupEngine<T> {
+        <T extends DriverExecutionUnit<?>, M extends ExecutorDriverManager<C, ?, O>, C, O extends StorageResourceOption> extends AbstractExecutionGroupEngine<T> {
     
-    private final E executionConnection;
+    private final M executorDriverManager;
     
     private final O option;
     
-    protected DriverExecutionGroupEngine(final int maxConnectionsSizePerQuery, final E executionConnection, final O option, final Collection<ShardingSphereRule> rules) {
+    protected DriverExecutionGroupEngine(final int maxConnectionsSizePerQuery, final M executorDriverManager, final O option, final Collection<ShardingSphereRule> rules) {
         super(maxConnectionsSizePerQuery, rules);
-        this.executionConnection = executionConnection;
+        this.executorDriverManager = executorDriverManager;
         this.option = option;
     }
     
     @Override
     protected final List<ExecutionGroup<T>> group(final String dataSourceName, final List<List<SQLUnit>> sqlUnitGroups, final ConnectionMode connectionMode) throws SQLException {
         List<ExecutionGroup<T>> result = new LinkedList<>();
-        List<C> connections = executionConnection.getConnections(dataSourceName, sqlUnitGroups.size(), connectionMode);
+        List<C> connections = executorDriverManager.getConnections(dataSourceName, sqlUnitGroups.size(), connectionMode);
         int count = 0;
         for (List<SQLUnit> each : sqlUnitGroups) {
             result.add(createExecutionGroup(dataSourceName, each, connections.get(count++), connectionMode));
@@ -67,10 +67,10 @@ public abstract class DriverExecutionGroupEngine
     private ExecutionGroup<T> createExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnits, final C connection, final ConnectionMode connectionMode) throws SQLException {
         List<T> result = new LinkedList<>();
         for (SQLUnit each : sqlUnits) {
-            result.add(createStorageResourceExecuteUnit(new ExecutionUnit(dataSourceName, each), executionConnection, connection, connectionMode, option));
+            result.add(createDriverSQLExecutionUnit(new ExecutionUnit(dataSourceName, each), executorDriverManager, connection, connectionMode, option));
         }
         return new ExecutionGroup<>(result);
     }
     
-    protected abstract T createStorageResourceExecuteUnit(ExecutionUnit executionUnit, E executionConnection, C connection, ConnectionMode connectionMode, O option) throws SQLException;
+    protected abstract T createDriverSQLExecutionUnit(ExecutionUnit executionUnit, M executorManager, C connection, ConnectionMode connectionMode, O option) throws SQLException;
 }

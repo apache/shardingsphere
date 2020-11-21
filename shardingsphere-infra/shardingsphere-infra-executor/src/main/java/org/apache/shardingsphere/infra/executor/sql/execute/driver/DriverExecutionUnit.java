@@ -15,15 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.resourced.jdbc.executor;
+package org.apache.shardingsphere.infra.executor.sql.execute.driver;
 
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.resourced.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.SQLExecutionUnit;
 
 /**
- * SQL executor callback.
- *
- * @param <T> class type of return value
+ * Driver execution unit.
+ * 
+ * @param <T> type of storage resource
  */
-public interface SQLExecutorCallback<T> extends ExecutorCallback<StatementExecuteUnit, T> {
+public interface DriverExecutionUnit<T> extends SQLExecutionUnit {
+    
+    /**
+     * Get storage resource.
+     * 
+     * @return storage resource
+     */
+    T getStorageResource();
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.resourced;
+package org.apache.shardingsphere.infra.executor.sql.execute.driver;
 
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 
@@ -23,13 +23,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Execution connection.
+ * Executor driver manager.
  * 
  * @param <C> type of resource connection
  * @param <R> type of storage resource
  * @param <O> type of storage resource option
  */
-public interface ExecutionConnection<C, R, O> {
+public interface ExecutorDriverManager<C, R, O> {
     
     /**
      * Get connections.

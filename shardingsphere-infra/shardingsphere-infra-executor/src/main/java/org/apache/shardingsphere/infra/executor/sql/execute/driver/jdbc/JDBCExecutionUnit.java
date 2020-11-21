@@ -15,10 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.resourced;
+package org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.DriverExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
+
+import java.sql.Statement;
 
 /**
- * Storage resource option.
+ * JDBC execution unit.
  */
-public interface StorageResourceOption {
+@RequiredArgsConstructor
+@Getter
+public final class JDBCExecutionUnit implements DriverExecutionUnit<Statement> {
+    
+    private final ExecutionUnit executionUnit;
+    
+    private final ConnectionMode connectionMode;
+    
+    private final Statement storageResource;
 }
