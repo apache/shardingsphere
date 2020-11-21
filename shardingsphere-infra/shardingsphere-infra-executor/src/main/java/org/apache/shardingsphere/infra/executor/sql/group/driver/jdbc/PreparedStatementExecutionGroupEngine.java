@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.StatementOption;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.connection.ExecutorJDBCManager;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.group.driver.DriverExecutionGroupEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 

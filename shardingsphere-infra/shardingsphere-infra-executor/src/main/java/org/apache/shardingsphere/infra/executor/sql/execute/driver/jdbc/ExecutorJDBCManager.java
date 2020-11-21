@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.connection;
+package org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.ExecutorDriverManager;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.StatementOption;
 
 import java.sql.Connection;
 import java.sql.Statement;

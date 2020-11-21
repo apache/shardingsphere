@@ -25,7 +25,7 @@ import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTempla
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.connection.ExecutorJDBCManager;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.hook.RootInvokeHook;
 import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
