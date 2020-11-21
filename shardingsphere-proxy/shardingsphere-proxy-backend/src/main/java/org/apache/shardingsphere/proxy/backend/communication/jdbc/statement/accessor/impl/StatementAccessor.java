@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.impl;
 
-import org.apache.shardingsphere.infra.executor.sql.group.resourced.jdbc.StatementExecutionGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.group.driver.jdbc.StatementExecutionGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;

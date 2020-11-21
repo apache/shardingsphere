@@ -48,7 +48,7 @@ import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.RawSQLE
 import org.apache.shardingsphere.infra.executor.sql.group.raw.RawExecutionGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
-import org.apache.shardingsphere.infra.executor.sql.group.resourced.jdbc.StatementExecutionGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.group.driver.jdbc.StatementExecutionGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.query.jdbc.StreamJDBCQueryResult;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
