@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.raw.group;
+package org.apache.shardingsphere.infra.executor.sql.group.raw;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.group.AbstractExecuteGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.group.AbstractExecutionGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
@@ -31,34 +31,34 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Raw execute group engine.
+ * Raw execution group engine.
  */
-public final class RawExecuteGroupEngine extends AbstractExecuteGroupEngine<RawSQLExecuteUnit> {
+public final class RawExecutionGroupEngine extends AbstractExecutionGroupEngine<RawSQLExecuteUnit> {
     
     private final int maxConnectionsSizePerQuery;
     
-    public RawExecuteGroupEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
+    public RawExecutionGroupEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
         super(rules);
         this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
     }
     
     @Override
-    protected List<InputGroup<RawSQLExecuteUnit>> group(final String dataSourceName, final List<SQLUnit> sqlUnits) {
-        List<InputGroup<RawSQLExecuteUnit>> result = new LinkedList<>();
+    protected List<ExecutionGroup<RawSQLExecuteUnit>> group(final String dataSourceName, final List<SQLUnit> sqlUnits) {
+        List<ExecutionGroup<RawSQLExecuteUnit>> result = new LinkedList<>();
         int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
         List<List<SQLUnit>> sqlUnitPartitions = Lists.partition(sqlUnits, desiredPartitionSize);
         ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
         for (List<SQLUnit> each : sqlUnitPartitions) {
-            result.add(generateSQLExecuteGroup(dataSourceName, each, connectionMode));
+            result.add(createSQLExecutionGroup(dataSourceName, each, connectionMode));
         }
         return result;
     }
     
-    private InputGroup<RawSQLExecuteUnit> generateSQLExecuteGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final ConnectionMode connectionMode) {
+    private ExecutionGroup<RawSQLExecuteUnit> createSQLExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final ConnectionMode connectionMode) {
         List<RawSQLExecuteUnit> rawSQLExecuteUnits = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
             rawSQLExecuteUnits.add(new RawSQLExecuteUnit(new ExecutionUnit(dataSourceName, each), connectionMode));
         }
-        return new InputGroup<>(rawSQLExecuteUnits);
+        return new ExecutionGroup<>(rawSQLExecuteUnits);
     }
 }

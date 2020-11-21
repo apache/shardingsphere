@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group;
+package org.apache.shardingsphere.infra.executor.sql.group.resourced.jdbc;
 
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JDBCExecutionConnection;
-import org.apache.shardingsphere.infra.executor.sql.resourced.group.ResourceManagedExecuteGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.group.resourced.ResourceManagedExecutionGroupEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.sql.Connection;
@@ -32,12 +32,12 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Execute group engine for prepared statement.
+ * Execution group engine for prepared statement.
  */
-public final class PreparedStatementExecuteGroupEngine extends ResourceManagedExecuteGroupEngine<StatementExecuteUnit, JDBCExecutionConnection, Connection, StatementOption> {
+public final class PreparedStatementExecutionGroupEngine extends ResourceManagedExecutionGroupEngine<StatementExecuteUnit, JDBCExecutionConnection, Connection, StatementOption> {
     
-    public PreparedStatementExecuteGroupEngine(final int maxConnectionsSizePerQuery,
-                                               final JDBCExecutionConnection executionConnection, final StatementOption option, final Collection<ShardingSphereRule> rules) {
+    public PreparedStatementExecutionGroupEngine(final int maxConnectionsSizePerQuery,
+                                                 final JDBCExecutionConnection executionConnection, final StatementOption option, final Collection<ShardingSphereRule> rules) {
         super(maxConnectionsSizePerQuery, executionConnection, option, rules);
     }
     

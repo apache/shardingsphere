@@ -23,13 +23,13 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 /**
- * Input group.
+ * Execution group.
  *
- * @param <T> type of input value
+ * @param <T> type of execution input value
  */
 @RequiredArgsConstructor
 @Getter
-public final class InputGroup<T> {
+public final class ExecutionGroup<T> {
     
     private final List<T> inputs;
 }

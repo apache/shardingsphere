@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
@@ -92,9 +92,9 @@ public abstract class AbstractStatementExecutor {
         OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(schemaName, schema));
     }
     
-    protected final boolean executeAndRefreshMetaData(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatement sqlStatement,
-                                                final Collection<RouteUnit> routeUnits, final SQLExecutorCallback<Boolean> sqlExecutorCallback) throws SQLException {
-        List<Boolean> result = sqlExecutor.execute(inputGroups, sqlExecutorCallback);
+    protected final boolean executeAndRefreshMetaData(final Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups, final SQLStatement sqlStatement,
+                                                      final Collection<RouteUnit> routeUnits, final SQLExecutorCallback<Boolean> sqlExecutorCallback) throws SQLException {
+        List<Boolean> result = sqlExecutor.execute(executionGroups, sqlExecutorCallback);
         refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatement, routeUnits);
         return null != result && !result.isEmpty() && null != result.get(0) && result.get(0);
     }
@@ -102,31 +102,32 @@ public abstract class AbstractStatementExecutor {
     /**
      * Execute SQL.
      *
-     * @param inputGroups input groups
+     * @param executionGroups execution groups
      * @param sqlStatement SQL statement
      * @param routeUnits route units
      * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    public abstract boolean execute(Collection<InputGroup<StatementExecuteUnit>> inputGroups, SQLStatement sqlStatement, Collection<RouteUnit> routeUnits) throws SQLException;
+    public abstract boolean execute(Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups, SQLStatement sqlStatement, Collection<RouteUnit> routeUnits) throws SQLException;
     
     /**
      * Execute query.
      *
-     * @param inputGroups input groups
+     * @param executionGroups execution groups
      * @return result set list
      * @throws SQLException SQL exception
      */
-    public abstract List<QueryResult> executeQuery(Collection<InputGroup<StatementExecuteUnit>> inputGroups) throws SQLException;
+    public abstract List<QueryResult> executeQuery(Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups) throws SQLException;
     
     /**
      * Execute update.
      *
-     * @param inputGroups input groups
+     * @param executionGroups execution groups
      * @param sqlStatementContext SQL statement context
      * @param routeUnits route units
      * @return effected records count
      * @throws SQLException SQL exception
      */
-    public abstract int executeUpdate(Collection<InputGroup<StatementExecuteUnit>> inputGroups, SQLStatementContext<?> sqlStatementContext, Collection<RouteUnit> routeUnits) throws SQLException;
+    public abstract int executeUpdate(Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups, 
+                                      SQLStatementContext<?> sqlStatementContext, Collection<RouteUnit> routeUnits) throws SQLException;
 }

@@ -17,28 +17,27 @@
 
 package org.apache.shardingsphere.infra.executor.sql.group;
 
+import org.apache.shardingsphere.infra.executor.kernel.ExecutionGroup;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
-import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Execute group decorator.
+ * Execution group engine.
  * 
  * @param <T> type of input value
- * @param <R> type of ShardingSphere rule
  */
-public interface ExecuteGroupDecorator<T, R extends ShardingSphereRule> extends OrderedSPI<R> {
+public interface ExecutionGroupEngine<T> {
     
     /**
-     * Decorate input groups.
-     * 
+     * Group execution units.
+     *
      * @param routeContext route context
-     * @param rule ShardingSphere rule
-     * @param inputGroups input groups to be decorated
-     * @return decorated input groups.
+     * @param executionUnits execution units
+     * @return execution groups
+     * @throws SQLException SQL exception
      */
-    Collection<InputGroup<T>> decorate(RouteContext routeContext, R rule, Collection<InputGroup<T>> inputGroups);
+    Collection<ExecutionGroup<T>> group(RouteContext routeContext, Collection<ExecutionUnit> executionUnits) throws SQLException;
 }

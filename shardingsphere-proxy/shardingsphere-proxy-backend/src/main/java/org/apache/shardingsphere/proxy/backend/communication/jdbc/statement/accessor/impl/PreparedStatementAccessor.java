@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.impl;
 
-import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupEngine;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.PreparedStatementExecuteGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.group.ExecutionGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.group.resourced.jdbc.PreparedStatementExecutionGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -35,9 +35,9 @@ import java.util.Collection;
 public final class PreparedStatementAccessor implements JDBCAccessor {
     
     @Override
-    public ExecuteGroupEngine<?> getExecuteGroupEngine(final BackendConnection backendConnection,
-                                                       final int maxConnectionsSizePerQuery, final StatementOption option, final Collection<ShardingSphereRule> rules) {
-        return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, rules);
+    public ExecutionGroupEngine<?> getExecutionGroupEngine(final BackendConnection backendConnection,
+                                                           final int maxConnectionsSizePerQuery, final StatementOption option, final Collection<ShardingSphereRule> rules) {
+        return new PreparedStatementExecutionGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, rules);
     }
     
     @Override
