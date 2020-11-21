@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.connection;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.ExecutionConnection;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.DriverExecutorManager;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.StatementOption;
 
 import java.sql.Connection;
 import java.sql.Statement;
 
 /**
- * Execution connection for JDBC.
+ * JDBC executor manager.
  */
-public interface JDBCExecutionConnection extends ExecutionConnection<Connection, Statement, StatementOption> {
+public interface JDBCExecutorManager extends DriverExecutorManager<Connection, Statement, StatementOption> {
 }
