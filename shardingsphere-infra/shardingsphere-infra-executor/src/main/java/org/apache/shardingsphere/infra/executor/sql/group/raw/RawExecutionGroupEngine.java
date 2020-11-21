@@ -40,9 +40,8 @@ public final class RawExecutionGroupEngine extends AbstractExecutionGroupEngine<
     }
     
     @Override
-    protected List<ExecutionGroup<RawSQLExecuteUnit>> group(final String dataSourceName, final List<SQLUnit> sqlUnits) {
+    protected List<ExecutionGroup<RawSQLExecuteUnit>> group(final String dataSourceName, final SQLUintGroupResult sqlUintGroupResult) {
         List<ExecutionGroup<RawSQLExecuteUnit>> result = new LinkedList<>();
-        SQLUintGroupResult sqlUintGroupResult = createSQLUintGroupResult(sqlUnits);
         for (List<SQLUnit> each : sqlUintGroupResult.getSqlUnitGroups()) {
             result.add(createSQLExecutionGroup(dataSourceName, each, sqlUintGroupResult.getConnectionMode()));
         }

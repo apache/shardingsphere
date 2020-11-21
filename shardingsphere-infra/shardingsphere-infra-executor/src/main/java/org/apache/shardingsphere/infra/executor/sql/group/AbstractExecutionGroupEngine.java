@@ -60,12 +60,12 @@ public abstract class AbstractExecutionGroupEngine<T> implements ExecutionGroupE
     public final Collection<ExecutionGroup<T>> group(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits) throws SQLException {
         Collection<ExecutionGroup<T>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : aggregateSQLUnitGroups(executionUnits).entrySet()) {
-            result.addAll(group(entry.getKey(), entry.getValue()));
+            result.addAll(group(entry.getKey(), createSQLUintGroupResult(entry.getValue())));
         }
         return decorate(routeContext, result);
     }
     
-    protected abstract List<ExecutionGroup<T>> group(String dataSourceName, List<SQLUnit> sqlUnits) throws SQLException;
+    protected abstract List<ExecutionGroup<T>> group(String dataSourceName, SQLUintGroupResult sqlUintGroupResult) throws SQLException;
     
     private Map<String, List<SQLUnit>> aggregateSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
         Map<String, List<SQLUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1);

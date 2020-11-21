@@ -55,9 +55,8 @@ public abstract class ResourceManagedExecutionGroupEngine
     }
     
     @Override
-    protected final List<ExecutionGroup<U>> group(final String dataSourceName, final List<SQLUnit> sqlUnits) throws SQLException {
+    protected final List<ExecutionGroup<U>> group(final String dataSourceName, final SQLUintGroupResult sqlUintGroupResult) throws SQLException {
         List<ExecutionGroup<U>> result = new LinkedList<>();
-        SQLUintGroupResult sqlUintGroupResult = createSQLUintGroupResult(sqlUnits);
         List<C> connections = executionConnection.getConnections(dataSourceName, sqlUintGroupResult.getSqlUnitGroups().size(), sqlUintGroupResult.getConnectionMode());
         int count = 0;
         for (List<SQLUnit> each : sqlUintGroupResult.getSqlUnitGroups()) {
