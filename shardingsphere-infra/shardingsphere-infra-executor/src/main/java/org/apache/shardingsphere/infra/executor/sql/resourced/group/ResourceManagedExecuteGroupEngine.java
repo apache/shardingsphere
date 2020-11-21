@@ -58,7 +58,7 @@ public abstract class ResourceManagedExecuteGroupEngine
     }
     
     @Override
-    protected final List<InputGroup<U>> generateSQLExecuteGroups(final String dataSourceName, final List<SQLUnit> sqlUnits) throws SQLException {
+    protected final List<InputGroup<U>> group(final String dataSourceName, final List<SQLUnit> sqlUnits) throws SQLException {
         List<InputGroup<U>> result = new LinkedList<>();
         int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
         List<List<SQLUnit>> sqlUnitPartitions = Lists.partition(sqlUnits, desiredPartitionSize);

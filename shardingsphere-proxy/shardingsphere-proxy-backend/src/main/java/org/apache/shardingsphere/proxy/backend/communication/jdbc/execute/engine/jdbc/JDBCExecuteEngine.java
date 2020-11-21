@@ -137,12 +137,12 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
                                                                              final RouteContext routeContext) throws SQLException {
         Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getRuleMetaData().getRules();
         ExecuteGroupEngine executeGroupEngine = accessor.getExecuteGroupEngine(backendConnection, maxConnectionsSizePerQuery, new StatementOption(isReturnGeneratedKeys), rules);
-        return (Collection<InputGroup<StatementExecuteUnit>>) executeGroupEngine.generate(routeContext, executionUnits);
+        return (Collection<InputGroup<StatementExecuteUnit>>) executeGroupEngine.group(routeContext, executionUnits);
     }
     
     private Collection<ExecuteResult> executeWithUnmanagedResource(final ExecutionContext executionContext, final int maxConnectionsSizePerQuery) throws SQLException {
         Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getRuleMetaData().getRules();
-        Collection<InputGroup<RawSQLExecuteUnit>> inputGroups = new RawExecuteGroupEngine(maxConnectionsSizePerQuery, rules).generate(executionContext.getRouteContext(),
+        Collection<InputGroup<RawSQLExecuteUnit>> inputGroups = new RawExecuteGroupEngine(maxConnectionsSizePerQuery, rules).group(executionContext.getRouteContext(),
                 executionContext.getExecutionUnits());
         // TODO handle query header
         return rawExecutor.execute(inputGroups, new RawSQLExecutorCallback());

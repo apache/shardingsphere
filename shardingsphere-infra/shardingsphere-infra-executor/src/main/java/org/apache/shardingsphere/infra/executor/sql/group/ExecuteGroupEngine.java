@@ -32,12 +32,12 @@ import java.util.Collection;
 public interface ExecuteGroupEngine<T> {
     
     /**
-     * Generate execution input groups.
+     * Group execution units.
      *
      * @param routeContext route context
      * @param executionUnits execution units
      * @return execution input groups
      * @throws SQLException SQL exception
      */
-    Collection<InputGroup<T>> generate(RouteContext routeContext, Collection<ExecutionUnit> executionUnits) throws SQLException;
+    Collection<InputGroup<T>> group(RouteContext routeContext, Collection<ExecutionUnit> executionUnits) throws SQLException;
 }

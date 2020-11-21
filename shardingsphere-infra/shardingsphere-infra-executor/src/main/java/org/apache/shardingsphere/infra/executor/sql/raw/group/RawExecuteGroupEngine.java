@@ -43,7 +43,7 @@ public final class RawExecuteGroupEngine extends AbstractExecuteGroupEngine<RawS
     }
     
     @Override
-    protected List<InputGroup<RawSQLExecuteUnit>> generateSQLExecuteGroups(final String dataSourceName, final List<SQLUnit> sqlUnits) {
+    protected List<InputGroup<RawSQLExecuteUnit>> group(final String dataSourceName, final List<SQLUnit> sqlUnits) {
         List<InputGroup<RawSQLExecuteUnit>> result = new LinkedList<>();
         int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
         List<List<SQLUnit>> sqlUnitPartitions = Lists.partition(sqlUnits, desiredPartitionSize);
