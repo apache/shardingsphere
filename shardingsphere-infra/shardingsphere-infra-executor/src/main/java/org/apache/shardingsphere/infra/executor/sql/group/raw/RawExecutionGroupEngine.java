@@ -22,12 +22,13 @@ import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.group.AbstractExecutionGroupEngine;
-import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Raw execution group engine.
@@ -48,10 +49,6 @@ public final class RawExecutionGroupEngine extends AbstractExecutionGroupEngine<
     }
     
     private ExecutionGroup<RawSQLExecuteUnit> createExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final ConnectionMode connectionMode) {
-        List<RawSQLExecuteUnit> rawSQLExecuteUnits = new LinkedList<>();
-        for (SQLUnit each : sqlUnitGroup) {
-            rawSQLExecuteUnits.add(new RawSQLExecuteUnit(new ExecutionUnit(dataSourceName, each), connectionMode));
-        }
-        return new ExecutionGroup<>(rawSQLExecuteUnits);
+        return new ExecutionGroup<>(sqlUnitGroup.stream().map(each -> new RawSQLExecuteUnit(new ExecutionUnit(dataSourceName, each), connectionMode)).collect(Collectors.toList()));
     }
 }
