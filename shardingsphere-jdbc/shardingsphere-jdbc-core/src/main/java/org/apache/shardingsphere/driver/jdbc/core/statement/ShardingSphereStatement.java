@@ -43,7 +43,7 @@ import org.apache.shardingsphere.infra.executor.sql.result.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawSQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawJDBCExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.JDBCExecutionUnit;
@@ -87,7 +87,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private final StatementExecutor statementExecutor;
     
-    private final RawJDBCExecutor rawExecutor;
+    private final RawExecutor rawExecutor;
     
     private final KernelProcessor kernelProcessor;
     
@@ -112,7 +112,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         statements = new LinkedList<>();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         statementExecutor = new StatementExecutor(connection.getDataSourceMap(), metaDataContexts, new SQLExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction()));
-        rawExecutor = new RawJDBCExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction());
+        rawExecutor = new RawExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction());
         kernelProcessor = new KernelProcessor();
     }
     

@@ -34,10 +34,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Raw JDBC executor.
+ * Raw executor.
  */
 @RequiredArgsConstructor
-public final class RawJDBCExecutor {
+public final class RawExecutor {
     
     private final ExecutorEngine executorEngine;
     

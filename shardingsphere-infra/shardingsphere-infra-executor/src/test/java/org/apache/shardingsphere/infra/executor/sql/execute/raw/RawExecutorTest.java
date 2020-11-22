@@ -38,12 +38,12 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class RawJDBCExecutorTest {
+public final class RawExecutorTest {
     
     @Test
     public void assertExecuteForResultEmpty() throws SQLException {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
-        RawJDBCExecutor executor = new RawJDBCExecutor(executorEngine, true);
+        RawExecutor executor = new RawExecutor(executorEngine, true);
         assertFalse(executor.execute(null, null));
     }
     
@@ -51,7 +51,7 @@ public final class RawJDBCExecutorTest {
     public void assertExecuteForExecuteQueryResult() throws SQLException {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
         when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenReturn(Collections.singletonList(new ExecuteQueryResult(null, null)));
-        RawJDBCExecutor executor = new RawJDBCExecutor(executorEngine, true);
+        RawExecutor executor = new RawExecutor(executorEngine, true);
         assertTrue(executor.execute(null, null));
     }
     
@@ -62,7 +62,7 @@ public final class RawJDBCExecutorTest {
         QueryResult queryResult = mock(QueryResult.class);
         when(executeQueryResult.getQueryResult()).thenReturn(queryResult);
         when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenReturn(Collections.singletonList(executeQueryResult));
-        RawJDBCExecutor executor = new RawJDBCExecutor(executorEngine, true);
+        RawExecutor executor = new RawExecutor(executorEngine, true);
         List<QueryResult> actual = executor.executeQuery(null, null);
         assertThat(actual, is(Collections.singletonList(queryResult)));
     }
@@ -73,7 +73,7 @@ public final class RawJDBCExecutorTest {
         ExecuteUpdateResult executeUpdateResult1 = new ExecuteUpdateResult(1, 2);
         ExecuteUpdateResult executeUpdateResult2 = new ExecuteUpdateResult(3, 4);
         when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenReturn(Arrays.asList(executeUpdateResult1, executeUpdateResult2));
-        RawJDBCExecutor executor = new RawJDBCExecutor(executorEngine, true);
+        RawExecutor executor = new RawExecutor(executorEngine, true);
         assertThat(executor.executeUpdate(null, null), is(4));
     }
     
@@ -81,9 +81,9 @@ public final class RawJDBCExecutorTest {
     public void assertExecuteNotThrownSQLException() throws SQLException {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
         when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
-        RawJDBCExecutor rawJDBCExecutor = new RawJDBCExecutor(executorEngine, false);
+        RawExecutor rawExecutor = new RawExecutor(executorEngine, false);
         ExecutorExceptionHandler.setExceptionThrown(false);
-        assertFalse(rawJDBCExecutor.execute(Collections.emptyList(), null));
+        assertFalse(rawExecutor.execute(Collections.emptyList(), null));
     }
     
     @Test
@@ -91,8 +91,8 @@ public final class RawJDBCExecutorTest {
         try {
             ExecutorEngine executorEngine = mock(ExecutorEngine.class);
             when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
-            RawJDBCExecutor rawJDBCExecutor = new RawJDBCExecutor(executorEngine, false);
-            rawJDBCExecutor.execute(Collections.emptyList(), null);
+            RawExecutor rawExecutor = new RawExecutor(executorEngine, false);
+            rawExecutor.execute(Collections.emptyList(), null);
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("TestSQLException"));
         }
