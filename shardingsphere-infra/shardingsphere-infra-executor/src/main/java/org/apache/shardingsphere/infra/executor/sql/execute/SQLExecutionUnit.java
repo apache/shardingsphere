@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute;
 
-import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 
 /**

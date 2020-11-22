@@ -45,13 +45,13 @@ import org.apache.shardingsphere.infra.executor.sql.result.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawSQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.RawJDBCExecutor;
-import org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.callback.RawSQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.group.raw.RawExecutionGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawJDBCExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.callback.RawSQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.executor.SQLExecutor;
-import org.apache.shardingsphere.infra.executor.sql.group.driver.jdbc.PreparedStatementExecutionGroupEngine;
-import org.apache.shardingsphere.infra.executor.sql.group.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.SQLExecutor;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.PreparedStatementExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.result.jdbc.StreamJDBCQueryResult;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -212,14 +212,14 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private Collection<ExecutionGroup<JDBCExecutionUnit>> createExecutionGroups() throws SQLException {
         int maxConnectionsSizePerQuery = metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new PreparedStatementExecutionGroupEngine(maxConnectionsSizePerQuery, connection, statementOption,
-                metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules()).group(executionContext.getRouteContext(), executionContext.getExecutionUnits());
+        return new PreparedStatementExecutionPrepareEngine(maxConnectionsSizePerQuery, connection, statementOption,
+                metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules()).prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
     
     private Collection<ExecutionGroup<RawSQLExecutionUnit>> createRawExecutionGroups() throws SQLException {
         int maxConnectionsSizePerQuery = metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new RawExecutionGroupEngine(maxConnectionsSizePerQuery, metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules())
-                .group(executionContext.getRouteContext(), executionContext.getExecutionUnits());
+        return new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules())
+                .prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
     
     @Override
@@ -355,10 +355,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private void initBatchPreparedStatementExecutor() throws SQLException {
-        PreparedStatementExecutionGroupEngine groupEngine = new PreparedStatementExecutionGroupEngine(
+        PreparedStatementExecutionPrepareEngine prepareEngine = new PreparedStatementExecutionPrepareEngine(
                 metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 connection, statementOption, metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules());
-        batchPreparedStatementExecutor.init(groupEngine.group(executionContext.getRouteContext(),
+        batchPreparedStatementExecutor.init(prepareEngine.prepare(executionContext.getRouteContext(),
                 new ArrayList<>(batchPreparedStatementExecutor.getBatchExecutionUnits()).stream().map(BatchExecutionUnit::getExecutionUnit).collect(Collectors.toList())));
         setBatchParametersForStatements();
     }
