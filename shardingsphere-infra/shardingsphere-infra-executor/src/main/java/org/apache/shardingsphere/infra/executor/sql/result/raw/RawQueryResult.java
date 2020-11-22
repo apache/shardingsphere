@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.query.raw;
+package org.apache.shardingsphere.infra.executor.sql.result.raw;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.query.raw.metadata.QueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.result.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.result.raw.metadata.QueryResultMetaData;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

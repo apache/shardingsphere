@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.query.raw.metadata;
+package org.apache.shardingsphere.infra.executor.sql.result.raw.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
 /**
- * Query result meta data.
+ * Query result row meta data.
  */
 @RequiredArgsConstructor
 @Getter
-public final class QueryResultMetaData {
+public final class QueryResultRowMetaData {
     
-    private final List<QueryResultRowMetaData> columns;
+    private final String name;
+    
+    private final String label;
+    
+    private final String typeName;
 }
