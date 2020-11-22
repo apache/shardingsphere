@@ -95,10 +95,10 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
     }
     
     private List<Object> createRow(final HintShowTableStatusResult hintShowTableStatusResult) {
-        List<Object> row = new ArrayList<>(3);
-        row.add(hintShowTableStatusResult.getLogicTable());
-        row.add(Joiner.on(",").join(hintShowTableStatusResult.getDatabaseShardingValues()));
-        row.add(Joiner.on(",").join(hintShowTableStatusResult.getTableShardingValues()));
-        return row;
+        List<Object> result = new ArrayList<>(3);
+        result.add(hintShowTableStatusResult.getLogicTable());
+        result.add(Joiner.on(",").join(hintShowTableStatusResult.getDatabaseShardingValues()));
+        result.add(Joiner.on(",").join(hintShowTableStatusResult.getTableShardingValues()));
+        return result;
     }
 }

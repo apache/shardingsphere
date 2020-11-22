@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -94,9 +95,9 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
     @Override
     public Collection<Object> getRowData() {
         ExecutionUnit executionUnit = executionUnits.next();
-        Collection<Object> row = new ArrayList<>(queryHeaders.size());
-        row.add(executionUnit.getDataSourceName());
-        row.add(executionUnit.getSqlUnit().getSql());
-        return row;
+        Collection<Object> result = new LinkedList<>();
+        result.add(executionUnit.getDataSourceName());
+        result.add(executionUnit.getSqlUnit().getSql());
+        return result;
     }
 }
