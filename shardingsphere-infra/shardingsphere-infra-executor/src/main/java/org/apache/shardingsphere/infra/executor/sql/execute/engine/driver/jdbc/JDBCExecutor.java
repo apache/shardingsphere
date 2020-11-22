@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ExecutorExceptionHandler;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.JDBCExecutorCallback;
 
 import java.sql.SQLException;
 import java.util.Collection;

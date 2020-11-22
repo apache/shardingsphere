@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.ExecuteUpdateResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.DefaultJDBCExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.MemoryJDBCQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -45,7 +45,7 @@ import java.util.List;
 /**
  * JDBC executor callback for proxy.
  */
-public final class ProxyJDBCExecutorCallback extends DefaultJDBCExecutorCallback<ExecuteResult> {
+public final class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<ExecuteResult> {
     
     private final SQLStatementContext<?> sqlStatementContext;
     
