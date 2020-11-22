@@ -31,7 +31,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -77,7 +77,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     }
     
     @Override
-    public List<Object> getRowData() throws SQLException {
+    public Collection<Object> getRowData() throws SQLException {
         return Collections.singletonList(mergedResult.getValue(1, Object.class));
     }
 }
