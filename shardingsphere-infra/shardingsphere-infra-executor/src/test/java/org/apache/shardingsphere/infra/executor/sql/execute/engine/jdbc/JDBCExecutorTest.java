@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine.jdbc;
 
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ExecutorExceptionHandler;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.SQLExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -34,16 +34,16 @@ import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SQLExecutorTest {
+public final class JDBCExecutorTest {
     
     @Test
     public void assertExecute() throws SQLException {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
         when(executorEngine.execute(anyCollection(), any(), any(), anyBoolean())).thenReturn(Collections.singletonList("test"));
-        SQLExecutor sqlExecutor = new SQLExecutor(executorEngine, false);
-        List<?> actual1 = sqlExecutor.execute(Collections.emptyList(), null);
+        JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, false);
+        List<?> actual1 = jdbcExecutor.execute(Collections.emptyList(), null);
         assertThat(actual1, is(Collections.singletonList("test")));
-        List<?> actual2 = sqlExecutor.execute(Collections.emptyList(), null, null);
+        List<?> actual2 = jdbcExecutor.execute(Collections.emptyList(), null, null);
         assertThat(actual2, is(Collections.singletonList("test")));
     }
     
@@ -52,8 +52,8 @@ public final class SQLExecutorTest {
         try {
             ExecutorEngine executorEngine = mock(ExecutorEngine.class);
             when(executorEngine.execute(anyCollection(), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
-            SQLExecutor sqlExecutor = new SQLExecutor(executorEngine, false);
-            sqlExecutor.execute(Collections.emptyList(), null);
+            JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, false);
+            jdbcExecutor.execute(Collections.emptyList(), null);
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("TestSQLException"));
         }
@@ -63,9 +63,9 @@ public final class SQLExecutorTest {
     public void assertExecuteNotThrownSQLException() throws SQLException {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
         when(executorEngine.execute(anyCollection(), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
-        SQLExecutor sqlExecutor = new SQLExecutor(executorEngine, false);
+        JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, false);
         ExecutorExceptionHandler.setExceptionThrown(false);
-        List<?> actual = sqlExecutor.execute(Collections.emptyList(), null);
+        List<?> actual = jdbcExecutor.execute(Collections.emptyList(), null);
         assertThat(actual, is(Collections.emptyList()));
     }
 }

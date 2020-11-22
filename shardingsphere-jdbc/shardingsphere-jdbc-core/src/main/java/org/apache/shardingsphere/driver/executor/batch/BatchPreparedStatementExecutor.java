@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ExecutorExceptionHandler;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.SQLExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.SQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.DefaultSQLExecutorCallback;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
@@ -50,7 +50,7 @@ public final class BatchPreparedStatementExecutor {
     
     private final MetaDataContexts metaDataContexts;
     
-    private final SQLExecutor sqlExecutor;
+    private final JDBCExecutor jdbcExecutor;
     
     private final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups;
     
@@ -59,9 +59,9 @@ public final class BatchPreparedStatementExecutor {
     
     private int batchCount;
     
-    public BatchPreparedStatementExecutor(final MetaDataContexts metaDataContexts, final SQLExecutor sqlExecutor) {
+    public BatchPreparedStatementExecutor(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor) {
         this.metaDataContexts = metaDataContexts;
-        this.sqlExecutor = sqlExecutor;
+        this.jdbcExecutor = jdbcExecutor;
         executionGroups = new LinkedList<>();
         batchExecutionUnits = new LinkedList<>();
     }
@@ -126,7 +126,7 @@ public final class BatchPreparedStatementExecutor {
                 return statement.executeBatch();
             }
         };
-        List<int[]> results = sqlExecutor.execute(executionGroups, callback);
+        List<int[]> results = jdbcExecutor.execute(executionGroups, callback);
         return isNeedAccumulate(
                 metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().filter(rule -> rule instanceof DataNodeContainedRule).collect(Collectors.toList()), sqlStatementContext)
                 ? accumulate(results) : results.get(0);

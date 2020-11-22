@@ -29,10 +29,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * SQL executor.
+ * JDBC executor.
  */
 @RequiredArgsConstructor
-public final class SQLExecutor {
+public final class JDBCExecutor {
     
     private final ExecutorEngine executorEngine;
     

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ExecutorExceptionHandler;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.SQLExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.SQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.DefaultSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.MemoryJDBCQueryResult;
@@ -47,8 +47,8 @@ import java.util.stream.Collectors;
  */
 public final class StatementExecutor extends AbstractStatementExecutor {
     
-    public StatementExecutor(final Map<String, DataSource> dataSourceMap, final MetaDataContexts metaDataContexts, final SQLExecutor sqlExecutor) {
-        super(dataSourceMap, metaDataContexts, sqlExecutor);
+    public StatementExecutor(final Map<String, DataSource> dataSourceMap, final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor) {
+        super(dataSourceMap, metaDataContexts, jdbcExecutor);
     }
     
     @Override
@@ -66,7 +66,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
                 return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamJDBCQueryResult(resultSet) : new MemoryJDBCQueryResult(resultSet);
             }
         };
-        return getSqlExecutor().execute(executionGroups, sqlExecutorCallback);
+        return getJdbcExecutor().execute(executionGroups, sqlExecutorCallback);
     }
     
     @Override
@@ -131,7 +131,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
                 return updater.executeUpdate(statement, sql);
             }
         };
-        List<Integer> results = getSqlExecutor().execute(executionGroups, sqlExecutorCallback);
+        List<Integer> results = getJdbcExecutor().execute(executionGroups, sqlExecutorCallback);
         refreshSchema(getMetaDataContexts().getDefaultMetaData(), sqlStatementContext.getSqlStatement(), routeUnits);
         if (isNeedAccumulate(getMetaDataContexts().getDefaultMetaData().getRuleMetaData().getRules().stream().filter(
             rule -> rule instanceof DataNodeContainedRule).collect(Collectors.toList()), sqlStatementContext)) {
