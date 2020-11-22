@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.DriverExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 
 import java.sql.Statement;
 

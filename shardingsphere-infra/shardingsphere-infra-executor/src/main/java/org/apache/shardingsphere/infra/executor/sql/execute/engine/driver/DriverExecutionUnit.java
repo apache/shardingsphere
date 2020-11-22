@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.SQLExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 
 /**
  * Driver execution unit.
