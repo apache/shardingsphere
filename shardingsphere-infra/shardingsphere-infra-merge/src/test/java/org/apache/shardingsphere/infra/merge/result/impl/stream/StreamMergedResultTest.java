@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.merge.result.impl.stream;
 
-import org.apache.shardingsphere.infra.executor.sql.result.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.stream.fixture.TestStreamMergedResult;
 import org.junit.Test;
 

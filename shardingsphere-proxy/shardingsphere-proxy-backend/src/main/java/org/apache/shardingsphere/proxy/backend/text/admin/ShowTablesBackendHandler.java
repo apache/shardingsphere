@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.result.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.result.raw.QueryResultRow;
-import org.apache.shardingsphere.infra.executor.sql.result.raw.RawQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.result.raw.metadata.QueryResultMetaData;
-import org.apache.shardingsphere.infra.executor.sql.result.raw.metadata.QueryResultRowMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.raw.result.query.QueryHeader;
+import org.apache.shardingsphere.infra.executor.sql.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.result.query.raw.QueryResultRow;
+import org.apache.shardingsphere.infra.executor.sql.result.query.raw.RawQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.result.query.raw.metadata.QueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.result.query.raw.metadata.QueryResultRowMetaData;
+import org.apache.shardingsphere.infra.executor.sql.result.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;

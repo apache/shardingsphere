@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.result.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.stream.StreamMergedResult;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 

@@ -39,18 +39,18 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.ExecutorConstant;
-import org.apache.shardingsphere.infra.executor.sql.result.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawSQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawJDBCExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.SQLExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
-import org.apache.shardingsphere.infra.executor.sql.result.jdbc.StreamJDBCQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.result.query.jdbc.StreamJDBCQueryResult;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -87,7 +87,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private final StatementExecutor statementExecutor;
     
-    private final RawJDBCExecutor rawExecutor;
+    private final RawExecutor rawExecutor;
     
     private final KernelProcessor kernelProcessor;
     
@@ -112,7 +112,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         statements = new LinkedList<>();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         statementExecutor = new StatementExecutor(connection.getDataSourceMap(), metaDataContexts, new SQLExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction()));
-        rawExecutor = new RawJDBCExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction());
+        rawExecutor = new RawExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction());
         kernelProcessor = new KernelProcessor();
     }
     

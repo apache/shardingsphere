@@ -41,18 +41,18 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.ExecutorConstant;
-import org.apache.shardingsphere.infra.executor.sql.result.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawSQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawJDBCExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.SQLExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.PreparedStatementExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
-import org.apache.shardingsphere.infra.executor.sql.result.jdbc.StreamJDBCQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.result.query.jdbc.StreamJDBCQueryResult;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -99,7 +99,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final PreparedStatementExecutor preparedStatementExecutor;
     
-    private final RawJDBCExecutor rawExecutor;
+    private final RawExecutor rawExecutor;
     
     private final BatchPreparedStatementExecutor batchPreparedStatementExecutor;
     
@@ -144,7 +144,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         statementOption = returnGeneratedKeys ? new StatementOption(true) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         SQLExecutor sqlExecutor = new SQLExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction());
         preparedStatementExecutor = new PreparedStatementExecutor(connection.getDataSourceMap(), metaDataContexts, sqlExecutor);
-        rawExecutor = new RawJDBCExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction());
+        rawExecutor = new RawExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction());
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(metaDataContexts, sqlExecutor);
         kernelProcessor = new KernelProcessor();
     }
