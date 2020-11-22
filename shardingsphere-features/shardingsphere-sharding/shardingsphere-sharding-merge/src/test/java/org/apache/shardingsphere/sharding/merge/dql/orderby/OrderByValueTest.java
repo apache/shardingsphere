@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.infra.executor.sql.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;

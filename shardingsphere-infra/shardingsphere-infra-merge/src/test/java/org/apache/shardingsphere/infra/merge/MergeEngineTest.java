@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.merge;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.fixture.rule.DecoratorRuleFixture;
 import org.apache.shardingsphere.infra.merge.fixture.rule.IndependentRuleFixture;
 import org.apache.shardingsphere.infra.merge.fixture.rule.MergerRuleFixture;

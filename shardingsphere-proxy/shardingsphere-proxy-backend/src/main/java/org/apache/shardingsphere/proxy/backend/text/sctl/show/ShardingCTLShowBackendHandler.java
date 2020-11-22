@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.sctl.show;
 
-import org.apache.shardingsphere.infra.executor.sql.result.query.QueryHeader;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
