@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.driver.executor.batch;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.driver.executor.AbstractBaseExecutorTest;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
@@ -127,23 +127,23 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     }
     
     private void setExecutionGroups(final List<PreparedStatement> preparedStatements) {
-        Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups = new LinkedList<>();
-        List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
-        executionGroups.add(new ExecutionGroup<>(preparedStatementExecuteUnits));
+        Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = new LinkedList<>();
+        List<JDBCExecutionUnit> executionUnits = new LinkedList<>();
+        executionGroups.add(new ExecutionGroup<>(executionUnits));
         Collection<BatchExecutionUnit> batchExecutionUnits = new LinkedList<>();
         for (PreparedStatement each : preparedStatements) {
             BatchExecutionUnit batchExecutionUnit = new BatchExecutionUnit(new ExecutionUnit("ds_0", new SQLUnit(SQL, Collections.singletonList(1))));
             batchExecutionUnit.mapAddBatchCount(0);
             batchExecutionUnit.mapAddBatchCount(1);
             batchExecutionUnits.add(batchExecutionUnit);
-            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(SQL, Collections.singletonList(1))),
+            executionUnits.add(new JDBCExecutionUnit(new ExecutionUnit("ds_0", new SQLUnit(SQL, Collections.singletonList(1))),
                     ConnectionMode.MEMORY_STRICTLY, each));
         }
         setFields(executionGroups, batchExecutionUnits);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setFields(final Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups, final Collection<BatchExecutionUnit> batchExecutionUnits) {
+    private void setFields(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final Collection<BatchExecutionUnit> batchExecutionUnits) {
         Field field = BatchPreparedStatementExecutor.class.getDeclaredField("executionGroups");
         field.setAccessible(true);
         field.set(actual, executionGroups);

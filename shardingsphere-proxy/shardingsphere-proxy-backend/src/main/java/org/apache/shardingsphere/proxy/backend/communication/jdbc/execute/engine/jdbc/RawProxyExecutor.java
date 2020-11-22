@@ -20,11 +20,11 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engin
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
-import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.RawSQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.update.ExecuteUpdateResult;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawSQLExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.callback.RawSQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.result.ExecuteResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.result.update.ExecuteUpdateResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.executor.ExecutorExceptionHandler;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -49,7 +49,7 @@ public final class RawProxyExecutor {
      * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    public Collection<ExecuteResult> execute(final Collection<ExecutionGroup<RawSQLExecuteUnit>> executionGroups, final RawSQLExecutorCallback callback) throws SQLException {
+    public Collection<ExecuteResult> execute(final Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups, final RawSQLExecutorCallback callback) throws SQLException {
         // TODO Load query header for first query
         List<ExecuteResult> results = doExecute(executionGroups, null, callback);
         // TODO refresh metadata
@@ -65,7 +65,7 @@ public final class RawProxyExecutor {
     }
     
     @SuppressWarnings("unchecked")
-    private <T> List<T> doExecute(final Collection<ExecutionGroup<RawSQLExecuteUnit>> executionGroups, 
+    private <T> List<T> doExecute(final Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups, 
                                   final RawSQLExecutorCallback firstCallback, final RawSQLExecutorCallback callback) throws SQLException {
         try {
             return executorEngine.execute((Collection) executionGroups, firstCallback, callback, serial);
