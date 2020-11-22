@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.engine.jdbc.callback;
+package org.apache.shardingsphere.infra.executor.sql.execute.engine.jdbc;
 
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.JDBCExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.DefaultJDBCExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +45,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DefaultJDBCExecutorCallbackTest {
+public final class JDBCExecutorCallbackTest {
     
     @Mock
     private PreparedStatement preparedStatement;
@@ -71,14 +70,14 @@ public final class DefaultJDBCExecutorCallbackTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertExecute() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        JDBCExecutorCallback<?> jdbcExecutorCallback = new DefaultJDBCExecutorCallback<Integer>(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), true) {
+        JDBCExecutorCallback<?> jdbcExecutorCallback = new JDBCExecutorCallback<Integer>(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), true) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return ((PreparedStatement) statement).executeUpdate();
             }
         };
-        Field field = DefaultJDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA");
+        Field field = JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA");
         field.setAccessible(true);
         Map<String, DataSourceMetaData> cachedDataSourceMetaData = (Map<String, DataSourceMetaData>) field.get(jdbcExecutorCallback);
         assertThat(cachedDataSourceMetaData.size(), is(0));
