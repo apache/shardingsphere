@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.merge.engine.decorator.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.result.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.Test;
 

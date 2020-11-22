@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.query.jdbc;
+package org.apache.shardingsphere.infra.executor.sql.result.jdbc;
 
 import org.junit.Test;
 

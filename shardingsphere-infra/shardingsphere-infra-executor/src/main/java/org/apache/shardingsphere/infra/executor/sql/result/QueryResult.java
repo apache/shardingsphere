@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.query;
+package org.apache.shardingsphere.infra.executor.sql.result;
 
 import java.io.InputStream;
 import java.sql.SQLException;

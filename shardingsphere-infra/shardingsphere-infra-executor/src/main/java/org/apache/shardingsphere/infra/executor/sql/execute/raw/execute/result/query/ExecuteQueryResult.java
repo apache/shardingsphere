@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.result.
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.result.QueryResult;
 
 import java.util.List;
 
