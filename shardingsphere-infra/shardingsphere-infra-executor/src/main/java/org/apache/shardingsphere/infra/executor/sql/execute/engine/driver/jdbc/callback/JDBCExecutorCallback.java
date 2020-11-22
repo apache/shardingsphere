@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc;
+package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback;
 
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 
 /**
- * SQL executor callback.
+ * JDBC executor callback.
  *
  * @param <T> class type of return value
  */
-public interface SQLExecutorCallback<T> extends ExecutorCallback<JDBCExecutionUnit, T> {
+public interface JDBCExecutorCallback<T> extends ExecutorCallback<JDBCExecutionUnit, T> {
 }

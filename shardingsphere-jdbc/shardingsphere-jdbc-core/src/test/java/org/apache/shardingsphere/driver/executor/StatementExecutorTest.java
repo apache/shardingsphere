@@ -19,13 +19,13 @@ package org.apache.shardingsphere.driver.executor;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
-import org.apache.shardingsphere.infra.executor.sql.execute.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.ExecutorExceptionHandler;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.SQLExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 
@@ -63,7 +63,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void setUp() throws SQLException {
         super.setUp();
         ShardingSphereConnection connection = getConnection();
-        actual = spy(new StatementExecutor(connection.getDataSourceMap(), connection.getMetaDataContexts(), new SQLExecutor(getExecutorEngine(), false)));
+        actual = spy(new StatementExecutor(connection.getDataSourceMap(), connection.getMetaDataContexts(), new JDBCExecutor(getExecutorEngine(), false)));
     }
     
     @Test

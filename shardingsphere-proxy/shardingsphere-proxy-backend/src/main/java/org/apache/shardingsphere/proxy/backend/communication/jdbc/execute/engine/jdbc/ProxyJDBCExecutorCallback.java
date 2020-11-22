@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine.jdbc;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.execute.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.ExecuteUpdateResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.impl.DefaultSQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.DefaultJDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.MemoryJDBCQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -43,9 +43,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * SQL executor callback for Proxy.
+ * JDBC executor callback for proxy.
  */
-public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<ExecuteResult> {
+public final class ProxyJDBCExecutorCallback extends DefaultJDBCExecutorCallback<ExecuteResult> {
     
     private final SQLStatementContext<?> sqlStatementContext;
     
@@ -59,9 +59,9 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     
     private boolean hasMetaData;
     
-    public ProxySQLExecutorCallback(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext, 
-                                    final BackendConnection backendConnection, final JDBCAccessor accessor,
-                                    final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
+    public ProxyJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext,
+                                     final BackendConnection backendConnection, final JDBCAccessor accessor,
+                                     final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
         super(databaseType, isExceptionThrown);
         this.sqlStatementContext = sqlStatementContext;
         this.backendConnection = backendConnection;

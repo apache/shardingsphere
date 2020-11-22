@@ -21,13 +21,13 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
-import org.apache.shardingsphere.infra.executor.sql.execute.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.ExecutorExceptionHandler;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.SQLExecutor;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.SQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.impl.DefaultSQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.JDBCExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.DefaultJDBCExecutorCallback;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -50,7 +50,7 @@ public final class BatchPreparedStatementExecutor {
     
     private final MetaDataContexts metaDataContexts;
     
-    private final SQLExecutor sqlExecutor;
+    private final JDBCExecutor jdbcExecutor;
     
     private final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups;
     
@@ -59,9 +59,9 @@ public final class BatchPreparedStatementExecutor {
     
     private int batchCount;
     
-    public BatchPreparedStatementExecutor(final MetaDataContexts metaDataContexts, final SQLExecutor sqlExecutor) {
+    public BatchPreparedStatementExecutor(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor) {
         this.metaDataContexts = metaDataContexts;
-        this.sqlExecutor = sqlExecutor;
+        this.jdbcExecutor = jdbcExecutor;
         executionGroups = new LinkedList<>();
         batchExecutionUnits = new LinkedList<>();
     }
@@ -119,14 +119,14 @@ public final class BatchPreparedStatementExecutor {
      */
     public int[] executeBatch(final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<int[]> callback = new DefaultSQLExecutorCallback<int[]>(metaDataContexts.getDatabaseType(), isExceptionThrown) {
+        JDBCExecutorCallback<int[]> callback = new DefaultJDBCExecutorCallback<int[]>(metaDataContexts.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return statement.executeBatch();
             }
         };
-        List<int[]> results = sqlExecutor.execute(executionGroups, callback);
+        List<int[]> results = jdbcExecutor.execute(executionGroups, callback);
         return isNeedAccumulate(
                 metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().filter(rule -> rule instanceof DataNodeContainedRule).collect(Collectors.toList()), sqlStatementContext)
                 ? accumulate(results) : results.get(0);
