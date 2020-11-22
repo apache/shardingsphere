@@ -120,16 +120,16 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private Collection<ExecuteResult> execute(final ExecutionContext executionContext, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         int maxConnectionsSizePerQuery = ProxyContext.getInstance().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return ExecutorConstant.MANAGED_RESOURCE ? executeWithManagedResource(executionContext, maxConnectionsSizePerQuery, isReturnGeneratedKeys, isExceptionThrown)
-                : executeWithUnmanagedResource(executionContext, maxConnectionsSizePerQuery);
+        return ExecutorConstant.MANAGED_RESOURCE ? executeWithDriver(executionContext, maxConnectionsSizePerQuery, isReturnGeneratedKeys, isExceptionThrown)
+                : executeWithRaw(executionContext, maxConnectionsSizePerQuery);
     }
     
-    private Collection<ExecuteResult> executeWithManagedResource(final ExecutionContext executionContext,
-                                                                 final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
+    private Collection<ExecuteResult> executeWithDriver(final ExecutionContext executionContext,
+                                                        final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getDatabaseType();
         return jdbcExecutor.execute(createExecutionGroups(executionContext.getExecutionUnits(), maxConnectionsSizePerQuery, isReturnGeneratedKeys, executionContext.getRouteContext()),
-                new ProxySQLExecutorCallback(databaseType, executionContext.getSqlStatementContext(), backendConnection, accessor, isExceptionThrown, isReturnGeneratedKeys, true),
-                new ProxySQLExecutorCallback(databaseType, executionContext.getSqlStatementContext(), backendConnection, accessor, isExceptionThrown, isReturnGeneratedKeys, false));
+                new ProxyJDBCExecutorCallback(databaseType, executionContext.getSqlStatementContext(), backendConnection, accessor, isExceptionThrown, isReturnGeneratedKeys, true),
+                new ProxyJDBCExecutorCallback(databaseType, executionContext.getSqlStatementContext(), backendConnection, accessor, isExceptionThrown, isReturnGeneratedKeys, false));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -140,7 +140,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         return (Collection<ExecutionGroup<JDBCExecutionUnit>>) prepareEngine.prepare(routeContext, executionUnits);
     }
     
-    private Collection<ExecuteResult> executeWithUnmanagedResource(final ExecutionContext executionContext, final int maxConnectionsSizePerQuery) throws SQLException {
+    private Collection<ExecuteResult> executeWithRaw(final ExecutionContext executionContext, final int maxConnectionsSizePerQuery) throws SQLException {
         Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getRuleMetaData().getRules();
         Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups = new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, rules).prepare(executionContext.getRouteContext(),
                 executionContext.getExecutionUnits());

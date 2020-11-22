@@ -43,9 +43,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * SQL executor callback for Proxy.
+ * JDBC executor callback for proxy.
  */
-public final class ProxySQLExecutorCallback extends DefaultJDBCExecutorCallback<ExecuteResult> {
+public final class ProxyJDBCExecutorCallback extends DefaultJDBCExecutorCallback<ExecuteResult> {
     
     private final SQLStatementContext<?> sqlStatementContext;
     
@@ -59,9 +59,9 @@ public final class ProxySQLExecutorCallback extends DefaultJDBCExecutorCallback<
     
     private boolean hasMetaData;
     
-    public ProxySQLExecutorCallback(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext, 
-                                    final BackendConnection backendConnection, final JDBCAccessor accessor,
-                                    final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
+    public ProxyJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext,
+                                     final BackendConnection backendConnection, final JDBCAccessor accessor,
+                                     final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
         super(databaseType, isExceptionThrown);
         this.sqlStatementContext = sqlStatementContext;
         this.backendConnection = backendConnection;
