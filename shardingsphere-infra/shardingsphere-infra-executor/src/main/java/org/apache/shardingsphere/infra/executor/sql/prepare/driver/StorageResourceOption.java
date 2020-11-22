@@ -15,29 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.group;
-
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-
-import java.sql.SQLException;
-import java.util.Collection;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 
 /**
- * Execution group engine.
- * 
- * @param <T> type of input value
+ * Storage resource option.
  */
-public interface ExecutionGroupEngine<T> {
-    
-    /**
-     * Group execution units.
-     *
-     * @param routeContext route context
-     * @param executionUnits execution units
-     * @return execution groups
-     * @throws SQLException SQL exception
-     */
-    Collection<ExecutionGroup<T>> group(RouteContext routeContext, Collection<ExecutionUnit> executionUnits) throws SQLException;
+public interface StorageResourceOption {
 }

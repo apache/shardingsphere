@@ -15,10 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.group.driver;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc;
+
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorDriverManager;
+
+import java.sql.Connection;
+import java.sql.Statement;
 
 /**
- * Storage resource option.
+ * Executor JDBC driver manager.
  */
-public interface StorageResourceOption {
+public interface ExecutorJDBCManager extends ExecutorDriverManager<Connection, Statement, StatementOption> {
 }

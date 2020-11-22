@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.group.driver.jdbc;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.group.driver.StorageResourceOption;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.StorageResourceOption;
 
 import java.sql.ResultSet;
 

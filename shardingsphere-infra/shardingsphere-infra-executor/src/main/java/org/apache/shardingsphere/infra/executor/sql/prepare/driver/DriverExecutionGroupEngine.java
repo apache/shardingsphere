@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.group.driver;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
-import org.apache.shardingsphere.infra.executor.sql.group.AbstractExecutionGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.DriverExecutionUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
