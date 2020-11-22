@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.result.jdbc;
+package org.apache.shardingsphere.infra.executor.sql.result.query.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.result.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.result.query.QueryResult;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;

@@ -26,8 +26,8 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.tex
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.result.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.raw.result.query.QueryHeader;
+import org.apache.shardingsphere.infra.executor.sql.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.result.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query;
 
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
-import org.apache.shardingsphere.infra.executor.sql.execute.raw.result.query.QueryHeader;
+import org.apache.shardingsphere.infra.executor.sql.result.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;

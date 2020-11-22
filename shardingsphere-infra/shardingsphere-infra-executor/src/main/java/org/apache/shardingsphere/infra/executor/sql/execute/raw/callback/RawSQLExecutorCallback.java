@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawSQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.raw.result.ExecuteResult;
+import org.apache.shardingsphere.infra.executor.sql.result.ExecuteResult;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;

@@ -15,10 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.raw.result;
+package org.apache.shardingsphere.infra.executor.sql.result.query;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.result.ExecuteResult;
+
+import java.util.List;
 
 /**
- * Execute result.
+ * Execute query result.
  */
-public interface ExecuteResult {
+@RequiredArgsConstructor
+@Getter
+public final class ExecuteQueryResult implements ExecuteResult {
+    
+    private final List<QueryHeader> queryHeaders;
+    
+    private final QueryResult queryResult;
 }

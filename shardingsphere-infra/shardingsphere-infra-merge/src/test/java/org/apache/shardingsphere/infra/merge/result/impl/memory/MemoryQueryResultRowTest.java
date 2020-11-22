@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.merge.result.impl.memory;
 
-import org.apache.shardingsphere.infra.executor.sql.result.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.result.query.QueryResult;
 import org.junit.Before;
 import org.junit.Test;
 
