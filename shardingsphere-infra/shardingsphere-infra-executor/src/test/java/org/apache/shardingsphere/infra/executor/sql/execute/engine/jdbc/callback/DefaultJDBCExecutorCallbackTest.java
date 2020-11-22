@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.SQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.DefaultJDBCExecutorCallback;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,7 +71,7 @@ public final class DefaultJDBCExecutorCallbackTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertExecute() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        SQLExecutorCallback<?> sqlExecutorCallback = new DefaultJDBCExecutorCallback<Integer>(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), true) {
+        JDBCExecutorCallback<?> jdbcExecutorCallback = new DefaultJDBCExecutorCallback<Integer>(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), true) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -80,11 +80,11 @@ public final class DefaultJDBCExecutorCallbackTest {
         };
         Field field = DefaultJDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA");
         field.setAccessible(true);
-        Map<String, DataSourceMetaData> cachedDataSourceMetaData = (Map<String, DataSourceMetaData>) field.get(sqlExecutorCallback);
+        Map<String, DataSourceMetaData> cachedDataSourceMetaData = (Map<String, DataSourceMetaData>) field.get(jdbcExecutorCallback);
         assertThat(cachedDataSourceMetaData.size(), is(0));
-        sqlExecutorCallback.execute(units, true, null);
+        jdbcExecutorCallback.execute(units, true, null);
         assertThat(cachedDataSourceMetaData.size(), is(1));
-        sqlExecutorCallback.execute(units, true, null);
+        jdbcExecutorCallback.execute(units, true, null);
         assertThat(cachedDataSourceMetaData.size(), is(1));
     }
 }

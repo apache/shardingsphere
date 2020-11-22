@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.SQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.DefaultJDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.MemoryJDBCQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResult;
@@ -55,8 +55,8 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     @Override
     public List<QueryResult> executeQuery(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<QueryResult> sqlExecutorCallback = createDefaultJDBCExecutorCallbackWithQueryResult(isExceptionThrown);
-        return getJdbcExecutor().execute(executionGroups, sqlExecutorCallback);
+        JDBCExecutorCallback<QueryResult> jdbcExecutorCallback = createDefaultJDBCExecutorCallbackWithQueryResult(isExceptionThrown);
+        return getJdbcExecutor().execute(executionGroups, jdbcExecutorCallback);
     }
     
     private DefaultJDBCExecutorCallback<QueryResult> createDefaultJDBCExecutorCallbackWithQueryResult(final boolean isExceptionThrown) {
@@ -79,8 +79,8 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     public int executeUpdate(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, 
                              final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<Integer> sqlExecutorCallback = createDefaultJDBCExecutorCallbackWithInteger(isExceptionThrown);
-        List<Integer> results = getJdbcExecutor().execute(executionGroups, sqlExecutorCallback);
+        JDBCExecutorCallback<Integer> jdbcExecutorCallback = createDefaultJDBCExecutorCallbackWithInteger(isExceptionThrown);
+        List<Integer> results = getJdbcExecutor().execute(executionGroups, jdbcExecutorCallback);
         refreshSchema(getMetaDataContexts().getDefaultMetaData(), sqlStatementContext.getSqlStatement(), routeUnits);
         return isNeedAccumulate(getMetaDataContexts().getDefaultMetaData().getRuleMetaData().getRules().stream().filter(
             rule -> rule instanceof DataNodeContainedRule).collect(Collectors.toList()), sqlStatementContext) ? accumulate(results) : results.get(0);
@@ -99,8 +99,8 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     @Override
     public boolean execute(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<Boolean> sqlExecutorCallback = createDefaultJDBCExecutorCallbackWithBoolean(isExceptionThrown);
-        return executeAndRefreshMetaData(executionGroups, sqlStatement, routeUnits, sqlExecutorCallback);
+        JDBCExecutorCallback<Boolean> jdbcExecutorCallback = createDefaultJDBCExecutorCallbackWithBoolean(isExceptionThrown);
+        return executeAndRefreshMetaData(executionGroups, sqlStatement, routeUnits, jdbcExecutorCallback);
     }
     
     private DefaultJDBCExecutorCallback<Boolean> createDefaultJDBCExecutorCallbackWithBoolean(final boolean isExceptionThrown) {
