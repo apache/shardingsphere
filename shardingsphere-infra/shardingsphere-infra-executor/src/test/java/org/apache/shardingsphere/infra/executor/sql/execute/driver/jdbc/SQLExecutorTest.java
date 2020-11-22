@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.executor;
+package org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc;
 
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.junit.Test;

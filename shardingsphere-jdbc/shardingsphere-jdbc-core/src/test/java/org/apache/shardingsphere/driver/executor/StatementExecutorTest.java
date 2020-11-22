@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.executor.sql.result.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.executor.ExecutorExceptionHandler;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.executor.SQLExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.SQLExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 

@@ -15,10 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.result;
+package org.apache.shardingsphere.infra.executor.sql.execute.raw.result.update;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.result.ExecuteResult;
 
 /**
- * Execute result.
+ * Execute update result.
  */
-public interface ExecuteResult {
+@RequiredArgsConstructor
+@Getter
+public final class ExecuteUpdateResult implements ExecuteResult {
+    
+    private final int updateCount;
+    
+    private final long lastInsertId;
 }

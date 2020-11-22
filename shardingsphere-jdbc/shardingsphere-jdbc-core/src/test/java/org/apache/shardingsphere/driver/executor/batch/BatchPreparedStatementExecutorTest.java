@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.executor.batch;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.executor.SQLExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.SQLExecutor;
 import org.apache.shardingsphere.driver.executor.AbstractBaseExecutorTest;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;

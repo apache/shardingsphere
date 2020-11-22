@@ -15,23 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.result.query;
+package org.apache.shardingsphere.infra.executor.sql.execute.raw.callback;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.executor.sql.result.QueryResult;
-
-import java.util.List;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * Execute query result.
+ * Raw executor callback.
+ *
+ * @param <I> type of input value
+ * @param <O> type of output value
  */
-@RequiredArgsConstructor
-@Getter
-public final class ExecuteQueryResult implements ExecuteResult {
+public interface RawExecutorCallback<I, O> {
     
-    private final List<QueryHeader> queryHeaders;
-    
-    private final QueryResult queryResult;
+    /**
+     * Execute.
+     *
+     * @param inputs input values
+     * @param isTrunkThread is execution in trunk thread
+     * @param dataMap data map
+     * @return execution results
+     * @throws SQLException throw when execute failure
+     */
+    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread, Map<String, Object> dataMap) throws SQLException;
 }

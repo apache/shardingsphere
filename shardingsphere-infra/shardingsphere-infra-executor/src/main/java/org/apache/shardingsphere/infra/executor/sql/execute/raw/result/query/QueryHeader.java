@@ -15,15 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.executor;
+package org.apache.shardingsphere.infra.executor.sql.execute.raw.result.query;
 
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc.JDBCExecutionUnit;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * SQL executor callback.
- *
- * @param <T> class type of return value
+ * Query header.
  */
-public interface SQLExecutorCallback<T> extends ExecutorCallback<JDBCExecutionUnit, T> {
+@RequiredArgsConstructor
+@Getter
+public final class QueryHeader {
+    
+    private final String schema;
+    
+    private final String table;
+    
+    private final String columnLabel;
+    
+    private final String columnName;
+    
+    private final int columnLength;
+    
+    private final int columnType;
+    
+    private final int decimals;
+    
+    private final boolean signed;
+    
+    private final boolean primaryKey;
+    
+    private final boolean notNull;
+    
+    private final boolean autoIncrement;
 }

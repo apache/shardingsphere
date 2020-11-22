@@ -15,28 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.raw.execute.callback;
+package org.apache.shardingsphere.infra.executor.sql.execute.driver.jdbc;
 
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Map;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 
 /**
- * Raw executor callback.
+ * SQL executor callback.
  *
- * @param <I> type of input value
- * @param <O> type of output value
+ * @param <T> class type of return value
  */
-public interface RawExecutorCallback<I, O> {
-    
-    /**
-     * Execute.
-     *
-     * @param inputs input values
-     * @param isTrunkThread is execution in trunk thread
-     * @param dataMap data map
-     * @return execution results
-     * @throws SQLException throw when execute failure
-     */
-    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread, Map<String, Object> dataMap) throws SQLException;
+public interface SQLExecutorCallback<T> extends ExecutorCallback<JDBCExecutionUnit, T> {
 }
