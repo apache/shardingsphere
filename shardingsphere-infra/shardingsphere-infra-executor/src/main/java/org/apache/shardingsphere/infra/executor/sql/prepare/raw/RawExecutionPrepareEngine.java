@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.RawSQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
@@ -30,11 +30,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Raw execution group engine.
+ * Raw execution prepare engine.
  */
-public final class RawExecutionGroupEngine extends AbstractExecutionGroupEngine<RawSQLExecutionUnit> {
+public final class RawExecutionPrepareEngine extends AbstractExecutionPrepareEngine<RawSQLExecutionUnit> {
     
-    public RawExecutionGroupEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
+    public RawExecutionPrepareEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
         super(maxConnectionsSizePerQuery, rules);
     }
     

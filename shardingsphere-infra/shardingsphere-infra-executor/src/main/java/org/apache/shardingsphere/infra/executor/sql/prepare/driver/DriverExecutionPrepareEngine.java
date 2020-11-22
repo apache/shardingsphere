@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
-import org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.driver.DriverExecutionUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
@@ -31,21 +31,21 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Driver execution group engine.
+ * Driver execution prepare engine.
  * 
  * @param <T> type of storage resource execute unit
  * @param <M> type of driver executor manager
  * @param <C> type of resource connection
  * @param <O> type of storage resource option
  */
-public abstract class DriverExecutionGroupEngine
-        <T extends DriverExecutionUnit<?>, M extends ExecutorDriverManager<C, ?, O>, C, O extends StorageResourceOption> extends AbstractExecutionGroupEngine<T> {
+public abstract class DriverExecutionPrepareEngine
+        <T extends DriverExecutionUnit<?>, M extends ExecutorDriverManager<C, ?, O>, C, O extends StorageResourceOption> extends AbstractExecutionPrepareEngine<T> {
     
     private final M executorDriverManager;
     
     private final O option;
     
-    protected DriverExecutionGroupEngine(final int maxConnectionsSizePerQuery, final M executorDriverManager, final O option, final Collection<ShardingSphereRule> rules) {
+    protected DriverExecutionPrepareEngine(final int maxConnectionsSizePerQuery, final M executorDriverManager, final O option, final Collection<ShardingSphereRule> rules) {
         super(maxConnectionsSizePerQuery, rules);
         this.executorDriverManager = executorDriverManager;
         this.option = option;

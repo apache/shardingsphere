@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor;
 
-import org.apache.shardingsphere.infra.executor.sql.prepare.ExecutionGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.prepare.ExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -32,15 +32,15 @@ import java.util.Collection;
 public interface JDBCAccessor {
     
     /**
-     * Get execution group engine.
+     * Get execution prepare engine.
      *
      * @param backendConnection backend connection
      * @param maxConnectionsSizePerQuery max connections size per query
      * @param option statement option
      * @param rules rules
-     * @return execution group engine
+     * @return execution prepare engine
      */
-    ExecutionGroupEngine<?> getExecutionGroupEngine(BackendConnection backendConnection, int maxConnectionsSizePerQuery, StatementOption option, Collection<ShardingSphereRule> rules);
+    ExecutionPrepareEngine<?> getExecutionPrepareEngine(BackendConnection backendConnection, int maxConnectionsSizePerQuery, StatementOption option, Collection<ShardingSphereRule> rules);
     
     /**
      * Execute SQL.

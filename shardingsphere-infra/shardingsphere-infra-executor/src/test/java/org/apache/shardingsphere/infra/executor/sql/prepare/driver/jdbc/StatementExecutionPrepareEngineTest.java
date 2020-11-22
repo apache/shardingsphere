@@ -43,15 +43,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PreparedStatementExecutionGroupEngineTest {
+public final class StatementExecutionPrepareEngineTest {
     
-    private PreparedStatementExecutionGroupEngine groupEngine;
+    private StatementExecutionPrepareEngine prepareEngine;
     
     @Test
     public void assertGetExecutionUnitGroupForOneShardMemoryStrictly() throws SQLException {
-        groupEngine = new PreparedStatementExecutionGroupEngine(
+        prepareEngine = new StatementExecutionPrepareEngine(
                 2, mockExecutorJDBCManager(1, ConnectionMode.MEMORY_STRICTLY), new StatementOption(true), Collections.singletonList(mock(ShardingSphereRule.class)));
-        Collection<ExecutionGroup<JDBCExecutionUnit>> actual = groupEngine.group(mock(RouteContext.class), mockShardRouteUnit(1, 1));
+        Collection<ExecutionGroup<JDBCExecutionUnit>> actual = prepareEngine.prepare(mock(RouteContext.class), mockShardRouteUnit(1, 1));
         assertThat(actual.size(), is(1));
         for (ExecutionGroup<JDBCExecutionUnit> each : actual) {
             assertThat(each.getInputs().size(), is(1));
@@ -60,9 +60,9 @@ public final class PreparedStatementExecutionGroupEngineTest {
     
     @Test
     public void assertGetExecutionUnitGroupForMultiShardConnectionStrictly() throws SQLException {
-        groupEngine = new PreparedStatementExecutionGroupEngine(
+        prepareEngine = new StatementExecutionPrepareEngine(
                 1, mockExecutorJDBCManager(1, ConnectionMode.CONNECTION_STRICTLY), new StatementOption(true), Collections.singletonList(mock(ShardingSphereRule.class)));
-        Collection<ExecutionGroup<JDBCExecutionUnit>> actual = groupEngine.group(mock(RouteContext.class), mockShardRouteUnit(10, 2));
+        Collection<ExecutionGroup<JDBCExecutionUnit>> actual = prepareEngine.prepare(mock(RouteContext.class), mockShardRouteUnit(10, 2));
         assertThat(actual.size(), is(10));
         for (ExecutionGroup<JDBCExecutionUnit> each : actual) {
             assertThat(each.getInputs().size(), is(2));

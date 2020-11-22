@@ -36,28 +36,28 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Abstract execution group engine.
+ * Abstract execution prepare engine.
  * 
  * @param <T> type of input value
  */
-public abstract class AbstractExecutionGroupEngine<T> implements ExecutionGroupEngine<T> {
+public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrepareEngine<T> {
     
     static {
-        ShardingSphereServiceLoader.register(ExecutionGroupDecorator.class);
+        ShardingSphereServiceLoader.register(ExecutionPrepareDecorator.class);
     }
     
     private final int maxConnectionsSizePerQuery;
     
     @SuppressWarnings("rawtypes")
-    private final Map<ShardingSphereRule, ExecutionGroupDecorator> decorators;
+    private final Map<ShardingSphereRule, ExecutionPrepareDecorator> decorators;
     
-    protected AbstractExecutionGroupEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
+    protected AbstractExecutionPrepareEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
         this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
-        decorators = OrderedSPIRegistry.getRegisteredServices(rules, ExecutionGroupDecorator.class);
+        decorators = OrderedSPIRegistry.getRegisteredServices(rules, ExecutionPrepareDecorator.class);
     }
     
     @Override
-    public final Collection<ExecutionGroup<T>> group(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits) throws SQLException {
+    public final Collection<ExecutionGroup<T>> prepare(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits) throws SQLException {
         Collection<ExecutionGroup<T>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : aggregateSQLUnitGroups(executionUnits).entrySet()) {
             String dataSourceName = entry.getKey();
@@ -90,7 +90,7 @@ public abstract class AbstractExecutionGroupEngine<T> implements ExecutionGroupE
     @SuppressWarnings({"unchecked", "rawtypes"})
     private Collection<ExecutionGroup<T>> decorate(final RouteContext routeContext, final Collection<ExecutionGroup<T>> executionGroups) {
         Collection<ExecutionGroup<T>> result = executionGroups;
-        for (Entry<ShardingSphereRule, ExecutionGroupDecorator> each : decorators.entrySet()) {
+        for (Entry<ShardingSphereRule, ExecutionPrepareDecorator> each : decorators.entrySet()) {
             result = each.getValue().decorate(routeContext, each.getKey(), result);
         }
         return result;
