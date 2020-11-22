@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.impl;
+package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.ExecutorExceptionHandler;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.SQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
 

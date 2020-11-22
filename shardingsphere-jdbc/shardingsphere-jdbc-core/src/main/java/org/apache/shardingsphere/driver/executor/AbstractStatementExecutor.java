@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.SQLExecutor;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.SQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.SQLExecutorCallback;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;

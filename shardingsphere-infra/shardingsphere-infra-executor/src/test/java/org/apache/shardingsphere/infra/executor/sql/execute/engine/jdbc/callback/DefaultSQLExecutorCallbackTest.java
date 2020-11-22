@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.engine.jdbc.impl;
+package org.apache.shardingsphere.infra.executor.sql.execute.engine.jdbc.callback;
 
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.SQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.impl.DefaultSQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.SQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.DefaultSQLExecutorCallback;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
