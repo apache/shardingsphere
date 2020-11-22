@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -91,9 +92,9 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
     }
     
     @Override
-    public List<Object> getRowData() {
+    public Collection<Object> getRowData() {
         ExecutionUnit executionUnit = executionUnits.next();
-        List<Object> row = new ArrayList<>(queryHeaders.size());
+        Collection<Object> row = new ArrayList<>(queryHeaders.size());
         row.add(executionUnit.getDataSourceName());
         row.add(executionUnit.getSqlUnit().getSql());
         return row;

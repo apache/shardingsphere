@@ -20,10 +20,12 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -74,6 +76,8 @@ public final class ShardingCTLExplainBackendHandlerTest {
     public void assertGetRowData() {
         handler.execute();
         assertTrue(handler.next());
-        assertThat(handler.getRowData().get(1), is("select 1"));
+        Iterator<Object> iterator = handler.getRowData().iterator();
+        assertNull(iterator.next());
+        assertThat(iterator.next(), is("select 1"));
     }
 }
