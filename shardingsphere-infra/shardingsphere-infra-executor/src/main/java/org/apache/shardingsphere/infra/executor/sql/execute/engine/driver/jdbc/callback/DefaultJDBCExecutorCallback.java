@@ -36,12 +36,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Default SQL executor callback.
+ * Default JDBC executor callback.
  *
  * @param <T> class type of return value
  */
 @RequiredArgsConstructor
-public abstract class DefaultSQLExecutorCallback<T> implements SQLExecutorCallback<T> {
+public abstract class DefaultJDBCExecutorCallback<T> implements SQLExecutorCallback<T> {
     
     private static final Map<String, DataSourceMetaData> CACHED_DATASOURCE_METADATA = new ConcurrentHashMap<>();
     

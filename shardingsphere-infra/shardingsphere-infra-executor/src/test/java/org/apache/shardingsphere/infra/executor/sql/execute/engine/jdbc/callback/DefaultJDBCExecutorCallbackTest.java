@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.SQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.DefaultSQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.callback.DefaultJDBCExecutorCallback;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +46,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DefaultSQLExecutorCallbackTest {
+public final class DefaultJDBCExecutorCallbackTest {
     
     @Mock
     private PreparedStatement preparedStatement;
@@ -71,14 +71,14 @@ public final class DefaultSQLExecutorCallbackTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertExecute() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        SQLExecutorCallback<?> sqlExecutorCallback = new DefaultSQLExecutorCallback<Integer>(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), true) {
+        SQLExecutorCallback<?> sqlExecutorCallback = new DefaultJDBCExecutorCallback<Integer>(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), true) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return ((PreparedStatement) statement).executeUpdate();
             }
         };
-        Field field = DefaultSQLExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA");
+        Field field = DefaultJDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA");
         field.setAccessible(true);
         Map<String, DataSourceMetaData> cachedDataSourceMetaData = (Map<String, DataSourceMetaData>) field.get(sqlExecutorCallback);
         assertThat(cachedDataSourceMetaData.size(), is(0));
