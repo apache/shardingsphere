@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.merge.fixture.merger;
 
-import org.apache.shardingsphere.infra.executor.sql.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.result.query.jdbc.StreamJDBCQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResult;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
