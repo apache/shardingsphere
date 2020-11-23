@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.io.Resources;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -43,9 +44,9 @@ public final class ScalingConfigUtil {
     /**
      * Init scaling config.
      *
-     * @throws IOException IO exception
      */
-    public static void initScalingConfig() throws IOException {
+    @SneakyThrows(IOException.class)
+    public static void initScalingConfig() {
         log.info("Init scaling config");
         File yamlFile = new File(Resources.getResource(DEFAULT_CONFIG_PATH + DEFAULT_CONFIG_FILE_NAME).getPath());
         ServerConfiguration serverConfig = YamlEngine.unmarshal(yamlFile, ServerConfiguration.class);
