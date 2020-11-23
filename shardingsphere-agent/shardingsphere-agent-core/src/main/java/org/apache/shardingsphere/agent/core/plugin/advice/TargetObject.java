@@ -26,7 +26,7 @@ public interface TargetObject {
     /**
      * Get the variable from context.
      *
-     * @return the attachment
+     * @return the attachment.
      */
     Object getAttachment();
 

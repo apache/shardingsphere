@@ -48,7 +48,7 @@ public class MethodInvocationResult {
     /**
      * Result that is provided by per-method advice.
      *
-     * @return the
+     * @return the advice result.
      */
     public Object getResult() {
         return result;

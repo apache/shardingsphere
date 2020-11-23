@@ -39,7 +39,7 @@ public class PluginLoader extends ClassLoader {
     /**
      * To find all intercepting target classes then to build TypeMatcher.
      *
-     * @return TypeMatcher
+     * @return type matcher
      */
     public ElementMatcher<? super TypeDescription> typeMatcher() {
         return null;

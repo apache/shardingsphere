@@ -26,8 +26,8 @@ public interface ConstructorAdvice {
     /**
      * Intercept the target's constructor. This method is weaved after the constructor execution.
      *
-     * @param target Intercepted target object
-     * @param args The all arguments of the intercepted constructor
+     * @param target intercepted target object
+     * @param args all arguments of the intercepted constructor
      */
     void onConstructor(TargetObject target, Object[] args);
 }

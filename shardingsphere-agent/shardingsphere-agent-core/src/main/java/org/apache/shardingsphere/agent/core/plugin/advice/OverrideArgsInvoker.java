@@ -24,7 +24,7 @@ package org.apache.shardingsphere.agent.core.plugin.advice;
 public interface OverrideArgsInvoker {
 
     /**
-     * invocation origin method.
+     * Invocation origin method.
      *
      * @param args the origin method arguments.
      * @return the result of the origin method.

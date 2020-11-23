@@ -30,8 +30,8 @@ public interface StaticMethodAroundAdvice {
      *
      * @param klass the target class
      * @param method the target method
-     * @param args the all method arguments
-     * @param result A wrapped class of result to detect whether or not to execute the origin method.
+     * @param args all method arguments
+     * @param result wrapped class of result to detect whether or not to execute the origin method.
      */
     void beforeMethod(Class<?> klass, Method method, Object[] args, MethodInvocationResult result);
 
@@ -40,8 +40,8 @@ public interface StaticMethodAroundAdvice {
      *
      * @param klass the target class
      * @param method the target method
-     * @param args the all method arguments
-     * @param result A wrapped class of result to detect whether or not to execute the origin method.
+     * @param args all method arguments
+     * @param result wrapped class of result to detect whether or not to execute the origin method.
      */
     void afterMethod(Class<?> klass, Method method, Object[] args, MethodInvocationResult result);
 
@@ -50,8 +50,8 @@ public interface StaticMethodAroundAdvice {
      *
      * @param klass the target class
      * @param method the target method
-     * @param args the all method arguments
-     * @param throwable an exception from target method.
+     * @param args all method arguments
+     * @param throwable exception from target method.
      */
     void onThrowing(Class<?> klass, Method method, Object[] args, Throwable throwable);
 }
