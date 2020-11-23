@@ -141,7 +141,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         assertThat(((QueryResponse) backendResponse).getQueryHeaders().get(0).getColumnLabel(), is("primary_only"));
         assertThat(((QueryResponse) backendResponse).getQueryHeaders().get(1).getColumnLabel(), is("sharding_type"));
         assertTrue(defaultHintBackendHandler.next());
-        List<Object> defaultRowData = defaultHintBackendHandler.getRowData();
+        List<Object> defaultRowData = (List<Object>) defaultHintBackendHandler.getRowData();
         assertThat(defaultRowData.get(0).toString(), is("false"));
         assertThat(defaultRowData.get(1).toString(), is("databases_tables"));
         assertFalse(defaultHintBackendHandler.next());
@@ -152,7 +152,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         ShardingCTLHintBackendHandler updateHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         updateHintBackendHandler.execute();
         assertTrue(updateHintBackendHandler.next());
-        List<Object> updateRowData = updateHintBackendHandler.getRowData();
+        List<Object> updateRowData = (List<Object>) updateHintBackendHandler.getRowData();
         assertThat(updateRowData.get(0).toString(), is("true"));
         assertThat(updateRowData.get(1).toString(), is("databases_only"));
         assertFalse(updateHintBackendHandler.next());
@@ -176,7 +176,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         assertThat(((QueryResponse) backendResponse).getQueryHeaders().get(1).getColumnLabel(), is("database_sharding_values"));
         assertThat(((QueryResponse) backendResponse).getQueryHeaders().get(2).getColumnLabel(), is("table_sharding_values"));
         assertTrue(defaultHintBackendHandler.next());
-        List<Object> defaultRowData = defaultHintBackendHandler.getRowData();
+        List<Object> defaultRowData = (List<Object>) defaultHintBackendHandler.getRowData();
         assertThat(defaultRowData.get(0).toString(), is("user"));
         assertThat(defaultRowData.get(1).toString(), is(""));
         assertThat(defaultRowData.get(2).toString(), is(""));
@@ -190,7 +190,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         ShardingCTLHintBackendHandler updateHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         updateHintBackendHandler.execute();
         assertTrue(updateHintBackendHandler.next());
-        List<Object> updateRowData = updateHintBackendHandler.getRowData();
+        List<Object> updateRowData = (List<Object>) updateHintBackendHandler.getRowData();
         assertThat(updateRowData.get(0).toString(), is("user"));
         assertThat(updateRowData.get(1).toString(), is("100"));
         assertThat(updateRowData.get(2).toString(), is("200,300"));
