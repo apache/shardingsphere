@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.postgresql.wal;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.config.rule.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

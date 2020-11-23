@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.check;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.config.rule.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;

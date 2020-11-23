@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.datasource;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.config.rule.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
 
 import java.sql.SQLException;
 
