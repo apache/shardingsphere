@@ -26,7 +26,7 @@ import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Do transaction operation.
@@ -66,7 +66,7 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     }
     
     @Override
-    public List<Object> getRowData() {
+    public Collection<Object> getRowData() {
         return null;
     }
 }

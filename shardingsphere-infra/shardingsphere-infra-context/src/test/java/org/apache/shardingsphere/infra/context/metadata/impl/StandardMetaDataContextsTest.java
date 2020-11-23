@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.context.metadata.impl;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.junit.Test;
 
@@ -44,11 +44,11 @@ public final class StandardMetaDataContextsTest {
     
     @Test
     public void assertClose() {
-        ExecutorKernel executorKernel = mock(ExecutorKernel.class);
+        ExecutorEngine executorEngine = mock(ExecutorEngine.class);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(Collections.singletonMap("logic_db", metaData), 
-                executorKernel, new Authentication(), new ConfigurationProperties(new Properties()), DatabaseTypeRegistry.getTrunkDatabaseType("SQL92"));
+                executorEngine, new Authentication(), new ConfigurationProperties(new Properties()), DatabaseTypeRegistry.getTrunkDatabaseType("SQL92"));
         standardMetaDataContexts.close();
-        verify(executorKernel).close();
+        verify(executorEngine).close();
     }
 }

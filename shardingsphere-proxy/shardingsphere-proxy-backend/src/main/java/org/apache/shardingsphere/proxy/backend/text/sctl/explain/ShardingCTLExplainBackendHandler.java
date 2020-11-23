@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -38,8 +38,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,11 +93,11 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
     }
     
     @Override
-    public List<Object> getRowData() {
+    public Collection<Object> getRowData() {
         ExecutionUnit executionUnit = executionUnits.next();
-        List<Object> row = new ArrayList<>(queryHeaders.size());
-        row.add(executionUnit.getDataSourceName());
-        row.add(executionUnit.getSqlUnit().getSql());
-        return row;
+        Collection<Object> result = new LinkedList<>();
+        result.add(executionUnit.getDataSourceName());
+        result.add(executionUnit.getSqlUnit().getSql());
+        return result;
     }
 }
