@@ -79,7 +79,7 @@ public final class SyncConfigurationUtil {
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(new ShardingRule(sourceRuleConfig, sourceConfig.getDatabaseType(), dataSourceMap));
         Optional<ShardingRuleConfiguration> targetRuleConfig = getTargetRuleConfig(scalingConfig);
         filterByShardingDataSourceTables(dataSourceTableNameMap, scalingConfig.getJobConfiguration());
-        Map<String, Set<String>> shardingColumnsMap = toShardingColumnsMap(targetRuleConfig.orElse(sourceRuleConfig));
+        Map<String, Set<String>> shardingColumnsMap = getShardingColumnsMap(targetRuleConfig.orElse(sourceRuleConfig));
         for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
             DumperConfiguration dumperConfig = createDumperConfig(entry.getKey(), sourceDataSource.get(entry.getKey()).getProps(), entry.getValue());
             ImporterConfiguration importerConfig = createImporterConfig(scalingConfig, shardingColumnsMap);
@@ -176,25 +176,7 @@ public final class SyncConfigurationUtil {
         }
     }
     
-    private static DumperConfiguration createDumperConfig(final String dataSourceName, final Map<String, Object> props, final Map<String, String> tableMap) {
-        DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceName(dataSourceName);
-        StandardJDBCDataSourceConfiguration dumperDataSourceConfig = new StandardJDBCDataSourceConfiguration(
-                props.containsKey("jdbcUrl") ? props.get("jdbcUrl").toString() : props.get("url").toString(), props.get("username").toString(), props.get("password").toString());
-        result.setDataSourceConfig(dumperDataSourceConfig);
-        result.setTableNameMap(tableMap);
-        return result;
-    }
-    
-    private static ImporterConfiguration createImporterConfig(final ScalingConfiguration scalingConfig, final Map<String, Set<String>> shardingRuleConfig) {
-        ImporterConfiguration result = new ImporterConfiguration();
-        result.setDataSourceConfig(scalingConfig.getRuleConfiguration().getTarget().unwrap());
-        result.setShardingColumnsMap(shardingRuleConfig);
-        result.setRetryTimes(scalingConfig.getJobConfiguration().getRetryTimes());
-        return result;
-    }
-    
-    private static Map<String, Set<String>> toShardingColumnsMap(final ShardingRuleConfiguration shardingRuleConfig) {
+    private static Map<String, Set<String>> getShardingColumnsMap(final ShardingRuleConfiguration shardingRuleConfig) {
         Map<String, Set<String>> result = Maps.newConcurrentMap();
         for (ShardingTableRuleConfiguration each : shardingRuleConfig.getTables()) {
             Set<String> shardingColumns = Sets.newHashSet();
@@ -213,6 +195,24 @@ public final class SyncConfigurationUtil {
             return Sets.newHashSet(((ComplexShardingStrategyConfiguration) shardingStrategy).getShardingColumns().split(","));
         }
         return Collections.emptySet();
+    }
+    
+    private static DumperConfiguration createDumperConfig(final String dataSourceName, final Map<String, Object> props, final Map<String, String> tableMap) {
+        DumperConfiguration result = new DumperConfiguration();
+        result.setDataSourceName(dataSourceName);
+        StandardJDBCDataSourceConfiguration dumperDataSourceConfig = new StandardJDBCDataSourceConfiguration(
+                props.containsKey("jdbcUrl") ? props.get("jdbcUrl").toString() : props.get("url").toString(), props.get("username").toString(), props.get("password").toString());
+        result.setDataSourceConfig(dumperDataSourceConfig);
+        result.setTableNameMap(tableMap);
+        return result;
+    }
+    
+    private static ImporterConfiguration createImporterConfig(final ScalingConfiguration scalingConfig, final Map<String, Set<String>> shardingColumnsMap) {
+        ImporterConfiguration result = new ImporterConfiguration();
+        result.setDataSourceConfig(scalingConfig.getRuleConfiguration().getTarget().unwrap());
+        result.setShardingColumnsMap(shardingColumnsMap);
+        result.setRetryTimes(scalingConfig.getJobConfiguration().getRetryTimes());
+        return result;
     }
     
     /**
