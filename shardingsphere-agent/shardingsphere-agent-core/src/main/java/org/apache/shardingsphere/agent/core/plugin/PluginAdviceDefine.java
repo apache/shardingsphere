@@ -29,7 +29,7 @@ import org.apache.shardingsphere.agent.core.plugin.point.InstanceMethodPoint;
 import java.util.List;
 
 /**
- * The advice of plugin configurer.
+ * Plugin advice define.
  *
  * <code>
  * PluginAdviceDefine.intercept("Target.class")
