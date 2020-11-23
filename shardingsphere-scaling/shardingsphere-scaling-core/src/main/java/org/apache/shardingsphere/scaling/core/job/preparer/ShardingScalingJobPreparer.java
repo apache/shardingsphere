@@ -63,8 +63,8 @@ public final class ShardingScalingJobPreparer {
      * @param shardingScalingJob sharding scaling job
      */
     public void prepare(final ShardingScalingJob shardingScalingJob) {
-        String databaseType = shardingScalingJob.getSyncConfigurations().get(0).getDumperConfiguration().getDataSourceConfiguration().getDatabaseType().getName();
-        try (DataSourceManager dataSourceManager = new DataSourceManager(shardingScalingJob.getSyncConfigurations())) {
+        String databaseType = shardingScalingJob.getSyncConfigs().get(0).getDumperConfig().getDataSourceConfig().getDatabaseType().getName();
+        try (DataSourceManager dataSourceManager = new DataSourceManager(shardingScalingJob.getSyncConfigs())) {
             checkDataSources(databaseType, dataSourceManager);
             ResumeBreakPointManager resumeBreakPointManager = getResumeBreakPointManager(databaseType, shardingScalingJob);
             if (resumeBreakPointManager.isResumable()) {
@@ -95,19 +95,19 @@ public final class ShardingScalingJobPreparer {
     
     private void initInventoryDataTasks(final ShardingScalingJob shardingScalingJob, final DataSourceManager dataSourceManager) {
         List<ScalingTask> allInventoryDataTasks = new LinkedList<>();
-        for (SyncConfiguration each : shardingScalingJob.getSyncConfigurations()) {
+        for (SyncConfiguration each : shardingScalingJob.getSyncConfigs()) {
             allInventoryDataTasks.addAll(inventoryDataTaskSplitter.splitInventoryData(each, dataSourceManager));
         }
-        for (Collection<ScalingTask> each : JobPrepareUtil.groupInventoryDataTasks(shardingScalingJob.getSyncConfigurations().get(0).getConcurrency(), allInventoryDataTasks)) {
+        for (Collection<ScalingTask> each : JobPrepareUtil.groupInventoryDataTasks(shardingScalingJob.getSyncConfigs().get(0).getConcurrency(), allInventoryDataTasks)) {
             shardingScalingJob.getInventoryDataTasks().add(syncTaskFactory.createInventoryDataSyncTaskGroup(each));
         }
     }
     
     private void initIncrementalDataTasks(final String databaseType, final ShardingScalingJob shardingScalingJob, final DataSourceManager dataSourceManager) throws SQLException {
-        for (SyncConfiguration each : shardingScalingJob.getSyncConfigurations()) {
-            DataSourceConfiguration dataSourceConfig = each.getDumperConfiguration().getDataSourceConfiguration();
-            each.getDumperConfiguration().setPositionManager(PositionManagerFactory.newInstance(databaseType, dataSourceManager.getDataSource(dataSourceConfig)));
-            shardingScalingJob.getIncrementalDataTasks().add(syncTaskFactory.createIncrementalDataSyncTask(each.getConcurrency(), each.getDumperConfiguration(), each.getImporterConfiguration()));
+        for (SyncConfiguration each : shardingScalingJob.getSyncConfigs()) {
+            DataSourceConfiguration dataSourceConfig = each.getDumperConfig().getDataSourceConfig();
+            each.getDumperConfig().setPositionManager(PositionManagerFactory.newInstance(databaseType, dataSourceManager.getDataSource(dataSourceConfig)));
+            shardingScalingJob.getIncrementalDataTasks().add(syncTaskFactory.createIncrementalDataSyncTask(each.getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
         }
     }
     

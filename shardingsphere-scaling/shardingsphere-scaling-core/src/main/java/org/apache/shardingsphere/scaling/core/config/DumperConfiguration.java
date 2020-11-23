@@ -33,7 +33,7 @@ public class DumperConfiguration {
     
     private String dataSourceName;
     
-    private DataSourceConfiguration dataSourceConfiguration;
+    private DataSourceConfiguration dataSourceConfig;
     
     private PositionManager positionManager;
     

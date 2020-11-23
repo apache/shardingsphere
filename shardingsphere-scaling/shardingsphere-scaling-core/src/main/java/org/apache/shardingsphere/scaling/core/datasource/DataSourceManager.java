@@ -50,12 +50,12 @@ public final class DataSourceManager implements AutoCloseable {
     
     private void createDataSources(final List<SyncConfiguration> syncConfigs) {
         createSourceDataSources(syncConfigs);
-        createTargetDataSources(syncConfigs.iterator().next().getImporterConfiguration().getDataSourceConfiguration());
+        createTargetDataSources(syncConfigs.iterator().next().getImporterConfig().getDataSourceConfig());
     }
     
     private void createSourceDataSources(final List<SyncConfiguration> syncConfigs) {
-        for (SyncConfiguration syncConfiguration : syncConfigs) {
-            DataSourceConfiguration dataSourceConfig = syncConfiguration.getDumperConfiguration().getDataSourceConfiguration();
+        for (SyncConfiguration syncConfig : syncConfigs) {
+            DataSourceConfiguration dataSourceConfig = syncConfig.getDumperConfig().getDataSourceConfig();
             DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
             cachedDataSources.put(dataSourceConfig, dataSource);
             sourceDataSources.put(dataSourceConfig, dataSource);

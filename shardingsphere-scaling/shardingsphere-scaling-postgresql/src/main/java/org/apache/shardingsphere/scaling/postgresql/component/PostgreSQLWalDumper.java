@@ -25,6 +25,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingS
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.utils.ThreadUtil;
 import org.apache.shardingsphere.scaling.postgresql.wal.LogicalReplication;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalEventConverter;
@@ -55,9 +56,9 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor i
     @Setter
     private Channel channel;
     
-    public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final WalPosition position) {
-        walPosition = position;
-        if (!StandardJDBCDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfiguration().getClass())) {
+    public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final Position<WalPosition> position) {
+        walPosition = (WalPosition) position;
+        if (!StandardJDBCDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
             throw new UnsupportedOperationException("PostgreSQLWalDumper only support JDBCDataSourceConfiguration");
         }
         this.dumperConfig = dumperConfig;
@@ -72,7 +73,7 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor i
     
     private void dump() {
         try {
-            Connection pgConnection = logicalReplication.createPgConnection((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfiguration());
+            Connection pgConnection = logicalReplication.createPgConnection((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig());
             DecodingPlugin decodingPlugin = new TestDecodingPlugin(pgConnection.unwrap(PgConnection.class).getTimestampUtils());
             PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionManager.SLOT_NAME, walPosition.getLogSequenceNumber());
             while (isRunning()) {

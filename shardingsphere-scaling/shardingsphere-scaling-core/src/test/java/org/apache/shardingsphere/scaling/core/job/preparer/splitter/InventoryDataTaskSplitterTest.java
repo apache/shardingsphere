@@ -70,7 +70,7 @@ public final class InventoryDataTaskSplitterTest {
     
     @Test
     public void assertSplitInventoryDataWithIntPrimary() throws SQLException {
-        initIntPrimaryEnvironment(syncConfig.getDumperConfiguration());
+        initIntPrimaryEnvironment(syncConfig.getDumperConfig());
         Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(3));
@@ -78,7 +78,7 @@ public final class InventoryDataTaskSplitterTest {
     
     @Test
     public void assertSplitInventoryDataWithCharPrimary() throws SQLException {
-        initCharPrimaryEnvironment(syncConfig.getDumperConfiguration());
+        initCharPrimaryEnvironment(syncConfig.getDumperConfig());
         Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
@@ -86,7 +86,7 @@ public final class InventoryDataTaskSplitterTest {
     
     @Test
     public void assertSplitInventoryDataWithUnionPrimary() throws SQLException {
-        initUnionPrimaryEnvironment(syncConfig.getDumperConfiguration());
+        initUnionPrimaryEnvironment(syncConfig.getDumperConfig());
         Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
@@ -94,14 +94,14 @@ public final class InventoryDataTaskSplitterTest {
     
     @Test
     public void assertSplitInventoryDataWithoutPrimary() throws SQLException {
-        initNoPrimaryEnvironment(syncConfig.getDumperConfiguration());
+        initNoPrimaryEnvironment(syncConfig.getDumperConfig());
         Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
     
     private void initIntPrimaryEnvironment(final DumperConfiguration dumperConfig) throws SQLException {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -111,7 +111,7 @@ public final class InventoryDataTaskSplitterTest {
     }
     
     private void initCharPrimaryEnvironment(final DumperConfiguration dumperConfig) throws SQLException {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -121,7 +121,7 @@ public final class InventoryDataTaskSplitterTest {
     }
     
     private void initUnionPrimaryEnvironment(final DumperConfiguration dumperConfig) throws SQLException {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -131,7 +131,7 @@ public final class InventoryDataTaskSplitterTest {
     }
     
     private void initNoPrimaryEnvironment(final DumperConfiguration dumperConfig) throws SQLException {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -143,7 +143,7 @@ public final class InventoryDataTaskSplitterTest {
     private DumperConfiguration mockDumperConfig() {
         DataSourceConfiguration dataSourceConfig = new StandardJDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
         DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfiguration(dataSourceConfig);
+        result.setDataSourceConfig(dataSourceConfig);
         Map<String, String> tableMap = new HashMap<>();
         tableMap.put("t_order", "t_order");
         result.setTableNameMap(tableMap);

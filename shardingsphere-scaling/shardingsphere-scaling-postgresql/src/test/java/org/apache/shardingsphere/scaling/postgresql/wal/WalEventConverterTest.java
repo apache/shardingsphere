@@ -58,7 +58,7 @@ public final class WalEventConverterTest {
     
     private DumperConfiguration mockDumperConfiguration() {
         DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfiguration(new StandardJDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
+        result.setDataSourceConfig(new StandardJDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
         Map<String, String> tableNameMap = Maps.newHashMap();
         tableNameMap.put("t_order", "t_order");
         result.setTableNameMap(tableNameMap);
@@ -67,7 +67,7 @@ public final class WalEventConverterTest {
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final DumperConfiguration dumperConfig) {
-        DataSource dataSource = new DataSourceManager().getDataSource(dumperConfig.getDataSourceConfiguration());
+        DataSource dataSource = new DataSourceManager().getDataSource(dumperConfig.getDataSourceConfig());
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");

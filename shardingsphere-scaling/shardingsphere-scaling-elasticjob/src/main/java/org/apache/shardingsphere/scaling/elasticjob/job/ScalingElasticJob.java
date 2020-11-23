@@ -42,19 +42,19 @@ public final class ScalingElasticJob implements SimpleJob {
     @Override
     public void execute(final ShardingContext shardingContext) {
         log.info("execute job: {} - {}/{}", shardingContext.getTaskId(), shardingContext.getShardingItem(), shardingContext.getShardingTotalCount());
-        ScalingConfiguration scalingConfiguration = GSON.fromJson(shardingContext.getJobParameter(), ScalingConfiguration.class);
-        if (scalingConfiguration.getJobConfiguration().isRunning()) {
-            startJob(scalingConfiguration, shardingContext);
+        ScalingConfiguration scalingConfig = GSON.fromJson(shardingContext.getJobParameter(), ScalingConfiguration.class);
+        if (scalingConfig.getJobConfiguration().isRunning()) {
+            startJob(scalingConfig, shardingContext);
             return;
         }
         stopJob(shardingContext);
     }
     
-    private void startJob(final ScalingConfiguration scalingConfiguration, final ShardingContext shardingContext) {
+    private void startJob(final ScalingConfiguration scalingConfig, final ShardingContext shardingContext) {
         log.info("start job: {} - {}", shardingContext.getJobName(), shardingContext.getShardingItem());
-        scalingConfiguration.getJobConfiguration().setShardingItem(shardingContext.getShardingItem());
-        scalingConfiguration.getJobConfiguration().setJobId(Long.valueOf(shardingContext.getJobName()));
-        shardingScalingJob = SCALING_JOB_SERVICE.start(scalingConfiguration).orElse(null);
+        scalingConfig.getJobConfiguration().setShardingItem(shardingContext.getShardingItem());
+        scalingConfig.getJobConfiguration().setJobId(Long.valueOf(shardingContext.getJobName()));
+        shardingScalingJob = SCALING_JOB_SERVICE.start(scalingConfig).orElse(null);
     }
     
     private void stopJob(final ShardingContext shardingContext) {

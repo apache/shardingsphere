@@ -75,7 +75,7 @@ public final class PostgreSQLWalDumperTest {
     private DumperConfiguration mockDumperConfiguration() {
         jdbcDataSourceConfig = new StandardJDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root");
         DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfiguration(jdbcDataSourceConfig);
+        result.setDataSourceConfig(jdbcDataSourceConfig);
         return result;
     }
     

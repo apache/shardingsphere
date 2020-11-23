@@ -38,7 +38,7 @@ public final class MySQLJdbcDumper extends AbstractJDBCDumper {
     
     public MySQLJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
         super(inventoryDumperConfig, dataSourceManager);
-        StandardJDBCDataSourceConfiguration jdbcDataSourceConfig = (StandardJDBCDataSourceConfiguration) getInventoryDumperConfiguration().getDataSourceConfiguration();
+        StandardJDBCDataSourceConfiguration jdbcDataSourceConfig = (StandardJDBCDataSourceConfiguration) getInventoryDumperConfig().getDataSourceConfig();
         jdbcDataSourceConfig.setJdbcUrl(fixMySQLUrl(jdbcDataSourceConfig.getJdbcUrl()));
     }
     

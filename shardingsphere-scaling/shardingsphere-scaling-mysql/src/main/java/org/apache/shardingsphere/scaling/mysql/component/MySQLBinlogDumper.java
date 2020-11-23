@@ -33,6 +33,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRe
 import org.apache.shardingsphere.scaling.core.execute.executor.record.PlaceholderRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.metadata.JdbcUri;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
@@ -67,13 +68,13 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
     @Setter
     private Channel channel;
     
-    public MySQLBinlogDumper(final DumperConfiguration dumperConfig, final BinlogPosition binlogPosition) {
-        this.binlogPosition = binlogPosition;
-        if (!StandardJDBCDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfiguration().getClass())) {
+    public MySQLBinlogDumper(final DumperConfiguration dumperConfig, final Position<BinlogPosition> binlogPosition) {
+        this.binlogPosition = (BinlogPosition) binlogPosition;
+        if (!StandardJDBCDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
             throw new UnsupportedOperationException("MySQLBinlogDumper only support JDBCDataSourceConfiguration");
         }
         this.dumperConfig = dumperConfig;
-        metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(dumperConfig.getDataSourceConfiguration()));
+        metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(dumperConfig.getDataSourceConfig()));
     }
     
     @Override
@@ -83,7 +84,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
     }
     
     private void dump() {
-        StandardJDBCDataSourceConfiguration jdbcDataSourceConfig = (StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfiguration();
+        StandardJDBCDataSourceConfiguration jdbcDataSourceConfig = (StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig();
         JdbcUri uri = new JdbcUri(jdbcDataSourceConfig.getJdbcUrl());
         MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), uri.getHostname(), uri.getPort(), jdbcDataSourceConfig.getUsername(), jdbcDataSourceConfig.getPassword()));
         client.connect();

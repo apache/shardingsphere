@@ -56,34 +56,34 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
     }
     
     @Override
-    public Optional<ShardingScalingJob> start(final ScalingConfiguration scalingConfiguration) {
+    public Optional<ShardingScalingJob> start(final ScalingConfiguration scalingConfig) {
         ShardingScalingJob shardingScalingJob = new ShardingScalingJob();
-        SyncConfigurationUtil.fillInShardingTables(scalingConfiguration);
-        updateScalingConfiguration(shardingScalingJob.getJobId(), scalingConfiguration);
+        SyncConfigurationUtil.fillInShardingTables(scalingConfig);
+        updateScalingConfig(shardingScalingJob.getJobId(), scalingConfig);
         return Optional.of(shardingScalingJob);
     }
     
     @Override
     public void stop(final long jobId) {
-        ScalingConfiguration scalingConfiguration = getJob(jobId).getScalingConfiguration();
-        scalingConfiguration.getJobConfiguration().setRunning(false);
-        updateScalingConfiguration(jobId, scalingConfiguration);
+        ScalingConfiguration scalingConfig = getJob(jobId).getScalingConfig();
+        scalingConfig.getJobConfiguration().setRunning(false);
+        updateScalingConfig(jobId, scalingConfig);
     }
     
-    private void updateScalingConfiguration(final long jobId, final ScalingConfiguration scalingConfiguration) {
-        REGISTRY_REPOSITORY.persist(ScalingTaskUtil.getScalingListenerPath(jobId, ScalingConstant.CONFIG), GSON.toJson(scalingConfiguration));
+    private void updateScalingConfig(final long jobId, final ScalingConfiguration scalingConfig) {
+        REGISTRY_REPOSITORY.persist(ScalingTaskUtil.getScalingListenerPath(jobId, ScalingConstant.CONFIG), GSON.toJson(scalingConfig));
     }
     
     @Override
     public ShardingScalingJob getJob(final long jobId) {
         ShardingScalingJob result = new ShardingScalingJob();
-        result.setScalingConfiguration(GSON.fromJson(REGISTRY_REPOSITORY.get(ScalingTaskUtil.getScalingListenerPath(jobId, ScalingConstant.CONFIG)), ScalingConfiguration.class));
+        result.setScalingConfig(GSON.fromJson(REGISTRY_REPOSITORY.get(ScalingTaskUtil.getScalingListenerPath(jobId, ScalingConstant.CONFIG)), ScalingConfiguration.class));
         return result;
     }
     
     @Override
     public ScalingJobProgress getProgress(final long jobId) {
-        boolean running = getJob(jobId).getScalingConfiguration().getJobConfiguration().isRunning();
+        boolean running = getJob(jobId).getScalingConfig().getJobConfiguration().isRunning();
         ScalingJobProgress result = new ScalingJobProgress(jobId, running ? "RUNNING" : "STOPPED");
         List<String> shardingItems = REGISTRY_REPOSITORY.getChildrenKeys(ScalingTaskUtil.getScalingListenerPath(jobId, ScalingConstant.POSITION));
         for (String each : shardingItems) {

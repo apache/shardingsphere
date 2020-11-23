@@ -48,7 +48,7 @@ public final class WalEventConverter {
     
     public WalEventConverter(final DumperConfiguration dumperConfig) {
         this.dumperConfig = dumperConfig;
-        metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(dumperConfig.getDataSourceConfiguration()));
+        metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(dumperConfig.getDataSourceConfig()));
     }
     
     /**
@@ -58,7 +58,7 @@ public final class WalEventConverter {
      * @return record
      */
     public Record convert(final AbstractWalEvent event) {
-        JdbcUri uri = new JdbcUri(((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfiguration()).getJdbcUrl());
+        JdbcUri uri = new JdbcUri(((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getJdbcUrl());
         if (filter(uri.getDatabase(), event)) {
             return createPlaceholderRecord(event);
         } else if (event instanceof WriteRowEvent) {

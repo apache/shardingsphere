@@ -74,7 +74,7 @@ public final class MySQLBinlogDumperTest {
     
     private DumperConfiguration mockDumperConfiguration() {
         DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfiguration(new StandardJDBCDataSourceConfiguration(URL, "root", "root"));
+        result.setDataSourceConfig(new StandardJDBCDataSourceConfiguration(URL, "root", "root"));
         Map<String, String> tableNameMap = new HashedMap<>(1);
         tableNameMap.put("t_order", "t_order");
         result.setTableNameMap(tableNameMap);
@@ -83,7 +83,7 @@ public final class MySQLBinlogDumperTest {
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final DumperConfiguration dumperConfig) {
-        DataSource dataSource = new DataSourceManager().getDataSource(dumperConfig.getDataSourceConfiguration());
+        DataSource dataSource = new DataSourceManager().getDataSource(dumperConfig.getDataSourceConfig());
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");

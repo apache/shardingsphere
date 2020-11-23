@@ -29,11 +29,11 @@ import static org.junit.Assert.assertThat;
 public final class RuleConfigurationTest {
     
     @Test
-    public void assertToJDBConfiguration() {
+    public void assertToJDBConfig() {
         String jdbcUrl = "jdbc:h2:mem:test_db_2;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
         String username = "root";
         String password = "password";
-        DataSourceConfiguration actual = mockStandardJDBCDataSourceConfigurationWrapper(jdbcUrl, username, password).unwrap();
+        DataSourceConfiguration actual = mockStandardJDBCDataSourceConfigWrapper(jdbcUrl, username, password).unwrap();
         assertThat(actual, instanceOf(StandardJDBCDataSourceConfiguration.class));
         StandardJDBCDataSourceConfiguration jdbcDataSourceConfig = (StandardJDBCDataSourceConfiguration) actual;
         assertThat(jdbcDataSourceConfig.getJdbcUrl(), is(jdbcUrl));
@@ -53,7 +53,7 @@ public final class RuleConfigurationTest {
         assertThat(shardingSphereJDBCConfig.getRule(), is(rule));
     }
     
-    private DataSourceConfigurationWrapper mockStandardJDBCDataSourceConfigurationWrapper(final String jdbcUrl, final String username, final String password) {
+    private DataSourceConfigurationWrapper mockStandardJDBCDataSourceConfigWrapper(final String jdbcUrl, final String username, final String password) {
         JsonObject parameter = new JsonObject();
         parameter.addProperty("jdbcUrl", jdbcUrl);
         parameter.addProperty("username", username);

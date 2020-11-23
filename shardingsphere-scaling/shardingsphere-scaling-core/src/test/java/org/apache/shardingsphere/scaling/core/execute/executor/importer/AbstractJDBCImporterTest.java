@@ -87,7 +87,7 @@ public final class AbstractJDBCImporterTest {
     
     @Before
     public void setUp() throws SQLException {
-        jdbcImporter = new AbstractJDBCImporter(getImporterConfiguration(), dataSourceManager) {
+        jdbcImporter = new AbstractJDBCImporter(mockImporterConfiguration(), dataSourceManager) {
             
             @Override
             protected AbstractSQLBuilder createSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
@@ -185,9 +185,9 @@ public final class AbstractJDBCImporterTest {
         return result;
     }
     
-    private ImporterConfiguration getImporterConfiguration() {
+    private ImporterConfiguration mockImporterConfiguration() {
         ImporterConfiguration result = new ImporterConfiguration();
-        result.setDataSourceConfiguration(dataSourceConfig);
+        result.setDataSourceConfig(dataSourceConfig);
         Map<String, Set<String>> shardingColumnsMap = Maps.newHashMap();
         shardingColumnsMap.put("test_table", Sets.newHashSet("user"));
         result.setShardingColumnsMap(shardingColumnsMap);

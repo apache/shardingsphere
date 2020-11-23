@@ -47,8 +47,8 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
     
     @Override
     public Map<String, DataConsistencyCheckResult> countCheck() {
-        return shardingScalingJob.getSyncConfigurations()
-                .stream().flatMap(each -> each.getDumperConfiguration().getTableNameMap().values().stream()).collect(Collectors.toSet())
+        return shardingScalingJob.getSyncConfigs()
+                .stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet())
                 .stream().collect(Collectors.toMap(Function.identity(), this::countCheck, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
@@ -75,11 +75,11 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
     }
     
     protected DataSourceWrapper getSourceDataSource() throws SQLException {
-        return shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getSource().unwrap().toDataSource();
+        return shardingScalingJob.getScalingConfig().getRuleConfiguration().getSource().unwrap().toDataSource();
     }
     
     protected DataSourceWrapper getTargetDataSource() throws SQLException {
-        return shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getTarget().unwrap().toDataSource();
+        return shardingScalingJob.getScalingConfig().getRuleConfiguration().getTarget().unwrap().toDataSource();
     }
     
     protected abstract AbstractSQLBuilder getSqlBuilder();

@@ -41,7 +41,7 @@ public final class DumperFactory {
      * @return JDBC dumper
      */
     public static JDBCDumper newInstanceJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
-        return newInstanceJdbcDumper(inventoryDumperConfig.getDataSourceConfiguration().getDatabaseType().getName(), inventoryDumperConfig, dataSourceManager);
+        return newInstanceJdbcDumper(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getName(), inventoryDumperConfig, dataSourceManager);
     }
     
     /**
@@ -66,7 +66,7 @@ public final class DumperFactory {
      * @return log dumper
      */
     public static LogDumper newInstanceLogDumper(final DumperConfiguration dumperConfig, final Position position) {
-        return newInstanceLogDumper(dumperConfig.getDataSourceConfiguration().getDatabaseType().getName(), dumperConfig, position);
+        return newInstanceLogDumper(dumperConfig.getDataSourceConfig().getDatabaseType().getName(), dumperConfig, position);
     }
     
     /**

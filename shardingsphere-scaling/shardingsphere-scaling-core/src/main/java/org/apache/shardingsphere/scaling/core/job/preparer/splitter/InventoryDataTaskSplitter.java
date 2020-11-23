@@ -59,15 +59,15 @@ public final class InventoryDataTaskSplitter {
      */
     public Collection<ScalingTask> splitInventoryData(final SyncConfiguration syncConfig, final DataSourceManager dataSourceManager) {
         Collection<ScalingTask> result = new LinkedList<>();
-        for (InventoryDumperConfiguration each : splitDumperConfiguration(syncConfig.getConcurrency(), syncConfig.getDumperConfiguration(), dataSourceManager)) {
-            result.add(syncTaskFactory.createInventoryDataSyncTask(each, syncConfig.getImporterConfiguration()));
+        for (InventoryDumperConfiguration each : splitDumperConfig(syncConfig.getConcurrency(), syncConfig.getDumperConfig(), dataSourceManager)) {
+            result.add(syncTaskFactory.createInventoryDataSyncTask(each, syncConfig.getImporterConfig()));
         }
         return result;
     }
     
-    private Collection<InventoryDumperConfiguration> splitDumperConfiguration(final int concurrency, final DumperConfiguration dumperConfig, final DataSourceManager dataSourceManager) {
+    private Collection<InventoryDumperConfiguration> splitDumperConfig(final int concurrency, final DumperConfiguration dumperConfig, final DataSourceManager dataSourceManager) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
         MetaDataManager metaDataManager = new MetaDataManager(dataSource);
         for (InventoryDumperConfiguration each : splitByTable(dumperConfig)) {
             if (isSpiltByPrimaryKeyRange(each, metaDataManager)) {

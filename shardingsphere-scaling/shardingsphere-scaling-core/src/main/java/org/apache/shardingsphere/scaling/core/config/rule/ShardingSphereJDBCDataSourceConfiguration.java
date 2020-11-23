@@ -64,7 +64,7 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements DataSour
     @Override
     public DatabaseType getDatabaseType() {
         if (null == databaseType) {
-            Map<String, Object> props = ConfigurationYamlConverter.loadDataSourceConfigurations(dataSource).values().iterator().next().getProps();
+            Map<String, Object> props = ConfigurationYamlConverter.loadDataSourceConfigs(dataSource).values().iterator().next().getProps();
             databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(props.getOrDefault("url", props.get("jdbcUrl")).toString());
         }
         return databaseType;
@@ -72,8 +72,8 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements DataSour
     
     @Override
     public DataSourceWrapper toDataSource() throws SQLException {
-        Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(ConfigurationYamlConverter.loadDataSourceConfigurations(dataSource));
-        ShardingRuleConfiguration ruleConfig = ConfigurationYamlConverter.loadShardingRuleConfiguration(rule);
+        Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(ConfigurationYamlConverter.loadDataSourceConfigs(dataSource));
+        ShardingRuleConfiguration ruleConfig = ConfigurationYamlConverter.loadShardingRuleConfig(rule);
         return new DataSourceWrapper(ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Lists.newArrayList(ruleConfig), null));
     }
 }

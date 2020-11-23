@@ -27,7 +27,7 @@ import static org.junit.Assert.assertThat;
 public final class JDBCDataSourceConfigurationTest {
     
     @Test
-    public void assertJDBCDataSourceConfigurationEquals() {
+    public void assertJDBCDataSourceConfigEquals() {
         StandardJDBCDataSourceConfiguration sourceConfig = new StandardJDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
         StandardJDBCDataSourceConfiguration targetConfig = new StandardJDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
         assertThat(sourceConfig, is(targetConfig));
@@ -37,7 +37,7 @@ public final class JDBCDataSourceConfigurationTest {
     }
     
     @Test
-    public void assertJDBCDataSourceConfigurationNotEquals() {
+    public void assertJDBCDataSourceConfigNotEquals() {
         StandardJDBCDataSourceConfiguration sourceConfig = new StandardJDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "sa", "root");
         StandardJDBCDataSourceConfiguration targetConfig = new StandardJDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
         assertThat(sourceConfig, not(targetConfig));

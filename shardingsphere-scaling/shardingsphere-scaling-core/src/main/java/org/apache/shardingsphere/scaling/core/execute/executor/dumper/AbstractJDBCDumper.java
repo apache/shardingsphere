@@ -53,7 +53,7 @@ import java.sql.SQLException;
 public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor implements JDBCDumper {
     
     @Getter(AccessLevel.PROTECTED)
-    private final InventoryDumperConfiguration inventoryDumperConfiguration;
+    private final InventoryDumperConfiguration inventoryDumperConfig;
     
     private final DataSourceManager dataSourceManager;
     
@@ -63,17 +63,17 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     private Channel channel;
     
     protected AbstractJDBCDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
-        if (!StandardJDBCDataSourceConfiguration.class.equals(inventoryDumperConfig.getDataSourceConfiguration().getClass())) {
+        if (!StandardJDBCDataSourceConfiguration.class.equals(inventoryDumperConfig.getDataSourceConfig().getClass())) {
             throw new UnsupportedOperationException("AbstractJDBCDumper only support JDBCDataSourceConfiguration");
         }
-        inventoryDumperConfiguration = inventoryDumperConfig;
+        this.inventoryDumperConfig = inventoryDumperConfig;
         this.dataSourceManager = dataSourceManager;
         tableMetaData = createTableMetaData();
     }
     
     private TableMetaData createTableMetaData() {
-        MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(inventoryDumperConfiguration.getDataSourceConfiguration()));
-        return metaDataManager.getTableMetaData(inventoryDumperConfiguration.getTableName());
+        MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(inventoryDumperConfig.getDataSourceConfig()));
+        return metaDataManager.getTableMetaData(inventoryDumperConfig.getTableName());
     }
     
     @Override
@@ -83,15 +83,15 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     }
     
     private void dump() {
-        try (Connection conn = dataSourceManager.getDataSource(inventoryDumperConfiguration.getDataSourceConfiguration()).getConnection()) {
-            String sql = String.format("SELECT * FROM %s %s", inventoryDumperConfiguration.getTableName(), RdbmsConfigurationUtil.getWhereCondition(inventoryDumperConfiguration));
+        try (Connection conn = dataSourceManager.getDataSource(inventoryDumperConfig.getDataSourceConfig()).getConnection()) {
+            String sql = String.format("SELECT * FROM %s %s", inventoryDumperConfig.getTableName(), RdbmsConfigurationUtil.getWhereCondition(inventoryDumperConfig));
             PreparedStatement ps = createPreparedStatement(conn, sql);
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
             while (isRunning() && rs.next()) {
                 DataRecord record = new DataRecord(newPosition(rs), metaData.getColumnCount());
                 record.setType(ScalingConstant.INSERT);
-                record.setTableName(inventoryDumperConfiguration.getTableNameMap().get(inventoryDumperConfiguration.getTableName()));
+                record.setTableName(inventoryDumperConfig.getTableNameMap().get(inventoryDumperConfig.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
                     record.addColumn(new Column(metaData.getColumnName(i), readValue(rs, i), true, tableMetaData.isPrimaryKey(i - 1)));
                 }
@@ -108,10 +108,10 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     }
     
     private Position<?> newPosition(final ResultSet rs) throws SQLException {
-        if (null == inventoryDumperConfiguration.getPrimaryKey()) {
+        if (null == inventoryDumperConfig.getPrimaryKey()) {
             return new PlaceholderPosition();
         }
-        return new PrimaryKeyPosition(rs.getLong(inventoryDumperConfiguration.getPrimaryKey()), ((PrimaryKeyPosition) inventoryDumperConfiguration.getPositionManager().getPosition()).getEndValue());
+        return new PrimaryKeyPosition(rs.getLong(inventoryDumperConfig.getPrimaryKey()), ((PrimaryKeyPosition) inventoryDumperConfig.getPositionManager().getPosition()).getEndValue());
     }
     
     protected abstract PreparedStatement createPreparedStatement(Connection connection, String sql) throws SQLException;

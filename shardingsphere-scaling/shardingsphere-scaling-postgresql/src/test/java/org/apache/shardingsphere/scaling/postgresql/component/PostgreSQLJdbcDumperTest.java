@@ -56,7 +56,7 @@ public final class PostgreSQLJdbcDumperTest {
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final DumperConfiguration dumperConfig) {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -67,7 +67,7 @@ public final class PostgreSQLJdbcDumperTest {
     
     @Test
     public void assertCreatePreparedStatement() throws SQLException {
-        DataSource dataSource = dataSourceManager.getDataSource(mockDumperConfiguration().getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(mockDumperConfiguration().getDataSourceConfig());
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = postgreSQLJdbcDumper.createPreparedStatement(connection, "SELECT * FROM t_order")) {
             assertThat(preparedStatement.getFetchSize(), is(1));
@@ -76,7 +76,7 @@ public final class PostgreSQLJdbcDumperTest {
     
     private DumperConfiguration mockDumperConfiguration() {
         DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfiguration(new StandardJDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
+        result.setDataSourceConfig(new StandardJDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
         return result;
     }
 }

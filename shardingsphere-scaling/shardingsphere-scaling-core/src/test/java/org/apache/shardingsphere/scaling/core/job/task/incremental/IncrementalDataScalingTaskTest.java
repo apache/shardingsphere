@@ -70,7 +70,7 @@ public final class IncrementalDataScalingTaskTest {
     
     private ImporterConfiguration mockImporterConfiguration() {
         ImporterConfiguration result = new ImporterConfiguration();
-        result.setDataSourceConfiguration(new StandardJDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD));
+        result.setDataSourceConfig(new StandardJDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD));
         return result;
     }
     
@@ -78,7 +78,7 @@ public final class IncrementalDataScalingTaskTest {
         DataSourceConfiguration dataSourceConfig = new StandardJDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceName("ds0");
-        result.setDataSourceConfiguration(dataSourceConfig);
+        result.setDataSourceConfig(dataSourceConfig);
         Map<String, String> tableMap = new HashMap<>(1, 1);
         tableMap.put("t_order", "t_order");
         result.setTableNameMap(tableMap);
