@@ -36,18 +36,18 @@ public final class ElasticJobUtils {
     /**
      * Create registry center.
      *
-     * @param governanceConfiguration governance configuration
+     * @param governanceConfig governance configuration
      * @return coordinator registry center
      */
-    public static CoordinatorRegistryCenter createRegistryCenter(final GovernanceConfiguration governanceConfiguration) {
-        CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(getZookeeperConfiguration(governanceConfiguration));
+    public static CoordinatorRegistryCenter createRegistryCenter(final GovernanceConfiguration governanceConfig) {
+        CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(getZookeeperConfig(governanceConfig));
         result.init();
         return result;
     }
     
-    private static ZookeeperConfiguration getZookeeperConfiguration(final GovernanceConfiguration governanceConfiguration) {
-        ZookeeperConfiguration result = new ZookeeperConfiguration(governanceConfiguration.getRegistryCenterConfiguration().getServerLists(), governanceConfiguration.getName());
-        Properties props = governanceConfiguration.getRegistryCenterConfiguration().getProps();
+    private static ZookeeperConfiguration getZookeeperConfig(final GovernanceConfiguration governanceConfig) {
+        ZookeeperConfiguration result = new ZookeeperConfiguration(governanceConfig.getRegistryCenterConfiguration().getServerLists(), governanceConfig.getName());
+        Properties props = governanceConfig.getRegistryCenterConfiguration().getProps();
         result.setMaxSleepTimeMilliseconds(getProperty(props, "max.sleep.time.milliseconds", result.getMaxSleepTimeMilliseconds()));
         result.setBaseSleepTimeMilliseconds(getProperty(props, "base.sleep.time.milliseconds", result.getBaseSleepTimeMilliseconds()));
         result.setConnectionTimeoutMilliseconds(getProperty(props, "connection.timeout.milliseconds", result.getConnectionTimeoutMilliseconds()));

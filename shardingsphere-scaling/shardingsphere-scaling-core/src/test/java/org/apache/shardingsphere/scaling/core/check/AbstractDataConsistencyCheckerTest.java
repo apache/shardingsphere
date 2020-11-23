@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.check;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
@@ -41,15 +41,15 @@ public final class AbstractDataConsistencyCheckerTest {
     public void assertCountCheck() {
         ShardingScalingJob shardingScalingJob = mockShardingScalingJob();
         DataConsistencyChecker dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance("H2", shardingScalingJob);
-        initTableData(shardingScalingJob.getSyncConfigurations().get(0).getDumperConfiguration().getDataSourceConfiguration());
-        initTableData(shardingScalingJob.getSyncConfigurations().get(0).getImporterConfiguration().getDataSourceConfiguration());
+        initTableData(shardingScalingJob.getSyncConfigs().get(0).getDumperConfig().getDataSourceConfig());
+        initTableData(shardingScalingJob.getSyncConfigs().get(0).getImporterConfig().getDataSourceConfig());
         Map<String, DataConsistencyCheckResult> resultMap = dataConsistencyChecker.countCheck();
         assertTrue(resultMap.get("t1").isCountValid());
         assertThat(resultMap.get("t1").getSourceCount(), is(resultMap.get("t1").getTargetCount()));
     }
     
     @SneakyThrows(SQLException.class)
-    private void initTableData(final ScalingDataSourceConfiguration dataSourceConfig) {
+    private void initTableData(final DataSourceConfiguration dataSourceConfig) {
         DataSource dataSource = new DataSourceManager().getDataSource(dataSourceConfig);
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {

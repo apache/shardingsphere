@@ -44,12 +44,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public abstract class AbstractDataConsistencyChecker implements DataConsistencyChecker {
     
+    private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
+    
     private final ShardingScalingJob shardingScalingJob;
     
     @Override
     public Map<String, DataConsistencyCheckResult> countCheck() {
-        return shardingScalingJob.getSyncConfigurations()
-                .stream().flatMap(each -> each.getDumperConfiguration().getTableNameMap().values().stream()).collect(Collectors.toSet())
+        return shardingScalingJob.getSyncConfigs()
+                .stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet())
                 .stream().collect(Collectors.toMap(Function.identity(), this::countCheck, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
@@ -76,11 +78,11 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
     }
     
     protected DataSourceWrapper getSourceDataSource() {
-        return new DataSourceFactory().newInstance(shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getSource().toTypedDataSourceConfiguration());
+        return dataSourceFactory.newInstance(shardingScalingJob.getScalingConfig().getRuleConfiguration().getSource().unwrap());
     }
     
     protected DataSourceWrapper getTargetDataSource() {
-        return new DataSourceFactory().newInstance(shardingScalingJob.getScalingConfiguration().getRuleConfiguration().getTarget().toTypedDataSourceConfiguration());
+        return dataSourceFactory.newInstance(shardingScalingJob.getScalingConfig().getRuleConfiguration().getTarget().unwrap());
     }
     
     protected abstract AbstractSQLBuilder getSqlBuilder();

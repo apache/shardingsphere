@@ -15,14 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.scaling.core.config.datasource;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
  * Scaling data source configuration.
  */
-public interface ScalingDataSourceConfiguration {
+public interface DataSourceConfiguration {
+    
+    /**
+     * Get config type.
+     *
+     * @return config type
+     */
+    String getConfigType();
     
     /**
      * Get database type.
@@ -30,4 +40,12 @@ public interface ScalingDataSourceConfiguration {
      * @return database type
      */
     DatabaseType getDatabaseType();
+    
+    /**
+     * To data source.
+     *
+     * @return data source
+     * @throws SQLException SQL exception
+     */
+    DataSource toDataSource() throws SQLException;
 }

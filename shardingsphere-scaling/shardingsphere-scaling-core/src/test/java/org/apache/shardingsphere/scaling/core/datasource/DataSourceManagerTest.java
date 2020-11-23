@@ -41,13 +41,13 @@ public final class DataSourceManagerTest {
     @Before
     @SneakyThrows(IOException.class)
     public void setUp() {
-        syncConfigurations = ScalingConfigurationUtil.initJob("/config.json").getSyncConfigurations();
+        syncConfigurations = ScalingConfigurationUtil.initJob("/config.json").getSyncConfigs();
     }
     
     @Test
     public void assertGetDataSource() {
         DataSourceManager dataSourceManager = new DataSourceManager();
-        DataSource actual = dataSourceManager.getDataSource(syncConfigurations.get(0).getDumperConfiguration().getDataSourceConfiguration());
+        DataSource actual = dataSourceManager.getDataSource(syncConfigurations.get(0).getDumperConfig().getDataSourceConfig());
         assertThat(actual, instanceOf(DataSourceWrapper.class));
     }
     

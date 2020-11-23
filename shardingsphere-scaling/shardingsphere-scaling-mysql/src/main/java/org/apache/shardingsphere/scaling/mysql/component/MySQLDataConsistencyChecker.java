@@ -49,8 +49,8 @@ public final class MySQLDataConsistencyChecker extends AbstractDataConsistencyCh
     
     @Override
     public Map<String, Boolean> dataCheck() {
-        return distinctByValue(getShardingScalingJob().getSyncConfigurations()
-                .stream().flatMap(each -> each.getDumperConfiguration().getTableNameMap().entrySet().stream())
+        return distinctByValue(getShardingScalingJob().getSyncConfigs()
+                .stream().flatMap(each -> each.getDumperConfig().getTableNameMap().entrySet().stream())
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)))
                 .entrySet().stream().collect(Collectors.toMap(Entry::getValue, entry -> dataValid(entry.getKey(), entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }

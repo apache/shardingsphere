@@ -43,13 +43,13 @@ public final class ShardingScalingJob {
     
     private int shardingItem;
     
-    private final transient List<SyncConfiguration> syncConfigurations = new LinkedList<>();
+    private final transient List<SyncConfiguration> syncConfigs = new LinkedList<>();
     
     private final transient List<ScalingTask> inventoryDataTasks = new LinkedList<>();
     
     private final transient List<ScalingTask> incrementalDataTasks = new LinkedList<>();
     
-    private transient ScalingConfiguration scalingConfiguration;
+    private transient ScalingConfiguration scalingConfig;
     
     private transient DataConsistencyChecker dataConsistencyChecker;
     
@@ -62,10 +62,10 @@ public final class ShardingScalingJob {
     
     public ShardingScalingJob(final ScalingConfiguration scalingConfig) {
         this();
-        scalingConfiguration = scalingConfig;
+        this.scalingConfig = scalingConfig;
         jobId = null != scalingConfig.getJobConfiguration().getJobId() ? scalingConfig.getJobConfiguration().getJobId() : jobId;
         shardingItem = scalingConfig.getJobConfiguration().getShardingItem();
-        syncConfigurations.addAll(SyncConfigurationUtil.toSyncConfigurations(scalingConfig));
+        syncConfigs.addAll(SyncConfigurationUtil.toSyncConfigs(scalingConfig));
     }
     
     private static void initIdAutoIncreaseGenerator() {

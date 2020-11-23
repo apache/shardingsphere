@@ -33,9 +33,9 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
     
     private Integer spiltNum;
     
-    public InventoryDumperConfiguration(final DumperConfiguration dumperConfiguration) {
-        setDataSourceName(dumperConfiguration.getDataSourceName());
-        setDataSourceConfiguration(dumperConfiguration.getDataSourceConfiguration());
-        setTableNameMap(dumperConfiguration.getTableNameMap());
+    public InventoryDumperConfiguration(final DumperConfiguration dumperConfig) {
+        setDataSourceName(dumperConfig.getDataSourceName());
+        setDataSourceConfig(dumperConfig.getDataSourceConfig());
+        setTableNameMap(dumperConfig.getTableNameMap());
     }
 }

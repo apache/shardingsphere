@@ -28,6 +28,6 @@ public final class FixtureScalingWorker implements ScalingWorker {
     }
     
     @Override
-    public void init(final GovernanceConfiguration governanceConfiguration) {
+    public void init(final GovernanceConfiguration governanceConfig) {
     }
 }

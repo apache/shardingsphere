@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.scaling.core.config.datasource;
 
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.junit.Test;
@@ -27,9 +27,9 @@ import static org.junit.Assert.assertThat;
 public final class JDBCDataSourceConfigurationTest {
     
     @Test
-    public void assertJDBCDataSourceConfigurationEquals() {
-        JDBCScalingDataSourceConfiguration sourceConfig = new JDBCScalingDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
-        JDBCScalingDataSourceConfiguration targetConfig = new JDBCScalingDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
+    public void assertJDBCDataSourceConfigEquals() {
+        StandardJDBCDataSourceConfiguration sourceConfig = new StandardJDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
+        StandardJDBCDataSourceConfiguration targetConfig = new StandardJDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
         assertThat(sourceConfig, is(targetConfig));
         sourceConfig.setDatabaseType(new MySQLDatabaseType());
         targetConfig.setDatabaseType(new MySQLDatabaseType());
@@ -37,9 +37,9 @@ public final class JDBCDataSourceConfigurationTest {
     }
     
     @Test
-    public void assertJDBCDataSourceConfigurationNotEquals() {
-        JDBCScalingDataSourceConfiguration sourceConfig = new JDBCScalingDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "sa", "root");
-        JDBCScalingDataSourceConfiguration targetConfig = new JDBCScalingDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
+    public void assertJDBCDataSourceConfigNotEquals() {
+        StandardJDBCDataSourceConfiguration sourceConfig = new StandardJDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "sa", "root");
+        StandardJDBCDataSourceConfiguration targetConfig = new StandardJDBCDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false", "root", "root");
         assertThat(sourceConfig, not(targetConfig));
     }
 }

@@ -17,18 +17,14 @@
 
 package org.apache.shardingsphere.scaling.util;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.junit.Test;
-
-import java.io.IOException;
 
 import static org.junit.Assert.assertNotNull;
 
 public final class ScalingConfigUtilTest {
     
     @Test
-    @SneakyThrows(IOException.class)
     public void assertInitScalingConfig() {
         ScalingConfigUtil.initScalingConfig();
         assertNotNull(ScalingContext.getInstance().getServerConfig());

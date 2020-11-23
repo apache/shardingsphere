@@ -51,8 +51,8 @@ public final class StandaloneScalingJobService extends AbstractScalingJobService
     }
     
     @Override
-    public Optional<ShardingScalingJob> start(final ScalingConfiguration scalingConfiguration) {
-        ShardingScalingJob shardingScalingJob = new ShardingScalingJob(scalingConfiguration);
+    public Optional<ShardingScalingJob> start(final ScalingConfiguration scalingConfig) {
+        ShardingScalingJob shardingScalingJob = new ShardingScalingJob(scalingConfig);
         scalingJobMap.put(shardingScalingJob.getJobId(), shardingScalingJob);
         shardingScalingJobPreparer.prepare(shardingScalingJob);
         if (!SyncTaskControlStatus.PREPARING_FAILURE.name().equals(shardingScalingJob.getStatus())) {
