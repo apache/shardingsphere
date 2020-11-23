@@ -40,7 +40,7 @@ import org.apache.shardingsphere.agent.core.plugin.point.InstanceMethodPoint;
 import java.util.Map;
 
 /**
- *  Shardingsphere transformer
+ *  Shardingsphere transformer.
  */
 @Slf4j
 public class ShardingSphereTransformer implements AgentBuilder.Transformer {
