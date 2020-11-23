@@ -39,6 +39,9 @@ import org.apache.shardingsphere.agent.core.plugin.point.InstanceMethodPoint;
 
 import java.util.Map;
 
+/**
+ *  Shardingsphere transformer
+ */
 @Slf4j
 public class ShardingSphereTransformer implements AgentBuilder.Transformer {
 
@@ -49,10 +52,7 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
     }
 
     @Override
-    public DynamicType.Builder<?> transform(final DynamicType.Builder<?> builder,
-                                            final TypeDescription typeDescription,
-                                            final ClassLoader classLoader,
-                                            final JavaModule module) {
+    public DynamicType.Builder<?> transform(final DynamicType.Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module) {
         if (pluginLoader.containsType(typeDescription)) {
 
             DynamicType.Builder<?> newBuilder = builder.defineField("_SSExtraData_", Map.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)

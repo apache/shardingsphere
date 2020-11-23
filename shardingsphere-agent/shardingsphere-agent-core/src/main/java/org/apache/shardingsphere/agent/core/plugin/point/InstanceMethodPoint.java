@@ -22,7 +22,7 @@ import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * A configuration of instance method intercepting point.
+ * Configuration of instance method intercepting point.
  */
 public class InstanceMethodPoint {
     private final ElementMatcher<? super MethodDescription> matcher;
@@ -38,7 +38,7 @@ public class InstanceMethodPoint {
     }
 
     /**
-     * detecting target method constraints but static methods.
+     * Detecting target method constraints but static methods.
      *
      * @return constraints
      */
@@ -47,7 +47,7 @@ public class InstanceMethodPoint {
     }
 
     /**
-     * to get the class name of advice.
+     * To get the class name of advice.
      *
      * @return the class name of advice.
      */
@@ -56,7 +56,7 @@ public class InstanceMethodPoint {
     }
 
     /**
-     * to detect whether to override origin arguments.
+     * To detect whether to override origin arguments.
      *
      * @return override if true
      */

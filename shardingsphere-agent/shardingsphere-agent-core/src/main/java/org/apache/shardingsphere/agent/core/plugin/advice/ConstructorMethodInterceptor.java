@@ -24,7 +24,7 @@ import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
 
 /**
- * A proxy class for ByteBuddy to intercept methods of target and weave post-method after constructor.
+ * Proxy class for ByteBuddy to intercept methods of target and weave post-method after constructor.
  */
 @Slf4j
 public class ConstructorMethodInterceptor {

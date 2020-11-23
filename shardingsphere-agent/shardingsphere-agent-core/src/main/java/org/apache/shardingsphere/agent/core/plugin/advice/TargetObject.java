@@ -19,19 +19,19 @@
 package org.apache.shardingsphere.agent.core.plugin.advice;
 
 /**
- * A wrapped class for target and provide a context to store variable during invocation.
+ * Wrapped class for target and provide a context to store variable during invocation.
  */
 public interface TargetObject {
 
     /**
-     * get the variable from context.
+     * Get the variable from context.
      *
      * @return the attachment
      */
     Object getAttachment();
 
     /**
-     * store a variable into context.
+     * Store a variable into context.
      *
      * @param attachment what variable you want to store.
      */

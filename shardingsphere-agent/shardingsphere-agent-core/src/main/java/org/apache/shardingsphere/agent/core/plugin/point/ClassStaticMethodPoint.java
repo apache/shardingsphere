@@ -22,7 +22,7 @@ import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * A configuration of static method intercepting point.
+ * Configuration of static method intercepting point.
  */
 public class ClassStaticMethodPoint {
 
@@ -39,7 +39,7 @@ public class ClassStaticMethodPoint {
     }
 
     /**
-     * detecting target method constraints.
+     * To detect target method constraints.
      *
      * @return constraints
      */
@@ -48,7 +48,7 @@ public class ClassStaticMethodPoint {
     }
 
     /**
-     * to get the class name of advice.
+     * To get the class name of advice.
      *
      * @return the class name of advice.
      */
@@ -57,7 +57,7 @@ public class ClassStaticMethodPoint {
     }
 
     /**
-     * to detect whether to override origin arguments.
+     * To detect whether to override origin arguments.
      *
      * @return override if true
      */

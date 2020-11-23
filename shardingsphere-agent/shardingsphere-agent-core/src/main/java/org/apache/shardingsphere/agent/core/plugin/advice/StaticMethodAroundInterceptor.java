@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
 /**
- * A proxy class for ByteBuddy to intercept methods of target and weave pre- and post-method around the target method.
+ * Proxy class for ByteBuddy to intercept methods of target and weave pre- and post-method around the target method.
  */
 @Slf4j
 public class StaticMethodAroundInterceptor {

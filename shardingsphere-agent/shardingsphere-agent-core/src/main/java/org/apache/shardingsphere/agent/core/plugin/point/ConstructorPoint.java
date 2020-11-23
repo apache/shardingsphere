@@ -22,7 +22,7 @@ import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * A configuration of constructor intercepting point.
+ * Configuration of constructor intercepting point.
  */
 public class ConstructorPoint {
     private final ElementMatcher<? super MethodDescription> matcher;
@@ -35,7 +35,7 @@ public class ConstructorPoint {
     }
 
     /**
-     * detecting target constructor constraints.
+     * To detect target constructor constraints.
      *
      * @return constraints
      */
@@ -44,7 +44,7 @@ public class ConstructorPoint {
     }
 
     /**
-     * to get the class name of advice.
+     * To get the class name of advice.
      *
      * @return the class name of advice.
      */

@@ -46,7 +46,7 @@ public class MethodInvocationResult {
     }
 
     /**
-     * a result that is provided by per-method advice.
+     * Result that is provided by per-method advice.
      *
      * @return the
      */
