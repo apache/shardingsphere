@@ -15,10 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config.rule;
+package org.apache.shardingsphere.scaling.core.config;
 
 import com.google.gson.JsonObject;
-import org.apache.shardingsphere.scaling.core.config.rule.RuleConfiguration.DataSourceConfigurationWrapper;
+import org.apache.shardingsphere.scaling.core.config.RuleConfiguration.DataSourceConfigurationWrapper;
+import org.apache.shardingsphere.scaling.core.config.rule.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.rule.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.rule.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.fixture.FixtureShardingSphereJDBCConfiguration;
 import org.junit.Test;
 

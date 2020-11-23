@@ -28,7 +28,7 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.rule.DataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.rule.ShardingSphereJDBCDataSourceConfiguration;
 
 import java.util.HashMap;
