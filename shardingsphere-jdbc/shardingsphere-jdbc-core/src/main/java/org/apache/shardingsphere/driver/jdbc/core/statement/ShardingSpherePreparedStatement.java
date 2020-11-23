@@ -162,7 +162,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 reply();
                 queryResults = preparedStatementExecutor.executeQuery(executionGroups);
             } else {
-                queryResults = rawExecutor.executeQuery(createRawExecutionGroups(), new RawSQLExecutorCallback());
+                queryResults = rawExecutor.executeQuery(createRawExecutionGroups(), new RawSQLExecutorCallback(metaDataContexts.getDefaultMetaData()));
             }
             MergedResult mergedResult = mergeQuery(queryResults);
             result = new ShardingSphereResultSet(statements.stream().map(this::getResultSet).collect(Collectors.toList()), mergedResult, this, executionContext);
@@ -184,7 +184,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 reply();
                 return preparedStatementExecutor.executeUpdate(executionGroups, executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
             } else {
-                return rawExecutor.executeUpdate(createRawExecutionGroups(), new RawSQLExecutorCallback());
+                return rawExecutor.executeUpdate(createRawExecutionGroups(), new RawSQLExecutorCallback(metaDataContexts.getDefaultMetaData()));
             }
         } finally {
             clearBatch();
@@ -203,7 +203,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 return preparedStatementExecutor.execute(executionGroups, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getRouteContext().getRouteUnits());
             } else {
                 // TODO process getStatement
-                return rawExecutor.execute(createRawExecutionGroups(), new RawSQLExecutorCallback());
+                return rawExecutor.execute(createRawExecutionGroups(), new RawSQLExecutorCallback(metaDataContexts.getDefaultMetaData()));
             }
         } finally {
             clearBatch();
