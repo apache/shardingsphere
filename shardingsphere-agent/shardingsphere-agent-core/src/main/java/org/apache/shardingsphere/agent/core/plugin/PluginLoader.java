@@ -69,7 +69,7 @@ public class PluginLoader extends ClassLoader {
      * get or create instance of the advice class. Create new one and caching when it is not exist.
      *
      * @param classNameOfAdvice the class name of advice
-     * @param <T>               the advice type.
+     * @param <T> the advice type.
      * @return instance of advice
      */
     @SneakyThrows({ClassNotFoundException.class, IllegalAccessException.class, InstantiationException.class})

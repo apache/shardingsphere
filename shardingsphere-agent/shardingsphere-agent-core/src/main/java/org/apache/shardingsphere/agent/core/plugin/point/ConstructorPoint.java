@@ -26,28 +26,30 @@ import net.bytebuddy.matcher.ElementMatcher;
  */
 public class ConstructorPoint {
     private final ElementMatcher<? super MethodDescription> matcher;
-    
+
     private final String advice;
-    
+
     public ConstructorPoint(final ElementMatcher<? super MethodDescription> matcher, final String advice) {
         this.matcher = matcher;
         this.advice = advice;
     }
 
     /**
-     * detecting target constructor constraints.  
+     * detecting target constructor constraints.
+     *
      * @return constraints
      */
     public ElementMatcher<? super MethodDescription> getConstructorMatcher() {
         return matcher;
     }
-    
+
     /**
      * to get the class name of advice.
+     *
      * @return the class name of advice.
      */
     public String getAdvice() {
         return advice;
     }
-    
+
 }

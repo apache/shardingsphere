@@ -42,6 +42,7 @@ public class StaticMethodAroundInterceptor {
 
     /**
      * Only intercept static method.
+     *
      * @param klass the class of target
      * @param method the intercepted method
      * @param args the all arguments of method
@@ -86,7 +87,7 @@ public class StaticMethodAroundInterceptor {
             } catch (Throwable throwable) {
                 // CHECKSTYLE:ON
                 log.error("Failed to execute the post-method of method[{}] in class[{}].", method.getName(), klass, throwable);
-            }   
+            }
         }
         return ret;
     }

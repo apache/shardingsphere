@@ -24,30 +24,33 @@ import java.lang.reflect.Method;
  * Weaving the advice around the static methods of target class.
  */
 public interface StaticMethodAroundAdvice {
-    
+
     /**
-     * Intercept the target method and weave the method before origin method. It will invoke before the origin calling. 
-     * @param klass     the target class
-     * @param method    the target method
-     * @param args      the all method arguments
-     * @param result    A wrapped class of result to detect whether or not to execute the origin method.
+     * Intercept the target method and weave the method before origin method. It will invoke before the origin calling.
+     *
+     * @param klass the target class
+     * @param method the target method
+     * @param args the all method arguments
+     * @param result A wrapped class of result to detect whether or not to execute the origin method.
      */
     void beforeMethod(Class<?> klass, Method method, Object[] args, MethodInvocationResult result);
-    
+
     /**
-     * Intercept the target method and weave the method after origin method. It will invoke after the origin calling. 
-     * @param klass     the target class
-     * @param method    the target method
-     * @param args      the all method arguments
-     * @param result    A wrapped class of result to detect whether or not to execute the origin method.
+     * Intercept the target method and weave the method after origin method. It will invoke after the origin calling.
+     *
+     * @param klass the target class
+     * @param method the target method
+     * @param args the all method arguments
+     * @param result A wrapped class of result to detect whether or not to execute the origin method.
      */
     void afterMethod(Class<?> klass, Method method, Object[] args, MethodInvocationResult result);
-    
+
     /**
-     * Weaving the method after origin method throwing. 
-     * @param klass     the target class
-     * @param method    the target method
-     * @param args      the all method arguments
+     * Weaving the method after origin method throwing.
+     *
+     * @param klass the target class
+     * @param method the target method
+     * @param args the all method arguments
      * @param throwable an exception from target method.
      */
     void onThrowing(Class<?> klass, Method method, Object[] args, Throwable throwable);

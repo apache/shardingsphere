@@ -25,9 +25,10 @@ public interface OverrideArgsInvoker {
 
     /**
      * invocation origin method.
-     * @param args  the origin method arguments.
-     * @return  the result of the origin method. 
+     *
+     * @param args the origin method arguments.
+     * @return the result of the origin method.
      */
     Object call(Object[] args);
-    
+
 }

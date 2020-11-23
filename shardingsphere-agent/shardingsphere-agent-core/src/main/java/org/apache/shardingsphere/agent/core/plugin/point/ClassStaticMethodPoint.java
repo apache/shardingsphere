@@ -25,13 +25,13 @@ import net.bytebuddy.matcher.ElementMatcher;
  * A configuration of static method intercepting point.
  */
 public class ClassStaticMethodPoint {
-    
+
     private final ElementMatcher<? super MethodDescription> matcher;
-    
+
     private final String advice;
-    
+
     private final boolean overrideArgs;
-    
+
     public ClassStaticMethodPoint(final ElementMatcher<? super MethodDescription> matcher, final String advice, final boolean overrideArgs) {
         this.matcher = matcher;
         this.advice = advice;
@@ -39,7 +39,8 @@ public class ClassStaticMethodPoint {
     }
 
     /**
-     * detecting target method constraints.  
+     * detecting target method constraints.
+     *
      * @return constraints
      */
     public ElementMatcher<? super MethodDescription> getMethodsMatcher() {
@@ -48,6 +49,7 @@ public class ClassStaticMethodPoint {
 
     /**
      * to get the class name of advice.
+     *
      * @return the class name of advice.
      */
     public String getAdvice() {
@@ -56,10 +58,11 @@ public class ClassStaticMethodPoint {
 
     /**
      * to detect whether to override origin arguments.
+     *
      * @return override if true
      */
     public boolean isOverrideArgs() {
         return overrideArgs;
     }
-    
+
 }

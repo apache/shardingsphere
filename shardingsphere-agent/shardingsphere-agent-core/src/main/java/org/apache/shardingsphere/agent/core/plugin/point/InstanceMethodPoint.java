@@ -26,19 +26,20 @@ import net.bytebuddy.matcher.ElementMatcher;
  */
 public class InstanceMethodPoint {
     private final ElementMatcher<? super MethodDescription> matcher;
-    
+
     private final String advice;
-    
+
     private final boolean overrideArgs;
-    
+
     public InstanceMethodPoint(final ElementMatcher<? super MethodDescription> matcher, final String advice, final boolean overrideArgs) {
         this.matcher = matcher;
         this.advice = advice;
         this.overrideArgs = overrideArgs;
     }
-    
+
     /**
-     * detecting target method constraints but static methods. 
+     * detecting target method constraints but static methods.
+     *
      * @return constraints
      */
     public ElementMatcher<? super MethodDescription> getMethodMatcher() {
@@ -47,6 +48,7 @@ public class InstanceMethodPoint {
 
     /**
      * to get the class name of advice.
+     *
      * @return the class name of advice.
      */
     public String getAdvice() {
@@ -55,6 +57,7 @@ public class InstanceMethodPoint {
 
     /**
      * to detect whether to override origin arguments.
+     *
      * @return override if true
      */
     public boolean isOverrideArgs() {

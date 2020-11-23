@@ -23,8 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
-import net.bytebuddy.implementation.bind.annotation.This;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
+import net.bytebuddy.implementation.bind.annotation.This;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
@@ -35,27 +35,28 @@ import java.util.concurrent.Callable;
 @Slf4j
 public class MethodAroundInterceptor {
     private final MethodAroundAdvice advice;
-    
+
     public MethodAroundInterceptor(final MethodAroundAdvice advice) {
         this.advice = advice;
     }
 
     /**
      * Only intercept instance method.
-     * @param target    the target object
-     * @param method    the intercepted method
-     * @param args      the all arguments of method
-     * @param uber      the origin method invocation
-     * @return  the return value of target invocation
+     *
+     * @param target the target object
+     * @param method the intercepted method
+     * @param args the all arguments of method
+     * @param uber the origin method invocation
+     * @return the return value of target invocation
      */
     @RuntimeType
     @SneakyThrows
     public Object intercept(final @This Object target, final @Origin Method method, final @AllArguments Object[] args, final @SuperCall Callable<?> uber) {
         final TargetObject instance = (TargetObject) target;
         final MethodInvocationResult result = new MethodInvocationResult();
-        
+
         Object ret;
-        
+
         try {
             advice.beforeMethod(instance, method, args, result);
             // CHECKSTYLE:OFF
@@ -63,7 +64,7 @@ public class MethodAroundInterceptor {
             // CHECKSTYLE:ON
             log.error("Failed to execute the pre-method of method[{}] in class[{}].", method.getName(), target.getClass(), throwable);
         }
-        
+
         try {
             if (result.isRebased()) {
                 ret = result.getResult();

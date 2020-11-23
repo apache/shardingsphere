@@ -57,6 +57,7 @@ public final class PluginAdviceDefine {
 
     /**
      * Intercept target class.
+     *
      * @param classNameOfTarget a class name of wanted advice target.
      * @return Configurer.
      */
@@ -96,11 +97,11 @@ public final class PluginAdviceDefine {
      */
     public static final class Builder {
         private final List<ConstructorPoint> constructorPoints = Lists.newArrayList();
-        
+
         private final List<InstanceMethodPoint> instanceMethodPoints = Lists.newArrayList();
-        
+
         private final List<ClassStaticMethodPoint> classStaticMethodPoints = Lists.newArrayList();
-        
+
         private final String classNameOfTarget;
 
         private Builder(final String classNameOfTarget) {
@@ -109,6 +110,7 @@ public final class PluginAdviceDefine {
 
         /**
          * Intercept the new target.
+         *
          * @param classNameOfTarget the class name of target.
          * @return Configuration builder.
          */
@@ -119,6 +121,7 @@ public final class PluginAdviceDefine {
 
         /**
          * to configure the intercepting point on constructor.
+         *
          * @param matcher constraints
          * @return Configuration builder
          */
@@ -128,6 +131,7 @@ public final class PluginAdviceDefine {
 
         /**
          * to configure the intercepting point around instance method.
+         *
          * @param matcher constraints
          * @return Configuration builder
          */
@@ -137,6 +141,7 @@ public final class PluginAdviceDefine {
 
         /**
          * to configure the intercepting point around instance method.
+         *
          * @param matcher constraints
          * @return Configuration builder
          */
@@ -147,6 +152,7 @@ public final class PluginAdviceDefine {
 
         /**
          * build configuration.
+         *
          * @return Plugin advice definition.
          */
         public PluginAdviceDefine install() {
@@ -160,9 +166,9 @@ public final class PluginAdviceDefine {
             private final Builder builder;
 
             private String classNameOfAdvice;
-            
+
             private boolean overrideArgs;
-            
+
             private ElementMatcher<? super MethodDescription> matcher;
 
             private InstanceMethodPointBuilder(final Builder builder, final ElementMatcher<? super MethodDescription> matcher) {
@@ -172,6 +178,7 @@ public final class PluginAdviceDefine {
 
             /**
              * to configure implementation for intercepting point.
+             *
              * @param classNameOfAdvice the class name of advice
              * @return Instance method point configurer.
              */
@@ -182,6 +189,7 @@ public final class PluginAdviceDefine {
 
             /**
              * to configure whether or not override the origin method arguments.
+             *
              * @param overrideArgs whether to override origin method arguments.
              * @return Instance method point configurer.
              */
@@ -192,6 +200,7 @@ public final class PluginAdviceDefine {
 
             /**
              * to build instance methods configuration.
+             *
              * @return Plugin advice builder.
              */
             public Builder build() {
@@ -205,11 +214,11 @@ public final class PluginAdviceDefine {
          */
         public static final class StaticMethodPointBuilder {
             private final Builder builder;
-            
+
             private String classNameOfAdvice;
-            
+
             private boolean overrideArgs;
-            
+
             private ElementMatcher<? super MethodDescription> matcher;
 
             private StaticMethodPointBuilder(final Builder builder, final ElementMatcher<? super MethodDescription> matcher) {
@@ -219,6 +228,7 @@ public final class PluginAdviceDefine {
 
             /**
              * to configure implementation for intercepting point.
+             *
              * @param classNameOfAdvice the class name of advice
              * @return Static method point configurer.
              */
@@ -229,6 +239,7 @@ public final class PluginAdviceDefine {
 
             /**
              * to configure whether or not override the origin method arguments.
+             *
              * @param overrideArgs whether to override origin method arguments.
              * @return Static method point configurer.
              */
@@ -239,6 +250,7 @@ public final class PluginAdviceDefine {
 
             /**
              * to build static methods configuration.
+             *
              * @return Plugin advice builder.
              */
             public Builder build() {
@@ -255,7 +267,7 @@ public final class PluginAdviceDefine {
             private final Builder builder;
 
             private String classNameOfAdvice;
-            
+
             private ElementMatcher<? super MethodDescription> matcher;
 
             private ConstructorPointBuilder(final Builder builder, final ElementMatcher<? super MethodDescription> matcher) {
@@ -265,6 +277,7 @@ public final class PluginAdviceDefine {
 
             /**
              * to configure implementation for intercepting point.
+             *
              * @param classNameOfAdvice the class name of advice
              * @return Constructor point configurer.
              */
@@ -275,6 +288,7 @@ public final class PluginAdviceDefine {
 
             /**
              * to build constructor point configuration.
+             *
              * @return Plugin advice builder.
              */
             public Builder build() {

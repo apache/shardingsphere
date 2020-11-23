@@ -22,11 +22,12 @@ package org.apache.shardingsphere.agent.core.plugin.advice;
  * Weaving the advice around the constructor of target class.
  */
 public interface ConstructorAdvice {
-    
+
     /**
      * Intercept the target's constructor. This method is weaved after the constructor execution.
-     * @param target    Intercepted target object
-     * @param args      The all arguments of the intercepted constructor
+     *
+     * @param target Intercepted target object
+     * @param args The all arguments of the intercepted constructor
      */
     void onConstructor(TargetObject target, Object[] args);
 }
