@@ -44,7 +44,6 @@ public final class ShardingCTLHintBackendHandler implements TextProtocolBackendH
     
     private HintCommandExecutor hintCommandExecutor;
 
-
     @SuppressWarnings("unchecked")
     @Override
     public BackendResponse execute() {
