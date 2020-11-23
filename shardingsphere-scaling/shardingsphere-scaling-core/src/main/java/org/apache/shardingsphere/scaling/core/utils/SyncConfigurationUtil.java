@@ -27,12 +27,12 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
+import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.metadata.JdbcUri;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -73,16 +73,16 @@ public final class SyncConfigurationUtil {
     public static Collection<SyncConfiguration> toSyncConfigs(final ScalingConfiguration scalingConfig) {
         Collection<SyncConfiguration> result = new LinkedList<>();
         ShardingSphereJDBCDataSourceConfiguration sourceConfig = getSourceConfig(scalingConfig);
-        ShardingRuleConfiguration shardingRuleConfig = ConfigurationYamlConverter.loadShardingRuleConfig(sourceConfig.getRule());
+        ShardingRuleConfiguration sourceRuleConfig = ConfigurationYamlConverter.loadShardingRuleConfig(sourceConfig.getRule());
         Map<String, org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration> sourceDataSource = ConfigurationYamlConverter.loadDataSourceConfigs(sourceConfig.getDataSource());
         Map<String, DataSource> dataSourceMap = sourceDataSource.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().createDataSource()));
-        Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(new ShardingRule(shardingRuleConfig, sourceConfig.getDatabaseType(), dataSourceMap));
-        Optional<ShardingRuleConfiguration> targetRule = getTargetRuleConfig(scalingConfig);
+        Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(new ShardingRule(sourceRuleConfig, sourceConfig.getDatabaseType(), dataSourceMap));
+        Optional<ShardingRuleConfiguration> targetRuleConfig = getTargetRuleConfig(scalingConfig);
         filterByShardingDataSourceTables(dataSourceTableNameMap, scalingConfig.getJobConfiguration());
+        Map<String, Set<String>> shardingColumnsMap = toShardingColumnsMap(targetRuleConfig.orElse(sourceRuleConfig));
         for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
-            DumperConfiguration dumperConfig = createDumperConfig(entry.getKey(), sourceDataSource.get(entry.getKey()), entry.getValue());
-            ImporterConfiguration importerConfig = createImporterConfig(scalingConfig, targetRule.orElse(shardingRuleConfig));
-            importerConfig.setRetryTimes(scalingConfig.getJobConfiguration().getRetryTimes());
+            DumperConfiguration dumperConfig = createDumperConfig(entry.getKey(), sourceDataSource.get(entry.getKey()).getProps(), entry.getValue());
+            ImporterConfiguration importerConfig = createImporterConfig(scalingConfig, shardingColumnsMap);
             result.add(new SyncConfiguration(scalingConfig.getJobConfiguration().getConcurrency(), dumperConfig, importerConfig));
         }
         return result;
@@ -176,23 +176,21 @@ public final class SyncConfigurationUtil {
         }
     }
     
-    private static DumperConfiguration createDumperConfig(
-            final String dataSourceName, final org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration dataSourceConfig, final Map<String, String> tableMap) {
+    private static DumperConfiguration createDumperConfig(final String dataSourceName, final Map<String, Object> props, final Map<String, String> tableMap) {
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceName(dataSourceName);
-        Map<String, Object> dataSourceProperties = dataSourceConfig.getProps();
         StandardJDBCDataSourceConfiguration dumperDataSourceConfig = new StandardJDBCDataSourceConfiguration(
-                dataSourceProperties.containsKey("jdbcUrl") ? dataSourceProperties.get("jdbcUrl").toString() : dataSourceProperties.get("url").toString(),
-                dataSourceProperties.get("username").toString(), dataSourceProperties.get("password").toString());
+                props.containsKey("jdbcUrl") ? props.get("jdbcUrl").toString() : props.get("url").toString(), props.get("username").toString(), props.get("password").toString());
         result.setDataSourceConfig(dumperDataSourceConfig);
         result.setTableNameMap(tableMap);
         return result;
     }
     
-    private static ImporterConfiguration createImporterConfig(final ScalingConfiguration scalingConfig, final ShardingRuleConfiguration shardingRuleConfig) {
+    private static ImporterConfiguration createImporterConfig(final ScalingConfiguration scalingConfig, final Map<String, Set<String>> shardingRuleConfig) {
         ImporterConfiguration result = new ImporterConfiguration();
         result.setDataSourceConfig(scalingConfig.getRuleConfiguration().getTarget().unwrap());
-        result.setShardingColumnsMap(toShardingColumnsMap(shardingRuleConfig));
+        result.setShardingColumnsMap(shardingRuleConfig);
+        result.setRetryTimes(scalingConfig.getJobConfiguration().getRetryTimes());
         return result;
     }
     
