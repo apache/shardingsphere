@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.scaling.core.config.rule;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceWrapper;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /**
@@ -44,8 +44,8 @@ public interface DataSourceConfiguration {
     /**
      * To data source.
      *
-     * @return data source wrapper
+     * @return data source
      * @throws SQLException SQL exception
      */
-    DataSourceWrapper toDataSource() throws SQLException;
+    DataSource toDataSource() throws SQLException;
 }
