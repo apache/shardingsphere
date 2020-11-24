@@ -84,7 +84,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         } else {
             visit(ctx.selectWithInto());
         }
-        formartPrint(";");
+        formatPrint(";");
         return result.toString();
     }
 
@@ -92,7 +92,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     public String visitQueryExpression(final QueryExpressionContext ctx) {
         if (null != ctx.withClause()) {
             visit(ctx.withClause());
-            formartPrint(" ");
+            formatPrint(" ");
         }
         if (null != ctx.queryExpressionBody()) {
             visit(ctx.queryExpressionBody());
@@ -100,11 +100,11 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
             visit(ctx.queryExpressionParens());
         }
         if (null != ctx.orderByClause()) {
-            formartPrint(" ");
+            formatPrint(" ");
             visit(ctx.orderByClause());
         }
         if (null != ctx.limitClause()) {
-            formartPrint(" ");
+            formatPrint(" ");
             visit(ctx.limitClause());
         }
         return result.toString();
@@ -112,10 +112,10 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
 
     @Override
     public String visitQueryExpressionParens(final QueryExpressionParensContext ctx) {
-        formartPrintln();
-        this.indentCount++;
-        formartPrint("(");
-        formartPrintln();
+        formatPrintln();
+        indentCount++;
+        formatPrint("(");
+        formatPrintln();
         if (null != ctx.queryExpressionParens()) {
             visit(ctx.queryExpressionParens());
         } else {
@@ -125,9 +125,9 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
                 visit(ctx.lockClauseList());
             }
         }
-        this.indentCount--;
-        formartPrintln();
-        formartPrint(")");
+        indentCount--;
+        formatPrintln();
+        formatPrint(")");
         return result.toString();
     }
 
@@ -153,31 +153,31 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
 
     @Override
     public String visitQuerySpecification(final QuerySpecificationContext ctx) {
-        formartPrint("SELECT ");
+        formatPrint("SELECT ");
         int selectSpecCount = ctx.selectSpecification().size();
         for (int i = 0; i < selectSpecCount; i++) {
             visit(ctx.selectSpecification(i));
-            formartPrint(" ");
+            formatPrint(" ");
         }
         visit(ctx.projections());
         if (null != ctx.fromClause()) {
-            formartPrintln();
+            formatPrintln();
             visit(ctx.fromClause());
         }
         if (null != ctx.whereClause()) {
-            formartPrintln();
+            formatPrintln();
             visit(ctx.whereClause());
         }
         if (null != ctx.groupByClause()) {
-            formartPrintln();
+            formatPrintln();
             visit(ctx.groupByClause());
         }
         if (null != ctx.havingClause()) {
-            formartPrintln();
+            formatPrintln();
             visit(ctx.havingClause());
         }
         if (null != ctx.windowClause()) {
-            formartPrintln();
+            formatPrintln();
             visit(ctx.windowClause());
         }
         return result.toString();
@@ -185,7 +185,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
 
     @Override
     public String visitExplicitTable(final ExplicitTableContext ctx) {
-        formartPrint("TABLE ");
+        formatPrint("TABLE ");
         visit(ctx.tableName());
         return result.toString();
     }
@@ -193,16 +193,16 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     @Override
     public String visitTableName(final TableNameContext ctx) {
         if (null != ctx.owner()) {
-            formartPrint(ctx.owner().getText());
-            formartPrint(".");
+            formatPrint(ctx.owner().getText());
+            formatPrint(".");
         }
-        formartPrint(ctx.name().getText());
+        formatPrint(ctx.name().getText());
         return result.toString();
     }
 
     @Override
     public String visitTableValueConstructor(final TableValueConstructorContext ctx) {
-        formartPrint("VALUES ");
+        formatPrint("VALUES ");
         visit(ctx.rowConstructorList());
         return result.toString();
     }
@@ -212,10 +212,10 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         int rowCount = ctx.assignmentValues().size();
         for (int i = 0; i < rowCount; i++) {
             if (i != 0 && i != rowCount) {
-                formartPrint(", ROW");
+                formatPrint(", ROW");
                 visit(ctx.assignmentValues(i));
             } else {
-                formartPrint("ROW");
+                formatPrint("ROW");
                 visit(ctx.assignmentValues(i));
             }
         }
@@ -224,28 +224,28 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
 
     @Override
     public String visitAssignmentValues(final AssignmentValuesContext ctx) {
-        formartPrint("(");
+        formatPrint("(");
         int assignCount = ctx.assignmentValue().size();
         for (int i = 0; i < assignCount; i++) {
             if (i != 0) {
-                formartPrint(", ");
+                formatPrint(", ");
                 visit(ctx.assignmentValue(i));
             } else {
                 visit(ctx.assignmentValue(i));
             }
         }
-        formartPrint(")");
+        formatPrint(")");
         return result.toString();
     }
 
     @Override
     public String visitWhereClause(final WhereClauseContext ctx) {
         visit(ctx.WHERE());
-        formartPrint(" ");
-        this.indentCount++;
-        formartPrintln();
+        formatPrint(" ");
+        indentCount++;
+        formatPrintln();
         visit(ctx.expr());
-        this.indentCount--;
+        indentCount--;
         return result.toString();
     }
 
@@ -254,12 +254,12 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         if (null != ctx.logicalOperator()) {
             ExprContext left = ctx.expr(0);
             visit(left);
-            formartPrintln();
+            formatPrintln();
             ExprContext right = ctx.expr(1);
-            formartPrint(ctx.logicalOperator().getText());
+            formatPrint(ctx.logicalOperator().getText());
             visit(right);
         } else if (null != ctx.notOperator()) {
-            formartPrint(ctx.notOperator().getText());
+            formatPrint(ctx.notOperator().getText());
             visit(ctx.expr(0));
         } else {
             visitChildren(ctx);
@@ -269,13 +269,13 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
 
     @Override
     public String visitAlias(final AliasContext ctx) {
-        formartPrint(ctx.getText());
+        formatPrint(ctx.getText());
         return result.toString();
     }
 
     @Override
     public String visitProjections(final ProjectionsContext ctx) {
-        this.indentCount++;
+        indentCount++;
         if (null != ctx.unqualifiedShorthand()) {
             visit(ctx.unqualifiedShorthand());
             result.append(" ");
@@ -287,13 +287,13 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
                 result.append(", ");
                 if (lineItemCount >= projectionsCountOfLine) {
                     lineItemCount = 0;
-                    formartPrintln();
+                    formatPrintln();
                 }
             }
             visit(ctx.projection(i));
             lineItemCount++;
         }
-        this.indentCount--;
+        indentCount--;
         return result.toString();
     }
 
@@ -301,10 +301,10 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     public String visitProjection(final ProjectionContext ctx) {
         if (null != ctx.expr()) {
             visit(ctx.expr());
-            formartPrint(" ");
+            formatPrint(" ");
         }
         if (null != ctx.AS()) {
-            formartPrint("AS ");
+            formatPrint("AS ");
         }
         if (null != ctx.alias()) {
             visit(ctx.alias());
@@ -317,13 +317,13 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
 
     @Override
     public String visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
-        this.indentCount++;
-        formartPrint("(");
-        formartPrintln();
+        indentCount++;
+        formatPrint("(");
+        formatPrintln();
         visit(ctx.tableElementList());
-        formartPrint("\n");
-        formartPrint(")");
-        this.indentCount--;
+        formatPrint("\n");
+        formatPrint(")");
+        indentCount--;
         return result.toString();
     }
 
@@ -334,7 +334,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
             if (0 == i) {
                 visit(ctx.tableElement(i));
             } else {
-                formartPrintln(",");
+                formatPrintln(",");
                 visit(ctx.tableElement(i));
             }
         }
@@ -343,39 +343,39 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
 
     @Override
     public String visitFieldLength(final FieldLengthContext ctx) {
-        formartPrint("(");
-        formartPrint(ctx.NUMBER_().getText());
-        formartPrint(")");
+        formatPrint("(");
+        formatPrint(ctx.NUMBER_().getText());
+        formatPrint(")");
         return result.toString();
     }
 
     @Override
     public String visitPrecision(final PrecisionContext ctx) {
-        formartPrint("(");
-        formartPrint(ctx.NUMBER_(0).getText());
-        formartPrint(", ");
-        formartPrint(ctx.NUMBER_(1).getText());
-        formartPrint(")");
+        formatPrint("(");
+        formatPrint(ctx.NUMBER_(0).getText());
+        formatPrint(", ");
+        formatPrint(ctx.NUMBER_(1).getText());
+        formatPrint(")");
         return super.visitPrecision(ctx);
     }
 
     @Override
     public String visitTypeDatetimePrecision(final TypeDatetimePrecisionContext ctx) {
-        formartPrint("(");
-        formartPrint(ctx.NUMBER_().getText());
-        formartPrint(")");
+        formatPrint("(");
+        formatPrint(ctx.NUMBER_().getText());
+        formatPrint(")");
         return result.toString();
     }
 
     @Override
     public String visitDataType(final DataTypeContext ctx) {
-        int n = ctx.getChildCount();
-        for (int i = 0; i < n; i++) {
-            ParseTree c = ctx.getChild(i);
-            if (i != 0 && !(c instanceof FieldLengthContext || c instanceof PrecisionContext || c instanceof StringListContext || c instanceof TypeDatetimePrecisionContext)) {
-                formartPrint(" ");
+        int childCount = ctx.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            ParseTree child = ctx.getChild(i);
+            if (i != 0 && !(child instanceof FieldLengthContext || child instanceof PrecisionContext || child instanceof StringListContext || child instanceof TypeDatetimePrecisionContext)) {
+                formatPrint(" ");
             }
-            c.accept(this);
+            child.accept(this);
         }
         return result.toString();
     }
@@ -383,56 +383,56 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     @Override
     public String visitStringList(final StringListContext ctx) {
         int stringCount = ctx.textString().size();
-        formartPrint("(");
+        formatPrint("(");
         for (int i = 0; i < stringCount; i++) {
             if (0 == i) {
-                formartPrint(ctx.textString(i).getText());
+                formatPrint(ctx.textString(i).getText());
             } else {
-                formartPrintln(",");
+                formatPrintln(",");
                 visit(ctx.textString(i));
             }
         }
-        formartPrint(")");
+        formatPrint(")");
         return result.toString();
     }
 
     @Override
     public String visitTerminal(final TerminalNode node) {
         if (isUperCase()) {
-            formartPrint(node.getText().toUpperCase());
+            formatPrint(node.getText().toUpperCase());
         } else {
-            formartPrint(node.getText().toLowerCase());
+            formatPrint(node.getText().toLowerCase());
         }
         return result.toString();
     }
 
     @Override
     public String visitIdentifier(final IdentifierContext ctx) {
-        formartPrint(ctx.getText());
+        formatPrint(ctx.getText());
         return result.toString();
     }
 
     @Override
     public String visitLiterals(final LiteralsContext ctx) {
-        formartPrint("?");
+        formatPrint("?");
         return result.toString();
     }
 
     @Override
     public String visitStringLiterals(final StringLiteralsContext ctx) {
-        formartPrint("?");
+        formatPrint("?");
         return result.toString();
     }
 
     @Override
     public String visitNumberLiterals(final NumberLiteralsContext ctx) {
-        formartPrint("?");
+        formatPrint("?");
         return result.toString();
     }
 
     @Override
     public String visitWithClause(final WithClauseContext ctx) {
-        formartPrint("WITH ");
+        formatPrint("WITH ");
         if (null != ctx.RECURSIVE()) {
             visit(ctx.RECURSIVE());
             result.append(" ");
@@ -505,55 +505,55 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     public String visitChildren(final RuleNode node) {
         String result = defaultResult();
 
-        int n = node.getChildCount();
-        for (int i = 0; i < n; i++) {
+        int childCount = node.getChildCount();
+        for (int i = 0; i < childCount; i++) {
             if (i != 0) {
-                formartPrint(" ");
+                formatPrint(" ");
             }
             if (!shouldVisitNextChild(node, result)) {
                 break;
             }
 
-            ParseTree c = node.getChild(i);
-            String childResult = c.accept(this);
+            ParseTree child = node.getChild(i);
+            String childResult = child.accept(this);
             result = aggregateResult(result, childResult);
         }
         return result;
     }
 
-    private void formartPrint(final char value) {
-        if (null == this.result) {
+    private void formatPrint(final char value) {
+        if (null == result) {
             return;
         }
-        this.result.append(value);
+        result.append(value);
     }
 
-    private void formartPrint(final String text) {
-        if (null == this.result) {
+    private void formatPrint(final String text) {
+        if (null == result) {
             return;
         }
         result.append(text);
     }
 
-    protected void formartPrintIndent() {
-        if (null == this.result) {
+    protected void formatPrintIndent() {
+        if (null == result) {
             return;
         }
-        for (int i = 0; i < this.indentCount; ++i) {
-            this.result.append('\t');
+        for (int i = 0; i < indentCount; ++i) {
+            result.append('\t');
         }
     }
 
-    private void formartPrintln() {
-        formartPrint('\n');
+    private void formatPrintln() {
+        formatPrint('\n');
         lines++;
-        formartPrintIndent();
+        formatPrintIndent();
     }
 
-    private void formartPrintln(final String text) {
-        formartPrint(text);
-        formartPrint('\n');
+    private void formatPrintln(final String text) {
+        formatPrint(text);
+        formatPrint('\n');
         lines++;
-        formartPrintIndent();
+        formatPrintIndent();
     }
 }
