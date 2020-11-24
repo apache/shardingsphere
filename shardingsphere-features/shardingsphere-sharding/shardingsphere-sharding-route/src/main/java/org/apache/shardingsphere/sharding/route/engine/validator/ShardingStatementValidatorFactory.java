@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.Shardi
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateViewStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingDeleteStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingInsertStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingSelectStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingUpdateStatementValidator;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
@@ -94,7 +95,7 @@ public final class ShardingStatementValidatorFactory {
             return Optional.of(new ShardingDeleteStatementValidator());
         }
         if (sqlStatement instanceof SelectStatement) {
-            return Optional.of(new ShardingDeleteStatementValidator());
+            return Optional.of(new ShardingSelectStatementValidator());
         }
         return Optional.empty();
     }
