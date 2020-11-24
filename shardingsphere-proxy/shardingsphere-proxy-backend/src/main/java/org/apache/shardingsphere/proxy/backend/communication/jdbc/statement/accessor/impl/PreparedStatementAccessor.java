@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.impl;
 
 import org.apache.shardingsphere.infra.executor.sql.prepare.ExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.PreparedStatementExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -37,7 +37,7 @@ public final class PreparedStatementAccessor implements JDBCAccessor {
     @Override
     public ExecutionPrepareEngine<?> getExecutionPrepareEngine(final BackendConnection backendConnection,
                                                                final int maxConnectionsSizePerQuery, final StatementOption option, final Collection<ShardingSphereRule> rules) {
-        return new PreparedStatementExecutionPrepareEngine(maxConnectionsSizePerQuery, backendConnection, option, rules);
+        return new DriverExecutionPrepareEngine(maxConnectionsSizePerQuery, backendConnection, option, rules, "JDBC_PREPARED_STATEMENT");
     }
     
     @Override

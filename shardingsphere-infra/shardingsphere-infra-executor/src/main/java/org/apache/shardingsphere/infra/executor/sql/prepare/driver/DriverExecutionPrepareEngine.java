@@ -18,17 +18,20 @@
 package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
-import org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.DriverExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Driver execution prepare engine.
@@ -38,17 +41,24 @@ import java.util.List;
  * @param <C> type of resource connection
  * @param <O> type of storage resource option
  */
-public abstract class DriverExecutionPrepareEngine
-        <T extends DriverExecutionUnit<?>, M extends ExecutorDriverManager<C, ?, O>, C, O extends StorageResourceOption> extends AbstractExecutionPrepareEngine<T> {
+public class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>, M extends ExecutorDriverManager<C, ?, O>, C, O extends StorageResourceOption> extends AbstractExecutionPrepareEngine<T> {
     
     private final M executorDriverManager;
     
     private final O option;
     
-    protected DriverExecutionPrepareEngine(final int maxConnectionsSizePerQuery, final M executorDriverManager, final O option, final Collection<ShardingSphereRule> rules) {
+    @SuppressWarnings("rawtypes")
+    private final SQLExecutionUnitBuilder sqlExecutionUnitBuilder;
+    
+    static {
+        ShardingSphereServiceLoader.register(SQLExecutionUnitBuilder.class);
+    }
+    
+    public DriverExecutionPrepareEngine(final int maxConnectionsSizePerQuery, final M executorDriverManager, final O option, final Collection<ShardingSphereRule> rules, final String type) {
         super(maxConnectionsSizePerQuery, rules);
         this.executorDriverManager = executorDriverManager;
         this.option = option;
+        sqlExecutionUnitBuilder = TypedSPIRegistry.getRegisteredService(SQLExecutionUnitBuilder.class, type, new Properties());
     }
     
     @Override
@@ -62,13 +72,12 @@ public abstract class DriverExecutionPrepareEngine
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     private ExecutionGroup<T> createExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnits, final C connection, final ConnectionMode connectionMode) throws SQLException {
         List<T> result = new LinkedList<>();
         for (SQLUnit each : sqlUnits) {
-            result.add(createDriverSQLExecutionUnit(new ExecutionUnit(dataSourceName, each), executorDriverManager, connection, connectionMode, option));
+            result.add((T) sqlExecutionUnitBuilder.build(new ExecutionUnit(dataSourceName, each), executorDriverManager, connection, connectionMode, option));
         }
         return new ExecutionGroup<>(result);
     }
-    
-    protected abstract T createDriverSQLExecutionUnit(ExecutionUnit executionUnit, M executorManager, C connection, ConnectionMode connectionMode, O option) throws SQLException;
 }
