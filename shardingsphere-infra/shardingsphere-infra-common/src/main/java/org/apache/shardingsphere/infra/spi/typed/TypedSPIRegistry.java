@@ -65,11 +65,11 @@ public final class TypedSPIRegistry {
         throw new ServiceProviderNotFoundException(typedSPIClass);
     }
     
-    private static <T extends TypedSPI> void convertPropertiesValueType(final Properties props, final T result) {
+    private static <T extends TypedSPI> void convertPropertiesValueType(final Properties props, final T service) {
         if (null != props) {
             Properties newProps = new Properties();
             props.forEach((key, value) -> newProps.setProperty(key.toString(), null == value ? null : value.toString()));
-            result.setProps(newProps);
+            service.setProps(newProps);
         }
     }
 }
