@@ -27,13 +27,17 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AliasCo
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CteClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExplicitTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FieldLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IgnoredIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NumberLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PrecisionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryExpressionBodyContext;
@@ -42,9 +46,12 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryEx
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QuerySpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RowConstructorListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableElementListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableValueConstructorContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TypeDatetimePrecisionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WithClauseContext;
 
@@ -309,6 +316,87 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     @Override
+    public String visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
+        this.indentCount++;
+        formartPrint("(");
+        formartPrintln();
+        visit(ctx.tableElementList());
+        formartPrint("\n");
+        formartPrint(")");
+        this.indentCount--;
+        return result.toString();
+    }
+
+    @Override
+    public String visitTableElementList(final TableElementListContext ctx) {
+        int tableElementCount = ctx.tableElement().size();
+        for (int i = 0; i < tableElementCount; i++) {
+            if (0 == i) {
+                visit(ctx.tableElement(i));
+            } else {
+                formartPrintln(",");
+                visit(ctx.tableElement(i));
+            }
+        }
+        return result.toString();
+    }
+
+    @Override
+    public String visitFieldLength(final FieldLengthContext ctx) {
+        formartPrint("(");
+        formartPrint(ctx.NUMBER_().getText());
+        formartPrint(")");
+        return result.toString();
+    }
+
+    @Override
+    public String visitPrecision(final PrecisionContext ctx) {
+        formartPrint("(");
+        formartPrint(ctx.NUMBER_(0).getText());
+        formartPrint(", ");
+        formartPrint(ctx.NUMBER_(1).getText());
+        formartPrint(")");
+        return super.visitPrecision(ctx);
+    }
+
+    @Override
+    public String visitTypeDatetimePrecision(final TypeDatetimePrecisionContext ctx) {
+        formartPrint("(");
+        formartPrint(ctx.NUMBER_().getText());
+        formartPrint(")");
+        return result.toString();
+    }
+
+    @Override
+    public String visitDataType(final DataTypeContext ctx) {
+        int n = ctx.getChildCount();
+        for (int i = 0; i < n; i++) {
+            ParseTree c = ctx.getChild(i);
+            if (i != 0 && !(c instanceof FieldLengthContext || c instanceof PrecisionContext || c instanceof StringListContext || c instanceof TypeDatetimePrecisionContext)) {
+                formartPrint(" ");
+            }
+            c.accept(this);
+        }
+        return result.toString();
+    }
+
+    @Override
+    public String visitStringList(final StringListContext ctx) {
+        int stringCount = ctx.textString().size();
+        formartPrint("(");
+        for (int i = 0; i < stringCount; i++) {
+            if (0 == i) {
+                formartPrint(ctx.textString(i).getText());
+            } else {
+                formartPrintln(",");
+                visit(ctx.textString(i));
+            }
+        }
+        formartPrint(")");
+        return result.toString();
+    }
+
+    @Override
     public String visitTerminal(final TerminalNode node) {
         if (isUperCase()) {
             formartPrint(node.getText().toUpperCase());
@@ -457,6 +545,13 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     }
 
     private void formartPrintln() {
+        formartPrint('\n');
+        lines++;
+        formartPrintIndent();
+    }
+
+    private void formartPrintln(final String text) {
+        formartPrint(text);
         formartPrint('\n');
         lines++;
         formartPrintIndent();

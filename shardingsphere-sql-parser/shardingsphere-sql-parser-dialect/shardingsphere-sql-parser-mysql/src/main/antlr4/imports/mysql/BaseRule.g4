@@ -642,7 +642,7 @@ dataType
     | dataTypeName = BIT fieldLength?
     | dataTypeName = (BOOL | BOOLEAN)
     | dataTypeName = CHAR fieldLength? charsetWithOptBinary?
-    | nchar fieldLength? BINARY?
+    | (dataTypeName = NCHAR | dataTypeName = NATIONAL CHAR) fieldLength? BINARY?
     | dataTypeName = BINARY fieldLength?
     | (dataTypeName = CHAR VARYING | dataTypeName = VARCHAR) fieldLength charsetWithOptBinary?
     | (dataTypeName = NATIONAL VARCHAR | dataTypeName = NVARCHAR | dataTypeName = NCHAR VARCHAR | dataTypeName = NATIONAL CHAR VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
