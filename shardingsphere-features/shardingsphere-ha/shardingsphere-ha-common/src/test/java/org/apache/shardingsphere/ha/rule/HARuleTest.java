@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.ha.rule;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
+import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
-import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
-import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,9 +40,11 @@ import static org.mockito.Mockito.mock;
 
 public final class HARuleTest {
     
+    private final Map<String, DataSource> dataSourceMap = Collections.singletonMap("ds", mock(DataSource.class));
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertNewWithEmptyDataSourceRule() {
-        new HARule(new HARuleConfiguration(Collections.emptyList(), Collections.emptyMap(), mock(ShardingSphereAlgorithmConfiguration.class)), mock(DatabaseType.class), Collections.emptyMap());
+        new HARule(new HARuleConfiguration(Collections.emptyList(), Collections.emptyMap(), mock(ShardingSphereAlgorithmConfiguration.class)), mock(DatabaseType.class), dataSourceMap);
     }
     
     @Test
@@ -60,8 +63,9 @@ public final class HARuleTest {
         HADataSourceRuleConfiguration config =
                 new HADataSourceRuleConfiguration("test_pr", "primary_ds", Arrays.asList("replica_ds_0", "replica_ds_1"), "random", true);
         return new HARule(new HARuleConfiguration(
-                Collections.singleton(config), ImmutableMap.of("random", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties())), mock(ShardingSphereAlgorithmConfiguration.class)),
-                mock(DatabaseType.class), Collections.emptyMap());
+                Collections.singleton(config), ImmutableMap.of("random", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties())),
+                new ShardingSphereAlgorithmConfiguration("Test", new Properties())),
+                mock(DatabaseType.class), dataSourceMap);
     }
     
     private void assertDataSourceRule(final HADataSourceRule actual) {

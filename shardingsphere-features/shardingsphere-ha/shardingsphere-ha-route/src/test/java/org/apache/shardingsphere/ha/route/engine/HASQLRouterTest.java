@@ -47,6 +47,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
@@ -84,7 +85,7 @@ public final class HASQLRouterTest {
     public void setUp() {
         rule = new HARule(new HARuleConfiguration(Collections.singleton(
                 new HADataSourceRuleConfiguration(DATASOURCE_NAME, PRIMARY_DATASOURCE, Collections.singletonList(REPLICA_DATASOURCE), null, true)),
-                Collections.emptyMap(), mock(ShardingSphereAlgorithmConfiguration.class)), mock(DatabaseType.class), Collections.emptyMap());
+                Collections.emptyMap(), new ShardingSphereAlgorithmConfiguration("TestRoute", new Properties())), mock(DatabaseType.class), Collections.singletonMap("ds", mock(DataSource.class)));
         sqlRouter = (HASQLRouter) OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLRouter.class).get(rule);
     }
     

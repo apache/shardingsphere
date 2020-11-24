@@ -69,18 +69,13 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
                     ? TypedSPIRegistry.getRegisteredService(ReplicaLoadBalanceAlgorithm.class) : loadBalancers.get(each.getLoadBalancerName());
             dataSourceRules.put(each.getName(), new HADataSourceRule(each, loadBalanceAlgorithm));
         }
-        if (config.getHaType().getType().equals("MGR")) {
-            HAType haType = TypedSPIRegistry.getRegisteredService(HAType.class);
-            haType.setProps(config.getHaType().getProps());
-            try {
-                haType.updatePrimaryDataSource(dataSourceMap);
-                haType.checkHAConfig(dataSourceMap);
-                haType.periodicalMonitor(dataSourceMap);
-            } catch (final SQLException ex) {
-                throw new ShardingSphereException(ex);
-            }
-        } else {
-            throw new ShardingSphereException("There's no HA configuration.");
+        HAType haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaType().getType(), config.getHaType().getProps());
+        try {
+            haType.updatePrimaryDataSource(dataSourceMap);
+            haType.checkHAConfig(dataSourceMap);
+            haType.periodicalMonitor(dataSourceMap);
+        } catch (final SQLException ex) {
+            throw new ShardingSphereException(ex);
         }
     }
     
