@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.execute.executor.channel;
+package org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset;
 
 import java.util.BitSet;
 import java.util.LinkedList;
