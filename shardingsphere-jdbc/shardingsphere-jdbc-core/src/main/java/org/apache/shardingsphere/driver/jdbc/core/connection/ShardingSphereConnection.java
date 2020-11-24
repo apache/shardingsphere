@@ -166,7 +166,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     @SuppressWarnings("MagicConstant")
     @Override
     public PreparedStatement createStorageResource(final String sql, final List<Object> parameters,
-                                                         final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
+                                                   final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
         return option.isReturnGeneratedKeys() ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
                 : connection.prepareStatement(sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
     }
