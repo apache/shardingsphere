@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.check;
+package org.apache.shardingsphere.scaling.core.job.check;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;

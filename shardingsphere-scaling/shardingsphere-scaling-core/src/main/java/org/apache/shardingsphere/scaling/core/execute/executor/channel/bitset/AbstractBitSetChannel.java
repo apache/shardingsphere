@@ -15,31 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.execute.executor.channel;
+package org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 
-import java.util.List;
+import java.util.BitSet;
+import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
- * Auto Acknowledge BitSet channel.
+ * Abstract BitSet channel.
  */
-public final class AutoAcknowledgeBitSetChannel extends AbstractBitSetChannel {
+@Getter(AccessLevel.PROTECTED)
+@Setter(AccessLevel.PROTECTED)
+public abstract class AbstractBitSetChannel implements BitSetChannel {
+    
+    private final Deque<Record> toBeAckRecords = new ConcurrentLinkedDeque<>();
+    
+    private final ManualBitSet manualBitSet = new ManualBitSet();
+    
+    private long acknowledgedIndex;
     
     @Override
-    public void pushRecord(final Record dataRecord, final long index) {
-        getManualBitSet().set(index);
-        getToBeAckRecords().add(dataRecord);
-        setAcknowledgedIndex(index);
+    public BitSet getAckBitSet(final long fromIndex) {
+        return manualBitSet.get(fromIndex, acknowledgedIndex);
     }
     
     @Override
-    public List<Record> fetchRecords(final int batchSize, final int timeout) {
-        throw new UnsupportedOperationException("Auto ack channel can not fetch records.");
+    public Record removeAckRecord() {
+        return toBeAckRecords.remove();
     }
     
     @Override
-    public void ack() {
-        throw new UnsupportedOperationException("Auto ack channel do not have to ack.");
+    public void clear(final long index) {
+        manualBitSet.clear(index);
+    }
+    
+    @Override
+    public void close() {
+        toBeAckRecords.clear();
     }
 }

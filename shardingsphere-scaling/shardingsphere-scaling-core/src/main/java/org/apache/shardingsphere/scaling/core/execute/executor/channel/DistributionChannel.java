@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.channel;
 
+import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.AutoAcknowledgeBitSetChannel;
+import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.BitSetChannel;
+import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.BlockingQueueBitSetChannel;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.PlaceholderRecord;
