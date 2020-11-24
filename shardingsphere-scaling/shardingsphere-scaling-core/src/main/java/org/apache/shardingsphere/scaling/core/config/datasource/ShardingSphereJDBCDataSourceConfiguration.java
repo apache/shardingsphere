@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.core.config.datasource;
 import com.google.common.collect.Lists;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -34,6 +35,7 @@ import java.util.Map;
 /**
  * ShardingSphere-JDBC data source configuration.
  */
+@Setter
 @Getter
 @EqualsAndHashCode(exclude = "databaseType")
 public final class ShardingSphereJDBCDataSourceConfiguration implements DataSourceConfiguration {
@@ -43,9 +45,9 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements DataSour
      */
     public static final String CONFIG_TYPE = "ShardingSphereJDBC";
     
-    private final String dataSource;
+    private String dataSource;
     
-    private final String rule;
+    private String rule;
     
     private transient DatabaseType databaseType;
     
