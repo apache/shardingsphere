@@ -17,35 +17,32 @@
 
 package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 
 /**
- * Execution prepare engine for statement.
+ * JDBC statement execution unit builder.
  */
-public final class StatementExecutionPrepareEngine extends DriverExecutionPrepareEngine<JDBCExecutionUnit, ExecutorJDBCManager, Connection, StatementOption> {
-    
-    public StatementExecutionPrepareEngine(final int maxConnectionsSizePerQuery,
-                                           final ExecutorJDBCManager executorJDBCManager, final StatementOption option, final Collection<ShardingSphereRule> rules) {
-        super(maxConnectionsSizePerQuery, executorJDBCManager, option, rules);
-    }
+public final class StatementExecutionUnitBuilder implements JDBCExecutionUnitBuilder {
     
     @Override
-    protected JDBCExecutionUnit createDriverSQLExecutionUnit(final ExecutionUnit executionUnit, final ExecutorJDBCManager executorManager, final Connection connection,
-                                                             final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
+    public JDBCExecutionUnit build(final ExecutionUnit executionUnit, final ExecutorJDBCManager executorManager,
+                                   final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
         return new JDBCExecutionUnit(executionUnit, connectionMode, createStatement(executorManager, connection, connectionMode, option));
     }
     
     private Statement createStatement(final ExecutorJDBCManager executorJDBCManager, final Connection connection,
                                       final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
         return executorJDBCManager.createStorageResource(connection, connectionMode, option);
+    }
+    
+    @Override
+    public String getType() {
+        return "JDBC_STATEMENT";
     }
 }

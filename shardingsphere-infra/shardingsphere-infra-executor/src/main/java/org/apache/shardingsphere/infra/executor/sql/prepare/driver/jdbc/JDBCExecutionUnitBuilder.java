@@ -15,36 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.typed;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc;
 
-import java.util.Properties;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.SQLExecutionUnitBuilder;
+
+import java.sql.Connection;
 
 /**
- * Typed SPI.
+ * JDBC execution unit builder.
  */
-public interface TypedSPI {
-    
-    /**
-     * Get type.
-     * 
-     * @return type
-     */
-    String getType();
-    
-    /**
-     * Get properties.
-     * 
-     * @return properties
-     */
-    default Properties getProps() {
-        return new Properties();
-    }
-    
-    /**
-     * Set properties.
-     * 
-     * @param props properties
-     */
-    default void setProps(final Properties props) {
-    }
+public interface JDBCExecutionUnitBuilder extends SQLExecutionUnitBuilder<JDBCExecutionUnit, ExecutorJDBCManager, Connection, StatementOption> {
 }
