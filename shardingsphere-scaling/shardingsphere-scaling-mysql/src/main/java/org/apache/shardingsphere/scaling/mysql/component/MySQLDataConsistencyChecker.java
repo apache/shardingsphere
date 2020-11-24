@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.scaling.mysql.component;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.scaling.core.check.AbstractDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.job.check.AbstractDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

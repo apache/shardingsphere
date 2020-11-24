@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.scaling.core.spi;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
-import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.JDBCDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
+import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 
