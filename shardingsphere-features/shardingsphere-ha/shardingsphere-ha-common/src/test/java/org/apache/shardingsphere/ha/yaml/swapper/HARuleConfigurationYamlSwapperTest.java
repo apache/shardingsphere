@@ -38,6 +38,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class HARuleConfigurationYamlSwapperTest {
     
@@ -52,7 +53,8 @@ public final class HARuleConfigurationYamlSwapperTest {
         HADataSourceRuleConfiguration dataSourceConfig =
                 new HADataSourceRuleConfiguration("ds", "primary", Collections.singletonList("replica"), "roundRobin", true);
         YamlHARuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(new HARuleConfiguration(
-                Collections.singleton(dataSourceConfig), ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties()))));
+                Collections.singleton(dataSourceConfig), ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties())),
+                mock(ShardingSphereAlgorithmConfiguration.class)));
         assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
         assertThat(actual.getDataSources().get("ds").getPrimaryDataSourceName(), is("primary"));
         assertThat(actual.getDataSources().get("ds").getReplicaDataSourceNames(), is(Collections.singletonList("replica")));
@@ -63,7 +65,7 @@ public final class HARuleConfigurationYamlSwapperTest {
     public void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
         HADataSourceRuleConfiguration dataSourceConfig = new HADataSourceRuleConfiguration("ds", "primary", Collections.singletonList("replica"), null, true);
         YamlHARuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(
-                new HARuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap()));
+                new HARuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap(), mock(ShardingSphereAlgorithmConfiguration.class)));
         assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
         assertThat(actual.getDataSources().get("ds").getPrimaryDataSourceName(), is("primary"));
         assertThat(actual.getDataSources().get("ds").getReplicaDataSourceNames(), is(Collections.singletonList("replica")));
