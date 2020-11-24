@@ -36,16 +36,14 @@ import java.util.Properties;
 /**
  * Driver execution prepare engine.
  * 
- * @param <T> type of storage resource execute unit
- * @param <M> type of driver executor manager
+ * @param <T> type of driver execution unit
  * @param <C> type of resource connection
- * @param <O> type of storage resource option
  */
-public class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>, M extends ExecutorDriverManager<C, ?, O>, C, O extends StorageResourceOption> extends AbstractExecutionPrepareEngine<T> {
+public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>, C> extends AbstractExecutionPrepareEngine<T> {
     
-    private final M executorDriverManager;
+    private final ExecutorDriverManager<C, ?, ?> executorDriverManager;
     
-    private final O option;
+    private final StorageResourceOption option;
     
     @SuppressWarnings("rawtypes")
     private final SQLExecutionUnitBuilder sqlExecutionUnitBuilder;
@@ -54,7 +52,8 @@ public class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>, M ex
         ShardingSphereServiceLoader.register(SQLExecutionUnitBuilder.class);
     }
     
-    public DriverExecutionPrepareEngine(final int maxConnectionsSizePerQuery, final M executorDriverManager, final O option, final Collection<ShardingSphereRule> rules, final String type) {
+    public DriverExecutionPrepareEngine(final int maxConnectionsSizePerQuery, final ExecutorDriverManager<C, ?, ?> executorDriverManager, 
+                                        final StorageResourceOption option, final Collection<ShardingSphereRule> rules, final String type) {
         super(maxConnectionsSizePerQuery, rules);
         this.executorDriverManager = executorDriverManager;
         this.option = option;
@@ -62,7 +61,7 @@ public class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>, M ex
     }
     
     @Override
-    protected final List<ExecutionGroup<T>> group(final String dataSourceName, final List<List<SQLUnit>> sqlUnitGroups, final ConnectionMode connectionMode) throws SQLException {
+    protected List<ExecutionGroup<T>> group(final String dataSourceName, final List<List<SQLUnit>> sqlUnitGroups, final ConnectionMode connectionMode) throws SQLException {
         List<ExecutionGroup<T>> result = new LinkedList<>();
         List<C> connections = executorDriverManager.getConnections(dataSourceName, sqlUnitGroups.size(), connectionMode);
         int count = 0;
