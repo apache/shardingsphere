@@ -34,7 +34,7 @@ public interface ScalingWorker {
     /**
      * Init scaling worker.
      *
-     * @param governanceConfiguration governance configuration
+     * @param governanceConfig governance configuration
      */
-    void init(GovernanceConfiguration governanceConfiguration);
+    void init(GovernanceConfiguration governanceConfig);
 }

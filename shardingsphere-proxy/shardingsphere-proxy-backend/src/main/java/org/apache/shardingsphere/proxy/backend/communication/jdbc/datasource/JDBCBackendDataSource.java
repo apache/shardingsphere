@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.proxy.backend.communication.BackendDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.core.TransactionType;

@@ -52,7 +52,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabas
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -154,7 +153,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     }
     
     @Override
-    public List<Object> getRowData() {
+    public Collection<Object> getRowData() {
         return Collections.emptyList();
     }
 }

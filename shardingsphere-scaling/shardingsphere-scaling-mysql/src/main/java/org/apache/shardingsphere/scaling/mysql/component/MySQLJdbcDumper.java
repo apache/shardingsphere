@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.mysql.component;
 
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.AbstractJDBCDumper;
 import org.apache.shardingsphere.scaling.core.metadata.JdbcUri;
@@ -38,7 +38,7 @@ public final class MySQLJdbcDumper extends AbstractJDBCDumper {
     
     public MySQLJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
         super(inventoryDumperConfig, dataSourceManager);
-        JDBCScalingDataSourceConfiguration jdbcDataSourceConfig = (JDBCScalingDataSourceConfiguration) getInventoryDumperConfiguration().getDataSourceConfiguration();
+        StandardJDBCDataSourceConfiguration jdbcDataSourceConfig = (StandardJDBCDataSourceConfiguration) getInventoryDumperConfig().getDataSourceConfig();
         jdbcDataSourceConfig.setJdbcUrl(fixMySQLUrl(jdbcDataSourceConfig.getJdbcUrl()));
     }
     

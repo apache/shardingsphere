@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.scaling.core.service;
 
-import org.apache.shardingsphere.scaling.core.check.DataConsistencyCheckResult;
-import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
+import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.utils.ProxyConfigurationUtil;
 import org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil;
 
@@ -33,24 +33,24 @@ import java.util.Optional;
 public abstract class AbstractScalingJobService implements ScalingJobService {
     
     @Override
-    public boolean shouldScaling(final String oldYamlProxyConfiguration, final String newYamlProxyConfiguration) {
-        ScalingConfiguration scalingConfiguration = ProxyConfigurationUtil.toScalingConfiguration(oldYamlProxyConfiguration, newYamlProxyConfiguration);
-        SyncConfigurationUtil.fillInShardingTables(scalingConfiguration);
-        return shouldScaling(scalingConfiguration);
+    public boolean shouldScaling(final String oldYamlProxyConfig, final String newYamlProxyConfig) {
+        ScalingConfiguration scalingConfig = ProxyConfigurationUtil.toScalingConfig(oldYamlProxyConfig, newYamlProxyConfig);
+        SyncConfigurationUtil.fillInShardingTables(scalingConfig);
+        return shouldScaling(scalingConfig);
     }
     
-    private boolean shouldScaling(final ScalingConfiguration scalingConfiguration) {
-        return scalingConfiguration.getJobConfiguration().getShardingTables().length > 0;
+    private boolean shouldScaling(final ScalingConfiguration scalingConfig) {
+        return scalingConfig.getJobConfiguration().getShardingTables().length > 0;
     }
     
     @Override
-    public Optional<ShardingScalingJob> start(final String oldYamlProxyConfiguration, final String newYamlProxyConfiguration) {
-        ScalingConfiguration scalingConfiguration = ProxyConfigurationUtil.toScalingConfiguration(oldYamlProxyConfiguration, newYamlProxyConfiguration);
-        SyncConfigurationUtil.fillInShardingTables(scalingConfiguration);
-        if (!shouldScaling(scalingConfiguration)) {
+    public Optional<ShardingScalingJob> start(final String oldYamlProxyConfig, final String newYamlProxyConfig) {
+        ScalingConfiguration scalingConfig = ProxyConfigurationUtil.toScalingConfig(oldYamlProxyConfig, newYamlProxyConfig);
+        SyncConfigurationUtil.fillInShardingTables(scalingConfig);
+        if (!shouldScaling(scalingConfig)) {
             return Optional.empty();
         }
-        return start(scalingConfiguration);
+        return start(scalingConfig);
     }
     
     @Override

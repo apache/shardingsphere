@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.merge.dql.groupby;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnit;

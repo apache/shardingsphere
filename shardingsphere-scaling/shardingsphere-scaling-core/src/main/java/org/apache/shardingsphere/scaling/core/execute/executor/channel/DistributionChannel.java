@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.channel;
 
+import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.AutoAcknowledgeBitSetChannel;
+import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.BitSetChannel;
+import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.BlockingQueueBitSetChannel;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.PlaceholderRecord;
@@ -123,11 +126,11 @@ public final class DistributionChannel implements Channel {
     }
     
     private List<Record> fetchAckRecords(final int count) {
-        List<Record> records = new LinkedList<>();
+        List<Record> result = new LinkedList<>();
         for (int i = 0; i < count; i++) {
-            records.add(getBitSetChannel(toBeAckBitSetIndexes.remove()).removeAckRecord());
+            result.add(getBitSetChannel(toBeAckBitSetIndexes.remove()).removeAckRecord());
         }
-        return records;
+        return result;
     }
     
     private BitSetChannel getBitSetChannel(final Integer index) {

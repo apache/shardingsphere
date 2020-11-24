@@ -62,9 +62,9 @@ public final class PrimaryKeyPosition implements Position<PrimaryKeyPosition> {
         @Override
         public PrimaryKeyPosition read(final JsonReader in) throws IOException {
             in.beginArray();
-            PrimaryKeyPosition position = new PrimaryKeyPosition(in.nextLong(), in.nextLong());
+            PrimaryKeyPosition result = new PrimaryKeyPosition(in.nextLong(), in.nextLong());
             in.endArray();
-            return position;
+            return result;
         }
     }
 }

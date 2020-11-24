@@ -78,7 +78,7 @@ public final class DistributedScalingJobServiceTest {
     }
     
     @Test
-    public void assertStartWithScalingConfiguration() {
+    public void assertStartWithScalingConfig() {
         Optional<ShardingScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
         assertTrue(shardingScalingJob.isPresent());
         assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(shardingScalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":true"));
@@ -86,7 +86,7 @@ public final class DistributedScalingJobServiceTest {
     
     @Test
     @SneakyThrows(IOException.class)
-    public void assertStartWithProxyConfiguration() {
+    public void assertStartWithProxyConfig() {
         String oldConfig = ScalingConfigurationUtil.getConfig("/proxy_config-sharding_1.yaml");
         String newConfig = ScalingConfigurationUtil.getConfig("/proxy_config-sharding_2.yaml");
         assertFalse(scalingJobService.start(oldConfig, oldConfig).isPresent());

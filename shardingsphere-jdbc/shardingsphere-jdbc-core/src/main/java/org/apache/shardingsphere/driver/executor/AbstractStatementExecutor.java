@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
-import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
@@ -64,7 +64,7 @@ public abstract class AbstractStatementExecutor {
     
     private final MetaDataContexts metaDataContexts;
     
-    private final SQLExecutor sqlExecutor;
+    private final JDBCExecutor jdbcExecutor;
     
     protected final boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext<?> sqlStatementContext) {
         return rules.stream().anyMatch(each -> ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
@@ -92,9 +92,9 @@ public abstract class AbstractStatementExecutor {
         OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(schemaName, schema));
     }
     
-    protected final boolean executeAndRefreshMetaData(final Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups, final SQLStatement sqlStatement,
-                                                      final Collection<RouteUnit> routeUnits, final SQLExecutorCallback<Boolean> sqlExecutorCallback) throws SQLException {
-        List<Boolean> result = sqlExecutor.execute(executionGroups, sqlExecutorCallback);
+    protected final boolean executeAndRefreshMetaData(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final SQLStatement sqlStatement,
+                                                      final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> jdbcExecutorCallback) throws SQLException {
+        List<Boolean> result = jdbcExecutor.execute(executionGroups, jdbcExecutorCallback);
         refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatement, routeUnits);
         return null != result && !result.isEmpty() && null != result.get(0) && result.get(0);
     }
@@ -108,7 +108,7 @@ public abstract class AbstractStatementExecutor {
      * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    public abstract boolean execute(Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups, SQLStatement sqlStatement, Collection<RouteUnit> routeUnits) throws SQLException;
+    public abstract boolean execute(Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, SQLStatement sqlStatement, Collection<RouteUnit> routeUnits) throws SQLException;
     
     /**
      * Execute query.
@@ -117,7 +117,7 @@ public abstract class AbstractStatementExecutor {
      * @return result set list
      * @throws SQLException SQL exception
      */
-    public abstract List<QueryResult> executeQuery(Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups) throws SQLException;
+    public abstract List<QueryResult> executeQuery(Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) throws SQLException;
     
     /**
      * Execute update.
@@ -128,6 +128,6 @@ public abstract class AbstractStatementExecutor {
      * @return effected records count
      * @throws SQLException SQL exception
      */
-    public abstract int executeUpdate(Collection<ExecutionGroup<StatementExecuteUnit>> executionGroups, 
+    public abstract int executeUpdate(Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, 
                                       SQLStatementContext<?> sqlStatementContext, Collection<RouteUnit> routeUnits) throws SQLException;
 }

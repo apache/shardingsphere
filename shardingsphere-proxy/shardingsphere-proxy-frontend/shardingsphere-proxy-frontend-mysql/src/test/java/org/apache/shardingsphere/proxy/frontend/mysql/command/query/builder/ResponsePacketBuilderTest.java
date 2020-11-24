@@ -17,39 +17,39 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder;
 
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
+import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.junit.Test;
+
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Arrays;
 
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
-import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
-
-import org.junit.Test;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ResponsePacketBuilderTest {
-
+    
     @Test
     public void assertBuildQueryResponsePackets() {
         QueryHeader queryHeader1 = new QueryHeader("schema1", "table1", "columnLabel1", "columnName1", 4, 5, 6, false, true, false, true);
         QueryHeader queryHeader2 = new QueryHeader("schema2", "table2", "columnLabel2", "columnName2", 7, 8, 9, false, true, true, true);
-        List<QueryHeader> queryHeaders = Arrays.asList(new QueryHeader[]{queryHeader1, queryHeader2});
+        List<QueryHeader> queryHeaders = Arrays.asList(queryHeader1, queryHeader2);
         QueryResponse queryResponse = new QueryResponse(queryHeaders);
         Collection<DatabasePacket<?>> actual = ResponsePacketBuilder.buildQueryResponsePackets(queryResponse);
         assertThat(actual.stream().findAny().get(), anyOf(instanceOf(MySQLFieldCountPacket.class), instanceOf(MySQLColumnDefinition41Packet.class), instanceOf(MySQLEofPacket.class)));
     }
-
+    
     @Test
     public void assertBuildUpdateResponsePackets() {
         UpdateResponse updateResponse = mock(UpdateResponse.class);
