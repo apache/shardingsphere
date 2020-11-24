@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Optional;
 
@@ -90,6 +91,9 @@ public final class ShardingStatementValidatorFactory {
             return Optional.of(new ShardingUpdateStatementValidator());
         }
         if (sqlStatement instanceof DeleteStatement) {
+            return Optional.of(new ShardingDeleteStatementValidator());
+        }
+        if (sqlStatement instanceof SelectStatement) {
             return Optional.of(new ShardingDeleteStatementValidator());
         }
         return Optional.empty();

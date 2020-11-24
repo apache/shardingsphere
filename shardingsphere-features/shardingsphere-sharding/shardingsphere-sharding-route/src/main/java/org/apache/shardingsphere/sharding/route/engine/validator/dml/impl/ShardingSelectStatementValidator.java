@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -36,76 +33,29 @@ import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDML
 import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 
 import com.google.common.base.Preconditions;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Sharding insert statement validator.
+ * Sharding select statement validator.
  */
-public final class ShardingInsertStatementValidator extends ShardingDMLStatementValidator<InsertStatement> {
+public final class ShardingSelectStatementValidator extends ShardingDMLStatementValidator<SelectStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext, 
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<SelectStatement> sqlStatementContext, 
                             final List<Object> parameters, final ShardingSphereSchema schema) {
-        if (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
-            validateShardingMultipleTable(shardingRule, sqlStatementContext);
-        }
-        InsertStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(sqlStatement);
-        String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        if (onDuplicateKeyColumnsSegment.isPresent() && isUpdateShardingKey(shardingRule, onDuplicateKeyColumnsSegment.get(), tableName)) {
-            throw new ShardingSphereException("INSERT INTO ... ON DUPLICATE KEY UPDATE can not support update for sharding column.");
-        }
-        Optional<SubquerySegment> insertSelectSegment = sqlStatement.getInsertSelect();
-        if (insertSelectSegment.isPresent() && isContainsKeyGenerateStrategy(shardingRule, tableName)
-                && !isContainsKeyGenerateColumn(shardingRule, sqlStatement.getColumns(), tableName)) {
-            throw new ShardingSphereException("INSERT INTO ... SELECT can not support applying keyGenerator to absent generateKeyColumn.");
-        }
-        TablesContext tablesContext = sqlStatementContext.getTablesContext();
-        if (insertSelectSegment.isPresent() && !isAllSameTables(tablesContext.getTableNames()) && !shardingRule.isAllBindingTables(tablesContext.getTableNames())) {
-            throw new ShardingSphereException("The table inserted and the table selected must be the same or bind tables.");
-        }
-        if (insertSelectSegment.isPresent()) {
-            checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
-        }
-    }
-    
-    private boolean isUpdateShardingKey(final ShardingRule shardingRule, final OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment, final String tableName) {
-        for (AssignmentSegment each : onDuplicateKeyColumnsSegment.getColumns()) {
-            if (shardingRule.isShardingColumn(each.getColumn().getIdentifier().getValue(), tableName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean isContainsKeyGenerateStrategy(final ShardingRule shardingRule, final String tableName) {
-        return shardingRule.findGenerateKeyColumnName(tableName).isPresent();
-    }
-    
-    private boolean isContainsKeyGenerateColumn(final ShardingRule shardingRule, final Collection<ColumnSegment> columns, final String tableName) {
-        return columns.isEmpty() || columns.stream().anyMatch(each -> shardingRule.isGenerateKeyColumn(each.getIdentifier().getValue(), tableName));
-    }
-    
-    private boolean isAllSameTables(final Collection<String> tableNames) {
-        return 1 == tableNames.stream().distinct().count();
+        checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
     }
 
-    private void checkSubqueryShardingValues(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext,
+    private void checkSubqueryShardingValues(final ShardingRule shardingRule, final SQLStatementContext<SelectStatement> sqlStatementContext,
         final List<Object> parameters, final ShardingSphereSchema schema) {
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
@@ -119,12 +69,12 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
             Preconditions.checkState(isSameShardingCondition(shardingRule, shardingConditions), "Sharding value must same with subquery.");
         }
     }
-
+    
     private boolean isRoutingByHint(final ShardingRule shardingRule, final TableRule tableRule) {
         return shardingRule.getDatabaseShardingStrategyConfiguration(tableRule) instanceof HintShardingStrategyConfiguration
             && shardingRule.getTableShardingStrategyConfiguration(tableRule) instanceof HintShardingStrategyConfiguration;
     }
-
+    
     private boolean isSameShardingCondition(final ShardingRule shardingRule, final ShardingConditions shardingConditions) {
         ShardingCondition example = shardingConditions.getConditions().remove(shardingConditions.getConditions().size() - 1);
         for (ShardingCondition each : shardingConditions.getConditions()) {
@@ -134,7 +84,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
         }
         return true;
     }
-
+    
     private boolean isSameShardingCondition(final ShardingRule shardingRule, final ShardingCondition shardingCondition1, final ShardingCondition shardingCondition2) {
         if (shardingCondition1.getValues().size() != shardingCondition2.getValues().size()) {
             return false;
@@ -148,21 +98,21 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
         }
         return true;
     }
-
+    
     private boolean isSameShardingConditionValue(final ShardingRule shardingRule, final ShardingConditionValue shardingConditionValue1, final ShardingConditionValue shardingConditionValue2) {
         return isSameLogicTable(shardingRule, shardingConditionValue1, shardingConditionValue2) && shardingConditionValue1.getColumnName().equals(shardingConditionValue2.getColumnName())
             && isSameValue(shardingConditionValue1, shardingConditionValue2);
     }
-
+    
     private boolean isSameLogicTable(final ShardingRule shardingRule, final ShardingConditionValue shardingValue1, final ShardingConditionValue shardingValue2) {
         return shardingValue1.getTableName().equals(shardingValue2.getTableName()) || isBindingTable(shardingRule, shardingValue1, shardingValue2);
     }
-
+    
     private boolean isBindingTable(final ShardingRule shardingRule, final ShardingConditionValue shardingValue1, final ShardingConditionValue shardingValue2) {
         Optional<BindingTableRule> bindingRule = shardingRule.findBindingTableRule(shardingValue1.getTableName());
         return bindingRule.isPresent() && bindingRule.get().hasLogicTable(shardingValue2.getTableName());
     }
-
+    
     @SuppressWarnings({"rawtypes", "unchecked"})
     private boolean isSameValue(final ShardingConditionValue shardingConditionValue1, final ShardingConditionValue shardingConditionValue2) {
         if (shardingConditionValue1 instanceof ListShardingConditionValue && shardingConditionValue2 instanceof ListShardingConditionValue) {
@@ -174,8 +124,8 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
         }
         return false;
     }
-
-    private ShardingConditions createShardingConditions(final SQLStatementContext<InsertStatement> sqlStatementContext,
+    
+    private ShardingConditions createShardingConditions(final SQLStatementContext<SelectStatement> sqlStatementContext,
         final List<Object> parameters, final ShardingSphereSchema schema, final ShardingRule rule) {
         List<ShardingCondition> shardingConditions;
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
@@ -188,6 +138,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     }
     
     @Override
-    public void postValidate(final InsertStatement sqlStatement, final RouteContext routeContext) {
+    public void postValidate(final SelectStatement sqlStatement, final RouteContext routeContext) {
     }
+    
 }
