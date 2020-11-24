@@ -68,12 +68,12 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
         }
         return decorate(routeContext, result);
     }
-
+    
     private List<List<SQLUnit>> group(final List<SQLUnit> sqlUnits) {
         int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
         return Lists.partition(sqlUnits, desiredPartitionSize);
     }
-
+    
     protected abstract List<ExecutionGroup<T>> group(String dataSourceName, List<List<SQLUnit>> sqlUnitGroups, ConnectionMode connectionMode) throws SQLException;
     
     private Map<String, List<SQLUnit>> aggregateSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
