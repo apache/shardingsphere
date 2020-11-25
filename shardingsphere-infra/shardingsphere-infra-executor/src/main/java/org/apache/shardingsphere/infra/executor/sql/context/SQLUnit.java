@@ -38,9 +38,9 @@ public final class SQLUnit {
     private final String sql;
     
     private final List<Object> parameters;
-
+    
     private final List<RouteMapper> tableRouteMappers;
-
+    
     public SQLUnit(final String sql, final List<Object> parameters) {
         this(sql, parameters, Collections.emptyList());
     }

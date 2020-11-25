@@ -30,13 +30,12 @@ import org.apache.shardingsphere.infra.route.context.RawGroup;
 @Getter
 @ToString
 public final class RawSQLRuntimeContext {
-
+    
     private final String schemaName;
-
+    
     private final ShardingSphereMetaData metaData;
-
+    
     private final RawGroup rawGroup;
-
+    
     private final boolean readOnly;
-
 }
