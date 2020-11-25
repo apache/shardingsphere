@@ -43,6 +43,6 @@ public final class StatementExecutionUnitBuilder implements JDBCExecutionUnitBui
     
     @Override
     public String getType() {
-        return "JDBC_STATEMENT";
+        return JDBCExecutionUnitBuilderType.STATEMENT;
     }
 }

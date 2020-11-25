@@ -15,27 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.route.context.RawGroup;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Raw route context.
+ * JDBC execution unit builder type.
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class RawSQLRuntimeContext {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class JDBCExecutionUnitBuilderType {
     
-    private final String schemaName;
+    public static final String STATEMENT = "JDBC.STATEMENT";
     
-    private final ShardingSphereMetaData metaData;
-    
-    private final RawGroup rawGroup;
-    
-    private final boolean readOnly;
+    public static final String PREPARED_STATEMENT = "JDBC.PREPARED_STATEMENT";
 }

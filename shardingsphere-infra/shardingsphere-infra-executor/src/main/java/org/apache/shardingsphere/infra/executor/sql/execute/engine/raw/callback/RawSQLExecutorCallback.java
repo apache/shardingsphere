@@ -39,7 +39,7 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
     }
     
     private final Collection<RawExecutorCallback> rawExecutorCallbacks;
-
+    
     public RawSQLExecutorCallback() {
         rawExecutorCallbacks = ShardingSphereServiceLoader.newServiceInstances(RawExecutorCallback.class);
         if (null == rawExecutorCallbacks || rawExecutorCallbacks.isEmpty()) {
