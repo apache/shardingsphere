@@ -53,6 +53,18 @@ public final class ConfigurationYamlConverter {
     }
     
     /**
+     * Serialize data source configurations.
+     *
+     * @param dataSourceConfigMap data source configurations
+     * @return data
+     */
+    public static String serializeDataSourceConfigs(final Map<String, DataSourceConfiguration> dataSourceConfigMap) {
+        YamlDataSourceConfigurationWrap yamlDataSourceConfigurationWrap = new YamlDataSourceConfigurationWrap();
+        yamlDataSourceConfigurationWrap.setDataSources(Maps.transformValues(dataSourceConfigMap, new DataSourceConfigurationYamlSwapper()::swapToYamlConfiguration));
+        return YamlEngine.marshal(yamlDataSourceConfigurationWrap);
+    }
+    
+    /**
      * Load sharding rule configuration.
      *
      * @param data data
