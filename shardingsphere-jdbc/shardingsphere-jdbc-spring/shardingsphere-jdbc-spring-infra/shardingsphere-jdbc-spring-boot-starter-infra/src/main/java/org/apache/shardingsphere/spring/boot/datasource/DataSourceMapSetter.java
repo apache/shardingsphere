@@ -60,13 +60,11 @@ public final class DataSourceMapSetter {
      * @param environment spring boot environment
      * @return data source map
      */
-    @SuppressWarnings("unchecked")
     public static Map<String, DataSource> getDataSourceMap(final Environment environment) {
         Map<String, DataSource> result = new LinkedHashMap<>();
-        Map<String, Object> dataSourceCommonProps = PropertyUtil.handle(environment, COMMON_PREFIX, Map.class);
-        for (String each : getDataSourceNames(environment, PREFIX)) {
+        for (String each : getDataSourceNames(environment)) {
             try {
-                result.put(each, getDataSource(environment, PREFIX, each, dataSourceCommonProps));
+                result.put(each, getDataSource(environment, each));
             } catch (final ReflectiveOperationException ex) {
                 throw new ShardingSphereException("Can't find data source type.", ex);
             } catch (final NamingException ex) {
@@ -76,37 +74,38 @@ public final class DataSourceMapSetter {
         return result;
     }
     
-    private static List<String> getDataSourceNames(final Environment environment, final String prefix) {
+    private static List<String> getDataSourceNames(final Environment environment) {
         StandardEnvironment standardEnv = (StandardEnvironment) environment;
         standardEnv.setIgnoreUnresolvableNestedPlaceholders(true);
-        String dataSourceNames = standardEnv.getProperty(prefix + DATA_SOURCE_NAME);
+        String dataSourceNames = standardEnv.getProperty(PREFIX + DATA_SOURCE_NAME);
         if (StringUtils.isEmpty(dataSourceNames)) {
-            dataSourceNames = standardEnv.getProperty(prefix + DATA_SOURCE_NAMES);
+            dataSourceNames = standardEnv.getProperty(PREFIX + DATA_SOURCE_NAMES);
         }
         return new InlineExpressionParser(dataSourceNames).splitAndEvaluate();
     }
     
-    @SuppressWarnings("unchecked")
-    private static DataSource getDataSource(final Environment environment, final String prefix, final String dataSourceName,
-                                            final Map<String, Object> dataSourceCommonProps) throws ReflectiveOperationException, NamingException {
-        Map<String, Object> dataSourceProps = mergedDataSourceProps(PropertyUtil.handle(environment, prefix + dataSourceName.trim(), Map.class), dataSourceCommonProps);
+    private static DataSource getDataSource(final Environment environment, final String dataSourceName) throws ReflectiveOperationException, NamingException {
+        Map<String, Object> dataSourceProps = mergedDataSourceProps(PREFIX + dataSourceName.trim(), environment);
         Preconditions.checkState(!dataSourceProps.isEmpty(), String.format("Wrong datasource [%s] properties.", dataSourceName));
         if (dataSourceProps.containsKey(JNDI_NAME)) {
             return getJNDIDataSource(dataSourceProps.get(JNDI_NAME).toString());
         }
         DataSource result = DataSourceUtil.getDataSource(dataSourceProps.get(DATA_SOURCE_TYPE).toString(), dataSourceProps);
         DataSourcePropertiesSetterHolder.getDataSourcePropertiesSetterByType(dataSourceProps.get(DATA_SOURCE_TYPE).toString()).ifPresent(
-            propsSetter -> propsSetter.propertiesSet(environment, prefix, dataSourceName, result));
+            propsSetter -> propsSetter.propertiesSet(environment, PREFIX, dataSourceName, result));
         return result;
     }
     
-    private static Map<String, Object> mergedDataSourceProps(final Map<String, Object> dataSourceProps, final Map<String, Object> dataSourceCommonProps) {
-        if (!dataSourceCommonProps.isEmpty()) {
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> mergedDataSourceProps(final String prefix, final Environment environment) {
+        final Map<String, Object> dataSourceProps = PropertyUtil.handle(environment, prefix, Map.class);
+        boolean exist = PropertyUtil.containPropertyPrefix(environment, COMMON_PREFIX);
+        if (exist) {
+            Map<String, Object> dataSourceCommonProps = PropertyUtil.handle(environment, COMMON_PREFIX, Map.class);
             dataSourceCommonProps.putAll(dataSourceProps);
             return dataSourceCommonProps;
-        } else {
-            return dataSourceProps;
         }
+        return dataSourceProps;
     }
     
     private static DataSource getJNDIDataSource(final String jndiName) throws NamingException {
