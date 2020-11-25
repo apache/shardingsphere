@@ -27,6 +27,7 @@ import org.apache.shardingsphere.governance.repository.api.listener.DataChangedE
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 @Getter
 @Setter
@@ -54,6 +55,19 @@ public final class TestGovernanceRepository implements RegistryRepository, Confi
     
     @Override
     public void persistEphemeral(final String key, final String value) {
+    }
+    
+    @Override
+    public void initLock(final String key) {
+    }
+    
+    @Override
+    public boolean tryLock(final long time, final TimeUnit unit) {
+        return false;
+    }
+    
+    @Override
+    public void releaseLock() {
     }
     
     @Override

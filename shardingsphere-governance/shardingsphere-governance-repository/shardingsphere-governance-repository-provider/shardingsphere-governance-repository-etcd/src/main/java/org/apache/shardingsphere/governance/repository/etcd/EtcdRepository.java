@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.repository.etcd;
 
-import java.nio.charset.StandardCharsets;
 import com.google.common.base.Splitter;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
@@ -38,9 +37,11 @@ import org.apache.shardingsphere.governance.repository.api.listener.DataChangedE
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -96,6 +97,22 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
         long leaseId = client.getLeaseClient().grant(etcdProperties.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
         client.getLeaseClient().keepAlive(leaseId, Observers.observer(response -> { }));
         client.getKVClient().put(ByteSequence.from(key, StandardCharsets.UTF_8), ByteSequence.from(value, StandardCharsets.UTF_8), PutOption.newBuilder().withLeaseId(leaseId).build()).get();
+    }
+    
+    @Override
+    public void initLock(final String key) {
+        // TODO
+    }
+    
+    @Override
+    public boolean tryLock(final long time, final TimeUnit unit) {
+        // TODO
+        return false;
+    }
+    
+    @Override
+    public void releaseLock() {
+        // TODO
     }
     
     @Override

@@ -18,16 +18,6 @@
 package org.apache.shardingsphere.governance.repository.zookeeper;
 
 import com.google.common.base.Strings;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.curator.framework.CuratorFramework;
@@ -37,6 +27,8 @@ import org.apache.curator.framework.api.transaction.TransactionOp;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
+import org.apache.curator.framework.recipes.locks.InterProcessLock;
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
@@ -51,6 +43,17 @@ import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Governance repository of ZooKeeper.
  */
@@ -59,6 +62,8 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     private final Map<String, CuratorCache> caches = new HashMap<>();
     
     private CuratorFramework client;
+    
+    private InterProcessLock interProcessLock;
     
     @Getter
     @Setter
@@ -209,6 +214,34 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
+        }
+    }
+    
+    @Override
+    public void initLock(final String key) {
+        interProcessLock = new InterProcessMutex(client, key);
+    }
+    
+    @Override
+    public boolean tryLock(final long time, final TimeUnit unit) {
+        try {
+            return interProcessLock.acquire(time, unit);
+            // CHECKSTYLE:OFF
+        } catch (final Exception e) {
+            // CHECKSTYLE:ON
+            CuratorZookeeperExceptionHandler.handleException(e);
+            return false;
+        }
+    }
+    
+    @Override
+    public void releaseLock() {
+        try {
+            interProcessLock.release();
+            // CHECKSTYLE:OFF
+        } catch (final Exception e) {
+            // CHECKSTYLE:ON
+            CuratorZookeeperExceptionHandler.handleException(e);
         }
     }
     
