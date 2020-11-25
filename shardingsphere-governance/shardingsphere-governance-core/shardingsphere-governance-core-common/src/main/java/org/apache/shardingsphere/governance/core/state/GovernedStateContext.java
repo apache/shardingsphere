@@ -25,13 +25,13 @@ import org.apache.shardingsphere.infra.state.StateContext;
 /**
  * Governed state machine.
  */
-public final class GovernedStateMachine {
+public final class GovernedStateContext {
     
     /**
      * Start up governed state machine.
      */
     public static void startUp() {
-        GovernanceEventBus.getInstance().register(new GovernedStateMachine());
+        GovernanceEventBus.getInstance().register(new GovernedStateContext());
     }
     
     /**

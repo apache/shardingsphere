@@ -22,7 +22,7 @@ import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.facade.listener.GovernanceListenerManager;
 import org.apache.shardingsphere.governance.core.facade.repository.GovernanceRepositoryFacade;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.core.state.GovernedStateMachine;
+import org.apache.shardingsphere.governance.core.state.GovernedStateContext;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -63,7 +63,7 @@ public final class GovernanceFacade implements AutoCloseable {
         configCenter = new ConfigCenter(repositoryFacade.getConfigurationRepository());
         listenerManager = new GovernanceListenerManager(repositoryFacade.getRegistryRepository(),
                 repositoryFacade.getConfigurationRepository(), schemaNames.isEmpty() ? configCenter.getAllSchemaNames() : schemaNames);
-        GovernedStateMachine.startUp();
+        GovernedStateContext.startUp();
     }
     
     /**
