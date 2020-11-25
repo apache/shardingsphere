@@ -20,10 +20,16 @@ package org.apache.shardingsphere.infra.metadata.schema.builder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.SchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Map.Entry;
 
 /**
  * Schema builder.
@@ -39,7 +45,7 @@ public final class SchemaBuilder {
      * @throws SQLException SQL exception
      */
     public static ShardingSphereSchema build(final SchemaBuilderMaterials materials) throws SQLException {
-        ShardingSphereSchema result = new ShardingSphereSchema();
+        ShardingSphereSchema result = createShardingSphereSchema(materials);
         for (ShardingSphereRule rule : materials.getRules()) {
             if (rule instanceof TableContainedRule) {
                 for (String table : ((TableContainedRule) rule).getTables()) {
@@ -48,6 +54,18 @@ public final class SchemaBuilder {
                     }
                 }
             }
+        }
+        return result;
+    }
+    
+    private static ShardingSphereSchema createShardingSphereSchema(final SchemaBuilderMaterials materials) throws SQLException {
+        ShardingSphereSchema result = new ShardingSphereSchema();
+        Collection<String> tableNames = new LinkedHashSet<>();
+        for (Entry<String, DataSource> entry: materials.getDataSourceMap().entrySet()) {
+            tableNames.addAll(SchemaMetaDataLoader.loadAllTableNames(entry.getValue(), materials.getDatabaseType()));
+        }
+        for (String each : tableNames) {
+            result.put(each, new TableMetaData());
         }
         return result;
     }
