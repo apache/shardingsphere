@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.impl;
 
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.JDBCAccessor;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
@@ -33,9 +35,9 @@ import java.util.Collection;
 public final class StatementAccessor implements JDBCAccessor {
     
     @Override
-    public StatementExecutionPrepareEngine getExecutionPrepareEngine(final BackendConnection backendConnection,
-                                                                     final int maxConnectionsSizePerQuery, final StatementOption option, final Collection<ShardingSphereRule> rules) {
-        return new StatementExecutionPrepareEngine(maxConnectionsSizePerQuery, backendConnection, option, rules);
+    public DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> getExecutionPrepareEngine(final BackendConnection backendConnection, final int maxConnectionsSizePerQuery, 
+                                                                                                 final StatementOption option, final Collection<ShardingSphereRule> rules) {
+        return new DriverExecutionPrepareEngine<>(maxConnectionsSizePerQuery, backendConnection, option, rules, "JDBC_STATEMENT");
     }
     
     @Override

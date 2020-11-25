@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.scaling.postgresql.component;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.scaling.core.check.AbstractDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.job.check.AbstractDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 
 import java.util.Collections;
 import java.util.Map;

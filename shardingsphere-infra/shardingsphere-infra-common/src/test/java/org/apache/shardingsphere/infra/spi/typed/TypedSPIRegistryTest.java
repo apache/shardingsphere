@@ -25,7 +25,9 @@ import org.apache.shardingsphere.infra.spi.fixture.TypedSPIFixture;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 public final class TypedSPIRegistryTest {
     
@@ -39,6 +41,18 @@ public final class TypedSPIRegistryTest {
         String type = "FIXTURE";
         TypedSPIFixture actual = TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, type, new Properties());
         assertNotNull(actual);
+    }
+    
+    @Test
+    public void assertPropertiesGetRegisteredService() {
+        Properties properties = new Properties();
+        properties.put("key1", 1);
+        properties.put("key2", 2L);
+        String type = "FIXTURE";
+        TypedSPIFixture actual = TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, type, properties);
+        assertNotNull(actual);
+        assertThat(actual.getProps().getProperty("key1"), is("1"));
+        assertThat(actual.getProps().getProperty("key2"), is("2"));
     }
     
     @Test
