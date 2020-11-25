@@ -21,6 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,10 +38,10 @@ public final class SQLUnit {
     private final String sql;
     
     private final List<Object> parameters;
-    
-    private final SQLRuntimeContext sqlRuntimeContext;
-    
+
+    private final List<RouteMapper> tableRouteMappers;
+
     public SQLUnit(final String sql, final List<Object> parameters) {
-        this(sql, parameters, new SQLRuntimeContext(Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        this(sql, parameters, Collections.emptyList());
     }
 }
