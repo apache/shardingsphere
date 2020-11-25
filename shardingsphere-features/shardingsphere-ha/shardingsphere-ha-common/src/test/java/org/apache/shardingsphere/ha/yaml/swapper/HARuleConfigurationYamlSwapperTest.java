@@ -20,6 +20,7 @@ package org.apache.shardingsphere.ha.yaml.swapper;
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
@@ -95,6 +96,10 @@ public final class HARuleConfigurationYamlSwapperTest {
         result.getDataSources().get("ha_ds").setName("ha_ds");
         result.getDataSources().get("ha_ds").setPrimaryDataSourceName("primary_ds");
         result.getDataSources().get("ha_ds").setReplicaDataSourceNames(Arrays.asList("replica_ds_0", "replica_ds_1"));
+        YamlShardingSphereAlgorithmConfiguration haType = new YamlShardingSphereAlgorithmConfiguration();
+        haType.setType("name");
+        haType.setProps(new Properties());
+        result.setHaType(haType);
         return result;
     }
     

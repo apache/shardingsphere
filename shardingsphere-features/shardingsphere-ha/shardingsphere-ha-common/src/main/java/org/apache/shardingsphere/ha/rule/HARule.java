@@ -79,8 +79,10 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
         }
     }
     
-    public HARule(final AlgorithmProvidedHARuleConfiguration config) {
+    public HARule(final AlgorithmProvidedHARuleConfiguration config, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         Preconditions.checkArgument(!config.getDataSources().isEmpty(), "HA data source rules can not be empty.");
+        Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
+        Preconditions.checkArgument(null != databaseType, "Database type cannot be null.");
         loadBalancers.putAll(config.getLoadBalanceAlgorithms());
         dataSourceRules = new HashMap<>(config.getDataSources().size(), 1);
         for (HADataSourceRuleConfiguration each : config.getDataSources()) {
@@ -88,6 +90,14 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
             ReplicaLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
                     ? TypedSPIRegistry.getRegisteredService(ReplicaLoadBalanceAlgorithm.class) : loadBalancers.get(each.getLoadBalancerName());
             dataSourceRules.put(each.getName(), new HADataSourceRule(each, loadBalanceAlgorithm));
+        }
+        HAType haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaType().getType(), config.getHaType().getProps());
+        try {
+            haType.updatePrimaryDataSource(dataSourceMap);
+            haType.checkHAConfig(dataSourceMap);
+            haType.periodicalMonitor(dataSourceMap);
+        } catch (final SQLException ex) {
+            throw new ShardingSphereException(ex);
         }
     }
     
