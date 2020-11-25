@@ -43,29 +43,40 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSphereAlgorithm> implements BeanDefinitionRegistryPostProcessor, BeanPostProcessor {
     
+    private static final String TYPE_SUFFIX = ".type";
+    
+    private static final String PROPS_SUFFIX = ".props";
+    
+    private static final String PROPS = "props";
+    
     private final Environment environment;
     
     @SuppressWarnings("all")
-    protected void registerBean(final String preFix, final Class<T> algorithmClass, final BeanDefinitionRegistry registry) {
-        Map<String, Object> paramMap = PropertyUtil.handle(environment, preFix, Map.class);
+    protected void registerBean(final String prefix, final Class<T> algorithmClass, final BeanDefinitionRegistry registry) {
+        Map<String, Object> paramMap = PropertyUtil.handle(environment, prefix, Map.class);
         Set<String> keys = paramMap.keySet().stream().map(key -> {
             return key.contains(".") ? key.substring(0, key.indexOf(".")) : key;
         }).collect(Collectors.toSet());
         Map<String, YamlShardingSphereAlgorithmConfiguration> shardingAlgorithmMap = new LinkedHashMap<>();
         keys.forEach(each -> {
-            String type = environment.getProperty(preFix + each + ".type");
-            Map<String, Object> propsMap = PropertyUtil.handle(environment, preFix + each + ".props", Map.class);
             YamlShardingSphereAlgorithmConfiguration config = new YamlShardingSphereAlgorithmConfiguration();
-            config.setType(type);
-            config.getProps().putAll(propsMap);
+            String propsPrefix = String.join("", prefix, each, PROPS_SUFFIX);
+            boolean exist = PropertyUtil.containPropertyPrefix(environment, propsPrefix);
+            if (exist) {
+                Map<String, Object> propsMap = PropertyUtil.handle(environment, propsPrefix, Map.class);
+                config.getProps().putAll(propsMap);
+            }
+            String typePrefix = String.join("", prefix, each, TYPE_SUFFIX);
+            String algorithmType = environment.getProperty(typePrefix);
+            config.setType(algorithmType);
             shardingAlgorithmMap.put(each, config);
         });
         ShardingSphereServiceLoader.register(algorithmClass);
-        shardingAlgorithmMap.forEach((k, v) -> {
-            ShardingSphereAlgorithm algorithm = TypedSPIRegistry.getRegisteredService(algorithmClass, v.getType(), v.getProps());
+        shardingAlgorithmMap.forEach((key, algorithmConfiguration) -> {
+            ShardingSphereAlgorithm algorithm = TypedSPIRegistry.getRegisteredService(algorithmClass, algorithmConfiguration.getType(), algorithmConfiguration.getProps());
             BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(algorithm.getClass());
-            builder.addPropertyValue("props", v.getProps());
-            registry.registerBeanDefinition(k, builder.getBeanDefinition());
+            builder.addPropertyValue(PROPS, algorithmConfiguration.getProps());
+            registry.registerBeanDefinition(key, builder.getBeanDefinition());
         });
     }
     
