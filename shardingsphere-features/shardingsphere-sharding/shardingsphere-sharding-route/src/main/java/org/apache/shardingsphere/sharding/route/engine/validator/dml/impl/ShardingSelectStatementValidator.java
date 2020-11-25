@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -51,9 +52,16 @@ public final class ShardingSelectStatementValidator extends ShardingDMLStatement
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<SelectStatement> sqlStatementContext, 
                             final List<Object> parameters, final ShardingSphereSchema schema) {
-        checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
+        if (isNeedMergeShardingValues(sqlStatementContext, shardingRule)) {
+            checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
+        }
     }
-
+    
+    private boolean isNeedMergeShardingValues(final SQLStatementContext<?> sqlStatementContext, final ShardingRule rule) {
+        boolean selectContainsSubquery = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsSubquery();
+        return selectContainsSubquery && !rule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty();
+    }
+    
     private void checkSubqueryShardingValues(final ShardingRule shardingRule, final SQLStatementContext<SelectStatement> sqlStatementContext,
         final List<Object> parameters, final ShardingSphereSchema schema) {
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
@@ -99,8 +107,7 @@ public final class ShardingSelectStatementValidator extends ShardingDMLStatement
     }
     
     private boolean isSameShardingConditionValue(final ShardingRule shardingRule, final ShardingConditionValue shardingConditionValue1, final ShardingConditionValue shardingConditionValue2) {
-        return isSameLogicTable(shardingRule, shardingConditionValue1, shardingConditionValue2) && shardingConditionValue1.getColumnName().equals(shardingConditionValue2.getColumnName())
-            && isSameValue(shardingConditionValue1, shardingConditionValue2);
+        return isSameLogicTable(shardingRule, shardingConditionValue1, shardingConditionValue2) && shardingConditionValue1.getColumnName().equals(shardingConditionValue2.getColumnName());
     }
     
     private boolean isSameLogicTable(final ShardingRule shardingRule, final ShardingConditionValue shardingValue1, final ShardingConditionValue shardingValue2) {

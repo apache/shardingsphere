@@ -78,7 +78,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
         if (insertSelectSegment.isPresent() && !isAllSameTables(tablesContext.getTableNames()) && !shardingRule.isAllBindingTables(tablesContext.getTableNames())) {
             throw new ShardingSphereException("The table inserted and the table selected must be the same or bind tables.");
         }
-        if (insertSelectSegment.isPresent()) {
+        if (insertSelectSegment.isPresent() && isNeedMergeShardingValues(sqlStatementContext, shardingRule)) {
             checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
         }
     }
@@ -184,6 +184,12 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
             shardingConditions = Collections.emptyList();
         }
         return new ShardingConditions(shardingConditions);
+    }
+
+    private boolean isNeedMergeShardingValues(final SQLStatementContext<?> sqlStatementContext, final ShardingRule rule) {
+        boolean insertSelectContainsSubquery = sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()
+            && ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext().isContainsSubquery();
+        return insertSelectContainsSubquery && !rule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty();
     }
     
     @Override
