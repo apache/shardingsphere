@@ -27,6 +27,6 @@ import lombok.NoArgsConstructor;
 public final class JDBCExecutionUnitBuilderType {
     
     public static final String STATEMENT = "JDBC.STATEMENT";
-
+    
     public static final String PREPARED_STATEMENT = "JDBC.PREPARED_STATEMENT";
 }
