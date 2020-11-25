@@ -46,6 +46,6 @@ public final class PreparedStatementExecutionUnitBuilder implements JDBCExecutio
     
     @Override
     public String getType() {
-        return "JDBC_PREPARED_STATEMENT";
+        return JDBCExecutionUnitBuilderType.PREPARED_STATEMENT;
     }
 }
