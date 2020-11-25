@@ -39,7 +39,7 @@ public final class HARuleBuilderTest {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void assertBuild() {
         HARuleConfiguration ruleConfig = mock(HARuleConfiguration.class);
         HADataSourceRuleConfiguration dataSourceRuleConfig = new HADataSourceRuleConfiguration(

@@ -18,14 +18,16 @@
 package org.apache.shardingsphere.ha.yaml.swapper;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
 import org.apache.shardingsphere.ha.algorithm.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.ha.algorithm.config.AlgorithmProvidedHARuleConfiguration;
+import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
 import org.apache.shardingsphere.ha.constant.HAOrder;
 import org.apache.shardingsphere.ha.yaml.config.YamlHARuleConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -87,6 +89,7 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapperTest {
         HADataSourceRuleConfiguration ruleConfig = new HADataSourceRuleConfiguration("name", "primaryDataSourceName",
                 Collections.singletonList("replicaDataSourceName"), "loadBalancerName", true);
         return swapper.swapToYamlConfiguration(
-                new AlgorithmProvidedHARuleConfiguration(Collections.singletonList(ruleConfig), ImmutableMap.of("name", new RandomReplicaLoadBalanceAlgorithm())));
+                new AlgorithmProvidedHARuleConfiguration(Collections.singletonList(ruleConfig), ImmutableMap.of("name", new RandomReplicaLoadBalanceAlgorithm()),
+                        new ShardingSphereAlgorithmConfiguration("name", new Properties())));
     }
 }

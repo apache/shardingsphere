@@ -15,27 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ha.api.config;
+package org.apache.shardingsphere.ha.spi;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 
-import java.util.Collection;
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * HA rule configuration.
+ * HA type.
  */
-@RequiredArgsConstructor
-@Getter
-public final class HARuleConfiguration implements RuleConfiguration {
+public interface HAType extends ShardingSphereAlgorithm {
     
-    private final Collection<HADataSourceRuleConfiguration> dataSources;
+    /**
+     * Check HA config.
+     *
+     * @param dataSourceMap Data source map
+     * @throws SQLException SQL Exception
+     */
+    void checkHAConfig(Map<String, DataSource> dataSourceMap) throws SQLException;
     
-    private final Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers;
+    /**
+     * Update primary data source.
+     *
+     * @param dataSourceMap Data source map
+     */
+    void updatePrimaryDataSource(Map<String, DataSource> dataSourceMap);
     
-    private final ShardingSphereAlgorithmConfiguration haType;
+    /**
+     * Periodical monitor.
+     *
+     * @param dataSourceMap Data source map
+     */
+    void periodicalMonitor(Map<String, DataSource> dataSourceMap);
 }

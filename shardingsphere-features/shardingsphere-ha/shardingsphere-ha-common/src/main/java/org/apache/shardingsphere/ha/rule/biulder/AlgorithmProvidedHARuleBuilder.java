@@ -17,19 +17,30 @@
 
 package org.apache.shardingsphere.ha.rule.biulder;
 
+import lombok.Setter;
 import org.apache.shardingsphere.ha.algorithm.config.AlgorithmProvidedHARuleConfiguration;
 import org.apache.shardingsphere.ha.constant.HAOrder;
 import org.apache.shardingsphere.ha.rule.HARule;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.aware.ResourceAware;
+
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
  * Algorithm provided HA rule builder.
  */
-public final class AlgorithmProvidedHARuleBuilder implements ShardingSphereRuleBuilder<HARule, AlgorithmProvidedHARuleConfiguration> {
+@Setter
+public final class AlgorithmProvidedHARuleBuilder implements ShardingSphereRuleBuilder<HARule, AlgorithmProvidedHARuleConfiguration>, ResourceAware {
+    
+    private DatabaseType databaseType;
+    
+    private Map<String, DataSource> dataSourceMap;
     
     @Override
     public HARule build(final AlgorithmProvidedHARuleConfiguration ruleConfig) {
-        return new HARule(ruleConfig);
+        return new HARule(ruleConfig, databaseType, dataSourceMap);
     }
     
     @Override
