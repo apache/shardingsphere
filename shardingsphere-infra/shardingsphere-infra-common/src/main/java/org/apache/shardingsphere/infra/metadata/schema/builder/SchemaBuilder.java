@@ -45,7 +45,7 @@ public final class SchemaBuilder {
      * @throws SQLException SQL exception
      */
     public static ShardingSphereSchema build(final SchemaBuilderMaterials materials) throws SQLException {
-        ShardingSphereSchema result = createShardingSphereSchema(materials);
+        ShardingSphereSchema result = new ShardingSphereSchema();
         for (ShardingSphereRule rule : materials.getRules()) {
             if (rule instanceof TableContainedRule) {
                 for (String table : ((TableContainedRule) rule).getTables()) {
@@ -55,18 +55,29 @@ public final class SchemaBuilder {
                 }
             }
         }
+        appendRemainTables(materials, result);
         return result;
     }
     
-    private static ShardingSphereSchema createShardingSphereSchema(final SchemaBuilderMaterials materials) throws SQLException {
-        ShardingSphereSchema result = new ShardingSphereSchema();
+    private static void appendRemainTables(final SchemaBuilderMaterials materials, final ShardingSphereSchema schema) throws SQLException {
         Collection<String> tableNames = new LinkedHashSet<>();
         for (Entry<String, DataSource> entry: materials.getDataSourceMap().entrySet()) {
             tableNames.addAll(SchemaMetaDataLoader.loadAllTableNames(entry.getValue(), materials.getDatabaseType()));
         }
+        tableNames.removeAll(getExistedTables(materials.getRules(), schema));
         for (String each : tableNames) {
-            result.put(each, new TableMetaData());
+            schema.put(each, new TableMetaData());
         }
+    }
+    
+    private static Collection<String> getExistedTables(final Collection<ShardingSphereRule> rules, final ShardingSphereSchema schema) {
+        Collection<String> result = new LinkedHashSet<>();
+        for (ShardingSphereRule each : rules) {
+            if (each instanceof TableContainedRule) {
+                result.addAll(((TableContainedRule) each).getTables());
+            }
+        }
+        result.addAll(schema.getAllTableNames());
         return result;
     }
 }
