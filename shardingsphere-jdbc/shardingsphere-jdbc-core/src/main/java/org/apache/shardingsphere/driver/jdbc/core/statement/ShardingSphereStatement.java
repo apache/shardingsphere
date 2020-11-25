@@ -38,7 +38,6 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
-import org.apache.shardingsphere.infra.executor.sql.ExecutorConstant;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
@@ -49,8 +48,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.builder.JDBCExecutionUnitBuilderType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.builder.JDBCExecutionUnitBuilderType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -58,6 +57,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.type.RawExecutionRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 
@@ -127,12 +127,12 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             executionContext = createExecutionContext(sql);
             List<QueryResult> queryResults;
-            if (ExecutorConstant.MANAGED_RESOURCE) {
+            if (metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
+                queryResults = rawExecutor.executeQuery(createRawExecutionGroups(), new RawSQLExecutorCallback());
+            } else {
                 Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
                 cacheStatements(executionGroups);
                 queryResults = statementExecutor.executeQuery(executionGroups);
-            } else {
-                queryResults = rawExecutor.executeQuery(createRawExecutionGroups(), new RawSQLExecutorCallback());
             }
             MergedResult mergedResult = mergeQuery(queryResults);
             result = new ShardingSphereResultSet(statements.stream().map(this::getResultSet).collect(Collectors.toList()), mergedResult, this, executionContext);
@@ -147,13 +147,12 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     public int executeUpdate(final String sql) throws SQLException {
         try {
             executionContext = createExecutionContext(sql);
-            if (ExecutorConstant.MANAGED_RESOURCE) {
-                Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
-                cacheStatements(executionGroups);
-                return statementExecutor.executeUpdate(executionGroups, executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
-            } else {
+            if (metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 return rawExecutor.executeUpdate(createRawExecutionGroups(), new RawSQLExecutorCallback());
             }
+            Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
+            cacheStatements(executionGroups);
+            return statementExecutor.executeUpdate(executionGroups, executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
         } finally {
             currentResultSet = null;
         }
@@ -166,13 +165,12 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
         try {
             executionContext = createExecutionContext(sql);
-            if (ExecutorConstant.MANAGED_RESOURCE) {
-                Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
-                cacheStatements(executionGroups);
-                return statementExecutor.executeUpdate(executionGroups, executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits(), autoGeneratedKeys);
-            } else {
+            if (metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 return rawExecutor.executeUpdate(createRawExecutionGroups(), new RawSQLExecutorCallback());
             }
+            Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
+            cacheStatements(executionGroups);
+            return statementExecutor.executeUpdate(executionGroups, executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits(), autoGeneratedKeys);
         } finally {
             currentResultSet = null;
         }
@@ -183,13 +181,12 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         returnGeneratedKeys = true;
         try {
             executionContext = createExecutionContext(sql);
-            if (ExecutorConstant.MANAGED_RESOURCE) {
-                Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
-                cacheStatements(executionGroups);
-                return statementExecutor.executeUpdate(executionGroups, executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits(), columnIndexes);
-            } else {
+            if (metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 return rawExecutor.executeUpdate(createRawExecutionGroups(), new RawSQLExecutorCallback());
             }
+            Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
+            cacheStatements(executionGroups);
+            return statementExecutor.executeUpdate(executionGroups, executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits(), columnIndexes);
         } finally {
             currentResultSet = null;
         }
@@ -200,13 +197,12 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         returnGeneratedKeys = true;
         try {
             executionContext = createExecutionContext(sql);
-            if (ExecutorConstant.MANAGED_RESOURCE) {
-                Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
-                cacheStatements(executionGroups);
-                return statementExecutor.executeUpdate(executionGroups, executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits(), columnNames);
-            } else {
+            if (metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 return rawExecutor.executeUpdate(createRawExecutionGroups(), new RawSQLExecutorCallback());
             }
+            Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
+            cacheStatements(executionGroups);
+            return statementExecutor.executeUpdate(executionGroups, executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits(), columnNames);
         } finally {
             currentResultSet = null;
         }
@@ -216,14 +212,13 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     public boolean execute(final String sql) throws SQLException {
         try {
             executionContext = createExecutionContext(sql);
-            if (ExecutorConstant.MANAGED_RESOURCE) {
-                Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
-                cacheStatements(executionGroups);
-                return statementExecutor.execute(executionGroups, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getRouteContext().getRouteUnits());
-            } else {
+            if (metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 // TODO process getStatement
                 return rawExecutor.execute(createRawExecutionGroups(), new RawSQLExecutorCallback());
             }
+            Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
+            cacheStatements(executionGroups);
+            return statementExecutor.execute(executionGroups, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getRouteContext().getRouteUnits());
         } finally {
             currentResultSet = null;
         }
@@ -236,14 +231,13 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
         try {
             executionContext = createExecutionContext(sql);
-            if (ExecutorConstant.MANAGED_RESOURCE) {
-                Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
-                cacheStatements(executionGroups);
-                return statementExecutor.execute(executionGroups, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getRouteContext().getRouteUnits(), autoGeneratedKeys);
-            } else {
+            if (metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 // TODO process getStatement
                 return rawExecutor.execute(createRawExecutionGroups(), new RawSQLExecutorCallback());
             }
+            Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
+            cacheStatements(executionGroups);
+            return statementExecutor.execute(executionGroups, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getRouteContext().getRouteUnits(), autoGeneratedKeys);
         } finally {
             currentResultSet = null;
         }
@@ -254,14 +248,13 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         returnGeneratedKeys = true;
         try {
             executionContext = createExecutionContext(sql);
-            if (ExecutorConstant.MANAGED_RESOURCE) {
-                Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
-                cacheStatements(executionGroups);
-                return statementExecutor.execute(executionGroups, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getRouteContext().getRouteUnits(), columnIndexes);
-            } else {
+            if (metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 // TODO process getStatement
                 return rawExecutor.execute(createRawExecutionGroups(), new RawSQLExecutorCallback());
             }
+            Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
+            cacheStatements(executionGroups);
+            return statementExecutor.execute(executionGroups, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getRouteContext().getRouteUnits(), columnIndexes);
         } finally {
             currentResultSet = null;
         }
@@ -272,14 +265,13 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         returnGeneratedKeys = true;
         try {
             executionContext = createExecutionContext(sql);
-            if (ExecutorConstant.MANAGED_RESOURCE) {
-                Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
-                cacheStatements(executionGroups);
-                return statementExecutor.execute(executionGroups, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getRouteContext().getRouteUnits(), columnNames);
-            } else {
+            if (metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 // TODO process getStatement
                 return rawExecutor.execute(createRawExecutionGroups(), new RawSQLExecutorCallback());
             }
+            Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
+            cacheStatements(executionGroups);
+            return statementExecutor.execute(executionGroups, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getRouteContext().getRouteUnits(), columnNames);
         } finally {
             currentResultSet = null;
         }

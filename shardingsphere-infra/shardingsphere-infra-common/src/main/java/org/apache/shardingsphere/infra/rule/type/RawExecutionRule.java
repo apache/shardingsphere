@@ -15,19 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+package org.apache.shardingsphere.infra.rule.type;
 
 /**
- * Executor constant.
+ * Raw execution rule.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecutorConstant {
-    
-    /**
-     * Use ShardingSphere to manage resource or not.
-     */
-    public static final boolean MANAGED_RESOURCE = true;
+public interface RawExecutionRule {
 }
