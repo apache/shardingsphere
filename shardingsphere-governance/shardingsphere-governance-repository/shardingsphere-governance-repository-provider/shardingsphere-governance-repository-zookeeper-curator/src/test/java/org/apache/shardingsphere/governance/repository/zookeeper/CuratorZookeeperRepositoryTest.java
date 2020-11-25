@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.governance.repository.zookeeper;
 
+import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.exception.GovernanceException;
@@ -28,6 +29,8 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -48,6 +51,7 @@ public final class CuratorZookeeperRepositoryTest {
         EmbedTestingServer.start();
         serverLists = EmbedTestingServer.getTestingServerConnectionString();
         REPOSITORY.init("governance", new GovernanceCenterConfiguration(REPOSITORY.getType(), serverLists, new Properties()));
+        REPOSITORY.initLock("/glock");
     }
     
     @Test
@@ -245,5 +249,21 @@ public final class CuratorZookeeperRepositoryTest {
             // CHECKSTYLE:ON
             assertTrue(ex instanceof GovernanceException);
         }
+    }
+    
+    @Test
+    public void assertTryLock() {
+        assertThat(REPOSITORY.tryLock(5, TimeUnit.SECONDS), is(true));
+        REPOSITORY.releaseLock();
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertTryLockFailed() {
+        assertThat(REPOSITORY.tryLock(1, TimeUnit.SECONDS), is(true));
+        FutureTask<Boolean> task = new FutureTask(() -> REPOSITORY.tryLock(1, TimeUnit.SECONDS));
+        new Thread(task).start();
+        assertThat(task.get(), is(false));
+        REPOSITORY.releaseLock();
     }
 }
