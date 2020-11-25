@@ -15,32 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.context;
+package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
-
-import java.util.List;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.route.context.RawGroup;
 
 /**
- * SQL runtime context.
+ * Raw route context.
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class SQLRuntimeContext {
-    
-    @Setter
-    private String schemaName;
-    
-    private final List<String> logicTables;
-    
-    private final List<String> actualTables;
-    
-    private final List<PrimaryKeyMetaData> primaryKeysMetaData;
-    
-    @Setter
-    private boolean readOnly;
+public final class RawSQLRuntimeContext {
+
+    private final String schemaName;
+
+    private final ShardingSphereMetaData metaData;
+
+    private final RawGroup rawGroup;
+
+    private final boolean readOnly;
+
 }
