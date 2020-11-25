@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -15,15 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc;
-
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.SQLExecutionUnitBuilder;
-
-import java.sql.Connection;
+package org.apache.shardingsphere.infra.rule.type;
 
 /**
- * JDBC execution unit builder.
+ * Raw execution rule.
  */
-public interface JDBCExecutionUnitBuilder extends SQLExecutionUnitBuilder<JDBCExecutionUnit, ExecutorJDBCManager, Connection, StatementOption> {
+public interface RawExecutionRule {
 }

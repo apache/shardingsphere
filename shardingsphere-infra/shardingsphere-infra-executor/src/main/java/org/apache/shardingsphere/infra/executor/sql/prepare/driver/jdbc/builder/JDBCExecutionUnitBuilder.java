@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.builder;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.SQLExecutionUnitBuilder;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+
+import java.sql.Connection;
 
 /**
- * Executor constant.
+ * JDBC execution unit builder.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecutorConstant {
-    
-    /**
-     * Use ShardingSphere to manage resource or not.
-     */
-    public static final boolean MANAGED_RESOURCE = true;
+public interface JDBCExecutionUnitBuilder extends SQLExecutionUnitBuilder<JDBCExecutionUnit, ExecutorJDBCManager, Connection, StatementOption> {
 }
