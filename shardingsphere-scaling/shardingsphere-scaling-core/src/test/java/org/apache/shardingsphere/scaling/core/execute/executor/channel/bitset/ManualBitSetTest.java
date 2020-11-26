@@ -44,7 +44,7 @@ public final class ManualBitSetTest {
     }
     
     @Test
-    public void assertGetSetEndIndex() {
+    public void assertGetEndIndex() {
         ManualBitSet bitSet = new ManualBitSet();
         IntStream.range(0, 10).filter(each -> each % 2 == 1).forEach(bitSet::set);
         assertThat(bitSet.getEndIndex(0L, 5), is(10L));
@@ -61,7 +61,7 @@ public final class ManualBitSetTest {
         assertThat(bitSets.size(), is(1));
         bitSet.clear(1025);
         assertThat(bitSets.size(), is(0));
-        bitSet.clear(2048);
+        bitSet.clear(2049);
         assertThat(bitSets.size(), is(0));
     }
 }
