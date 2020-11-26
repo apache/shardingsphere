@@ -30,7 +30,7 @@ public final class AutoAcknowledgeBitSetChannel extends AbstractBitSetChannel {
     public void pushRecord(final Record dataRecord, final long index) {
         getManualBitSet().set(index);
         getToBeAckRecords().add(dataRecord);
-        setAcknowledgedIndex(index);
+        setAcknowledgedIndex(index + 1);
     }
     
     @Override
