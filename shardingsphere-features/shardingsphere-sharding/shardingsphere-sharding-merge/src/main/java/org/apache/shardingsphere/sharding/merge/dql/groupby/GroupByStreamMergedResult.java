@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -47,13 +47,13 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
     private List<?> currentGroupByValues;
     
-    public GroupByStreamMergedResult(final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults,
+    public GroupByStreamMergedResult(final Map<String, Integer> labelAndIndexMap, final List<QueryResultSet> queryResultSets,
                                      final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
-        super(queryResults, selectStatementContext, schema);
+        super(queryResultSets, selectStatementContext, schema);
         this.selectStatementContext = selectStatementContext;
         currentRow = new ArrayList<>(labelAndIndexMap.size());
         currentGroupByValues = getOrderByValuesQueue().isEmpty()
-                ? Collections.emptyList() : new GroupByValue(getCurrentQueryResult(), selectStatementContext.getGroupByContext().getItems()).getGroupValues();
+                ? Collections.emptyList() : new GroupByValue(getCurrentQueryResultSet(), selectStatementContext.getGroupByContext().getItems()).getGroupValues();
     }
     
     @Override
@@ -66,7 +66,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
             super.next();
         }
         if (aggregateCurrentGroupByRowAndNext()) {
-            currentGroupByValues = new GroupByValue(getCurrentQueryResult(), selectStatementContext.getGroupByContext().getItems()).getGroupValues();
+            currentGroupByValues = new GroupByValue(getCurrentQueryResultSet(), selectStatementContext.getGroupByContext().getItems()).getGroupValues();
         }
         return true;
     }
@@ -75,7 +75,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
         boolean result = false;
         Map<AggregationProjection, AggregationUnit> aggregationUnitMap = Maps.toMap(
                 selectStatementContext.getProjectionsContext().getAggregationProjections(), input -> AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection));
-        while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResult(), selectStatementContext.getGroupByContext().getItems()).getGroupValues())) {
+        while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResultSet(), selectStatementContext.getGroupByContext().getItems()).getGroupValues())) {
             aggregate(aggregationUnitMap);
             cacheCurrentRow();
             result = super.next();
@@ -102,13 +102,13 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     }
     
     private void cacheCurrentRow() throws SQLException {
-        for (int i = 0; i < getCurrentQueryResult().getColumnCount(); i++) {
-            currentRow.add(getCurrentQueryResult().getValue(i + 1, Object.class));
+        for (int i = 0; i < getCurrentQueryResultSet().getColumnCount(); i++) {
+            currentRow.add(getCurrentQueryResultSet().getValue(i + 1, Object.class));
         }
     }
     
     private Comparable<?> getAggregationValue(final AggregationProjection aggregationProjection) throws SQLException {
-        Object result = getCurrentQueryResult().getValue(aggregationProjection.getIndex(), Object.class);
+        Object result = getCurrentQueryResultSet().getValue(aggregationProjection.getIndex(), Object.class);
         Preconditions.checkState(null == result || result instanceof Comparable, "Aggregation value must implements Comparable");
         return (Comparable<?>) result;
     }

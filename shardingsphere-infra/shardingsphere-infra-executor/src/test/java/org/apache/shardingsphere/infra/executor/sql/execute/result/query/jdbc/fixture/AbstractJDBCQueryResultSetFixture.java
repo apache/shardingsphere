@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.fixture;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.AbstractJDBCQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.AbstractJDBCQueryResultSet;
 
 import java.io.InputStream;
 import java.sql.ResultSetMetaData;
@@ -26,9 +26,9 @@ import java.util.Date;
 
 import static org.mockito.Mockito.mock;
 
-public final class AbstractJDBCQueryResultFixture extends AbstractJDBCQueryResult {
+public final class AbstractJDBCQueryResultSetFixture extends AbstractJDBCQueryResultSet {
     
-    public AbstractJDBCQueryResultFixture(final ResultSetMetaData resultSetMetaData) {
+    public AbstractJDBCQueryResultSetFixture(final ResultSetMetaData resultSetMetaData) {
         super(resultSetMetaData);
     }
     

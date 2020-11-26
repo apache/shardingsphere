@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.merge.engine.decorator.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.Test;
 
@@ -31,11 +31,11 @@ import static org.mockito.Mockito.when;
 public final class TransparentResultDecoratorTest {
     
     @Test
-    public void assertDecorateQueryResult() throws SQLException {
-        QueryResult queryResult = mock(QueryResult.class);
-        when(queryResult.next()).thenReturn(true);
+    public void assertDecorateQueryResultSet() throws SQLException {
+        QueryResultSet queryResultSet = mock(QueryResultSet.class);
+        when(queryResultSet.next()).thenReturn(true);
         TransparentResultDecorator decorator = new TransparentResultDecorator();
-        MergedResult actual = decorator.decorate(queryResult, mock(SQLStatementContext.class), new TransparentRule());
+        MergedResult actual = decorator.decorate(queryResultSet, mock(SQLStatementContext.class), new TransparentRule());
         assertTrue(actual.next());
     }
     

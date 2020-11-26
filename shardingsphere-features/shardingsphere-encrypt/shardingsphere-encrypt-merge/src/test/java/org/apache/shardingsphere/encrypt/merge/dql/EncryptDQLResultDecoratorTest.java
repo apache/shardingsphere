@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.merge.dql;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.Test;
 
@@ -33,10 +33,10 @@ public final class EncryptDQLResultDecoratorTest {
     
     @Test
     public void assertDecorateQueryResult() throws SQLException {
-        QueryResult queryResult = mock(QueryResult.class);
-        when(queryResult.next()).thenReturn(true);
+        QueryResultSet queryResultSet = mock(QueryResultSet.class);
+        when(queryResultSet.next()).thenReturn(true);
         EncryptDQLResultDecorator decorator = new EncryptDQLResultDecorator(mock(EncryptAlgorithmMetaData.class), false);
-        MergedResult actual = decorator.decorate(queryResult, mock(SQLStatementContext.class), mock(EncryptRule.class));
+        MergedResult actual = decorator.decorate(queryResultSet, mock(SQLStatementContext.class), mock(EncryptRule.class));
         assertTrue(actual.next());
     }
     

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.iterator;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.merge.result.impl.stream.StreamMergedResult;
 
 import java.sql.SQLException;
@@ -29,29 +29,29 @@ import java.util.List;
  */
 public final class IteratorStreamMergedResult extends StreamMergedResult {
     
-    private final Iterator<QueryResult> queryResults;
+    private final Iterator<QueryResultSet> queryResultSets;
     
-    public IteratorStreamMergedResult(final List<QueryResult> queryResults) {
-        this.queryResults = queryResults.iterator();
-        setCurrentQueryResult(this.queryResults.next());
+    public IteratorStreamMergedResult(final List<QueryResultSet> queryResultSets) {
+        this.queryResultSets = queryResultSets.iterator();
+        setCurrentQueryResultSet(this.queryResultSets.next());
     }
     
     @Override
     public boolean next() throws SQLException {
-        if (getCurrentQueryResult().next()) {
+        if (getCurrentQueryResultSet().next()) {
             return true;
         }
-        if (!queryResults.hasNext()) {
+        if (!queryResultSets.hasNext()) {
             return false;
         }
-        setCurrentQueryResult(queryResults.next());
-        boolean hasNext = getCurrentQueryResult().next();
+        setCurrentQueryResultSet(queryResultSets.next());
+        boolean hasNext = getCurrentQueryResultSet().next();
         if (hasNext) {
             return true;
         }
-        while (!hasNext && queryResults.hasNext()) {
-            setCurrentQueryResult(queryResults.next());
-            hasNext = getCurrentQueryResult().next();
+        while (!hasNext && queryResultSets.hasNext()) {
+            setCurrentQueryResultSet(queryResultSets.next());
+            hasNext = getCurrentQueryResultSet().next();
         }
         return hasNext;
     }

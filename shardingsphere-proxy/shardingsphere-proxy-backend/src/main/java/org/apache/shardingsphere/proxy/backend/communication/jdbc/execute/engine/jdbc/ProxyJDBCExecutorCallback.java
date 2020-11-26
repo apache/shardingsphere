@@ -19,14 +19,14 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engin
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.ExecuteUpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.MemoryJDBCQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.MemoryJDBCQueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResultSet;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.JDBCAccessor;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -84,7 +84,7 @@ public final class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Execut
         if (accessor.execute(statement, sql, isReturnGeneratedKeys)) {
             ResultSet resultSet = statement.getResultSet();
             backendConnection.add(resultSet);
-            return new ExecuteQueryResult(withMetadata ? getQueryHeaders(sqlStatementContext, resultSet.getMetaData()) : null, createQueryResult(resultSet, connectionMode));
+            return new ExecuteQueryResult(withMetadata ? getQueryHeaders(sqlStatementContext, resultSet.getMetaData()) : null, createQueryResultSet(resultSet, connectionMode));
         }
         return new ExecuteUpdateResult(statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
     }
@@ -117,8 +117,8 @@ public final class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Execut
                 && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
     }
     
-    private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
-        return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamJDBCQueryResult(resultSet) : new MemoryJDBCQueryResult(resultSet);
+    private QueryResultSet createQueryResultSet(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
+        return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamJDBCQueryResultSet(resultSet) : new MemoryJDBCQueryResultSet(resultSet);
     }
     
     private long getGeneratedKey(final Statement statement) throws SQLException {

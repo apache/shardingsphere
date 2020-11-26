@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.fixture.AbstractJDBCQueryResultFixture;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.fixture.AbstractJDBCQueryResultSetFixture;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,11 +31,11 @@ import static org.mockito.Mockito.when;
 
 public final class AbstractJDBCQueryResultTest {
     
-    private AbstractJDBCQueryResultFixture queryResult;
+    private AbstractJDBCQueryResultSetFixture queryResult;
     
     @Before
     public void setUp() throws SQLException {
-        queryResult = new AbstractJDBCQueryResultFixture(mockResultSetMetaData());
+        queryResult = new AbstractJDBCQueryResultSetFixture(mockResultSetMetaData());
     }
     
     private ResultSetMetaData mockResultSetMetaData() throws SQLException {

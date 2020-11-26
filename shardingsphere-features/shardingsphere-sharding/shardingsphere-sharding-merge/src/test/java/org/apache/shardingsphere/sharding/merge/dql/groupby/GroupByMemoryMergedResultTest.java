@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
@@ -54,7 +54,7 @@ public final class GroupByMemoryMergedResultTest {
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()), createSelectStatementContext(), null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResultSet(), createQueryResultSet(), createQueryResultSet()), createSelectStatementContext(), null);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(0));
         assertThat(actual.getValue(2, Object.class), is(nullValue()));
@@ -63,23 +63,23 @@ public final class GroupByMemoryMergedResultTest {
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        QueryResult queryResult1 = createQueryResult();
-        when(queryResult1.next()).thenReturn(true, false);
-        when(queryResult1.getValue(1, Object.class)).thenReturn(20);
-        when(queryResult1.getValue(2, Object.class)).thenReturn(0);
-        when(queryResult1.getValue(3, Object.class)).thenReturn(2);
-        when(queryResult1.getValue(4, Object.class)).thenReturn(2);
-        when(queryResult1.getValue(5, Object.class)).thenReturn(20);
-        QueryResult queryResult2 = createQueryResult();
-        QueryResult queryResult3 = createQueryResult();
-        when(queryResult3.next()).thenReturn(true, true, false);
-        when(queryResult3.getValue(1, Object.class)).thenReturn(20, 30);
-        when(queryResult3.getValue(2, Object.class)).thenReturn(0);
-        when(queryResult3.getValue(3, Object.class)).thenReturn(2, 3);
-        when(queryResult3.getValue(4, Object.class)).thenReturn(2, 2, 3);
-        when(queryResult3.getValue(5, Object.class)).thenReturn(20, 20, 30);
+        QueryResultSet queryResultSet1 = createQueryResultSet();
+        when(queryResultSet1.next()).thenReturn(true, false);
+        when(queryResultSet1.getValue(1, Object.class)).thenReturn(20);
+        when(queryResultSet1.getValue(2, Object.class)).thenReturn(0);
+        when(queryResultSet1.getValue(3, Object.class)).thenReturn(2);
+        when(queryResultSet1.getValue(4, Object.class)).thenReturn(2);
+        when(queryResultSet1.getValue(5, Object.class)).thenReturn(20);
+        QueryResultSet queryResultSet2 = createQueryResultSet();
+        QueryResultSet queryResultSet3 = createQueryResultSet();
+        when(queryResultSet3.next()).thenReturn(true, true, false);
+        when(queryResultSet3.getValue(1, Object.class)).thenReturn(20, 30);
+        when(queryResultSet3.getValue(2, Object.class)).thenReturn(0);
+        when(queryResultSet3.getValue(3, Object.class)).thenReturn(2, 3);
+        when(queryResultSet3.getValue(4, Object.class)).thenReturn(2, 2, 3);
+        when(queryResultSet3.getValue(5, Object.class)).thenReturn(20, 20, 30);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(queryResultSet1, queryResultSet2, queryResultSet3), createSelectStatementContext(), null);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(new BigDecimal(30)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
@@ -118,23 +118,23 @@ public final class GroupByMemoryMergedResultTest {
 
     @Test
     public void assertNextForAggregationResultSetsEmpty() throws SQLException {
-        QueryResult queryResult1 = createQueryResult();
-        when(queryResult1.next()).thenReturn(true, false);
-        when(queryResult1.getValue(1, Object.class)).thenReturn(20);
-        when(queryResult1.getValue(2, Object.class)).thenReturn(0);
-        when(queryResult1.getValue(3, Object.class)).thenReturn(2);
-        when(queryResult1.getValue(4, Object.class)).thenReturn(2);
-        when(queryResult1.getValue(5, Object.class)).thenReturn(20);
-        QueryResult queryResult2 = createQueryResult();
-        QueryResult queryResult3 = createQueryResult();
-        when(queryResult3.next()).thenReturn(true, true, false);
-        when(queryResult3.getValue(1, Object.class)).thenReturn(20, 30);
-        when(queryResult3.getValue(2, Object.class)).thenReturn(0);
-        when(queryResult3.getValue(3, Object.class)).thenReturn(2, 3);
-        when(queryResult3.getValue(4, Object.class)).thenReturn(2, 2, 3);
-        when(queryResult3.getValue(5, Object.class)).thenReturn(20, 20, 30);
+        QueryResultSet queryResultSet1 = createQueryResultSet();
+        when(queryResultSet1.next()).thenReturn(true, false);
+        when(queryResultSet1.getValue(1, Object.class)).thenReturn(20);
+        when(queryResultSet1.getValue(2, Object.class)).thenReturn(0);
+        when(queryResultSet1.getValue(3, Object.class)).thenReturn(2);
+        when(queryResultSet1.getValue(4, Object.class)).thenReturn(2);
+        when(queryResultSet1.getValue(5, Object.class)).thenReturn(20);
+        QueryResultSet queryResultSet2 = createQueryResultSet();
+        QueryResultSet queryResultSet3 = createQueryResultSet();
+        when(queryResultSet3.next()).thenReturn(true, true, false);
+        when(queryResultSet3.getValue(1, Object.class)).thenReturn(20, 30);
+        when(queryResultSet3.getValue(2, Object.class)).thenReturn(0);
+        when(queryResultSet3.getValue(3, Object.class)).thenReturn(2, 3);
+        when(queryResultSet3.getValue(4, Object.class)).thenReturn(2, 2, 3);
+        when(queryResultSet3.getValue(5, Object.class)).thenReturn(20, 20, 30);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(queryResultSet1, queryResultSet2, queryResultSet3), createSelectStatementContext(), null);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(new BigDecimal(30)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
@@ -156,8 +156,8 @@ public final class GroupByMemoryMergedResultTest {
         return result;
     }
     
-    private QueryResult createQueryResult() throws SQLException {
-        QueryResult result = mock(QueryResult.class);
+    private QueryResultSet createQueryResultSet() throws SQLException {
+        QueryResultSet result = mock(QueryResultSet.class);
         when(result.getColumnCount()).thenReturn(5);
         when(result.getColumnLabel(1)).thenReturn("COUNT(*)");
         when(result.getColumnLabel(2)).thenReturn("AVG(num)");

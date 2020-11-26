@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
@@ -87,23 +87,23 @@ public final class OrderByValueTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
             selectStatement, new GroupByContext(Collections.emptyList(), 0), createOrderBy(), createProjectionsContext(), null);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        QueryResult queryResult1 = createQueryResult("1", "2");
-        OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(
+        QueryResultSet queryResultSet1 = createQueryResultSet("1", "2");
+        OrderByValue orderByValue1 = new OrderByValue(queryResultSet1, Arrays.asList(
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))),
             selectStatementContext, schema);
         FieldSetter.setField(orderByValue1, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue1.next());
-        QueryResult queryResult2 = createQueryResult("3", "4");
-        OrderByValue orderByValue2 = new OrderByValue(queryResult2, Arrays.asList(
+        QueryResultSet queryResultSet2 = createQueryResultSet("3", "4");
+        OrderByValue orderByValue2 = new OrderByValue(queryResultSet2, Arrays.asList(
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))),
             selectStatementContext, schema);
         FieldSetter.setField(orderByValue2, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue2.next());
         assertTrue(orderByValue1.compareTo(orderByValue2) < 0);
-        assertFalse(orderByValue1.getQueryResult().next());
-        assertFalse(orderByValue2.getQueryResult().next());
+        assertFalse(orderByValue1.getQueryResultSet().next());
+        assertFalse(orderByValue2.getQueryResultSet().next());
     }
 
     @Test
@@ -137,23 +137,23 @@ public final class OrderByValueTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
             selectStatement, new GroupByContext(Collections.emptyList(), 0), createOrderBy(), createProjectionsContext(), null);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        QueryResult queryResult1 = createQueryResult("1", "2");
-        OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(
+        QueryResultSet queryResultSet1 = createQueryResultSet("1", "2");
+        OrderByValue orderByValue1 = new OrderByValue(queryResultSet1, Arrays.asList(
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))),
             selectStatementContext, schema);
         FieldSetter.setField(orderByValue1, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue1.next());
-        QueryResult queryResult2 = createQueryResult("3", "4");
-        OrderByValue orderByValue2 = new OrderByValue(queryResult2, Arrays.asList(
+        QueryResultSet queryResultSet2 = createQueryResultSet("3", "4");
+        OrderByValue orderByValue2 = new OrderByValue(queryResultSet2, Arrays.asList(
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))),
             selectStatementContext, schema);
         FieldSetter.setField(orderByValue2, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue2.next());
         assertTrue(orderByValue1.compareTo(orderByValue2) > 0);
-        assertFalse(orderByValue1.getQueryResult().next());
-        assertFalse(orderByValue2.getQueryResult().next());
+        assertFalse(orderByValue1.getQueryResultSet().next());
+        assertFalse(orderByValue2.getQueryResultSet().next());
     }
 
     @Test
@@ -187,27 +187,27 @@ public final class OrderByValueTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
             selectStatement, new GroupByContext(Collections.emptyList(), 0), createOrderBy(), createProjectionsContext(), null);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        QueryResult queryResult1 = createQueryResult("1", "2");
-        OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(
+        QueryResultSet queryResultSet1 = createQueryResultSet("1", "2");
+        OrderByValue orderByValue1 = new OrderByValue(queryResultSet1, Arrays.asList(
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))),
             selectStatementContext, schema);
         FieldSetter.setField(orderByValue1, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue1.next());
-        QueryResult queryResult2 = createQueryResult("1", "2");
-        OrderByValue orderByValue2 = new OrderByValue(queryResult2, Arrays.asList(
+        QueryResultSet queryResultSet2 = createQueryResultSet("1", "2");
+        OrderByValue orderByValue2 = new OrderByValue(queryResultSet2, Arrays.asList(
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))),
             selectStatementContext, schema);
         FieldSetter.setField(orderByValue2, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue2.next());
         assertThat(orderByValue1.compareTo(orderByValue2), is(0));
-        assertFalse(orderByValue1.getQueryResult().next());
-        assertFalse(orderByValue2.getQueryResult().next());
+        assertFalse(orderByValue1.getQueryResultSet().next());
+        assertFalse(orderByValue2.getQueryResultSet().next());
     }
     
-    private QueryResult createQueryResult(final String... values) throws SQLException {
-        QueryResult result = mock(QueryResult.class);
+    private QueryResultSet createQueryResultSet(final String... values) throws SQLException {
+        QueryResultSet result = mock(QueryResultSet.class);
         when(result.next()).thenReturn(true, false);
         for (int i = 0; i < values.length; i++) {
             when(result.getValue(i + 1, Object.class)).thenReturn(values[i]);

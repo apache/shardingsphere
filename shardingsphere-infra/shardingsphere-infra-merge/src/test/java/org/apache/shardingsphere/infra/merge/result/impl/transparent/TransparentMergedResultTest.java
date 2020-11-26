@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.merge.result.impl.transparent;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -38,41 +38,41 @@ public final class TransparentMergedResultTest {
     
     @Test
     public void assertNext() throws SQLException {
-        QueryResult queryResult = mock(QueryResult.class);
-        when(queryResult.next()).thenReturn(true, false);
-        TransparentMergedResult actual = new TransparentMergedResult(queryResult);
+        QueryResultSet queryResultSet = mock(QueryResultSet.class);
+        when(queryResultSet.next()).thenReturn(true, false);
+        TransparentMergedResult actual = new TransparentMergedResult(queryResultSet);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
     
     @Test
     public void assertGetValue() throws SQLException {
-        QueryResult queryResult = mock(QueryResult.class);
-        when(queryResult.getValue(1, Object.class)).thenReturn("1");
-        TransparentMergedResult actual = new TransparentMergedResult(queryResult);
+        QueryResultSet queryResultSet = mock(QueryResultSet.class);
+        when(queryResultSet.getValue(1, Object.class)).thenReturn("1");
+        TransparentMergedResult actual = new TransparentMergedResult(queryResultSet);
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
     }
     
     @Test
     public void assertGetCalendarValue() throws SQLException {
-        QueryResult queryResult = mock(QueryResult.class);
-        when(queryResult.getCalendarValue(1, Date.class, null)).thenReturn(new Date(0L));
-        TransparentMergedResult actual = new TransparentMergedResult(queryResult);
+        QueryResultSet queryResultSet = mock(QueryResultSet.class);
+        when(queryResultSet.getCalendarValue(1, Date.class, null)).thenReturn(new Date(0L));
+        TransparentMergedResult actual = new TransparentMergedResult(queryResultSet);
         assertThat(actual.getCalendarValue(1, Date.class, null), is(new Date(0L)));
     }
     
     @Test
     public void assertGetInputStream() throws SQLException {
-        QueryResult queryResult = mock(QueryResult.class);
+        QueryResultSet queryResultSet = mock(QueryResultSet.class);
         InputStream value = mock(InputStream.class);
-        when(queryResult.getInputStream(1, "Ascii")).thenReturn(value);
-        TransparentMergedResult actual = new TransparentMergedResult(queryResult);
+        when(queryResultSet.getInputStream(1, "Ascii")).thenReturn(value);
+        TransparentMergedResult actual = new TransparentMergedResult(queryResultSet);
         assertThat(actual.getInputStream(1, "Ascii"), is(value));
     }
     
     @Test
     public void assertWasNull() throws SQLException {
-        TransparentMergedResult actual = new TransparentMergedResult(mock(QueryResult.class));
+        TransparentMergedResult actual = new TransparentMergedResult(mock(QueryResultSet.class));
         assertFalse(actual.wasNull());
     }
 }

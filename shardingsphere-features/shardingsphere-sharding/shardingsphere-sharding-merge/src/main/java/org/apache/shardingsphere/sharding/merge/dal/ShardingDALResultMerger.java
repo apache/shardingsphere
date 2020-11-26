@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dal;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
@@ -49,17 +49,17 @@ public final class ShardingDALResultMerger implements ResultMerger {
     private final ShardingRule shardingRule;
     
     @Override
-    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema) throws SQLException {
+    public MergedResult merge(final List<QueryResultSet> queryResultSets, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema) throws SQLException {
         SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
         if (dalStatement instanceof MySQLShowDatabasesStatement) {
             return new SingleLocalDataMergedResult(Collections.singletonList(DefaultSchema.LOGIC_NAME));
         }
         if (dalStatement instanceof MySQLShowTablesStatement || dalStatement instanceof MySQLShowTableStatusStatement || dalStatement instanceof MySQLShowIndexStatement) {
-            return new LogicTablesMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
+            return new LogicTablesMergedResult(shardingRule, sqlStatementContext, schema, queryResultSets);
         }
         if (dalStatement instanceof MySQLShowCreateTableStatement) {
-            return new ShowCreateTableMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
+            return new ShowCreateTableMergedResult(shardingRule, sqlStatementContext, schema, queryResultSets);
         }
-        return new TransparentMergedResult(queryResults.get(0));
+        return new TransparentMergedResult(queryResultSets.get(0));
     }
 }

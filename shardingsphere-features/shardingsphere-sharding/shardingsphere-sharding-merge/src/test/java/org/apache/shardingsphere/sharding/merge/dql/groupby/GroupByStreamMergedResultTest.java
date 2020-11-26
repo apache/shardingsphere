@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -60,31 +60,31 @@ public final class GroupByStreamMergedResultTest {
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult()), createSelectStatementContext(), buildSchema());
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResultSet(), mockQueryResultSet(), mockQueryResultSet()), createSelectStatementContext(), buildSchema());
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        QueryResult queryResult1 = mockQueryResult();
-        when(queryResult1.next()).thenReturn(true, false);
-        when(queryResult1.getValue(1, Object.class)).thenReturn(20);
-        when(queryResult1.getValue(2, Object.class)).thenReturn(0);
-        when(queryResult1.getValue(3, Object.class)).thenReturn(2);
-        when(queryResult1.getValue(4, Object.class)).thenReturn(new Date(0L));
-        when(queryResult1.getValue(5, Object.class)).thenReturn(2);
-        when(queryResult1.getValue(6, Object.class)).thenReturn(20);
-        QueryResult queryResult2 = mockQueryResult();
-        QueryResult queryResult3 = mockQueryResult();
-        when(queryResult3.next()).thenReturn(true, true, false);
-        when(queryResult3.getValue(1, Object.class)).thenReturn(20, 30);
-        when(queryResult3.getValue(2, Object.class)).thenReturn(0);
-        when(queryResult3.getValue(3, Object.class)).thenReturn(2, 2, 3);
-        when(queryResult3.getValue(4, Object.class)).thenReturn(new Date(0L));
-        when(queryResult3.getValue(5, Object.class)).thenReturn(2, 2, 3);
-        when(queryResult3.getValue(6, Object.class)).thenReturn(20, 20, 30);
+        QueryResultSet queryResultSet1 = mockQueryResultSet();
+        when(queryResultSet1.next()).thenReturn(true, false);
+        when(queryResultSet1.getValue(1, Object.class)).thenReturn(20);
+        when(queryResultSet1.getValue(2, Object.class)).thenReturn(0);
+        when(queryResultSet1.getValue(3, Object.class)).thenReturn(2);
+        when(queryResultSet1.getValue(4, Object.class)).thenReturn(new Date(0L));
+        when(queryResultSet1.getValue(5, Object.class)).thenReturn(2);
+        when(queryResultSet1.getValue(6, Object.class)).thenReturn(20);
+        QueryResultSet queryResultSet2 = mockQueryResultSet();
+        QueryResultSet queryResultSet3 = mockQueryResultSet();
+        when(queryResultSet3.next()).thenReturn(true, true, false);
+        when(queryResultSet3.getValue(1, Object.class)).thenReturn(20, 30);
+        when(queryResultSet3.getValue(2, Object.class)).thenReturn(0);
+        when(queryResultSet3.getValue(3, Object.class)).thenReturn(2, 2, 3);
+        when(queryResultSet3.getValue(4, Object.class)).thenReturn(new Date(0L));
+        when(queryResultSet3.getValue(5, Object.class)).thenReturn(2, 2, 3);
+        when(queryResultSet3.getValue(6, Object.class)).thenReturn(20, 20, 30);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), buildSchema());
+        MergedResult actual = resultMerger.merge(Arrays.asList(queryResultSet1, queryResultSet2, queryResultSet3), createSelectStatementContext(), buildSchema());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(new BigDecimal(40)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
@@ -104,29 +104,29 @@ public final class GroupByStreamMergedResultTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        QueryResult queryResult1 = mockQueryResult();
-        when(queryResult1.next()).thenReturn(true, false);
-        when(queryResult1.getValue(1, Object.class)).thenReturn(20);
-        when(queryResult1.getValue(2, Object.class)).thenReturn(0);
-        when(queryResult1.getValue(3, Object.class)).thenReturn(2);
-        when(queryResult1.getValue(5, Object.class)).thenReturn(2);
-        when(queryResult1.getValue(6, Object.class)).thenReturn(20);
-        QueryResult queryResult2 = mockQueryResult();
-        when(queryResult2.next()).thenReturn(true, true, true, false);
-        when(queryResult2.getValue(1, Object.class)).thenReturn(20, 30, 30, 40);
-        when(queryResult2.getValue(2, Object.class)).thenReturn(0);
-        when(queryResult2.getValue(3, Object.class)).thenReturn(2, 2, 3, 3, 3, 4);
-        when(queryResult2.getValue(5, Object.class)).thenReturn(2, 2, 3, 3, 3, 4);
-        when(queryResult2.getValue(6, Object.class)).thenReturn(20, 20, 30, 30, 30, 40);
-        QueryResult queryResult3 = mockQueryResult();
-        when(queryResult3.next()).thenReturn(true, true, false);
-        when(queryResult3.getValue(1, Object.class)).thenReturn(10, 30);
-        when(queryResult3.getValue(2, Object.class)).thenReturn(10);
-        when(queryResult3.getValue(3, Object.class)).thenReturn(1, 1, 1, 1, 3);
-        when(queryResult3.getValue(5, Object.class)).thenReturn(1, 1, 3);
-        when(queryResult3.getValue(6, Object.class)).thenReturn(10, 10, 30);
+        QueryResultSet queryResultSet1 = mockQueryResultSet();
+        when(queryResultSet1.next()).thenReturn(true, false);
+        when(queryResultSet1.getValue(1, Object.class)).thenReturn(20);
+        when(queryResultSet1.getValue(2, Object.class)).thenReturn(0);
+        when(queryResultSet1.getValue(3, Object.class)).thenReturn(2);
+        when(queryResultSet1.getValue(5, Object.class)).thenReturn(2);
+        when(queryResultSet1.getValue(6, Object.class)).thenReturn(20);
+        QueryResultSet queryResultSet2 = mockQueryResultSet();
+        when(queryResultSet2.next()).thenReturn(true, true, true, false);
+        when(queryResultSet2.getValue(1, Object.class)).thenReturn(20, 30, 30, 40);
+        when(queryResultSet2.getValue(2, Object.class)).thenReturn(0);
+        when(queryResultSet2.getValue(3, Object.class)).thenReturn(2, 2, 3, 3, 3, 4);
+        when(queryResultSet2.getValue(5, Object.class)).thenReturn(2, 2, 3, 3, 3, 4);
+        when(queryResultSet2.getValue(6, Object.class)).thenReturn(20, 20, 30, 30, 30, 40);
+        QueryResultSet queryResultSet3 = mockQueryResultSet();
+        when(queryResultSet3.next()).thenReturn(true, true, false);
+        when(queryResultSet3.getValue(1, Object.class)).thenReturn(10, 30);
+        when(queryResultSet3.getValue(2, Object.class)).thenReturn(10);
+        when(queryResultSet3.getValue(3, Object.class)).thenReturn(1, 1, 1, 1, 3);
+        when(queryResultSet3.getValue(5, Object.class)).thenReturn(1, 1, 3);
+        when(queryResultSet3.getValue(6, Object.class)).thenReturn(10, 10, 30);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), buildSchema());
+        MergedResult actual = resultMerger.merge(Arrays.asList(queryResultSet1, queryResultSet2, queryResultSet3), createSelectStatementContext(), buildSchema());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(new BigDecimal(10)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
@@ -185,8 +185,8 @@ public final class GroupByStreamMergedResultTest {
         return new ShardingSphereSchema(ImmutableMap.of("tbl", tableMetaData));
     }
     
-    private QueryResult mockQueryResult() throws SQLException {
-        QueryResult result = mock(QueryResult.class);
+    private QueryResultSet mockQueryResultSet() throws SQLException {
+        QueryResultSet result = mock(QueryResultSet.class);
         when(result.getColumnCount()).thenReturn(6);
         when(result.getColumnLabel(1)).thenReturn("COUNT(*)");
         when(result.getColumnLabel(2)).thenReturn("AVG(num)");

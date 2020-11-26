@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 
@@ -38,16 +38,16 @@ import java.util.Set;
 public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
     
     public LogicTablesMergedResult(final ShardingRule shardingRule,
-                                   final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
-        super(shardingRule, schema, sqlStatementContext, queryResults);
+                                   final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResultSet> queryResultSets) throws SQLException {
+        super(shardingRule, schema, sqlStatementContext, queryResultSets);
     }
     
     @Override
     protected final List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final ShardingSphereSchema schema, 
-                                                    final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+                                                    final SQLStatementContext sqlStatementContext, final List<QueryResultSet> queryResultSets) throws SQLException {
         List<MemoryQueryResultRow> result = new LinkedList<>();
         Set<String> tableNames = new HashSet<>();
-        for (QueryResult each : queryResults) {
+        for (QueryResultSet each : queryResultSets) {
             while (each.next()) {
                 MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
                 String actualTableName = memoryResultSetRow.getCell(1).toString();

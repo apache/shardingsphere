@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorEx
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.MemoryJDBCQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.MemoryJDBCQueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResultSet;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -51,18 +51,18 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     }
     
     @Override
-    public List<QueryResult> executeQuery(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) throws SQLException {
+    public List<QueryResultSet> executeQuery(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        JDBCExecutorCallback<QueryResult> jdbcExecutorCallback = new JDBCExecutorCallback<QueryResult>(getMetaDataContexts().getDatabaseType(), isExceptionThrown) {
+        JDBCExecutorCallback<QueryResultSet> jdbcExecutorCallback = new JDBCExecutorCallback<QueryResultSet>(getMetaDataContexts().getDatabaseType(), isExceptionThrown) {
             
             @Override
-            protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+            protected QueryResultSet executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return createQueryResult(sql, statement, connectionMode);
             }
             
-            private QueryResult createQueryResult(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+            private QueryResultSet createQueryResult(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 ResultSet resultSet = statement.executeQuery(sql);
-                return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamJDBCQueryResult(resultSet) : new MemoryJDBCQueryResult(resultSet);
+                return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamJDBCQueryResultSet(resultSet) : new MemoryJDBCQueryResultSet(resultSet);
             }
         };
         return getJdbcExecutor().execute(executionGroups, jdbcExecutorCallback);

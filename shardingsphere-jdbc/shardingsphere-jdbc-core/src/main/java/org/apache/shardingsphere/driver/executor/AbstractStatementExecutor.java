@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
@@ -114,10 +114,10 @@ public abstract class AbstractStatementExecutor {
      * Execute query.
      *
      * @param executionGroups execution groups
-     * @return result set list
+     * @return query result set list
      * @throws SQLException SQL exception
      */
-    public abstract List<QueryResult> executeQuery(Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) throws SQLException;
+    public abstract List<QueryResultSet> executeQuery(Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) throws SQLException;
     
     /**
      * Execute update.

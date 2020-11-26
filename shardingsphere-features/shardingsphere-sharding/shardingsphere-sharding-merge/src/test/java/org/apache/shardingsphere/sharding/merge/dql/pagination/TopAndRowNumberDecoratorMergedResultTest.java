@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.pagination;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
@@ -49,7 +49,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
                 new ProjectionsContext(0, 0, false, Collections.emptyList()),
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, Integer.MAX_VALUE, true), null, Collections.emptyList()));
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("SQLServer"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult(), createQueryResult()), selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResultSet(), mockQueryResultSet(), mockQueryResultSet(), mockQueryResultSet()), selectStatementContext, null);
         assertFalse(actual.next());
     }
     
@@ -60,7 +60,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(null, new NumberLiteralLimitValueSegment(0, 0, 5), Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult(), createQueryResult()), selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResultSet(), mockQueryResultSet(), mockQueryResultSet(), mockQueryResultSet()), selectStatementContext, null);
         for (int i = 0; i < 5; i++) {
             assertTrue(actual.next());
         }
@@ -74,7 +74,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), null, Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult(), createQueryResult()), selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResultSet(), mockQueryResultSet(), mockQueryResultSet(), mockQueryResultSet()), selectStatementContext, null);
         for (int i = 0; i < 7; i++) {
             assertTrue(actual.next());
         }
@@ -88,7 +88,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.emptyList()),
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 2, false), new NumberLiteralLimitValueSegment(0, 0, 4), Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult(), createQueryResult()), selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResultSet(), mockQueryResultSet(), mockQueryResultSet(), mockQueryResultSet()), selectStatementContext, null);
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -101,15 +101,15 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.emptyList()),
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralLimitValueSegment(0, 0, 4), Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult(), createQueryResult()), selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResultSet(), mockQueryResultSet(), mockQueryResultSet(), mockQueryResultSet()), selectStatementContext, null);
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
     
-    private QueryResult createQueryResult() throws SQLException {
-        QueryResult result = mock(QueryResult.class);
+    private QueryResultSet mockQueryResultSet() throws SQLException {
+        QueryResultSet result = mock(QueryResultSet.class);
         when(result.next()).thenReturn(true, true, false);
         return result;
     }

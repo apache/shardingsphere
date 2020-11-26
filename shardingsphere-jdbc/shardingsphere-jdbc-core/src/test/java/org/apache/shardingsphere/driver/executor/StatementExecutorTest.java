@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.executor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -108,7 +108,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(resultSet2.getInt(1)).thenReturn(2);
         when(statement1.executeQuery(DQL_SQL)).thenReturn(resultSet1);
         when(statement2.executeQuery(DQL_SQL)).thenReturn(resultSet2);
-        List<QueryResult> result = actual.executeQuery(createExecutionGroups(Arrays.asList(statement1, statement2), true));
+        List<QueryResultSet> result = actual.executeQuery(createExecutionGroups(Arrays.asList(statement1, statement2), true));
         assertThat(String.valueOf(result.get(0).getValue(1, int.class)), is("1"));
         assertThat(String.valueOf(result.get(1).getValue(1, int.class)), is("2"));
         verify(statement1).executeQuery(DQL_SQL);
@@ -120,7 +120,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = getStatement();
         SQLException ex = new SQLException("");
         when(statement.executeQuery(DQL_SQL)).thenThrow(ex);
-        assertThat(actual.executeQuery(createExecutionGroups(Collections.singletonList(statement), true)), is(Collections.singletonList((QueryResult) null)));
+        assertThat(actual.executeQuery(createExecutionGroups(Collections.singletonList(statement), true)), is(Collections.singletonList((QueryResultSet) null)));
         verify(statement).executeQuery(DQL_SQL);
     }
     
@@ -131,8 +131,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         SQLException ex = new SQLException("");
         when(statement1.executeQuery(DQL_SQL)).thenThrow(ex);
         when(statement2.executeQuery(DQL_SQL)).thenThrow(ex);
-        List<QueryResult> actualResultSets = actual.executeQuery(createExecutionGroups(Arrays.asList(statement1, statement2), true));
-        assertThat(actualResultSets, is(Arrays.asList((QueryResult) null, null)));
+        List<QueryResultSet> actualQueryResultSets = actual.executeQuery(createExecutionGroups(Arrays.asList(statement1, statement2), true));
+        assertThat(actualQueryResultSets, is(Arrays.asList((QueryResultSet) null, null)));
         verify(statement1).executeQuery(DQL_SQL);
         verify(statement2).executeQuery(DQL_SQL);
     }

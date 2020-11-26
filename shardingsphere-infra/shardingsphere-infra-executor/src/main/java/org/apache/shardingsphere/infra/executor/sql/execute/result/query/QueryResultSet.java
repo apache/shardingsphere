@@ -22,12 +22,12 @@ import java.sql.SQLException;
 import java.util.Calendar;
 
 /**
- * Query result form SQL.
+ * Query result set.
  */
-public interface QueryResult {
+public interface QueryResultSet {
     
     /**
-     * iterate next data.
+     * Iterate next data.
      *
      * @return has next data
      * @throws SQLException SQL Exception

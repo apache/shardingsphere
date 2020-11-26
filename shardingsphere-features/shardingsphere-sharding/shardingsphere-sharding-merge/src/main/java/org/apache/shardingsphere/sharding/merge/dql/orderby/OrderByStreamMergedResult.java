@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.merge.result.impl.stream.StreamMergedResult;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 
@@ -44,21 +44,21 @@ public class OrderByStreamMergedResult extends StreamMergedResult {
     @Getter(AccessLevel.PROTECTED)
     private boolean isFirstNext;
     
-    public OrderByStreamMergedResult(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
+    public OrderByStreamMergedResult(final List<QueryResultSet> queryResultSets, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
         orderByItems = selectStatementContext.getOrderByContext().getItems();
-        orderByValuesQueue = new PriorityQueue<>(queryResults.size());
-        orderResultSetsToQueue(queryResults, selectStatementContext, schema);
+        orderByValuesQueue = new PriorityQueue<>(queryResultSets.size());
+        orderResultSetsToQueue(queryResultSets, selectStatementContext, schema);
         isFirstNext = true;
     }
     
-    private void orderResultSetsToQueue(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
-        for (QueryResult each : queryResults) {
+    private void orderResultSetsToQueue(final List<QueryResultSet> queryResultSets, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
+        for (QueryResultSet each : queryResultSets) {
             OrderByValue orderByValue = new OrderByValue(each, orderByItems, selectStatementContext, schema);
             if (orderByValue.next()) {
                 orderByValuesQueue.offer(orderByValue);
             }
         }
-        setCurrentQueryResult(orderByValuesQueue.isEmpty() ? queryResults.get(0) : orderByValuesQueue.peek().getQueryResult());
+        setCurrentQueryResultSet(orderByValuesQueue.isEmpty() ? queryResultSets.get(0) : orderByValuesQueue.peek().getQueryResultSet());
     }
     
     @Override
@@ -77,7 +77,7 @@ public class OrderByStreamMergedResult extends StreamMergedResult {
         if (orderByValuesQueue.isEmpty()) {
             return false;
         }
-        setCurrentQueryResult(orderByValuesQueue.peek().getQueryResult());
+        setCurrentQueryResultSet(orderByValuesQueue.peek().getQueryResultSet());
         return true;
     }
 }

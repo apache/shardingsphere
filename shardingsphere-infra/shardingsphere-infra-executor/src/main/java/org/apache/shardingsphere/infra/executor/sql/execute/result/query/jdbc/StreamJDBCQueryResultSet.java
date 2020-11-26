@@ -30,13 +30,13 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 /**
- * JDBC query result for stream loading.
+ * JDBC query result set for stream loading.
  */
-public final class StreamJDBCQueryResult extends AbstractJDBCQueryResult {
+public final class StreamJDBCQueryResultSet extends AbstractJDBCQueryResultSet {
     
     private final ResultSet resultSet;
     
-    public StreamJDBCQueryResult(final ResultSet resultSet) throws SQLException {
+    public StreamJDBCQueryResultSet(final ResultSet resultSet) throws SQLException {
         super(resultSet.getMetaData());
         this.resultSet = resultSet;
     }

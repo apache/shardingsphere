@@ -53,14 +53,14 @@ public final class MemoryJDBCQueryResultTest {
     public void assertConstructorWithSqlException() throws SQLException {
         ResultSet resultSet = mockResultSet();
         when(resultSet.next()).thenThrow(new SQLException(""));
-        new MemoryJDBCQueryResult(resultSet);
+        new MemoryJDBCQueryResultSet(resultSet);
     }
     
     @Test
     public void assertNext() throws SQLException {
-        MemoryJDBCQueryResult queryResult = new MemoryJDBCQueryResult(mockResultSet());
-        assertTrue(queryResult.next());
-        assertFalse(queryResult.next());
+        MemoryJDBCQueryResultSet queryResultSet = new MemoryJDBCQueryResultSet(mockResultSet());
+        assertTrue(queryResultSet.next());
+        assertFalse(queryResultSet.next());
     }
     
     @Test
@@ -71,7 +71,7 @@ public final class MemoryJDBCQueryResultTest {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertNull(actual.getValue(1, boolean.class));
         assertFalse(actual.next());
@@ -81,7 +81,7 @@ public final class MemoryJDBCQueryResultTest {
     public void assertGetValueByBoolean() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.BOOLEAN);
         when(resultSet.getBoolean(1)).thenReturn(true);
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertTrue((boolean) actual.getValue(1, boolean.class));
         assertFalse(actual.next());
@@ -91,7 +91,7 @@ public final class MemoryJDBCQueryResultTest {
     public void assertGetValueByTinyInt() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.TINYINT);
         when(resultSet.getInt(1)).thenReturn(1);
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, int.class), is(1));
         assertFalse(actual.next());
@@ -101,7 +101,7 @@ public final class MemoryJDBCQueryResultTest {
     public void assertGetValueBySmallInt() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.SMALLINT);
         when(resultSet.getInt(1)).thenReturn(1);
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, int.class), is(1));
         assertFalse(actual.next());
@@ -112,7 +112,7 @@ public final class MemoryJDBCQueryResultTest {
         ResultSet resultSet = getMockedResultSet(Types.INTEGER);
         when(resultSet.getInt(1)).thenReturn(1);
         when(resultSet.getMetaData().isSigned(1)).thenReturn(true);
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, int.class), is(1));
         assertFalse(actual.next());
@@ -123,7 +123,7 @@ public final class MemoryJDBCQueryResultTest {
         ResultSet resultSet = getMockedResultSet(Types.INTEGER);
         when(resultSet.getLong(1)).thenReturn(1L);
         when(resultSet.getMetaData().isSigned(1)).thenReturn(false);
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, int.class), is(1L));
         assertFalse(actual.next());
@@ -134,7 +134,7 @@ public final class MemoryJDBCQueryResultTest {
         ResultSet resultSet = getMockedResultSet(Types.BIGINT);
         when(resultSet.getLong(1)).thenReturn(1L);
         when(resultSet.getMetaData().isSigned(1)).thenReturn(true);
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, long.class), is(1L));
         assertFalse(actual.next());
@@ -145,7 +145,7 @@ public final class MemoryJDBCQueryResultTest {
         ResultSet resultSet = getMockedResultSet(Types.BIGINT);
         when(resultSet.getBigDecimal(1)).thenReturn(new BigDecimal("1"));
         when(resultSet.getMetaData().isSigned(1)).thenReturn(false);
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, long.class), is(new BigDecimal("1").toBigInteger()));
         assertFalse(actual.next());
@@ -155,7 +155,7 @@ public final class MemoryJDBCQueryResultTest {
     public void assertGetValueByNumeric() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.NUMERIC);
         when(resultSet.getBigDecimal(1)).thenReturn(new BigDecimal("1"));
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, BigDecimal.class), is(new BigDecimal("1")));
         assertFalse(actual.next());
@@ -165,7 +165,7 @@ public final class MemoryJDBCQueryResultTest {
     public void assertGetValueByDecimal() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.DECIMAL);
         when(resultSet.getBigDecimal(1)).thenReturn(new BigDecimal("1"));
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, BigDecimal.class), is(new BigDecimal("1")));
         assertFalse(actual.next());
@@ -175,7 +175,7 @@ public final class MemoryJDBCQueryResultTest {
     public void assertGetValueByFloat() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.FLOAT);
         when(resultSet.getDouble(1)).thenReturn(1.0D);
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, double.class), is(1.0D));
         assertFalse(actual.next());
@@ -185,7 +185,7 @@ public final class MemoryJDBCQueryResultTest {
     public void assertGetValueByDouble() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.DOUBLE);
         when(resultSet.getDouble(1)).thenReturn(1.0D);
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, double.class), is(1.0D));
         assertFalse(actual.next());
@@ -195,7 +195,7 @@ public final class MemoryJDBCQueryResultTest {
     public void assertGetValueByChar() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.CHAR);
         when(resultSet.getString(1)).thenReturn("value");
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class), is("value"));
         assertFalse(actual.next());
@@ -205,7 +205,7 @@ public final class MemoryJDBCQueryResultTest {
     public void assertGetValueByVarchar() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.VARCHAR);
         when(resultSet.getString(1)).thenReturn("value");
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class), is("value"));
         assertFalse(actual.next());
@@ -215,7 +215,7 @@ public final class MemoryJDBCQueryResultTest {
     public void assertGetValueByLongVarchar() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.LONGVARCHAR);
         when(resultSet.getString(1)).thenReturn("value");
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class), is("value"));
         assertFalse(actual.next());
@@ -225,7 +225,7 @@ public final class MemoryJDBCQueryResultTest {
     public void assertGetValueByDate() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.DATE);
         when(resultSet.getDate(1)).thenReturn(new Date(0L));
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Date.class), is(new Date(0L)));
         assertFalse(actual.next());
@@ -235,7 +235,7 @@ public final class MemoryJDBCQueryResultTest {
     public void assertGetValueByTime() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.TIME);
         when(resultSet.getTime(1)).thenReturn(new Time(0L));
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Time.class), is(new Time(0L)));
         assertFalse(actual.next());
@@ -245,7 +245,7 @@ public final class MemoryJDBCQueryResultTest {
     public void assertGetValueByTimestamp() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.TIMESTAMP);
         when(resultSet.getTimestamp(1)).thenReturn(new Timestamp(0L));
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Timestamp.class), is(new Timestamp(0L)));
         assertFalse(actual.next());
@@ -256,7 +256,7 @@ public final class MemoryJDBCQueryResultTest {
         ResultSet resultSet = getMockedResultSet(Types.CLOB);
         Clob value = mock(Clob.class);
         when(resultSet.getClob(1)).thenReturn(value);
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Clob.class), is(value));
         assertFalse(actual.next());
@@ -267,7 +267,7 @@ public final class MemoryJDBCQueryResultTest {
         ResultSet resultSet = getMockedResultSet(Types.BLOB);
         Blob value = mock(Blob.class);
         when(resultSet.getBlob(1)).thenReturn(value);
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Blob.class), is(value));
         assertFalse(actual.next());
@@ -278,7 +278,7 @@ public final class MemoryJDBCQueryResultTest {
         ResultSet resultSet = getMockedResultSet(Types.BINARY);
         Blob value = mock(Blob.class);
         when(resultSet.getBlob(1)).thenReturn(value);
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Blob.class), is(value));
         assertFalse(actual.next());
@@ -289,7 +289,7 @@ public final class MemoryJDBCQueryResultTest {
         ResultSet resultSet = getMockedResultSet(Types.VARBINARY);
         Blob value = mock(Blob.class);
         when(resultSet.getBlob(1)).thenReturn(value);
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Blob.class), is(value));
         assertFalse(actual.next());
@@ -300,7 +300,7 @@ public final class MemoryJDBCQueryResultTest {
         ResultSet resultSet = getMockedResultSet(Types.LONGVARBINARY);
         Blob value = mock(Blob.class);
         when(resultSet.getBlob(1)).thenReturn(value);
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Blob.class), is(value));
         assertFalse(actual.next());
@@ -311,7 +311,7 @@ public final class MemoryJDBCQueryResultTest {
         ResultSet resultSet = getMockedResultSet(Types.ARRAY);
         Array value = mock(Array.class);
         when(resultSet.getArray(1)).thenReturn(value);
-        MemoryJDBCQueryResult actual = new MemoryJDBCQueryResult(resultSet);
+        MemoryJDBCQueryResultSet actual = new MemoryJDBCQueryResultSet(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Array.class), is(value));
         assertFalse(actual.next());
@@ -329,16 +329,16 @@ public final class MemoryJDBCQueryResultTest {
     
     @Test
     public void assertGetCalendarValue() throws SQLException {
-        MemoryJDBCQueryResult queryResult = new MemoryJDBCQueryResult(mockResultSet());
-        queryResult.next();
-        assertThat(queryResult.getCalendarValue(1, Integer.class, Calendar.getInstance()), Is.is(1));
+        MemoryJDBCQueryResultSet queryResultSet = new MemoryJDBCQueryResultSet(mockResultSet());
+        queryResultSet.next();
+        assertThat(queryResultSet.getCalendarValue(1, Integer.class, Calendar.getInstance()), Is.is(1));
     }
     
     @Test
     public void assertGetInputStream() throws SQLException, IOException {
-        MemoryJDBCQueryResult queryResult = new MemoryJDBCQueryResult(mockResultSet());
-        queryResult.next();
-        InputStream inputStream = queryResult.getInputStream(1, "Unicode");
+        MemoryJDBCQueryResultSet queryResultSet = new MemoryJDBCQueryResultSet(mockResultSet());
+        queryResultSet.next();
+        InputStream inputStream = queryResultSet.getInputStream(1, "Unicode");
         assertThat(inputStream.read(), is(getInputStream(1).read()));
     }
     
@@ -353,11 +353,11 @@ public final class MemoryJDBCQueryResultTest {
     
     @Test
     public void assertWasNull() throws SQLException {
-        MemoryJDBCQueryResult queryResult = new MemoryJDBCQueryResult(mockResultSet());
-        queryResult.next();
-        assertFalse(queryResult.wasNull());
-        queryResult.next();
-        assertTrue(queryResult.wasNull());
+        MemoryJDBCQueryResultSet queryResultSet = new MemoryJDBCQueryResultSet(mockResultSet());
+        queryResultSet.next();
+        assertFalse(queryResultSet.wasNull());
+        queryResultSet.next();
+        assertTrue(queryResultSet.wasNull());
     }
     
     private ResultSet mockResultSet() throws SQLException {
