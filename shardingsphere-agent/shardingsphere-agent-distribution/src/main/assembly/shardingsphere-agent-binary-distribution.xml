@@ -17,36 +17,12 @@
 
 <assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
-    <id>shardingsphere-agent</id>
+    <id>bin</id>
     <formats>
         <format>dir</format>
         <format>tar.gz</format>
     </formats>
     <includeBaseDirectory>true</includeBaseDirectory>
-    <moduleSets>
-        <moduleSet>
-            <includes>
-                <include>${project.groupId}:shardingsphere-agent-bootstrap</include>
-            </includes>
-            <binaries>
-                <unpack>false</unpack>
-                <outputDirectory>/</outputDirectory>
-                <includeDependencies>false</includeDependencies>
-            </binaries>
-        </moduleSet>
-
-        <moduleSet>
-            <includes>
-                <include>${project.groupId}:shardingsphere-agent-plugin-metrics</include>
-            </includes>
-            <binaries>
-                <unpack>false</unpack>
-                <outputDirectory>plugins</outputDirectory>
-                <includeDependencies>false</includeDependencies>
-            </binaries>
-        </moduleSet>
-
-    </moduleSets>
     
     <fileSets>
         <fileSet>
@@ -64,10 +40,21 @@
         </fileSet>
     </fileSets>
     
-<!--    <dependencySets>-->
-<!--        <dependencySet>-->
-<!--            <outputDirectory>lib</outputDirectory>-->
-<!--            <fileMode>0644</fileMode>-->
-<!--        </dependencySet>-->
-<!--    </dependencySets>-->
+    <dependencySets>
+        <dependencySet>
+            <includes>
+                <include>${project.groupId}:shardingsphere-agent-plugin-metrics</include>
+            </includes>
+            <outputDirectory>plugins</outputDirectory>
+            <fileMode>0644</fileMode>
+        </dependencySet>
+        <dependencySet>
+            <includes>
+                <include>${project.groupId}:shardingsphere-agent-bootstrap</include>
+            </includes>
+            <outputDirectory>/</outputDirectory>
+            <outputFileNameMapping>shardingsphere-agent.jar</outputFileNameMapping>
+            <fileMode>0644</fileMode>
+        </dependencySet>
+    </dependencySets>
 </assembly>

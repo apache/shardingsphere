@@ -29,19 +29,34 @@
 
     <artifactId>shardingsphere-agent-distribution</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-agent-bootstrap</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-agent-plugin-metrics</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
     <build>
+        <finalName>shardingsphere-agent</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <finalName>shardingsphere-agent</finalName>
                     <descriptors>
                         <descriptor>src/main/assembly/shardingsphere-agent-binary-distribution.xml</descriptor>
                     </descriptors>
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>shardingsphere-agent</id>
+                        <id>bin</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
