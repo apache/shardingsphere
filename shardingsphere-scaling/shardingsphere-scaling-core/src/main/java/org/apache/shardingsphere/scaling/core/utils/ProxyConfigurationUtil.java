@@ -73,9 +73,7 @@ public final class ProxyConfigurationUtil {
     private static YamlDataSourceConfiguration toYamlDataSourceConfig(final YamlProxyRuleConfiguration proxyRuleConfig, final YamlDataSourceParameter yamlDataSourceParameter) {
         YamlDataSourceConfiguration result = new YamlDataSourceConfiguration();
         result.setDataSourceClassName("com.zaxxer.hikari.HikariDataSource");
-        Map<String, Object> props = new HashMap<>();
-        props.putAll(ReflectionUtil.getFieldMap(yamlDataSourceParameter));
-        props.putAll(proxyRuleConfig.getDataSourceCommon());
+        Map<String, Object> props = new HashMap<>(ReflectionUtil.getFieldMap(yamlDataSourceParameter));
         result.setProps(props);
         return result;
     }
