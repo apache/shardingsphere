@@ -26,6 +26,7 @@ import org.apache.shardingsphere.governance.core.event.model.schema.SchemaPersis
 import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
+import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
@@ -81,6 +82,8 @@ public final class ConfigCenterTest {
     private static final String SHARDING_AND_ENCRYPT_RULE_YAML = "yaml/configCenter/data-sharding-encrypt-rule.yaml";
     
     private static final String REPLICA_QUERY_RULE_YAML = "yaml/configCenter/data-replica-query-rule.yaml";
+    
+    private static final String HA_RULE_YAML = "yaml/configCenter/data-ha-rule.yaml";
     
     private static final String ENCRYPT_RULE_YAML = "yaml/configCenter/data-encrypt-rule.yaml";
     
@@ -160,6 +163,14 @@ public final class ConfigCenterTest {
     }
     
     @Test
+    public void assertPersistConfigurationForHARuleWithoutAuthenticationAndIsOverwrite() {
+        ConfigCenter configCenter = new ConfigCenter(configurationRepository);
+        configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createHARuleConfiguration(), true);
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(HA_RULE_YAML));
+    }
+    
+    @Test
     public void assertPersistConfigurationForShardingRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
@@ -205,6 +216,14 @@ public final class ConfigCenterTest {
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReplicaQueryRuleConfiguration(), true);
         verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
         verify(configurationRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(REPLICA_QUERY_RULE_YAML));
+    }
+    
+    @Test
+    public void assertPersistConfigurationForHARuleWithAuthenticationAndIsOverwrite() {
+        ConfigCenter configCenter = new ConfigCenter(configurationRepository);
+        configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createHARuleConfiguration(), true);
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(configurationRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(HA_RULE_YAML));
     }
     
     @Test
@@ -268,6 +287,10 @@ public final class ConfigCenterTest {
     
     private Collection<RuleConfiguration> createReplicaQueryRuleConfiguration() {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(REPLICA_QUERY_RULE_YAML), YamlRootRuleConfigurations.class).getRules());
+    }
+    
+    private Collection<RuleConfiguration> createHARuleConfiguration() {
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(HA_RULE_YAML), YamlRootRuleConfigurations.class).getRules());
     }
     
     private Collection<RuleConfiguration> createEncryptRuleConfiguration() {
@@ -354,6 +377,20 @@ public final class ConfigCenterTest {
         assertThat(config.getDataSources().size(), is(1));
         assertThat(config.getDataSources().iterator().next().getPrimaryDataSourceName(), is("primary_ds"));
         assertThat(config.getDataSources().iterator().next().getReplicaDataSourceNames().size(), is(2));
+    }
+    
+    @Test
+    public void assertLoadHARuleConfiguration() {
+        when(configurationRepository.get("/metadata/sharding_db/rule")).thenReturn(readYAML(HA_RULE_YAML));
+        ConfigCenter configCenter = new ConfigCenter(configurationRepository);
+        Collection<RuleConfiguration> actual = configCenter.loadRuleConfigurations("sharding_db");
+        HARuleConfiguration config = (HARuleConfiguration) actual.iterator().next();
+        assertThat(config.getDataSources().size(), is(1));
+        assertThat(config.getDataSources().iterator().next().getPrimaryDataSourceName(), is("primary_ds"));
+        assertThat(config.getDataSources().iterator().next().getReplicaDataSourceNames().size(), is(2));
+        assertThat(config.getHaType().getType(), is("MGR"));
+        assertThat(config.getHaType().getProps().getProperty("keepAliveSeconds"), is("5"));
+        assertThat(config.getHaType().getProps().getProperty("groupName"), is("92504d5b-6dec-11e8-91ea-246e9612aaf1"));
     }
     
     @Test
