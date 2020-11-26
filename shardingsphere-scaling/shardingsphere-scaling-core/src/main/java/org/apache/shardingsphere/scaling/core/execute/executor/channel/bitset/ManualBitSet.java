@@ -66,7 +66,7 @@ public final class ManualBitSet {
             BitSet bitSet = bitSets.get(i);
             int begin = i == listFromIndex ? correctFromIndex % BIT_SET_SIZE : 0;
             int end = i == listToIndex ? correctToIndex % BIT_SET_SIZE : BIT_SET_SIZE;
-            for (int j = begin; j < end; j++) {
+            for (int j = begin; j <= end; j++) {
                 if (bitSet.get(j)) {
                     result.set(k, true);
                 }
