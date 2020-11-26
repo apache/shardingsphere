@@ -32,5 +32,5 @@ public final class ExecuteQueryResult implements ExecuteResult {
     
     private final List<QueryHeader> queryHeaders;
     
-    private final QueryResult queryResult;
+    private final QueryResultSet queryResultSet;
 }

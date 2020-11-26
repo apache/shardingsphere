@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.merge.result.impl.stream;
 
 import lombok.Setter;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.io.InputStream;
@@ -31,35 +31,35 @@ import java.util.Calendar;
 @Setter
 public abstract class StreamMergedResult implements MergedResult {
     
-    private QueryResult currentQueryResult;
+    private QueryResultSet currentQueryResultSet;
     
     private boolean wasNull;
     
-    protected final QueryResult getCurrentQueryResult() throws SQLException {
-        if (null == currentQueryResult) {
+    protected final QueryResultSet getCurrentQueryResultSet() throws SQLException {
+        if (null == currentQueryResultSet) {
             throw new SQLException("Current ResultSet is null, ResultSet perhaps end of next.");
         }
-        return currentQueryResult;
+        return currentQueryResultSet;
     }
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        Object result = getCurrentQueryResult().getValue(columnIndex, type);
-        wasNull = getCurrentQueryResult().wasNull();
+        Object result = getCurrentQueryResultSet().getValue(columnIndex, type);
+        wasNull = getCurrentQueryResultSet().wasNull();
         return result;
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
-        Object result = getCurrentQueryResult().getCalendarValue(columnIndex, type, calendar);
-        wasNull = getCurrentQueryResult().wasNull();
+        Object result = getCurrentQueryResultSet().getCalendarValue(columnIndex, type, calendar);
+        wasNull = getCurrentQueryResultSet().wasNull();
         return result;
     }
     
     @Override
     public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        InputStream result = getCurrentQueryResult().getInputStream(columnIndex, type);
-        wasNull = getCurrentQueryResult().wasNull();
+        InputStream result = getCurrentQueryResultSet().getInputStream(columnIndex, type);
+        wasNull = getCurrentQueryResultSet().wasNull();
         return result;
     }
     

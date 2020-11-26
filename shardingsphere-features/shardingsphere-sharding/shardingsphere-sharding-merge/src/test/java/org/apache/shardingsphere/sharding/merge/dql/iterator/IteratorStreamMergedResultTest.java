@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,20 +53,20 @@ public final class IteratorStreamMergedResultTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
+        List<QueryResultSet> queryResultSets = Arrays.asList(mock(QueryResultSet.class), mock(QueryResultSet.class), mock(QueryResultSet.class));
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(queryResultSets, selectStatementContext, null);
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForResultSetsAllNotEmpty() throws SQLException {
-        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
-        for (QueryResult each : queryResults) {
+        List<QueryResultSet> queryResultSets = Arrays.asList(mock(QueryResultSet.class), mock(QueryResultSet.class), mock(QueryResultSet.class));
+        for (QueryResultSet each : queryResultSets) {
             when(each.next()).thenReturn(true, false);
         }
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(queryResultSets, selectStatementContext, null);
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -75,43 +75,43 @@ public final class IteratorStreamMergedResultTest {
     
     @Test
     public void assertNextForFirstResultSetsNotEmptyOnly() throws SQLException {
-        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
-        when(queryResults.get(0).next()).thenReturn(true, false);
+        List<QueryResultSet> queryResultSets = Arrays.asList(mock(QueryResultSet.class), mock(QueryResultSet.class), mock(QueryResultSet.class));
+        when(queryResultSets.get(0).next()).thenReturn(true, false);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(queryResultSets, selectStatementContext, null);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForMiddleResultSetsNotEmpty() throws SQLException {
-        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
-        when(queryResults.get(1).next()).thenReturn(true, false);
+        List<QueryResultSet> queryResultSets = Arrays.asList(mock(QueryResultSet.class), mock(QueryResultSet.class), mock(QueryResultSet.class));
+        when(queryResultSets.get(1).next()).thenReturn(true, false);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(queryResultSets, selectStatementContext, null);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForLastResultSetsNotEmptyOnly() throws SQLException {
-        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
-        when(queryResults.get(2).next()).thenReturn(true, false);
+        List<QueryResultSet> queryResultSets = Arrays.asList(mock(QueryResultSet.class), mock(QueryResultSet.class), mock(QueryResultSet.class));
+        when(queryResultSets.get(2).next()).thenReturn(true, false);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(queryResultSets, selectStatementContext, null);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForMix() throws SQLException {
-        List<QueryResult> queryResults = Arrays.asList(
-                mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
-        when(queryResults.get(1).next()).thenReturn(true, false);
-        when(queryResults.get(3).next()).thenReturn(true, false);
-        when(queryResults.get(5).next()).thenReturn(true, false);
+        List<QueryResultSet> queryResultSets = Arrays.asList(
+                mock(QueryResultSet.class), mock(QueryResultSet.class), mock(QueryResultSet.class), mock(QueryResultSet.class), mock(QueryResultSet.class), mock(QueryResultSet.class));
+        when(queryResultSets.get(1).next()).thenReturn(true, false);
+        when(queryResultSets.get(3).next()).thenReturn(true, false);
+        when(queryResultSets.get(5).next()).thenReturn(true, false);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(queryResultSets, selectStatementContext, null);
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertTrue(actual.next());

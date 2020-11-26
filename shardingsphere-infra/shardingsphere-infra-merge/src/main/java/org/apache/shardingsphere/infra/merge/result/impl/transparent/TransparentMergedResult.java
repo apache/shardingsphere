@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.merge.result.impl.transparent;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.io.InputStream;
@@ -31,30 +31,30 @@ import java.util.Calendar;
 @RequiredArgsConstructor
 public final class TransparentMergedResult implements MergedResult {
     
-    private final QueryResult queryResult;
+    private final QueryResultSet queryResultSet;
     
     @Override
     public boolean next() throws SQLException {
-        return queryResult.next();
+        return queryResultSet.next();
     }
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        return queryResult.getValue(columnIndex, type);
+        return queryResultSet.getValue(columnIndex, type);
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
-        return queryResult.getCalendarValue(columnIndex, type, calendar);
+        return queryResultSet.getCalendarValue(columnIndex, type, calendar);
     }
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        return queryResult.getInputStream(columnIndex, type);
+        return queryResultSet.getInputStream(columnIndex, type);
     }
     
     @Override
     public boolean wasNull() throws SQLException {
-        return queryResult.wasNull();
+        return queryResultSet.wasNull();
     }
 }
