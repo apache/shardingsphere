@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExe
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.ExecuteUpdateResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -70,7 +70,7 @@ public final class RawProxyExecutor {
         try {
             return executorEngine.execute((Collection) executionGroups, firstCallback, callback, serial);
         } catch (final SQLException ex) {
-            ExecutorExceptionHandler.handleException(ex);
+            SQLExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();
         }
     }

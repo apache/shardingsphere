@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw;
 
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.ExecuteUpdateResult;
@@ -82,7 +82,7 @@ public final class RawExecutorTest {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
         when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
         RawExecutor rawExecutor = new RawExecutor(executorEngine, false);
-        ExecutorExceptionHandler.setExceptionThrown(false);
+        SQLExecutorExceptionHandler.setExceptionThrown(false);
         assertFalse(rawExecutor.execute(Collections.emptyList(), null));
     }
     

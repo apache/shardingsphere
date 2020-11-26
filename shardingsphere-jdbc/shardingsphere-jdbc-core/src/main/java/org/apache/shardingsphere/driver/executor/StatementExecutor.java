@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
@@ -52,7 +52,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     @Override
     public List<QueryResult> executeQuery(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) throws SQLException {
-        boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         JDBCExecutorCallback<QueryResult> jdbcExecutorCallback = new JDBCExecutorCallback<QueryResult>(getMetaDataContexts().getDatabaseType(), isExceptionThrown) {
             
             @Override
@@ -122,7 +122,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private int executeUpdate(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final Updater updater,
                               final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
-        boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         JDBCExecutorCallback jdbcExecutorCallback = new JDBCExecutorCallback<Integer>(getMetaDataContexts().getDatabaseType(), isExceptionThrown) {
             
             @Override
@@ -192,7 +192,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     @SuppressWarnings("rawtypes")
     private boolean execute(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final Executor executor,
                             final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
-        boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         JDBCExecutorCallback jdbcExecutorCallback = new JDBCExecutorCallback<Boolean>(getMetaDataContexts().getDatabaseType(), isExceptionThrown) {
             
             @Override

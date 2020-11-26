@@ -30,28 +30,28 @@ public final class ExecutorExceptionHandlerTest {
     
     @After
     public void tearDown() throws NoSuchFieldException, IllegalAccessException {
-        Field field = ExecutorExceptionHandler.class.getDeclaredField("IS_EXCEPTION_THROWN");
+        Field field = SQLExecutorExceptionHandler.class.getDeclaredField("IS_EXCEPTION_THROWN");
         field.setAccessible(true);
-        ((ThreadLocal) field.get(ExecutorExceptionHandler.class)).remove();
+        ((ThreadLocal) field.get(SQLExecutorExceptionHandler.class)).remove();
     }
     
     @Test(expected = SQLException.class)
     public void assertHandleExceptionWithoutSet() throws SQLException {
-        assertTrue(ExecutorExceptionHandler.isExceptionThrown());
-        ExecutorExceptionHandler.handleException(new SQLException(""));
+        assertTrue(SQLExecutorExceptionHandler.isExceptionThrown());
+        SQLExecutorExceptionHandler.handleException(new SQLException(""));
     }
     
     @Test(expected = SQLException.class)
     public void assertHandleExceptionWhenExceptionThrownIsTrue() throws SQLException {
-        ExecutorExceptionHandler.setExceptionThrown(true);
-        assertTrue(ExecutorExceptionHandler.isExceptionThrown());
-        ExecutorExceptionHandler.handleException(new SQLException(""));
+        SQLExecutorExceptionHandler.setExceptionThrown(true);
+        assertTrue(SQLExecutorExceptionHandler.isExceptionThrown());
+        SQLExecutorExceptionHandler.handleException(new SQLException(""));
     }
     
     @Test
     public void assertHandleExceptionWhenExceptionThrownIsFalse() throws SQLException {
-        ExecutorExceptionHandler.setExceptionThrown(false);
-        assertFalse(ExecutorExceptionHandler.isExceptionThrown());
-        ExecutorExceptionHandler.handleException(new SQLException(""));
+        SQLExecutorExceptionHandler.setExceptionThrown(false);
+        assertFalse(SQLExecutorExceptionHandler.isExceptionThrown());
+        SQLExecutorExceptionHandler.handleException(new SQLException(""));
     }
 }

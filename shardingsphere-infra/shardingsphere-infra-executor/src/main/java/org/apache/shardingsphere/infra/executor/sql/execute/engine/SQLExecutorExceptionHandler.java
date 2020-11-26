@@ -25,11 +25,11 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import java.sql.SQLException;
 
 /**
- * Executor exception handler.
+ * SQL executor exception handler.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-public final class ExecutorExceptionHandler {
+public final class SQLExecutorExceptionHandler {
     
     private static final ThreadLocal<Boolean> IS_EXCEPTION_THROWN = ThreadLocal.withInitial(() -> true);
     

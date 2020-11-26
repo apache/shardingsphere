@@ -25,7 +25,7 @@
     <logger name="org.apache.shardingsphere" level="warn" additivity="false">
         <appender-ref ref="console" />
     </logger>
-    <logger name="org.apache.shardingsphere.infra.executor.sql.execute.engine.ExecutorExceptionHandler" level="off" />
+    <logger name="org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler" level="off" />
     
     <root>
         <level value="error" />
