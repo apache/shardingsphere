@@ -81,6 +81,7 @@ public final class DataSourceMapSetter {
         }
         return new InlineExpressionParser(dataSourceNames).splitAndEvaluate();
     }
+    
     @SuppressWarnings("unchecked")
     private static DataSource getDataSource(final Environment environment, final String dataSourceName) throws ReflectiveOperationException, NamingException {
         Map<String, Object> dataSourceProps = PropertyUtil.handle(environment, String.join("", PREFIX, dataSourceName), Map.class);
