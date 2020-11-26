@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.governance.core.yaml.swapper;
 
+import com.google.common.collect.Maps;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlColumnMetaData;
 import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlIndexMetaData;
 import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
@@ -55,7 +57,7 @@ public final class SchemaYamlSwapper implements YamlSwapper<YamlSchema, Sharding
     }
     
     private ShardingSphereSchema convertSchema(final YamlSchema schema) {
-        return new ShardingSphereSchema(schema.getTables().entrySet().stream()
+        return new ShardingSphereSchema(MapUtils.isEmpty(schema.getTables()) ? Maps.newLinkedHashMap() : schema.getTables().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> convertTable(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
     

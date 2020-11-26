@@ -38,6 +38,8 @@ public final class SchemaYamlSwapperTest {
     
     private static final String YAML = "yaml/schema.yaml";
     
+    private static final String YAML_WITHOUT_TABLE = "yaml/schema-without-table.yaml";
+    
     @Test
     public void assertSwapToYamlSchema() {
         ShardingSphereSchema schema = new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(YAML), YamlSchema.class));
@@ -56,6 +58,21 @@ public final class SchemaYamlSwapperTest {
         assertThat(schema.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
         assertThat(schema.getAllColumnNames("t_order").size(), is(1));
         assertThat(schema.get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
+    }
+    
+    @Test
+    public void assertSwapToYamlSchemaWithoutTable() {
+        ShardingSphereSchema schema = new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(YAML_WITHOUT_TABLE), YamlSchema.class));
+        YamlSchema yamlSchema = new SchemaYamlSwapper().swapToYamlConfiguration(schema);
+        assertNotNull(yamlSchema);
+        assertThat(yamlSchema.getTables().size(), is(0));
+    }
+    
+    @Test
+    public void assertSwapToShardingSphereSchemaWithoutTable() {
+        YamlSchema yamlSchema = YamlEngine.unmarshal(readYAML(YAML_WITHOUT_TABLE), YamlSchema.class);
+        ShardingSphereSchema schema = new SchemaYamlSwapper().swapToObject(yamlSchema);
+        assertThat(schema.getAllTableNames().size(), is(0));
     }
     
     @SneakyThrows({URISyntaxException.class, IOException.class})
