@@ -76,11 +76,6 @@ public final class SQLServerDataSourceMetaDataTest {
         assertThat(actual.getCatalog(), is("ds_0.0.0"));
         assertNull(actual.getSchema());
     }
-
-
-
-
-
     
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertNewConstructorFailure() {
