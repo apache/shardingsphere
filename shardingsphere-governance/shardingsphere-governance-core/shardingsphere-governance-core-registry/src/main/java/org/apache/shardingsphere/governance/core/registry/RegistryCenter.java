@@ -103,7 +103,7 @@ public final class RegistryCenter {
     @Subscribe
     public synchronized void lock(final GlobalLockAddedEvent event) {
         if (Optional.of(event).isPresent()) {
-            persistInstanceData(RegistryCenterNodeStatus.LOCK.toString());
+            persistInstanceData(RegistryCenterNodeStatus.LOCKED.toString());
         }
     }
 }

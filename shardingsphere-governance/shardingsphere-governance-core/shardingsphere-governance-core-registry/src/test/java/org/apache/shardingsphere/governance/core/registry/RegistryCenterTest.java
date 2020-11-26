@@ -86,6 +86,6 @@ public final class RegistryCenterTest {
     @Test
     public void assertLock() {
         registryCenter.lock(new GlobalLockAddedEvent());
-        verify(registryRepository).persist(anyString(), eq(RegistryCenterNodeStatus.LOCK.toString()));
+        verify(registryRepository).persist(anyString(), eq(RegistryCenterNodeStatus.LOCKED.toString()));
     }
 }
