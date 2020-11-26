@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
@@ -296,7 +296,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     
     @Test
     public void assertOverallExceptionFailure() throws SQLException {
-        ExecutorExceptionHandler.setExceptionThrown(true);
+        SQLExecutorExceptionHandler.setExceptionThrown(true);
         Statement statement = getStatement();
         SQLException ex = new SQLException("");
         when(statement.execute(DML_SQL)).thenThrow(ex);

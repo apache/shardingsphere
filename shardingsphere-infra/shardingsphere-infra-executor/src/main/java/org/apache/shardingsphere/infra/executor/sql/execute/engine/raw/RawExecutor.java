@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.ExecuteUpdateResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
@@ -100,7 +100,7 @@ public final class RawExecutor {
         try {
             return executorEngine.execute((Collection) executionGroups, null, callback, serial);
         } catch (final SQLException ex) {
-            ExecutorExceptionHandler.handleException(ex);
+            SQLExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();
         }
     }

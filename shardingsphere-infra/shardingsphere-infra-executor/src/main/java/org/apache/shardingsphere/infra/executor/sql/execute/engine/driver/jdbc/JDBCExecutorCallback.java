@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
 
@@ -65,7 +65,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
      * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
      */
     private T execute(final JDBCExecutionUnit jdbcExecutionUnit, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
-        ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
+        SQLExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         DataSourceMetaData dataSourceMetaData = getDataSourceMetaData(jdbcExecutionUnit.getStorageResource().getConnection().getMetaData());
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         try {
@@ -76,7 +76,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
             return result;
         } catch (final SQLException ex) {
             sqlExecutionHook.finishFailure(ex);
-            ExecutorExceptionHandler.handleException(ex);
+            SQLExecutorExceptionHandler.handleException(ex);
             return null;
         }
     }

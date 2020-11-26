@@ -17,22 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.fetchsize.impl;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.fetchsize.StatementMemoryStrictlyFetchSizeSetter;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
 /**
  * Statement memory strictly fetch size setter for PostgreSQL.
  */
-@Getter
-@Setter
 public final class PostgreSQLStatementMemoryStrictlyFetchSizeSetter implements StatementMemoryStrictlyFetchSizeSetter {
-    
-    private Properties props;
     
     @Override
     public void setFetchSize(final Statement statement) throws SQLException {

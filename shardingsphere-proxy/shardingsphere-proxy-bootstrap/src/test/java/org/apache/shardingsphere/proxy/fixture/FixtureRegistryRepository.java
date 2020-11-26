@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.proxy.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
@@ -28,16 +26,11 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-@Getter
-@Setter
 public final class FixtureRegistryRepository implements RegistryRepository, ConfigurationRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
-    
-    private Properties props = new Properties();
     
     @Override
     public void init(final String name, final GovernanceCenterConfiguration config) {

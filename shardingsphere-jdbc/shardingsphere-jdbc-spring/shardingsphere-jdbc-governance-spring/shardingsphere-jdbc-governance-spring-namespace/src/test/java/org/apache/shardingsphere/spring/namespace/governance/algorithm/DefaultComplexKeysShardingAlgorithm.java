@@ -17,19 +17,12 @@
 
 package org.apache.shardingsphere.spring.namespace.governance.algorithm;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
 import java.util.Collection;
-import java.util.Properties;
 
-@Getter
-@Setter
 public final class DefaultComplexKeysShardingAlgorithm implements ComplexKeysShardingAlgorithm<Integer> {
-    
-    private Properties props = new Properties();
     
     @Override
     public void init() {

@@ -17,22 +17,15 @@
 
 package org.apache.shardingsphere.ha.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.ha.spi.HAType;
 
 import javax.sql.DataSource;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Test HA type.
  */
-@Getter
-@Setter
 public final class TestHATypeFixture implements HAType {
-    
-    private Properties props = new Properties();
     
     @Override
     public void checkHAConfig(final Map<String, DataSource> dataSourceMap) {
@@ -40,7 +33,6 @@ public final class TestHATypeFixture implements HAType {
     
     @Override
     public void updatePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
-
     }
     
     @Override
