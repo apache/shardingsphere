@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * ParseTreeCacheBuilder Testcase
+ * ParseTreeCacheBuilder Testcase.
  */
 public class ParseTreeCacheBuilderTest {
 
@@ -35,7 +35,7 @@ public class ParseTreeCacheBuilderTest {
     private String databaseType;
 
     /**
-     * define cacheOption & databaseType
+     * define cacheOption & databaseType.
      */
     @Before
     public void setUp() {
