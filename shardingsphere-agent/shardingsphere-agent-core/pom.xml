@@ -60,7 +60,6 @@
     </dependencies>
 
     <build>
-        <finalName>shardingsphere-agent</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>

@@ -105,39 +105,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>clean</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <delete dir="${project.basedir}/../../agent" />
-                            </tasks>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>package</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <mkdir dir="${project.basedir}/../../agent" />
-                                <copy file="${project.build.directory}/shardingsphere-agent.jar" tofile="${project.basedir}/../../agent/shardingsphere-agent.jar" overwrite="true" />
-                                <mkdir dir="${project.basedir}/../../agent/config" />
-                                <mkdir dir="${project.basedir}/../../agent/logs" />
-                                <copydir src="${project.basedir}/../config" dest="${project.basedir}/../../agent/config" forceoverwrite="true" />
-                            </tasks>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 </project>
