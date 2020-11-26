@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 
 import javax.sql.DataSource;
@@ -73,8 +74,8 @@ public final class SchemaBuilder {
     private static Collection<String> getExistedTables(final Collection<ShardingSphereRule> rules, final ShardingSphereSchema schema) {
         Collection<String> result = new LinkedHashSet<>();
         for (ShardingSphereRule each : rules) {
-            if (each instanceof TableContainedRule) {
-                result.addAll(((TableContainedRule) each).getTables());
+            if (each instanceof DataNodeContainedRule) {
+                result.addAll(((DataNodeContainedRule) each).getAllActualTables());
             }
         }
         result.addAll(schema.getAllTableNames());
