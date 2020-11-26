@@ -19,71 +19,34 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import org.junit.Test;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ResourceLockTest {
     
     @Test
-    public void assertDoAwait() throws InterruptedException {
-        int numberOfThreads = 10;
+    public void assertDoAwait() {
         ResourceLock resourceLock = new ResourceLock();
-        ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
-        CountDownLatch latch = new CountDownLatch(numberOfThreads);
-        AtomicInteger counter = new AtomicInteger();
-        for (int i = 0; i < numberOfThreads; i++) {
-            service.submit(() -> {
-                resourceLock.doAwait();
-                counter.incrementAndGet();
-                latch.countDown();
-            });
-        }
-        latch.await();
-        assertThat(numberOfThreads, is(counter.get()));
+        long startTime = System.currentTimeMillis();
+        resourceLock.doAwait();
+        assertTrue(System.currentTimeMillis() - startTime >= 200L);
     }
     
     @Test
-    public void assertDoAwaitThrowsException() throws InterruptedException {
-        int numberOfThreads = 10;
+    public void assertDoNotify() {
         ResourceLock resourceLock = new ResourceLock();
-        ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
-        CountDownLatch latch = new CountDownLatch(numberOfThreads);
-        AtomicInteger counter = new AtomicInteger();
-        for (int i = 0; i < numberOfThreads; i++) {
-            service.submit(() -> {
-                resourceLock.doAwait();
-                counter.incrementAndGet();
-                latch.countDown();
-            });
-        }
-        latch.await(100, TimeUnit.MILLISECONDS);
-        service.shutdownNow();
-        assertThat(numberOfThreads, not(counter.get()));
-    }
-    
-    @Test
-    public void assertDoNotify() throws InterruptedException {
-        int numberOfThreads = 10;
-        ResourceLock resourceLock = new ResourceLock();
-        ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
-        CountDownLatch latch = new CountDownLatch(numberOfThreads);
-        AtomicInteger counter = new AtomicInteger();
-        for (int i = 0; i < numberOfThreads; i++) {
-            service.submit(() -> {
-                resourceLock.doAwait();
-                counter.incrementAndGet();
-                latch.countDown();
-                resourceLock.doNotify();
-            });
-        }
-        latch.await();
-        assertThat(numberOfThreads, is(counter.get()));
+        long startTime = System.currentTimeMillis();
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        executorService.submit(() -> {
+            try {
+                Thread.sleep(50L);
+            } catch (final InterruptedException ignored) {
+            }
+            resourceLock.doNotify();
+        });
+        resourceLock.doAwait();
+        assertTrue(System.currentTimeMillis() - startTime < 200L);
     }
 }
