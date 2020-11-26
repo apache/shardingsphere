@@ -36,7 +36,6 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.junit.Test;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -125,7 +124,6 @@ public final class YamlProxyConfigurationSwapperTest {
         prepareProps(yamlProxyServerConfig);
         YamlProxyRuleConfiguration yamlProxyRuleConfig = prepareRuleConfigurations(result);
         when(yamlProxyRuleConfig.getSchemaName()).thenReturn("ruleConfigSchema1");
-        prepareDataSourceCommon(yamlProxyRuleConfig);
         prepareDataSource(yamlProxyRuleConfig);
         prepareDataSources(yamlProxyRuleConfig);
         prepareRules(yamlProxyRuleConfig);
@@ -170,10 +168,6 @@ public final class YamlProxyConfigurationSwapperTest {
         when(yamlDataSourceParameter.getMinPoolSize()).thenReturn(5);
         when(yamlDataSourceParameter.getMaintenanceIntervalMilliseconds()).thenReturn(6L);
         when(yamlDataSourceParameter.isReadOnly()).thenReturn(true);
-    }
-    
-    private void prepareDataSourceCommon(final YamlProxyRuleConfiguration yamlProxyRuleConfig) {
-        when(yamlProxyRuleConfig.getDataSourceCommon()).thenReturn(Collections.emptyMap());
     }
     
     private YamlProxyRuleConfiguration prepareRuleConfigurations(final YamlProxyConfiguration yamlProxyConfig) {
