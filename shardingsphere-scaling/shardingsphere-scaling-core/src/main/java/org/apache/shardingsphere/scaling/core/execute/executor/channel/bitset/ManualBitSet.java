@@ -83,7 +83,7 @@ public final class ManualBitSet {
      * @param size true bit size
      * @return index
      */
-    public synchronized long getSetEndIndex(final long fromIndex, final int size) {
+    public synchronized long getEndIndex(final long fromIndex, final int size) {
         if (size == 0) {
             return fromIndex;
         }
