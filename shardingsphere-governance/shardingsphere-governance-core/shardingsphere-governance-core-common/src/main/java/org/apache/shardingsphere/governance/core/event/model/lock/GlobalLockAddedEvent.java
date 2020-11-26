@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.lock.event;
+package org.apache.shardingsphere.governance.core.event.model.lock;
 
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 
 /**
- * Global lock add event.
+ * Global lock added event.
  */
-public final class GlobalLockAddEvent implements GovernanceEvent {
+public final class GlobalLockAddedEvent implements GovernanceEvent {
 }

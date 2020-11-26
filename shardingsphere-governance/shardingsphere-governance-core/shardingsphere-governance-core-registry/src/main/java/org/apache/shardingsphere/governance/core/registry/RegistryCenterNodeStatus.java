@@ -25,5 +25,10 @@ public enum RegistryCenterNodeStatus {
     /**
      * Disabled state.
      */
-    DISABLED
+    DISABLED,
+    
+    /**
+     * Locked state.
+     */
+    LOCKED
 }

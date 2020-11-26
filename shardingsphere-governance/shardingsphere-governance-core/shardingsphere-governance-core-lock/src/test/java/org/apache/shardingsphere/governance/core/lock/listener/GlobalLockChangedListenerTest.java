@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.lock.listener;
 
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.lock.event.GlobalLockAddEvent;
+import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockAddedEvent;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
@@ -49,6 +49,6 @@ public final class GlobalLockChangedListenerTest {
     public void createEvent() {
         Optional<GovernanceEvent> actual = globalLockChangedListener.createEvent(new DataChangedEvent("/glock", "", Type.ADDED));
         assertTrue(actual.isPresent());
-        assertTrue(actual.get() instanceof GlobalLockAddEvent);
+        assertTrue(actual.get() instanceof GlobalLockAddedEvent);
     }
 }
