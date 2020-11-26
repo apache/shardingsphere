@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.governance.core.lock.listener;
 
-import org.apache.shardingsphere.governance.core.lock.event.GlobalLockAddEvent;
-import org.apache.shardingsphere.governance.core.lock.node.GlobalLockNode;
 import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockAddedEvent;
+import org.apache.shardingsphere.governance.core.lock.node.GlobalLockNode;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 
@@ -32,12 +32,15 @@ import java.util.Optional;
  */
 public final class GlobalLockChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
+    private final GlobalLockNode globalLockNode;
+    
     public GlobalLockChangedListener(final RegistryRepository registryRepository) {
         super(registryRepository, Collections.singleton(new GlobalLockNode().getGlobalLockNodePath()));
+        globalLockNode = new GlobalLockNode();
     }
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        return Optional.of(new GlobalLockAddEvent());
+        return event.getKey().equals(globalLockNode.getGlobalLockNodePath()) ? Optional.of(new GlobalLockAddedEvent()) : Optional.empty();
     }
 }

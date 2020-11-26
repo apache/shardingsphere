@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry;
 
+import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockAddedEvent;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +30,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -79,5 +81,11 @@ public final class RegistryCenterTest {
         registryCenter.loadDisabledDataSources("replica_query_db");
         verify(registryRepository).getChildrenKeys(anyString());
         verify(registryRepository).get(anyString());
+    }
+    
+    @Test
+    public void assertLock() {
+        registryCenter.lock(new GlobalLockAddedEvent());
+        verify(registryRepository).persist(anyString(), eq(RegistryCenterNodeStatus.LOCK.toString()));
     }
 }
