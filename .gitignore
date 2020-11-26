@@ -38,3 +38,6 @@ Thumbs.db
 
 # antlr ignore
 src/main/antlr4/imports/**/gen/
+
+# agent build ignore
+/agent/
