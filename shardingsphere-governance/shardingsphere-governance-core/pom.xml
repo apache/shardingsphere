@@ -31,7 +31,6 @@
         <module>shardingsphere-governance-core-common</module>
         <module>shardingsphere-governance-core-config</module>
         <module>shardingsphere-governance-core-registry</module>
-        <module>shardingsphere-governance-core-context</module>
         <module>shardingsphere-governance-core-facade</module>
         <module>shardingsphere-governance-core-lock</module>
     </modules>

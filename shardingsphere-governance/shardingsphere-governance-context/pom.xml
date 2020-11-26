@@ -22,10 +22,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-governance-core</artifactId>
+        <artifactId>shardingsphere-governance</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-governance-core-context</artifactId>
+    <artifactId>shardingsphere-governance-context</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
