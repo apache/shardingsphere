@@ -141,10 +141,9 @@ public final class ShardingCTLHintBackendHandlerTest {
         assertThat(((QueryResponse) backendResponse).getQueryHeaders().get(0).getColumnLabel(), is("primary_only"));
         assertThat(((QueryResponse) backendResponse).getQueryHeaders().get(1).getColumnLabel(), is("sharding_type"));
         assertTrue(defaultHintBackendHandler.next());
-        List<Object> defaultRowData = (List<Object>) defaultHintBackendHandler.getRowData();
-        Iterator<Object> iterator = defaultRowData.iterator();
-        assertThat(iterator.next().toString(), is("false"));
-        assertThat(iterator.next().toString(), is("databases_tables"));
+        Iterator<Object> defaultRowData = defaultHintBackendHandler.getRowData().iterator();
+        assertThat(defaultRowData.next().toString(), is("false"));
+        assertThat(defaultRowData.next().toString(), is("databases_tables"));
         assertFalse(defaultHintBackendHandler.next());
         String setPrimaryOnlySQL = "sctl:hint set primary_only=true";
         String setDatabaseOnlySQL = "sctl:hint set DatabaseShardingValue=100";
@@ -153,10 +152,9 @@ public final class ShardingCTLHintBackendHandlerTest {
         ShardingCTLHintBackendHandler updateHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         updateHintBackendHandler.execute();
         assertTrue(updateHintBackendHandler.next());
-        List<Object> updateRowData = (List<Object>) updateHintBackendHandler.getRowData();
-        Iterator<Object> iteratorUpdateRowData = updateRowData.iterator();
-        assertThat(iteratorUpdateRowData.next().toString(), is("true"));
-        assertThat(iteratorUpdateRowData.next().toString(), is("databases_only"));
+        Iterator<Object> updateRowData = updateHintBackendHandler.getRowData().iterator();
+        assertThat(updateRowData.next().toString(), is("true"));
+        assertThat(updateRowData.next().toString(), is("databases_only"));
         assertFalse(updateHintBackendHandler.next());
     }
     
@@ -178,11 +176,10 @@ public final class ShardingCTLHintBackendHandlerTest {
         assertThat(((QueryResponse) backendResponse).getQueryHeaders().get(1).getColumnLabel(), is("database_sharding_values"));
         assertThat(((QueryResponse) backendResponse).getQueryHeaders().get(2).getColumnLabel(), is("table_sharding_values"));
         assertTrue(defaultHintBackendHandler.next());
-        List<Object> defaultRowData = (List<Object>) defaultHintBackendHandler.getRowData();
-        Iterator<Object> iterator = defaultRowData.iterator();
-        assertThat(iterator.next().toString(), is("user"));
-        assertThat(iterator.next().toString(), is(""));
-        assertThat(iterator.next().toString(), is(""));
+        Iterator<Object> defaultRowData = defaultHintBackendHandler.getRowData().iterator();
+        assertThat(defaultRowData.next().toString(), is("user"));
+        assertThat(defaultRowData.next().toString(), is(""));
+        assertThat(defaultRowData.next().toString(), is(""));
         assertFalse(defaultHintBackendHandler.next());
         String addDatabaseShardingValueSQL = "sctl:hint addDatabaseshardingvalue user=100";
         String addTableShardingValueSQL1 = "sctl:hint addTableshardingvalue user=200";
@@ -193,11 +190,10 @@ public final class ShardingCTLHintBackendHandlerTest {
         ShardingCTLHintBackendHandler updateHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         updateHintBackendHandler.execute();
         assertTrue(updateHintBackendHandler.next());
-        List<Object> updateRowData = (List<Object>) updateHintBackendHandler.getRowData();
-        Iterator<Object> iteratorUpdateRowData = updateRowData.iterator();
-        assertThat(iteratorUpdateRowData.next().toString(), is("user"));
-        assertThat(iteratorUpdateRowData.next().toString(), is("100"));
-        assertThat(iteratorUpdateRowData.next().toString(), is("200,300"));
+        Iterator<Object> updateRowData = updateHintBackendHandler.getRowData().iterator();
+        assertThat(updateRowData.next().toString(), is("user"));
+        assertThat(updateRowData.next().toString(), is("100"));
+        assertThat(updateRowData.next().toString(), is("200,300"));
         assertFalse(updateHintBackendHandler.next());
     }
     
