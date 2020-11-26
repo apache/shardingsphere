@@ -17,20 +17,13 @@
 
 package org.apache.shardingsphere.sharding.algorithm.keygen.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     private final AtomicInteger count = new AtomicInteger();
-    
-    @Getter
-    @Setter
-    private Properties props = new Properties();
     
     @Override
     public void init() {

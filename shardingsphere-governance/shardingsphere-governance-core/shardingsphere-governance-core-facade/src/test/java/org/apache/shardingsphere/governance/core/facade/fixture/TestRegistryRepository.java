@@ -17,22 +17,15 @@
 
 package org.apache.shardingsphere.governance.core.facade.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-@Getter
-@Setter
 public final class TestRegistryRepository implements RegistryRepository {
-    
-    private Properties props = new Properties();
     
     @Override
     public void init(final String name, final GovernanceCenterConfiguration config) {

@@ -29,16 +29,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-@Getter
-@Setter
 public final class FixtureRegistryRepository implements RegistryRepository, ConfigurationRepository {
     
     private static final Node REGISTRY_DATA = new Node();
-    
-    private Properties props = new Properties();
     
     @Override
     public void init(final String name, final GovernanceCenterConfiguration config) {

@@ -24,12 +24,9 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.Properties;
 import java.util.Set;
 
 public final class StandardModuloShardingTableAlgorithm implements StandardShardingAlgorithm<Long> {
-    
-    private Properties props = new Properties();
     
     @Override
     public void init() {
@@ -58,16 +55,6 @@ public final class StandardModuloShardingTableAlgorithm implements StandardShard
             throw new UnsupportedOperationException("");
         }
         return result;
-    }
-    
-    @Override
-    public Properties getProps() {
-        return props;
-    }
-    
-    @Override
-    public void setProps(final Properties props) {
-        this.props = props;
     }
     
     @Override

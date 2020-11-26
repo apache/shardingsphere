@@ -22,7 +22,6 @@ import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
 
 import javax.sql.XADataSource;
 import javax.transaction.TransactionManager;
-import java.util.Properties;
 
 public final class FixtureXATransactionManager implements XATransactionManager {
     
@@ -54,15 +53,5 @@ public final class FixtureXATransactionManager implements XATransactionManager {
     @Override
     public String getType() {
         return "fixture";
-    }
-    
-    @Override
-    public Properties getProps() {
-        return null;
-    }
-    
-    @Override
-    public void setProps(final Properties props) {
-        
     }
 }
