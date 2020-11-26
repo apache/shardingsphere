@@ -35,6 +35,7 @@ import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
+import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
@@ -207,6 +208,10 @@ public final class ConfigCenter {
                 ShadowRuleConfiguration config = (ShadowRuleConfiguration) each;
                 boolean isShadow = !config.getColumn().isEmpty() && null != config.getSourceDataSourceNames() && null != config.getShadowDataSourceNames();
                 Preconditions.checkState(isShadow, "No available shadow rule configuration in `%s` for governance.", schemaName);
+                configs.add(each);
+            } else if (each instanceof HARuleConfiguration) {
+                HARuleConfiguration config = (HARuleConfiguration) each;
+                Preconditions.checkState(!config.getHaType().getType().isEmpty(), "No available HA rule configuration in `%s` for governance.", schemaName);
                 configs.add(each);
             }
         }

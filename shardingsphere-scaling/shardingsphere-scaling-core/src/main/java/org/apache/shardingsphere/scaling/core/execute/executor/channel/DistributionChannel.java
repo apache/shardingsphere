@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.channel;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.AutoAcknowledgeBitSetChannel;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.BitSetChannel;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.BlockingQueueBitSetChannel;
@@ -40,6 +41,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Distribution channel.
  */
+@Slf4j
 public final class DistributionChannel implements Channel {
     
     private final int channelNumber;
@@ -106,14 +108,20 @@ public final class DistributionChannel implements Channel {
     }
     
     private synchronized void ackRecords0() {
-        int count = shouldAckCount();
-        if (0 == count) {
-            return;
-        }
-        ackCallback.onAck(fetchAckRecords(count));
-        lastAckIndex += count;
-        for (BitSetChannel channel : channels) {
-            channel.clear(lastAckIndex);
+        try {
+            int count = shouldAckCount();
+            if (0 == count) {
+                return;
+            }
+            ackCallback.onAck(fetchAckRecords(count));
+            lastAckIndex += count;
+            for (BitSetChannel channel : channels) {
+                channel.clear(lastAckIndex);
+            }
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("distribution channel auto ack failed.", ex);
         }
     }
     
@@ -157,6 +165,7 @@ public final class DistributionChannel implements Channel {
         for (int i = 0; i < channels.length; i++) {
             if (!channelAssignment.containsValue(i)) {
                 channelAssignment.put(threadId, i);
+                return;
             }
         }
     }

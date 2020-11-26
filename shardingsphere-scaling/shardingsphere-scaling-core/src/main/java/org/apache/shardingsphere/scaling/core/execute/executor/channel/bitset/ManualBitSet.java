@@ -83,7 +83,7 @@ public final class ManualBitSet {
      * @param size true bit size
      * @return index
      */
-    public synchronized long getSetEndIndex(final long fromIndex, final int size) {
+    public synchronized long getEndIndex(final long fromIndex, final int size) {
         if (size == 0) {
             return fromIndex;
         }
@@ -107,10 +107,10 @@ public final class ManualBitSet {
      * @param bitIndex retain bit index
      */
     public void clear(final long bitIndex) {
-        if ((bitIndex - startIndex) / BIT_SET_SIZE > 10) {
+        if ((bitIndex - startIndex) > BIT_SET_SIZE) {
             synchronized (this) {
-                int count = (int) ((bitIndex - startIndex) / BIT_SET_SIZE);
-                if (count > 10) {
+                int count = Math.min(bitSets.size(), (int) ((bitIndex - startIndex) / BIT_SET_SIZE));
+                if (count > 0) {
                     bitSets.subList(0, count).clear();
                     startIndex += count * BIT_SET_SIZE;
                 }

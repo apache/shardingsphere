@@ -52,5 +52,10 @@
             <artifactId>shardingsphere-shadow-common</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-ha-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

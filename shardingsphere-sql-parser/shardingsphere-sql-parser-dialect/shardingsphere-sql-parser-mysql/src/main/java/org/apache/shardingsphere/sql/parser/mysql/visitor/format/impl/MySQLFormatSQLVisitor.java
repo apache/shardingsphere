@@ -24,10 +24,15 @@ import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AliasContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterCommandListContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterListContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterTableActionsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateDefinitionClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateTableOptionsSpaceSeparatedContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CteClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExplicitTableContext;
@@ -46,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryEx
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QuerySpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RowConstructorListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StandaloneAlterTableActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableElementListContext;
@@ -204,6 +210,96 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     public String visitTableValueConstructor(final TableValueConstructorContext ctx) {
         formatPrint("VALUES ");
         visit(ctx.rowConstructorList());
+        return result.toString();
+    }
+
+    @Override
+    public String visitAlterTable(final AlterTableContext ctx) {
+        visit(ctx.ALTER());
+        formatPrint(" ");
+        visit(ctx.TABLE());
+        formatPrint(" ");
+        visit(ctx.tableName());
+        if (null != ctx.alterTableActions()) {
+            indentCount++;
+            formatPrintln();
+            visit(ctx.alterTableActions());
+            indentCount--;
+        } else if (null != ctx.standaloneAlterTableAction()) {
+            indentCount++;
+            formatPrintln();
+            visit(ctx.standaloneAlterTableAction());
+            indentCount--;
+        }
+        return result.toString();
+    }
+
+    @Override
+    public String visitAlterTableActions(final AlterTableActionsContext ctx) {
+        if (null != ctx.alterCommandList()) {
+            visit(ctx.alterCommandList());
+            if (null != ctx.alterTablePartitionOptions()) {
+                formatPrintln();
+                visit(ctx.alterTablePartitionOptions());
+            }
+        } else {
+            visit(ctx.alterTablePartitionOptions());
+        }
+        return result.toString();
+    }
+
+    @Override
+    public String visitAlterCommandList(final AlterCommandListContext ctx) {
+        if (null != ctx.alterCommandsModifierList()) {
+            visit(ctx.alterCommandsModifierList());
+            if (null != ctx.alterList()) {
+                formatPrintln(",");
+                visit(ctx.alterList());
+            }
+        } else if (null != ctx.alterList()) {
+            visit(ctx.alterList());
+        }
+        return result.toString();
+    }
+
+    @Override
+    public String visitAlterList(final AlterListContext ctx) {
+        int childCount = ctx.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            ParseTree child = ctx.getChild(i);
+            if (i != 0) {
+                if (child instanceof TerminalNode) {
+                    formatPrintln(",");
+                    continue;
+                } else {
+                    child.accept(this);
+                }
+            } else {
+                child.accept(this);
+            }
+        }
+        return result.toString();
+    }
+
+    @Override
+    public String visitCreateTableOptionsSpaceSeparated(final CreateTableOptionsSpaceSeparatedContext ctx) {
+        int childCount = ctx.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            if (0 != i) {
+                formatPrintln();
+            }
+            visit(ctx.getChild(i));
+        }
+        return result.toString();
+    }
+
+    @Override
+    public String visitStandaloneAlterTableAction(final StandaloneAlterTableActionContext ctx) {
+        if (null != ctx.alterCommandsModifierList()) {
+            visit(ctx.alterCommandsModifierList());
+            formatPrintln(",");
+        }
+        visit(ctx.standaloneAlterCommands());
         return result.toString();
     }
 

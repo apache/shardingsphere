@@ -53,7 +53,7 @@ public final class BlockingQueueBitSetChannel extends AbstractBitSetChannel {
         }
         queue.drainTo(result, batchSize);
         getToBeAckRecords().addAll(result);
-        fetchedIndex = getManualBitSet().getSetEndIndex(fetchedIndex, result.size());
+        fetchedIndex = getManualBitSet().getEndIndex(fetchedIndex, result.size());
         return result;
     }
     

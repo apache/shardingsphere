@@ -49,6 +49,9 @@ public final class HARuleConfigurationYamlSwapper
         if (null != data.getLoadBalancers()) {
             data.getLoadBalancers().forEach((key, value) -> result.getLoadBalancers().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         }
+        if (null != data.getHaType()) {
+            result.setHaType(algorithmSwapper.swapToYamlConfiguration(data.getHaType()));
+        }
         return result;
     }
     
