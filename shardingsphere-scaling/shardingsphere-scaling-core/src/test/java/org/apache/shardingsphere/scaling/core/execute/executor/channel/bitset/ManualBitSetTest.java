@@ -36,11 +36,11 @@ public final class ManualBitSetTest {
     @Test
     public void assertGet() {
         ManualBitSet bitSet = new ManualBitSet();
-        IntStream.range(0, 10).forEach(bitSet::set);
-        assertFalse(bitSet.get(0, 9).get(9));
-        assertTrue(bitSet.get(0, 10).get(9));
-        assertFalse(bitSet.get(0, 10).get(10));
-        assertFalse(bitSet.get(0, 11).get(10));
+        IntStream.range(0, 1024).forEach(bitSet::set);
+        assertFalse(bitSet.get(0, 1023).get(1023));
+        assertTrue(bitSet.get(0, 1024).get(1023));
+        assertFalse(bitSet.get(0, 1024).get(1024));
+        assertFalse(bitSet.get(0, 1025).get(1024));
     }
     
     @Test

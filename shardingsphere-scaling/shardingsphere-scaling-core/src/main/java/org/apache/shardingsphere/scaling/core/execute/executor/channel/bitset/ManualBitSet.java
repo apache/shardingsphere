@@ -63,6 +63,9 @@ public final class ManualBitSet {
         int listFromIndex = correctFromIndex / BIT_SET_SIZE;
         int listToIndex = correctToIndex / BIT_SET_SIZE;
         for (int i = listFromIndex, k = 0; i <= listToIndex; i++) {
+            if (i >= bitSets.size()) {
+                break;
+            }
             BitSet bitSet = bitSets.get(i);
             int begin = i == listFromIndex ? correctFromIndex % BIT_SET_SIZE : 0;
             int end = i == listToIndex ? correctToIndex % BIT_SET_SIZE : BIT_SET_SIZE;
