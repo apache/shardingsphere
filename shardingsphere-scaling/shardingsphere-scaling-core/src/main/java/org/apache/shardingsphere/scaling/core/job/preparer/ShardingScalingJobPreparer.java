@@ -33,14 +33,12 @@ import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChe
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceCheckerCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.preparer.resumer.SyncPositionResumer;
 import org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryDataTaskSplitter;
-import org.apache.shardingsphere.scaling.core.job.preparer.utils.JobPrepareUtil;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultSyncTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.SyncTaskFactory;
 import org.apache.shardingsphere.scaling.core.schedule.SyncTaskControlStatus;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -97,9 +95,7 @@ public final class ShardingScalingJobPreparer {
         for (SyncConfiguration each : shardingScalingJob.getSyncConfigs()) {
             allInventoryDataTasks.addAll(inventoryDataTaskSplitter.splitInventoryData(each, dataSourceManager));
         }
-        for (Collection<ScalingTask> each : JobPrepareUtil.groupInventoryDataTasks(shardingScalingJob.getSyncConfigs().get(0).getConcurrency(), allInventoryDataTasks)) {
-            shardingScalingJob.getInventoryDataTasks().add(syncTaskFactory.createInventoryDataSyncTaskGroup(each));
-        }
+        shardingScalingJob.getInventoryDataTasks().addAll(allInventoryDataTasks);
     }
     
     private void initIncrementalDataTasks(final String databaseType, final ShardingScalingJob shardingScalingJob, final DataSourceManager dataSourceManager) {
