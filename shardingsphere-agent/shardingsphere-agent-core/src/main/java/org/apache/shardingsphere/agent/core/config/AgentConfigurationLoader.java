@@ -43,7 +43,7 @@ public final class AgentConfigurationLoader {
      */
     public static AgentConfiguration load() throws IOException {
         String specifiedConfigPath = System.getProperty(SPECIFIED_CONFIG_PATH);
-        File configFile = null == specifiedConfigPath ? new File(AgentPathLocator.findPath(), DEFAULT_CONFIG_PATH) : new File(specifiedConfigPath);
+        File configFile = null == specifiedConfigPath ? new File(AgentPathLocator.getAgentPath(), DEFAULT_CONFIG_PATH) : new File(specifiedConfigPath);
         return loadAgentConfiguration(configFile);
     }
 
