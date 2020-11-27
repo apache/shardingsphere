@@ -22,6 +22,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.core.exception.ShardingSphereAgentException;
 
@@ -29,46 +30,46 @@ import org.apache.shardingsphere.agent.core.exception.ShardingSphereAgentExcepti
  * Agent path locator.
  */
 @Slf4j
-public class AgentPathLocator {
+public final class AgentPathLocator {
     
+    @Getter
     private static File agentPath;
     
     static {
         agentPath = locatorPath();
     }
     
-    /**
-     * Find path file.
-     *
-     * @return file
-     */
-    public static File findPath() {
-        return agentPath;
-    }
-    
-    private static File locatorPath() throws ShardingSphereAgentException {
+    private static File locatorPath() {
         String classResourcePath = AgentPathLocator.class.getName().replaceAll("\\.", "/") + ".class";
         URL resource = ClassLoader.getSystemClassLoader().getResource(classResourcePath);
         if (resource != null) {
             String url = resource.toString();
             log.debug("The beacon class location is {}.", url);
-            int insidePathIndex = url.indexOf('!');
-            boolean isInJar = insidePathIndex > -1;
+            int insideIndex = url.indexOf('!');
+            boolean isInJar = insideIndex > -1;
             if (isInJar) {
-                url = url.substring(url.indexOf("file:"), insidePathIndex);
-                try {
-                    File agentJarFile = new File(new URL(url).toURI());
-                    return agentJarFile.exists() ? agentJarFile.getParentFile() : null;
-                } catch (MalformedURLException | URISyntaxException e) {
-                    log.error("Can not locate agent jar file by url:" + url);
-                }
+                return getFileInJar(url, insideIndex);
             } else {
-                int prefixLength = "file:".length();
-                String classLocation = url.substring(prefixLength, url.length() - classResourcePath.length());
-                return new File(classLocation);
+                return getFileInResource(url, classResourcePath);
             }
         }
-        log.error("Can not locate agent jar file.");
         throw new ShardingSphereAgentException("Can not locate agent jar file.");
+    }
+    
+    private static File getFileInResource(final String url, final String classResourcePath) {
+        int prefixLength = "file:".length();
+        String classLocation = url.substring(prefixLength, url.length() - classResourcePath.length());
+        return new File(classLocation);
+    }
+    
+    private static File getFileInJar(final String url, final int insidePathIndex) {
+        String realUrl = url.substring(url.indexOf("file:"), insidePathIndex);
+        try {
+            File agentJarFile = new File(new URL(realUrl).toURI());
+            return agentJarFile.exists() ? agentJarFile.getParentFile() : null;
+        } catch (MalformedURLException | URISyntaxException e) {
+            log.error("Can not locate agent jar file by url:" + url);
+            return null;
+        }
     }
 }
