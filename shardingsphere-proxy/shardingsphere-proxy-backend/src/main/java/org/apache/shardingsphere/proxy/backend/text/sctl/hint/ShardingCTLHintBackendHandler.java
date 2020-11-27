@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintComma
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintCommandExecutorFactory;
 
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -65,7 +65,7 @@ public final class ShardingCTLHintBackendHandler implements TextProtocolBackendH
     }
     
     @Override
-    public List<Object> getRowData() throws SQLException {
+    public Collection<Object> getRowData() throws SQLException {
         return hintCommandExecutor.getQueryData().getData();
     }
 }
