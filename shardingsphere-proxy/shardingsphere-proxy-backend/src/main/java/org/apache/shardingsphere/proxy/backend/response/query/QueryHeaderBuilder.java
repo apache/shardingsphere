@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -37,59 +36,6 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class QueryHeaderBuilder {
-    
-    /**
-     * Build query header builder.
-     * 
-     * @param resultSetMetaData result set meta data
-     * @param metaData meta data name
-     * @param columnIndex column index 
-     * @return query header
-     * @throws SQLException SQL exception
-     */
-    public static QueryHeader build(final ResultSetMetaData resultSetMetaData, final ShardingSphereMetaData metaData, final int columnIndex) throws SQLException {
-        return build(resultSetMetaData, metaData, resultSetMetaData.getColumnName(columnIndex), columnIndex);
-    }
-    
-    /**
-     * Build query header builder.
-     * 
-     * @param projectionsContext projections context
-     * @param resultSetMetaData result set meta data
-     * @param metaData meta data name
-     * @param columnIndex column index
-     * @return query header
-     * @throws SQLException SQL exception
-     */
-    public static QueryHeader build(final ProjectionsContext projectionsContext,
-                                    final ResultSetMetaData resultSetMetaData, final ShardingSphereMetaData metaData, final int columnIndex) throws SQLException {
-        return build(resultSetMetaData, metaData, getColumnName(projectionsContext, resultSetMetaData, columnIndex), columnIndex);
-    }
-    
-    private static QueryHeader build(final ResultSetMetaData resultSetMetaData, final ShardingSphereMetaData metaData, final String columnName, final int columnIndex) throws SQLException {
-        String schemaName = metaData.getName();
-        String actualTableName = resultSetMetaData.getTableName(columnIndex);
-        Optional<DataNodeContainedRule> dataNodeContainedRule = 
-                metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
-        String tableName;
-        boolean primaryKey;
-        if (null != actualTableName && dataNodeContainedRule.isPresent()) {
-            tableName = dataNodeContainedRule.get().findLogicTableByActualTable(actualTableName).orElse("");
-            TableMetaData tableMetaData = metaData.getSchema().get(tableName);
-            primaryKey = null != tableMetaData && tableMetaData.getColumns().get(columnName.toLowerCase()).isPrimaryKey();
-        } else {
-            tableName = actualTableName;
-            primaryKey = false;
-        }
-        String columnLabel = resultSetMetaData.getColumnLabel(columnIndex);
-        int columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
-        int columnType = resultSetMetaData.getColumnType(columnIndex);
-        int decimals = resultSetMetaData.getScale(columnIndex);
-        boolean signed = resultSetMetaData.isSigned(columnIndex);
-        boolean notNull = resultSetMetaData.isNullable(columnIndex) == ResultSetMetaData.columnNoNulls;
-        boolean autoIncrement = resultSetMetaData.isAutoIncrement(columnIndex);
-        return new QueryHeader(schemaName, tableName, columnLabel, columnName, columnLength, columnType, decimals, signed, primaryKey, notNull, autoIncrement);
-    }
     
     /**
      * Build query header builder.
@@ -142,11 +88,6 @@ public final class QueryHeaderBuilder {
         boolean notNull = executeQueryResult.getQueryResultSet().isNotNull(columnIndex);
         boolean autoIncrement = executeQueryResult.getQueryResultSet().isAutoIncrement(columnIndex);
         return new QueryHeader(schemaName, tableName, columnLabel, columnName, columnLength, columnType, decimals, signed, primaryKey, notNull, autoIncrement);
-    }
-    
-    private static String getColumnName(final ProjectionsContext projectionsContext, final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
-        Projection projection = projectionsContext.getExpandProjections().get(columnIndex - 1);
-        return projection instanceof ColumnProjection ? ((ColumnProjection) projection).getName() : resultSetMetaData.getColumnName(columnIndex);
     }
     
     private static String getColumnName(final ProjectionsContext projectionsContext, final ExecuteQueryResult executeQueryResult, final int columnIndex) throws SQLException {

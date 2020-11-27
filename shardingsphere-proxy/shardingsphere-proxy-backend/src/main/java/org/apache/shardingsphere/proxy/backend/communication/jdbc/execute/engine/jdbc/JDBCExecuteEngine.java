@@ -113,7 +113,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
             int columnCount = ((ExecuteQueryResult) executeResult).getQueryResultSet().getColumnCount();
             List<QueryHeader> queryHeaders = new ArrayList<>(columnCount);
             for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                if (executionContext.getSqlStatementContext() instanceof SelectStatementContext) {
+                if (hasSelectExpandProjections(executionContext.getSqlStatementContext())) {
                     queryHeaders.add(QueryHeaderBuilder.build(
                             ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), (ExecuteQueryResult) executeResult, metaData, columnIndex));
                 } else {
@@ -146,8 +146,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
                                                         final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getDatabaseType();
         return jdbcExecutor.execute(createExecutionGroups(executionContext.getExecutionUnits(), maxConnectionsSizePerQuery, isReturnGeneratedKeys, executionContext.getRouteContext()),
-                new ProxyJDBCExecutorCallback(databaseType, executionContext.getSqlStatementContext(), backendConnection, accessor, isExceptionThrown, isReturnGeneratedKeys, true),
-                new ProxyJDBCExecutorCallback(databaseType, executionContext.getSqlStatementContext(), backendConnection, accessor, isExceptionThrown, isReturnGeneratedKeys, false));
+                new ProxyJDBCExecutorCallback(databaseType, backendConnection, accessor, isExceptionThrown, isReturnGeneratedKeys, true),
+                new ProxyJDBCExecutorCallback(databaseType, backendConnection, accessor, isExceptionThrown, isReturnGeneratedKeys, false));
     }
     
     private Collection<ExecutionGroup<JDBCExecutionUnit>> createExecutionGroups(final Collection<ExecutionUnit> executionUnits, final int maxConnectionsSizePerQuery,
@@ -172,5 +172,9 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
             result.getQueryResultSets().add(((ExecuteQueryResult) each).getQueryResultSet());
         }
         return result;
+    }
+
+    private boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
+        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
     }
 }

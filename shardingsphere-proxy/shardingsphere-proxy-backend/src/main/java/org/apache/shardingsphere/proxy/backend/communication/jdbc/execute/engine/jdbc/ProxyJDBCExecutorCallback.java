@@ -17,38 +17,26 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine.jdbc;
 
-import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.MemoryJDBCQueryResultSet;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResultSet;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.ExecuteUpdateResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.JDBCAccessor;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryHeaderBuilder;
 
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * JDBC executor callback for proxy.
  */
 public final class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<ExecuteResult> {
-    
-    private final SQLStatementContext<?> sqlStatementContext;
     
     private final BackendConnection backendConnection;
     
@@ -60,11 +48,9 @@ public final class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Execut
     
     private boolean hasMetaData;
     
-    public ProxyJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext,
-                                     final BackendConnection backendConnection, final JDBCAccessor accessor,
+    public ProxyJDBCExecutorCallback(final DatabaseType databaseType, final BackendConnection backendConnection, final JDBCAccessor accessor,
                                      final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
         super(databaseType, isExceptionThrown);
-        this.sqlStatementContext = sqlStatementContext;
         this.backendConnection = backendConnection;
         this.accessor = accessor;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
@@ -85,39 +71,9 @@ public final class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Execut
         if (accessor.execute(statement, sql, isReturnGeneratedKeys)) {
             ResultSet resultSet = statement.getResultSet();
             backendConnection.add(resultSet);
-            QueryResultSet queryResultSet = createQueryResultSet(resultSet, connectionMode);
-            return new ExecuteQueryResult(withMetadata ? getQueryHeaders(sqlStatementContext, resultSet.getMetaData()) : null, queryResultSet);
+            return new ExecuteQueryResult(createQueryResultSet(resultSet, connectionMode));
         }
         return new ExecuteUpdateResult(statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
-    }
-    
-    private List<QueryHeader> getQueryHeaders(final SQLStatementContext<?> sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
-        if (isHasSelectExpandProjections()) {
-            return getQueryHeaders(((SelectStatementContext) sqlStatementContext).getProjectionsContext(), resultSetMetaData);
-        }
-        return getQueryHeaders(resultSetMetaData);
-    }
-    
-    private List<QueryHeader> getQueryHeaders(final ProjectionsContext projectionsContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
-        List<QueryHeader> result = new LinkedList<>();
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
-        for (int columnIndex = 1; columnIndex <= projectionsContext.getExpandProjections().size(); columnIndex++) {
-            result.add(QueryHeaderBuilder.build(projectionsContext, resultSetMetaData, metaData, columnIndex));
-        }
-        return result;
-    }
-    
-    private List<QueryHeader> getQueryHeaders(final ResultSetMetaData resultSetMetaData) throws SQLException {
-        List<QueryHeader> result = new LinkedList<>();
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
-        for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
-            result.add(QueryHeaderBuilder.build(resultSetMetaData, metaData, columnIndex));
-        }
-        return result;
-    }
-    
-    private boolean isHasSelectExpandProjections() {
-        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
     }
     
     private QueryResultSet createQueryResultSet(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {

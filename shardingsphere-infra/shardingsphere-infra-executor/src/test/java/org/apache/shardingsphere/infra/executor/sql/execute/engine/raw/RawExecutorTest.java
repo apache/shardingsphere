@@ -50,7 +50,7 @@ public final class RawExecutorTest {
     @Test
     public void assertExecuteForExecuteQueryResult() throws SQLException {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
-        when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenReturn(Collections.singletonList(new ExecuteQueryResult(null, null)));
+        when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenReturn(Collections.singletonList(new ExecuteQueryResult(null)));
         RawExecutor executor = new RawExecutor(executorEngine, true);
         assertTrue(executor.execute(null, null));
     }
