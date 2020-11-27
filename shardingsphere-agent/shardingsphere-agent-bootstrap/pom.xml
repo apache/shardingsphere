@@ -47,7 +47,6 @@
             <artifactId>byte-buddy</artifactId>
             <version>${bytebuddy.version}</version>
         </dependency>
-
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy-agent</artifactId>
@@ -61,9 +60,6 @@
         <plugins>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
-                <configuration>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
-                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -72,7 +68,7 @@
                         </goals>
                         <configuration>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <createDependencyReducedPom>true</createDependencyReducedPom>
                             <createSourcesJar>true</createSourcesJar>
                             <shadeSourcesContent>true</shadeSourcesContent>
                             <transformers>
@@ -88,11 +84,11 @@
                                 <excludes>
                                     <exclude>net.bytebuddy:byte-buddy:jar:</exclude>
                                     <exclude>com.google.*:*</exclude>
-                                    <exclude>com.google.guava:guava</exclude>
-                                    <exclude>org.checkerframework:checker-compat-qual</exclude>
-                                    <exclude>org.codehaus.mojo:animal-sniffer-annotations</exclude>
-                                    <exclude>io.perfmark:*</exclude>
+                                    <exclude>com.google.guava:guava:*</exclude>
+                                    <exclude>org.checkerframework:checker-qual:*</exclude>
                                     <exclude>org.slf4j:*</exclude>
+                                    <exclude>org.yaml:snakeyaml:*</exclude>
+                                    <exclude>org.apache.commons:logging:*</exclude>
                                 </excludes>
                             </artifactSet>
                             <relocations>

@@ -6,6 +6,7 @@ target/
 *.zip
 *.tar
 *.tar.gz
+dependency-reduced-pom.xml
 
 # maven plugin ignore
 release.properties

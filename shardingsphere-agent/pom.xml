@@ -30,9 +30,9 @@
     <name>${project.artifactId}</name>
 
     <modules>
-        <module>shardingsphere-agent-distribution</module>
         <module>shardingsphere-agent-bootstrap</module>
         <module>shardingsphere-agent-core</module>
         <module>shardingsphere-agent-plugins</module>
+        <module>shardingsphere-agent-distribution</module>
     </modules>
 </project>
