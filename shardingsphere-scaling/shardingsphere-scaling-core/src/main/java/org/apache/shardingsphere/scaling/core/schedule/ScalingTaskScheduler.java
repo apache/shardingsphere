@@ -70,7 +70,7 @@ public final class ScalingTaskScheduler implements Runnable {
         log.info("Start inventory data sync task.");
         ExecuteCallback inventoryDataTaskCallback = createInventoryDataTaskCallback();
         for (ScalingTask each : shardingScalingJob.getInventoryDataTasks()) {
-            ScalingContext.getInstance().getTaskExecuteEngine().submit(each, inventoryDataTaskCallback);
+            ScalingContext.getInstance().getInventoryDumperExecuteEngine().submit(each, inventoryDataTaskCallback);
         }
     }
     
@@ -101,7 +101,7 @@ public final class ScalingTaskScheduler implements Runnable {
         }
         ExecuteCallback incrementalDataTaskCallback = createIncrementalDataTaskCallback();
         for (ScalingTask each : shardingScalingJob.getIncrementalDataTasks()) {
-            ScalingContext.getInstance().getTaskExecuteEngine().submit(each, incrementalDataTaskCallback);
+            ScalingContext.getInstance().getIncrementalDumperExecuteEngine().submit(each, incrementalDataTaskCallback);
         }
         shardingScalingJob.setStatus(SyncTaskControlStatus.SYNCHRONIZE_INCREMENTAL_DATA.name());
     }
