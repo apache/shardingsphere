@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 public final class GroupByValueTest {
     
     @Mock
-    private QueryResultSet queryResultSet;
+    private ExecuteQueryResult queryResultSet;
     
     @Before
     public void setUp() throws SQLException {

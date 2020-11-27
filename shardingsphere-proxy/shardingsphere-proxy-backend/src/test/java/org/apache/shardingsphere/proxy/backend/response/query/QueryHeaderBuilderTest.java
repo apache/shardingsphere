@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryHeader;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -146,17 +146,17 @@ public final class QueryHeaderBuilderTest {
     }
     
     private ExecuteQueryResult createExecuteQueryResult() throws SQLException {
-        ExecuteQueryResult result = mock(ExecuteQueryResult.class, RETURNS_DEEP_STUBS);
-        when(result.getQueryResultSet().getTableName(1)).thenReturn("t_order");
-        when(result.getQueryResultSet().getColumnLabel(1)).thenReturn("order_id");
-        when(result.getQueryResultSet().getColumnName(1)).thenReturn("order_id");
-        when(result.getQueryResultSet().getColumnName(2)).thenReturn("expr");
-        when(result.getQueryResultSet().getColumnType(1)).thenReturn(Types.INTEGER);
-        when(result.getQueryResultSet().isSigned(1)).thenReturn(true);
-        when(result.getQueryResultSet().isAutoIncrement(1)).thenReturn(true);
-        when(result.getQueryResultSet().getColumnLength(1)).thenReturn(1);
-        when(result.getQueryResultSet().getDecimals(1)).thenReturn(1);
-        when(result.getQueryResultSet().isNotNull(1)).thenReturn(true);
+        ExecuteQueryResult result = mock(ExecuteQueryResult.class);
+        when(result.getTableName(1)).thenReturn("t_order");
+        when(result.getColumnLabel(1)).thenReturn("order_id");
+        when(result.getColumnName(1)).thenReturn("order_id");
+        when(result.getColumnName(2)).thenReturn("expr");
+        when(result.getColumnType(1)).thenReturn(Types.INTEGER);
+        when(result.isSigned(1)).thenReturn(true);
+        when(result.isAutoIncrement(1)).thenReturn(true);
+        when(result.getColumnLength(1)).thenReturn(1);
+        when(result.getDecimals(1)).thenReturn(1);
+        when(result.isNotNull(1)).thenReturn(true);
         return result;
     }
 }

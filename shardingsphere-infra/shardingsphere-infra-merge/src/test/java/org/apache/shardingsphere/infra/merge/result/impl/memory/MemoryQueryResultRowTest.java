@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.merge.result.impl.memory;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,7 +34,7 @@ public final class MemoryQueryResultRowTest {
     
     @Before
     public void setUp() throws SQLException {
-        QueryResultSet queryResultSet = mock(QueryResultSet.class);
+        ExecuteQueryResult queryResultSet = mock(ExecuteQueryResult.class);
         when(queryResultSet.getColumnCount()).thenReturn(1);
         when(queryResultSet.getValue(1, Object.class)).thenReturn("value");
         memoryResultSetRow = new MemoryQueryResultRow(queryResultSet);

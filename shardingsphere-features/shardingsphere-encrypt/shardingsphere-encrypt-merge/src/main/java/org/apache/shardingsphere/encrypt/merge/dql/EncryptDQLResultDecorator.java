@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.merge.dql;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
@@ -36,7 +36,7 @@ public final class EncryptDQLResultDecorator implements ResultDecorator<EncryptR
     private final boolean queryWithCipherColumn;
     
     @Override
-    public MergedResult decorate(final QueryResultSet queryResultSet, final SQLStatementContext<?> sqlStatementContext, final EncryptRule rule) {
+    public MergedResult decorate(final ExecuteQueryResult queryResultSet, final SQLStatementContext<?> sqlStatementContext, final EncryptRule rule) {
         return new EncryptMergedResult(metaData, new TransparentMergedResult(queryResultSet), queryWithCipherColumn);
     }
     

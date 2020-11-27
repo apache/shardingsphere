@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.merge.dal.impl.DecoratedEncryptColumnsM
 import org.apache.shardingsphere.encrypt.merge.dal.impl.MergedEncryptColumnsMergedResult;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 public final class EncryptDALResultDecorator implements ResultDecorator<EncryptRule> {
     
     @Override
-    public MergedResult decorate(final QueryResultSet queryResultSet, final SQLStatementContext<?> sqlStatementContext, final EncryptRule rule) {
+    public MergedResult decorate(final ExecuteQueryResult queryResultSet, final SQLStatementContext<?> sqlStatementContext, final EncryptRule rule) {
         return isNeedMergeEncryptColumns(sqlStatementContext.getSqlStatement())
                 ? new MergedEncryptColumnsMergedResult(queryResultSet, sqlStatementContext, rule) : new TransparentMergedResult(queryResultSet);
     }

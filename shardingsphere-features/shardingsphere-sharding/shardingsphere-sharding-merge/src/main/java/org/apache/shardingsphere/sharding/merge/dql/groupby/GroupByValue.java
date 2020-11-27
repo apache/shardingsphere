@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 
 import java.sql.SQLException;
@@ -36,11 +36,11 @@ public final class GroupByValue {
     
     private final List<?> groupValues;
     
-    public GroupByValue(final QueryResultSet queryResultSet, final Collection<OrderByItem> groupByItems) throws SQLException {
+    public GroupByValue(final ExecuteQueryResult queryResultSet, final Collection<OrderByItem> groupByItems) throws SQLException {
         groupValues = getGroupByValues(queryResultSet, groupByItems);
     }
     
-    private List<?> getGroupByValues(final QueryResultSet queryResultSet, final Collection<OrderByItem> groupByItems) throws SQLException {
+    private List<?> getGroupByValues(final ExecuteQueryResult queryResultSet, final Collection<OrderByItem> groupByItems) throws SQLException {
         List<Object> result = new ArrayList<>(groupByItems.size());
         for (OrderByItem each : groupByItems) {
             result.add(queryResultSet.getValue(each.getIndex(), Object.class));

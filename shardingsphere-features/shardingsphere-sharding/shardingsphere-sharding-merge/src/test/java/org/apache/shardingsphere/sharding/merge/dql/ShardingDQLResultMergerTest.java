@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dql;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByMemoryMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByStreamMergedResult;
@@ -317,18 +317,18 @@ public final class ShardingDQLResultMergerTest {
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
     }
     
-    private List<QueryResultSet> createQueryResultSets() throws SQLException {
-        List<QueryResultSet> result = new LinkedList<>();
-        QueryResultSet queryResultSet = createQueryResultSet();
+    private List<ExecuteQueryResult> createQueryResultSets() throws SQLException {
+        List<ExecuteQueryResult> result = new LinkedList<>();
+        ExecuteQueryResult queryResultSet = createQueryResultSet();
         result.add(queryResultSet);
-        result.add(mock(QueryResultSet.class));
-        result.add(mock(QueryResultSet.class));
-        result.add(mock(QueryResultSet.class));
+        result.add(mock(ExecuteQueryResult.class));
+        result.add(mock(ExecuteQueryResult.class));
+        result.add(mock(ExecuteQueryResult.class));
         return result;
     }
     
-    private QueryResultSet createQueryResultSet() throws SQLException {
-        QueryResultSet result = mock(QueryResultSet.class);
+    private ExecuteQueryResult createQueryResultSet() throws SQLException {
+        ExecuteQueryResult result = mock(ExecuteQueryResult.class);
         when(result.getColumnCount()).thenReturn(1);
         when(result.getColumnLabel(1)).thenReturn("count(*)");
         when(result.getValue(1, Object.class)).thenReturn(0);

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ import java.util.Map;
 public final class OrderByValue implements Comparable<OrderByValue> {
     
     @Getter
-    private final QueryResultSet queryResultSet;
+    private final ExecuteQueryResult queryResultSet;
     
     private final Collection<OrderByItem> orderByItems;
     
@@ -51,7 +51,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     
     private List<Comparable<?>> orderValues;
     
-    public OrderByValue(final QueryResultSet queryResultSet, final Collection<OrderByItem> orderByItems,
+    public OrderByValue(final ExecuteQueryResult queryResultSet, final Collection<OrderByItem> orderByItems,
                         final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
         this.queryResultSet = queryResultSet;
         this.orderByItems = orderByItems;

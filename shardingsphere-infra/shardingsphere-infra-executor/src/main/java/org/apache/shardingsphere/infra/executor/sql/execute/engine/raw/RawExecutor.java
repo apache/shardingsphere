@@ -20,12 +20,11 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.update.ExecuteUpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.update.ExecuteUpdateResult;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -51,8 +50,8 @@ public final class RawExecutor {
      * @return Query results
      * @throws SQLException SQL exception
      */
-    public List<QueryResultSet> executeQuery(final Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups, final RawSQLExecutorCallback callback) throws SQLException {
-        return doExecute(executionGroups, callback).stream().map(each -> ((ExecuteQueryResult) each).getQueryResultSet()).collect(Collectors.toList());
+    public List<ExecuteQueryResult> executeQuery(final Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups, final RawSQLExecutorCallback callback) throws SQLException {
+        return doExecute(executionGroups, callback).stream().map(each -> (ExecuteQueryResult) each).collect(Collectors.toList());
     }
     
     /**

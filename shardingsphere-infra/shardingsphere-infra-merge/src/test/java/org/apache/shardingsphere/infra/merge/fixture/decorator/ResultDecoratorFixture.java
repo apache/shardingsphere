@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.merge.fixture.decorator;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResultSet;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.fixture.rule.DecoratorRuleFixture;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 public final class ResultDecoratorFixture implements ResultDecorator<DecoratorRuleFixture> {
     
     @Override
-    public MergedResult decorate(final QueryResultSet queryResultSet, final SQLStatementContext<?> sqlStatementContext, final DecoratorRuleFixture rule) throws SQLException {
+    public MergedResult decorate(final ExecuteQueryResult queryResultSet, final SQLStatementContext<?> sqlStatementContext, final DecoratorRuleFixture rule) throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString(1)).thenReturn("decorated_value");
         return new TransparentMergedResult(new StreamJDBCQueryResultSet(resultSet));

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -27,7 +27,7 @@ import java.sql.SQLException;
  * Abstract JDBC query result set.
  */
 @RequiredArgsConstructor
-public abstract class AbstractJDBCQueryResultSet implements QueryResultSet {
+public abstract class AbstractJDBCQueryResultSet implements ExecuteQueryResult {
     
     private final ResultSetMetaData resultSetMetaData;
     
