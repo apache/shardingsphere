@@ -89,7 +89,10 @@ public abstract class AbstractStatementExecutor {
     }
     
     private void notifySchemaChanged(final String schemaName, final ShardingSphereSchema schema) {
-        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(schemaName, schema));
+        Collection<SchemaChangedNotifier> notifiers = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values();
+        if (!notifiers.isEmpty()) {
+            notifiers.forEach(each -> each.notify(schemaName, schema));
+        }
     }
     
     protected final boolean executeAndRefreshMetaData(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final SQLStatement sqlStatement,
