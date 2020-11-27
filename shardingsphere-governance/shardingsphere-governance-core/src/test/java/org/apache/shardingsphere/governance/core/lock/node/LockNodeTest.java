@@ -23,17 +23,17 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class GlobalLockNodeTest {
+public final class LockNodeTest {
     
-    private GlobalLockNode globalLockNode;
+    private LockNode lockNode;
     
     @Before
     public void setUp() {
-        globalLockNode = new GlobalLockNode();
+        lockNode = new LockNode();
     }
     
     @Test
     public void getGlobalLockNodePath() {
-        assertThat(globalLockNode.getGlobalLockNodePath(), is("/glock"));
+        assertThat(lockNode.getGlobalLockNodePath(), is("/glock"));
     }
 }

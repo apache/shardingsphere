@@ -20,9 +20,9 @@ package org.apache.shardingsphere.governance.core.lock.node;
 import com.google.common.base.Joiner;
 
 /**
- * Global lock node.
+ * Lock node.
  */
-public final class GlobalLockNode {
+public final class LockNode {
     
     private static final String GLOBAL_LOCK_NODE = "glock";
     
