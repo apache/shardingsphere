@@ -40,21 +40,9 @@ public final class DumperFactory {
      * @param dataSourceManager data source factory
      * @return JDBC dumper
      */
-    public static JDBCDumper newInstanceJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
-        return newInstanceJdbcDumper(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getName(), inventoryDumperConfig, dataSourceManager);
-    }
-    
-    /**
-     * New instance of JDBC dumper.
-     *
-     * @param databaseType database type
-     * @param inventoryDumperConfig inventory dumper configuration
-     * @param dataSourceManager data source factory
-     * @return JDBC dumper
-     */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static JDBCDumper newInstanceJdbcDumper(final String databaseType, final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
-        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
+    public static JDBCDumper newInstanceJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
+        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getName());
         return scalingEntry.getJdbcDumperClass().getConstructor(InventoryDumperConfiguration.class, DataSourceManager.class).newInstance(inventoryDumperConfig, dataSourceManager);
     }
     

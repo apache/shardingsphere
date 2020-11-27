@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.mysql.component;
 
+import com.google.common.base.Preconditions;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -70,10 +71,8 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
     
     public MySQLBinlogDumper(final DumperConfiguration dumperConfig, final Position<BinlogPosition> binlogPosition) {
         this.binlogPosition = (BinlogPosition) binlogPosition;
-        if (!StandardJDBCDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
-            throw new UnsupportedOperationException("MySQLBinlogDumper only support JDBCDataSourceConfiguration");
-        }
         this.dumperConfig = dumperConfig;
+        Preconditions.checkArgument(dumperConfig.getDataSourceConfig() instanceof StandardJDBCDataSourceConfiguration, "MySQLBinlogDumper only support StandardJDBCDataSourceConfiguration");
         metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(dumperConfig.getDataSourceConfig()));
     }
     
