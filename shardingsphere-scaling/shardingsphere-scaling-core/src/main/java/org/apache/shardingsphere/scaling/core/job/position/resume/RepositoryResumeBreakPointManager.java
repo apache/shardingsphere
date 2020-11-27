@@ -57,8 +57,14 @@ public final class RepositoryResumeBreakPointManager extends AbstractResumeBreak
     }
     
     private void persistPosition() {
-        persistIncrementalPosition();
-        persistInventoryPosition();
+        try {
+            persistIncrementalPosition();
+            persistInventoryPosition();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("persist position failed.", ex);
+        }
     }
     
     @Override
