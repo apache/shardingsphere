@@ -23,7 +23,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class GovernedStateTest {
+public final class GovernedStateTest {
     
     private final GovernedState governedState = new GovernedState();
     

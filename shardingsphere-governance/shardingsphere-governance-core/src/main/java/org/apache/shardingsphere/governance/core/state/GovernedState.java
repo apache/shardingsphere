@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 /**
  * Governed state.
  */
-public class GovernedState {
+public final class GovernedState {
     
     private final Deque<RegistryCenterNodeStatus> states = new ConcurrentLinkedDeque<>();
     
