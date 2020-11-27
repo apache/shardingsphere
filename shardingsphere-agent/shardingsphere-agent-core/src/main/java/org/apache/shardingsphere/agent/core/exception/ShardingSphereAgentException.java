@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.core.exception;
 /**
  * Basic exception of ShardingSphere agent.
  */
-public class ShardingSphereAgentException extends RuntimeException {
+public final class ShardingSphereAgentException extends RuntimeException {
     
     private static final long serialVersionUID = -1343739516839252250L;
     
