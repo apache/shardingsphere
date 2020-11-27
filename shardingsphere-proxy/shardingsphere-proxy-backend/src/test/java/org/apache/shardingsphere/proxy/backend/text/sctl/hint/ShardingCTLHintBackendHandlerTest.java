@@ -49,6 +49,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
