@@ -43,12 +43,12 @@ public final class AutoAcknowledgeBitSetChannelTest {
     }
     
     @Test(expected = UnsupportedOperationException.class)
-    public void assertFetchRecords() {
+    public void assertFetchRecordsFailure() {
         channel.fetchRecords(1, 1);
     }
     
     @Test(expected = UnsupportedOperationException.class)
-    public void assertAck() {
+    public void assertAckFailure() {
         channel.ack();
     }
 }
