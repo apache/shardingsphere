@@ -92,6 +92,11 @@ public final class RawQueryResultSet implements QueryResultSet {
     }
     
     @Override
+    public String getTableName(final int columnIndex) {
+        return metaData.getColumns().get(columnIndex).getTableName();
+    }
+    
+    @Override
     public String getColumnName(final int columnIndex) {
         return metaData.getColumns().get(columnIndex).getName();
     }
@@ -102,7 +107,37 @@ public final class RawQueryResultSet implements QueryResultSet {
     }
     
     @Override
+    public int getColumnType(final int columnIndex) {
+        return metaData.getColumns().get(columnIndex).getType();
+    }
+    
+    @Override
     public String getColumnTypeName(final int columnIndex) {
         return metaData.getColumns().get(columnIndex).getTypeName();
+    }
+    
+    @Override
+    public int getColumnLength(final int columnIndex) {
+        return metaData.getColumns().get(columnIndex).getLength();
+    }
+    
+    @Override
+    public int getDecimals(final int columnIndex) {
+        return metaData.getColumns().get(columnIndex).getDecimals();
+    }
+    
+    @Override
+    public boolean isSigned(final int columnIndex) {
+        return metaData.getColumns().get(columnIndex).isSigned();
+    }
+    
+    @Override
+    public boolean isNotNull(final int columnIndex) {
+        return metaData.getColumns().get(columnIndex).isNotNull();
+    }
+    
+    @Override
+    public boolean isAutoIncrement(final int columnIndex) {
+        return metaData.getColumns().get(columnIndex).isAutoIncrement();
     }
 }

@@ -82,6 +82,15 @@ public interface QueryResultSet {
     int getColumnCount() throws SQLException;
     
     /**
+     * Get table name.
+     *
+     * @param columnIndex column index
+     * @return table name
+     * @throws SQLException SQL Exception
+     */
+    String getTableName(int columnIndex) throws SQLException;
+    
+    /**
      * Get column name.
      *
      * @param columnIndex column index
@@ -100,6 +109,15 @@ public interface QueryResultSet {
     String getColumnLabel(int columnIndex) throws SQLException;
     
     /**
+     * Get column type.
+     *
+     * @param columnIndex column index
+     * @return column type
+     * @throws SQLException SQL Exception
+     */
+    int getColumnType(int columnIndex) throws SQLException;
+    
+    /**
      * Get column type name.
      * 
      * @param columnIndex column index
@@ -107,4 +125,49 @@ public interface QueryResultSet {
      * @throws SQLException SQL Exception
      */
     String getColumnTypeName(int columnIndex) throws SQLException;
+    
+    /**
+     * Get column length.
+     *
+     * @param columnIndex column index
+     * @return column length
+     * @throws SQLException SQL Exception
+     */
+    int getColumnLength(int columnIndex) throws SQLException;
+    
+    /**
+     * Get decimals.
+     *
+     * @param columnIndex column index
+     * @return decimals
+     * @throws SQLException SQL Exception
+     */
+    int getDecimals(int columnIndex) throws SQLException;
+    
+    /**
+     * Is signed.
+     *
+     * @param columnIndex column index
+     * @return signed or not
+     * @throws SQLException SQL Exception
+     */
+    boolean isSigned(int columnIndex) throws SQLException;
+    
+    /**
+     * Is not null.
+     *
+     * @param columnIndex column index
+     * @return not null or null
+     * @throws SQLException SQL Exception
+     */
+    boolean isNotNull(int columnIndex) throws SQLException;
+    
+    /**
+     * Is auto increment.
+     *
+     * @param columnIndex column index
+     * @return auto increment or not
+     * @throws SQLException SQL Exception
+     */
+    boolean isAutoIncrement(int columnIndex) throws SQLException;
 }

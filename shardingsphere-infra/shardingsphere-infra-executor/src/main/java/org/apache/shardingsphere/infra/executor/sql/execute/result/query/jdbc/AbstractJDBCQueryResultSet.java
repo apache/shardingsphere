@@ -37,6 +37,11 @@ public abstract class AbstractJDBCQueryResultSet implements QueryResultSet {
     }
     
     @Override
+    public final String getTableName(final int columnIndex) throws SQLException {
+        return resultSetMetaData.getTableName(columnIndex);
+    }
+    
+    @Override
     public final String getColumnName(final int columnIndex) throws SQLException {
         return resultSetMetaData.getColumnName(columnIndex);
     }
@@ -47,7 +52,37 @@ public abstract class AbstractJDBCQueryResultSet implements QueryResultSet {
     }
     
     @Override
+    public final int getColumnType(final int columnIndex) throws SQLException {
+        return resultSetMetaData.getColumnType(columnIndex);
+    }
+    
+    @Override
     public final String getColumnTypeName(final int columnIndex) throws SQLException {
         return resultSetMetaData.getColumnTypeName(columnIndex);
+    }
+    
+    @Override
+    public final int getColumnLength(final int columnIndex) throws SQLException {
+        return resultSetMetaData.getColumnDisplaySize(columnIndex);
+    }
+    
+    @Override
+    public final int getDecimals(final int columnIndex) throws SQLException {
+        return resultSetMetaData.getScale(columnIndex);
+    }
+    
+    @Override
+    public final boolean isSigned(final int columnIndex) throws SQLException {
+        return resultSetMetaData.isSigned(columnIndex);
+    }
+    
+    @Override
+    public final boolean isNotNull(final int columnIndex) throws SQLException {
+        return resultSetMetaData.isNullable(columnIndex) == ResultSetMetaData.columnNoNulls;
+    }
+    
+    @Override
+    public final boolean isAutoIncrement(final int columnIndex) throws SQLException {
+        return resultSetMetaData.isAutoIncrement(columnIndex);
     }
 }

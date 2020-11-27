@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.engine.jdbc;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -47,6 +48,7 @@ import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.proxy.backend.response.query.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -58,6 +60,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -106,7 +109,18 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
                 executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement, SQLExecutorExceptionHandler.isExceptionThrown());
         ExecuteResult executeResult = executeResults.iterator().next();
         if (executeResult instanceof ExecuteQueryResult) {
-            return getExecuteQueryResponse(((ExecuteQueryResult) executeResult).getQueryHeaders(), executeResults);
+            ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
+            int columnCount = ((ExecuteQueryResult) executeResult).getQueryResultSet().getColumnCount();
+            List<QueryHeader> queryHeaders = new ArrayList<>(columnCount);
+            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+                if (executionContext.getSqlStatementContext() instanceof SelectStatementContext) {
+                    queryHeaders.add(QueryHeaderBuilder.build(
+                            ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), (ExecuteQueryResult) executeResult, metaData, columnIndex));
+                } else {
+                    queryHeaders.add(QueryHeaderBuilder.build((ExecuteQueryResult) executeResult, metaData, columnIndex));
+                }
+            }
+            return getExecuteQueryResponse(queryHeaders, executeResults);
         } else {
             UpdateResponse result = new UpdateResponse(executeResults);
             if (executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement) {

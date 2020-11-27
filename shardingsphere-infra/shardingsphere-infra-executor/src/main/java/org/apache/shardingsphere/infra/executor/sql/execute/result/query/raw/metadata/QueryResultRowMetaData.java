@@ -27,9 +27,23 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class QueryResultRowMetaData {
     
+    private final String tableName;
+    
     private final String name;
     
     private final String label;
     
+    private final int type;
+    
     private final String typeName;
+    
+    private final int length;
+    
+    private final int decimals;
+    
+    private final boolean signed;
+    
+    private final boolean notNull;
+    
+    private final boolean autoIncrement;
 }

@@ -54,8 +54,8 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
         if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
             return result;
         }
-        QueryResultMetaData metaData = new QueryResultMetaData(
-                Collections.singletonList(new QueryResultRowMetaData(result.getQueryHeaders().get(0).getColumnName(), result.getQueryHeaders().get(0).getColumnLabel(), "VARCHAR")));
+        QueryResultMetaData metaData = new QueryResultMetaData(Collections.singletonList(new QueryResultRowMetaData(
+                null, result.getQueryHeaders().get(0).getColumnName(), result.getQueryHeaders().get(0).getColumnLabel(), Types.VARCHAR, "VARCHAR", 255, 0, false, false, false)));
         Collection<String> allTableNames = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getSchema().getAllTableNames();
         List<QueryResultRow> rows = allTableNames.stream().map(each -> new QueryResultRow(Collections.singletonList(each))).collect(Collectors.toList());
         QueryResultSet queryResultSet = new RawQueryResultSet(metaData, rows);
