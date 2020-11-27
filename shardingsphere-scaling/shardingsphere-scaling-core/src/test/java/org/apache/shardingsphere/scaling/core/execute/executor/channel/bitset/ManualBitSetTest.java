@@ -44,10 +44,17 @@ public final class ManualBitSetTest {
     }
     
     @Test
-    public void assertGetEndIndex() {
+    public void assertGetEndIndexSuccess() {
         ManualBitSet bitSet = new ManualBitSet();
         IntStream.range(0, 10).filter(each -> each % 2 == 1).forEach(bitSet::set);
         assertThat(bitSet.getEndIndex(0L, 5), is(10L));
+    }
+    
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void assertGetEndIndexFailure() {
+        ManualBitSet bitSet = new ManualBitSet();
+        IntStream.range(0, 10).filter(each -> each % 2 == 1).forEach(bitSet::set);
+        bitSet.getEndIndex(0L, 10);
     }
     
     @Test
