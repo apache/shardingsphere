@@ -19,19 +19,18 @@ package org.apache.shardingsphere.governance.core.state;
 
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 
-import java.util.Deque;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Governed state.
  */
 public final class GovernedState {
     
-    private final Deque<RegistryCenterNodeStatus> states = new ConcurrentLinkedDeque<>();
+    private final AtomicReference<RegistryCenterNodeStatus> currentState = new AtomicReference<>();
     
     public GovernedState() {
-        states.push(RegistryCenterNodeStatus.OK);
+        currentState.set(RegistryCenterNodeStatus.OK);
     }
     
     /**
@@ -40,8 +39,8 @@ public final class GovernedState {
      * @param state state
      * @return current state of instance
      */
-    public RegistryCenterNodeStatus addState(final RegistryCenterNodeStatus state) {
-        states.push(state);
+    public RegistryCenterNodeStatus setState(final RegistryCenterNodeStatus state) {
+        currentState.set(state);
         return getState();
     }
     
@@ -51,7 +50,7 @@ public final class GovernedState {
      * @return state
      */
     public RegistryCenterNodeStatus getState() {
-        return Optional.of(states.peek()).orElse(RegistryCenterNodeStatus.OK);
+        return Optional.of(currentState.get()).orElse(RegistryCenterNodeStatus.OK);
     }
     
     /**
@@ -60,7 +59,6 @@ public final class GovernedState {
      * @return current state of instance
      */
     public RegistryCenterNodeStatus recoverState() {
-        states.pop();
         return getState();
     }
 }

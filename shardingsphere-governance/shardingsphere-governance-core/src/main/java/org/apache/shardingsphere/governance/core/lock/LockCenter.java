@@ -59,7 +59,7 @@ public final class LockCenter {
     @Subscribe
     public synchronized void lock(final GlobalLockAddedEvent event) {
         if (Optional.of(event).isPresent()) {
-            registryCenter.persistInstanceData(governedState.addState(RegistryCenterNodeStatus.LOCKED).toString());
+            registryCenter.persistInstanceData(governedState.setState(RegistryCenterNodeStatus.LOCKED).toString());
         }
     }
     

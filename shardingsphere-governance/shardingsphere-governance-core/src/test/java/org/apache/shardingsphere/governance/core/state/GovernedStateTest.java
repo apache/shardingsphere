@@ -28,15 +28,15 @@ public final class GovernedStateTest {
     private final GovernedState governedState = new GovernedState();
     
     @Test
-    public void addState() {
+    public void setState() {
         assertThat(governedState.getState(), is(RegistryCenterNodeStatus.OK));
-        RegistryCenterNodeStatus state = governedState.addState(RegistryCenterNodeStatus.LOCKED);
+        RegistryCenterNodeStatus state = governedState.setState(RegistryCenterNodeStatus.LOCKED);
         assertThat(state, is(RegistryCenterNodeStatus.LOCKED));
     }
     
     @Test
     public void recoverState() {
-        governedState.addState(RegistryCenterNodeStatus.LOCKED);
+        governedState.setState(RegistryCenterNodeStatus.LOCKED);
         assertThat(governedState.getState(), is(RegistryCenterNodeStatus.LOCKED));
         assertThat(governedState.recoverState(), is(RegistryCenterNodeStatus.OK));
         assertThat(governedState.getState(), is(RegistryCenterNodeStatus.OK));
