@@ -169,7 +169,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     private BackendResponse getExecuteQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResult> executeResults) {
         QueryResponse result = new QueryResponse(queryHeaders);
         for (ExecuteResult each : executeResults) {
-            result.getQueryResultSets().add((ExecuteQueryResult) each);
+            result.getQueryResults().add((ExecuteQueryResult) each);
         }
         return result;
     }

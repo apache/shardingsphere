@@ -82,10 +82,10 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     private Collection<PostgreSQLColumnDescription> createColumnDescriptions(final QueryResponse queryResponse) throws SQLException {
         Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
-        List<ExecuteQueryResult> queryResultSets = queryResponse.getQueryResultSets();
+        List<ExecuteQueryResult> queryResults = queryResponse.getQueryResults();
         int columnIndex = 0;
         for (QueryHeader each : queryResponse.getQueryHeaders()) {
-            String columnTypeName = queryResultSets.isEmpty() ? null : queryResultSets.get(0).getColumnTypeName(columnIndex + 1);
+            String columnTypeName = queryResults.isEmpty() ? null : queryResults.get(0).getColumnTypeName(columnIndex + 1);
             result.add(new PostgreSQLColumnDescription(each.getColumnName(), ++columnIndex, each.getColumnType(), each.getColumnLength(), columnTypeName));
         }
         return result;

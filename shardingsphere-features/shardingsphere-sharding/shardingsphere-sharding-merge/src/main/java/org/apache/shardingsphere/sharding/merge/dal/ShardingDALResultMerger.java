@@ -49,17 +49,17 @@ public final class ShardingDALResultMerger implements ResultMerger {
     private final ShardingRule shardingRule;
     
     @Override
-    public MergedResult merge(final List<ExecuteQueryResult> queryResultSets, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema) throws SQLException {
+    public MergedResult merge(final List<ExecuteQueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema) throws SQLException {
         SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
         if (dalStatement instanceof MySQLShowDatabasesStatement) {
             return new SingleLocalDataMergedResult(Collections.singletonList(DefaultSchema.LOGIC_NAME));
         }
         if (dalStatement instanceof MySQLShowTablesStatement || dalStatement instanceof MySQLShowTableStatusStatement || dalStatement instanceof MySQLShowIndexStatement) {
-            return new LogicTablesMergedResult(shardingRule, sqlStatementContext, schema, queryResultSets);
+            return new LogicTablesMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
         }
         if (dalStatement instanceof MySQLShowCreateTableStatement) {
-            return new ShowCreateTableMergedResult(shardingRule, sqlStatementContext, schema, queryResultSets);
+            return new ShowCreateTableMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
         }
-        return new TransparentMergedResult(queryResultSets.get(0));
+        return new TransparentMergedResult(queryResults.get(0));
     }
 }

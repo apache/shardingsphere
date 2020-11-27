@@ -31,9 +31,9 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Raw query result set.
+ * Raw query result.
  */
-public final class RawQueryResultSet implements ExecuteQueryResult {
+public final class RawQueryResult implements ExecuteQueryResult {
     
     private final QueryResultMetaData metaData;
     
@@ -41,7 +41,7 @@ public final class RawQueryResultSet implements ExecuteQueryResult {
     
     private QueryResultRow currentRow;
     
-    public RawQueryResultSet(final QueryResultMetaData metaData, final List<QueryResultRow> rows) {
+    public RawQueryResult(final QueryResultMetaData metaData, final List<QueryResultRow> rows) {
         this.metaData = metaData;
         this.rows = rows.iterator();
     }

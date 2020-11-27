@@ -31,35 +31,35 @@ import java.util.Calendar;
 @Setter
 public abstract class StreamMergedResult implements MergedResult {
     
-    private ExecuteQueryResult currentQueryResultSet;
+    private ExecuteQueryResult currentQueryResult;
     
     private boolean wasNull;
     
-    protected final ExecuteQueryResult getCurrentQueryResultSet() throws SQLException {
-        if (null == currentQueryResultSet) {
+    protected final ExecuteQueryResult getCurrentQueryResult() throws SQLException {
+        if (null == currentQueryResult) {
             throw new SQLException("Current ResultSet is null, ResultSet perhaps end of next.");
         }
-        return currentQueryResultSet;
+        return currentQueryResult;
     }
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        Object result = getCurrentQueryResultSet().getValue(columnIndex, type);
-        wasNull = getCurrentQueryResultSet().wasNull();
+        Object result = getCurrentQueryResult().getValue(columnIndex, type);
+        wasNull = getCurrentQueryResult().wasNull();
         return result;
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
-        Object result = getCurrentQueryResultSet().getCalendarValue(columnIndex, type, calendar);
-        wasNull = getCurrentQueryResultSet().wasNull();
+        Object result = getCurrentQueryResult().getCalendarValue(columnIndex, type, calendar);
+        wasNull = getCurrentQueryResult().wasNull();
         return result;
     }
     
     @Override
     public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        InputStream result = getCurrentQueryResultSet().getInputStream(columnIndex, type);
-        wasNull = getCurrentQueryResultSet().wasNull();
+        InputStream result = getCurrentQueryResult().getInputStream(columnIndex, type);
+        wasNull = getCurrentQueryResult().wasNull();
         return result;
     }
     

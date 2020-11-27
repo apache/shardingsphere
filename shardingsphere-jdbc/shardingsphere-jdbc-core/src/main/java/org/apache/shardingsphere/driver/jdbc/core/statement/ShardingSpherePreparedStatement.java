@@ -47,7 +47,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecut
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
@@ -157,16 +157,16 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         try {
             clearPrevious();
             executionContext = createExecutionContext();
-            List<ExecuteQueryResult> queryResultSets;
+            List<ExecuteQueryResult> queryResults;
             if (metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
-                queryResultSets = rawExecutor.executeQuery(createRawExecutionGroups(), new RawSQLExecutorCallback());
+                queryResults = rawExecutor.executeQuery(createRawExecutionGroups(), new RawSQLExecutorCallback());
             } else {
                 Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
                 cacheStatements(executionGroups);
                 reply();
-                queryResultSets = preparedStatementExecutor.executeQuery(executionGroups);
+                queryResults = preparedStatementExecutor.executeQuery(executionGroups);
             }
-            MergedResult mergedResult = mergeQuery(queryResultSets);
+            MergedResult mergedResult = mergeQuery(queryResults);
             result = new ShardingSphereResultSet(statements.stream().map(this::getResultSet).collect(Collectors.toList()), mergedResult, this, executionContext);
         } finally {
             clearBatch();
@@ -230,7 +230,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
         if (executionContext.getSqlStatementContext() instanceof SelectStatementContext || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets();
-            MergedResult mergedResult = mergeQuery(getQueryResultSets(resultSets));
+            MergedResult mergedResult = mergeQuery(getQueryResults(resultSets));
             currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, executionContext);
         }
         return currentResultSet;
@@ -252,11 +252,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return result;
     }
     
-    private List<ExecuteQueryResult> getQueryResultSets(final List<ResultSet> resultSets) throws SQLException {
+    private List<ExecuteQueryResult> getQueryResults(final List<ResultSet> resultSets) throws SQLException {
         List<ExecuteQueryResult> result = new ArrayList<>(resultSets.size());
         for (ResultSet each : resultSets) {
             if (null != each) {
-                result.add(new StreamJDBCQueryResultSet(each));
+                result.add(new StreamJDBCQueryResult(each));
             }
         }
         return result;
@@ -277,10 +277,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return new LogicSQL(sqlStatementContext, sql, parameters);
     }
     
-    private MergedResult mergeQuery(final List<ExecuteQueryResult> queryResultSets) throws SQLException {
+    private MergedResult mergeQuery(final List<ExecuteQueryResult> queryResults) throws SQLException {
         ShardingSphereMetaData metaData = metaDataContexts.getDefaultMetaData();
         MergeEngine mergeEngine = new MergeEngine(metaDataContexts.getDatabaseType(), metaData.getSchema(), metaDataContexts.getProps(), metaData.getRuleMetaData().getRules());
-        return mergeEngine.merge(queryResultSets, executionContext.getSqlStatementContext());
+        return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }
     
     private void reply() {

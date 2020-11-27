@@ -38,16 +38,16 @@ import java.util.Set;
 public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
     
     public LogicTablesMergedResult(final ShardingRule shardingRule,
-                                   final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<ExecuteQueryResult> queryResultSets) throws SQLException {
-        super(shardingRule, schema, sqlStatementContext, queryResultSets);
+                                   final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<ExecuteQueryResult> queryResults) throws SQLException {
+        super(shardingRule, schema, sqlStatementContext, queryResults);
     }
     
     @Override
     protected final List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final ShardingSphereSchema schema, 
-                                                    final SQLStatementContext sqlStatementContext, final List<ExecuteQueryResult> queryResultSets) throws SQLException {
+                                                    final SQLStatementContext sqlStatementContext, final List<ExecuteQueryResult> queryResults) throws SQLException {
         List<MemoryQueryResultRow> result = new LinkedList<>();
         Set<String> tableNames = new HashSet<>();
-        for (ExecuteQueryResult each : queryResultSets) {
+        for (ExecuteQueryResult each : queryResults) {
             while (each.next()) {
                 MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
                 String actualTableName = memoryResultSetRow.getCell(1).toString();

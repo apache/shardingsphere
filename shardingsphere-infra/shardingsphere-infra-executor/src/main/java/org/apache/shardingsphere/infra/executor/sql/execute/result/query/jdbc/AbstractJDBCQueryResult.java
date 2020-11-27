@@ -24,10 +24,10 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 /**
- * Abstract JDBC query result set.
+ * Abstract JDBC query result.
  */
 @RequiredArgsConstructor
-public abstract class AbstractJDBCQueryResultSet implements ExecuteQueryResult {
+public abstract class AbstractJDBCQueryResult implements ExecuteQueryResult {
     
     private final ResultSetMetaData resultSetMetaData;
     

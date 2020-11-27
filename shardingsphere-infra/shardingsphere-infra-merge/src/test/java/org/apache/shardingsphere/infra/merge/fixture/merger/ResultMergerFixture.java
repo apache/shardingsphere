@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.merge.fixture.merger;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResult;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
@@ -35,10 +35,10 @@ import static org.mockito.Mockito.when;
 public final class ResultMergerFixture implements ResultMerger {
     
     @Override
-    public MergedResult merge(final List<ExecuteQueryResult> queryResultSets, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema) throws SQLException {
+    public MergedResult merge(final List<ExecuteQueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema) throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString(1)).thenReturn("merged_value");
-        ExecuteQueryResult queryResultSet = new StreamJDBCQueryResultSet(resultSet);
-        return new TransparentMergedResult(queryResultSet);
+        ExecuteQueryResult queryResult = new StreamJDBCQueryResult(resultSet);
+        return new TransparentMergedResult(queryResult);
     }
 }

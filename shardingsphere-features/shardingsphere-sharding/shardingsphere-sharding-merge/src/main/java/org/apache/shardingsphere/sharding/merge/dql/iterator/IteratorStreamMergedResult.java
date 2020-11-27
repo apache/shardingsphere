@@ -29,29 +29,29 @@ import java.util.List;
  */
 public final class IteratorStreamMergedResult extends StreamMergedResult {
     
-    private final Iterator<ExecuteQueryResult> queryResultSets;
+    private final Iterator<ExecuteQueryResult> queryResults;
     
-    public IteratorStreamMergedResult(final List<ExecuteQueryResult> queryResultSets) {
-        this.queryResultSets = queryResultSets.iterator();
-        setCurrentQueryResultSet(this.queryResultSets.next());
+    public IteratorStreamMergedResult(final List<ExecuteQueryResult> queryResults) {
+        this.queryResults = queryResults.iterator();
+        setCurrentQueryResult(this.queryResults.next());
     }
     
     @Override
     public boolean next() throws SQLException {
-        if (getCurrentQueryResultSet().next()) {
+        if (getCurrentQueryResult().next()) {
             return true;
         }
-        if (!queryResultSets.hasNext()) {
+        if (!queryResults.hasNext()) {
             return false;
         }
-        setCurrentQueryResultSet(queryResultSets.next());
-        boolean hasNext = getCurrentQueryResultSet().next();
+        setCurrentQueryResult(queryResults.next());
+        boolean hasNext = getCurrentQueryResult().next();
         if (hasNext) {
             return true;
         }
-        while (!hasNext && queryResultSets.hasNext()) {
-            setCurrentQueryResultSet(queryResultSets.next());
-            hasNext = getCurrentQueryResultSet().next();
+        while (!hasNext && queryResults.hasNext()) {
+            setCurrentQueryResult(queryResults.next());
+            hasNext = getCurrentQueryResult().next();
         }
         return hasNext;
     }

@@ -33,11 +33,11 @@ public interface ResultMerger {
     /**
      * Merge query results.
      * 
-     * @param queryResultSets query result sets
+     * @param queryResults query results
      * @param sqlStatementContext SQL statement context
      * @param schema ShardingSphere schema
      * @return merged result
      * @throws SQLException SQL exception
      */
-    MergedResult merge(List<ExecuteQueryResult> queryResultSets, SQLStatementContext<?> sqlStatementContext, ShardingSphereSchema schema) throws SQLException;
+    MergedResult merge(List<ExecuteQueryResult> queryResults, SQLStatementContext<?> sqlStatementContext, ShardingSphereSchema schema) throws SQLException;
 }

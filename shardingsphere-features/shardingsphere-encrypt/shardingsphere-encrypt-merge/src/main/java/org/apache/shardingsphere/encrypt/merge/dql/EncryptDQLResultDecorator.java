@@ -36,8 +36,8 @@ public final class EncryptDQLResultDecorator implements ResultDecorator<EncryptR
     private final boolean queryWithCipherColumn;
     
     @Override
-    public MergedResult decorate(final ExecuteQueryResult queryResultSet, final SQLStatementContext<?> sqlStatementContext, final EncryptRule rule) {
-        return new EncryptMergedResult(metaData, new TransparentMergedResult(queryResultSet), queryWithCipherColumn);
+    public MergedResult decorate(final ExecuteQueryResult queryResult, final SQLStatementContext<?> sqlStatementContext, final EncryptRule rule) {
+        return new EncryptMergedResult(metaData, new TransparentMergedResult(queryResult), queryWithCipherColumn);
     }
     
     @Override

@@ -72,25 +72,25 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        List<ExecuteQueryResult> queryResultSets = Arrays.asList(mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class));
+        List<ExecuteQueryResult> queryResults = Arrays.asList(mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class));
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResultSets, selectStatementContext, buildSchema());
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, buildSchema());
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        List<ExecuteQueryResult> queryResultSets = Arrays.asList(mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class));
+        List<ExecuteQueryResult> queryResults = Arrays.asList(mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class));
         for (int i = 0; i < 3; i++) {
-            when(queryResultSets.get(i).getColumnName(1)).thenReturn("col1");
-            when(queryResultSets.get(i).getColumnName(2)).thenReturn("col2");
+            when(queryResults.get(i).getColumnName(1)).thenReturn("col1");
+            when(queryResults.get(i).getColumnName(2)).thenReturn("col2");
         }
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        when(queryResultSets.get(0).next()).thenReturn(true, false);
-        when(queryResultSets.get(0).getValue(1, Object.class)).thenReturn("2");
-        when(queryResultSets.get(2).next()).thenReturn(true, true, false);
-        when(queryResultSets.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
-        MergedResult actual = resultMerger.merge(queryResultSets, selectStatementContext, buildSchema());
+        when(queryResults.get(0).next()).thenReturn(true, false);
+        when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
+        when(queryResults.get(2).next()).thenReturn(true, true, false);
+        when(queryResults.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, buildSchema());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
         assertTrue(actual.next());
@@ -102,19 +102,19 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        List<ExecuteQueryResult> queryResultSets = Arrays.asList(mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class));
+        List<ExecuteQueryResult> queryResults = Arrays.asList(mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class));
         for (int i = 0; i < 3; i++) {
-            when(queryResultSets.get(i).getColumnName(1)).thenReturn("col1");
-            when(queryResultSets.get(i).getColumnName(2)).thenReturn("col2");
+            when(queryResults.get(i).getColumnName(1)).thenReturn("col1");
+            when(queryResults.get(i).getColumnName(2)).thenReturn("col2");
         }
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        when(queryResultSets.get(0).next()).thenReturn(true, false);
-        when(queryResultSets.get(0).getValue(1, Object.class)).thenReturn("2");
-        when(queryResultSets.get(1).next()).thenReturn(true, true, true, false);
-        when(queryResultSets.get(1).getValue(1, Object.class)).thenReturn("2", "2", "3", "3", "4", "4");
-        when(queryResultSets.get(2).next()).thenReturn(true, true, false);
-        when(queryResultSets.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
-        MergedResult actual = resultMerger.merge(queryResultSets, selectStatementContext, buildSchema());
+        when(queryResults.get(0).next()).thenReturn(true, false);
+        when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
+        when(queryResults.get(1).next()).thenReturn(true, true, true, false);
+        when(queryResults.get(1).getValue(1, Object.class)).thenReturn("2", "2", "3", "3", "4", "4");
+        when(queryResults.get(2).next()).thenReturn(true, true, false);
+        when(queryResults.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, buildSchema());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
         assertTrue(actual.next());
@@ -132,19 +132,19 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForCaseSensitive() throws SQLException {
-        List<ExecuteQueryResult> queryResultSets = Arrays.asList(mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class));
+        List<ExecuteQueryResult> queryResults = Arrays.asList(mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class));
         for (int i = 0; i < 3; i++) {
-            when(queryResultSets.get(i).getColumnName(1)).thenReturn("col1");
-            when(queryResultSets.get(i).getColumnName(2)).thenReturn("col2");
+            when(queryResults.get(i).getColumnName(1)).thenReturn("col1");
+            when(queryResults.get(i).getColumnName(2)).thenReturn("col2");
         }
-        when(queryResultSets.get(0).next()).thenReturn(true, false);
-        when(queryResultSets.get(0).getValue(1, Object.class)).thenReturn("b");
-        when(queryResultSets.get(1).next()).thenReturn(true, true, false);
-        when(queryResultSets.get(1).getValue(1, Object.class)).thenReturn("B", "B", "a", "a");
-        when(queryResultSets.get(2).next()).thenReturn(true, false);
-        when(queryResultSets.get(2).getValue(1, Object.class)).thenReturn("A");
+        when(queryResults.get(0).next()).thenReturn(true, false);
+        when(queryResults.get(0).getValue(1, Object.class)).thenReturn("b");
+        when(queryResults.get(1).next()).thenReturn(true, true, false);
+        when(queryResults.get(1).getValue(1, Object.class)).thenReturn("B", "B", "a", "a");
+        when(queryResults.get(2).next()).thenReturn(true, false);
+        when(queryResults.get(2).getValue(1, Object.class)).thenReturn("A");
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResultSets, selectStatementContext, buildSchema());
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, buildSchema());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("A"));
         assertTrue(actual.next());
@@ -158,19 +158,19 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForCaseInsensitive() throws SQLException {
-        List<ExecuteQueryResult> queryResultSets = Arrays.asList(mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class));
+        List<ExecuteQueryResult> queryResults = Arrays.asList(mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class));
         for (int i = 0; i < 3; i++) {
-            when(queryResultSets.get(i).getColumnName(1)).thenReturn("col1");
-            when(queryResultSets.get(i).getColumnName(2)).thenReturn("col2");
+            when(queryResults.get(i).getColumnName(1)).thenReturn("col1");
+            when(queryResults.get(i).getColumnName(2)).thenReturn("col2");
         }
-        when(queryResultSets.get(0).next()).thenReturn(true, false);
-        when(queryResultSets.get(0).getValue(2, Object.class)).thenReturn("b");
-        when(queryResultSets.get(1).next()).thenReturn(true, true, false);
-        when(queryResultSets.get(1).getValue(2, Object.class)).thenReturn("a", "a", "B", "B");
-        when(queryResultSets.get(2).next()).thenReturn(true, false);
-        when(queryResultSets.get(2).getValue(2, Object.class)).thenReturn("A");
+        when(queryResults.get(0).next()).thenReturn(true, false);
+        when(queryResults.get(0).getValue(2, Object.class)).thenReturn("b");
+        when(queryResults.get(1).next()).thenReturn(true, true, false);
+        when(queryResults.get(1).getValue(2, Object.class)).thenReturn("a", "a", "B", "B");
+        when(queryResults.get(2).next()).thenReturn(true, false);
+        when(queryResults.get(2).getValue(2, Object.class)).thenReturn("A");
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResultSets, selectStatementContext, buildSchema());
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, buildSchema());
         assertTrue(actual.next());
         assertThat(actual.getValue(2, Object.class).toString(), is("a"));
         assertTrue(actual.next());

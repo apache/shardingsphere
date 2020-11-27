@@ -44,21 +44,21 @@ public class OrderByStreamMergedResult extends StreamMergedResult {
     @Getter(AccessLevel.PROTECTED)
     private boolean isFirstNext;
     
-    public OrderByStreamMergedResult(final List<ExecuteQueryResult> queryResultSets, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
+    public OrderByStreamMergedResult(final List<ExecuteQueryResult> queryResults, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
         orderByItems = selectStatementContext.getOrderByContext().getItems();
-        orderByValuesQueue = new PriorityQueue<>(queryResultSets.size());
-        orderResultSetsToQueue(queryResultSets, selectStatementContext, schema);
+        orderByValuesQueue = new PriorityQueue<>(queryResults.size());
+        orderResultSetsToQueue(queryResults, selectStatementContext, schema);
         isFirstNext = true;
     }
     
-    private void orderResultSetsToQueue(final List<ExecuteQueryResult> queryResultSets, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
-        for (ExecuteQueryResult each : queryResultSets) {
+    private void orderResultSetsToQueue(final List<ExecuteQueryResult> queryResults, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
+        for (ExecuteQueryResult each : queryResults) {
             OrderByValue orderByValue = new OrderByValue(each, orderByItems, selectStatementContext, schema);
             if (orderByValue.next()) {
                 orderByValuesQueue.offer(orderByValue);
             }
         }
-        setCurrentQueryResultSet(orderByValuesQueue.isEmpty() ? queryResultSets.get(0) : orderByValuesQueue.peek().getQueryResultSet());
+        setCurrentQueryResult(orderByValuesQueue.isEmpty() ? queryResults.get(0) : orderByValuesQueue.peek().getQueryResult());
     }
     
     @Override
@@ -77,7 +77,7 @@ public class OrderByStreamMergedResult extends StreamMergedResult {
         if (orderByValuesQueue.isEmpty()) {
             return false;
         }
-        setCurrentQueryResultSet(orderByValuesQueue.peek().getQueryResultSet());
+        setCurrentQueryResult(orderByValuesQueue.peek().getQueryResult());
         return true;
     }
 }

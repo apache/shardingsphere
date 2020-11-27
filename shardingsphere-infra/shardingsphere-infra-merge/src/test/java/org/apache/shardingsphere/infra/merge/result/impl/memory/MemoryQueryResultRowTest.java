@@ -34,10 +34,10 @@ public final class MemoryQueryResultRowTest {
     
     @Before
     public void setUp() throws SQLException {
-        ExecuteQueryResult queryResultSet = mock(ExecuteQueryResult.class);
-        when(queryResultSet.getColumnCount()).thenReturn(1);
-        when(queryResultSet.getValue(1, Object.class)).thenReturn("value");
-        memoryResultSetRow = new MemoryQueryResultRow(queryResultSet);
+        ExecuteQueryResult queryResult = mock(ExecuteQueryResult.class);
+        when(queryResult.getColumnCount()).thenReturn(1);
+        when(queryResult.getValue(1, Object.class)).thenReturn("value");
+        memoryResultSetRow = new MemoryQueryResultRow(queryResult);
     }
     
     @Test

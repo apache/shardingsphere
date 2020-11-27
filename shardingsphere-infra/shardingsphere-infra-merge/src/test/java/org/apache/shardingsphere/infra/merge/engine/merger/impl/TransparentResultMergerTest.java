@@ -34,10 +34,10 @@ public final class TransparentResultMergerTest {
     
     @Test
     public void assertMerge() throws SQLException {
-        ExecuteQueryResult queryResultSet = mock(ExecuteQueryResult.class);
-        when(queryResultSet.next()).thenReturn(true);
+        ExecuteQueryResult queryResult = mock(ExecuteQueryResult.class);
+        when(queryResult.next()).thenReturn(true);
         TransparentResultMerger merger = new TransparentResultMerger();
-        MergedResult actual = merger.merge(Collections.singletonList(queryResultSet), mock(SQLStatementContext.class), mock(ShardingSphereSchema.class));
+        MergedResult actual = merger.merge(Collections.singletonList(queryResult), mock(SQLStatementContext.class), mock(ShardingSphereSchema.class));
         assertTrue(actual.next());
     }
 }

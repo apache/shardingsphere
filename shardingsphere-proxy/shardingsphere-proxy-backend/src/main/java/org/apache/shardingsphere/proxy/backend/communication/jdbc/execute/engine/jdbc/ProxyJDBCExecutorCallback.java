@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.MemoryJDBCQueryResultSet;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.MemoryJDBCQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.ExecuteUpdateResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.JDBCAccessor;
@@ -70,13 +70,13 @@ public final class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Execut
         if (accessor.execute(statement, sql, isReturnGeneratedKeys)) {
             ResultSet resultSet = statement.getResultSet();
             backendConnection.add(resultSet);
-            return createQueryResultSet(resultSet, connectionMode);
+            return createQueryResult(resultSet, connectionMode);
         }
         return new ExecuteUpdateResult(statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
     }
     
-    private ExecuteQueryResult createQueryResultSet(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
-        return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamJDBCQueryResultSet(resultSet) : new MemoryJDBCQueryResultSet(resultSet);
+    private ExecuteQueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
+        return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamJDBCQueryResult(resultSet) : new MemoryJDBCQueryResult(resultSet);
     }
     
     private long getGeneratedKey(final Statement statement) throws SQLException {

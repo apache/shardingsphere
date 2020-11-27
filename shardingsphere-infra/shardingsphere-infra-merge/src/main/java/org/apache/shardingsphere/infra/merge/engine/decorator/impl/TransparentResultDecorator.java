@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.merge.result.impl.transparent.Transparent
 public final class TransparentResultDecorator implements ResultDecorator<TransparentRule> {
     
     @Override
-    public MergedResult decorate(final ExecuteQueryResult queryResultSet, final SQLStatementContext<?> sqlStatementContext, final TransparentRule rule) {
-        return new TransparentMergedResult(queryResultSet);
+    public MergedResult decorate(final ExecuteQueryResult queryResult, final SQLStatementContext<?> sqlStatementContext, final TransparentRule rule) {
+        return new TransparentMergedResult(queryResult);
     }
     
     @Override
