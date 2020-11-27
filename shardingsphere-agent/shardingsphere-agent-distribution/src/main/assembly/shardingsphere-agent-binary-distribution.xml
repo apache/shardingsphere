@@ -15,15 +15,16 @@
   ~ limitations under the License.
   -->
 
-<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
     <id>bin</id>
     <formats>
         <format>dir</format>
         <format>tar.gz</format>
     </formats>
-    <includeBaseDirectory>true</includeBaseDirectory>
-    
+    <includeBaseDirectory>false</includeBaseDirectory>
+
     <fileSets>
         <fileSet>
             <directory>src/main/resources/conf</directory>
@@ -39,22 +40,33 @@
             <fileMode>0644</fileMode>
         </fileSet>
     </fileSets>
-    
-    <dependencySets>
-        <dependencySet>
+
+    <moduleSets>
+        <moduleSet>
+            <useAllReactorProjects>true</useAllReactorProjects>
+
             <includes>
-                <include>${project.groupId}:shardingsphere-agent-plugin-metrics</include>
+                <include>*:shardingsphere-agent-bootstrap</include>
             </includes>
-            <outputDirectory>plugins</outputDirectory>
-            <fileMode>0644</fileMode>
-        </dependencySet>
-        <dependencySet>
+            <binaries>
+                <unpack>false</unpack>
+                <outputDirectory>/</outputDirectory>
+                <includeDependencies>false</includeDependencies>
+                <outputFileNameMapping>shardingsphere-agent.jar</outputFileNameMapping>
+            </binaries>
+        </moduleSet>
+        <moduleSet>
+            <useAllReactorProjects>true</useAllReactorProjects>
+
             <includes>
-                <include>${project.groupId}:shardingsphere-agent-bootstrap</include>
+                <include>*:shardingsphere-agent-plugin-metrics</include>
             </includes>
-            <outputDirectory>/</outputDirectory>
-            <outputFileNameMapping>shardingsphere-agent.jar</outputFileNameMapping>
-            <fileMode>0644</fileMode>
-        </dependencySet>
-    </dependencySets>
+            <binaries>
+                <unpack>false</unpack>
+                <outputDirectory>/plugin</outputDirectory>
+                <includeDependencies>false</includeDependencies>
+                <outputFileNameMapping>${module.artifactId}-${module.version}.jar</outputFileNameMapping>
+            </binaries>
+        </moduleSet>
+    </moduleSets>
 </assembly>

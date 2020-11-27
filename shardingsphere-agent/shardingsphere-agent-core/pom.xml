@@ -37,24 +37,39 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>
-
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
             <version>${bytebuddy.version}</version>
         </dependency>
-
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy-agent</artifactId>
             <version>${bytebuddy.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>
@@ -63,9 +78,6 @@
         <plugins>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
-                <configuration>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
-                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -73,29 +85,22 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <artifactSet>
-                                <excludes>
-                                    <exclude>net.bytebuddy:byte-buddy:jar:</exclude>
-                                    <exclude>com.google.*:*</exclude>
-                                    <exclude>com.google.guava:guava</exclude>
-                                    <exclude>org.checkerframework:checker-compat-qual</exclude>
-                                    <exclude>org.codehaus.mojo:animal-sniffer-annotations</exclude>
-                                    <exclude>io.perfmark:*</exclude>
-                                    <exclude>org.slf4j:*</exclude>
-                                </excludes>
-                            </artifactSet>
                             <relocations>
+                                <relocation>
+                                    <pattern>org.yaml</pattern>
+                                    <shadedPattern>${shade.package}.org.yaml</shadedPattern>
+                                </relocation>
                                 <relocation>
                                     <pattern>com.google</pattern>
                                     <shadedPattern>${shade.package}.com.google</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>io.perfmark</pattern>
-                                    <shadedPattern>${shade.package}.io.perfmark</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>org.slf4j</pattern>
                                     <shadedPattern>${shade.package}.org.slf4j</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons</pattern>
+                                    <shadedPattern>${shade.package}.org.apache.commons</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.checkerframework</pattern>
