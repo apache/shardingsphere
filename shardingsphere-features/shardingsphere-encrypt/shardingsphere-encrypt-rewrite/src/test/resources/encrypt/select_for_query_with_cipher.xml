@@ -61,16 +61,16 @@
     
     <rewrite-assertion id="select_with_unqualified_shorthand">
         <input sql="SELECT * FROM t_account" />
-        <output sql="SELECT account_id, cipher_certificate_number AS certificate_number, cipher_password AS password, cipher_amount AS amount, status FROM t_account" />
+        <output sql="SELECT `account_id`, `cipher_certificate_number` AS certificate_number, `cipher_password` AS password, `cipher_amount` AS amount, `status` FROM t_account" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_qualified_shorthand">
         <input sql="SELECT a.* FROM t_account a" />
-        <output sql="SELECT a.account_id, a.cipher_certificate_number AS certificate_number, a.cipher_password AS password, a.cipher_amount AS amount, a.status FROM t_account a" />
+        <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS certificate_number, `a`.`cipher_password` AS password, `a`.`cipher_amount` AS amount, `a`.`status` FROM t_account a" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_mix_qualified_shorthand_and_other_projection">
         <input sql="SELECT a.*, account_id, 1+1 FROM t_account a" />
-        <output sql="SELECT a.account_id, a.cipher_certificate_number AS certificate_number, a.cipher_password AS password, a.cipher_amount AS amount, a.status, account_id, 1+1 FROM t_account a" />
+        <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS certificate_number, `a`.`cipher_password` AS password, `a`.`cipher_amount` AS amount, `a`.`status`, account_id, 1+1 FROM t_account a" />
     </rewrite-assertion>
 </rewrite-assertions>
