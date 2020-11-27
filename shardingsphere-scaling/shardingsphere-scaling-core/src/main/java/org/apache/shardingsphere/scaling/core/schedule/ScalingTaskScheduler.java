@@ -62,16 +62,22 @@ public final class ScalingTaskScheduler implements Runnable {
     
     @Override
     public void run() {
-        shardingScalingJob.setStatus(SyncTaskControlStatus.MIGRATE_INVENTORY_DATA.name());
-        if (ScalingTaskUtil.allInventoryTasksFinished(shardingScalingJob.getInventoryDataTasks())) {
+        if (executeInventoryDataSyncTask()) {
             executeIncrementalDataSyncTask();
-            return;
         }
+    }
+    
+    private boolean executeInventoryDataSyncTask() {
         log.info("Start inventory data sync task.");
+        if (ScalingTaskUtil.allInventoryTasksFinished(shardingScalingJob.getInventoryDataTasks())) {
+            return true;
+        }
+        shardingScalingJob.setStatus(SyncTaskControlStatus.MIGRATE_INVENTORY_DATA.name());
         ExecuteCallback inventoryDataTaskCallback = createInventoryDataTaskCallback();
         for (ScalingTask each : shardingScalingJob.getInventoryDataTasks()) {
             ScalingContext.getInstance().getInventoryDumperExecuteEngine().submit(each, inventoryDataTaskCallback);
         }
+        return false;
     }
     
     private ExecuteCallback createInventoryDataTaskCallback() {
