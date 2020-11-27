@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -27,13 +27,18 @@ import java.sql.SQLException;
  * Abstract JDBC query result set.
  */
 @RequiredArgsConstructor
-public abstract class AbstractJDBCQueryResultSet implements QueryResultSet {
+public abstract class AbstractJDBCQueryResultSet implements ExecuteQueryResult {
     
     private final ResultSetMetaData resultSetMetaData;
     
     @Override
     public final int getColumnCount() throws SQLException {
         return resultSetMetaData.getColumnCount();
+    }
+    
+    @Override
+    public final String getTableName(final int columnIndex) throws SQLException {
+        return resultSetMetaData.getTableName(columnIndex);
     }
     
     @Override
@@ -47,7 +52,37 @@ public abstract class AbstractJDBCQueryResultSet implements QueryResultSet {
     }
     
     @Override
+    public final int getColumnType(final int columnIndex) throws SQLException {
+        return resultSetMetaData.getColumnType(columnIndex);
+    }
+    
+    @Override
     public final String getColumnTypeName(final int columnIndex) throws SQLException {
         return resultSetMetaData.getColumnTypeName(columnIndex);
+    }
+    
+    @Override
+    public final int getColumnLength(final int columnIndex) throws SQLException {
+        return resultSetMetaData.getColumnDisplaySize(columnIndex);
+    }
+    
+    @Override
+    public final int getDecimals(final int columnIndex) throws SQLException {
+        return resultSetMetaData.getScale(columnIndex);
+    }
+    
+    @Override
+    public final boolean isSigned(final int columnIndex) throws SQLException {
+        return resultSetMetaData.isSigned(columnIndex);
+    }
+    
+    @Override
+    public final boolean isNotNull(final int columnIndex) throws SQLException {
+        return resultSetMetaData.isNullable(columnIndex) == ResultSetMetaData.columnNoNulls;
+    }
+    
+    @Override
+    public final boolean isAutoIncrement(final int columnIndex) throws SQLException {
+        return resultSetMetaData.isAutoIncrement(columnIndex);
     }
 }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorEx
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.MemoryJDBCQueryResultSet;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResultSet;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -52,21 +52,21 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     }
     
     @Override
-    public List<QueryResultSet> executeQuery(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) throws SQLException {
+    public List<ExecuteQueryResult> executeQuery(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        JDBCExecutorCallback<QueryResultSet> callback = createJDBCExecutorCallbackWithQueryResult(isExceptionThrown);
+        JDBCExecutorCallback<ExecuteQueryResult> callback = createJDBCExecutorCallbackWithQueryResult(isExceptionThrown);
         return getJdbcExecutor().execute(executionGroups, callback);
     }
     
-    private JDBCExecutorCallback<QueryResultSet> createJDBCExecutorCallbackWithQueryResult(final boolean isExceptionThrown) {
-        return new JDBCExecutorCallback<QueryResultSet>(getMetaDataContexts().getDatabaseType(), isExceptionThrown) {
+    private JDBCExecutorCallback<ExecuteQueryResult> createJDBCExecutorCallbackWithQueryResult(final boolean isExceptionThrown) {
+        return new JDBCExecutorCallback<ExecuteQueryResult>(getMetaDataContexts().getDatabaseType(), isExceptionThrown) {
             
             @Override
-            protected QueryResultSet executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException { 
+            protected ExecuteQueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException { 
                 return createQueryResult(statement, connectionMode);
             }
             
-            private QueryResultSet createQueryResult(final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+            private ExecuteQueryResult createQueryResult(final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 PreparedStatement preparedStatement = (PreparedStatement) statement;
                 ResultSet resultSet = preparedStatement.executeQuery();
                 return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamJDBCQueryResultSet(resultSet) : new MemoryJDBCQueryResultSet(resultSet);

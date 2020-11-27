@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.Test;
 
@@ -79,8 +79,8 @@ public final class LimitDecoratorMergedResultTest {
         assertFalse(actual.next());
     }
     
-    private QueryResultSet mockQueryResultSet() throws SQLException {
-        QueryResultSet result = mock(QueryResultSet.class);
+    private ExecuteQueryResult mockQueryResultSet() throws SQLException {
+        ExecuteQueryResult result = mock(ExecuteQueryResult.class);
         when(result.next()).thenReturn(true, true, false);
         return result;
     }

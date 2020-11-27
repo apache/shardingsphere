@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata.QueryResultMetaData;
 
 import java.io.ByteArrayInputStream;
@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * Raw query result set.
  */
-public final class RawQueryResultSet implements QueryResultSet {
+public final class RawQueryResultSet implements ExecuteQueryResult {
     
     private final QueryResultMetaData metaData;
     
@@ -92,6 +92,11 @@ public final class RawQueryResultSet implements QueryResultSet {
     }
     
     @Override
+    public String getTableName(final int columnIndex) {
+        return metaData.getColumns().get(columnIndex).getTableName();
+    }
+    
+    @Override
     public String getColumnName(final int columnIndex) {
         return metaData.getColumns().get(columnIndex).getName();
     }
@@ -102,7 +107,37 @@ public final class RawQueryResultSet implements QueryResultSet {
     }
     
     @Override
+    public int getColumnType(final int columnIndex) {
+        return metaData.getColumns().get(columnIndex).getType();
+    }
+    
+    @Override
     public String getColumnTypeName(final int columnIndex) {
         return metaData.getColumns().get(columnIndex).getTypeName();
+    }
+    
+    @Override
+    public int getColumnLength(final int columnIndex) {
+        return metaData.getColumns().get(columnIndex).getLength();
+    }
+    
+    @Override
+    public int getDecimals(final int columnIndex) {
+        return metaData.getColumns().get(columnIndex).getDecimals();
+    }
+    
+    @Override
+    public boolean isSigned(final int columnIndex) {
+        return metaData.getColumns().get(columnIndex).isSigned();
+    }
+    
+    @Override
+    public boolean isNotNull(final int columnIndex) {
+        return metaData.getColumns().get(columnIndex).isNotNull();
+    }
+    
+    @Override
+    public boolean isAutoIncrement(final int columnIndex) {
+        return metaData.getColumns().get(columnIndex).isAutoIncrement();
     }
 }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.ExecuteUpdateResult;
 import org.junit.Test;
 
@@ -50,7 +49,7 @@ public final class RawExecutorTest {
     @Test
     public void assertExecuteForExecuteQueryResult() throws SQLException {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
-        when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenReturn(Collections.singletonList(new ExecuteQueryResult(null, null)));
+        when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenReturn(Collections.singletonList(mock(ExecuteQueryResult.class)));
         RawExecutor executor = new RawExecutor(executorEngine, true);
         assertTrue(executor.execute(null, null));
     }
@@ -59,12 +58,10 @@ public final class RawExecutorTest {
     public void assertExecuteQueryForExecuteQueryResult() throws SQLException {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
         ExecuteQueryResult executeQueryResult = mock(ExecuteQueryResult.class);
-        QueryResultSet queryResultSet = mock(QueryResultSet.class);
-        when(executeQueryResult.getQueryResultSet()).thenReturn(queryResultSet);
         when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenReturn(Collections.singletonList(executeQueryResult));
         RawExecutor executor = new RawExecutor(executorEngine, true);
-        List<QueryResultSet> actual = executor.executeQuery(null, null);
-        assertThat(actual, is(Collections.singletonList(queryResultSet)));
+        List<ExecuteQueryResult> actual = executor.executeQuery(null, null);
+        assertThat(actual, is(Collections.singletonList(executeQueryResult)));
     }
     
     @Test

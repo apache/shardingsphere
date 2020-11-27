@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
@@ -63,15 +63,15 @@ public final class GroupByMemoryMergedResultTest {
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        QueryResultSet queryResultSet1 = createQueryResultSet();
+        ExecuteQueryResult queryResultSet1 = createQueryResultSet();
         when(queryResultSet1.next()).thenReturn(true, false);
         when(queryResultSet1.getValue(1, Object.class)).thenReturn(20);
         when(queryResultSet1.getValue(2, Object.class)).thenReturn(0);
         when(queryResultSet1.getValue(3, Object.class)).thenReturn(2);
         when(queryResultSet1.getValue(4, Object.class)).thenReturn(2);
         when(queryResultSet1.getValue(5, Object.class)).thenReturn(20);
-        QueryResultSet queryResultSet2 = createQueryResultSet();
-        QueryResultSet queryResultSet3 = createQueryResultSet();
+        ExecuteQueryResult queryResultSet2 = createQueryResultSet();
+        ExecuteQueryResult queryResultSet3 = createQueryResultSet();
         when(queryResultSet3.next()).thenReturn(true, true, false);
         when(queryResultSet3.getValue(1, Object.class)).thenReturn(20, 30);
         when(queryResultSet3.getValue(2, Object.class)).thenReturn(0);
@@ -118,15 +118,15 @@ public final class GroupByMemoryMergedResultTest {
 
     @Test
     public void assertNextForAggregationResultSetsEmpty() throws SQLException {
-        QueryResultSet queryResultSet1 = createQueryResultSet();
+        ExecuteQueryResult queryResultSet1 = createQueryResultSet();
         when(queryResultSet1.next()).thenReturn(true, false);
         when(queryResultSet1.getValue(1, Object.class)).thenReturn(20);
         when(queryResultSet1.getValue(2, Object.class)).thenReturn(0);
         when(queryResultSet1.getValue(3, Object.class)).thenReturn(2);
         when(queryResultSet1.getValue(4, Object.class)).thenReturn(2);
         when(queryResultSet1.getValue(5, Object.class)).thenReturn(20);
-        QueryResultSet queryResultSet2 = createQueryResultSet();
-        QueryResultSet queryResultSet3 = createQueryResultSet();
+        ExecuteQueryResult queryResultSet2 = createQueryResultSet();
+        ExecuteQueryResult queryResultSet3 = createQueryResultSet();
         when(queryResultSet3.next()).thenReturn(true, true, false);
         when(queryResultSet3.getValue(1, Object.class)).thenReturn(20, 30);
         when(queryResultSet3.getValue(2, Object.class)).thenReturn(0);
@@ -156,8 +156,8 @@ public final class GroupByMemoryMergedResultTest {
         return result;
     }
     
-    private QueryResultSet createQueryResultSet() throws SQLException {
-        QueryResultSet result = mock(QueryResultSet.class);
+    private ExecuteQueryResult createQueryResultSet() throws SQLException {
+        ExecuteQueryResult result = mock(ExecuteQueryResult.class);
         when(result.getColumnCount()).thenReturn(5);
         when(result.getColumnLabel(1)).thenReturn("COUNT(*)");
         when(result.getColumnLabel(2)).thenReturn("AVG(num)");

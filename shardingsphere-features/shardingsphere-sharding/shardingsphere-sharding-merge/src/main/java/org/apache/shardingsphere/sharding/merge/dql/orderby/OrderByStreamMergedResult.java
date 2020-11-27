@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.stream.StreamMergedResult;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 
@@ -44,15 +44,15 @@ public class OrderByStreamMergedResult extends StreamMergedResult {
     @Getter(AccessLevel.PROTECTED)
     private boolean isFirstNext;
     
-    public OrderByStreamMergedResult(final List<QueryResultSet> queryResultSets, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
+    public OrderByStreamMergedResult(final List<ExecuteQueryResult> queryResultSets, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
         orderByItems = selectStatementContext.getOrderByContext().getItems();
         orderByValuesQueue = new PriorityQueue<>(queryResultSets.size());
         orderResultSetsToQueue(queryResultSets, selectStatementContext, schema);
         isFirstNext = true;
     }
     
-    private void orderResultSetsToQueue(final List<QueryResultSet> queryResultSets, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
-        for (QueryResultSet each : queryResultSets) {
+    private void orderResultSetsToQueue(final List<ExecuteQueryResult> queryResultSets, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
+        for (ExecuteQueryResult each : queryResultSets) {
             OrderByValue orderByValue = new OrderByValue(each, orderByItems, selectStatementContext, schema);
             if (orderByValue.next()) {
                 orderByValuesQueue.offer(orderByValue);

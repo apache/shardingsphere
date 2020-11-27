@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.merge.dal.impl.MergedEncryptColumnsMerg
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
 public final class MergedEncryptColumnsMergedResultTest {
     
     @Mock
-    private QueryResultSet queryResultSet;
+    private ExecuteQueryResult queryResultSet;
     
     @Test
     public void assertNextWithNotHasNext() throws SQLException {
@@ -98,7 +98,7 @@ public final class MergedEncryptColumnsMergedResultTest {
         assertFalse(createMergedEncryptColumnsMergedResult(queryResultSet, mock(EncryptRule.class)).wasNull());
     }
     
-    private MergedEncryptColumnsMergedResult createMergedEncryptColumnsMergedResult(final QueryResultSet queryResultSet, final EncryptRule encryptRule) {
+    private MergedEncryptColumnsMergedResult createMergedEncryptColumnsMergedResult(final ExecuteQueryResult queryResultSet, final EncryptRule encryptRule) {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         IdentifierValue identifierValue = new IdentifierValue("test");
         TableNameSegment tableNameSegment = new TableNameSegment(1, 4, identifierValue);

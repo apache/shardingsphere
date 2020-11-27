@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.pagination;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
@@ -92,8 +92,8 @@ public final class RowNumberDecoratorMergedResultTest {
         assertFalse(actual.next());
     }
     
-    private QueryResultSet mockQueryResultSet() throws SQLException {
-        QueryResultSet result = mock(QueryResultSet.class);
+    private ExecuteQueryResult mockQueryResultSet() throws SQLException {
+        ExecuteQueryResult result = mock(ExecuteQueryResult.class);
         when(result.next()).thenReturn(true, true, false);
         return result;
     }
