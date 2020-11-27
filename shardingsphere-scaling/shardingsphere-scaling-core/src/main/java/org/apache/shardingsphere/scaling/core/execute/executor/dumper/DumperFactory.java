@@ -65,7 +65,7 @@ public final class DumperFactory {
      * @param position position
      * @return log dumper
      */
-    public static LogDumper newInstanceLogDumper(final DumperConfiguration dumperConfig, final Position position) {
+    public static LogDumper newInstanceLogDumper(final DumperConfiguration dumperConfig, final Position<?> position) {
         return newInstanceLogDumper(dumperConfig.getDataSourceConfig().getDatabaseType().getName(), dumperConfig, position);
     }
     
@@ -78,7 +78,7 @@ public final class DumperFactory {
      * @return log dumper
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static LogDumper newInstanceLogDumper(final String databaseType, final DumperConfiguration dumperConfig, final Position position) {
+    public static LogDumper newInstanceLogDumper(final String databaseType, final DumperConfiguration dumperConfig, final Position<?> position) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
         return scalingEntry.getLogDumperClass().getConstructor(DumperConfiguration.class, Position.class).newInstance(dumperConfig, position);
     }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.scaling.core.job.position.Position;
  */
 public final class FinishedRecord extends Record {
     
-    public FinishedRecord(final Position position) {
+    public FinishedRecord(final Position<?> position) {
         super(position);
     }
 }
