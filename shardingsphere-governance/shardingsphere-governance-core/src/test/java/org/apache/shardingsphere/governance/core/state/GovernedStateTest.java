@@ -15,25 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.lock.node;
+package org.apache.shardingsphere.governance.core.state;
 
-import org.junit.Before;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class GlobalLockNodeTest {
+public class GovernedStateTest {
     
-    private GlobalLockNode globalLockNode;
+    private final GovernedState governedState = new GovernedState();
     
-    @Before
-    public void setUp() {
-        globalLockNode = new GlobalLockNode();
+    @Test
+    public void addState() {
+        assertThat(governedState.getState(), is(RegistryCenterNodeStatus.OK));
+        RegistryCenterNodeStatus state = governedState.addState(RegistryCenterNodeStatus.LOCKED);
+        assertThat(state, is(RegistryCenterNodeStatus.LOCKED));
     }
     
     @Test
-    public void getGlobalLockNodePath() {
-        assertThat(globalLockNode.getGlobalLockNodePath(), is("/glock"));
+    public void recoverState() {
+        governedState.addState(RegistryCenterNodeStatus.LOCKED);
+        assertThat(governedState.getState(), is(RegistryCenterNodeStatus.LOCKED));
+        assertThat(governedState.recoverState(), is(RegistryCenterNodeStatus.OK));
+        assertThat(governedState.getState(), is(RegistryCenterNodeStatus.OK));
     }
 }

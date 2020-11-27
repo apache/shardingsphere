@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry;
+package org.apache.shardingsphere.governance.core.lock.node;
+
+import com.google.common.base.Joiner;
 
 /**
- * State node status.
+ * Lock node.
  */
-public enum RegistryCenterNodeStatus {
+public final class LockNode {
+    
+    private static final String GLOBAL_LOCK_NODE = "glock";
     
     /**
-     * Disabled state.
+     * Get global lock node path.
+     * 
+     * @return global lock node path
      */
-    DISABLED,
-    
-    /**
-     * Locked state.
-     */
-    LOCKED,
-    
-    /**
-     * Ok state.
-     */
-    OK
+    public String getGlobalLockNodePath() {
+        return Joiner.on("/").join("", GLOBAL_LOCK_NODE);
+    }
 }

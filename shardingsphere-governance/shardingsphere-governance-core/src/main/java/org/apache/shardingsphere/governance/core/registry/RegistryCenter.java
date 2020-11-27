@@ -18,14 +18,11 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import com.google.common.base.Strings;
-import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
-import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockAddedEvent;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -93,17 +90,5 @@ public final class RegistryCenter {
     
     private String getDataSourceNodeData(final String schemaName, final String dataSourceName) {
         return repository.get(node.getDataSourcePath(schemaName, dataSourceName));
-    }
-    
-    /**
-     * Lock instance after global lock added.
-     * 
-     * @param event global lock added event
-     */
-    @Subscribe
-    public synchronized void lock(final GlobalLockAddedEvent event) {
-        if (Optional.of(event).isPresent()) {
-            persistInstanceData(RegistryCenterNodeStatus.LOCKED.toString());
-        }
     }
 }

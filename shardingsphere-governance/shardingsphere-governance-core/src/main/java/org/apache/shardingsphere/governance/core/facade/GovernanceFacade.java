@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.facade.listener.GovernanceListenerManager;
 import org.apache.shardingsphere.governance.core.facade.repository.GovernanceRepositoryFacade;
+import org.apache.shardingsphere.governance.core.lock.LockCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.state.GovernedStateContext;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
@@ -50,6 +51,9 @@ public final class GovernanceFacade implements AutoCloseable {
     
     private GovernanceListenerManager listenerManager;
     
+    @Getter
+    private LockCenter lockCenter;
+    
     /**
      * Initialize governance facade.
      *
@@ -61,6 +65,7 @@ public final class GovernanceFacade implements AutoCloseable {
         repositoryFacade = new GovernanceRepositoryFacade(config);
         registryCenter = new RegistryCenter(repositoryFacade.getRegistryRepository());
         configCenter = new ConfigCenter(repositoryFacade.getConfigurationRepository());
+        lockCenter = new LockCenter(repositoryFacade.getRegistryRepository(), registryCenter);
         listenerManager = new GovernanceListenerManager(repositoryFacade.getRegistryRepository(),
                 repositoryFacade.getConfigurationRepository(), schemaNames.isEmpty() ? configCenter.getAllSchemaNames() : schemaNames);
         GovernedStateContext.startUp();

@@ -17,21 +17,23 @@
 
 package org.apache.shardingsphere.governance.core.lock.node;
 
-import com.google.common.base.Joiner;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- * Global lock node.
- */
-public final class GlobalLockNode {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class LockNodeTest {
     
-    private static final String GLOBAL_LOCK_NODE = "glock";
+    private LockNode lockNode;
     
-    /**
-     * Get global lock node path.
-     * 
-     * @return global lock node path
-     */
-    public String getGlobalLockNodePath() {
-        return Joiner.on("/").join("", GLOBAL_LOCK_NODE);
+    @Before
+    public void setUp() {
+        lockNode = new LockNode();
+    }
+    
+    @Test
+    public void getGlobalLockNodePath() {
+        assertThat(lockNode.getGlobalLockNodePath(), is("/glock"));
     }
 }
