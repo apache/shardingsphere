@@ -32,8 +32,8 @@ import java.util.List;
 public final class ShowCreateTableMergedResult extends LogicTablesMergedResult {
     
     public ShowCreateTableMergedResult(final ShardingRule shardingRule,
-                                       final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<ExecuteQueryResult> queryResultSets) throws SQLException {
-        super(shardingRule, sqlStatementContext, schema, queryResultSets);
+                                       final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<ExecuteQueryResult> queryResults) throws SQLException {
+        super(shardingRule, sqlStatementContext, schema, queryResults);
     }
     
     @Override

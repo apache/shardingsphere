@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.MemoryJDBCQueryResultSet;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.MemoryJDBCExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCExecuteQueryResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -62,7 +62,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
             
             private ExecuteQueryResult createQueryResult(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 ResultSet resultSet = statement.executeQuery(sql);
-                return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamJDBCQueryResultSet(resultSet) : new MemoryJDBCQueryResultSet(resultSet);
+                return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamJDBCExecuteQueryResult(resultSet) : new MemoryJDBCExecuteQueryResult(resultSet);
             }
         };
         return getJdbcExecutor().execute(executionGroups, jdbcExecutorCallback);

@@ -119,7 +119,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             mergeUpdateCount(sqlStatementContext);
             return response;
         }
-        mergedResult = mergeQuery(sqlStatementContext, ((QueryResponse) response).getQueryResultSets());
+        mergedResult = mergeQuery(sqlStatementContext, ((QueryResponse) response).getQueryResults());
         return response;
     }
     
@@ -135,10 +135,10 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return dataNodeContainedRule.isPresent() && dataNodeContainedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }
     
-    private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<ExecuteQueryResult> queryResultSets) throws SQLException {
+    private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<ExecuteQueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(ProxyContext.getInstance().getMetaDataContexts().getDatabaseType(), 
                 metaData.getSchema(), ProxyContext.getInstance().getMetaDataContexts().getProps(), metaData.getRuleMetaData().getRules());
-        return mergeEngine.merge(queryResultSets, sqlStatementContext);
+        return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
     @Override

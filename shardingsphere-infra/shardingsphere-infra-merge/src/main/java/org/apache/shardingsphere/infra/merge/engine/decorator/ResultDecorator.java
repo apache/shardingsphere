@@ -34,13 +34,13 @@ public interface ResultDecorator<T extends ShardingSphereRule> {
     /**
      * Decorate query result.
      *
-     * @param queryResultSet query result set
+     * @param queryResult query result
      * @param sqlStatementContext SQL statement context
      * @param rule ShardingSphere rule
      * @return merged result
      * @throws SQLException SQL exception
      */
-    MergedResult decorate(ExecuteQueryResult queryResultSet, SQLStatementContext<?> sqlStatementContext, T rule) throws SQLException;
+    MergedResult decorate(ExecuteQueryResult queryResult, SQLStatementContext<?> sqlStatementContext, T rule) throws SQLException;
     
     /**
      * Decorate merged result.

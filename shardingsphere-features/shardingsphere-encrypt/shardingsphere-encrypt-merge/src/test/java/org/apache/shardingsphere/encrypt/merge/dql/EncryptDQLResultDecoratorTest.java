@@ -33,10 +33,10 @@ public final class EncryptDQLResultDecoratorTest {
     
     @Test
     public void assertDecorateQueryResult() throws SQLException {
-        ExecuteQueryResult queryResultSet = mock(ExecuteQueryResult.class);
-        when(queryResultSet.next()).thenReturn(true);
+        ExecuteQueryResult queryResult = mock(ExecuteQueryResult.class);
+        when(queryResult.next()).thenReturn(true);
         EncryptDQLResultDecorator decorator = new EncryptDQLResultDecorator(mock(EncryptAlgorithmMetaData.class), false);
-        MergedResult actual = decorator.decorate(queryResultSet, mock(SQLStatementContext.class), mock(EncryptRule.class));
+        MergedResult actual = decorator.decorate(queryResult, mock(SQLStatementContext.class), mock(EncryptRule.class));
         assertTrue(actual.next());
     }
     

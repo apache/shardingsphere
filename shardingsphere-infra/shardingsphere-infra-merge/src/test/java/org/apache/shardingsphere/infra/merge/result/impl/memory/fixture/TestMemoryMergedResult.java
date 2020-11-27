@@ -42,7 +42,7 @@ public final class TestMemoryMergedResult extends MemoryMergedResult<Independent
     
     @Override
     protected List<MemoryQueryResultRow> init(final IndependentRuleFixture rule,
-                                              final ShardingSphereSchema schema, final SQLStatementContext sqlStatementContext, final List<ExecuteQueryResult> queryResultSets) {
+                                              final ShardingSphereSchema schema, final SQLStatementContext sqlStatementContext, final List<ExecuteQueryResult> queryResults) {
         memoryQueryResultRow = mock(MemoryQueryResultRow.class);
         return Collections.singletonList(memoryQueryResultRow);
     }

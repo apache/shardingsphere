@@ -48,7 +48,7 @@ public final class LimitDecoratorMergedResultTest {
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, Integer.MAX_VALUE), null, Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResultSet(), mockQueryResultSet(), mockQueryResultSet(), mockQueryResultSet()), selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, null);
         assertFalse(actual.next());
     }
     
@@ -59,7 +59,7 @@ public final class LimitDecoratorMergedResultTest {
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 2), null, Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResultSet(), mockQueryResultSet(), mockQueryResultSet(), mockQueryResultSet()), selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, null);
         for (int i = 0; i < 6; i++) {
             assertTrue(actual.next());
         }
@@ -73,13 +73,13 @@ public final class LimitDecoratorMergedResultTest {
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.emptyList()),
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 2), new NumberLiteralLimitValueSegment(0, 0, 2), Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResultSet(), mockQueryResultSet(), mockQueryResultSet(), mockQueryResultSet()), selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, null);
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
     
-    private ExecuteQueryResult mockQueryResultSet() throws SQLException {
+    private ExecuteQueryResult mockQueryResult() throws SQLException {
         ExecuteQueryResult result = mock(ExecuteQueryResult.class);
         when(result.next()).thenReturn(true, true, false);
         return result;

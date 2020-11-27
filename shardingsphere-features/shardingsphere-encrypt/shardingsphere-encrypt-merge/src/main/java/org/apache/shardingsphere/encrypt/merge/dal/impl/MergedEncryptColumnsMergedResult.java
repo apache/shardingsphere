@@ -28,25 +28,25 @@ import java.sql.SQLException;
  */
 public final class MergedEncryptColumnsMergedResult extends EncryptColumnsMergedResult {
     
-    private final ExecuteQueryResult queryResultSet;
+    private final ExecuteQueryResult queryResult;
     
-    public MergedEncryptColumnsMergedResult(final ExecuteQueryResult queryResultSet, final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
+    public MergedEncryptColumnsMergedResult(final ExecuteQueryResult queryResult, final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
         super(sqlStatementContext, encryptRule);
-        this.queryResultSet = queryResultSet;
+        this.queryResult = queryResult;
     }
     
     @Override
     protected boolean nextValue() throws SQLException {
-        return queryResultSet.next();
+        return queryResult.next();
     }
     
     @Override
     protected Object getOriginalValue(final int columnIndex, final Class<?> type) throws SQLException {
-        return queryResultSet.getValue(columnIndex, type);
+        return queryResult.getValue(columnIndex, type);
     }
     
     @Override
     public boolean wasNull() throws SQLException {
-        return queryResultSet.wasNull();
+        return queryResult.wasNull();
     }
 }

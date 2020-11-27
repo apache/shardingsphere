@@ -38,39 +38,39 @@ public final class StreamMergedResultTest {
     
     @Test(expected = SQLException.class)
     public void assertGetCurrentQueryResultIfNull() throws SQLException {
-        streamMergedResult.getCurrentQueryResultSet();
+        streamMergedResult.getCurrentQueryResult();
     }
     
     @Test
     public void assertGetValue() throws SQLException {
-        ExecuteQueryResult queryResultSet = mock(ExecuteQueryResult.class);
-        when(queryResultSet.getValue(1, Object.class)).thenReturn("1");
-        streamMergedResult.setCurrentQueryResultSet(queryResultSet);
+        ExecuteQueryResult queryResult = mock(ExecuteQueryResult.class);
+        when(queryResult.getValue(1, Object.class)).thenReturn("1");
+        streamMergedResult.setCurrentQueryResult(queryResult);
         assertThat(streamMergedResult.getValue(1, Object.class).toString(), is("1"));
     }
     
     @Test
     public void assertGetCalendarValue() throws SQLException {
-        ExecuteQueryResult queryResultSet = mock(ExecuteQueryResult.class);
+        ExecuteQueryResult queryResult = mock(ExecuteQueryResult.class);
         Calendar calendar = Calendar.getInstance();
-        when(queryResultSet.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
-        streamMergedResult.setCurrentQueryResultSet(queryResultSet);
+        when(queryResult.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
+        streamMergedResult.setCurrentQueryResult(queryResult);
         assertThat(streamMergedResult.getCalendarValue(1, Date.class, calendar), is(new Date(0L)));
     }
     
     @Test
     public void assertGetInputStream() throws SQLException {
-        ExecuteQueryResult queryResultSet = mock(ExecuteQueryResult.class);
+        ExecuteQueryResult queryResult = mock(ExecuteQueryResult.class);
         InputStream value = mock(InputStream.class);
-        when(queryResultSet.getInputStream(1, "Ascii")).thenReturn(value);
-        streamMergedResult.setCurrentQueryResultSet(queryResultSet);
+        when(queryResult.getInputStream(1, "Ascii")).thenReturn(value);
+        streamMergedResult.setCurrentQueryResult(queryResult);
         assertThat(streamMergedResult.getInputStream(1, "Ascii"), is(value));
     }
     
     @Test
     public void assertWasNull() {
-        ExecuteQueryResult queryResultSet = mock(ExecuteQueryResult.class);
-        streamMergedResult.setCurrentQueryResultSet(queryResultSet);
+        ExecuteQueryResult queryResult = mock(ExecuteQueryResult.class);
+        streamMergedResult.setCurrentQueryResult(queryResult);
         assertFalse(streamMergedResult.wasNull());
     }
 }

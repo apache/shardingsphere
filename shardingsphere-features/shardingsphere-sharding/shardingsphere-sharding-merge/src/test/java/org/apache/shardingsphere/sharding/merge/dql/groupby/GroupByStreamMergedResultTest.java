@@ -60,31 +60,31 @@ public final class GroupByStreamMergedResultTest {
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResultSet(), mockQueryResultSet(), mockQueryResultSet()), createSelectStatementContext(), buildSchema());
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult()), createSelectStatementContext(), buildSchema());
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        ExecuteQueryResult queryResultSet1 = mockQueryResultSet();
-        when(queryResultSet1.next()).thenReturn(true, false);
-        when(queryResultSet1.getValue(1, Object.class)).thenReturn(20);
-        when(queryResultSet1.getValue(2, Object.class)).thenReturn(0);
-        when(queryResultSet1.getValue(3, Object.class)).thenReturn(2);
-        when(queryResultSet1.getValue(4, Object.class)).thenReturn(new Date(0L));
-        when(queryResultSet1.getValue(5, Object.class)).thenReturn(2);
-        when(queryResultSet1.getValue(6, Object.class)).thenReturn(20);
-        ExecuteQueryResult queryResultSet2 = mockQueryResultSet();
-        ExecuteQueryResult queryResultSet3 = mockQueryResultSet();
-        when(queryResultSet3.next()).thenReturn(true, true, false);
-        when(queryResultSet3.getValue(1, Object.class)).thenReturn(20, 30);
-        when(queryResultSet3.getValue(2, Object.class)).thenReturn(0);
-        when(queryResultSet3.getValue(3, Object.class)).thenReturn(2, 2, 3);
-        when(queryResultSet3.getValue(4, Object.class)).thenReturn(new Date(0L));
-        when(queryResultSet3.getValue(5, Object.class)).thenReturn(2, 2, 3);
-        when(queryResultSet3.getValue(6, Object.class)).thenReturn(20, 20, 30);
+        ExecuteQueryResult queryResult1 = mockQueryResult();
+        when(queryResult1.next()).thenReturn(true, false);
+        when(queryResult1.getValue(1, Object.class)).thenReturn(20);
+        when(queryResult1.getValue(2, Object.class)).thenReturn(0);
+        when(queryResult1.getValue(3, Object.class)).thenReturn(2);
+        when(queryResult1.getValue(4, Object.class)).thenReturn(new Date(0L));
+        when(queryResult1.getValue(5, Object.class)).thenReturn(2);
+        when(queryResult1.getValue(6, Object.class)).thenReturn(20);
+        ExecuteQueryResult queryResult2 = mockQueryResult();
+        ExecuteQueryResult queryResult3 = mockQueryResult();
+        when(queryResult3.next()).thenReturn(true, true, false);
+        when(queryResult3.getValue(1, Object.class)).thenReturn(20, 30);
+        when(queryResult3.getValue(2, Object.class)).thenReturn(0);
+        when(queryResult3.getValue(3, Object.class)).thenReturn(2, 2, 3);
+        when(queryResult3.getValue(4, Object.class)).thenReturn(new Date(0L));
+        when(queryResult3.getValue(5, Object.class)).thenReturn(2, 2, 3);
+        when(queryResult3.getValue(6, Object.class)).thenReturn(20, 20, 30);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(queryResultSet1, queryResultSet2, queryResultSet3), createSelectStatementContext(), buildSchema());
+        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), buildSchema());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(new BigDecimal(40)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
@@ -104,29 +104,29 @@ public final class GroupByStreamMergedResultTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        ExecuteQueryResult queryResultSet1 = mockQueryResultSet();
-        when(queryResultSet1.next()).thenReturn(true, false);
-        when(queryResultSet1.getValue(1, Object.class)).thenReturn(20);
-        when(queryResultSet1.getValue(2, Object.class)).thenReturn(0);
-        when(queryResultSet1.getValue(3, Object.class)).thenReturn(2);
-        when(queryResultSet1.getValue(5, Object.class)).thenReturn(2);
-        when(queryResultSet1.getValue(6, Object.class)).thenReturn(20);
-        ExecuteQueryResult queryResultSet2 = mockQueryResultSet();
-        when(queryResultSet2.next()).thenReturn(true, true, true, false);
-        when(queryResultSet2.getValue(1, Object.class)).thenReturn(20, 30, 30, 40);
-        when(queryResultSet2.getValue(2, Object.class)).thenReturn(0);
-        when(queryResultSet2.getValue(3, Object.class)).thenReturn(2, 2, 3, 3, 3, 4);
-        when(queryResultSet2.getValue(5, Object.class)).thenReturn(2, 2, 3, 3, 3, 4);
-        when(queryResultSet2.getValue(6, Object.class)).thenReturn(20, 20, 30, 30, 30, 40);
-        ExecuteQueryResult queryResultSet3 = mockQueryResultSet();
-        when(queryResultSet3.next()).thenReturn(true, true, false);
-        when(queryResultSet3.getValue(1, Object.class)).thenReturn(10, 30);
-        when(queryResultSet3.getValue(2, Object.class)).thenReturn(10);
-        when(queryResultSet3.getValue(3, Object.class)).thenReturn(1, 1, 1, 1, 3);
-        when(queryResultSet3.getValue(5, Object.class)).thenReturn(1, 1, 3);
-        when(queryResultSet3.getValue(6, Object.class)).thenReturn(10, 10, 30);
+        ExecuteQueryResult queryResult1 = mockQueryResult();
+        when(queryResult1.next()).thenReturn(true, false);
+        when(queryResult1.getValue(1, Object.class)).thenReturn(20);
+        when(queryResult1.getValue(2, Object.class)).thenReturn(0);
+        when(queryResult1.getValue(3, Object.class)).thenReturn(2);
+        when(queryResult1.getValue(5, Object.class)).thenReturn(2);
+        when(queryResult1.getValue(6, Object.class)).thenReturn(20);
+        ExecuteQueryResult queryResult2 = mockQueryResult();
+        when(queryResult2.next()).thenReturn(true, true, true, false);
+        when(queryResult2.getValue(1, Object.class)).thenReturn(20, 30, 30, 40);
+        when(queryResult2.getValue(2, Object.class)).thenReturn(0);
+        when(queryResult2.getValue(3, Object.class)).thenReturn(2, 2, 3, 3, 3, 4);
+        when(queryResult2.getValue(5, Object.class)).thenReturn(2, 2, 3, 3, 3, 4);
+        when(queryResult2.getValue(6, Object.class)).thenReturn(20, 20, 30, 30, 30, 40);
+        ExecuteQueryResult queryResult3 = mockQueryResult();
+        when(queryResult3.next()).thenReturn(true, true, false);
+        when(queryResult3.getValue(1, Object.class)).thenReturn(10, 30);
+        when(queryResult3.getValue(2, Object.class)).thenReturn(10);
+        when(queryResult3.getValue(3, Object.class)).thenReturn(1, 1, 1, 1, 3);
+        when(queryResult3.getValue(5, Object.class)).thenReturn(1, 1, 3);
+        when(queryResult3.getValue(6, Object.class)).thenReturn(10, 10, 30);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(queryResultSet1, queryResultSet2, queryResultSet3), createSelectStatementContext(), buildSchema());
+        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), buildSchema());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(new BigDecimal(10)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
@@ -185,7 +185,7 @@ public final class GroupByStreamMergedResultTest {
         return new ShardingSphereSchema(ImmutableMap.of("tbl", tableMetaData));
     }
     
-    private ExecuteQueryResult mockQueryResultSet() throws SQLException {
+    private ExecuteQueryResult mockQueryResult() throws SQLException {
         ExecuteQueryResult result = mock(ExecuteQueryResult.class);
         when(result.getColumnCount()).thenReturn(6);
         when(result.getColumnLabel(1)).thenReturn("COUNT(*)");

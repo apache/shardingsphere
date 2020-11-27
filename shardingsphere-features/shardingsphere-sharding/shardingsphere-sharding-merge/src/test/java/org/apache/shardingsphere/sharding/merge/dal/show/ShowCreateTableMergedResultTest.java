@@ -72,10 +72,10 @@ public final class ShowCreateTableMergedResultTest {
     
     @Test
     public void assertNextForTableRuleIsPresent() throws SQLException {
-        assertTrue(new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultSet())).next());
+        assertTrue(new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult())).next());
     }
     
-    private ExecuteQueryResult mockQueryResultSet() throws SQLException {
+    private ExecuteQueryResult mockQueryResult() throws SQLException {
         ExecuteQueryResult result = mock(ExecuteQueryResult.class);
         when(result.getColumnCount()).thenReturn(2);
         when(result.next()).thenReturn(true, false);

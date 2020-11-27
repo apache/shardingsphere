@@ -52,37 +52,37 @@ public final class MergeEngineTest {
     private ConfigurationProperties props;
     
     @Mock
-    private ExecuteQueryResult queryResultSet;
+    private ExecuteQueryResult queryResult;
     
     @Mock
     private SQLStatementContext<?> sqlStatementContext;
     
     @Test
     public void assertMergeWithIndependentRule() throws SQLException {
-        when(queryResultSet.getValue(1, String.class)).thenReturn("test");
+        when(queryResult.getValue(1, String.class)).thenReturn("test");
         MergeEngine mergeEngine = new MergeEngine(databaseType, schema, props, Collections.singletonList(new IndependentRuleFixture()));
-        MergedResult actual = mergeEngine.merge(Collections.singletonList(queryResultSet), sqlStatementContext);
+        MergedResult actual = mergeEngine.merge(Collections.singletonList(queryResult), sqlStatementContext);
         assertThat(actual.getValue(1, String.class), is("test"));
     }
     
     @Test
     public void assertMergeWithMergerRuleOnly() throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(databaseType, schema, props, Collections.singletonList(new MergerRuleFixture()));
-        MergedResult actual = mergeEngine.merge(Collections.singletonList(queryResultSet), sqlStatementContext);
+        MergedResult actual = mergeEngine.merge(Collections.singletonList(queryResult), sqlStatementContext);
         assertThat(actual.getValue(1, String.class), is("merged_value"));
     }
     
     @Test
     public void assertMergeWithDecoratorRuleOnly() throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(databaseType, schema, props, Collections.singletonList(new DecoratorRuleFixture()));
-        MergedResult actual = mergeEngine.merge(Collections.singletonList(queryResultSet), sqlStatementContext);
+        MergedResult actual = mergeEngine.merge(Collections.singletonList(queryResult), sqlStatementContext);
         assertThat(actual.getValue(1, String.class), is("decorated_value"));
     }
     
     @Test
     public void assertMergeWithMergerRuleAndDecoratorRuleTogether() throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(databaseType, schema, props, Arrays.asList(new MergerRuleFixture(), new DecoratorRuleFixture()));
-        MergedResult actual = mergeEngine.merge(Collections.singletonList(queryResultSet), sqlStatementContext);
+        MergedResult actual = mergeEngine.merge(Collections.singletonList(queryResult), sqlStatementContext);
         assertThat(actual.getValue(1, String.class), is("decorated_merged_value"));
     }
 }

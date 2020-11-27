@@ -71,7 +71,7 @@ public final class ShardingDQLResultMergerTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(buildSelectStatement(new MySQLSelectStatement()),
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
-        assertThat(resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema()), instanceOf(IteratorStreamMergedResult.class));
+        assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema()), instanceOf(IteratorStreamMergedResult.class));
     }
     
     @Test
@@ -81,7 +81,7 @@ public final class ShardingDQLResultMergerTest {
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
-        assertThat(resultMerger.merge(Collections.singletonList(createQueryResultSet()), selectStatementContext, buildSchema()), instanceOf(IteratorStreamMergedResult.class));
+        assertThat(resultMerger.merge(Collections.singletonList(createQueryResult()), selectStatementContext, buildSchema()), instanceOf(IteratorStreamMergedResult.class));
     }
     
     @Test
@@ -91,7 +91,7 @@ public final class ShardingDQLResultMergerTest {
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema());
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
         assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(IteratorStreamMergedResult.class));
     }
@@ -103,7 +103,7 @@ public final class ShardingDQLResultMergerTest {
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema());
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
         assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(IteratorStreamMergedResult.class));
     }
@@ -115,7 +115,7 @@ public final class ShardingDQLResultMergerTest {
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema());
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(IteratorStreamMergedResult.class));
     }
@@ -127,7 +127,7 @@ public final class ShardingDQLResultMergerTest {
                 buildSelectStatement(new MySQLSelectStatement()), new GroupByContext(Collections.emptyList(), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
-        assertThat(resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema()), instanceOf(OrderByStreamMergedResult.class));
+        assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema()), instanceOf(OrderByStreamMergedResult.class));
     }
     
     @Test
@@ -138,7 +138,7 @@ public final class ShardingDQLResultMergerTest {
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema());
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
         assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(OrderByStreamMergedResult.class));
     }
@@ -151,7 +151,7 @@ public final class ShardingDQLResultMergerTest {
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema());
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
         assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(OrderByStreamMergedResult.class));
     }
@@ -164,7 +164,7 @@ public final class ShardingDQLResultMergerTest {
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema());
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(OrderByStreamMergedResult.class));
     }
@@ -176,7 +176,7 @@ public final class ShardingDQLResultMergerTest {
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
-        assertThat(resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema()), instanceOf(GroupByStreamMergedResult.class));
+        assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema()), instanceOf(GroupByStreamMergedResult.class));
     }
     
     @Test
@@ -187,7 +187,7 @@ public final class ShardingDQLResultMergerTest {
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema());
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
         assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByStreamMergedResult.class));
     }
@@ -200,7 +200,7 @@ public final class ShardingDQLResultMergerTest {
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema());
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
         assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByStreamMergedResult.class));
     }
@@ -213,7 +213,7 @@ public final class ShardingDQLResultMergerTest {
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema());
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByStreamMergedResult.class));
     }
@@ -225,7 +225,7 @@ public final class ShardingDQLResultMergerTest {
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0), 
                 new OrderByContext(Collections.emptyList(), false), new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(null, null, Collections.emptyList()));
-        assertThat(resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema()), instanceOf(GroupByMemoryMergedResult.class));
+        assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema()), instanceOf(GroupByMemoryMergedResult.class));
     }
     
     @Test
@@ -235,7 +235,7 @@ public final class ShardingDQLResultMergerTest {
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0), 
                 new OrderByContext(Collections.emptyList(), false), new ProjectionsContext(0, 0, false, Collections.emptyList()),
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema());
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
         assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
     }
@@ -248,7 +248,7 @@ public final class ShardingDQLResultMergerTest {
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema());
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
         assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
     }
@@ -262,7 +262,7 @@ public final class ShardingDQLResultMergerTest {
                         new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC))), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema());
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
     }
@@ -275,7 +275,7 @@ public final class ShardingDQLResultMergerTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 buildSelectStatement(new MySQLSelectStatement()), new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 projectionsContext, new PaginationContext(null, null, Collections.emptyList()));
-        assertThat(resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema()), instanceOf(GroupByMemoryMergedResult.class));
+        assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema()), instanceOf(GroupByMemoryMergedResult.class));
     }
     
     @Test
@@ -286,7 +286,7 @@ public final class ShardingDQLResultMergerTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 buildSelectStatement(new MySQLSelectStatement()), new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 projectionsContext, new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema());
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
         assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
     }
@@ -299,7 +299,7 @@ public final class ShardingDQLResultMergerTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 buildSelectStatement(new OracleSelectStatement()), new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                         projectionsContext, new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema());
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
         assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
     }
@@ -312,22 +312,22 @@ public final class ShardingDQLResultMergerTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 buildSelectStatement(new SQLServerSelectStatement()), new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 projectionsContext, new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
-        MergedResult actual = resultMerger.merge(createQueryResultSets(), selectStatementContext, buildSchema());
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, buildSchema());
         assertThat(actual, instanceOf(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
     }
     
-    private List<ExecuteQueryResult> createQueryResultSets() throws SQLException {
+    private List<ExecuteQueryResult> createQueryResults() throws SQLException {
         List<ExecuteQueryResult> result = new LinkedList<>();
-        ExecuteQueryResult queryResultSet = createQueryResultSet();
-        result.add(queryResultSet);
+        ExecuteQueryResult queryResult = createQueryResult();
+        result.add(queryResult);
         result.add(mock(ExecuteQueryResult.class));
         result.add(mock(ExecuteQueryResult.class));
         result.add(mock(ExecuteQueryResult.class));
         return result;
     }
     
-    private ExecuteQueryResult createQueryResultSet() throws SQLException {
+    private ExecuteQueryResult createQueryResult() throws SQLException {
         ExecuteQueryResult result = mock(ExecuteQueryResult.class);
         when(result.getColumnCount()).thenReturn(1);
         when(result.getColumnLabel(1)).thenReturn("count(*)");
