@@ -31,15 +31,15 @@ public final class MemoryQueryResultRow {
     
     private final Object[] data;
     
-    public MemoryQueryResultRow(final ExecuteQueryResult queryResultSet) throws SQLException {
-        data = load(queryResultSet);
+    public MemoryQueryResultRow(final ExecuteQueryResult queryResult) throws SQLException {
+        data = load(queryResult);
     }
     
-    private Object[] load(final ExecuteQueryResult queryResultSet) throws SQLException {
-        int columnCount = queryResultSet.getColumnCount();
+    private Object[] load(final ExecuteQueryResult queryResult) throws SQLException {
+        int columnCount = queryResult.getColumnCount();
         Object[] result = new Object[columnCount];
         for (int i = 0; i < columnCount; i++) {
-            result[i] = queryResultSet.getValue(i + 1, Object.class);
+            result[i] = queryResult.getValue(i + 1, Object.class);
         }
         return result;
     }

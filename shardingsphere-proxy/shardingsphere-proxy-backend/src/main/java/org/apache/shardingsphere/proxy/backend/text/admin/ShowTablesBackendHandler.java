@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.QueryResultRow;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.RawQueryResultSet;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.RawQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata.QueryResultRowMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryHeader;
@@ -58,8 +58,8 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
                 null, result.getQueryHeaders().get(0).getColumnName(), result.getQueryHeaders().get(0).getColumnLabel(), Types.VARCHAR, "VARCHAR", 255, 0, false, false, false)));
         Collection<String> allTableNames = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getSchema().getAllTableNames();
         List<QueryResultRow> rows = allTableNames.stream().map(each -> new QueryResultRow(Collections.singletonList(each))).collect(Collectors.toList());
-        ExecuteQueryResult queryResultSet = new RawQueryResultSet(metaData, rows);
-        result.getQueryResultSets().add(queryResultSet);
+        ExecuteQueryResult queryResult = new RawQueryResult(metaData, rows);
+        result.getQueryResults().add(queryResult);
         queryResponse = result;
         return result;
     }
@@ -71,14 +71,14 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
     
     @Override
     public boolean next() throws SQLException {
-        return null != queryResponse && queryResponse.getQueryResultSets().get(0).next();
+        return null != queryResponse && queryResponse.getQueryResults().get(0).next();
     }
     
     @Override
     public Collection<Object> getRowData() throws SQLException {
         Collection<Object> result = new LinkedList<>();
         for (int columnIndex = 1; columnIndex <= queryResponse.getQueryHeaders().size(); columnIndex++) {
-            result.add(queryResponse.getQueryResultSets().get(0).getValue(columnIndex, Object.class));
+            result.add(queryResponse.getQueryResults().get(0).getValue(columnIndex, Object.class));
         }
         return result;
     }

@@ -38,35 +38,35 @@ public final class TransparentMergedResultTest {
     
     @Test
     public void assertNext() throws SQLException {
-        ExecuteQueryResult queryResultSet = mock(ExecuteQueryResult.class);
-        when(queryResultSet.next()).thenReturn(true, false);
-        TransparentMergedResult actual = new TransparentMergedResult(queryResultSet);
+        ExecuteQueryResult queryResult = mock(ExecuteQueryResult.class);
+        when(queryResult.next()).thenReturn(true, false);
+        TransparentMergedResult actual = new TransparentMergedResult(queryResult);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
     
     @Test
     public void assertGetValue() throws SQLException {
-        ExecuteQueryResult queryResultSet = mock(ExecuteQueryResult.class);
-        when(queryResultSet.getValue(1, Object.class)).thenReturn("1");
-        TransparentMergedResult actual = new TransparentMergedResult(queryResultSet);
+        ExecuteQueryResult queryResult = mock(ExecuteQueryResult.class);
+        when(queryResult.getValue(1, Object.class)).thenReturn("1");
+        TransparentMergedResult actual = new TransparentMergedResult(queryResult);
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
     }
     
     @Test
     public void assertGetCalendarValue() throws SQLException {
-        ExecuteQueryResult queryResultSet = mock(ExecuteQueryResult.class);
-        when(queryResultSet.getCalendarValue(1, Date.class, null)).thenReturn(new Date(0L));
-        TransparentMergedResult actual = new TransparentMergedResult(queryResultSet);
+        ExecuteQueryResult queryResult = mock(ExecuteQueryResult.class);
+        when(queryResult.getCalendarValue(1, Date.class, null)).thenReturn(new Date(0L));
+        TransparentMergedResult actual = new TransparentMergedResult(queryResult);
         assertThat(actual.getCalendarValue(1, Date.class, null), is(new Date(0L)));
     }
     
     @Test
     public void assertGetInputStream() throws SQLException {
-        ExecuteQueryResult queryResultSet = mock(ExecuteQueryResult.class);
+        ExecuteQueryResult queryResult = mock(ExecuteQueryResult.class);
         InputStream value = mock(InputStream.class);
-        when(queryResultSet.getInputStream(1, "Ascii")).thenReturn(value);
-        TransparentMergedResult actual = new TransparentMergedResult(queryResultSet);
+        when(queryResult.getInputStream(1, "Ascii")).thenReturn(value);
+        TransparentMergedResult actual = new TransparentMergedResult(queryResult);
         assertThat(actual.getInputStream(1, "Ascii"), is(value));
     }
     

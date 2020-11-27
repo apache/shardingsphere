@@ -31,11 +31,11 @@ import static org.mockito.Mockito.when;
 public final class TransparentResultDecoratorTest {
     
     @Test
-    public void assertDecorateQueryResultSet() throws SQLException {
-        ExecuteQueryResult queryResultSet = mock(ExecuteQueryResult.class);
-        when(queryResultSet.next()).thenReturn(true);
+    public void assertDecorateQueryResult() throws SQLException {
+        ExecuteQueryResult queryResult = mock(ExecuteQueryResult.class);
+        when(queryResult.next()).thenReturn(true);
         TransparentResultDecorator decorator = new TransparentResultDecorator();
-        MergedResult actual = decorator.decorate(queryResultSet, mock(SQLStatementContext.class), new TransparentRule());
+        MergedResult actual = decorator.decorate(queryResult, mock(SQLStatementContext.class), new TransparentRule());
         assertTrue(actual.next());
     }
     

@@ -35,9 +35,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 public final class EncryptDALResultDecorator implements ResultDecorator<EncryptRule> {
     
     @Override
-    public MergedResult decorate(final ExecuteQueryResult queryResultSet, final SQLStatementContext<?> sqlStatementContext, final EncryptRule rule) {
+    public MergedResult decorate(final ExecuteQueryResult queryResult, final SQLStatementContext<?> sqlStatementContext, final EncryptRule rule) {
         return isNeedMergeEncryptColumns(sqlStatementContext.getSqlStatement())
-                ? new MergedEncryptColumnsMergedResult(queryResultSet, sqlStatementContext, rule) : new TransparentMergedResult(queryResultSet);
+                ? new MergedEncryptColumnsMergedResult(queryResult, sqlStatementContext, rule) : new TransparentMergedResult(queryResult);
     }
     
     @Override

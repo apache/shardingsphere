@@ -43,7 +43,7 @@ import java.util.Map;
 public final class OrderByValue implements Comparable<OrderByValue> {
     
     @Getter
-    private final ExecuteQueryResult queryResultSet;
+    private final ExecuteQueryResult queryResult;
     
     private final Collection<OrderByItem> orderByItems;
     
@@ -51,9 +51,9 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     
     private List<Comparable<?>> orderValues;
     
-    public OrderByValue(final ExecuteQueryResult queryResultSet, final Collection<OrderByItem> orderByItems,
+    public OrderByValue(final ExecuteQueryResult queryResult, final Collection<OrderByItem> orderByItems,
                         final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
-        this.queryResultSet = queryResultSet;
+        this.queryResult = queryResult;
         this.orderByItems = orderByItems;
         orderValuesCaseSensitive = getOrderValuesCaseSensitive(selectStatementContext, schema);
     }
@@ -80,7 +80,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
                 }
             } else if (orderByItemSegment instanceof IndexOrderByItemSegment) {
                 int columnIndex = ((IndexOrderByItemSegment) orderByItemSegment).getColumnIndex();
-                String columnName = queryResultSet.getColumnName(columnIndex);
+                String columnName = queryResult.getColumnName(columnIndex);
                 if (columns.containsKey(columnName)) {
                     return columns.get(columnName).isCaseSensitive();
                 }
@@ -98,7 +98,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
      * @throws SQLException SQL Exception
      */
     public boolean next() throws SQLException {
-        boolean result = queryResultSet.next();
+        boolean result = queryResult.next();
         orderValues = result ? getOrderValues() : Collections.emptyList();
         return result;
     }
@@ -106,7 +106,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     private List<Comparable<?>> getOrderValues() throws SQLException {
         List<Comparable<?>> result = new ArrayList<>(orderByItems.size());
         for (OrderByItem each : orderByItems) {
-            Object value = queryResultSet.getValue(each.getIndex(), Object.class);
+            Object value = queryResult.getValue(each.getIndex(), Object.class);
             Preconditions.checkState(null == value || value instanceof Comparable, "Order by value must implements Comparable");
             result.add((Comparable<?>) value);
         }

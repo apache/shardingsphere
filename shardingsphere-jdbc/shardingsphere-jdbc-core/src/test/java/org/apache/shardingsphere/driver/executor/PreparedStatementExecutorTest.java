@@ -128,8 +128,8 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         SQLException ex = new SQLException("");
         when(preparedStatement1.executeQuery()).thenThrow(ex);
         when(preparedStatement2.executeQuery()).thenThrow(ex);
-        List<ExecuteQueryResult> actualQueryResultSets = actual.executeQuery(getExecutionGroups(Arrays.asList(preparedStatement1, preparedStatement2), true));
-        assertThat(actualQueryResultSets, is(Arrays.asList((ExecuteQueryResult) null, null)));
+        List<ExecuteQueryResult> actualQueryResults = actual.executeQuery(getExecutionGroups(Arrays.asList(preparedStatement1, preparedStatement2), true));
+        assertThat(actualQueryResults, is(Arrays.asList((ExecuteQueryResult) null, null)));
         verify(preparedStatement1).executeQuery();
         verify(preparedStatement2).executeQuery();
     }

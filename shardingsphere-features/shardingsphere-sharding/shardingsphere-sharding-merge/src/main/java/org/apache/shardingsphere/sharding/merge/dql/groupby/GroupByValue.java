@@ -36,14 +36,14 @@ public final class GroupByValue {
     
     private final List<?> groupValues;
     
-    public GroupByValue(final ExecuteQueryResult queryResultSet, final Collection<OrderByItem> groupByItems) throws SQLException {
-        groupValues = getGroupByValues(queryResultSet, groupByItems);
+    public GroupByValue(final ExecuteQueryResult queryResult, final Collection<OrderByItem> groupByItems) throws SQLException {
+        groupValues = getGroupByValues(queryResult, groupByItems);
     }
     
-    private List<?> getGroupByValues(final ExecuteQueryResult queryResultSet, final Collection<OrderByItem> groupByItems) throws SQLException {
+    private List<?> getGroupByValues(final ExecuteQueryResult queryResult, final Collection<OrderByItem> groupByItems) throws SQLException {
         List<Object> result = new ArrayList<>(groupByItems.size());
         for (OrderByItem each : groupByItems) {
-            result.add(queryResultSet.getValue(each.getIndex(), Object.class));
+            result.add(queryResult.getValue(each.getIndex(), Object.class));
         }
         return result;
     }

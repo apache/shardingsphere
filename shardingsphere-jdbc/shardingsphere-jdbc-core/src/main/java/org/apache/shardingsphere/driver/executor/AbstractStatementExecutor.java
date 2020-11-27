@@ -114,7 +114,7 @@ public abstract class AbstractStatementExecutor {
      * Execute query.
      *
      * @param executionGroups execution groups
-     * @return query result set list
+     * @return query results
      * @throws SQLException SQL exception
      */
     public abstract List<ExecuteQueryResult> executeQuery(Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) throws SQLException;

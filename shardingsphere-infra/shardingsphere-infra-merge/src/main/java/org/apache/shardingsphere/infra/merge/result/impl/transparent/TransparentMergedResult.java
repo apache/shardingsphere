@@ -31,30 +31,30 @@ import java.util.Calendar;
 @RequiredArgsConstructor
 public final class TransparentMergedResult implements MergedResult {
     
-    private final ExecuteQueryResult queryResultSet;
+    private final ExecuteQueryResult queryResult;
     
     @Override
     public boolean next() throws SQLException {
-        return queryResultSet.next();
+        return queryResult.next();
     }
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        return queryResultSet.getValue(columnIndex, type);
+        return queryResult.getValue(columnIndex, type);
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
-        return queryResultSet.getCalendarValue(columnIndex, type, calendar);
+        return queryResult.getCalendarValue(columnIndex, type, calendar);
     }
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        return queryResultSet.getInputStream(columnIndex, type);
+        return queryResult.getInputStream(columnIndex, type);
     }
     
     @Override
     public boolean wasNull() throws SQLException {
-        return queryResultSet.wasNull();
+        return queryResult.wasNull();
     }
 }

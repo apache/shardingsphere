@@ -131,8 +131,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         SQLException ex = new SQLException("");
         when(statement1.executeQuery(DQL_SQL)).thenThrow(ex);
         when(statement2.executeQuery(DQL_SQL)).thenThrow(ex);
-        List<ExecuteQueryResult> actualQueryResultSets = actual.executeQuery(createExecutionGroups(Arrays.asList(statement1, statement2), true));
-        assertThat(actualQueryResultSets, is(Arrays.asList((ExecuteQueryResult) null, null)));
+        List<ExecuteQueryResult> actualQueryResults = actual.executeQuery(createExecutionGroups(Arrays.asList(statement1, statement2), true));
+        assertThat(actualQueryResults, is(Arrays.asList((ExecuteQueryResult) null, null)));
         verify(statement1).executeQuery(DQL_SQL);
         verify(statement2).executeQuery(DQL_SQL);
     }

@@ -35,5 +35,5 @@ public final class QueryResponse implements BackendResponse {
     
     private final List<QueryHeader> queryHeaders;
     
-    private final List<ExecuteQueryResult> queryResultSets = new LinkedList<>();
+    private final List<ExecuteQueryResult> queryResults = new LinkedList<>();
 }

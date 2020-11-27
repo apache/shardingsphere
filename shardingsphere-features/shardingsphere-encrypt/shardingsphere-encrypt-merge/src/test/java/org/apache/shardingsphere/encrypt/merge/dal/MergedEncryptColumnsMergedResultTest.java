@@ -45,30 +45,30 @@ import static org.mockito.Mockito.when;
 public final class MergedEncryptColumnsMergedResultTest {
     
     @Mock
-    private ExecuteQueryResult queryResultSet;
+    private ExecuteQueryResult queryResult;
     
     @Test
     public void assertNextWithNotHasNext() throws SQLException {
-        assertFalse(createMergedEncryptColumnsMergedResult(queryResultSet, mock(EncryptRule.class)).next());
+        assertFalse(createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).next());
     }
     
     @Test
     public void assertNextWithHasNext() throws SQLException {
-        when(queryResultSet.next()).thenReturn(true);
-        assertTrue(createMergedEncryptColumnsMergedResult(queryResultSet, mock(EncryptRule.class)).next());
+        when(queryResult.next()).thenReturn(true);
+        assertTrue(createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).next());
     }
     
     @Test
     public void assertNextWithAssistedQuery() throws SQLException {
-        when(queryResultSet.next()).thenReturn(true).thenReturn(false);
-        when(queryResultSet.getValue(1, String.class)).thenReturn("assistedQuery");
-        assertFalse(createMergedEncryptColumnsMergedResult(queryResultSet, mockEncryptRule()).next());
+        when(queryResult.next()).thenReturn(true).thenReturn(false);
+        when(queryResult.getValue(1, String.class)).thenReturn("assistedQuery");
+        assertFalse(createMergedEncryptColumnsMergedResult(queryResult, mockEncryptRule()).next());
     }
     
     @Test
     public void assertGetValueWithCipherColumn() throws SQLException {
-        when(queryResultSet.getValue(1, String.class)).thenReturn("cipher");
-        assertThat(createMergedEncryptColumnsMergedResult(queryResultSet, mockEncryptRule()).getValue(1, String.class), is("id"));
+        when(queryResult.getValue(1, String.class)).thenReturn("cipher");
+        assertThat(createMergedEncryptColumnsMergedResult(queryResult, mockEncryptRule()).getValue(1, String.class), is("id"));
     }
     
     private EncryptRule mockEncryptRule() {
@@ -83,27 +83,27 @@ public final class MergedEncryptColumnsMergedResultTest {
     
     @Test
     public void assertGetValueWithOtherColumn() throws SQLException {
-        when(queryResultSet.getValue(1, String.class)).thenReturn("assistedQuery");
-        assertThat(createMergedEncryptColumnsMergedResult(queryResultSet, mock(EncryptRule.class)).getValue(1, String.class), is("assistedQuery"));
+        when(queryResult.getValue(1, String.class)).thenReturn("assistedQuery");
+        assertThat(createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).getValue(1, String.class), is("assistedQuery"));
     }
     
     @Test
     public void assertGetValueWithOtherIndex() throws SQLException {
-        when(queryResultSet.getValue(2, String.class)).thenReturn("id");
-        assertThat(createMergedEncryptColumnsMergedResult(queryResultSet, mock(EncryptRule.class)).getValue(2, String.class), is("id"));
+        when(queryResult.getValue(2, String.class)).thenReturn("id");
+        assertThat(createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).getValue(2, String.class), is("id"));
     }
     
     @Test
     public void assertWasNull() throws SQLException {
-        assertFalse(createMergedEncryptColumnsMergedResult(queryResultSet, mock(EncryptRule.class)).wasNull());
+        assertFalse(createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).wasNull());
     }
     
-    private MergedEncryptColumnsMergedResult createMergedEncryptColumnsMergedResult(final ExecuteQueryResult queryResultSet, final EncryptRule encryptRule) {
+    private MergedEncryptColumnsMergedResult createMergedEncryptColumnsMergedResult(final ExecuteQueryResult queryResult, final EncryptRule encryptRule) {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         IdentifierValue identifierValue = new IdentifierValue("test");
         TableNameSegment tableNameSegment = new TableNameSegment(1, 4, identifierValue);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(tableNameSegment);
         when(sqlStatementContext.getAllTables()).thenReturn(Collections.singletonList(simpleTableSegment));
-        return new MergedEncryptColumnsMergedResult(queryResultSet, sqlStatementContext, encryptRule);
+        return new MergedEncryptColumnsMergedResult(queryResult, sqlStatementContext, encryptRule);
     }
 }

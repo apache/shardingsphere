@@ -65,7 +65,7 @@ public final class ShowTablesMergedResultTest {
         return new ShardingSphereSchema(tableMetaDataMap);
     }
     
-    private ExecuteQueryResult mockQueryResultSet(final String value) throws SQLException {
+    private ExecuteQueryResult mockQueryResult(final String value) throws SQLException {
         ExecuteQueryResult result = mock(ExecuteQueryResult.class);
         when(result.next()).thenReturn(true, false);
         when(result.getValue(1, Object.class)).thenReturn(value);
@@ -81,7 +81,7 @@ public final class ShowTablesMergedResultTest {
     
     @Test
     public void assertNextForActualTableNameInTableRule() throws SQLException {
-        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultSet("table_0")));
+        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult("table_0")));
         assertTrue(actual.next());
     }
 }
