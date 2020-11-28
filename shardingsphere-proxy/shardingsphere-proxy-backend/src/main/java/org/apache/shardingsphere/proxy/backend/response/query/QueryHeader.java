@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query;
+package org.apache.shardingsphere.proxy.backend.response.query;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
