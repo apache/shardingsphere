@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw;
 
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.update.ExecuteUpdateResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -47,29 +47,29 @@ public final class RawExecutorTest {
     }
     
     @Test
-    public void assertExecuteForExecuteQueryResult() throws SQLException {
+    public void assertExecuteForQueryResult() throws SQLException {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
-        when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenReturn(Collections.singletonList(mock(ExecuteQueryResult.class)));
+        when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenReturn(Collections.singletonList(mock(QueryResult.class)));
         RawExecutor executor = new RawExecutor(executorEngine, true);
         assertTrue(executor.execute(null, null));
     }
     
     @Test
-    public void assertExecuteQueryForExecuteQueryResult() throws SQLException {
+    public void assertExecuteQueryForQueryResult() throws SQLException {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
-        ExecuteQueryResult executeQueryResult = mock(ExecuteQueryResult.class);
-        when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenReturn(Collections.singletonList(executeQueryResult));
+        QueryResult queryResult = mock(QueryResult.class);
+        when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenReturn(Collections.singletonList(queryResult));
         RawExecutor executor = new RawExecutor(executorEngine, true);
-        List<ExecuteQueryResult> actual = executor.executeQuery(null, null);
-        assertThat(actual, is(Collections.singletonList(executeQueryResult)));
+        List<QueryResult> actual = executor.executeQuery(null, null);
+        assertThat(actual, is(Collections.singletonList(queryResult)));
     }
     
     @Test
     public void assertExecuteUpdate() throws SQLException {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
-        ExecuteUpdateResult executeUpdateResult1 = new ExecuteUpdateResult(1, 2);
-        ExecuteUpdateResult executeUpdateResult2 = new ExecuteUpdateResult(3, 4);
-        when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenReturn(Arrays.asList(executeUpdateResult1, executeUpdateResult2));
+        UpdateResult updateResult1 = new UpdateResult(1, 2);
+        UpdateResult updateResult2 = new UpdateResult(3, 4);
+        when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenReturn(Arrays.asList(updateResult1, updateResult2));
         RawExecutor executor = new RawExecutor(executorEngine, true);
         assertThat(executor.executeUpdate(null, null), is(4));
     }

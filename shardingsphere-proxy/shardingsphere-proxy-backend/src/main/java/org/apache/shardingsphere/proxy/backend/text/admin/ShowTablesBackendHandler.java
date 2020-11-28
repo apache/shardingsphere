@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.QueryResultRow;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.RawQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata.QueryResultMetaData;
@@ -58,7 +58,7 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
                 null, result.getQueryHeaders().get(0).getColumnName(), result.getQueryHeaders().get(0).getColumnLabel(), Types.VARCHAR, "VARCHAR", 255, 0, false, false, false)));
         Collection<String> allTableNames = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getSchema().getAllTableNames();
         List<QueryResultRow> rows = allTableNames.stream().map(each -> new QueryResultRow(Collections.singletonList(each))).collect(Collectors.toList());
-        ExecuteQueryResult queryResult = new RawQueryResult(metaData, rows);
+        QueryResult queryResult = new RawQueryResult(metaData, rows);
         result.getQueryResults().add(queryResult);
         queryResponse = result;
         return result;

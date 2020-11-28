@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.executor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -105,7 +105,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(resultSet2.getInt(1)).thenReturn(2);
         when(preparedStatement1.executeQuery()).thenReturn(resultSet1);
         when(preparedStatement2.executeQuery()).thenReturn(resultSet2);
-        List<ExecuteQueryResult> result = actual.executeQuery(getExecutionGroups(Arrays.asList(preparedStatement1, preparedStatement2), true));
+        List<QueryResult> result = actual.executeQuery(getExecutionGroups(Arrays.asList(preparedStatement1, preparedStatement2), true));
         assertThat(String.valueOf(result.get(0).getValue(1, int.class)), is("1"));
         assertThat(String.valueOf(result.get(1).getValue(1, int.class)), is("2"));
         verify(preparedStatement1).executeQuery();
@@ -117,7 +117,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement = getPreparedStatement();
         SQLException ex = new SQLException("");
         when(preparedStatement.executeQuery()).thenThrow(ex);
-        assertThat(actual.executeQuery(getExecutionGroups(Collections.singletonList(preparedStatement), true)), is(Collections.singletonList((ExecuteQueryResult) null)));
+        assertThat(actual.executeQuery(getExecutionGroups(Collections.singletonList(preparedStatement), true)), is(Collections.singletonList((QueryResult) null)));
         verify(preparedStatement).executeQuery();
     }
     
@@ -128,8 +128,8 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         SQLException ex = new SQLException("");
         when(preparedStatement1.executeQuery()).thenThrow(ex);
         when(preparedStatement2.executeQuery()).thenThrow(ex);
-        List<ExecuteQueryResult> actualQueryResults = actual.executeQuery(getExecutionGroups(Arrays.asList(preparedStatement1, preparedStatement2), true));
-        assertThat(actualQueryResults, is(Arrays.asList((ExecuteQueryResult) null, null)));
+        List<QueryResult> actualQueryResults = actual.executeQuery(getExecutionGroups(Arrays.asList(preparedStatement1, preparedStatement2), true));
+        assertThat(actualQueryResults, is(Arrays.asList((QueryResult) null, null)));
         verify(preparedStatement1).executeQuery();
         verify(preparedStatement2).executeQuery();
     }

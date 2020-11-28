@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
     private List<?> currentGroupByValues;
     
-    public GroupByStreamMergedResult(final Map<String, Integer> labelAndIndexMap, final List<ExecuteQueryResult> queryResults,
+    public GroupByStreamMergedResult(final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults,
                                      final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
         super(queryResults, selectStatementContext, schema);
         this.selectStatementContext = selectStatementContext;

@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExe
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryHeader;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
@@ -108,16 +108,16 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         Collection<ExecuteResult> executeResults = execute(executionContext,
                 executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement, SQLExecutorExceptionHandler.isExceptionThrown());
         ExecuteResult executeResult = executeResults.iterator().next();
-        if (executeResult instanceof ExecuteQueryResult) {
+        if (executeResult instanceof QueryResult) {
             ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
-            int columnCount = ((ExecuteQueryResult) executeResult).getColumnCount();
+            int columnCount = ((QueryResult) executeResult).getColumnCount();
             List<QueryHeader> queryHeaders = new ArrayList<>(columnCount);
             for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
                 if (hasSelectExpandProjections(executionContext.getSqlStatementContext())) {
                     queryHeaders.add(QueryHeaderBuilder.build(
-                            ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), (ExecuteQueryResult) executeResult, metaData, columnIndex));
+                            ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), (QueryResult) executeResult, metaData, columnIndex));
                 } else {
-                    queryHeaders.add(QueryHeaderBuilder.build((ExecuteQueryResult) executeResult, metaData, columnIndex));
+                    queryHeaders.add(QueryHeaderBuilder.build((QueryResult) executeResult, metaData, columnIndex));
                 }
             }
             return getExecuteQueryResponse(queryHeaders, executeResults);
@@ -169,7 +169,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     private BackendResponse getExecuteQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResult> executeResults) {
         QueryResponse result = new QueryResponse(queryHeaders);
         for (ExecuteResult each : executeResults) {
-            result.getQueryResults().add((ExecuteQueryResult) each);
+            result.getQueryResults().add((QueryResult) each);
         }
         return result;
     }

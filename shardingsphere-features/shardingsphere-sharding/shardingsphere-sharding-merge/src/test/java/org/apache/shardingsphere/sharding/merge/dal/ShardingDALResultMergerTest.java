@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOtherStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,11 +44,11 @@ import static org.mockito.Mockito.when;
 
 public final class ShardingDALResultMergerTest {
     
-    private final List<ExecuteQueryResult> queryResults = new LinkedList<>();
+    private final List<QueryResult> queryResults = new LinkedList<>();
     
     @Before
     public void setUp() {
-        queryResults.add(mock(ExecuteQueryResult.class));
+        queryResults.add(mock(QueryResult.class));
     }
     
     @Test

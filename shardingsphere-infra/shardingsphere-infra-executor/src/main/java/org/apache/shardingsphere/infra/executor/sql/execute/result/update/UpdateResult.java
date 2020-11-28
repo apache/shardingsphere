@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 
 /**
- * Execute update result.
+ * Update result.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExecuteUpdateResult implements ExecuteResult {
+public final class UpdateResult implements ExecuteResult {
     
     private final int updateCount;
     

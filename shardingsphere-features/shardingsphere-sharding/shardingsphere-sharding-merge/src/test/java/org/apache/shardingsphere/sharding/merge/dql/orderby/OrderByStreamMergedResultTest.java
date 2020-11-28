@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -72,7 +72,7 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        List<ExecuteQueryResult> queryResults = Arrays.asList(mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class));
+        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, buildSchema());
         assertFalse(actual.next());
@@ -80,7 +80,7 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        List<ExecuteQueryResult> queryResults = Arrays.asList(mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class));
+        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         for (int i = 0; i < 3; i++) {
             when(queryResults.get(i).getColumnName(1)).thenReturn("col1");
             when(queryResults.get(i).getColumnName(2)).thenReturn("col2");
@@ -102,7 +102,7 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        List<ExecuteQueryResult> queryResults = Arrays.asList(mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class));
+        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         for (int i = 0; i < 3; i++) {
             when(queryResults.get(i).getColumnName(1)).thenReturn("col1");
             when(queryResults.get(i).getColumnName(2)).thenReturn("col2");
@@ -132,7 +132,7 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForCaseSensitive() throws SQLException {
-        List<ExecuteQueryResult> queryResults = Arrays.asList(mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class));
+        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         for (int i = 0; i < 3; i++) {
             when(queryResults.get(i).getColumnName(1)).thenReturn("col1");
             when(queryResults.get(i).getColumnName(2)).thenReturn("col2");
@@ -158,7 +158,7 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForCaseInsensitive() throws SQLException {
-        List<ExecuteQueryResult> queryResults = Arrays.asList(mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class), mock(ExecuteQueryResult.class));
+        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         for (int i = 0; i < 3; i++) {
             when(queryResults.get(i).getColumnName(1)).thenReturn("col1");
             when(queryResults.get(i).getColumnName(2)).thenReturn("col2");

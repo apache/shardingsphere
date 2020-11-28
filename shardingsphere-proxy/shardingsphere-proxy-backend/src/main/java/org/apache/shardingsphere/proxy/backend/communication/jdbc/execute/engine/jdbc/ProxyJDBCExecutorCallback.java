@@ -21,10 +21,10 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.MemoryJDBCQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.update.ExecuteUpdateResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.JDBCAccessor;
 
@@ -72,10 +72,10 @@ public final class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Execut
             backendConnection.add(resultSet);
             return createQueryResult(resultSet, connectionMode);
         }
-        return new ExecuteUpdateResult(statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
+        return new UpdateResult(statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
     }
     
-    private ExecuteQueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
+    private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
         return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamJDBCQueryResult(resultSet) : new MemoryJDBCQueryResult(resultSet);
     }
     

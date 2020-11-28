@@ -24,9 +24,9 @@ import java.sql.SQLException;
 import java.util.Calendar;
 
 /**
- * Execute query result.
+ * Query result.
  */
-public interface ExecuteQueryResult extends ExecuteResult {
+public interface QueryResult extends ExecuteResult {
     
     /**
      * Iterate next data.
@@ -58,19 +58,19 @@ public interface ExecuteQueryResult extends ExecuteResult {
     Object getCalendarValue(int columnIndex, Class<?> type, Calendar calendar) throws SQLException;
     
     /**
-     * Get InputStream.
+     * Get input stream.
      *
      * @param columnIndex column index
      * @param type class type of data value
-     * @return InputStream
+     * @return input stream
      * @throws SQLException SQL Exception
      */
     InputStream getInputStream(int columnIndex, String type) throws SQLException;
     
     /**
-     * Judge ResultSet is null or not.
+     * Judge result set is null or not.
      *
-     * @return ResultSet is null or not
+     * @return result set is null or not
      * @throws SQLException SQL Exception
      */
     boolean wasNull() throws SQLException;

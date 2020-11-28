@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.merge.result.impl.stream;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.stream.fixture.TestStreamMergedResult;
 import org.junit.Test;
 
@@ -43,7 +43,7 @@ public final class StreamMergedResultTest {
     
     @Test
     public void assertGetValue() throws SQLException {
-        ExecuteQueryResult queryResult = mock(ExecuteQueryResult.class);
+        QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.getValue(1, Object.class)).thenReturn("1");
         streamMergedResult.setCurrentQueryResult(queryResult);
         assertThat(streamMergedResult.getValue(1, Object.class).toString(), is("1"));
@@ -51,7 +51,7 @@ public final class StreamMergedResultTest {
     
     @Test
     public void assertGetCalendarValue() throws SQLException {
-        ExecuteQueryResult queryResult = mock(ExecuteQueryResult.class);
+        QueryResult queryResult = mock(QueryResult.class);
         Calendar calendar = Calendar.getInstance();
         when(queryResult.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
         streamMergedResult.setCurrentQueryResult(queryResult);
@@ -60,7 +60,7 @@ public final class StreamMergedResultTest {
     
     @Test
     public void assertGetInputStream() throws SQLException {
-        ExecuteQueryResult queryResult = mock(ExecuteQueryResult.class);
+        QueryResult queryResult = mock(QueryResult.class);
         InputStream value = mock(InputStream.class);
         when(queryResult.getInputStream(1, "Ascii")).thenReturn(value);
         streamMergedResult.setCurrentQueryResult(queryResult);
@@ -69,7 +69,7 @@ public final class StreamMergedResultTest {
     
     @Test
     public void assertWasNull() {
-        ExecuteQueryResult queryResult = mock(ExecuteQueryResult.class);
+        QueryResult queryResult = mock(QueryResult.class);
         streamMergedResult.setCurrentQueryResult(queryResult);
         assertFalse(streamMergedResult.wasNull());
     }
