@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorEx
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.update.ExecuteUpdateResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -63,7 +63,7 @@ public final class RawExecutor {
      * @throws SQLException SQL exception
      */
     public int executeUpdate(final Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups, final RawSQLExecutorCallback callback) throws SQLException {
-        List<Integer> results = doExecute(executionGroups, callback).stream().map(each -> ((ExecuteUpdateResult) each).getUpdateCount()).collect(Collectors.toList());
+        List<Integer> results = doExecute(executionGroups, callback).stream().map(each -> ((UpdateResult) each).getUpdateCount()).collect(Collectors.toList());
         // TODO check is need to accumulate
         // TODO refresh metadata
         return accumulate(results);

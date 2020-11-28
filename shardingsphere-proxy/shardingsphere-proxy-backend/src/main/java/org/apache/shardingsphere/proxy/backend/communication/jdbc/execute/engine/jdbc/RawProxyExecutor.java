@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.update.ExecuteUpdateResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 
 import java.sql.SQLException;
@@ -54,10 +54,10 @@ public final class RawProxyExecutor {
         List<ExecuteResult> results = doExecute(executionGroups, null, callback);
         // TODO refresh metadata
         if (null == results || results.isEmpty() || null == results.get(0)) {
-            return Collections.singleton(new ExecuteUpdateResult(0, 0L));
+            return Collections.singleton(new UpdateResult(0, 0L));
         }
         // CHECKSTYLE:OFF
-        if (results.get(0) instanceof ExecuteUpdateResult) {
+        if (results.get(0) instanceof UpdateResult) {
             // TODO refresh metadata
         }
         // CHECKSTYLE:ON

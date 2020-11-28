@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.update.ExecuteUpdateResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -67,8 +67,8 @@ public final class RawExecutorTest {
     @Test
     public void assertExecuteUpdate() throws SQLException {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
-        ExecuteUpdateResult executeUpdateResult1 = new ExecuteUpdateResult(1, 2);
-        ExecuteUpdateResult executeUpdateResult2 = new ExecuteUpdateResult(3, 4);
+        UpdateResult executeUpdateResult1 = new UpdateResult(1, 2);
+        UpdateResult executeUpdateResult2 = new UpdateResult(3, 4);
         when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenReturn(Arrays.asList(executeUpdateResult1, executeUpdateResult2));
         RawExecutor executor = new RawExecutor(executorEngine, true);
         assertThat(executor.executeUpdate(null, null), is(4));

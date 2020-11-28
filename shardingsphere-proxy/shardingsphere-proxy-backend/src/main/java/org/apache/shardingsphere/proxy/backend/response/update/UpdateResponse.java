@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.response.update;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.update.ExecuteUpdateResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 
 import java.util.Collection;
@@ -51,8 +51,8 @@ public final class UpdateResponse implements BackendResponse {
     
     public UpdateResponse(final Collection<ExecuteResult> executeResults) {
         for (ExecuteResult each : executeResults) {
-            updateCount = ((ExecuteUpdateResult) each).getUpdateCount();
-            updateCounts.add(((ExecuteUpdateResult) each).getUpdateCount());
+            updateCount = ((UpdateResult) each).getUpdateCount();
+            updateCounts.add(((UpdateResult) each).getUpdateCount());
         }
         lastInsertId = getLastInsertId(executeResults);
     }
@@ -60,7 +60,7 @@ public final class UpdateResponse implements BackendResponse {
     private long getLastInsertId(final Collection<ExecuteResult> executeResults) {
         long result = 0;
         for (ExecuteResult each : executeResults) {
-            result = Math.max(result, ((ExecuteUpdateResult) each).getLastInsertId());
+            result = Math.max(result, ((UpdateResult) each).getLastInsertId());
         }
         return result;
     }
