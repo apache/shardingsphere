@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.core.cache;
 
-import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.hamcrest.core.Is.isA;
+import static org.junit.Assert.assertThat;
 
 /**
  * ParseTreeCacheBuilder Testcase.
@@ -44,10 +44,7 @@ public class ParseTreeCacheBuilderTest {
     }
 
     @Test
-    public void build() {
-        LoadingCache<String, ParseTree> loadingCache = CacheBuilder.newBuilder().softValues()
-                .initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize()).concurrencyLevel(option.getConcurrencyLevel()).build(new ParseTreeCacheLoader(databaseType));
-
-        Assert.assertEquals(loadingCache.asMap(), ParseTreeCacheBuilder.build(option, databaseType).asMap());
+    public void assertBuild() {
+        assertThat(ParseTreeCacheBuilder.build(option, databaseType), isA(LoadingCache.class));
     }
 }
