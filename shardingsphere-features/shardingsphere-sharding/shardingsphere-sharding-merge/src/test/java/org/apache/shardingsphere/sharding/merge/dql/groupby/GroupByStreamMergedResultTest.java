@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -66,7 +66,7 @@ public final class GroupByStreamMergedResultTest {
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        ExecuteQueryResult queryResult1 = mockQueryResult();
+        QueryResult queryResult1 = mockQueryResult();
         when(queryResult1.next()).thenReturn(true, false);
         when(queryResult1.getValue(1, Object.class)).thenReturn(20);
         when(queryResult1.getValue(2, Object.class)).thenReturn(0);
@@ -74,8 +74,8 @@ public final class GroupByStreamMergedResultTest {
         when(queryResult1.getValue(4, Object.class)).thenReturn(new Date(0L));
         when(queryResult1.getValue(5, Object.class)).thenReturn(2);
         when(queryResult1.getValue(6, Object.class)).thenReturn(20);
-        ExecuteQueryResult queryResult2 = mockQueryResult();
-        ExecuteQueryResult queryResult3 = mockQueryResult();
+        QueryResult queryResult2 = mockQueryResult();
+        QueryResult queryResult3 = mockQueryResult();
         when(queryResult3.next()).thenReturn(true, true, false);
         when(queryResult3.getValue(1, Object.class)).thenReturn(20, 30);
         when(queryResult3.getValue(2, Object.class)).thenReturn(0);
@@ -104,21 +104,21 @@ public final class GroupByStreamMergedResultTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        ExecuteQueryResult queryResult1 = mockQueryResult();
+        QueryResult queryResult1 = mockQueryResult();
         when(queryResult1.next()).thenReturn(true, false);
         when(queryResult1.getValue(1, Object.class)).thenReturn(20);
         when(queryResult1.getValue(2, Object.class)).thenReturn(0);
         when(queryResult1.getValue(3, Object.class)).thenReturn(2);
         when(queryResult1.getValue(5, Object.class)).thenReturn(2);
         when(queryResult1.getValue(6, Object.class)).thenReturn(20);
-        ExecuteQueryResult queryResult2 = mockQueryResult();
+        QueryResult queryResult2 = mockQueryResult();
         when(queryResult2.next()).thenReturn(true, true, true, false);
         when(queryResult2.getValue(1, Object.class)).thenReturn(20, 30, 30, 40);
         when(queryResult2.getValue(2, Object.class)).thenReturn(0);
         when(queryResult2.getValue(3, Object.class)).thenReturn(2, 2, 3, 3, 3, 4);
         when(queryResult2.getValue(5, Object.class)).thenReturn(2, 2, 3, 3, 3, 4);
         when(queryResult2.getValue(6, Object.class)).thenReturn(20, 20, 30, 30, 30, 40);
-        ExecuteQueryResult queryResult3 = mockQueryResult();
+        QueryResult queryResult3 = mockQueryResult();
         when(queryResult3.next()).thenReturn(true, true, false);
         when(queryResult3.getValue(1, Object.class)).thenReturn(10, 30);
         when(queryResult3.getValue(2, Object.class)).thenReturn(10);
@@ -185,8 +185,8 @@ public final class GroupByStreamMergedResultTest {
         return new ShardingSphereSchema(ImmutableMap.of("tbl", tableMetaData));
     }
     
-    private ExecuteQueryResult mockQueryResult() throws SQLException {
-        ExecuteQueryResult result = mock(ExecuteQueryResult.class);
+    private QueryResult mockQueryResult() throws SQLException {
+        QueryResult result = mock(QueryResult.class);
         when(result.getColumnCount()).thenReturn(6);
         when(result.getColumnLabel(1)).thenReturn("COUNT(*)");
         when(result.getColumnLabel(2)).thenReturn("AVG(num)");

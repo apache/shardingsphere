@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.merge.result.impl.memory;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 
 import java.sql.SQLException;
 
@@ -31,11 +31,11 @@ public final class MemoryQueryResultRow {
     
     private final Object[] data;
     
-    public MemoryQueryResultRow(final ExecuteQueryResult queryResult) throws SQLException {
+    public MemoryQueryResultRow(final QueryResult queryResult) throws SQLException {
         data = load(queryResult);
     }
     
-    private Object[] load(final ExecuteQueryResult queryResult) throws SQLException {
+    private Object[] load(final QueryResult queryResult) throws SQLException {
         int columnCount = queryResult.getColumnCount();
         Object[] result = new Object[columnCount];
         for (int i = 0; i < columnCount; i++) {

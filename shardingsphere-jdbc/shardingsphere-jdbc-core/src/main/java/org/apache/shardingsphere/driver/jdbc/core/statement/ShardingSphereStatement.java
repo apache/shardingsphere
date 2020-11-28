@@ -44,7 +44,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.StreamJDBCQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
@@ -126,7 +126,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         ResultSet result;
         try {
             executionContext = createExecutionContext(sql);
-            List<ExecuteQueryResult> queryResults;
+            List<QueryResult> queryResults;
             if (metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 queryResults = rawExecutor.executeQuery(createRawExecutionGroups(), new RawSQLExecutorCallback());
             } else {
@@ -355,8 +355,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return result;
     }
     
-    private List<ExecuteQueryResult> getQueryResults(final List<ResultSet> resultSets) throws SQLException {
-        List<ExecuteQueryResult> result = new ArrayList<>(resultSets.size());
+    private List<QueryResult> getQueryResults(final List<ResultSet> resultSets) throws SQLException {
+        List<QueryResult> result = new ArrayList<>(resultSets.size());
         for (ResultSet each : resultSets) {
             if (null != each) {
                 result.add(new StreamJDBCQueryResult(each));
@@ -365,7 +365,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return result;
     }
     
-    private MergedResult mergeQuery(final List<ExecuteQueryResult> queryResults) throws SQLException {
+    private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
         ShardingSphereMetaData metaData = metaDataContexts.getDefaultMetaData();
         MergeEngine mergeEngine = new MergeEngine(metaDataContexts.getDatabaseType(), metaData.getSchema(), metaDataContexts.getProps(), metaData.getRuleMetaData().getRules());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());

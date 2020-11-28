@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.merge.engine.merger;
 
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.sql.SQLException;
@@ -39,5 +39,5 @@ public interface ResultMerger {
      * @return merged result
      * @throws SQLException SQL exception
      */
-    MergedResult merge(List<ExecuteQueryResult> queryResults, SQLStatementContext<?> sqlStatementContext, ShardingSphereSchema schema) throws SQLException;
+    MergedResult merge(List<QueryResult> queryResults, SQLStatementContext<?> sqlStatementContext, ShardingSphereSchema schema) throws SQLException;
 }

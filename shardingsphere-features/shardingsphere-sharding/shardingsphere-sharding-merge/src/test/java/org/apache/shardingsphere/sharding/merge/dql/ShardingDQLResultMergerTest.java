@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dql;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByMemoryMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByStreamMergedResult;
@@ -317,18 +317,18 @@ public final class ShardingDQLResultMergerTest {
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
     }
     
-    private List<ExecuteQueryResult> createQueryResults() throws SQLException {
-        List<ExecuteQueryResult> result = new LinkedList<>();
-        ExecuteQueryResult queryResult = createQueryResult();
+    private List<QueryResult> createQueryResults() throws SQLException {
+        List<QueryResult> result = new LinkedList<>();
+        QueryResult queryResult = createQueryResult();
         result.add(queryResult);
-        result.add(mock(ExecuteQueryResult.class));
-        result.add(mock(ExecuteQueryResult.class));
-        result.add(mock(ExecuteQueryResult.class));
+        result.add(mock(QueryResult.class));
+        result.add(mock(QueryResult.class));
+        result.add(mock(QueryResult.class));
         return result;
     }
     
-    private ExecuteQueryResult createQueryResult() throws SQLException {
-        ExecuteQueryResult result = mock(ExecuteQueryResult.class);
+    private QueryResult createQueryResult() throws SQLException {
+        QueryResult result = mock(QueryResult.class);
         when(result.getColumnCount()).thenReturn(1);
         when(result.getColumnLabel(1)).thenReturn("count(*)");
         when(result.getValue(1, Object.class)).thenReturn(0);

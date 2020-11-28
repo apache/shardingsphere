@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
@@ -290,12 +290,12 @@ public final class GroupByRowComparatorTest {
         return result;
     }
     
-    private ExecuteQueryResult mockQueryResult(final Object... values) throws SQLException {
+    private QueryResult mockQueryResult(final Object... values) throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSetMetaData.getColumnCount()).thenReturn(values.length);
-        ExecuteQueryResult result = mock(ExecuteQueryResult.class);
+        QueryResult result = mock(QueryResult.class);
         when(result.getColumnCount()).thenReturn(values.length);
         int index = 0;
         for (Object each : values) {

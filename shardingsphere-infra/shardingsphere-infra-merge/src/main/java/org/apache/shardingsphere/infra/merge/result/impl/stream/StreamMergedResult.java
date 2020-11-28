@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.merge.result.impl.stream;
 
 import lombok.Setter;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.io.InputStream;
@@ -31,11 +31,11 @@ import java.util.Calendar;
 @Setter
 public abstract class StreamMergedResult implements MergedResult {
     
-    private ExecuteQueryResult currentQueryResult;
+    private QueryResult currentQueryResult;
     
     private boolean wasNull;
     
-    protected final ExecuteQueryResult getCurrentQueryResult() throws SQLException {
+    protected final QueryResult getCurrentQueryResult() throws SQLException {
         if (null == currentQueryResult) {
             throw new SQLException("Current ResultSet is null, ResultSet perhaps end of next.");
         }

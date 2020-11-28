@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata.QueryResultMetaData;
 
 import java.io.ByteArrayInputStream;
@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * Raw query result.
  */
-public final class RawQueryResult implements ExecuteQueryResult {
+public final class RawQueryResult implements QueryResult {
     
     private final QueryResultMetaData metaData;
     
