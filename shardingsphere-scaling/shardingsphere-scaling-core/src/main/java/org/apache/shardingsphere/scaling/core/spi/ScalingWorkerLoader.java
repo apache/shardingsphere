@@ -40,10 +40,10 @@ public final class ScalingWorkerLoader {
         ShardingSphereServiceLoader.register(ScalingWorker.class);
         YamlGovernanceConfiguration distributedScalingService = ScalingContext.getInstance().getServerConfig().getDistributedScalingService();
         if (null != distributedScalingService) {
-            GovernanceConfiguration governanceConfiguration = new GovernanceConfigurationYamlSwapper().swapToObject(distributedScalingService);
+            GovernanceConfiguration governanceConfig = new GovernanceConfigurationYamlSwapper().swapToObject(distributedScalingService);
             Collection<ScalingWorker> scalingWorkers = ShardingSphereServiceLoader.newServiceInstances(ScalingWorker.class);
             for (ScalingWorker each : scalingWorkers) {
-                each.init(governanceConfiguration);
+                each.init(governanceConfig);
                 return Optional.of(each.getType());
             }
         }

@@ -44,7 +44,7 @@ public final class TypedSPIRegistry {
         Optional<T> serviceInstance = ShardingSphereServiceLoader.newServiceInstances(typedSPIClass).stream().filter(each -> each.getType().equalsIgnoreCase(type)).findFirst();
         if (serviceInstance.isPresent()) {
             T result = serviceInstance.get();
-            result.setProps(props);
+            convertPropertiesValueType(props, result);
             return result;
         }
         throw new ServiceProviderNotFoundException(typedSPIClass, type);
@@ -63,5 +63,13 @@ public final class TypedSPIRegistry {
             return serviceInstance.get();
         }
         throw new ServiceProviderNotFoundException(typedSPIClass);
+    }
+    
+    private static <T extends TypedSPI> void convertPropertiesValueType(final Properties props, final T service) {
+        if (null != props) {
+            Properties newProps = new Properties();
+            props.forEach((key, value) -> newProps.setProperty(key.toString(), null == value ? null : value.toString()));
+            service.setProps(newProps);
+        }
     }
 }

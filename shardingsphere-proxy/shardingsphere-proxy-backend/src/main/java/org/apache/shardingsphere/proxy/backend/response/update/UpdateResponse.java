@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.response.update;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.update.ExecuteUpdateResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.update.ExecuteUpdateResult;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 
 import java.util.Collection;

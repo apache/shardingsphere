@@ -75,7 +75,30 @@ public final class MySQLFormartTest {
                 + "\tandb = ?\n"
                 + "\tandc = ?\n"
                 + "\tandd = ?;"});
-        testUnits.add(new String[]{"alter_table", "ALTER TABLE t_log ADD name varchar(10)", "ALTER TABLE t_log ADD name VARCHAR ( 10 )"});
+        testUnits.add(new String[]{"alter_table", "ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, engine ss max_rows 10,min_rows 2, ADD column6 TIMESTAMP, ADD column7 TIME;", ""
+                + "ALTER TABLE t_order\n"
+                + "\tADD column4 DATE,\n"
+                + "\tADD column5 DATETIME,\n"
+                + "\tENGINE ss\n"
+                + "\tMAX_ROWS 10,\n"
+                + "\tMIN_ROWS 2,\n"
+                + "\tADD column6 TIMESTAMP,\n"
+                + "\tADD column7 TIME"});
+        testUnits.add(new String[]{"create_table", "CREATE TABLE IF NOT EXISTS `runoob_tbl`(\n"
+                + "`runoob_id` INT UNSIGNED AUTO_INCREMENT,\n"
+                + "`runoob_title` VARCHAR(100) NOT NULL,\n"
+                + "`runoob_author` VARCHAR(40) NOT NULL,\n"
+                + "`runoob_test` NATIONAL CHAR(40),\n"
+                + "`submission_date` DATE,\n"
+                + "PRIMARY KEY ( `runoob_id` )\n"
+                + ")ENGINE=InnoDB DEFAULT CHARSET=utf8;", "CREATE TABLE IF NOT EXISTS `runoob_tbl` (\n"
+                + "\t`runoob_id` INT UNSIGNED AUTO_INCREMENT,\n"
+                + "\t`runoob_title` VARCHAR(100) NOT NULL,\n"
+                + "\t`runoob_author` VARCHAR(40) NOT NULL,\n"
+                + "\t`runoob_test` NATIONAL CHAR(40),\n"
+                + "\t`submission_date` DATE,\n"
+                + "\tPRIMARY KEY ( `runoob_id` )\n"
+                + ") ENGINE = InnoDB DEFAULT CHARSET = utf8"});
     }
 
     private final String caseId;

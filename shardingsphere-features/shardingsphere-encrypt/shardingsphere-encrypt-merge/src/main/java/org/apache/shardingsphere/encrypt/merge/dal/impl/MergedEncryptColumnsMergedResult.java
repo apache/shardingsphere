@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.merge.dal.impl;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 
 import java.sql.SQLException;
 
@@ -28,9 +28,9 @@ import java.sql.SQLException;
  */
 public final class MergedEncryptColumnsMergedResult extends EncryptColumnsMergedResult {
     
-    private final QueryResult queryResult;
+    private final ExecuteQueryResult queryResult;
     
-    public MergedEncryptColumnsMergedResult(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
+    public MergedEncryptColumnsMergedResult(final ExecuteQueryResult queryResult, final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
         super(sqlStatementContext, encryptRule);
         this.queryResult = queryResult;
     }

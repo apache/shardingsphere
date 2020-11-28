@@ -49,6 +49,9 @@ public final class HARuleConfigurationYamlSwapper
         if (null != data.getLoadBalancers()) {
             data.getLoadBalancers().forEach((key, value) -> result.getLoadBalancers().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         }
+        if (null != data.getHaType()) {
+            result.setHaType(algorithmSwapper.swapToYamlConfiguration(data.getHaType()));
+        }
         return result;
     }
     
@@ -72,7 +75,8 @@ public final class HARuleConfigurationYamlSwapper
         if (null != yamlConfig.getLoadBalancers()) {
             yamlConfig.getLoadBalancers().forEach((key, value) -> loadBalancers.put(key, algorithmSwapper.swapToObject(value)));
         }
-        return new HARuleConfiguration(dataSources, loadBalancers);
+        ShardingSphereAlgorithmConfiguration haType = algorithmSwapper.swapToObject(yamlConfig.getHaType());
+        return new HARuleConfiguration(dataSources, loadBalancers, haType);
     }
     
     private HADataSourceRuleConfiguration swapToObject(final String name, final YamlHADataSourceRuleConfiguration yamlDataSourceRuleConfig) {

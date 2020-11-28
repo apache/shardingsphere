@@ -21,10 +21,8 @@ import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTask;
-import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTaskGroup;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * Scaling task util.
@@ -38,11 +36,7 @@ public final class ScalingTaskUtil {
      * @return is finished
      */
     public static boolean allInventoryTasksFinished(final List<ScalingTask> inventoryDataTasks) {
-        return inventoryDataTasks.stream().allMatch(each -> ((InventoryDataScalingTaskGroup) each).getScalingTasks().stream().allMatch(getFinishPredicate()));
-    }
-    
-    private static Predicate<ScalingTask> getFinishPredicate() {
-        return each -> ((InventoryDataScalingTask) each).getPositionManager().getPosition() instanceof FinishedPosition;
+        return inventoryDataTasks.stream().allMatch(each -> ((InventoryDataScalingTask) each).getPositionManager().getPosition() instanceof FinishedPosition);
     }
     
     /**

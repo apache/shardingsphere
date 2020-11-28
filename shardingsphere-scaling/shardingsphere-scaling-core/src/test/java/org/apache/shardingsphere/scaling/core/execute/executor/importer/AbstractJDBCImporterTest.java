@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
@@ -69,7 +69,7 @@ public final class AbstractJDBCImporterTest {
     private AbstractSQLBuilder sqlBuilder;
     
     @Mock
-    private ScalingDataSourceConfiguration dataSourceConfig;
+    private DataSourceConfiguration dataSourceConfig;
     
     @Mock
     private Channel channel;
@@ -87,7 +87,7 @@ public final class AbstractJDBCImporterTest {
     
     @Before
     public void setUp() throws SQLException {
-        jdbcImporter = new AbstractJDBCImporter(getImporterConfiguration(), dataSourceManager) {
+        jdbcImporter = new AbstractJDBCImporter(mockImporterConfiguration(), dataSourceManager) {
             
             @Override
             protected AbstractSQLBuilder createSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
@@ -185,9 +185,9 @@ public final class AbstractJDBCImporterTest {
         return result;
     }
     
-    private ImporterConfiguration getImporterConfiguration() {
+    private ImporterConfiguration mockImporterConfiguration() {
         ImporterConfiguration result = new ImporterConfiguration();
-        result.setDataSourceConfiguration(dataSourceConfig);
+        result.setDataSourceConfig(dataSourceConfig);
         Map<String, Set<String>> shardingColumnsMap = Maps.newHashMap();
         shardingColumnsMap.put("test_table", Sets.newHashSet("user"));
         result.setShardingColumnsMap(shardingColumnsMap);

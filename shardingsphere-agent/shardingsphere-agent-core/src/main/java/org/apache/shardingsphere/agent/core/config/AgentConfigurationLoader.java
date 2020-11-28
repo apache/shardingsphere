@@ -20,9 +20,9 @@ package org.apache.shardingsphere.agent.core.config;
 import com.google.common.base.Preconditions;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.agent.core.common.AgentPathLocator;
 import org.apache.shardingsphere.agent.core.yaml.YamlEngine;
 
 /**
@@ -33,6 +33,8 @@ public final class AgentConfigurationLoader {
     
     private static final String DEFAULT_CONFIG_PATH = "/conf/agent.yaml";
     
+    private static final String SPECIFIED_CONFIG_PATH = "agent-path";
+    
     /**
      * Load configuration of ShardingSphere-Agent.
      *
@@ -40,17 +42,11 @@ public final class AgentConfigurationLoader {
      * @throws IOException IO exception
      */
     public static AgentConfiguration load() throws IOException {
-        return loadAgentConfiguration(getResourceFile());
+        String specifiedConfigPath = System.getProperty(SPECIFIED_CONFIG_PATH);
+        File configFile = null == specifiedConfigPath ? new File(AgentPathLocator.getAgentPath(), DEFAULT_CONFIG_PATH) : new File(specifiedConfigPath);
+        return loadAgentConfiguration(configFile);
     }
-    
-    private static File getResourceFile() {
-        URL url = AgentConfigurationLoader.class.getResource(DEFAULT_CONFIG_PATH);
-        if (null != url) {
-            return new File(url.getFile());
-        }
-        return new File(DEFAULT_CONFIG_PATH);
-    }
-    
+
     private static AgentConfiguration loadAgentConfiguration(final File yamlFile) throws IOException {
         AgentConfiguration result = YamlEngine.unmarshal(yamlFile, AgentConfiguration.class);
         Preconditions.checkNotNull(result, "Agent configuration file `%s` is invalid.", yamlFile.getName());

@@ -23,10 +23,9 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.DescribeStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowColumnsStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -48,9 +47,6 @@ import static org.mockito.Mockito.when;
 public final class EncryptDALResultDecoratorTest {
     
     @Mock
-    private ShardingSphereSchema schema;
-
-    @Mock
     private EncryptRule rule;
     
     @Mock
@@ -58,28 +54,25 @@ public final class EncryptDALResultDecoratorTest {
     
     @Test
     public void assertMergedResultWithDescribeStatement() {
-        schema = mock(ShardingSphereSchema.class);
         sqlStatementContext = getDescribeStatementContext();
         EncryptDALResultDecorator encryptDALResultDecorator = new EncryptDALResultDecorator();
-        assertThat(encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, rule), instanceOf(MergedEncryptColumnsMergedResult.class));
+        assertThat(encryptDALResultDecorator.decorate(mock(ExecuteQueryResult.class), sqlStatementContext, rule), instanceOf(MergedEncryptColumnsMergedResult.class));
         assertThat(encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, rule), instanceOf(DecoratedEncryptColumnsMergedResult.class));
     }
     
     @Test
     public void assertMergedResultWithShowColumnsStatement() {
-        schema = mock(ShardingSphereSchema.class);
         sqlStatementContext = getShowColumnsStatementContext();
         EncryptDALResultDecorator encryptDALResultDecorator = new EncryptDALResultDecorator();
-        assertThat(encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, rule), instanceOf(MergedEncryptColumnsMergedResult.class));
+        assertThat(encryptDALResultDecorator.decorate(mock(ExecuteQueryResult.class), sqlStatementContext, rule), instanceOf(MergedEncryptColumnsMergedResult.class));
         assertThat(encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, rule), instanceOf(DecoratedEncryptColumnsMergedResult.class));
     }
     
     @Test
     public void assertMergedResultWithOtherStatement() {
-        schema = mock(ShardingSphereSchema.class);
         sqlStatementContext = mock(SQLStatementContext.class);
         EncryptDALResultDecorator encryptDALResultDecorator = new EncryptDALResultDecorator();
-        assertThat(encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, rule), instanceOf(TransparentMergedResult.class));
+        assertThat(encryptDALResultDecorator.decorate(mock(ExecuteQueryResult.class), sqlStatementContext, rule), instanceOf(TransparentMergedResult.class));
         assertThat(encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, rule), instanceOf(MergedResult.class));
     }
     

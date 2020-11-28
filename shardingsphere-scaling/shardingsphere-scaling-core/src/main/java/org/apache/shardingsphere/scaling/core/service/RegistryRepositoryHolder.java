@@ -73,11 +73,11 @@ public final class RegistryRepositoryHolder {
         }
         YamlGovernanceConfiguration distributedScalingService = ScalingContext.getInstance().getServerConfig().getDistributedScalingService();
         if (null != distributedScalingService) {
-            GovernanceConfiguration governanceConfiguration = new GovernanceConfigurationYamlSwapper().swapToObject(distributedScalingService);
-            GovernanceCenterConfiguration registryCenterConfig = governanceConfiguration.getRegistryCenterConfiguration();
+            GovernanceConfiguration governanceConfig = new GovernanceConfigurationYamlSwapper().swapToObject(distributedScalingService);
+            GovernanceCenterConfiguration registryCenterConfig = governanceConfig.getRegistryCenterConfiguration();
             Preconditions.checkNotNull(registryCenterConfig, "Registry center configuration cannot be null.");
             registryRepository = TypedSPIRegistry.getRegisteredService(RegistryRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
-            registryRepository.init(governanceConfiguration.getName(), registryCenterConfig);
+            registryRepository.init(governanceConfig.getName(), registryCenterConfig);
         }
         log.info("distributed scaling service available = " + available);
         available = null != registryRepository;

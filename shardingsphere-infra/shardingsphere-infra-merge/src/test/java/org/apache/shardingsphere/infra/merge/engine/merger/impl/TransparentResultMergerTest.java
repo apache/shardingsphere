@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.merge.engine.merger.impl;
 
-import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -34,7 +34,7 @@ public final class TransparentResultMergerTest {
     
     @Test
     public void assertMerge() throws SQLException {
-        QueryResult queryResult = mock(QueryResult.class);
+        ExecuteQueryResult queryResult = mock(ExecuteQueryResult.class);
         when(queryResult.next()).thenReturn(true);
         TransparentResultMerger merger = new TransparentResultMerger();
         MergedResult actual = merger.merge(Collections.singletonList(queryResult), mock(SQLStatementContext.class), mock(ShardingSphereSchema.class));

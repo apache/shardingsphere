@@ -26,7 +26,7 @@ The process of submitting ICLA are:
 ![](https://shardingsphere.apache.org/blog/img/icla%20en3.png)
 
 **4. The signature at the bottom of the document:**
-Apache only accept hand-written signature or gpg signature, here we suggest to choose hand-written way.
+Apache only accept hand-written signature or gpg signature, here we suggest choosing hand-written way.
 Print the document and sign your name on the paper, or use electric pen.
 
 ![](https://shardingsphere.apache.org/blog/img/icla%20en4.png)

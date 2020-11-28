@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor
 
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -95,10 +95,10 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
     }
     
     private List<Object> createRow(final HintShowTableStatusResult hintShowTableStatusResult) {
-        List<Object> row = new ArrayList<>(3);
-        row.add(hintShowTableStatusResult.getLogicTable());
-        row.add(Joiner.on(",").join(hintShowTableStatusResult.getDatabaseShardingValues()));
-        row.add(Joiner.on(",").join(hintShowTableStatusResult.getTableShardingValues()));
-        return row;
+        List<Object> result = new ArrayList<>(3);
+        result.add(hintShowTableStatusResult.getLogicTable());
+        result.add(Joiner.on(",").join(hintShowTableStatusResult.getDatabaseShardingValues()));
+        result.add(Joiner.on(",").join(hintShowTableStatusResult.getTableShardingValues()));
+        return result;
     }
 }

@@ -28,7 +28,8 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-governance-core</module>
         <module>shardingsphere-governance-repository</module>
+        <module>shardingsphere-governance-core</module>
+        <module>shardingsphere-governance-context</module>
     </modules>
 </project>

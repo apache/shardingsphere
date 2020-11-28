@@ -45,12 +45,12 @@ public final class ScalingWorkerLoaderTest {
     }
     
     private ServerConfiguration mockServerConfiguration() {
-        ServerConfiguration serverConfiguration = new ServerConfiguration();
+        ServerConfiguration result = new ServerConfiguration();
         YamlGovernanceConfiguration distributedScalingService = new YamlGovernanceConfiguration();
         YamlGovernanceCenterConfiguration registryCenter = new YamlGovernanceCenterConfiguration();
         registryCenter.setType("Zookeeper");
         distributedScalingService.setRegistryCenter(registryCenter);
-        serverConfiguration.setDistributedScalingService(distributedScalingService);
-        return serverConfiguration;
+        result.setDistributedScalingService(distributedScalingService);
+        return result;
     }
 }

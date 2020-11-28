@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
@@ -53,7 +53,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     private final DatabaseType databaseType;
     
     @Override
-    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema) throws SQLException {
+    public MergedResult merge(final List<ExecuteQueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema) throws SQLException {
         if (1 == queryResults.size()) {
             return new IteratorStreamMergedResult(queryResults);
         }
@@ -64,7 +64,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
         return decorate(queryResults, selectStatementContext, mergedResult);
     }
     
-    private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
+    private Map<String, Integer> getColumnLabelIndexMap(final ExecuteQueryResult queryResult) throws SQLException {
         Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (int i = queryResult.getColumnCount(); i > 0; i--) {
             result.put(SQLUtil.getExactlyValue(queryResult.getColumnLabel(i)), i);
@@ -72,7 +72,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
         return result;
     }
     
-    private MergedResult build(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext,
+    private MergedResult build(final List<ExecuteQueryResult> queryResults, final SelectStatementContext selectStatementContext,
                                final Map<String, Integer> columnLabelIndexMap, final ShardingSphereSchema schema) throws SQLException {
         if (isNeedProcessGroupBy(selectStatementContext)) {
             return getGroupByMergedResult(queryResults, selectStatementContext, columnLabelIndexMap, schema);
@@ -103,7 +103,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
         }
     }
     
-    private MergedResult getGroupByMergedResult(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext,
+    private MergedResult getGroupByMergedResult(final List<ExecuteQueryResult> queryResults, final SelectStatementContext selectStatementContext,
                                                 final Map<String, Integer> columnLabelIndexMap, final ShardingSphereSchema schema) throws SQLException {
         return selectStatementContext.isSameGroupByAndOrderByItems()
                 ? new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, selectStatementContext, schema)
@@ -114,7 +114,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
         return !selectStatementContext.getOrderByContext().getItems().isEmpty();
     }
     
-    private MergedResult decorate(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext, final MergedResult mergedResult) throws SQLException {
+    private MergedResult decorate(final List<ExecuteQueryResult> queryResults, final SelectStatementContext selectStatementContext, final MergedResult mergedResult) throws SQLException {
         PaginationContext paginationContext = selectStatementContext.getPaginationContext();
         if (!paginationContext.isHasPagination() || 1 == queryResults.size()) {
             return mergedResult;

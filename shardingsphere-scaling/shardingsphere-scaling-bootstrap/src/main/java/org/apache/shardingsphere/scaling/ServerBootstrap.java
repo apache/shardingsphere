@@ -45,7 +45,6 @@ public final class ServerBootstrap {
      * @param args running args
      */
     // CHECKSTYLE:OFF
-    @SneakyThrows
     public static void main(final String[] args) {
         // CHECKSTYLE:ON
         log.info("ShardingSphere-Scaling Server Startup");
@@ -53,7 +52,8 @@ public final class ServerBootstrap {
         startScalingServer();
     }
     
-    private static void startScalingServer() throws InterruptedException {
+    @SneakyThrows(InterruptedException.class)
+    private static void startScalingServer() {
         log.info("Start scaling server");
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();

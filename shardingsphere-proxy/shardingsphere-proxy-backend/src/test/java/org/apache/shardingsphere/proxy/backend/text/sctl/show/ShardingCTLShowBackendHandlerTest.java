@@ -26,7 +26,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -44,7 +44,7 @@ public final class ShardingCTLShowBackendHandlerTest {
         assertThat(actual, instanceOf(QueryResponse.class));
         assertThat(((QueryResponse) actual).getQueryHeaders().size(), is(1));
         backendHandler.next();
-        List<Object> rowData = backendHandler.getRowData();
+        Collection<Object> rowData = backendHandler.getRowData();
         assertThat(rowData.iterator().next(), is("LOCAL"));
     }
     
@@ -56,7 +56,7 @@ public final class ShardingCTLShowBackendHandlerTest {
         assertThat(actual, instanceOf(QueryResponse.class));
         assertThat(((QueryResponse) actual).getQueryHeaders().size(), is(1));
         backendHandler.next();
-        List<Object> rowData = backendHandler.getRowData();
+        Collection<Object> rowData = backendHandler.getRowData();
         assertThat(rowData.iterator().next(), is(0));
     }
     

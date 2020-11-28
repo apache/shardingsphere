@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dal.show;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -65,8 +65,8 @@ public final class ShowTablesMergedResultTest {
         return new ShardingSphereSchema(tableMetaDataMap);
     }
     
-    private QueryResult mockQueryResult(final String value) throws SQLException {
-        QueryResult result = mock(QueryResult.class);
+    private ExecuteQueryResult mockQueryResult(final String value) throws SQLException {
+        ExecuteQueryResult result = mock(ExecuteQueryResult.class);
         when(result.next()).thenReturn(true, false);
         when(result.getValue(1, Object.class)).thenReturn(value);
         when(result.getColumnCount()).thenReturn(1);

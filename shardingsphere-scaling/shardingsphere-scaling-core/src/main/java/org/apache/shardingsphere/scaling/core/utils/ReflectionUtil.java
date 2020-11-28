@@ -126,14 +126,14 @@ public final class ReflectionUtil {
      * @throws NoSuchFieldException no such field exception
      */
     public static Field getField(final Class<?> targetClass, final String fieldName, final boolean isDeclared) throws NoSuchFieldException {
-        Field targetField;
+        Field result;
         if (isDeclared) {
-            targetField = targetClass.getDeclaredField(fieldName);
+            result = targetClass.getDeclaredField(fieldName);
         } else {
-            targetField = targetClass.getField(fieldName);
+            result = targetClass.getField(fieldName);
         }
-        targetField.setAccessible(true);
-        return targetField;
+        result.setAccessible(true);
+        return result;
     }
     
     /**

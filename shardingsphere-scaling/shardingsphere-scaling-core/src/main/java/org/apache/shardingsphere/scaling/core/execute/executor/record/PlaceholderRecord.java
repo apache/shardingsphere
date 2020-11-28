@@ -24,7 +24,7 @@ import org.apache.shardingsphere.scaling.core.job.position.Position;
  */
 public final class PlaceholderRecord extends Record {
     
-    public PlaceholderRecord(final Position position) {
+    public PlaceholderRecord(final Position<?> position) {
         super(position);
     }
 }

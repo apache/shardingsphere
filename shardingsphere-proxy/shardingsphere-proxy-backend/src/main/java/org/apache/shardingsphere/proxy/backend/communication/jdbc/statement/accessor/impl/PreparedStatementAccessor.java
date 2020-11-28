@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.impl;
 
-import org.apache.shardingsphere.infra.executor.sql.group.ExecutionGroupEngine;
-import org.apache.shardingsphere.infra.executor.sql.group.resourced.jdbc.PreparedStatementExecutionGroupEngine;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.builder.JDBCExecutionUnitBuilderType;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.JDBCAccessor;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -35,9 +37,9 @@ import java.util.Collection;
 public final class PreparedStatementAccessor implements JDBCAccessor {
     
     @Override
-    public ExecutionGroupEngine<?> getExecutionGroupEngine(final BackendConnection backendConnection,
-                                                           final int maxConnectionsSizePerQuery, final StatementOption option, final Collection<ShardingSphereRule> rules) {
-        return new PreparedStatementExecutionGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, rules);
+    public DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> getExecutionPrepareEngine(final BackendConnection backendConnection, final int maxConnectionsSizePerQuery, 
+                                                                                                 final StatementOption option, final Collection<ShardingSphereRule> rules) {
+        return new DriverExecutionPrepareEngine<>(maxConnectionsSizePerQuery, backendConnection, option, rules, JDBCExecutionUnitBuilderType.PREPARED_STATEMENT);
     }
     
     @Override

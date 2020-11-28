@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.iterator;
 
-import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.stream.StreamMergedResult;
 
 import java.sql.SQLException;
@@ -29,9 +29,9 @@ import java.util.List;
  */
 public final class IteratorStreamMergedResult extends StreamMergedResult {
     
-    private final Iterator<QueryResult> queryResults;
+    private final Iterator<ExecuteQueryResult> queryResults;
     
-    public IteratorStreamMergedResult(final List<QueryResult> queryResults) {
+    public IteratorStreamMergedResult(final List<ExecuteQueryResult> queryResults) {
         this.queryResults = queryResults.iterator();
         setCurrentQueryResult(this.queryResults.next());
     }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.merge.engine.decorator.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.transparent.Transparent
 public final class TransparentResultDecorator implements ResultDecorator<TransparentRule> {
     
     @Override
-    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext<?> sqlStatementContext, final TransparentRule rule) {
+    public MergedResult decorate(final ExecuteQueryResult queryResult, final SQLStatementContext<?> sqlStatementContext, final TransparentRule rule) {
         return new TransparentMergedResult(queryResult);
     }
     

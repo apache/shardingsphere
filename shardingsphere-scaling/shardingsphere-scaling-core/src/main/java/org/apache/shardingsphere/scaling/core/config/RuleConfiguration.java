@@ -17,43 +17,65 @@
 
 package org.apache.shardingsphere.scaling.core.config;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
+
+import java.util.Map;
 
 /**
  * Rule configuration.
  */
-@Setter
 @Getter
 public final class RuleConfiguration {
     
-    private DataSourceConf source;
+    private final DataSourceConfigurationWrapper source;
     
-    private DataSourceConf target;
+    private final DataSourceConfigurationWrapper target;
     
-    @Setter
-    @Getter
-    public static class DataSourceConf {
+    public RuleConfiguration(final DataSourceConfiguration source, final DataSourceConfiguration target) {
+        this.source = new DataSourceConfigurationWrapper(source.getConfigType(), new Gson().toJsonTree(source));
+        this.target = new DataSourceConfigurationWrapper(target.getConfigType(), new Gson().toJsonTree(target));
+    }
+    
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DataSourceConfigurationWrapper {
         
         private String type;
         
         private JsonElement parameter;
         
         /**
-         * Get typed data source configuration.
+         * Unwrap to {@code DataSourceConfiguration}.
          *
-         * @return scaling data source configuration
+         * @return {@code DataSourceConfiguration}
          */
-        public ScalingDataSourceConfiguration toTypedDataSourceConfiguration() {
-            if ("jdbc".equalsIgnoreCase(type)) {
-                return new Gson().fromJson(parameter, JDBCScalingDataSourceConfiguration.class);
+        public DataSourceConfiguration unwrap() {
+            Map<String, Class<?>> instances = DataSourceConfigurationHolder.getInstances();
+            Preconditions.checkArgument(instances.containsKey(type.toLowerCase()), "Unsupported Data Source Type:" + type);
+            return (DataSourceConfiguration) new Gson().fromJson(parameter, instances.get(type.toLowerCase()));
+        }
+        
+        private static class DataSourceConfigurationHolder {
+            
+            private static final Map<String, Class<?>> INSTANCES = Maps.newHashMap();
+            
+            static {
+                INSTANCES.put(StandardJDBCDataSourceConfiguration.CONFIG_TYPE.toLowerCase(), StandardJDBCDataSourceConfiguration.class);
+                INSTANCES.put(ShardingSphereJDBCDataSourceConfiguration.CONFIG_TYPE.toLowerCase(), ShardingSphereJDBCDataSourceConfiguration.class);
             }
-            if ("shardingSphereJdbc".equalsIgnoreCase(type)) {
-                return new Gson().fromJson(parameter, ShardingSphereJDBCScalingDataSourceConfiguration.class);
+            
+            private static Map<String, Class<?>> getInstances() {
+                return INSTANCES;
             }
-            throw new UnsupportedOperationException("Unsupported Data Source Type:" + type);
         }
     }
 }

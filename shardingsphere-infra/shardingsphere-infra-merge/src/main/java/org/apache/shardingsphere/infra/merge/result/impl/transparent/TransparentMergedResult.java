@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.merge.result.impl.transparent;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.io.InputStream;
@@ -31,7 +31,7 @@ import java.util.Calendar;
 @RequiredArgsConstructor
 public final class TransparentMergedResult implements MergedResult {
     
-    private final QueryResult queryResult;
+    private final ExecuteQueryResult queryResult;
     
     @Override
     public boolean next() throws SQLException {

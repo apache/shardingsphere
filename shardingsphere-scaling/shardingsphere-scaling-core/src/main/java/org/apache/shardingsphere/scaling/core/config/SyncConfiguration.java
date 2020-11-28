@@ -29,7 +29,7 @@ public final class SyncConfiguration {
     
     private final int concurrency;
     
-    private final DumperConfiguration dumperConfiguration;
+    private final DumperConfiguration dumperConfig;
     
-    private final ImporterConfiguration importerConfiguration;
+    private final ImporterConfiguration importerConfig;
 }

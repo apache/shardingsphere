@@ -17,19 +17,17 @@
 
 package org.apache.shardingsphere.scaling.mysql.component;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.AbstractJDBCDumper;
-import org.apache.shardingsphere.scaling.core.metadata.JdbcUri;
+import org.apache.shardingsphere.scaling.core.utils.JDBCUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * MySQL JDBC Dumper.
@@ -38,33 +36,7 @@ public final class MySQLJdbcDumper extends AbstractJDBCDumper {
     
     public MySQLJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
         super(inventoryDumperConfig, dataSourceManager);
-        JDBCScalingDataSourceConfiguration jdbcDataSourceConfig = (JDBCScalingDataSourceConfiguration) getInventoryDumperConfiguration().getDataSourceConfiguration();
-        jdbcDataSourceConfig.setJdbcUrl(fixMySQLUrl(jdbcDataSourceConfig.getJdbcUrl()));
-    }
-    
-    private String fixMySQLUrl(final String url) {
-        JdbcUri uri = new JdbcUri(url);
-        return String.format("jdbc:%s://%s/%s?%s", uri.getScheme(), uri.getHost(), uri.getDatabase(), fixMySQLParams(uri.getParameters()));
-    }
-    
-    private String fixMySQLParams(final Map<String, String> parameters) {
-        if (!parameters.containsKey("yearIsDateType")) {
-            parameters.put("yearIsDateType", "false");
-        }
-        return formatMySQLParams(parameters);
-    }
-    
-    private String formatMySQLParams(final Map<String, String> parameters) {
-        StringBuilder result = new StringBuilder();
-        for (Entry<String, String> entry : parameters.entrySet()) {
-            result.append(entry.getKey());
-            if (null != entry.getValue()) {
-                result.append("=").append(entry.getValue());
-            }
-            result.append("&");
-        }
-        result.deleteCharAt(result.length() - 1);
-        return result.toString();
+        JDBCUtil.appendJDBCParameter(inventoryDumperConfig.getDataSourceConfig(), ImmutableMap.<String, String>builder().put("yearIsDateType", "false").build());
     }
     
     @Override

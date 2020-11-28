@@ -84,7 +84,6 @@ public final class ExecutionContextBuilderTest {
         expected.add(expectedUnit1);
         expected.add(expectedUnit2);
         assertThat(actual, is(expected));
-        assertThat(actual.iterator().next().getSqlUnit().getSqlRuntimeContext().getPrimaryKeysMetaData().size(), is(1));
     }
     
     @Test
@@ -101,7 +100,6 @@ public final class ExecutionContextBuilderTest {
         Collection<ExecutionUnit> expected = new LinkedHashSet<>(1, 1);
         expected.add(expectedUnit2);
         assertThat(actual, is(expected));
-        assertThat(actual.iterator().next().getSqlUnit().getSqlRuntimeContext().getPrimaryKeysMetaData().size(), is(0));
     }
     
     private ShardingSphereSchema buildSchemaWithoutPrimaryKey() {
