@@ -143,7 +143,7 @@ public final class ProxySQLExecutor {
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             queryHeaders.add(createQueryHeader(executionContext, executeResultSample, metaData, columnIndex));
         }
-        return getQueryResponses(queryHeaders, executeResults);
+        return createQueryResponse(queryHeaders, executeResults);
     }
     
     private QueryHeader createQueryHeader(final ExecutionContext executionContext, 
@@ -154,7 +154,7 @@ public final class ProxySQLExecutor {
         return QueryHeaderBuilder.build(executeResultSample, metaData, columnIndex);
     }
     
-    private BackendResponse getQueryResponses(final List<QueryHeader> queryHeaders, final Collection<ExecuteResult> executeResults) {
+    private BackendResponse createQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResult> executeResults) {
         QueryResponse result = new QueryResponse(queryHeaders);
         for (ExecuteResult each : executeResults) {
             result.getQueryResults().add((QueryResult) each);
