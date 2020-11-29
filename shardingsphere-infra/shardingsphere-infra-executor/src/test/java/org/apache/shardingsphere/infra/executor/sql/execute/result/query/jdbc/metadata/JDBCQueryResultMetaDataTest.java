@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.metadata;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.fixture.AbstractJDBCQueryResultFixture;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,13 +28,13 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class AbstractJDBCQueryResultTest {
+public final class JDBCQueryResultMetaDataTest {
     
-    private AbstractJDBCQueryResultFixture queryResult;
+    private JDBCQueryResultMetaData queryResultMetaData;
     
     @Before
     public void setUp() throws SQLException {
-        queryResult = new AbstractJDBCQueryResultFixture(mockResultSetMetaData());
+        queryResultMetaData = new JDBCQueryResultMetaData(mockResultSetMetaData());
     }
     
     private ResultSetMetaData mockResultSetMetaData() throws SQLException {
@@ -49,21 +48,21 @@ public final class AbstractJDBCQueryResultTest {
     
     @Test
     public void assertGetColumnCount() throws SQLException {
-        assertThat(queryResult.getColumnCount(), is(1));
+        assertThat(queryResultMetaData.getColumnCount(), is(1));
     }
     
     @Test
     public void assertGetColumnName() throws SQLException {
-        assertThat(queryResult.getColumnName(1), is("order_id"));
+        assertThat(queryResultMetaData.getColumnName(1), is("order_id"));
     }
     
     @Test
     public void assertGetColumnLabel() throws SQLException {
-        assertThat(queryResult.getColumnLabel(1), is("oid"));
+        assertThat(queryResultMetaData.getColumnLabel(1), is("oid"));
     }
     
     @Test
     public void assertGetColumnTypeName() throws SQLException {
-        assertThat(queryResult.getColumnTypeName(1), is("INT"));
+        assertThat(queryResultMetaData.getColumnTypeName(1), is("INT"));
     }
 }

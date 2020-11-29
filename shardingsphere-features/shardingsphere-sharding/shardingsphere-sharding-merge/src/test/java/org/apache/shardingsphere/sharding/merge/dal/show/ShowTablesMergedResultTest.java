@@ -66,10 +66,10 @@ public final class ShowTablesMergedResultTest {
     }
     
     private QueryResult mockQueryResult(final String value) throws SQLException {
-        QueryResult result = mock(QueryResult.class);
+        QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
         when(result.next()).thenReturn(true, false);
         when(result.getValue(1, Object.class)).thenReturn(value);
-        when(result.getColumnCount()).thenReturn(1);
+        when(result.getMetaData().getColumnCount()).thenReturn(1);
         return result;
     }
     

@@ -15,74 +15,74 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.metadata;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 /**
- * Abstract JDBC query result.
+ * JDBC query result meta data.
  */
 @RequiredArgsConstructor
-public abstract class AbstractJDBCQueryResult implements QueryResult {
+public final class JDBCQueryResultMetaData implements QueryResultMetaData {
     
     private final ResultSetMetaData resultSetMetaData;
     
     @Override
-    public final int getColumnCount() throws SQLException {
+    public int getColumnCount() throws SQLException {
         return resultSetMetaData.getColumnCount();
     }
     
     @Override
-    public final String getTableName(final int columnIndex) throws SQLException {
+    public String getTableName(final int columnIndex) throws SQLException {
         return resultSetMetaData.getTableName(columnIndex);
     }
     
     @Override
-    public final String getColumnName(final int columnIndex) throws SQLException {
+    public String getColumnName(final int columnIndex) throws SQLException {
         return resultSetMetaData.getColumnName(columnIndex);
     }
     
     @Override
-    public final String getColumnLabel(final int columnIndex) throws SQLException {
+    public String getColumnLabel(final int columnIndex) throws SQLException {
         return resultSetMetaData.getColumnLabel(columnIndex);
     }
     
     @Override
-    public final int getColumnType(final int columnIndex) throws SQLException {
+    public int getColumnType(final int columnIndex) throws SQLException {
         return resultSetMetaData.getColumnType(columnIndex);
     }
     
     @Override
-    public final String getColumnTypeName(final int columnIndex) throws SQLException {
+    public String getColumnTypeName(final int columnIndex) throws SQLException {
         return resultSetMetaData.getColumnTypeName(columnIndex);
     }
     
     @Override
-    public final int getColumnLength(final int columnIndex) throws SQLException {
+    public int getColumnLength(final int columnIndex) throws SQLException {
         return resultSetMetaData.getColumnDisplaySize(columnIndex);
     }
     
     @Override
-    public final int getDecimals(final int columnIndex) throws SQLException {
+    public int getDecimals(final int columnIndex) throws SQLException {
         return resultSetMetaData.getScale(columnIndex);
     }
     
     @Override
-    public final boolean isSigned(final int columnIndex) throws SQLException {
+    public boolean isSigned(final int columnIndex) throws SQLException {
         return resultSetMetaData.isSigned(columnIndex);
     }
     
     @Override
-    public final boolean isNotNull(final int columnIndex) throws SQLException {
+    public boolean isNotNull(final int columnIndex) throws SQLException {
         return resultSetMetaData.isNullable(columnIndex) == ResultSetMetaData.columnNoNulls;
     }
     
     @Override
-    public final boolean isAutoIncrement(final int columnIndex) throws SQLException {
+    public boolean isAutoIncrement(final int columnIndex) throws SQLException {
         return resultSetMetaData.isAutoIncrement(columnIndex);
     }
 }

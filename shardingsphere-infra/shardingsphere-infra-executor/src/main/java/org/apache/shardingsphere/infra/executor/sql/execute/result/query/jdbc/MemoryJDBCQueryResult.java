@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.metadata.JDBCQueryResultMetaData;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,20 +42,23 @@ import java.util.List;
 /**
  * JDBC query result for memory loading.
  */
-public final class MemoryJDBCQueryResult extends AbstractJDBCQueryResult {
+public final class MemoryJDBCQueryResult implements QueryResult {
+    
+    @Getter
+    private final JDBCQueryResultMetaData metaData;
     
     private final Iterator<List<Object>> rows;
     
     private List<Object> currentRow;
     
     public MemoryJDBCQueryResult(final ResultSet resultSet) throws SQLException {
-        super(resultSet.getMetaData());
+        metaData = new JDBCQueryResultMetaData(resultSet.getMetaData());
         rows = loadRows(resultSet);
     }
     
     private Iterator<List<Object>> loadRows(final ResultSet resultSet) throws SQLException {
         Collection<List<Object>> result = new LinkedList<>();
-        int columnCount = getColumnCount();
+        int columnCount = metaData.getColumnCount();
         while (resultSet.next()) {
             List<Object> rowData = new ArrayList<>(columnCount);
             for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {

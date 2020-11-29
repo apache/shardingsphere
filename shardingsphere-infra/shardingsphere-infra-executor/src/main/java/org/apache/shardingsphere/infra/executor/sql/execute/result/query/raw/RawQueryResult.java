@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata.RawQueryResultMetaData;
@@ -36,6 +37,7 @@ import java.util.List;
  */
 public final class RawQueryResult implements QueryResult {
     
+    @Getter
     private final RawQueryResultMetaData metaData;
     
     private final Iterator<QueryResultDataRow> rows;
@@ -85,60 +87,5 @@ public final class RawQueryResult implements QueryResult {
     @Override
     public boolean wasNull() {
         return null == currentRow;
-    }
-    
-    @Override
-    public int getColumnCount() {
-        return metaData.getColumnCount();
-    }
-    
-    @Override
-    public String getTableName(final int columnIndex) {
-        return metaData.getTableName(columnIndex);
-    }
-    
-    @Override
-    public String getColumnName(final int columnIndex) {
-        return metaData.getColumnName(columnIndex);
-    }
-    
-    @Override
-    public String getColumnLabel(final int columnIndex) {
-        return metaData.getColumnLabel(columnIndex);
-    }
-    
-    @Override
-    public int getColumnType(final int columnIndex) {
-        return metaData.getColumnType(columnIndex);
-    }
-    
-    @Override
-    public String getColumnTypeName(final int columnIndex) {
-        return metaData.getColumnTypeName(columnIndex);
-    }
-    
-    @Override
-    public int getColumnLength(final int columnIndex) {
-        return metaData.getColumnLength(columnIndex);
-    }
-    
-    @Override
-    public int getDecimals(final int columnIndex) {
-        return metaData.getDecimals(columnIndex);
-    }
-    
-    @Override
-    public boolean isSigned(final int columnIndex) {
-        return metaData.isSigned(columnIndex);
-    }
-    
-    @Override
-    public boolean isNotNull(final int columnIndex) {
-        return metaData.isNotNull(columnIndex);
-    }
-    
-    @Override
-    public boolean isAutoIncrement(final int columnIndex) {
-        return metaData.isAutoIncrement(columnIndex);
     }
 }

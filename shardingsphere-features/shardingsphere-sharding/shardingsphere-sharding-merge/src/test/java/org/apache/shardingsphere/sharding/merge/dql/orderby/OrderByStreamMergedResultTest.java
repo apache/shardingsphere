@@ -49,6 +49,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -72,7 +73,7 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
+        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, buildSchema());
         assertFalse(actual.next());
@@ -80,10 +81,10 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
+        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         for (int i = 0; i < 3; i++) {
-            when(queryResults.get(i).getColumnName(1)).thenReturn("col1");
-            when(queryResults.get(i).getColumnName(2)).thenReturn("col2");
+            when(queryResults.get(i).getMetaData().getColumnName(1)).thenReturn("col1");
+            when(queryResults.get(i).getMetaData().getColumnName(2)).thenReturn("col2");
         }
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         when(queryResults.get(0).next()).thenReturn(true, false);
@@ -102,10 +103,10 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
+        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         for (int i = 0; i < 3; i++) {
-            when(queryResults.get(i).getColumnName(1)).thenReturn("col1");
-            when(queryResults.get(i).getColumnName(2)).thenReturn("col2");
+            when(queryResults.get(i).getMetaData().getColumnName(1)).thenReturn("col1");
+            when(queryResults.get(i).getMetaData().getColumnName(2)).thenReturn("col2");
         }
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         when(queryResults.get(0).next()).thenReturn(true, false);
@@ -132,10 +133,10 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForCaseSensitive() throws SQLException {
-        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
+        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         for (int i = 0; i < 3; i++) {
-            when(queryResults.get(i).getColumnName(1)).thenReturn("col1");
-            when(queryResults.get(i).getColumnName(2)).thenReturn("col2");
+            when(queryResults.get(i).getMetaData().getColumnName(1)).thenReturn("col1");
+            when(queryResults.get(i).getMetaData().getColumnName(2)).thenReturn("col2");
         }
         when(queryResults.get(0).next()).thenReturn(true, false);
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("b");
@@ -158,10 +159,10 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForCaseInsensitive() throws SQLException {
-        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
+        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         for (int i = 0; i < 3; i++) {
-            when(queryResults.get(i).getColumnName(1)).thenReturn("col1");
-            when(queryResults.get(i).getColumnName(2)).thenReturn("col2");
+            when(queryResults.get(i).getMetaData().getColumnName(1)).thenReturn("col1");
+            when(queryResults.get(i).getMetaData().getColumnName(2)).thenReturn("col2");
         }
         when(queryResults.get(0).next()).thenReturn(true, false);
         when(queryResults.get(0).getValue(2, Object.class)).thenReturn("b");

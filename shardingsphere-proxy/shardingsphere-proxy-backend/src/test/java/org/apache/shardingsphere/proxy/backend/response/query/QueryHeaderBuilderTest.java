@@ -145,17 +145,17 @@ public final class QueryHeaderBuilderTest {
     }
     
     private QueryResult createQueryResult() throws SQLException {
-        QueryResult result = mock(QueryResult.class);
-        when(result.getTableName(1)).thenReturn("t_order");
-        when(result.getColumnLabel(1)).thenReturn("order_id");
-        when(result.getColumnName(1)).thenReturn("order_id");
-        when(result.getColumnName(2)).thenReturn("expr");
-        when(result.getColumnType(1)).thenReturn(Types.INTEGER);
-        when(result.isSigned(1)).thenReturn(true);
-        when(result.isAutoIncrement(1)).thenReturn(true);
-        when(result.getColumnLength(1)).thenReturn(1);
-        when(result.getDecimals(1)).thenReturn(1);
-        when(result.isNotNull(1)).thenReturn(true);
+        QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaData().getTableName(1)).thenReturn("t_order");
+        when(result.getMetaData().getColumnLabel(1)).thenReturn("order_id");
+        when(result.getMetaData().getColumnName(1)).thenReturn("order_id");
+        when(result.getMetaData().getColumnName(2)).thenReturn("expr");
+        when(result.getMetaData().getColumnType(1)).thenReturn(Types.INTEGER);
+        when(result.getMetaData().isSigned(1)).thenReturn(true);
+        when(result.getMetaData().isAutoIncrement(1)).thenReturn(true);
+        when(result.getMetaData().getColumnLength(1)).thenReturn(1);
+        when(result.getMetaData().getDecimals(1)).thenReturn(1);
+        when(result.getMetaData().isNotNull(1)).thenReturn(true);
         return result;
     }
 }
