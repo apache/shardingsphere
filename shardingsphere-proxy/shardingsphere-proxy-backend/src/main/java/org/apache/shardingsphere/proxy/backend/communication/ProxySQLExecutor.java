@@ -131,7 +131,7 @@ public final class ProxySQLExecutor {
     private Collection<ExecuteResult> useDriverToExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules, 
                                                          final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
-                maxConnectionsSizePerQuery, backendConnection, new StatementOption(isReturnGeneratedKeys), rules, type);
+                type, maxConnectionsSizePerQuery, backendConnection, new StatementOption(isReturnGeneratedKeys), rules);
         Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
         return jdbcExecutor.execute(executionGroups, isExceptionThrown, isReturnGeneratedKeys);
     }
