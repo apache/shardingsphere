@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.jdbc;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.jdbc.type.stream;
 
 import org.junit.Test;
 
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class StreamJDBCQueryResultTest {
+public final class JDBCStreamQueryResultTest {
     
     @Test
     public void assertNext() throws SQLException {

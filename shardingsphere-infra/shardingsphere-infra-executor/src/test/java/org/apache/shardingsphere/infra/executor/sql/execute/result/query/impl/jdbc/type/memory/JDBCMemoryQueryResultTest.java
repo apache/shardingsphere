@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.jdbc;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.jdbc.type.memory;
 
 import org.hamcrest.core.Is;
 import org.junit.Test;
@@ -47,7 +47,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MemoryJDBCQueryResultTest {
+public final class JDBCMemoryQueryResultTest {
     
     @Test(expected = SQLException.class)
     public void assertConstructorWithSqlException() throws SQLException {

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.jdbc;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.jdbc.type.memory;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
