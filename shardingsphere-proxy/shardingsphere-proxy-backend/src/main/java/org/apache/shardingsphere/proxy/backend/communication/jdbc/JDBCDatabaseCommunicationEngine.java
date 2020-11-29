@@ -22,10 +22,9 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -37,10 +36,11 @@ import org.apache.shardingsphere.infra.metadata.schema.refresher.spi.SchemaChang
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
+import org.apache.shardingsphere.proxy.backend.communication.ProxySQLExecutor;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
+import org.apache.shardingsphere.proxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -63,7 +63,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private final ShardingSphereMetaData metaData;
     
-    private final SQLExecuteEngine sqlExecuteEngine;
+    private final ProxySQLExecutor proxySQLExecutor;
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
@@ -88,8 +88,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponse();
         }
-        sqlExecuteEngine.checkExecutePrerequisites(executionContext);
-        response = sqlExecuteEngine.execute(executionContext);
+        proxySQLExecutor.checkExecutePrerequisites(executionContext);
+        response = proxySQLExecutor.execute(executionContext);
         refreshSchema(executionContext);
         return merge(executionContext.getSqlStatementContext());
     }
