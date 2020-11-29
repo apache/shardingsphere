@@ -42,7 +42,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.RawExecutionRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.ProxyJDBCExecutorCallback;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.RawProxyExecutor;
+import org.apache.shardingsphere.proxy.backend.communication.raw.ProxyRawExecutor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.JDBCAccessor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
@@ -77,7 +77,7 @@ public final class ProxySQLExecutor {
     
     private final JDBCExecutor jdbcExecutor;
     
-    private final RawProxyExecutor rawExecutor;
+    private final ProxyRawExecutor rawExecutor;
     
     public ProxySQLExecutor(final BackendConnection backendConnection, final JDBCAccessor accessor) {
         this.backendConnection = backendConnection;
@@ -85,7 +85,7 @@ public final class ProxySQLExecutor {
         ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
         boolean isSerialExecute = backendConnection.isSerialExecute();
         jdbcExecutor = new JDBCExecutor(executorEngine, isSerialExecute);
-        rawExecutor = new RawProxyExecutor(executorEngine, isSerialExecute);
+        rawExecutor = new ProxyRawExecutor(executorEngine, isSerialExecute);
     }
     
     /**
@@ -121,66 +121,59 @@ public final class ProxySQLExecutor {
     public BackendResponse execute(final ExecutionContext executionContext) throws SQLException {
         Collection<ExecuteResult> executeResults = execute(executionContext,
                 executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement, SQLExecutorExceptionHandler.isExceptionThrown());
-        ExecuteResult executeResult = executeResults.iterator().next();
-        if (executeResult instanceof QueryResult) {
-            ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
-            int columnCount = ((QueryResult) executeResult).getMetaData().getColumnCount();
-            List<QueryHeader> queryHeaders = new ArrayList<>(columnCount);
-            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                if (hasSelectExpandProjections(executionContext.getSqlStatementContext())) {
-                    queryHeaders.add(QueryHeaderBuilder.build(
-                            ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), (QueryResult) executeResult, metaData, columnIndex));
-                } else {
-                    queryHeaders.add(QueryHeaderBuilder.build((QueryResult) executeResult, metaData, columnIndex));
-                }
-            }
-            return getExecuteQueryResponse(queryHeaders, executeResults);
-        } else {
-            UpdateResponse result = new UpdateResponse(executeResults);
-            if (executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement) {
-                result.setType("INSERT");
-            } else if (executionContext.getSqlStatementContext().getSqlStatement() instanceof DeleteStatement) {
-                result.setType("DELETE");
-            } else if (executionContext.getSqlStatementContext().getSqlStatement() instanceof UpdateStatement) {
-                result.setType("UPDATE");
-            }
-            return result;
-        }
+        ExecuteResult executeResultSample = executeResults.iterator().next();
+        return executeResultSample instanceof QueryResult
+                ? processExecuteQuery(executionContext, executeResults, (QueryResult) executeResultSample) : processExecuteUpdate(executionContext, executeResults);
     }
     
     private Collection<ExecuteResult> execute(final ExecutionContext executionContext, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         int maxConnectionsSizePerQuery = ProxyContext.getInstance().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap().get(backendConnection.getSchemaName());
-        return metaData.getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule) 
-                ? executeWithRaw(executionContext, maxConnectionsSizePerQuery)
-                : executeWithDriver(executionContext, maxConnectionsSizePerQuery, isReturnGeneratedKeys, isExceptionThrown);
+        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap().get(backendConnection.getSchemaName()).getRuleMetaData().getRules();
+        return rules.stream().anyMatch(each -> each instanceof RawExecutionRule) 
+                ? rawExecute(executionContext, rules, maxConnectionsSizePerQuery) : useDriverToExecute(executionContext, rules, maxConnectionsSizePerQuery, isReturnGeneratedKeys, isExceptionThrown);
     }
     
-    private Collection<ExecuteResult> executeWithDriver(final ExecutionContext executionContext,
-                                                        final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
+    private Collection<ExecuteResult> rawExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules, final int maxConnectionsSizePerQuery) throws SQLException {
+        RawExecutionPrepareEngine prepareEngine = new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, rules);
+        Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
+        // TODO handle query header
+        return rawExecutor.execute(executionGroups, new RawSQLExecutorCallback());
+    }
+    
+    private Collection<ExecuteResult> useDriverToExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules, 
+                                                         final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getDatabaseType();
-        return jdbcExecutor.execute(createExecutionGroups(executionContext.getExecutionUnits(), maxConnectionsSizePerQuery, isReturnGeneratedKeys, executionContext.getRouteContext()),
+        Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups(
+                executionContext.getExecutionUnits(), rules, maxConnectionsSizePerQuery, isReturnGeneratedKeys, executionContext.getRouteContext());
+        return jdbcExecutor.execute(executionGroups,
                 new ProxyJDBCExecutorCallback(databaseType, backendConnection, accessor, isExceptionThrown, isReturnGeneratedKeys, true),
                 new ProxyJDBCExecutorCallback(databaseType, backendConnection, accessor, isExceptionThrown, isReturnGeneratedKeys, false));
     }
     
-    private Collection<ExecutionGroup<JDBCExecutionUnit>> createExecutionGroups(final Collection<ExecutionUnit> executionUnits, final int maxConnectionsSizePerQuery,
-                                                                                final boolean isReturnGeneratedKeys, final RouteContext routeContext) throws SQLException {
-        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getRuleMetaData().getRules();
+    private Collection<ExecutionGroup<JDBCExecutionUnit>> createExecutionGroups(final Collection<ExecutionUnit> executionUnits, final Collection<ShardingSphereRule> rules, 
+                                                                                final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys, 
+                                                                                final RouteContext routeContext) throws SQLException {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = accessor.getExecutionPrepareEngine(
                 backendConnection, maxConnectionsSizePerQuery, new StatementOption(isReturnGeneratedKeys), rules);
         return prepareEngine.prepare(routeContext, executionUnits);
     }
     
-    private Collection<ExecuteResult> executeWithRaw(final ExecutionContext executionContext, final int maxConnectionsSizePerQuery) throws SQLException {
-        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getRuleMetaData().getRules();
-        Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups = new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, rules).prepare(executionContext.getRouteContext(),
-                executionContext.getExecutionUnits());
-        // TODO handle query header
-        return rawExecutor.execute(executionGroups, new RawSQLExecutorCallback());
+    private BackendResponse processExecuteQuery(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults, final QueryResult executeResultSample) throws SQLException {
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
+        int columnCount = executeResultSample.getMetaData().getColumnCount();
+        List<QueryHeader> queryHeaders = new ArrayList<>(columnCount);
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+            if (hasSelectExpandProjections(executionContext.getSqlStatementContext())) {
+                queryHeaders.add(QueryHeaderBuilder.build(
+                        ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), executeResultSample, metaData, columnIndex));
+            } else {
+                queryHeaders.add(QueryHeaderBuilder.build(executeResultSample, metaData, columnIndex));
+            }
+        }
+        return getQueryResponses(queryHeaders, executeResults);
     }
     
-    private BackendResponse getExecuteQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResult> executeResults) {
+    private BackendResponse getQueryResponses(final List<QueryHeader> queryHeaders, final Collection<ExecuteResult> executeResults) {
         QueryResponse result = new QueryResponse(queryHeaders);
         for (ExecuteResult each : executeResults) {
             result.getQueryResults().add((QueryResult) each);
@@ -190,5 +183,17 @@ public final class ProxySQLExecutor {
     
     private boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
+    }
+    
+    private UpdateResponse processExecuteUpdate(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults) {
+        UpdateResponse result = new UpdateResponse(executeResults);
+        if (executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement) {
+            result.setType("INSERT");
+        } else if (executionContext.getSqlStatementContext().getSqlStatement() instanceof DeleteStatement) {
+            result.setType("DELETE");
+        } else if (executionContext.getSqlStatementContext().getSqlStatement() instanceof UpdateStatement) {
+            result.setType("UPDATE");
+        }
+        return result;
     }
 }

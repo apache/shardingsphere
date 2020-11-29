@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.executor;
+package org.apache.shardingsphere.proxy.backend.communication.raw;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -32,10 +32,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Raw Proxy executor.
+ * Proxy raw executor.
  */
 @RequiredArgsConstructor
-public final class RawProxyExecutor {
+public final class ProxyRawExecutor {
     
     private final ExecutorEngine executorEngine;
     
@@ -46,12 +46,12 @@ public final class RawProxyExecutor {
      *
      * @param executionGroups execution groups
      * @param callback raw SQL execute callback
-     * @return return true if is DQL, false if is DML
+     * @return execute results
      * @throws SQLException SQL exception
      */
     public Collection<ExecuteResult> execute(final Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups, final RawSQLExecutorCallback callback) throws SQLException {
         // TODO Load query header for first query
-        List<ExecuteResult> results = doExecute(executionGroups, null, callback);
+        List<ExecuteResult> results = execute(executionGroups, null, callback);
         // TODO refresh metadata
         if (null == results || results.isEmpty() || null == results.get(0)) {
             return Collections.singleton(new UpdateResult(0, 0L));
@@ -65,8 +65,8 @@ public final class RawProxyExecutor {
     }
     
     @SuppressWarnings("unchecked")
-    private <T> List<T> doExecute(final Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups, 
-                                  final RawSQLExecutorCallback firstCallback, final RawSQLExecutorCallback callback) throws SQLException {
+    private <T> List<T> execute(final Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups, 
+                                final RawSQLExecutorCallback firstCallback, final RawSQLExecutorCallback callback) throws SQLException {
         try {
             return executorEngine.execute((Collection) executionGroups, firstCallback, callback, serial);
         } catch (final SQLException ex) {
