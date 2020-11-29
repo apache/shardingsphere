@@ -20,11 +20,9 @@ package org.apache.shardingsphere.proxy.backend.communication;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
@@ -36,11 +34,10 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.RawExecutionRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.ProxyJDBCExecutorCallback;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.ProxyJDBCExecutor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.JDBCAccessor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.communication.raw.ProxyRawExecutor;
@@ -74,7 +71,7 @@ public final class ProxySQLExecutor {
     
     private final JDBCAccessor accessor;
     
-    private final JDBCExecutor jdbcExecutor;
+    private final ProxyJDBCExecutor jdbcExecutor;
     
     private final ProxyRawExecutor rawExecutor;
     
@@ -83,7 +80,7 @@ public final class ProxySQLExecutor {
         this.accessor = accessor;
         ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
         boolean isSerialExecute = backendConnection.isSerialExecute();
-        jdbcExecutor = new JDBCExecutor(executorEngine, isSerialExecute);
+        jdbcExecutor = new ProxyJDBCExecutor(backendConnection, new JDBCExecutor(executorEngine, isSerialExecute), accessor);
         rawExecutor = new ProxyRawExecutor(executorEngine, isSerialExecute);
     }
     
@@ -134,20 +131,10 @@ public final class ProxySQLExecutor {
     
     private Collection<ExecuteResult> useDriverToExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules, 
                                                          final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
-        DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getDatabaseType();
-        Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups(
-                executionContext.getExecutionUnits(), rules, maxConnectionsSizePerQuery, isReturnGeneratedKeys, executionContext.getRouteContext());
-        return jdbcExecutor.execute(executionGroups,
-                new ProxyJDBCExecutorCallback(databaseType, backendConnection, accessor, isExceptionThrown, isReturnGeneratedKeys, true),
-                new ProxyJDBCExecutorCallback(databaseType, backendConnection, accessor, isExceptionThrown, isReturnGeneratedKeys, false));
-    }
-    
-    private Collection<ExecutionGroup<JDBCExecutionUnit>> createExecutionGroups(final Collection<ExecutionUnit> executionUnits, final Collection<ShardingSphereRule> rules, 
-                                                                                final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys, 
-                                                                                final RouteContext routeContext) throws SQLException {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = accessor.getExecutionPrepareEngine(
                 backendConnection, maxConnectionsSizePerQuery, new StatementOption(isReturnGeneratedKeys), rules);
-        return prepareEngine.prepare(routeContext, executionUnits);
+        Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
+        return jdbcExecutor.execute(executionGroups, isExceptionThrown, isReturnGeneratedKeys);
     }
     
     private BackendResponse processExecuteQuery(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults, final QueryResult executeResultSample) throws SQLException {

@@ -1,0 +1,61 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.executor;
+
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.JDBCAccessor;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+
+import java.sql.SQLException;
+import java.util.Collection;
+
+/**
+ * Proxy JDBC executor.
+ */
+@RequiredArgsConstructor
+public final class ProxyJDBCExecutor {
+    
+    private final BackendConnection backendConnection;
+    
+    private final JDBCExecutor jdbcExecutor;
+    
+    private final JDBCAccessor accessor;
+    
+    /**
+     * Execute.
+     * 
+     * @param executionGroups execution groups
+     * @param isReturnGeneratedKeys is return generated keys
+     * @param isExceptionThrown is exception thrown
+     * @return execute results
+     * @throws SQLException SQL exception
+     */
+    public Collection<ExecuteResult> execute(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, 
+                                             final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
+        DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getDatabaseType();
+        return jdbcExecutor.execute(executionGroups,
+                new ProxyJDBCExecutorCallback(databaseType, backendConnection, accessor, isExceptionThrown, isReturnGeneratedKeys, true),
+                new ProxyJDBCExecutorCallback(databaseType, backendConnection, accessor, isExceptionThrown, isReturnGeneratedKeys, false));
+    }
+}
