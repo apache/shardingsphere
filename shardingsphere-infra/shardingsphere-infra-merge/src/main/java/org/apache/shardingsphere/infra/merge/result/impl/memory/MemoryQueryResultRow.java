@@ -36,7 +36,7 @@ public final class MemoryQueryResultRow {
     }
     
     private Object[] load(final QueryResult queryResult) throws SQLException {
-        int columnCount = queryResult.getColumnCount();
+        int columnCount = queryResult.getMetaData().getColumnCount();
         Object[] result = new Object[columnCount];
         for (int i = 0; i < columnCount; i++) {
             result[i] = queryResult.getValue(i + 1, Object.class);

@@ -46,6 +46,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -295,8 +296,8 @@ public final class GroupByRowComparatorTest {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSetMetaData.getColumnCount()).thenReturn(values.length);
-        QueryResult result = mock(QueryResult.class);
-        when(result.getColumnCount()).thenReturn(values.length);
+        QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaData().getColumnCount()).thenReturn(values.length);
         int index = 0;
         for (Object each : values) {
             when(result.getValue(++index, Object.class)).thenReturn(each);

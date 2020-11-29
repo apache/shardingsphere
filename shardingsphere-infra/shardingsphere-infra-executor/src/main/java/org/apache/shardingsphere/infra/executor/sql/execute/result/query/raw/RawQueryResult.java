@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata.QueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.row.QueryResultDataRow;
 
 import java.io.ByteArrayInputStream;
@@ -36,13 +37,14 @@ import java.util.List;
  */
 public final class RawQueryResult implements QueryResult {
     
-    private final QueryResultMetaData metaData;
+    @Getter
+    private final RawQueryResultMetaData metaData;
     
     private final Iterator<QueryResultDataRow> rows;
     
     private QueryResultDataRow currentRow;
     
-    public RawQueryResult(final QueryResultMetaData metaData, final List<QueryResultDataRow> rows) {
+    public RawQueryResult(final RawQueryResultMetaData metaData, final List<QueryResultDataRow> rows) {
         this.metaData = metaData;
         this.rows = rows.iterator();
     }
@@ -85,60 +87,5 @@ public final class RawQueryResult implements QueryResult {
     @Override
     public boolean wasNull() {
         return null == currentRow;
-    }
-    
-    @Override
-    public int getColumnCount() {
-        return metaData.getColumnCount();
-    }
-    
-    @Override
-    public String getTableName(final int columnIndex) {
-        return metaData.getTableName(columnIndex);
-    }
-    
-    @Override
-    public String getColumnName(final int columnIndex) {
-        return metaData.getColumnName(columnIndex);
-    }
-    
-    @Override
-    public String getColumnLabel(final int columnIndex) {
-        return metaData.getColumnLabel(columnIndex);
-    }
-    
-    @Override
-    public int getColumnType(final int columnIndex) {
-        return metaData.getColumnType(columnIndex);
-    }
-    
-    @Override
-    public String getColumnTypeName(final int columnIndex) {
-        return metaData.getColumnTypeName(columnIndex);
-    }
-    
-    @Override
-    public int getColumnLength(final int columnIndex) {
-        return metaData.getColumnLength(columnIndex);
-    }
-    
-    @Override
-    public int getDecimals(final int columnIndex) {
-        return metaData.getDecimals(columnIndex);
-    }
-    
-    @Override
-    public boolean isSigned(final int columnIndex) {
-        return metaData.isSigned(columnIndex);
-    }
-    
-    @Override
-    public boolean isNotNull(final int columnIndex) {
-        return metaData.isNotNull(columnIndex);
-    }
-    
-    @Override
-    public boolean isAutoIncrement(final int columnIndex) {
-        return metaData.isAutoIncrement(columnIndex);
     }
 }

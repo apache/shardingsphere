@@ -102,7 +102,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     }
     
     private void cacheCurrentRow() throws SQLException {
-        for (int i = 0; i < getCurrentQueryResult().getColumnCount(); i++) {
+        for (int i = 0; i < getCurrentQueryResult().getMetaData().getColumnCount(); i++) {
             currentRow.add(getCurrentQueryResult().getValue(i + 1, Object.class));
         }
     }

@@ -37,6 +37,7 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -109,7 +110,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     }
     
     private QueryResult mockQueryResult() throws SQLException {
-        QueryResult result = mock(QueryResult.class);
+        QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
         when(result.next()).thenReturn(true, true, false);
         return result;
     }

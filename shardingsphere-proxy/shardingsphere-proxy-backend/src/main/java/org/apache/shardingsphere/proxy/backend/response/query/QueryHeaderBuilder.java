@@ -46,7 +46,7 @@ public final class QueryHeaderBuilder {
      * @throws SQLException SQL exception
      */
     public static QueryHeader build(final QueryResult queryResult, final ShardingSphereMetaData metaData, final int columnIndex) throws SQLException {
-        return build(queryResult, metaData, queryResult.getColumnName(columnIndex), columnIndex);
+        return build(queryResult, metaData, queryResult.getMetaData().getColumnName(columnIndex), columnIndex);
     }
     
     /**
@@ -65,7 +65,7 @@ public final class QueryHeaderBuilder {
     
     private static QueryHeader build(final QueryResult queryResult, final ShardingSphereMetaData metaData, final String columnName, final int columnIndex) throws SQLException {
         String schemaName = metaData.getName();
-        String actualTableName = queryResult.getTableName(columnIndex);
+        String actualTableName = queryResult.getMetaData().getTableName(columnIndex);
         Optional<DataNodeContainedRule> dataNodeContainedRule =
                 metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
         String tableName;
@@ -78,18 +78,18 @@ public final class QueryHeaderBuilder {
             tableName = actualTableName;
             primaryKey = false;
         }
-        String columnLabel = queryResult.getColumnLabel(columnIndex);
-        int columnLength = queryResult.getColumnLength(columnIndex);
-        int columnType = queryResult.getColumnType(columnIndex);
-        int decimals = queryResult.getDecimals(columnIndex);
-        boolean signed = queryResult.isSigned(columnIndex);
-        boolean notNull = queryResult.isNotNull(columnIndex);
-        boolean autoIncrement = queryResult.isAutoIncrement(columnIndex);
+        String columnLabel = queryResult.getMetaData().getColumnLabel(columnIndex);
+        int columnLength = queryResult.getMetaData().getColumnLength(columnIndex);
+        int columnType = queryResult.getMetaData().getColumnType(columnIndex);
+        int decimals = queryResult.getMetaData().getDecimals(columnIndex);
+        boolean signed = queryResult.getMetaData().isSigned(columnIndex);
+        boolean notNull = queryResult.getMetaData().isNotNull(columnIndex);
+        boolean autoIncrement = queryResult.getMetaData().isAutoIncrement(columnIndex);
         return new QueryHeader(schemaName, tableName, columnLabel, columnName, columnLength, columnType, decimals, signed, primaryKey, notNull, autoIncrement);
     }
     
     private static String getColumnName(final ProjectionsContext projectionsContext, final QueryResult queryResult, final int columnIndex) throws SQLException {
         Projection projection = projectionsContext.getExpandProjections().get(columnIndex - 1);
-        return projection instanceof ColumnProjection ? ((ColumnProjection) projection).getName() : queryResult.getColumnName(columnIndex);
+        return projection instanceof ColumnProjection ? ((ColumnProjection) projection).getName() : queryResult.getMetaData().getColumnName(columnIndex);
     }
 }

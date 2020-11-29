@@ -85,7 +85,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
         List<QueryResult> queryResults = queryResponse.getQueryResults();
         int columnIndex = 0;
         for (QueryHeader each : queryResponse.getQueryHeaders()) {
-            String columnTypeName = queryResults.isEmpty() ? null : queryResults.get(0).getColumnTypeName(columnIndex + 1);
+            String columnTypeName = queryResults.isEmpty() ? null : queryResults.get(0).getMetaData().getColumnTypeName(columnIndex + 1);
             result.add(new PostgreSQLColumnDescription(each.getColumnName(), ++columnIndex, each.getColumnType(), each.getColumnLength(), columnTypeName));
         }
         return result;

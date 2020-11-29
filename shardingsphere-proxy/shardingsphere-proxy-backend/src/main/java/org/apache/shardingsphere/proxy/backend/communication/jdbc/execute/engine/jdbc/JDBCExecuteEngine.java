@@ -110,7 +110,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         ExecuteResult executeResult = executeResults.iterator().next();
         if (executeResult instanceof QueryResult) {
             ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
-            int columnCount = ((QueryResult) executeResult).getColumnCount();
+            int columnCount = ((QueryResult) executeResult).getMetaData().getColumnCount();
             List<QueryHeader> queryHeaders = new ArrayList<>(columnCount);
             for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
                 if (hasSelectExpandProjections(executionContext.getSqlStatementContext())) {

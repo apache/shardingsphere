@@ -25,6 +25,7 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,8 +35,8 @@ public final class MemoryQueryResultRowTest {
     
     @Before
     public void setUp() throws SQLException {
-        QueryResult queryResult = mock(QueryResult.class);
-        when(queryResult.getColumnCount()).thenReturn(1);
+        QueryResult queryResult = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(queryResult.getMetaData().getColumnCount()).thenReturn(1);
         when(queryResult.getValue(1, Object.class)).thenReturn("value");
         memoryResultSetRow = new MemoryQueryResultRow(queryResult);
     }
