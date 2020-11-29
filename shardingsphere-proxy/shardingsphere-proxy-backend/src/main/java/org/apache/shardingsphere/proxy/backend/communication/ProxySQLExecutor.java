@@ -121,31 +121,9 @@ public final class ProxySQLExecutor {
     public BackendResponse execute(final ExecutionContext executionContext) throws SQLException {
         Collection<ExecuteResult> executeResults = execute(executionContext,
                 executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement, SQLExecutorExceptionHandler.isExceptionThrown());
-        ExecuteResult executeResult = executeResults.iterator().next();
-        if (executeResult instanceof QueryResult) {
-            ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
-            int columnCount = ((QueryResult) executeResult).getMetaData().getColumnCount();
-            List<QueryHeader> queryHeaders = new ArrayList<>(columnCount);
-            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                if (hasSelectExpandProjections(executionContext.getSqlStatementContext())) {
-                    queryHeaders.add(QueryHeaderBuilder.build(
-                            ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), (QueryResult) executeResult, metaData, columnIndex));
-                } else {
-                    queryHeaders.add(QueryHeaderBuilder.build((QueryResult) executeResult, metaData, columnIndex));
-                }
-            }
-            return getExecuteQueryResponse(queryHeaders, executeResults);
-        } else {
-            UpdateResponse result = new UpdateResponse(executeResults);
-            if (executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement) {
-                result.setType("INSERT");
-            } else if (executionContext.getSqlStatementContext().getSqlStatement() instanceof DeleteStatement) {
-                result.setType("DELETE");
-            } else if (executionContext.getSqlStatementContext().getSqlStatement() instanceof UpdateStatement) {
-                result.setType("UPDATE");
-            }
-            return result;
-        }
+        ExecuteResult executeResultSample = executeResults.iterator().next();
+        return executeResultSample instanceof QueryResult
+                ? processExecuteQuery(executionContext, executeResults, (QueryResult) executeResultSample) : processExecuteUpdate(executionContext, executeResults);
     }
     
     private Collection<ExecuteResult> execute(final ExecutionContext executionContext, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
@@ -178,6 +156,33 @@ public final class ProxySQLExecutor {
                 executionContext.getExecutionUnits());
         // TODO handle query header
         return rawExecutor.execute(executionGroups, new RawSQLExecutorCallback());
+    }
+    
+    private BackendResponse processExecuteQuery(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults, final QueryResult executeResultSample) throws SQLException {
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
+        int columnCount = executeResultSample.getMetaData().getColumnCount();
+        List<QueryHeader> queryHeaders = new ArrayList<>(columnCount);
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+            if (hasSelectExpandProjections(executionContext.getSqlStatementContext())) {
+                queryHeaders.add(QueryHeaderBuilder.build(
+                        ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), executeResultSample, metaData, columnIndex));
+            } else {
+                queryHeaders.add(QueryHeaderBuilder.build(executeResultSample, metaData, columnIndex));
+            }
+        }
+        return getExecuteQueryResponse(queryHeaders, executeResults);
+    }
+    
+    private UpdateResponse processExecuteUpdate(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults) {
+        UpdateResponse result = new UpdateResponse(executeResults);
+        if (executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement) {
+            result.setType("INSERT");
+        } else if (executionContext.getSqlStatementContext().getSqlStatement() instanceof DeleteStatement) {
+            result.setType("DELETE");
+        } else if (executionContext.getSqlStatementContext().getSqlStatement() instanceof UpdateStatement) {
+            result.setType("UPDATE");
+        }
+        return result;
     }
     
     private BackendResponse getExecuteQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResult> executeResults) {
