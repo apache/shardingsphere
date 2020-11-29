@@ -65,7 +65,7 @@ import java.util.List;
  * Proxy SQL Executor.
  */
 public final class ProxySQLExecutor {
-
+    
     private final String type;
     
     private final BackendConnection backendConnection;
