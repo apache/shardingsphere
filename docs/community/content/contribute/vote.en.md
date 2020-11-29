@@ -1,6 +1,6 @@
 +++ 
 title = "New committer voting process" 
-weight = 12
+weight = 13
 chapter = true 
 +++
 
