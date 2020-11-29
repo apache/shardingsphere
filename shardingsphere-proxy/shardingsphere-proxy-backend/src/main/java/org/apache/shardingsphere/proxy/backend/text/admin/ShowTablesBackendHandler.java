@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.QueryResultRow;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.row.QueryResultRow;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.RawQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata.QueryResultRowMetaData;

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata.QueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.row.QueryResultRow;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
