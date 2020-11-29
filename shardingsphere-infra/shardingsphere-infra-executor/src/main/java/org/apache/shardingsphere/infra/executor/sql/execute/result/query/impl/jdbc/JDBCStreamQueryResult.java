@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.jdbc;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.jdbc.metadata.JDBCQueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.stream.AbstractStreamQueryResult;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -36,15 +35,12 @@ import java.util.Calendar;
 /**
  * JDBC query result for stream loading.
  */
-public final class JDBCStreamQueryResult implements QueryResult {
-    
-    @Getter
-    private final JDBCQueryResultMetaData metaData;
+public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
     
     private final ResultSet resultSet;
     
     public JDBCStreamQueryResult(final ResultSet resultSet) throws SQLException {
-        metaData = new JDBCQueryResultMetaData(resultSet.getMetaData());
+        super(new JDBCQueryResultMetaData(resultSet.getMetaData()));
         this.resultSet = resultSet;
     }
     
