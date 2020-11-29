@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.jdbc.metadata.JDBCQueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.row.QueryResultDataRow;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -47,17 +48,17 @@ public final class MemoryJDBCQueryResult implements QueryResult {
     @Getter
     private final JDBCQueryResultMetaData metaData;
     
-    private final Iterator<List<Object>> rows;
+    private final Iterator<QueryResultDataRow> rows;
     
-    private List<Object> currentRow;
+    private QueryResultDataRow currentRow;
     
     public MemoryJDBCQueryResult(final ResultSet resultSet) throws SQLException {
         metaData = new JDBCQueryResultMetaData(resultSet.getMetaData());
         rows = loadRows(resultSet);
     }
     
-    private Iterator<List<Object>> loadRows(final ResultSet resultSet) throws SQLException {
-        Collection<List<Object>> result = new LinkedList<>();
+    private Iterator<QueryResultDataRow> loadRows(final ResultSet resultSet) throws SQLException {
+        Collection<QueryResultDataRow> result = new LinkedList<>();
         int columnCount = metaData.getColumnCount();
         while (resultSet.next()) {
             List<Object> rowData = new ArrayList<>(columnCount);
@@ -65,7 +66,7 @@ public final class MemoryJDBCQueryResult implements QueryResult {
                 Object rowValue = loadRowValue(resultSet, columnIndex);
                 rowData.add(resultSet.wasNull() ? null : rowValue);
             }
-            result.add(rowData);
+            result.add(new QueryResultDataRow(rowData));
         }
         return result.iterator();
     }
@@ -132,17 +133,17 @@ public final class MemoryJDBCQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
-        return currentRow.get(columnIndex - 1);
+        return currentRow.getValue().get(columnIndex - 1);
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
-        return currentRow.get(columnIndex - 1);
+        return currentRow.getValue().get(columnIndex - 1);
     }
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) {
-        return getInputStream(currentRow.get(columnIndex - 1));
+        return getInputStream(currentRow.getValue().get(columnIndex - 1));
     }
     
     @SneakyThrows(IOException.class)
