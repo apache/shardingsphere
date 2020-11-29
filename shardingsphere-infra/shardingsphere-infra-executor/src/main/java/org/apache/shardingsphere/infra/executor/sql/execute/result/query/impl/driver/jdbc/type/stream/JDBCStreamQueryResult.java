@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.jdbc.type.stream;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.jdbc.metadata.JDBCQueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata.JDBCQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.stream.AbstractStreamQueryResult;
 
 import java.io.InputStream;

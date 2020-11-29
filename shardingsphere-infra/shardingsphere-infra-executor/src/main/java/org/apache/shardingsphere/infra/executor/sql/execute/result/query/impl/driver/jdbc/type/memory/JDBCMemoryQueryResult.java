@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.jdbc.type.memory;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.jdbc.metadata.JDBCQueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata.JDBCQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.AbstractMemoryQueryResult;
 
 import java.sql.ResultSet;

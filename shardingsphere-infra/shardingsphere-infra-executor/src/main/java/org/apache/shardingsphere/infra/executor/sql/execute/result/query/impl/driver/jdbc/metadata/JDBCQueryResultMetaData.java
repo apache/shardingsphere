@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.jdbc.metadata;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
