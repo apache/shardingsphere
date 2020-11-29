@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.row;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +23,11 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 /**
- * Query result data row.
+ * Memory query result data row.
  */
 @RequiredArgsConstructor
 @Getter
-public final class QueryResultDataRow {
+public final class MemoryQueryResultDataRow {
     
     private final List<Object> value;
 }

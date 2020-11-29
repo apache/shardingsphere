@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.row.QueryResultDataRow;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -42,9 +42,9 @@ public abstract class AbstractMemoryQueryResult implements QueryResult {
     @Getter
     private final QueryResultMetaData metaData;
     
-    private final Iterator<QueryResultDataRow> rows;
+    private final Iterator<MemoryQueryResultDataRow> rows;
     
-    private QueryResultDataRow currentRow;
+    private MemoryQueryResultDataRow currentRow;
     
     @Override
     public final boolean next() {

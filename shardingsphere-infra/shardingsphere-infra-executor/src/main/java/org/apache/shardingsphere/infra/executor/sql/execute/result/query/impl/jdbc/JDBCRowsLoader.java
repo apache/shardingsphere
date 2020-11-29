@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.j
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.row.QueryResultDataRow;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -45,15 +45,15 @@ public final class JDBCRowsLoader {
      * @return Query result data rows
      * @throws SQLException SQL exception
      */
-    public static Collection<QueryResultDataRow> load(final int columnCount, final ResultSet resultSet) throws SQLException {
-        Collection<QueryResultDataRow> result = new LinkedList<>();
+    public static Collection<MemoryQueryResultDataRow> load(final int columnCount, final ResultSet resultSet) throws SQLException {
+        Collection<MemoryQueryResultDataRow> result = new LinkedList<>();
         while (resultSet.next()) {
             List<Object> rowData = new ArrayList<>(columnCount);
             for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
                 Object rowValue = loadRowValue(resultSet, columnIndex);
                 rowData.add(resultSet.wasNull() ? null : rowValue);
             }
-            result.add(new QueryResultDataRow(rowData));
+            result.add(new MemoryQueryResultDataRow(rowData));
         }
         return result;
     }
