@@ -1,6 +1,6 @@
 +++
 title = "Documents Contributor Guide"
-weight = 5
+weight = 6
 chapter = true
 +++
 
