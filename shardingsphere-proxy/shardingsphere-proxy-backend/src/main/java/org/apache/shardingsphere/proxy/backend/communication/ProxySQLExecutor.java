@@ -38,7 +38,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.RawExecutionRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.ProxyJDBCExecutor;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.JDBCAccessor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.communication.raw.ProxyRawExecutor;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
@@ -66,21 +65,21 @@ import java.util.List;
  * Proxy SQL Executor.
  */
 public final class ProxySQLExecutor {
+
+    private final String type;
     
     private final BackendConnection backendConnection;
-    
-    private final String type;
     
     private final ProxyJDBCExecutor jdbcExecutor;
     
     private final ProxyRawExecutor rawExecutor;
     
-    public ProxySQLExecutor(final BackendConnection backendConnection, final JDBCAccessor accessor, final String type) {
-        this.backendConnection = backendConnection;
+    public ProxySQLExecutor(final String type, final BackendConnection backendConnection) {
         this.type = type;
+        this.backendConnection = backendConnection;
         ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
         boolean isSerialExecute = backendConnection.isSerialExecute();
-        jdbcExecutor = new ProxyJDBCExecutor(backendConnection, new JDBCExecutor(executorEngine, isSerialExecute), accessor);
+        jdbcExecutor = new ProxyJDBCExecutor(type, backendConnection, new JDBCExecutor(executorEngine, isSerialExecute));
         rawExecutor = new ProxyRawExecutor(executorEngine, isSerialExecute);
     }
     

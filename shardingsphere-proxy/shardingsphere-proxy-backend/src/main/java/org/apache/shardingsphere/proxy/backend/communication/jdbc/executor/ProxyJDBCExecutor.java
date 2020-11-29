@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.JDBCAccessor;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback.ProxyJDBCExecutorCallbackFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.sql.SQLException;
@@ -36,11 +36,11 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class ProxyJDBCExecutor {
     
+    private final String type;
+    
     private final BackendConnection backendConnection;
     
     private final JDBCExecutor jdbcExecutor;
-    
-    private final JDBCAccessor accessor;
     
     /**
      * Execute.
@@ -55,7 +55,7 @@ public final class ProxyJDBCExecutor {
                                              final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getDatabaseType();
         return jdbcExecutor.execute(executionGroups,
-                new ProxyJDBCExecutorCallback(databaseType, backendConnection, accessor, isExceptionThrown, isReturnGeneratedKeys, true),
-                new ProxyJDBCExecutorCallback(databaseType, backendConnection, accessor, isExceptionThrown, isReturnGeneratedKeys, false));
+                ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, backendConnection, isExceptionThrown, isReturnGeneratedKeys, true),
+                ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, backendConnection, isExceptionThrown, isReturnGeneratedKeys, false));
     }
 }

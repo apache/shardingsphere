@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.impl;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.JDBCAccessor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Prepared statement accessor.
+ * Prepared statement executor callback for proxy.
  */
-public final class PreparedStatementAccessor implements JDBCAccessor {
+public final class ProxyPreparedStatementExecutorCallback extends ProxyJDBCExecutorCallback {
+    
+    public ProxyPreparedStatementExecutorCallback(final DatabaseType databaseType, final BackendConnection backendConnection,
+                                                  final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
+        super(databaseType, backendConnection, isExceptionThrown, isReturnGeneratedKeys, fetchMetaData);
+    }
     
     @Override
-    public boolean execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+    protected boolean execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return ((PreparedStatement) statement).execute();
     }
 }

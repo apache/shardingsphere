@@ -15,25 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.fetchsize.impl;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.impl;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.fetchsize.StatementMemoryStrictlyFetchSizeSetter;
+import org.junit.Test;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 
-/**
- * Statement memory strictly fetch size setter for PostgreSQL.
- */
-public final class PostgreSQLStatementMemoryStrictlyFetchSizeSetter implements StatementMemoryStrictlyFetchSizeSetter {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+public final class PostgreSQLStatementMemoryStrictlyFetchSizeSetterTest {
     
-    @Override
-    public void setFetchSize(final Statement statement) throws SQLException {
-        statement.setFetchSize(1);
+    @Test
+    public void assertSetFetchSize() throws SQLException {
+        Statement statement = mock(Statement.class);
+        new PostgreSQLStatementMemoryStrictlyFetchSizeSetter().setFetchSize(statement);
+        verify(statement, times(1)).setFetchSize(1);
     }
     
-    @Override
-    public String getType() {
-        return "PostgreSQL";
+    @Test
+    public void assertGetType() {
+        assertThat(new PostgreSQLStatementMemoryStrictlyFetchSizeSetter().getType(), is("PostgreSQL"));
     }
 }
