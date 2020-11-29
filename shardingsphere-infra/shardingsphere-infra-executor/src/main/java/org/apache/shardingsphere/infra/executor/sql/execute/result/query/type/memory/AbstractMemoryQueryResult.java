@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.row.QueryResultDataRow;
 
 import java.io.ByteArrayInputStream;
@@ -30,27 +32,22 @@ import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.util.Calendar;
 import java.util.Iterator;
-import java.util.List;
 
 /**
- * Raw query result.
+ * Abstract memory query result.
  */
-public final class RawQueryResult implements QueryResult {
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+public abstract class AbstractMemoryQueryResult implements QueryResult {
     
     @Getter
-    private final RawQueryResultMetaData metaData;
+    private final QueryResultMetaData metaData;
     
     private final Iterator<QueryResultDataRow> rows;
     
     private QueryResultDataRow currentRow;
     
-    public RawQueryResult(final RawQueryResultMetaData metaData, final List<QueryResultDataRow> rows) {
-        this.metaData = metaData;
-        this.rows = rows.iterator();
-    }
-    
     @Override
-    public boolean next() {
+    public final boolean next() {
         if (rows.hasNext()) {
             currentRow = rows.next();
             return true;
@@ -60,17 +57,17 @@ public final class RawQueryResult implements QueryResult {
     }
     
     @Override
-    public Object getValue(final int columnIndex, final Class<?> type) {
+    public final Object getValue(final int columnIndex, final Class<?> type) {
         return currentRow.getValue().get(columnIndex - 1);
     }
     
     @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
+    public final Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
         return currentRow.getValue().get(columnIndex - 1);
     }
     
     @Override
-    public InputStream getInputStream(final int columnIndex, final String type) {
+    public final InputStream getInputStream(final int columnIndex, final String type) {
         return getInputStream(currentRow.getValue().get(columnIndex - 1));
     }
     
@@ -85,7 +82,7 @@ public final class RawQueryResult implements QueryResult {
     }
     
     @Override
-    public boolean wasNull() {
+    public final boolean wasNull() {
         return null == currentRow;
     }
 }

@@ -36,14 +36,14 @@ import java.util.Calendar;
 /**
  * JDBC query result for stream loading.
  */
-public final class StreamJDBCQueryResult implements QueryResult {
+public final class JDBCStreamQueryResult implements QueryResult {
     
     @Getter
     private final JDBCQueryResultMetaData metaData;
     
     private final ResultSet resultSet;
     
-    public StreamJDBCQueryResult(final ResultSet resultSet) throws SQLException {
+    public JDBCStreamQueryResult(final ResultSet resultSet) throws SQLException {
         metaData = new JDBCQueryResultMetaData(resultSet.getMetaData());
         this.resultSet = resultSet;
     }
