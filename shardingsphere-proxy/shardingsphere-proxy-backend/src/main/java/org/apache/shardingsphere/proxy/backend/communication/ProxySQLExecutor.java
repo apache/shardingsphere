@@ -69,15 +69,15 @@ public final class ProxySQLExecutor {
     
     private final BackendConnection backendConnection;
     
-    private final JDBCAccessor accessor;
+    private final String type;
     
     private final ProxyJDBCExecutor jdbcExecutor;
     
     private final ProxyRawExecutor rawExecutor;
     
-    public ProxySQLExecutor(final BackendConnection backendConnection, final JDBCAccessor accessor) {
+    public ProxySQLExecutor(final BackendConnection backendConnection, final JDBCAccessor accessor, final String type) {
         this.backendConnection = backendConnection;
-        this.accessor = accessor;
+        this.type = type;
         ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
         boolean isSerialExecute = backendConnection.isSerialExecute();
         jdbcExecutor = new ProxyJDBCExecutor(backendConnection, new JDBCExecutor(executorEngine, isSerialExecute), accessor);
@@ -131,8 +131,8 @@ public final class ProxySQLExecutor {
     
     private Collection<ExecuteResult> useDriverToExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules, 
                                                          final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = accessor.getExecutionPrepareEngine(
-                backendConnection, maxConnectionsSizePerQuery, new StatementOption(isReturnGeneratedKeys), rules);
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
+                maxConnectionsSizePerQuery, backendConnection, new StatementOption(isReturnGeneratedKeys), rules, type);
         Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
         return jdbcExecutor.execute(executionGroups, isExceptionThrown, isReturnGeneratedKeys);
     }
