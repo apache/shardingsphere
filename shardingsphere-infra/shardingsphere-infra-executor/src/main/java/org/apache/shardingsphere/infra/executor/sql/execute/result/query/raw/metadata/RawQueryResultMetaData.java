@@ -28,7 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class RawQueryResultMetaData implements QueryResultMetaData {
     
-    private final List<QueryResultColumnMetaData> columns;
+    private final List<RawQueryResultColumnMetaData> columns;
     
     @Override
     public int getColumnCount() {
