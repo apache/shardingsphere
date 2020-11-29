@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -81,8 +82,10 @@ public final class ProxySQLExecutor {
     public ProxySQLExecutor(final BackendConnection backendConnection, final JDBCAccessor accessor) {
         this.backendConnection = backendConnection;
         this.accessor = accessor;
-        jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.isSerialExecute());
-        rawExecutor = new RawProxyExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.isSerialExecute());
+        ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
+        boolean isSerialExecute = backendConnection.isSerialExecute();
+        jdbcExecutor = new JDBCExecutor(executorEngine, isSerialExecute);
+        rawExecutor = new RawProxyExecutor(executorEngine, isSerialExecute);
     }
     
     /**
