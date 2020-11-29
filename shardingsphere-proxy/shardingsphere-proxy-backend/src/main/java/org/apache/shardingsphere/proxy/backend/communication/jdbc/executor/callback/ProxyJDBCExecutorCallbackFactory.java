@@ -48,7 +48,7 @@ public final class ProxyJDBCExecutorCallbackFactory {
             return new ProxyStatementExecutorCallback(databaseType, backendConnection, isExceptionThrown, isReturnGeneratedKeys, isFetchMetaData);
         }
         if (JDBCExecutionUnitBuilderType.PREPARED_STATEMENT.equals(type)) {
-        return new ProxyPreparedStatementExecutorCallback(databaseType, backendConnection, isExceptionThrown, isReturnGeneratedKeys, isFetchMetaData);
+            return new ProxyPreparedStatementExecutorCallback(databaseType, backendConnection, isExceptionThrown, isReturnGeneratedKeys, isFetchMetaData);
         }
         throw new UnsupportedOperationException(String.format("Unsupported driver type: `%s`", type));
     }
