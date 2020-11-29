@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.fetchsize;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.impl;
 
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Statement memory strictly fetch size setter.
+ * Statement memory strictly fetch size setter for PostgreSQL.
  */
-public interface StatementMemoryStrictlyFetchSizeSetter extends TypedSPI {
+public final class PostgreSQLStatementMemoryStrictlyFetchSizeSetter implements StatementMemoryStrictlyFetchSizeSetter {
     
-    /**
-     * Set fetch size.
-     * 
-     * @param statement statement to be set
-     * @throws SQLException SQL exception
-     */
-    void setFetchSize(Statement statement) throws SQLException;
+    @Override
+    public void setFetchSize(final Statement statement) throws SQLException {
+        statement.setFetchSize(1);
+    }
+    
+    @Override
+    public String getType() {
+        return "PostgreSQL";
+    }
 }

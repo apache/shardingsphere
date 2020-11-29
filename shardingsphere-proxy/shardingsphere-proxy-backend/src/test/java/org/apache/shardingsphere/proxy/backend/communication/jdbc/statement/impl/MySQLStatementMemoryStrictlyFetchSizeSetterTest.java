@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.fetchsize.impl;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.impl;
 
 import org.junit.Test;
 

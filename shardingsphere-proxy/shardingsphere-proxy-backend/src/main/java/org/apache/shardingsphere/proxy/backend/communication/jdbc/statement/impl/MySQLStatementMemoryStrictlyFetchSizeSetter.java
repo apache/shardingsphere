@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.fetchsize.impl;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.impl;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.fetchsize.StatementMemoryStrictlyFetchSizeSetter;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 
 import java.sql.SQLException;
 import java.sql.Statement;

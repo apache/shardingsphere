@@ -219,7 +219,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private Collection<ExecutionGroup<JDBCExecutionUnit>> createExecutionGroups() throws SQLException {
         int maxConnectionsSizePerQuery = metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
-                maxConnectionsSizePerQuery, connection, statementOption, metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(), JDBCExecutionUnitBuilderType.PREPARED_STATEMENT);
+                JDBCExecutionUnitBuilderType.PREPARED_STATEMENT, maxConnectionsSizePerQuery, connection, statementOption, metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules());
         return prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
     
@@ -357,8 +357,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private void initBatchPreparedStatementExecutor() throws SQLException {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
-                metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
-                connection, statementOption, metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(), JDBCExecutionUnitBuilderType.PREPARED_STATEMENT);
+                JDBCExecutionUnitBuilderType.PREPARED_STATEMENT, metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
+                connection, statementOption, metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules());
         batchPreparedStatementExecutor.init(prepareEngine.prepare(executionContext.getRouteContext(),
                 new ArrayList<>(batchPreparedStatementExecutor.getBatchExecutionUnits()).stream().map(BatchExecutionUnit::getExecutionUnit).collect(Collectors.toList())));
         setBatchParametersForStatements();
