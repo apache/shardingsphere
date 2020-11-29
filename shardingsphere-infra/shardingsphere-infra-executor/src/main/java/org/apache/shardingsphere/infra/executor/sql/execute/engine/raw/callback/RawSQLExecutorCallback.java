@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback;
 
+import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
@@ -38,17 +38,17 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
         ShardingSphereServiceLoader.register(RawExecutorCallback.class);
     }
     
-    private final Collection<RawExecutorCallback> rawExecutorCallbacks;
+    @SuppressWarnings("rawtypes")
+    private final Collection<RawExecutorCallback> callbacks;
     
     public RawSQLExecutorCallback() {
-        rawExecutorCallbacks = ShardingSphereServiceLoader.newServiceInstances(RawExecutorCallback.class);
-        if (null == rawExecutorCallbacks || rawExecutorCallbacks.isEmpty()) {
-            throw new ShardingSphereException("not found raw executor callback impl");
-        }
+        callbacks = ShardingSphereServiceLoader.newServiceInstances(RawExecutorCallback.class);
+        Preconditions.checkState(!callbacks.isEmpty(), "No raw executor callback implementation found.");
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<ExecuteResult> execute(final Collection<RawSQLExecutionUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
-        return rawExecutorCallbacks.iterator().next().execute(inputs, isTrunkThread, dataMap);
+        return callbacks.iterator().next().execute(inputs, isTrunkThread, dataMap);
     }
 }
