@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Query result row meta data.
+ * Query result column meta data.
  */
 @RequiredArgsConstructor
 @Getter
-public final class QueryResultRowMetaData {
+public final class QueryResultColumnMetaData {
     
     private final String tableName;
     

@@ -29,5 +29,5 @@ import java.util.List;
 @Getter
 public final class QueryResultMetaData {
     
-    private final List<QueryResultRowMetaData> columns;
+    private final List<QueryResultColumnMetaData> columns;
 }
