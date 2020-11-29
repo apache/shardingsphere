@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.communication;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -42,9 +41,9 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.RawExecutionRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.ProxyJDBCExecutorCallback;
-import org.apache.shardingsphere.proxy.backend.communication.raw.ProxyRawExecutor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.JDBCAccessor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
+import org.apache.shardingsphere.proxy.backend.communication.raw.ProxyRawExecutor;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
@@ -95,20 +94,13 @@ public final class ProxySQLExecutor {
      */
     public void checkExecutePrerequisites(final ExecutionContext executionContext) {
         if (isExecuteDDLInXATransaction(executionContext.getSqlStatementContext().getSqlStatement())) {
-            throw new TableModifyInTransactionException(getTableName(executionContext.getSqlStatementContext()));
+            throw new TableModifyInTransactionException(executionContext.getSqlStatementContext());
         }
     }
     
     private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement) {
         TransactionStatus transactionStatus = backendConnection.getTransactionStatus();
         return TransactionType.XA == transactionStatus.getTransactionType() && sqlStatement instanceof DDLStatement && transactionStatus.isInTransaction();
-    }
-    
-    private String getTableName(final SQLStatementContext<?> sqlStatementContext) {
-        if (sqlStatementContext instanceof TableAvailable && !((TableAvailable) sqlStatementContext).getAllTables().isEmpty()) {
-            return ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
-        }
-        return "unknown_table";
     }
     
     /**
