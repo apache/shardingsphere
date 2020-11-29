@@ -19,10 +19,10 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.row.QueryResultDataRow;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.RawQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata.RawQueryResultMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata.QueryResultColumnMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -54,11 +54,11 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
         if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
             return result;
         }
-        RawQueryResultMetaData metaData = new RawQueryResultMetaData(Collections.singletonList(new QueryResultColumnMetaData(
+        RawQueryResultMetaData metaData = new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData(
                 null, result.getQueryHeaders().get(0).getColumnName(), result.getQueryHeaders().get(0).getColumnLabel(), Types.VARCHAR, "VARCHAR", 255, 0, false, false, false)));
         Collection<String> allTableNames = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getSchema().getAllTableNames();
-        List<QueryResultDataRow> rows = allTableNames.stream().map(each -> new QueryResultDataRow(Collections.singletonList(each))).collect(Collectors.toList());
-        QueryResult queryResult = new RawQueryResult(metaData, rows);
+        List<MemoryQueryResultDataRow> rows = allTableNames.stream().map(each -> new MemoryQueryResultDataRow(Collections.singletonList(each))).collect(Collectors.toList());
+        QueryResult queryResult = new RawMemoryQueryResult(metaData, rows);
         result.getQueryResults().add(queryResult);
         queryResponse = result;
         return result;

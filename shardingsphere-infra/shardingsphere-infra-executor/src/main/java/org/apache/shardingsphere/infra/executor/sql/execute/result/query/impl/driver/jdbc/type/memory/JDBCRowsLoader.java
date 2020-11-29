@@ -15,63 +15,51 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory;
 
-import lombok.Getter;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.metadata.JDBCQueryResultMetaData;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * JDBC query result for memory loading.
+ * JDBC rows loader.
  */
-public final class MemoryJDBCQueryResult implements QueryResult {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class JDBCRowsLoader {
     
-    @Getter
-    private final JDBCQueryResultMetaData metaData;
-    
-    private final Iterator<List<Object>> rows;
-    
-    private List<Object> currentRow;
-    
-    public MemoryJDBCQueryResult(final ResultSet resultSet) throws SQLException {
-        metaData = new JDBCQueryResultMetaData(resultSet.getMetaData());
-        rows = loadRows(resultSet);
-    }
-    
-    private Iterator<List<Object>> loadRows(final ResultSet resultSet) throws SQLException {
-        Collection<List<Object>> result = new LinkedList<>();
-        int columnCount = metaData.getColumnCount();
+    /**
+     * Load rows.
+     * 
+     * @param columnCount column count
+     * @param resultSet result set of JDBC
+     * @return Query result data rows
+     * @throws SQLException SQL exception
+     */
+    public static Collection<MemoryQueryResultDataRow> load(final int columnCount, final ResultSet resultSet) throws SQLException {
+        Collection<MemoryQueryResultDataRow> result = new LinkedList<>();
         while (resultSet.next()) {
             List<Object> rowData = new ArrayList<>(columnCount);
             for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
                 Object rowValue = loadRowValue(resultSet, columnIndex);
                 rowData.add(resultSet.wasNull() ? null : rowValue);
             }
-            result.add(rowData);
+            result.add(new MemoryQueryResultDataRow(rowData));
         }
-        return result.iterator();
+        return result;
     }
     
     @SuppressWarnings("ReturnOfNull")
-    private Object loadRowValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+    private static Object loadRowValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
         switch (metaData.getColumnType(columnIndex)) {
             case Types.BOOLEAN:
@@ -118,45 +106,5 @@ public final class MemoryJDBCQueryResult implements QueryResult {
             default:
                 return resultSet.getObject(columnIndex);
         }
-    }
-    
-    @Override
-    public boolean next() {
-        if (rows.hasNext()) {
-            currentRow = rows.next();
-            return true;
-        }
-        currentRow = null;
-        return false;
-    }
-    
-    @Override
-    public Object getValue(final int columnIndex, final Class<?> type) {
-        return currentRow.get(columnIndex - 1);
-    }
-    
-    @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
-        return currentRow.get(columnIndex - 1);
-    }
-    
-    @Override
-    public InputStream getInputStream(final int columnIndex, final String type) {
-        return getInputStream(currentRow.get(columnIndex - 1));
-    }
-    
-    @SneakyThrows(IOException.class)
-    private InputStream getInputStream(final Object value) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-        objectOutputStream.writeObject(value);
-        objectOutputStream.flush();
-        objectOutputStream.close();
-        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-    }
-    
-    @Override
-    public boolean wasNull() {
-        return null == currentRow;
     }
 }

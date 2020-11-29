@@ -15,35 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata.JDBCQueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.AbstractMemoryQueryResult;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
- * Query result column meta data.
+ * JDBC query result for memory loading.
  */
-@RequiredArgsConstructor
-@Getter
-public final class QueryResultColumnMetaData {
+public final class JDBCMemoryQueryResult extends AbstractMemoryQueryResult {
     
-    private final String tableName;
-    
-    private final String name;
-    
-    private final String label;
-    
-    private final int type;
-    
-    private final String typeName;
-    
-    private final int length;
-    
-    private final int decimals;
-    
-    private final boolean signed;
-    
-    private final boolean notNull;
-    
-    private final boolean autoIncrement;
+    public JDBCMemoryQueryResult(final ResultSet resultSet) throws SQLException {
+        super(new JDBCQueryResultMetaData(resultSet.getMetaData()), JDBCRowsLoader.load(resultSet.getMetaData().getColumnCount(), resultSet).iterator());
+    }
 }

@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.row;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.AbstractMemoryQueryResult;
 
 import java.util.List;
 
 /**
- * Query result data row.
+ * Raw query result for memory loading.
  */
-@RequiredArgsConstructor
-@Getter
-public final class QueryResultDataRow {
+public final class RawMemoryQueryResult extends AbstractMemoryQueryResult {
     
-    private final List<Object> value;
+    public RawMemoryQueryResult(final RawQueryResultMetaData metaData, final List<MemoryQueryResultDataRow> rows) {
+        super(metaData, rows.iterator());
+    }
 }

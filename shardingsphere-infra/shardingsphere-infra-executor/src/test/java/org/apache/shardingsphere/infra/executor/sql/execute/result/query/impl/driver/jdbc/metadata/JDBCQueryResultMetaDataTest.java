@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.jdbc.metadata;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata;
 
 import org.junit.Before;
 import org.junit.Test;
