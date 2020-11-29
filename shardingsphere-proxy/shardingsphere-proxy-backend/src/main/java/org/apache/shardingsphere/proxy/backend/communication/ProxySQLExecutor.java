@@ -148,10 +148,9 @@ public final class ProxySQLExecutor {
     
     private QueryHeader createQueryHeader(final ExecutionContext executionContext, 
                                           final QueryResult executeResultSample, final ShardingSphereMetaData metaData, final int columnIndex) throws SQLException {
-        if (hasSelectExpandProjections(executionContext.getSqlStatementContext())) {
-            return QueryHeaderBuilder.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), executeResultSample, metaData, columnIndex);
-        }
-        return QueryHeaderBuilder.build(executeResultSample, metaData, columnIndex);
+        return hasSelectExpandProjections(executionContext.getSqlStatementContext())
+                ? QueryHeaderBuilder.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), executeResultSample, metaData, columnIndex)
+                : QueryHeaderBuilder.build(executeResultSample, metaData, columnIndex);
     }
     
     private BackendResponse createQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResult> executeResults) {
