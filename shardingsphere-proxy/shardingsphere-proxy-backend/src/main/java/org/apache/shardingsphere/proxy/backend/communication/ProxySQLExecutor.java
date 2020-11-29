@@ -42,7 +42,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.RawExecutionRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.ProxyJDBCExecutorCallback;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.RawProxyExecutor;
+import org.apache.shardingsphere.proxy.backend.communication.raw.ProxyRawExecutor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.accessor.JDBCAccessor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
@@ -77,7 +77,7 @@ public final class ProxySQLExecutor {
     
     private final JDBCExecutor jdbcExecutor;
     
-    private final RawProxyExecutor rawExecutor;
+    private final ProxyRawExecutor rawExecutor;
     
     public ProxySQLExecutor(final BackendConnection backendConnection, final JDBCAccessor accessor) {
         this.backendConnection = backendConnection;
@@ -85,7 +85,7 @@ public final class ProxySQLExecutor {
         ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
         boolean isSerialExecute = backendConnection.isSerialExecute();
         jdbcExecutor = new JDBCExecutor(executorEngine, isSerialExecute);
-        rawExecutor = new RawProxyExecutor(executorEngine, isSerialExecute);
+        rawExecutor = new ProxyRawExecutor(executorEngine, isSerialExecute);
     }
     
     /**
