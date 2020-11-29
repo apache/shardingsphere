@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.metadata.schema.refresher.spi.SchemaChang
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.ProxySQLExecutor;
+import org.apache.shardingsphere.proxy.backend.communication.ProxySQLExecutor;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
@@ -63,7 +63,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private final ShardingSphereMetaData metaData;
     
-    private final ProxySQLExecutor sqlExecuteEngine;
+    private final ProxySQLExecutor proxySQLExecutor;
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
@@ -88,8 +88,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponse();
         }
-        sqlExecuteEngine.checkExecutePrerequisites(executionContext);
-        response = sqlExecuteEngine.execute(executionContext);
+        proxySQLExecutor.checkExecutePrerequisites(executionContext);
+        response = proxySQLExecutor.execute(executionContext);
         refreshSchema(executionContext);
         return merge(executionContext.getSqlStatementContext());
     }
