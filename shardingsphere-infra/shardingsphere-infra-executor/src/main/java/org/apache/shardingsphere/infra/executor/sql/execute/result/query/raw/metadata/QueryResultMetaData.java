@@ -29,5 +29,49 @@ import java.util.List;
 @Getter
 public final class QueryResultMetaData {
     
-    private final List<QueryResultRowMetaData> columns;
+    private final List<QueryResultColumnMetaData> columns;
+    
+    public int getColumnCount() {
+        return columns.size();
+    }
+    
+    public String getTableName(final int columnIndex) {
+        return columns.get(columnIndex).getTableName();
+    }
+    
+    public String getColumnName(final int columnIndex) {
+        return columns.get(columnIndex).getName();
+    }
+    
+    public String getColumnLabel(final int columnIndex) {
+        return columns.get(columnIndex).getLabel();
+    }
+    
+    public int getColumnType(final int columnIndex) {
+        return columns.get(columnIndex).getType();
+    }
+    
+    public String getColumnTypeName(final int columnIndex) {
+        return columns.get(columnIndex).getTypeName();
+    }
+    
+    public int getColumnLength(final int columnIndex) {
+        return columns.get(columnIndex).getLength();
+    }
+    
+    public int getDecimals(final int columnIndex) {
+        return columns.get(columnIndex).getDecimals();
+    }
+    
+    public boolean isSigned(final int columnIndex) {
+        return columns.get(columnIndex).isSigned();
+    }
+    
+    public boolean isNotNull(final int columnIndex) {
+        return columns.get(columnIndex).isNotNull();
+    }
+    
+    public boolean isAutoIncrement(final int columnIndex) {
+        return columns.get(columnIndex).isAutoIncrement();
+    }
 }

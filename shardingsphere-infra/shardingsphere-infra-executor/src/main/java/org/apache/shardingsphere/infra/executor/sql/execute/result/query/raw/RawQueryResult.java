@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata.QueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.row.QueryResultDataRow;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,11 +38,11 @@ public final class RawQueryResult implements QueryResult {
     
     private final QueryResultMetaData metaData;
     
-    private final Iterator<QueryResultRow> rows;
+    private final Iterator<QueryResultDataRow> rows;
     
-    private QueryResultRow currentRow;
+    private QueryResultDataRow currentRow;
     
-    public RawQueryResult(final QueryResultMetaData metaData, final List<QueryResultRow> rows) {
+    public RawQueryResult(final QueryResultMetaData metaData, final List<QueryResultDataRow> rows) {
         this.metaData = metaData;
         this.rows = rows.iterator();
     }
@@ -88,56 +89,56 @@ public final class RawQueryResult implements QueryResult {
     
     @Override
     public int getColumnCount() {
-        return metaData.getColumns().size();
+        return metaData.getColumnCount();
     }
     
     @Override
     public String getTableName(final int columnIndex) {
-        return metaData.getColumns().get(columnIndex).getTableName();
+        return metaData.getTableName(columnIndex);
     }
     
     @Override
     public String getColumnName(final int columnIndex) {
-        return metaData.getColumns().get(columnIndex).getName();
+        return metaData.getColumnName(columnIndex);
     }
     
     @Override
     public String getColumnLabel(final int columnIndex) {
-        return metaData.getColumns().get(columnIndex).getLabel();
+        return metaData.getColumnLabel(columnIndex);
     }
     
     @Override
     public int getColumnType(final int columnIndex) {
-        return metaData.getColumns().get(columnIndex).getType();
+        return metaData.getColumnType(columnIndex);
     }
     
     @Override
     public String getColumnTypeName(final int columnIndex) {
-        return metaData.getColumns().get(columnIndex).getTypeName();
+        return metaData.getColumnTypeName(columnIndex);
     }
     
     @Override
     public int getColumnLength(final int columnIndex) {
-        return metaData.getColumns().get(columnIndex).getLength();
+        return metaData.getColumnLength(columnIndex);
     }
     
     @Override
     public int getDecimals(final int columnIndex) {
-        return metaData.getColumns().get(columnIndex).getDecimals();
+        return metaData.getDecimals(columnIndex);
     }
     
     @Override
     public boolean isSigned(final int columnIndex) {
-        return metaData.getColumns().get(columnIndex).isSigned();
+        return metaData.isSigned(columnIndex);
     }
     
     @Override
     public boolean isNotNull(final int columnIndex) {
-        return metaData.getColumns().get(columnIndex).isNotNull();
+        return metaData.isNotNull(columnIndex);
     }
     
     @Override
     public boolean isAutoIncrement(final int columnIndex) {
-        return metaData.getColumns().get(columnIndex).isAutoIncrement();
+        return metaData.isAutoIncrement(columnIndex);
     }
 }

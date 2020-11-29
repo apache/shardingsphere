@@ -15,35 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.row;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 /**
- * Query result row meta data.
+ * Query result data row.
  */
 @RequiredArgsConstructor
 @Getter
-public final class QueryResultRowMetaData {
+public final class QueryResultDataRow {
     
-    private final String tableName;
-    
-    private final String name;
-    
-    private final String label;
-    
-    private final int type;
-    
-    private final String typeName;
-    
-    private final int length;
-    
-    private final int decimals;
-    
-    private final boolean signed;
-    
-    private final boolean notNull;
-    
-    private final boolean autoIncrement;
+    private final List<Object> value;
 }

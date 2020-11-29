@@ -19,10 +19,10 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.QueryResultRow;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.row.QueryResultDataRow;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.RawQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata.QueryResultMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata.QueryResultRowMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata.QueryResultColumnMetaData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -54,10 +54,10 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
         if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
             return result;
         }
-        QueryResultMetaData metaData = new QueryResultMetaData(Collections.singletonList(new QueryResultRowMetaData(
+        QueryResultMetaData metaData = new QueryResultMetaData(Collections.singletonList(new QueryResultColumnMetaData(
                 null, result.getQueryHeaders().get(0).getColumnName(), result.getQueryHeaders().get(0).getColumnLabel(), Types.VARCHAR, "VARCHAR", 255, 0, false, false, false)));
         Collection<String> allTableNames = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getSchema().getAllTableNames();
-        List<QueryResultRow> rows = allTableNames.stream().map(each -> new QueryResultRow(Collections.singletonList(each))).collect(Collectors.toList());
+        List<QueryResultDataRow> rows = allTableNames.stream().map(each -> new QueryResultDataRow(Collections.singletonList(each))).collect(Collectors.toList());
         QueryResult queryResult = new RawQueryResult(metaData, rows);
         result.getQueryResults().add(queryResult);
         queryResponse = result;
