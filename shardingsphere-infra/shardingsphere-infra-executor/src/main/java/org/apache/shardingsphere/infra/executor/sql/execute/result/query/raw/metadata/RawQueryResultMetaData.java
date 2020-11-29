@@ -17,60 +17,70 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.raw.metadata;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 
 import java.util.List;
 
 /**
- * Query result meta data.
+ * Raw query result meta data.
  */
 @RequiredArgsConstructor
-@Getter
-public final class QueryResultMetaData {
+public final class RawQueryResultMetaData implements QueryResultMetaData {
     
     private final List<QueryResultColumnMetaData> columns;
     
+    @Override
     public int getColumnCount() {
         return columns.size();
     }
     
+    @Override
     public String getTableName(final int columnIndex) {
         return columns.get(columnIndex).getTableName();
     }
     
+    @Override
     public String getColumnName(final int columnIndex) {
         return columns.get(columnIndex).getName();
     }
     
+    @Override
     public String getColumnLabel(final int columnIndex) {
         return columns.get(columnIndex).getLabel();
     }
     
+    @Override
     public int getColumnType(final int columnIndex) {
         return columns.get(columnIndex).getType();
     }
     
+    @Override
     public String getColumnTypeName(final int columnIndex) {
         return columns.get(columnIndex).getTypeName();
     }
     
+    @Override
     public int getColumnLength(final int columnIndex) {
         return columns.get(columnIndex).getLength();
     }
     
+    @Override
     public int getDecimals(final int columnIndex) {
         return columns.get(columnIndex).getDecimals();
     }
     
+    @Override
     public boolean isSigned(final int columnIndex) {
         return columns.get(columnIndex).isSigned();
     }
     
+    @Override
     public boolean isNotNull(final int columnIndex) {
         return columns.get(columnIndex).isNotNull();
     }
     
+    @Override
     public boolean isAutoIncrement(final int columnIndex) {
         return columns.get(columnIndex).isAutoIncrement();
     }
