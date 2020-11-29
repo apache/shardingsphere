@@ -141,14 +141,17 @@ public final class ProxySQLExecutor {
         int columnCount = executeResultSample.getMetaData().getColumnCount();
         List<QueryHeader> queryHeaders = new ArrayList<>(columnCount);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            if (hasSelectExpandProjections(executionContext.getSqlStatementContext())) {
-                queryHeaders.add(QueryHeaderBuilder.build(
-                        ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), executeResultSample, metaData, columnIndex));
-            } else {
-                queryHeaders.add(QueryHeaderBuilder.build(executeResultSample, metaData, columnIndex));
-            }
+            queryHeaders.add(createQueryHeader(executionContext, executeResultSample, metaData, columnIndex));
         }
         return getQueryResponses(queryHeaders, executeResults);
+    }
+    
+    private QueryHeader createQueryHeader(final ExecutionContext executionContext, 
+                                          final QueryResult executeResultSample, final ShardingSphereMetaData metaData, final int columnIndex) throws SQLException {
+        if (hasSelectExpandProjections(executionContext.getSqlStatementContext())) {
+            return QueryHeaderBuilder.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), executeResultSample, metaData, columnIndex);
+        }
+        return QueryHeaderBuilder.build(executeResultSample, metaData, columnIndex);
     }
     
     private BackendResponse getQueryResponses(final List<QueryHeader> queryHeaders, final Collection<ExecuteResult> executeResults) {
