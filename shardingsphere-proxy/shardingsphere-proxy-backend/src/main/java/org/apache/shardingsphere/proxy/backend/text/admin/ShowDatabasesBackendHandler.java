@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 
@@ -44,9 +44,9 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     private MergedResult mergedResult;
     
     @Override
-    public BackendResponse execute() {
+    public ResponseHeader execute() {
         mergedResult = new SingleLocalDataMergedResult(getSchemaNames());
-        return new QueryResponse(Collections.singletonList(
+        return new QueryResponseHeader(Collections.singletonList(
                 new QueryHeader("information_schema", "SCHEMATA", "Database", "SCHEMA_NAME", 100, Types.VARCHAR, "VARCHAR", 0, false, false, false, false)));
     }
     

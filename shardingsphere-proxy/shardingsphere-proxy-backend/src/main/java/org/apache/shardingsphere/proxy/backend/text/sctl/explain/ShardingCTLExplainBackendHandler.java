@@ -24,14 +24,14 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -62,7 +62,7 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
     private Iterator<ExecutionUnit> executionUnits;
     
     @Override
-    public BackendResponse execute() {
+    public ResponseHeader execute() {
         Optional<ShardingCTLExplainStatement> explainStatement = new ShardingCTLExplainParser(sql).doParse();
         if (!explainStatement.isPresent()) {
             throw new InvalidShardingCTLFormatException(sql);
@@ -76,7 +76,7 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
         queryHeaders = new ArrayList<>(2);
         queryHeaders.add(new QueryHeader("", "", "datasource_name", "", 255, Types.CHAR, "CHAR", 0, false, false, false, false));
         queryHeaders.add(new QueryHeader("", "", "sql", "", 255, Types.CHAR, "CHAR", 0, false, false, false, false));
-        return new QueryResponse(queryHeaders);
+        return new QueryResponseHeader(queryHeaders);
     }
     
     private LogicSQL createLogicSQL(final ShardingSphereMetaData metaData, final ShardingCTLExplainStatement explainStatement) {

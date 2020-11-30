@@ -25,7 +25,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -50,7 +50,7 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Override
-    public BackendResponse execute() throws SQLException {
+    public ResponseHeader execute() throws SQLException {
         if (null == backendConnection.getSchemaName()) {
             Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap();
             if (metaDataMap.isEmpty()) {
@@ -73,6 +73,6 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public Collection<Object> getRowData() throws SQLException {
-        return databaseCommunicationEngine.getQueryData().getData();
+        return databaseCommunicationEngine.getQueryResponseData().getData();
     }
 }

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response;
+package org.apache.shardingsphere.proxy.backend.response.header;
 
 /**
- * Backend response.
+ * Response header.
  */
-public interface BackendResponse {
+public interface ResponseHeader {
 }

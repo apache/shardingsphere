@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response.update;
+package org.apache.shardingsphere.proxy.backend.response.header.update;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -29,9 +29,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Update response.
+ * Update response header.
  */
-public final class UpdateResponse implements BackendResponse {
+public final class UpdateResponseHeader implements ResponseHeader {
     
     private final List<Integer> updateCounts = new LinkedList<>();
     
@@ -45,11 +45,11 @@ public final class UpdateResponse implements BackendResponse {
     @Setter
     private String type;
     
-    public UpdateResponse() {
+    public UpdateResponseHeader() {
         this(Collections.emptyList());
     }
     
-    public UpdateResponse(final Collection<ExecuteResult> executeResults) {
+    public UpdateResponseHeader(final Collection<ExecuteResult> executeResults) {
         for (ExecuteResult each : executeResults) {
             updateCount = ((UpdateResult) each).getUpdateCount();
             updateCounts.add(((UpdateResult) each).getUpdateCount());

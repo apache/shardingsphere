@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor;
 
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintAddTableShardingValueCommand;
 
@@ -28,8 +28,8 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.H
 public final class HintAddTableShardingValueExecutor extends AbstractHintUpdateExecutor<HintAddTableShardingValueCommand> {
     
     @Override
-    public BackendResponse execute(final HintAddTableShardingValueCommand command) {
+    public ResponseHeader execute(final HintAddTableShardingValueCommand command) {
         HintManagerHolder.get().addTableShardingValue(command.getLogicTable(), command.getValue());
-        return new UpdateResponse();
+        return new UpdateResponseHeader();
     }
 }

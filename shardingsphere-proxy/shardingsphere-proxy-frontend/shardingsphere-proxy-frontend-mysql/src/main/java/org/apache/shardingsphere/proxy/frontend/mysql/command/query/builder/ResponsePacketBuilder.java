@@ -26,9 +26,9 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLFie
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -44,13 +44,13 @@ public final class ResponsePacketBuilder {
     /**
      * Build query response packets.
      * 
-     * @param queryResponse query response
+     * @param queryResponseHeader query response header
      * @return query response packets
      */
-    public static Collection<DatabasePacket<?>> buildQueryResponsePackets(final QueryResponse queryResponse) {
+    public static Collection<DatabasePacket<?>> buildQueryResponsePackets(final QueryResponseHeader queryResponseHeader) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         int sequenceId = 0;
-        List<QueryHeader> queryHeader = queryResponse.getQueryHeaders();
+        List<QueryHeader> queryHeader = queryResponseHeader.getQueryHeaders();
         result.add(new MySQLFieldCountPacket(++sequenceId, queryHeader.size()));
         for (QueryHeader each : queryHeader) {
             result.add(new MySQLColumnDefinition41Packet(++sequenceId, getColumnFieldDetailFlag(each), each.getSchema(), each.getTable(), each.getTable(),
@@ -80,10 +80,10 @@ public final class ResponsePacketBuilder {
     /**
      * Build update response packets.
      * 
-     * @param updateResponse update response
+     * @param updateResponseHeader update response header
      * @return update response packets
      */
-    public static Collection<DatabasePacket<?>> buildUpdateResponsePackets(final UpdateResponse updateResponse) {
-        return Collections.singletonList(new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId()));
+    public static Collection<DatabasePacket<?>> buildUpdateResponsePackets(final UpdateResponseHeader updateResponseHeader) {
+        return Collections.singletonList(new MySQLOKPacket(1, updateResponseHeader.getUpdateCount(), updateResponseHeader.getLastInsertId()));
     }
 }

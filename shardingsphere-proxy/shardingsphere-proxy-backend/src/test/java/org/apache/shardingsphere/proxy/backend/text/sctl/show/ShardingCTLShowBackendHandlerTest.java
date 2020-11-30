@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.sctl.show;
 
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -40,9 +40,9 @@ public final class ShardingCTLShowBackendHandlerTest {
     public void assertShowTransactionType() throws SQLException {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show transaction_type", backendConnection);
-        BackendResponse actual = backendHandler.execute();
-        assertThat(actual, instanceOf(QueryResponse.class));
-        assertThat(((QueryResponse) actual).getQueryHeaders().size(), is(1));
+        ResponseHeader actual = backendHandler.execute();
+        assertThat(actual, instanceOf(QueryResponseHeader.class));
+        assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(1));
         backendHandler.next();
         Collection<Object> rowData = backendHandler.getRowData();
         assertThat(rowData.iterator().next(), is("LOCAL"));
@@ -52,9 +52,9 @@ public final class ShardingCTLShowBackendHandlerTest {
     public void assertShowCachedConnections() throws SQLException {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show cached_connections", backendConnection);
-        BackendResponse actual = backendHandler.execute();
-        assertThat(actual, instanceOf(QueryResponse.class));
-        assertThat(((QueryResponse) actual).getQueryHeaders().size(), is(1));
+        ResponseHeader actual = backendHandler.execute();
+        assertThat(actual, instanceOf(QueryResponseHeader.class));
+        assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(1));
         backendHandler.next();
         Collection<Object> rowData = backendHandler.getRowData();
         assertThat(rowData.iterator().next(), is(0));
