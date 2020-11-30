@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateA
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Sharding scaling out job.
@@ -37,7 +38,7 @@ import java.util.List;
 @Setter
 public final class ShardingScalingJob {
     
-    private static SnowflakeKeyGenerateAlgorithm idAutoIncreaseGenerator;
+    private static final SnowflakeKeyGenerateAlgorithm ID_AUTO_INCREASE_GENERATOR = initIdAutoIncreaseGenerator();
     
     private long jobId;
     
@@ -56,28 +57,27 @@ public final class ShardingScalingJob {
     private String status = SyncTaskControlStatus.RUNNING.name();
     
     public ShardingScalingJob() {
-        initIdAutoIncreaseGenerator();
-        jobId = (Long) idAutoIncreaseGenerator.generateKey();
+        this(generateKey());
+    }
+    
+    public ShardingScalingJob(final long jobId) {
+        this.jobId = jobId;
     }
     
     public ShardingScalingJob(final ScalingConfiguration scalingConfig) {
-        this();
+        this(Optional.ofNullable(scalingConfig.getJobConfiguration().getJobId()).orElse(generateKey()));
         this.scalingConfig = scalingConfig;
-        jobId = null != scalingConfig.getJobConfiguration().getJobId() ? scalingConfig.getJobConfiguration().getJobId() : jobId;
         shardingItem = scalingConfig.getJobConfiguration().getShardingItem();
         syncConfigs.addAll(SyncConfigurationUtil.toSyncConfigs(scalingConfig));
     }
     
-    private static void initIdAutoIncreaseGenerator() {
-        if (null != idAutoIncreaseGenerator) {
-            return;
-        }
-        synchronized (ShardingScalingJob.class) {
-            if (null != idAutoIncreaseGenerator) {
-                return;
-            }
-            idAutoIncreaseGenerator = new SnowflakeKeyGenerateAlgorithm();
-            idAutoIncreaseGenerator.init();
-        }
+    private static SnowflakeKeyGenerateAlgorithm initIdAutoIncreaseGenerator() {
+        SnowflakeKeyGenerateAlgorithm result = new SnowflakeKeyGenerateAlgorithm();
+        result.init();
+        return result;
+    }
+    
+    private static Long generateKey() {
+        return (Long) ID_AUTO_INCREASE_GENERATOR.generateKey();
     }
 }

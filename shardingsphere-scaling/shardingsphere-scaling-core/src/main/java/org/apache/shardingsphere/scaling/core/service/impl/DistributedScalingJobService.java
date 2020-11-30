@@ -76,7 +76,7 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
     
     @Override
     public ShardingScalingJob getJob(final long jobId) {
-        ShardingScalingJob result = new ShardingScalingJob();
+        ShardingScalingJob result = new ShardingScalingJob(jobId);
         result.setScalingConfig(GSON.fromJson(REGISTRY_REPOSITORY.get(ScalingTaskUtil.getScalingListenerPath(jobId, ScalingConstant.CONFIG)), ScalingConfiguration.class));
         return result;
     }
