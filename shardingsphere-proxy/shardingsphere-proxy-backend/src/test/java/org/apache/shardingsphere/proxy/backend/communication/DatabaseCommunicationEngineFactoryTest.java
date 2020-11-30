@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc;
+package org.apache.shardingsphere.proxy.backend.communication;
 
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -23,8 +23,6 @@ import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataCon
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -69,7 +67,7 @@ public final class DatabaseCommunicationEngineFactoryTest {
         DatabaseCommunicationEngine engine =
                 DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(mock(SQLStatement.class), "schemaName", backendConnection);
         assertNotNull(engine);
-        assertThat(engine, instanceOf(JDBCDatabaseCommunicationEngine.class));
+        assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
     }
     
     @Test
@@ -79,6 +77,6 @@ public final class DatabaseCommunicationEngineFactoryTest {
         DatabaseCommunicationEngine engine =
                 DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(SQLStatement.class), "schemaName", Collections.emptyList(), backendConnection);
         assertNotNull(engine);
-        assertThat(engine, instanceOf(JDBCDatabaseCommunicationEngine.class));
+        assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
     }
 }

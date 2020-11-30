@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.builder.JDBCExecutionUnitBuilderType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -62,7 +61,7 @@ public final class DatabaseCommunicationEngineFactory {
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
         LogicSQL logicSQL = createLogicSQL(sqlStatement, sql, Collections.emptyList(), metaData);
         ProxySQLExecutor proxySQLExecutor = new ProxySQLExecutor(JDBCExecutionUnitBuilderType.STATEMENT, backendConnection);
-        return new JDBCDatabaseCommunicationEngine(logicSQL, metaData, proxySQLExecutor);
+        return new DatabaseCommunicationEngine(logicSQL, metaData, proxySQLExecutor);
     }
     
     /**
@@ -78,7 +77,7 @@ public final class DatabaseCommunicationEngineFactory {
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
         LogicSQL logicSQL = createLogicSQL(sqlStatement, sql, new ArrayList<>(parameters), metaData);
         ProxySQLExecutor proxySQLExecutor = new ProxySQLExecutor(JDBCExecutionUnitBuilderType.PREPARED_STATEMENT, backendConnection);
-        return new JDBCDatabaseCommunicationEngine(logicSQL, metaData, proxySQLExecutor);
+        return new DatabaseCommunicationEngine(logicSQL, metaData, proxySQLExecutor);
     }
     
     private LogicSQL createLogicSQL(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final ShardingSphereMetaData metaData) {
