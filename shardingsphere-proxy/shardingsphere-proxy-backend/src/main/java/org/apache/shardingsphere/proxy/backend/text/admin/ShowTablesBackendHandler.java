@@ -66,7 +66,7 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
     
     private QueryResponse createQueryResponse(final String schemaName) {
         String column = String.format("Tables_in_%s", schemaName);
-        return new QueryResponse(Collections.singletonList(new QueryHeader(schemaName, "", column, column, 64, Types.VARCHAR, 0, false, false, false, false)));
+        return new QueryResponse(Collections.singletonList(new QueryHeader(schemaName, "", column, column, 64, Types.VARCHAR, "VARCHAR", 0, false, false, false, false)));
     }
     
     @Override

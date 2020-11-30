@@ -91,7 +91,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
         response = proxySQLExecutor.execute(executionContext);
         refreshSchema(executionContext);
-        return merge(executionContext.getSqlStatementContext());
+        merge(executionContext.getSqlStatementContext());
+        return response;
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -114,13 +115,12 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(schemaName, schema));
     }
     
-    private BackendResponse merge(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
+    private void merge(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         if (response instanceof UpdateResponse) {
             mergeUpdateCount(sqlStatementContext);
-            return response;
+            return;
         }
         mergedResult = mergeQuery(sqlStatementContext, ((QueryResponse) response).getQueryResults());
-        return response;
     }
     
     private void mergeUpdateCount(final SQLStatementContext<?> sqlStatementContext) {

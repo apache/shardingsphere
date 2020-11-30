@@ -81,11 +81,12 @@ public final class QueryHeaderBuilder {
         String columnLabel = queryResult.getMetaData().getColumnLabel(columnIndex);
         int columnLength = queryResult.getMetaData().getColumnLength(columnIndex);
         int columnType = queryResult.getMetaData().getColumnType(columnIndex);
+        String columnTypeName = queryResult.getMetaData().getColumnTypeName(columnIndex);
         int decimals = queryResult.getMetaData().getDecimals(columnIndex);
         boolean signed = queryResult.getMetaData().isSigned(columnIndex);
         boolean notNull = queryResult.getMetaData().isNotNull(columnIndex);
         boolean autoIncrement = queryResult.getMetaData().isAutoIncrement(columnIndex);
-        return new QueryHeader(schemaName, tableName, columnLabel, columnName, columnLength, columnType, decimals, signed, primaryKey, notNull, autoIncrement);
+        return new QueryHeader(schemaName, tableName, columnLabel, columnName, columnLength, columnType, columnTypeName, decimals, signed, primaryKey, notNull, autoIncrement);
     }
     
     private static String getColumnName(final ProjectionsContext projectionsContext, final QueryResult queryResult, final int columnIndex) throws SQLException {
