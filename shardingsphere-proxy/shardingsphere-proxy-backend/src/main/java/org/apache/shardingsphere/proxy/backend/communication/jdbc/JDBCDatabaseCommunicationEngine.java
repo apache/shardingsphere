@@ -97,26 +97,24 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
         Collection<ExecuteResult> executeResults = proxySQLExecutor.execute(executionContext);
         ExecuteResult executeResultSample = executeResults.iterator().next();
-        BackendResponse result;
         if (executeResultSample instanceof QueryResult) {
-            result = processExecuteQuery(executionContext, executeResults, (QueryResult) executeResultSample);
-            queryHeaders = ((QueryResponse) result).getQueryHeaders();
-        } else {
-            result = processExecuteUpdate(executionContext, executeResults);
-            queryHeaders = Collections.emptyList();
-            refreshSchema(executionContext);
+            queryHeaders = createQueryHeaders(executionContext, (QueryResult) executeResultSample);
+            mergedResult = mergeQuery(executionContext.getSqlStatementContext(), executeResults.stream().map(each -> (QueryResult) each).collect(Collectors.toList()));
+            return new QueryResponse(queryHeaders);
         }
-        merge(executionContext.getSqlStatementContext(), result);
+        UpdateResponse result = createUpdateResponse(executionContext, executeResults);
+        refreshSchema(executionContext);
+        mergeUpdateCount(executionContext.getSqlStatementContext(), result);
         return result;
     }
     
-    private BackendResponse processExecuteQuery(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults, final QueryResult executeResultSample) throws SQLException {
+    private List<QueryHeader> createQueryHeaders(final ExecutionContext executionContext, final QueryResult executeResultSample) throws SQLException {
         int columnCount = executeResultSample.getMetaData().getColumnCount();
-        List<QueryHeader> queryHeaders = new ArrayList<>(columnCount);
+        List<QueryHeader> result = new ArrayList<>(columnCount);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            queryHeaders.add(createQueryHeader(executionContext, executeResultSample, metaData, columnIndex));
+            result.add(createQueryHeader(executionContext, executeResultSample, metaData, columnIndex));
         }
-        return createQueryResponse(queryHeaders, executeResults);
+        return result;
     }
     
     private QueryHeader createQueryHeader(final ExecutionContext executionContext,
@@ -130,15 +128,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
     }
     
-    private BackendResponse createQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResult> executeResults) {
-        QueryResponse result = new QueryResponse(queryHeaders);
-        for (ExecuteResult each : executeResults) {
-            result.getQueryResults().add((QueryResult) each);
-        }
-        return result;
-    }
-    
-    private UpdateResponse processExecuteUpdate(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults) {
+    private UpdateResponse createUpdateResponse(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults) {
         UpdateResponse result = new UpdateResponse(executeResults);
         if (executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement) {
             result.setType("INSERT");
@@ -170,12 +160,10 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(schemaName, schema));
     }
     
-    private void merge(final SQLStatementContext<?> sqlStatementContext, final BackendResponse response) throws SQLException {
-        if (response instanceof UpdateResponse) {
-            mergeUpdateCount(sqlStatementContext, (UpdateResponse) response);
-            return;
-        }
-        mergedResult = mergeQuery(sqlStatementContext, ((QueryResponse) response).getQueryResults());
+    private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+        MergeEngine mergeEngine = new MergeEngine(ProxyContext.getInstance().getMetaDataContexts().getDatabaseType(),
+                metaData.getSchema(), ProxyContext.getInstance().getMetaDataContexts().getProps(), metaData.getRuleMetaData().getRules());
+        return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
     private void mergeUpdateCount(final SQLStatementContext<?> sqlStatementContext, final UpdateResponse response) {
@@ -188,12 +176,6 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         Optional<DataNodeContainedRule> dataNodeContainedRule = 
                 metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
         return dataNodeContainedRule.isPresent() && dataNodeContainedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
-    }
-    
-    private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(ProxyContext.getInstance().getMetaDataContexts().getDatabaseType(), 
-                metaData.getSchema(), ProxyContext.getInstance().getMetaDataContexts().getProps(), metaData.getRuleMetaData().getRules());
-        return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
     @Override
