@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text;
 
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -33,7 +33,7 @@ public interface TextProtocolBackendHandler {
      * @return backend response
      * @throws SQLException SQL exception
      */
-    BackendResponse execute() throws SQLException;
+    ResponseHeader execute() throws SQLException;
     
     /**
      * Goto next result value.

@@ -40,12 +40,12 @@ import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.ProxySQLExecutor;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryHeaderBuilder;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryData;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -78,7 +78,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     private MergedResult mergedResult;
     
     @Override
-    public BackendResponse execute() throws SQLException {
+    public ResponseHeader execute() throws SQLException {
         ExecutionContext executionContext = kernelProcessor.generateExecutionContext(logicSQL, metaData, ProxyContext.getInstance().getMetaDataContexts().getProps());
         logSQL(executionContext);
         return doExecute(executionContext);
@@ -90,9 +90,9 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
     }
     
-    private BackendResponse doExecute(final ExecutionContext executionContext) throws SQLException {
+    private ResponseHeader doExecute(final ExecutionContext executionContext) throws SQLException {
         if (executionContext.getExecutionUnits().isEmpty()) {
-            return new UpdateResponse();
+            return new UpdateResponseHeader();
         }
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
         Collection<ExecuteResult> executeResults = proxySQLExecutor.execute(executionContext);
@@ -101,10 +101,11 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
                 ? processExecuteQuery(executionContext, executeResults, (QueryResult) executeResultSample) : processExecuteUpdate(executionContext, executeResults);
     }
     
-    private QueryResponse processExecuteQuery(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults, final QueryResult executeResultSample) throws SQLException {
+    private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, 
+                                                    final Collection<ExecuteResult> executeResults, final QueryResult executeResultSample) throws SQLException {
         queryHeaders = createQueryHeaders(executionContext, executeResultSample);
         mergedResult = mergeQuery(executionContext.getSqlStatementContext(), executeResults.stream().map(each -> (QueryResult) each).collect(Collectors.toList()));
-        return new QueryResponse(queryHeaders);
+        return new QueryResponseHeader(queryHeaders);
     }
     
     private List<QueryHeader> createQueryHeaders(final ExecutionContext executionContext, final QueryResult executeResultSample) throws SQLException {
@@ -133,15 +134,15 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
-    private UpdateResponse processExecuteUpdate(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults) throws SQLException {
-        UpdateResponse result = createUpdateResponse(executionContext, executeResults);
+    private UpdateResponseHeader processExecuteUpdate(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults) throws SQLException {
+        UpdateResponseHeader result = createUpdateResponse(executionContext, executeResults);
         refreshSchema(executionContext);
         mergeUpdateCount(executionContext.getSqlStatementContext(), result);
         return result;
     }
     
-    private UpdateResponse createUpdateResponse(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults) {
-        UpdateResponse result = new UpdateResponse(executeResults);
+    private UpdateResponseHeader createUpdateResponse(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults) {
+        UpdateResponseHeader result = new UpdateResponseHeader(executeResults);
         if (executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement) {
             result.setType("INSERT");
         } else if (executionContext.getSqlStatementContext().getSqlStatement() instanceof DeleteStatement) {
@@ -172,7 +173,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(schemaName, schema));
     }
     
-    private void mergeUpdateCount(final SQLStatementContext<?> sqlStatementContext, final UpdateResponse response) {
+    private void mergeUpdateCount(final SQLStatementContext<?> sqlStatementContext, final UpdateResponseHeader response) {
         if (isNeedAccumulate(sqlStatementContext)) {
             response.mergeUpdateCount();
         }

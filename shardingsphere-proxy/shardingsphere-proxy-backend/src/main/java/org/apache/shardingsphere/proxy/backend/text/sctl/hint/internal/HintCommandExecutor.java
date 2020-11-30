@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal;
 
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryData;
 
 import java.sql.SQLException;
 
@@ -33,7 +33,7 @@ public interface HintCommandExecutor<T extends HintCommand> {
      * @param hintCommand hint command
      * @return backend response
      */
-    BackendResponse execute(T hintCommand);
+    ResponseHeader execute(T hintCommand);
     
     /**
      * Goto next result value.

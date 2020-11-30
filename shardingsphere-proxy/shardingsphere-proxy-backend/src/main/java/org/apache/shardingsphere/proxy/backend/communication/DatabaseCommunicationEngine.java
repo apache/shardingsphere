@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.communication;
 
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryData;
 
 import java.sql.SQLException;
 
@@ -33,7 +33,7 @@ public interface DatabaseCommunicationEngine {
      * @return backend response
      * @throws SQLException SQL exception
      */
-    BackendResponse execute() throws SQLException;
+    ResponseHeader execute() throws SQLException;
     
     /**
      * Goto next result value.

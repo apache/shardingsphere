@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor;
 
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintSetPrimaryOnlyCommand;
 
@@ -28,10 +28,10 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.H
 public final class HintSetPrimaryOnlyExecutor extends AbstractHintUpdateExecutor<HintSetPrimaryOnlyCommand> {
     
     @Override
-    public BackendResponse execute(final HintSetPrimaryOnlyCommand command) {
+    public ResponseHeader execute(final HintSetPrimaryOnlyCommand command) {
         if (command.isPrimaryOnly()) {
             HintManagerHolder.get().setPrimaryRouteOnly();
         }
-        return new UpdateResponse();
+        return new UpdateResponseHeader();
     }
 }

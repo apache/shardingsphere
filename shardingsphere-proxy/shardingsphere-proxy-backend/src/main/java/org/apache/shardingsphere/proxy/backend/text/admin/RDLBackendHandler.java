@@ -37,8 +37,8 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
@@ -65,53 +65,53 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     private final SQLStatement sqlStatement;
     
     @Override
-    public BackendResponse execute() throws SQLException {
+    public ResponseHeader execute() throws SQLException {
         SQLStatementContext<?> context = getSQLStatementContext();
         if (!isRegistryCenterExisted()) {
             throw new SQLException(String.format("No Registry center to execute `%s` SQL", context.getClass().getSimpleName()));
         }
-        return getBackendResponse(context);
+        return getResponseHeader(context);
     }
     
-    private BackendResponse execute(final CreateDatabaseStatementContext context) {
+    private ResponseHeader execute(final CreateDatabaseStatementContext context) {
         if (ProxyContext.getInstance().getAllSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
             throw new DBCreateExistsException(context.getSqlStatement().getDatabaseName());
         }
         // TODO Need to get the executed feedback from registry center for returning.
         GovernanceEventBus.getInstance().post(new SchemaNamePersistEvent(context.getSqlStatement().getDatabaseName(), false));
-        UpdateResponse result = new UpdateResponse();
+        UpdateResponseHeader result = new UpdateResponseHeader();
         result.setType("CREATE");
         return result;
     }
     
-    private BackendResponse execute(final DropDatabaseStatementContext context) {
+    private ResponseHeader execute(final DropDatabaseStatementContext context) {
         if (!ProxyContext.getInstance().getAllSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
             throw new DBCreateExistsException(context.getSqlStatement().getDatabaseName());
         }
         // TODO Need to get the executed feedback from registry center for returning.
         GovernanceEventBus.getInstance().post(new SchemaNamePersistEvent(context.getSqlStatement().getDatabaseName(), true));
-        UpdateResponse result = new UpdateResponse();
+        UpdateResponseHeader result = new UpdateResponseHeader();
         result.setType("DROP");
         return result;
     }
     
-    private BackendResponse execute(final CreateDataSourcesStatementContext context) {
+    private ResponseHeader execute(final CreateDataSourcesStatementContext context) {
         Map<String, YamlDataSourceParameter> parameters = CreateDataSourcesStatementContextConverter.convert(context);
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(parameters));
         // TODO Need to get the executed feedback from registry center for returning.
         GovernanceEventBus.getInstance().post(new DataSourcePersistEvent(backendConnection.getSchemaName(), dataSources));
-        UpdateResponse result = new UpdateResponse();
+        UpdateResponseHeader result = new UpdateResponseHeader();
         result.setType("CREATE");
         return result;
     }
     
-    private BackendResponse execute(final CreateShardingRuleStatementContext context) {
+    private ResponseHeader execute(final CreateShardingRuleStatementContext context) {
         YamlShardingRuleConfiguration config = CreateShardingRuleStatementContextConverter.convert(context);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(config));
         // TODO Need to get the executed feedback from registry center for returning.
         GovernanceEventBus.getInstance().post(new RuleConfigurationsPersistEvent(backendConnection.getSchemaName(), rules));
-        UpdateResponse result = new UpdateResponse();
+        UpdateResponseHeader result = new UpdateResponseHeader();
         result.setType("CREATE");
         return result;
     }
@@ -130,7 +130,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         return new DropDatabaseStatementContext((DropDatabaseStatement) sqlStatement);
     }
     
-    private BackendResponse getBackendResponse(final SQLStatementContext<?> context) {
+    private ResponseHeader getResponseHeader(final SQLStatementContext<?> context) {
         if (context instanceof CreateDatabaseStatementContext) {
             return execute((CreateDatabaseStatementContext) context);
         }

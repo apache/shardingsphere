@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response.query;
+package org.apache.shardingsphere.proxy.backend.response.header.query;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 
 import java.util.List;
 
 /**
- * Query response.
+ * Query response header.
  */
 @RequiredArgsConstructor
 @Getter
-public final class QueryResponse implements BackendResponse {
+public final class QueryResponseHeader implements ResponseHeader {
     
     private final List<QueryHeader> queryHeaders;
 }

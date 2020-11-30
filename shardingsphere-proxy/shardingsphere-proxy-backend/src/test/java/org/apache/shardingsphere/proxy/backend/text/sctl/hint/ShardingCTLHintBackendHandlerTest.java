@@ -31,9 +31,9 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
@@ -90,7 +90,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         clearThreadLocal();
         String sql = "sctl:hint set primary_only=true ";
         ShardingCTLHintBackendHandler hintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
-        assertThat(hintBackendHandler.execute(), instanceOf(UpdateResponse.class));
+        assertThat(hintBackendHandler.execute(), instanceOf(UpdateResponseHeader.class));
         assertTrue(HintManager.isPrimaryRouteOnly());
     }
     
@@ -99,7 +99,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         clearThreadLocal();
         String sql = "sctl:hint set databaseShardingValue=100";
         ShardingCTLHintBackendHandler hintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
-        assertThat(hintBackendHandler.execute(), instanceOf(UpdateResponse.class));
+        assertThat(hintBackendHandler.execute(), instanceOf(UpdateResponseHeader.class));
         assertThat(HintManager.getDatabaseShardingValues().iterator().next().toString(), is("100"));
     }
     
@@ -108,7 +108,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         clearThreadLocal();
         String sql = "sctl:hint addDatabaseShardingValue user=100 ";
         ShardingCTLHintBackendHandler hintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
-        assertThat(hintBackendHandler.execute(), instanceOf(UpdateResponse.class));
+        assertThat(hintBackendHandler.execute(), instanceOf(UpdateResponseHeader.class));
         assertThat(HintManager.getDatabaseShardingValues("user").iterator().next().toString(), is("100"));
     }
     
@@ -117,7 +117,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         clearThreadLocal();
         String sql = "sctl:hint addTableShardingValue  user=100 ";
         ShardingCTLHintBackendHandler hintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
-        assertThat(hintBackendHandler.execute(), instanceOf(UpdateResponse.class));
+        assertThat(hintBackendHandler.execute(), instanceOf(UpdateResponseHeader.class));
         assertThat(HintManager.getTableShardingValues("user").iterator().next().toString(), is("100"));
     }
     
@@ -126,7 +126,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         clearThreadLocal();
         String sql = "sctl:hint clear ";
         ShardingCTLHintBackendHandler hintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
-        assertThat(hintBackendHandler.execute(), instanceOf(UpdateResponse.class));
+        assertThat(hintBackendHandler.execute(), instanceOf(UpdateResponseHeader.class));
         assertThat(HintManager.getInstance(), instanceOf(HintManager.class));
         HintManager.clear();
     }
@@ -136,10 +136,10 @@ public final class ShardingCTLHintBackendHandlerTest {
         clearThreadLocal();
         String sql = "sctl:hint show status";
         ShardingCTLHintBackendHandler defaultHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
-        BackendResponse backendResponse = defaultHintBackendHandler.execute();
-        assertThat(backendResponse, instanceOf(QueryResponse.class));
-        assertThat(((QueryResponse) backendResponse).getQueryHeaders().get(0).getColumnLabel(), is("primary_only"));
-        assertThat(((QueryResponse) backendResponse).getQueryHeaders().get(1).getColumnLabel(), is("sharding_type"));
+        ResponseHeader responseHeader = defaultHintBackendHandler.execute();
+        assertThat(responseHeader, instanceOf(QueryResponseHeader.class));
+        assertThat(((QueryResponseHeader) responseHeader).getQueryHeaders().get(0).getColumnLabel(), is("primary_only"));
+        assertThat(((QueryResponseHeader) responseHeader).getQueryHeaders().get(1).getColumnLabel(), is("sharding_type"));
         assertTrue(defaultHintBackendHandler.next());
         Iterator<Object> defaultRowData = defaultHintBackendHandler.getRowData().iterator();
         assertThat(defaultRowData.next().toString(), is("false"));
@@ -170,11 +170,11 @@ public final class ShardingCTLHintBackendHandlerTest {
                 new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new Authentication(), new ConfigurationProperties(props), new MySQLDatabaseType()));
         String sql = "sctl:hint show table status";
         ShardingCTLHintBackendHandler defaultHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
-        BackendResponse backendResponse = defaultHintBackendHandler.execute();
-        assertThat(backendResponse, instanceOf(QueryResponse.class));
-        assertThat(((QueryResponse) backendResponse).getQueryHeaders().get(0).getColumnLabel(), is("table_name"));
-        assertThat(((QueryResponse) backendResponse).getQueryHeaders().get(1).getColumnLabel(), is("database_sharding_values"));
-        assertThat(((QueryResponse) backendResponse).getQueryHeaders().get(2).getColumnLabel(), is("table_sharding_values"));
+        ResponseHeader responseHeader = defaultHintBackendHandler.execute();
+        assertThat(responseHeader, instanceOf(QueryResponseHeader.class));
+        assertThat(((QueryResponseHeader) responseHeader).getQueryHeaders().get(0).getColumnLabel(), is("table_name"));
+        assertThat(((QueryResponseHeader) responseHeader).getQueryHeaders().get(1).getColumnLabel(), is("database_sharding_values"));
+        assertThat(((QueryResponseHeader) responseHeader).getQueryHeaders().get(2).getColumnLabel(), is("table_sharding_values"));
         assertTrue(defaultHintBackendHandler.next());
         Iterator<Object> defaultRowData = defaultHintBackendHandler.getRowData().iterator();
         assertThat(defaultRowData.next().toString(), is("user"));

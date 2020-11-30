@@ -23,11 +23,11 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.me
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 import java.sql.SQLException;
@@ -49,8 +49,8 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
     private QueryResult queryResult;
     
     @Override
-    public BackendResponse execute() {
-        QueryResponse result = createQueryResponse(backendConnection.getSchemaName());
+    public ResponseHeader execute() {
+        QueryResponseHeader result = createQueryResponse(backendConnection.getSchemaName());
         if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
             return result;
         }
@@ -62,9 +62,9 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
         return result;
     }
     
-    private QueryResponse createQueryResponse(final String schemaName) {
+    private QueryResponseHeader createQueryResponse(final String schemaName) {
         String column = String.format("Tables_in_%s", schemaName);
-        return new QueryResponse(Collections.singletonList(new QueryHeader(schemaName, "", column, column, 64, Types.VARCHAR, "VARCHAR", 0, false, false, false, false)));
+        return new QueryResponseHeader(Collections.singletonList(new QueryHeader(schemaName, "", column, column, 64, Types.VARCHAR, "VARCHAR", 0, false, false, false, false)));
     }
     
     @Override
