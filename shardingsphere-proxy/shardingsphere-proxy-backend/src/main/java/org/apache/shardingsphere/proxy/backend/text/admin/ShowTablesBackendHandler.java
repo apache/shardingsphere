@@ -46,7 +46,7 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
     
     private final BackendConnection backendConnection;
     
-    private QueryResponse queryResponse;
+    private QueryResult queryResult;
     
     @Override
     public BackendResponse execute() {
@@ -58,9 +58,8 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
                 null, result.getQueryHeaders().get(0).getColumnName(), result.getQueryHeaders().get(0).getColumnLabel(), Types.VARCHAR, "VARCHAR", 255, 0, false, false, false)));
         Collection<String> allTableNames = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getSchema().getAllTableNames();
         List<MemoryQueryResultDataRow> rows = allTableNames.stream().map(each -> new MemoryQueryResultDataRow(Collections.singletonList(each))).collect(Collectors.toList());
-        QueryResult queryResult = new RawMemoryQueryResult(metaData, rows);
+        queryResult = new RawMemoryQueryResult(metaData, rows);
         result.getQueryResults().add(queryResult);
-        queryResponse = result;
         return result;
     }
     
@@ -71,14 +70,14 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
     
     @Override
     public boolean next() throws SQLException {
-        return null != queryResponse && queryResponse.getQueryResults().get(0).next();
+        return null != queryResult && queryResult.next();
     }
     
     @Override
     public Collection<Object> getRowData() throws SQLException {
         Collection<Object> result = new LinkedList<>();
-        for (int columnIndex = 1; columnIndex <= queryResponse.getQueryHeaders().size(); columnIndex++) {
-            result.add(queryResponse.getQueryResults().get(0).getValue(columnIndex, Object.class));
+        for (int columnIndex = 1; columnIndex <= queryResult.getMetaData().getColumnCount(); columnIndex++) {
+            result.add(queryResult.getValue(columnIndex, Object.class));
         }
         return result;
     }
