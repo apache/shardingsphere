@@ -38,7 +38,7 @@ import java.util.Optional;
 @Setter
 public final class ShardingScalingJob {
     
-    private static final SnowflakeKeyGenerateAlgorithm idAutoIncreaseGenerator = getIdAutoIncreaseGenerator();
+    private static final SnowflakeKeyGenerateAlgorithm ID_AUTO_INCREASE_GENERATOR = initIdAutoIncreaseGenerator();
     
     private long jobId;
     
@@ -71,13 +71,13 @@ public final class ShardingScalingJob {
         syncConfigs.addAll(SyncConfigurationUtil.toSyncConfigs(scalingConfig));
     }
     
-    private static SnowflakeKeyGenerateAlgorithm getIdAutoIncreaseGenerator() {
+    private static SnowflakeKeyGenerateAlgorithm initIdAutoIncreaseGenerator() {
         SnowflakeKeyGenerateAlgorithm result = new SnowflakeKeyGenerateAlgorithm();
         result.init();
         return result;
     }
     
     private static Long generateKey() {
-        return (Long) idAutoIncreaseGenerator.generateKey();
+        return (Long) ID_AUTO_INCREASE_GENERATOR.generateKey();
     }
 }
