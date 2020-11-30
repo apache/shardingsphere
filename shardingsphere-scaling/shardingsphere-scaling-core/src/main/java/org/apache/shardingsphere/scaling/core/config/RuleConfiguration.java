@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
@@ -45,13 +46,12 @@ public final class RuleConfiguration {
         this.target = new DataSourceConfigurationWrapper(target.getConfigType(), new Gson().toJsonTree(target));
     }
     
-    @NoArgsConstructor
-    @AllArgsConstructor
+    @RequiredArgsConstructor
     public static class DataSourceConfigurationWrapper {
         
-        private String type;
+        private final String type;
         
-        private JsonElement parameter;
+        private final JsonElement parameter;
         
         /**
          * Unwrap to {@code DataSourceConfiguration}.
