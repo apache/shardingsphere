@@ -20,9 +20,11 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
@@ -41,9 +43,13 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.query.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -89,10 +95,53 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             return new UpdateResponse();
         }
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
-        BackendResponse result = proxySQLExecutor.execute(executionContext);
+        Collection<ExecuteResult> executeResults = proxySQLExecutor.execute(executionContext);
+        ExecuteResult executeResultSample = executeResults.iterator().next();
+        BackendResponse result = executeResultSample instanceof QueryResult
+                ? processExecuteQuery(executionContext, executeResults, (QueryResult) executeResultSample) : processExecuteUpdate(executionContext, executeResults);
         queryHeaders = result instanceof QueryResponse ? ((QueryResponse) result).getQueryHeaders() : Collections.emptyList();
         refreshSchema(executionContext);
         merge(executionContext.getSqlStatementContext(), result);
+        return result;
+    }
+    
+    private BackendResponse processExecuteQuery(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults, final QueryResult executeResultSample) throws SQLException {
+        int columnCount = executeResultSample.getMetaData().getColumnCount();
+        List<QueryHeader> queryHeaders = new ArrayList<>(columnCount);
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+            queryHeaders.add(createQueryHeader(executionContext, executeResultSample, metaData, columnIndex));
+        }
+        return createQueryResponse(queryHeaders, executeResults);
+    }
+    
+    private QueryHeader createQueryHeader(final ExecutionContext executionContext,
+                                          final QueryResult executeResultSample, final ShardingSphereMetaData metaData, final int columnIndex) throws SQLException {
+        return hasSelectExpandProjections(executionContext.getSqlStatementContext())
+                ? QueryHeaderBuilder.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), executeResultSample, metaData, columnIndex)
+                : QueryHeaderBuilder.build(executeResultSample, metaData, columnIndex);
+    }
+    
+    private boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
+        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
+    }
+    
+    private BackendResponse createQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResult> executeResults) {
+        QueryResponse result = new QueryResponse(queryHeaders);
+        for (ExecuteResult each : executeResults) {
+            result.getQueryResults().add((QueryResult) each);
+        }
+        return result;
+    }
+    
+    private UpdateResponse processExecuteUpdate(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults) {
+        UpdateResponse result = new UpdateResponse(executeResults);
+        if (executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement) {
+            result.setType("INSERT");
+        } else if (executionContext.getSqlStatementContext().getSqlStatement() instanceof DeleteStatement) {
+            result.setType("DELETE");
+        } else if (executionContext.getSqlStatementContext().getSqlStatement() instanceof UpdateStatement) {
+            result.setType("UPDATE");
+        }
         return result;
     }
     
