@@ -97,15 +97,14 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
         Collection<ExecuteResult> executeResults = proxySQLExecutor.execute(executionContext);
         ExecuteResult executeResultSample = executeResults.iterator().next();
-        if (executeResultSample instanceof QueryResult) {
-            queryHeaders = createQueryHeaders(executionContext, (QueryResult) executeResultSample);
-            mergedResult = mergeQuery(executionContext.getSqlStatementContext(), executeResults.stream().map(each -> (QueryResult) each).collect(Collectors.toList()));
-            return new QueryResponse(queryHeaders);
-        }
-        UpdateResponse result = createUpdateResponse(executionContext, executeResults);
-        refreshSchema(executionContext);
-        mergeUpdateCount(executionContext.getSqlStatementContext(), result);
-        return result;
+        return executeResultSample instanceof QueryResult
+                ? processExecuteQuery(executionContext, executeResults, (QueryResult) executeResultSample) : processExecuteUpdate(executionContext, executeResults);
+    }
+    
+    private QueryResponse processExecuteQuery(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults, final QueryResult executeResultSample) throws SQLException {
+        queryHeaders = createQueryHeaders(executionContext, executeResultSample);
+        mergedResult = mergeQuery(executionContext.getSqlStatementContext(), executeResults.stream().map(each -> (QueryResult) each).collect(Collectors.toList()));
+        return new QueryResponse(queryHeaders);
     }
     
     private List<QueryHeader> createQueryHeaders(final ExecutionContext executionContext, final QueryResult executeResultSample) throws SQLException {
@@ -126,6 +125,13 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
+    }
+    
+    private UpdateResponse processExecuteUpdate(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults) throws SQLException {
+        UpdateResponse result = createUpdateResponse(executionContext, executeResults);
+        refreshSchema(executionContext);
+        mergeUpdateCount(executionContext.getSqlStatementContext(), result);
+        return result;
     }
     
     private UpdateResponse createUpdateResponse(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults) {
