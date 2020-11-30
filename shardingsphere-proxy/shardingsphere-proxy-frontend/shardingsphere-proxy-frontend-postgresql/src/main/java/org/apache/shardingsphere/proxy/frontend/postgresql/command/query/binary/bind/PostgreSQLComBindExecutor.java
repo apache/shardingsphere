@@ -35,7 +35,7 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryData;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -124,7 +124,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     @Override
     public PostgreSQLPacket getQueryData() throws SQLException {
-        QueryData queryData = databaseCommunicationEngine.getQueryData();
+        QueryResponseData queryData = databaseCommunicationEngine.getQueryResponseData();
         return packet.isBinaryRowData()
                 ? new PostgreSQLBinaryResultSetRowPacket(queryData.getData(), queryData.getColumnTypes().stream().map(PostgreSQLColumnType::valueOfJDBCType).collect(Collectors.toList()))
                 : new PostgreSQLDataRowPacket(queryData.getData());

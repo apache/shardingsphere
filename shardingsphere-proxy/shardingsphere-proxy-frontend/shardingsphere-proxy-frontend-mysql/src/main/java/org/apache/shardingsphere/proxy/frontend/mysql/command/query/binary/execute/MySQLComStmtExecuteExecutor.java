@@ -30,7 +30,7 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryData;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
@@ -86,7 +86,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
     @Override
     public MySQLPacket getQueryData() throws SQLException {
-        QueryData queryData = databaseCommunicationEngine.getQueryData();
+        QueryResponseData queryData = databaseCommunicationEngine.getQueryResponseData();
         return new MySQLBinaryResultSetRowPacket(++currentSequenceId, queryData.getData(), queryData.getColumnTypes().stream().map(MySQLColumnType::valueOfJDBCType).collect(Collectors.toList()));
     }
 }

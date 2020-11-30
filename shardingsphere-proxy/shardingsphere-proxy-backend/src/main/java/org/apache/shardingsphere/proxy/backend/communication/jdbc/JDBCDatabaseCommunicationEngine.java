@@ -41,7 +41,7 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.ProxySQLExecutor;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryData;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -191,11 +191,11 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     @Override
-    public QueryData getQueryData() throws SQLException {
+    public QueryResponseData getQueryResponseData() throws SQLException {
         List<Object> row = new ArrayList<>(queryHeaders.size());
         for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {
             row.add(mergedResult.getValue(columnIndex, Object.class));
         }
-        return new QueryData(queryHeaders.stream().map(QueryHeader::getColumnType).collect(Collectors.toList()), row);
+        return new QueryResponseData(queryHeaders.stream().map(QueryHeader::getColumnType).collect(Collectors.toList()), row);
     }
 }

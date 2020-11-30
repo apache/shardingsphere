@@ -23,11 +23,11 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 /**
- * Query data.
+ * Query response data.
  */
 @RequiredArgsConstructor
 @Getter
-public final class QueryData {
+public final class QueryResponseData {
     
     private final List<Integer> columnTypes;
     

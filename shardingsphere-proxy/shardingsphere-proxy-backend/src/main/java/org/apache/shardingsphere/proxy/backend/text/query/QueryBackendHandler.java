@@ -62,6 +62,6 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public Collection<Object> getRowData() throws SQLException {
-        return databaseCommunicationEngine.getQueryData().getData();
+        return databaseCommunicationEngine.getQueryResponseData().getData();
     }
 }
