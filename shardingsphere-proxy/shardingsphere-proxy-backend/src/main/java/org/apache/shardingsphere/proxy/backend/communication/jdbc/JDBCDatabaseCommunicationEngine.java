@@ -97,10 +97,15 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
         Collection<ExecuteResult> executeResults = proxySQLExecutor.execute(executionContext);
         ExecuteResult executeResultSample = executeResults.iterator().next();
-        BackendResponse result = executeResultSample instanceof QueryResult
-                ? processExecuteQuery(executionContext, executeResults, (QueryResult) executeResultSample) : processExecuteUpdate(executionContext, executeResults);
-        queryHeaders = result instanceof QueryResponse ? ((QueryResponse) result).getQueryHeaders() : Collections.emptyList();
-        refreshSchema(executionContext);
+        BackendResponse result;
+        if (executeResultSample instanceof QueryResult) {
+            result = processExecuteQuery(executionContext, executeResults, (QueryResult) executeResultSample);
+            queryHeaders = ((QueryResponse) result).getQueryHeaders();
+        } else {
+            result = processExecuteUpdate(executionContext, executeResults);
+            queryHeaders = Collections.emptyList();
+            refreshSchema(executionContext);
+        }
         merge(executionContext.getSqlStatementContext(), result);
         return result;
     }
