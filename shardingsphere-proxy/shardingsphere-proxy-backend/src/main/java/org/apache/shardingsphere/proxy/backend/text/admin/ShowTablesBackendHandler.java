@@ -59,7 +59,6 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
         Collection<String> allTableNames = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getSchema().getAllTableNames();
         List<MemoryQueryResultDataRow> rows = allTableNames.stream().map(each -> new MemoryQueryResultDataRow(Collections.singletonList(each))).collect(Collectors.toList());
         queryResult = new RawMemoryQueryResult(metaData, rows);
-        result.getQueryResults().add(queryResult);
         return result;
     }
     

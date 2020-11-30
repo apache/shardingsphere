@@ -19,10 +19,8 @@ package org.apache.shardingsphere.proxy.backend.response.query;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -33,6 +31,4 @@ import java.util.List;
 public final class QueryResponse implements BackendResponse {
     
     private final List<QueryHeader> queryHeaders;
-    
-    private final List<QueryResult> queryResults = new LinkedList<>();
 }
