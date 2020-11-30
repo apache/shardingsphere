@@ -127,6 +127,12 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
     }
     
+    private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+        MergeEngine mergeEngine = new MergeEngine(ProxyContext.getInstance().getMetaDataContexts().getDatabaseType(),
+                metaData.getSchema(), ProxyContext.getInstance().getMetaDataContexts().getProps(), metaData.getRuleMetaData().getRules());
+        return mergeEngine.merge(queryResults, sqlStatementContext);
+    }
+    
     private UpdateResponse processExecuteUpdate(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults) throws SQLException {
         UpdateResponse result = createUpdateResponse(executionContext, executeResults);
         refreshSchema(executionContext);
@@ -164,12 +170,6 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private void notifySchemaChanged(final String schemaName, final ShardingSphereSchema schema) {
         OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(schemaName, schema));
-    }
-    
-    private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(ProxyContext.getInstance().getMetaDataContexts().getDatabaseType(),
-                metaData.getSchema(), ProxyContext.getInstance().getMetaDataContexts().getProps(), metaData.getRuleMetaData().getRules());
-        return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
     private void mergeUpdateCount(final SQLStatementContext<?> sqlStatementContext, final UpdateResponse response) {
