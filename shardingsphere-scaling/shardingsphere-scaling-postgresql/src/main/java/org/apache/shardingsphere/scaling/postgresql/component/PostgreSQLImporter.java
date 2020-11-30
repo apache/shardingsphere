@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.postgresql.component;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractJDBCImporter;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.SQLBuilder;
 
 import java.util.Map;
 import java.util.Set;
@@ -35,7 +35,7 @@ public final class PostgreSQLImporter extends AbstractJDBCImporter {
     }
     
     @Override
-    protected AbstractSQLBuilder createSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
+    protected SQLBuilder createSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
         return new PostgreSQLSQLBuilder(shardingColumnsMap);
     }
 }

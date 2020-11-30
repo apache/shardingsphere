@@ -28,6 +28,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.SQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,7 +67,7 @@ public final class AbstractJDBCImporterTest {
     private DataSourceManager dataSourceManager;
     
     @Mock
-    private AbstractSQLBuilder sqlBuilder;
+    private SQLBuilder sqlBuilder;
     
     @Mock
     private DataSourceConfiguration dataSourceConfig;
@@ -90,7 +91,7 @@ public final class AbstractJDBCImporterTest {
         jdbcImporter = new AbstractJDBCImporter(mockImporterConfiguration(), dataSourceManager) {
             
             @Override
-            protected AbstractSQLBuilder createSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
+            protected SQLBuilder createSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
                 return sqlBuilder;
             }
         };

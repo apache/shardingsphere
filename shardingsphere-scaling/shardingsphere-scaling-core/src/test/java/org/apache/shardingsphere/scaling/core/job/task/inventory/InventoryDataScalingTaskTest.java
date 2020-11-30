@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.core.job.task.inventory;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
@@ -58,7 +59,7 @@ public final class InventoryDataScalingTaskTest {
         DumperConfiguration dumperConfig = mockDumperConfig();
         ImporterConfiguration importerConfig = mockImporterConfig();
         ScalingContext.getInstance().init(new ServerConfiguration());
-        syncConfig = new SyncConfiguration(3, dumperConfig, importerConfig);
+        syncConfig = new SyncConfiguration(new JobConfiguration(), dumperConfig, importerConfig);
         dataSourceManager = new DataSourceManager();
     }
     

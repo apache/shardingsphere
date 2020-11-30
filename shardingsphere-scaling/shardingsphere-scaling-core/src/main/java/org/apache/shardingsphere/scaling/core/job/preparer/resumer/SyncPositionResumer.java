@@ -78,7 +78,7 @@ public final class SyncPositionResumer {
         result.setTableName(splitTable[0].split("\\.")[1]);
         result.setPositionManager(entry.getValue());
         if (2 == splitTable.length) {
-            result.setSpiltNum(Integer.parseInt(splitTable[1]));
+            result.setShardingItem(Integer.parseInt(splitTable[1]));
         }
         result.setPrimaryKey(metaDataManager.getTableMetaData(result.getTableName()).getPrimaryKeyColumns().get(0));
         return result;
@@ -94,7 +94,7 @@ public final class SyncPositionResumer {
     private void resumeIncrementalPosition(final ShardingScalingJob shardingScalingJob, final ResumeBreakPointManager resumeBreakPointManager) {
         for (SyncConfiguration each : shardingScalingJob.getSyncConfigs()) {
             each.getDumperConfig().setPositionManager(resumeBreakPointManager.getIncrementalPositionManagerMap().get(each.getDumperConfig().getDataSourceName()));
-            shardingScalingJob.getIncrementalDataTasks().add(syncTaskFactory.createIncrementalDataSyncTask(each.getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
+            shardingScalingJob.getIncrementalDataTasks().add(syncTaskFactory.createIncrementalDataSyncTask(each.getJobConfig().getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
         }
     }
     

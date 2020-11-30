@@ -31,7 +31,7 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
     
     private String primaryKey;
     
-    private Integer spiltNum;
+    private Integer shardingItem;
     
     public InventoryDumperConfiguration(final DumperConfiguration dumperConfig) {
         setDataSourceName(dumperConfig.getDataSourceName());

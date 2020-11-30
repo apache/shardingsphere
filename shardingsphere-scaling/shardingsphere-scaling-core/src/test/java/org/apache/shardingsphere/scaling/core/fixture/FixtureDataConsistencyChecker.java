@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.fixture;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.SQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.AbstractDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
@@ -44,17 +44,7 @@ public final class FixtureDataConsistencyChecker extends AbstractDataConsistency
     }
     
     @Override
-    protected AbstractSQLBuilder getSqlBuilder() {
-        return new AbstractSQLBuilder(Maps.newHashMap()) {
-            @Override
-            protected String getLeftIdentifierQuoteString() {
-                return "`";
-            }
-            
-            @Override
-            protected String getRightIdentifierQuoteString() {
-                return "`";
-            }
-        };
+    protected SQLBuilder getSqlBuilder() {
+        return new FixtureSQLBuilder(Maps.newHashMap());
     }
 }

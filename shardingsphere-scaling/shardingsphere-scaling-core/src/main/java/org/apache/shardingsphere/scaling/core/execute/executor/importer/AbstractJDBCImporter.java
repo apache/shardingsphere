@@ -32,6 +32,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRe
 import org.apache.shardingsphere.scaling.core.execute.executor.record.GroupedDataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.SQLBuilder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -54,7 +55,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     
     private final DataSourceManager dataSourceManager;
     
-    private final AbstractSQLBuilder sqlBuilder;
+    private final SQLBuilder sqlBuilder;
     
     @Setter
     private Channel channel;
@@ -71,7 +72,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
      * @param shardingColumnsMap sharding columns map
      * @return SQL builder
      */
-    protected abstract AbstractSQLBuilder createSQLBuilder(Map<String, Set<String>> shardingColumnsMap);
+    protected abstract SQLBuilder createSQLBuilder(Map<String, Set<String>> shardingColumnsMap);
     
     @Override
     public final void start() {

@@ -22,8 +22,9 @@ import com.google.common.collect.Sets;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.SQLBuilder;
+import org.apache.shardingsphere.scaling.core.fixture.FixtureSQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -33,23 +34,7 @@ import static org.junit.Assert.assertThat;
 
 public final class AbstractSqlBuilderTest {
     
-    private AbstractSQLBuilder sqlBuilder;
-    
-    @Before
-    public void setUp() {
-        sqlBuilder = new AbstractSQLBuilder(Maps.newHashMap()) {
-            
-            @Override
-            protected String getLeftIdentifierQuoteString() {
-                return "`";
-            }
-    
-            @Override
-            protected String getRightIdentifierQuoteString() {
-                return "`";
-            }
-        };
-    }
+    private final SQLBuilder sqlBuilder = new FixtureSQLBuilder(Maps.newHashMap());
     
     @Test
     public void assertBuildInsertSQL() {

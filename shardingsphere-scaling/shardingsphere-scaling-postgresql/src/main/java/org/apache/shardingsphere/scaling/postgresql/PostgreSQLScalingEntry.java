@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.postgresql;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.JDBCDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.SQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLDataSour
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLImporter;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLJdbcDumper;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLPositionManager;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLSQLBuilder;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLWalDumper;
 
 /**
@@ -64,6 +66,11 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     @Override
     public Class<? extends DataConsistencyChecker> getDataConsistencyCheckerClass() {
         return PostgreSQLDataConsistencyChecker.class;
+    }
+    
+    @Override
+    public Class<? extends SQLBuilder> getSQLBuilderClass() {
+        return PostgreSQLSQLBuilder.class;
     }
     
     @Override

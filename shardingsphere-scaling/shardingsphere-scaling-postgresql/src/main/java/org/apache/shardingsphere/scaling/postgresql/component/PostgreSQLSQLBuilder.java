@@ -20,7 +20,8 @@ package org.apache.shardingsphere.scaling.postgresql.component;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.AbstractSQLBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.SQLBuilder;
 
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +29,7 @@ import java.util.Set;
 /**
  * PostgreSQL SQL builder.
  */
-public final class PostgreSQLSQLBuilder extends AbstractSQLBuilder {
+public final class PostgreSQLSQLBuilder extends AbstractSQLBuilder implements SQLBuilder {
     
     public PostgreSQLSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
         super(shardingColumnsMap);
