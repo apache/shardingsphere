@@ -46,7 +46,8 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     @Override
     public BackendResponse execute() {
         mergedResult = new SingleLocalDataMergedResult(getSchemaNames());
-        return new QueryResponse(Collections.singletonList(new QueryHeader("information_schema", "SCHEMATA", "Database", "SCHEMA_NAME", 100, Types.VARCHAR, 0, false, false, false, false)));
+        return new QueryResponse(Collections.singletonList(
+                new QueryHeader("information_schema", "SCHEMATA", "Database", "SCHEMA_NAME", 100, Types.VARCHAR, "VARCHAR", 0, false, false, false, false)));
     }
     
     private Collection<Object> getSchemaNames() {

@@ -39,6 +39,8 @@ public final class QueryHeader {
     
     private final int columnType;
     
+    private final String columnTypeName;
+    
     private final int decimals;
     
     private final boolean signed;
