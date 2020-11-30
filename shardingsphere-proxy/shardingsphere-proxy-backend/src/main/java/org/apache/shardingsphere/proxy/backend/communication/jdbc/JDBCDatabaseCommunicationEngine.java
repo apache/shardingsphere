@@ -67,7 +67,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
-    private BackendResponse response;
+    private List<QueryHeader> queryHeaders;
     
     private MergedResult mergedResult;
     
@@ -89,10 +89,11 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             return new UpdateResponse();
         }
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
-        response = proxySQLExecutor.execute(executionContext);
+        BackendResponse result = proxySQLExecutor.execute(executionContext);
+        queryHeaders = result instanceof QueryResponse ? ((QueryResponse) result).getQueryHeaders() : Collections.emptyList();
         refreshSchema(executionContext);
-        merge(executionContext.getSqlStatementContext());
-        return response;
+        merge(executionContext.getSqlStatementContext(), result);
+        return result;
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -115,17 +116,17 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(schemaName, schema));
     }
     
-    private void merge(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
+    private void merge(final SQLStatementContext<?> sqlStatementContext, final BackendResponse response) throws SQLException {
         if (response instanceof UpdateResponse) {
-            mergeUpdateCount(sqlStatementContext);
+            mergeUpdateCount(sqlStatementContext, (UpdateResponse) response);
             return;
         }
         mergedResult = mergeQuery(sqlStatementContext, ((QueryResponse) response).getQueryResults());
     }
     
-    private void mergeUpdateCount(final SQLStatementContext<?> sqlStatementContext) {
+    private void mergeUpdateCount(final SQLStatementContext<?> sqlStatementContext, final UpdateResponse response) {
         if (isNeedAccumulate(sqlStatementContext)) {
-            ((UpdateResponse) response).mergeUpdateCount();
+            response.mergeUpdateCount();
         }
     }
     
@@ -148,7 +149,6 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     @Override
     public QueryData getQueryData() throws SQLException {
-        List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
         List<Object> row = new ArrayList<>(queryHeaders.size());
         for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {
             row.add(mergedResult.getValue(columnIndex, Object.class));
