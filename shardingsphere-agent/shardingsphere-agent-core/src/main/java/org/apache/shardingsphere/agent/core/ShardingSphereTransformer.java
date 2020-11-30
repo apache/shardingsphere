@@ -62,7 +62,7 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
             final PluginAdviceDefine define = pluginLoader.loadPluginAdviceDefine(typeDescription);
             for (ConstructorPoint point : define.getConstructorPoints()) {
                 try {
-                    final ConstructorMethodInterceptor interceptor = new ConstructorMethodInterceptor(pluginLoader.getInstance(point.getAdvice()));
+                    final ConstructorMethodInterceptor interceptor = new ConstructorMethodInterceptor(pluginLoader.getOrCreateInstance(point.getAdvice()));
                     newBuilder = newBuilder.constructor(point.getConstructorMatcher())
                             .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(interceptor)));
                     // CHECKSTYLE:OFF
@@ -74,7 +74,7 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
 
             for (ClassStaticMethodPoint point : define.getClassStaticMethodPoints()) {
                 try {
-                    final StaticMethodAroundInterceptor interceptor = new StaticMethodAroundInterceptor(pluginLoader.getInstance(point.getAdvice()));
+                    final StaticMethodAroundInterceptor interceptor = new StaticMethodAroundInterceptor(pluginLoader.getOrCreateInstance(point.getAdvice()));
                     newBuilder = newBuilder.method(point.getMethodsMatcher())
                             .intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
                     // CHECKSTYLE:OFF
@@ -86,7 +86,7 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
 
             for (InstanceMethodPoint point : define.getInstanceMethodPoints()) {
                 try {
-                    final MethodAroundInterceptor interceptor = new MethodAroundInterceptor(pluginLoader.getInstance(point.getAdvice()));
+                    final MethodAroundInterceptor interceptor = new MethodAroundInterceptor(pluginLoader.getOrCreateInstance(point.getAdvice()));
                     newBuilder = newBuilder.method(point.getMethodMatcher())
                             .intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
                     // CHECKSTYLE:OFF
