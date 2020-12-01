@@ -25,7 +25,7 @@ import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 import java.util.Map;
 
 /**
- * SQL builder factory.
+ * Scaling SQL builder factory.
  */
 public final class ScalingSQLBuilderFactory {
     

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord
 import java.util.Collection;
 
 /**
- * SQL builder.
+ * Scaling SQL builder.
  */
 public interface ScalingSQLBuilder {
     
