@@ -36,11 +36,11 @@ beginTransaction
     ;
 
 commit
-    : COMMIT optionWork? optionChain? optionRelease?
+    : COMMIT WORK? optionChain? optionRelease?
     ;
 
 rollback
-    : ROLLBACK (optionWork? TO SAVEPOINT? identifier | optionWork? optionChain? optionRelease?)
+    : ROLLBACK (WORK? TO SAVEPOINT? identifier | WORK? optionChain? optionRelease?)
     ;
 
 savepoint
@@ -48,7 +48,7 @@ savepoint
     ;
 
 begin
-    : BEGIN optionWork?
+    : BEGIN WORK?
     ;
 
 lock
@@ -83,10 +83,6 @@ level
 accessMode
    : READ (WRITE | ONLY)
    ;
-
-optionWork
-    : WORK
-    ;
 
 optionChain
     : AND NO? CHAIN

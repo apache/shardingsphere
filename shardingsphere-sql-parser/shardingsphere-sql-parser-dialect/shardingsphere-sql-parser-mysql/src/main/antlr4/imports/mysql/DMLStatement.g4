@@ -178,6 +178,10 @@ importStatement
     : IMPORT TABLE FROM STRING_ (COMMA_ STRING_)?
     ;
 
+loadStatement
+    : loadDataStatement | loadXmlStatement
+    ;
+
 loadDataStatement
     : LOAD DATA
       (LOW_PRIORITY | CONCURRENT)? LOCAL? 
