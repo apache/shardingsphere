@@ -26,19 +26,19 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Configuration of plugin.
+ * Plugin definition.
  */
-public abstract class Configuration {
-    
+public abstract class PluginDefine {
+
     private final Map<String, PluginAdviceDefine.Builder> defineMap = Maps.newHashMap();
-    
-    private final List<Service> services = Lists.newArrayList();
-    
+
+    private final List<Class<? extends Service>> services = Lists.newArrayList();
+
     /**
      * Configure the plugin here.
      */
-    protected abstract void configure();
-    
+    protected abstract void define();
+
     protected PluginAdviceDefine.Builder intercept(final String classNameOfTarget) {
         if (defineMap.containsKey(classNameOfTarget)) {
             return defineMap.get(classNameOfTarget);
@@ -47,29 +47,34 @@ public abstract class Configuration {
         defineMap.put(classNameOfTarget, builder);
         return builder;
     }
-    
-    protected void registerService(final Service service) {
+
+    /**
+     * Register service to agent.
+     *
+     * @param service the class of Service.
+     */
+    protected void registerService(final Class<? extends Service> service) {
         services.add(service);
     }
-    
+
     /**
      * To build Plugin definition.
      *
      * @return configurations.
      */
     public final List<PluginAdviceDefine> build() {
-        configure();
+        define();
         return defineMap.values().stream()
                 .map(PluginAdviceDefine.Builder::install)
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * To get all services.
      *
      * @return all services.
      */
-    public List<Service> getAllServics() {
+    public List<Class<? extends Service>> getAllServics() {
         return services;
     }
 }

@@ -50,7 +50,7 @@ public class ShardingSphereAgent {
 
         final ByteBuddy byteBuddy = new ByteBuddy().with(TypeValidation.ENABLED);
     
-        final AgentBuilder builder = new AgentBuilder.Default()
+        AgentBuilder builder = new AgentBuilder.Default()
             .with(byteBuddy)
             .ignore(ElementMatchers.isSynthetic())
             .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."))
