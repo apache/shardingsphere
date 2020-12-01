@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -49,7 +49,7 @@ public final class UpdateResponseHeaderTest {
         assertThat(updateResponseHeader.getUpdateCount(), is(4L));
     }
 
-    private Collection<ExecuteResult> getExecuteUpdateResults() {
+    private List<ExecuteResult> getExecuteUpdateResults() {
         ExecuteResult updateResult1 = new UpdateResult(1, 2L);
         ExecuteResult updateResult2 = new UpdateResult(3, 4L);
         return Arrays.asList(updateResult1, updateResult2);
