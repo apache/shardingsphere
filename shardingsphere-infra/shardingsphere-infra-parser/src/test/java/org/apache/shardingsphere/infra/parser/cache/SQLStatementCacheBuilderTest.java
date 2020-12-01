@@ -24,8 +24,8 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.Assert.assertThat;
 
-public class SQLStatementCacheBuilderTest {
-
+public final class SQLStatementCacheBuilderTest {
+    
     @Test
     public void assertBuild() {
         assertThat(SQLStatementCacheBuilder.build(new CacheOption(128, 1024L, 4), "MySQL"), isA(LoadingCache.class));
