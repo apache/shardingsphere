@@ -71,12 +71,12 @@ public final class PluginLoader extends ClassLoader implements Closeable {
 
     @Override
     protected Class<?> findClass(final String name) throws ClassNotFoundException {
-        final String path = classNameToPath(name);
-        for (final JarFile jar : jars) {
-            final ZipEntry entry = jar.getEntry(path);
+        String path = classNameToPath(name);
+        for (JarFile jar : jars) {
+            ZipEntry entry = jar.getEntry(path);
             if (Objects.nonNull(entry)) {
                 try {
-                    final byte[] data = ByteStreams.toByteArray(jar.getInputStream(entry));
+                    byte[] data = ByteStreams.toByteArray(jar.getInputStream(entry));
                     return defineClass(name, data, 0, data.length);
                 } catch (IOException ioe) {
                     log.error("Failed to load class {}.", name, ioe);
@@ -107,31 +107,31 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     }
 
     private Map<String, PluginAdviceDefine> loadAllPlugins() throws IOException {
-        final File[] jarFiles = AgentPathLocator.getAgentPath().listFiles(file -> file.getName().endsWith(".jar"));
-        final ImmutableMap.Builder<String, PluginAdviceDefine> pluginDefineMap = ImmutableMap.builder();
+        File[] jarFiles = AgentPathLocator.getAgentPath().listFiles(file -> file.getName().endsWith(".jar"));
+        ImmutableMap.Builder<String, PluginAdviceDefine> pluginDefineMap = ImmutableMap.builder();
         if (jarFiles == null) {
             return pluginDefineMap.build();
         }
 
-        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        for (final File jarFile : jarFiles) {
+        for (File jarFile : jarFiles) {
             outputStream.reset();
 
-            final JarFile jar = new JarFile(jarFile, true);
+            JarFile jar = new JarFile(jarFile, true);
             jars.add(jar);
 
-            final Attributes attributes = jar.getManifest().getMainAttributes();
-            final String entrypoint = attributes.getValue("Entrypoint");
+            Attributes attributes = jar.getManifest().getMainAttributes();
+            String entrypoint = attributes.getValue("Entrypoint");
             if (Strings.isNullOrEmpty(entrypoint)) {
-                log.error("");
+                log.warn("Entrypoint is not setting in {}.", jarFile.getName());
                 continue;
             }
 
             ByteStreams.copy(jar.getInputStream(jar.getEntry(classNameToPath(entrypoint))), outputStream);
 
             try {
-                final PluginDefine config = (PluginDefine) defineClass(entrypoint, outputStream.toByteArray(), 0, outputStream.size())
+                PluginDefine config = (PluginDefine) defineClass(entrypoint, outputStream.toByteArray(), 0, outputStream.size())
                         .newInstance();
 
                 config.getAllServics().forEach(klass -> {

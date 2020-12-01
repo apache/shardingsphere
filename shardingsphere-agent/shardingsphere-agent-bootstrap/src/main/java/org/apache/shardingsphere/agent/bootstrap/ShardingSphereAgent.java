@@ -48,7 +48,7 @@ public class ShardingSphereAgent {
         AgentConfiguration agentConfiguration = AgentConfigurationLoader.load();
         SingletonHolder.INSTANCE.put(agentConfiguration);
 
-        final ByteBuddy byteBuddy = new ByteBuddy().with(TypeValidation.ENABLED);
+        ByteBuddy byteBuddy = new ByteBuddy().with(TypeValidation.ENABLED);
     
         AgentBuilder builder = new AgentBuilder.Default()
             .with(byteBuddy)
@@ -56,7 +56,7 @@ public class ShardingSphereAgent {
             .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."))
             .or(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.")));
     
-        final PluginLoader pluginLoader = PluginLoader.getInstance();
+        PluginLoader pluginLoader = PluginLoader.getInstance();
         pluginLoader.initialAllServices();
     
         builder.type(pluginLoader.typeMatcher())
