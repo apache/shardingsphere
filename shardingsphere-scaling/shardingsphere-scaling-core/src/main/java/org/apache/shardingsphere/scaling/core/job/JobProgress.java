@@ -29,7 +29,7 @@ import java.util.Map;
  */
 @Getter
 @RequiredArgsConstructor
-public final class ScalingJobProgress {
+public final class JobProgress {
     
     private final long id;
     

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.execute.engine.ShardingScalingExecuteEngine;
-import org.apache.shardingsphere.scaling.core.job.ScalingJobProgress;
+import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
@@ -63,7 +63,7 @@ public final class StandaloneScalingJobServiceTest {
         Optional<ShardingScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
         assertTrue(shardingScalingJob.isPresent());
         long jobId = shardingScalingJob.get().getJobId();
-        ScalingJobProgress progress = scalingJobService.getProgress(jobId);
+        JobProgress progress = scalingJobService.getProgress(jobId);
         assertThat(progress.getIncrementalDataScalingTaskProgress().size(), is(1));
         assertThat(progress.getInventoryDataScalingTaskProgress().size(), is(1));
     }
@@ -74,7 +74,7 @@ public final class StandaloneScalingJobServiceTest {
         assertTrue(shardingScalingJob.isPresent());
         long jobId = shardingScalingJob.get().getJobId();
         scalingJobService.stop(jobId);
-        ScalingJobProgress progress = scalingJobService.getProgress(jobId);
+        JobProgress progress = scalingJobService.getProgress(jobId);
         assertThat(progress.getStatus(), is(ScalingControlStatus.STOPPED.name()));
         scalingJobService.remove(jobId);
     }
@@ -97,7 +97,7 @@ public final class StandaloneScalingJobServiceTest {
         Optional<ShardingScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
         assertTrue(shardingScalingJob.isPresent());
         long jobId = shardingScalingJob.get().getJobId();
-        ScalingJobProgress progress = scalingJobService.getProgress(jobId);
+        JobProgress progress = scalingJobService.getProgress(jobId);
         assertThat(progress.getIncrementalDataScalingTaskProgress().size(), is(1));
         assertThat(progress.getInventoryDataScalingTaskProgress().size(), is(1));
         ReflectionUtil.setStaticFieldValue(ResumeBreakPointManagerFactory.class, "clazz", FakeResumeBreakPointManager.class);

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.service.impl;
 
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
-import org.apache.shardingsphere.scaling.core.job.ScalingJobProgress;
+import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.preparer.ShardingScalingJobPreparer;
@@ -78,12 +78,12 @@ public final class StandaloneScalingJobService extends AbstractScalingJobService
     }
     
     @Override
-    public ScalingJobProgress getProgress(final long jobId) {
+    public JobProgress getProgress(final long jobId) {
         if (!scalingJobMap.containsKey(jobId)) {
             throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", jobId));
         }
         ShardingScalingJob shardingScalingJob = scalingJobMap.get(jobId);
-        ScalingJobProgress result = new ScalingJobProgress(jobId, shardingScalingJob.getStatus());
+        JobProgress result = new JobProgress(jobId, shardingScalingJob.getStatus());
         if (scalingTaskSchedulerMap.containsKey(jobId)) {
             result.getInventoryDataScalingTaskProgress().put("0", scalingTaskSchedulerMap.get(jobId).getInventoryDataTaskProgress());
             result.getIncrementalDataScalingTaskProgress().put("0", scalingTaskSchedulerMap.get(jobId).getIncrementalDataTaskProgress());

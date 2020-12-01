@@ -23,7 +23,7 @@ import com.google.gson.JsonObject;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
-import org.apache.shardingsphere.scaling.core.job.ScalingJobProgress;
+import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.job.TaskProgress;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
@@ -82,9 +82,9 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
     }
     
     @Override
-    public ScalingJobProgress getProgress(final long jobId) {
+    public JobProgress getProgress(final long jobId) {
         boolean running = getJob(jobId).getScalingConfig().getJobConfiguration().isRunning();
-        ScalingJobProgress result = new ScalingJobProgress(jobId, running ? "RUNNING" : "STOPPED");
+        JobProgress result = new JobProgress(jobId, running ? "RUNNING" : "STOPPED");
         List<String> shardingItems = REGISTRY_REPOSITORY.getChildrenKeys(ScalingTaskUtil.getScalingListenerPath(jobId, ScalingConstant.POSITION));
         for (String each : shardingItems) {
             result.getInventoryDataScalingTaskProgress().put(each, getInventoryDataScalingTaskProgress(jobId, each));
