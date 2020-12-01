@@ -144,6 +144,10 @@ unreservedWord
     | WAIT | WARNINGS | WEEK | WEIGHT_STRING | WITHOUT | WORK | WRAPPER | X509 | XA | XID | XML | YEAR | COLUMN_NAME
     ;
 
+textOrIdentifier
+    : identifier | STRING_
+    ;
+
 variable
     : (AT_? AT_)? scope? DOT_? internalVariableName
     ;
@@ -195,10 +199,12 @@ indexName
     : identifier
     ;
 
+userIdentifierOrText
+    : textOrIdentifier (AT_ textOrIdentifier)?
+    ;
+
 userName
-    : STRING_  AT_ STRING_
-    | identifier
-    | STRING_
+    : userIdentifierOrText | CURRENT_USER (LP_ RP_)?
     ;
 
 eventName
@@ -636,7 +642,7 @@ dataType
     | dataTypeName = BIT fieldLength?
     | dataTypeName = (BOOL | BOOLEAN)
     | dataTypeName = CHAR fieldLength? charsetWithOptBinary?
-    | nchar fieldLength? BINARY?
+    | (dataTypeName = NCHAR | dataTypeName = NATIONAL CHAR) fieldLength? BINARY?
     | dataTypeName = BINARY fieldLength?
     | (dataTypeName = CHAR VARYING | dataTypeName = VARCHAR) fieldLength charsetWithOptBinary?
     | (dataTypeName = NATIONAL VARCHAR | dataTypeName = NVARCHAR | dataTypeName = NCHAR VARCHAR | dataTypeName = NATIONAL CHAR VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
@@ -668,6 +674,10 @@ textString
     : STRING_
     | HEX_DIGIT_
     | BIT_NUM_
+    ;
+
+textStringHash
+    : STRING_ | HEX_DIGIT_
     ;
 
 fieldOptions

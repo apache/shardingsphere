@@ -24,7 +24,7 @@ import org.apache.shardingsphere.scaling.core.job.position.Position;
 
 public final class FixtureH2LogDumper implements LogDumper {
     
-    public FixtureH2LogDumper(final DumperConfiguration dumperConfig, final Position position) {
+    public FixtureH2LogDumper(final DumperConfiguration dumperConfig, final Position<?> position) {
     }
     
     @Override

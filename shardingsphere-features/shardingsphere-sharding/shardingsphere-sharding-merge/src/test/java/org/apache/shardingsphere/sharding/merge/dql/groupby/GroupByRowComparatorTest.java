@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
@@ -46,6 +46,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -88,8 +89,8 @@ public final class GroupByRowComparatorTest {
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
-        MemoryQueryResultRow o1 = new MemoryQueryResultRow(createQueryResult("1", "2"));
-        MemoryQueryResultRow o2 = new MemoryQueryResultRow(createQueryResult("3", "4"));
+        MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
+        MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
         assertTrue(groupByRowComparator.compare(o1, o2) < 0);
     }
 
@@ -128,8 +129,8 @@ public final class GroupByRowComparatorTest {
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
-        MemoryQueryResultRow o1 = new MemoryQueryResultRow(createQueryResult("1", "2"));
-        MemoryQueryResultRow o2 = new MemoryQueryResultRow(createQueryResult("3", "4"));
+        MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
+        MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
         assertTrue(groupByRowComparator.compare(o1, o2) > 0);
     }
 
@@ -168,8 +169,8 @@ public final class GroupByRowComparatorTest {
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
-        MemoryQueryResultRow o1 = new MemoryQueryResultRow(createQueryResult("1", "2"));
-        MemoryQueryResultRow o2 = new MemoryQueryResultRow(createQueryResult("1", "2"));
+        MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
+        MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         assertThat(groupByRowComparator.compare(o1, o2), is(0));
     }
 
@@ -205,8 +206,8 @@ public final class GroupByRowComparatorTest {
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
-        MemoryQueryResultRow o1 = new MemoryQueryResultRow(createQueryResult("1", "2"));
-        MemoryQueryResultRow o2 = new MemoryQueryResultRow(createQueryResult("3", "4"));
+        MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
+        MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
         assertTrue(groupByRowComparator.compare(o1, o2) < 0);
     }
 
@@ -242,8 +243,8 @@ public final class GroupByRowComparatorTest {
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
-        MemoryQueryResultRow o1 = new MemoryQueryResultRow(createQueryResult("1", "2"));
-        MemoryQueryResultRow o2 = new MemoryQueryResultRow(createQueryResult("3", "4"));
+        MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
+        MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
         assertTrue(groupByRowComparator.compare(o1, o2) > 0);
     }
 
@@ -279,8 +280,8 @@ public final class GroupByRowComparatorTest {
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
-        MemoryQueryResultRow o1 = new MemoryQueryResultRow(createQueryResult("1", "2"));
-        MemoryQueryResultRow o2 = new MemoryQueryResultRow(createQueryResult("1", "2"));
+        MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
+        MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         assertThat(groupByRowComparator.compare(o1, o2), is(0));
     }
     
@@ -290,13 +291,13 @@ public final class GroupByRowComparatorTest {
         return result;
     }
     
-    private QueryResult createQueryResult(final Object... values) throws SQLException {
+    private QueryResult mockQueryResult(final Object... values) throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSetMetaData.getColumnCount()).thenReturn(values.length);
-        QueryResult result = mock(QueryResult.class);
-        when(result.getColumnCount()).thenReturn(values.length);
+        QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaData().getColumnCount()).thenReturn(values.length);
         int index = 0;
         for (Object each : values) {
             when(result.getValue(++index, Object.class)).thenReturn(each);

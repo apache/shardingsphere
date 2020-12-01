@@ -23,7 +23,7 @@ import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfi
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
+import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,6 +74,6 @@ public final class RepositoryResumeBreakPointManagerTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void resetRegistryRepositoryAvailable() {
-        ReflectionUtil.setFieldValue(RegistryRepositoryHolder.class, null, "available", null);
+        ReflectionUtil.setStaticFieldValue(RegistryRepositoryHolder.class, "available", null);
     }
 }

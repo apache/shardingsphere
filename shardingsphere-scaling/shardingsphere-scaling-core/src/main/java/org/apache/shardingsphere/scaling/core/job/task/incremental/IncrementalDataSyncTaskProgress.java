@@ -34,5 +34,5 @@ public final class IncrementalDataSyncTaskProgress implements SyncProgress {
     
     private final long delayMillisecond;
     
-    private final Position position;
+    private final Position<?> position;
 }

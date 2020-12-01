@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.transaction;
 
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
@@ -36,7 +36,7 @@ public final class TransactionBackendHandlerTest {
     @Test
     public void assertExecute() throws SQLException {
         TransactionBackendHandler transactionBackendHandler = new TransactionBackendHandler(TransactionOperationType.BEGIN, backendConnection);
-        BackendResponse actual = transactionBackendHandler.execute();
-        assertThat(actual, instanceOf(UpdateResponse.class));
+        ResponseHeader actual = transactionBackendHandler.execute();
+        assertThat(actual, instanceOf(UpdateResponseHeader.class));
     }
 }

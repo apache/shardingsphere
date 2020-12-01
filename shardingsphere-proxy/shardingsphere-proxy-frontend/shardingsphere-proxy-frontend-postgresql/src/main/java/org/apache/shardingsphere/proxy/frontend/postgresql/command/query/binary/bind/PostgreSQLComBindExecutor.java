@@ -29,27 +29,27 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bin
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Command bind executor for PostgreSQL.
@@ -57,7 +57,7 @@ import java.util.Optional;
 public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     private final PostgreSQLComBindPacket packet;
-            
+    
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Getter
@@ -83,19 +83,19 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
         if (null == databaseCommunicationEngine) {
             return result;
         }
-        BackendResponse backendResponse = databaseCommunicationEngine.execute();
-        if (backendResponse instanceof QueryResponse) {
-            createQueryPacket((QueryResponse) backendResponse).ifPresent(result::add);
+        ResponseHeader responseHeader = databaseCommunicationEngine.execute();
+        if (responseHeader instanceof QueryResponseHeader) {
+            createQueryPacket((QueryResponseHeader) responseHeader).ifPresent(result::add);
         }
-        if (backendResponse instanceof UpdateResponse) {
+        if (responseHeader instanceof UpdateResponseHeader) {
             responseType = ResponseType.UPDATE;
-            result.add(createUpdatePacket((UpdateResponse) backendResponse));
+            result.add(createUpdatePacket((UpdateResponseHeader) responseHeader));
         }
         return result;
     }
     
-    private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponse queryResponse) throws SQLException {
-        Collection<PostgreSQLColumnDescription> columnDescriptions = createColumnDescriptions(queryResponse);
+    private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponseHeader queryResponseHeader) {
+        Collection<PostgreSQLColumnDescription> columnDescriptions = createColumnDescriptions(queryResponseHeader);
         if (columnDescriptions.isEmpty()) {
             responseType = ResponseType.QUERY;
         }
@@ -105,19 +105,17 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
         return Optional.of(new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions));
     }
     
-    private Collection<PostgreSQLColumnDescription> createColumnDescriptions(final QueryResponse queryResponse) throws SQLException {
+    private Collection<PostgreSQLColumnDescription> createColumnDescriptions(final QueryResponseHeader queryResponseHeader) {
         Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
-        List<QueryResult> queryResults = queryResponse.getQueryResults();
         int columnIndex = 0;
-        for (QueryHeader each : queryResponse.getQueryHeaders()) {
-            String columnTypeName = queryResults.isEmpty() ? null : queryResults.get(0).getColumnTypeName(columnIndex + 1);
-            result.add(new PostgreSQLColumnDescription(each.getColumnName(), ++columnIndex, each.getColumnType(), each.getColumnLength(), columnTypeName));
+        for (QueryHeader each : queryResponseHeader.getQueryHeaders()) {
+            result.add(new PostgreSQLColumnDescription(each.getColumnName(), ++columnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName()));
         }
         return result;
     }
     
-    private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponse updateResponse) {
-        return new PostgreSQLCommandCompletePacket(updateResponse.getType(), updateResponse.getUpdateCount());
+    private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponseHeader updateResponseHeader) {
+        return new PostgreSQLCommandCompletePacket(new PostgreSQLCommand(updateResponseHeader.getSqlStatement()).getSQLCommand(), updateResponseHeader.getUpdateCount());
     }
     
     @Override
@@ -127,15 +125,9 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     @Override
     public PostgreSQLPacket getQueryData() throws SQLException {
-        QueryData queryData = databaseCommunicationEngine.getQueryData();
-        return packet.isBinaryRowData() ? new PostgreSQLBinaryResultSetRowPacket(queryData.getData(), getPostgreSQLColumnTypes(queryData)) : new PostgreSQLDataRowPacket(queryData.getData());
-    }
-    
-    private List<PostgreSQLColumnType> getPostgreSQLColumnTypes(final QueryData queryData) {
-        List<PostgreSQLColumnType> result = new ArrayList<>(queryData.getColumnTypes().size());
-        for (int i = 0; i < queryData.getColumnTypes().size(); i++) {
-            result.add(PostgreSQLColumnType.valueOfJDBCType(queryData.getColumnTypes().get(i)));
-        }
-        return result;
+        QueryResponseData queryData = databaseCommunicationEngine.getQueryResponseData();
+        return packet.isBinaryRowData()
+                ? new PostgreSQLBinaryResultSetRowPacket(queryData.getData(), queryData.getColumnTypes().stream().map(PostgreSQLColumnType::valueOfJDBCType).collect(Collectors.toList()))
+                : new PostgreSQLDataRowPacket(queryData.getData());
     }
 }

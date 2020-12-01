@@ -18,20 +18,14 @@
 package org.apache.shardingsphere.driver.fixture;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ResetIncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     @Getter
     private static final AtomicInteger COUNT = new AtomicInteger();
-    
-    @Getter
-    @Setter
-    private Properties props = new Properties();
     
     @Override
     public void init() {

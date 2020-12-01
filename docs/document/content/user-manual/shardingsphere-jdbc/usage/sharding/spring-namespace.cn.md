@@ -8,7 +8,7 @@ weight = 4
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-spring-namespace</artifactId>
+    <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -43,32 +43,48 @@ weight = 4
     
     <!-- 配置分库策略 -->
     <sharding:sharding-algorithm id="dbShardingAlgorithm" type="INLINE">
-        <properties>
+        <props>
             <prop key="algorithm-expression">ds$->{user_id % 2}</prop>
-        </properties>
+        </props>
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="dbStrategy" sharding-column="user_id" algorithm-ref="dbShardingAlgorithm" />
     
     <!-- 配置分表策略 -->
     <sharding:sharding-algorithm id="tableShardingAlgorithm" type="INLINE">
-        <properties>
+        <props>
             <prop key="algorithm-expression">t_order$->{order_id % 2}</prop>
-        </properties>
+        </props>
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="tableStrategy" sharding-column="user_id" algorithm-ref="tableShardingAlgorithm" />
+
+    <!-- 配置分布式id生成策略 -->
+    <sharding:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
+           <props>
+               <prop key="worker-id">123</prop>
+           </props>
+    </sharding:key-generate-algorithm>   
+    <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
+
+    <!-- 配置sharding策略 -->
+    <sharding:rule id="shardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" actual-data-nodes="ds${0..1}.t_order_${0..1}" database-strategy-ref="dbStrategy" table-strategy-ref="tableStrategy" key-generate-strategy-ref="orderKeyGenerator" />
+        </sharding:table-rules>
+        <sharding:binding-table-rules>
+            <sharding:binding-table-rule logic-tables="t_order,t_order_item"/>
+        </sharding:binding-table-rules>
+        <sharding:broadcast-table-rules>
+            <sharding:broadcast-table-rule table="t_address"/>
+        </sharding:broadcast-table-rules>
+    </sharding:rule>
     
     <!-- 配置ShardingSphereDataSource -->
-    <sharding:data-source id="shardingDataSource">
-        <!-- 配置分片规则 -->
-        <sharding:sharding-rule data-source-names="ds0,ds1">
-            <sharding:table-rules>
-                <!-- 配置 t_order 表规则 -->
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds$->{0..1}.t_order$->{0..1}" database-strategy-ref="dbStrategy" table-strategy-ref="tableStrategy" />
-                <!-- 省略配置 t_order_item 表规则... -->
-                <!-- ... -->
-            </sharding:table-rules>
-        </sharding:sharding-rule>
-    </sharding:data-source>
+    <shardingsphere:data-source id="shardingDataSource" data-source-names="ds0, ds1" rule-refs="shardingRule">
+        <props>
+            <prop key="sql-show">false</prop>
+        </props>
+    </shardingsphere:data-source>
+    
 </beans>
 ```
 

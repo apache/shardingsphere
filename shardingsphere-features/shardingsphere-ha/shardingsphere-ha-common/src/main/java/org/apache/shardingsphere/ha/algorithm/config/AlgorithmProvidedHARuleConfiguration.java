@@ -21,9 +21,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
 import org.apache.shardingsphere.ha.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -42,4 +43,6 @@ public final class AlgorithmProvidedHARuleConfiguration implements RuleConfigura
     private Collection<HADataSourceRuleConfiguration> dataSources = new LinkedList<>();
     
     private Map<String, ReplicaLoadBalanceAlgorithm> loadBalanceAlgorithms = new LinkedHashMap<>();
+    
+    private ShardingSphereAlgorithmConfiguration haType;
 }

@@ -19,14 +19,14 @@ package org.apache.shardingsphere.proxy.backend.text.transaction;
 
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.Collection;
 
 /**
  * Do transaction operation.
@@ -43,7 +43,7 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     }
     
     @Override
-    public BackendResponse execute() throws SQLException {
+    public ResponseHeader execute() throws SQLException {
         switch (operationType) {
             case BEGIN:
                 backendTransactionManager.begin();
@@ -57,7 +57,7 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
             default:
                 throw new SQLFeatureNotSupportedException(operationType.name());
         }
-        return new UpdateResponse();
+        return new UpdateResponseHeader(null);
     }
     
     @Override
@@ -66,7 +66,7 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     }
     
     @Override
-    public QueryData getQueryData() {
+    public Collection<Object> getRowData() {
         return null;
     }
 }

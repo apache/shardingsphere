@@ -28,7 +28,6 @@ import javax.sql.XADataSource;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
-import java.util.Properties;
 
 /**
  * Atomikos XA transaction manager.
@@ -73,15 +72,5 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     @Override
     public String getType() {
         return "atomikos";
-    }
-    
-    @Override
-    public Properties getProps() {
-        return null;
-    }
-    
-    @Override
-    public void setProps(final Properties props) {
-        
     }
 }

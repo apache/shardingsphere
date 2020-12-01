@@ -1,6 +1,6 @@
 +++ 
 title = "New committer voting process" 
-weight = 12
+weight = 13
 chapter = true 
 +++
 
@@ -31,7 +31,7 @@ https://github.com/apache/shardingsphere/pull/6211
 [^ means these words are subject to change in different case]
 ```
 
-**2. Wait 3*24 hours to get vote result from commiunity committers.**
+**2. Wait 3*24 hours to get vote result from community committers.**
 
 **3. PMC sends vote result over email.**
 

@@ -31,8 +31,8 @@ import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalDa
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataSyncTaskProgress;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 import org.junit.After;
 import org.junit.Before;
@@ -58,7 +58,7 @@ public final class DistributedScalingJobServiceTest {
         ScalingContext.getInstance().init(mockServerConfiguration());
         scalingJobService = new DistributedScalingJobService();
         registryRepository = RegistryRepositoryHolder.getInstance();
-        registryRepository.persist(ScalingConstant.SCALING_LISTENER, "");
+        registryRepository.persist(ScalingConstant.SCALING_LISTENER_PATH, "");
     }
     
     @Test
@@ -78,21 +78,21 @@ public final class DistributedScalingJobServiceTest {
     }
     
     @Test
-    public void assertStartWithScalingConfiguration() {
+    public void assertStartWithScalingConfig() {
         Optional<ShardingScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
         assertTrue(shardingScalingJob.isPresent());
-        assertThat(registryRepository.get(ScalingTaskUtil.assemblingPath(shardingScalingJob.get().getJobId(), ScalingConstant.STATUS)), is("RUNNING"));
+        assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(shardingScalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":true"));
     }
     
     @Test
     @SneakyThrows(IOException.class)
-    public void assertStartWithProxyConfiguration() {
+    public void assertStartWithProxyConfig() {
         String oldConfig = ScalingConfigurationUtil.getConfig("/proxy_config-sharding_1.yaml");
         String newConfig = ScalingConfigurationUtil.getConfig("/proxy_config-sharding_2.yaml");
         assertFalse(scalingJobService.start(oldConfig, oldConfig).isPresent());
         Optional<ShardingScalingJob> shardingScalingJob = scalingJobService.start(oldConfig, newConfig);
         assertTrue(shardingScalingJob.isPresent());
-        assertThat(registryRepository.get(ScalingTaskUtil.assemblingPath(shardingScalingJob.get().getJobId(), ScalingConstant.STATUS)), is("RUNNING"));
+        assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(shardingScalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":true"));
     }
     
     @Test
@@ -100,20 +100,19 @@ public final class DistributedScalingJobServiceTest {
         Optional<ShardingScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
         assertTrue(shardingScalingJob.isPresent());
         scalingJobService.stop(shardingScalingJob.get().getJobId());
-        assertThat(registryRepository.get(ScalingTaskUtil.assemblingPath(shardingScalingJob.get().getJobId(), ScalingConstant.STATUS)), is("STOPPING"));
+        assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(shardingScalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":false"));
     }
     
     @Test
     public void assertGetProgress() {
-        registryRepository.persist(ScalingTaskUtil.assemblingPath("1/status"), "RUNNING");
-        registryRepository.persist(ScalingTaskUtil.assemblingPath("1/config"), "config");
-        registryRepository.persist(ScalingTaskUtil.assemblingPath("1/position/0/inventory"),
+        registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/config"), "{'ruleConfiguration':{'source':{},'target':{}},'jobConfiguration':{'running':true}}");
+        registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/position/0/inventory"),
                 "{'unfinished': {'ds1.table1#1':[0,100],'ds1.table1#2':[160,200],'ds1.table3':[]},'finished':['ds1.table2#1','ds1.table2#2']}");
-        registryRepository.persist(ScalingTaskUtil.assemblingPath("1/position/0/incremental"),
+        registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/position/0/incremental"),
                 "{'ds1':{'filename':binlog1,'position':4,'delay':1},'ds3':{'filename':binlog2,'position':4,'delay':3}}");
-        registryRepository.persist(ScalingTaskUtil.assemblingPath("1/position/1/inventory"),
+        registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/position/1/inventory"),
                 "{'unfinished': {'ds2.table1#1':[0,100],'ds2.table1#2':[160,200],'ds2.table3':[]},'finished':['ds2.table2#1','ds2.table2#2']}");
-        registryRepository.persist(ScalingTaskUtil.assemblingPath("1/position/1/incremental"),
+        registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/position/1/incremental"),
                 "{'ds2':{'filename':binlog1,'position':4,'delay':2},'ds4':{'filename':binlog2,'position':4,'delay':4}}");
         ScalingJobProgress actual = scalingJobService.getProgress(1);
         assertThat(actual.getInventoryDataSyncTaskProgress().get("0").stream()
@@ -127,8 +126,7 @@ public final class DistributedScalingJobServiceTest {
     
     @Test
     public void assertRemove() {
-        registryRepository.persist(ScalingTaskUtil.assemblingPath("1/status"), "STOPPING");
-        registryRepository.persist(ScalingTaskUtil.assemblingPath("1/config"), "config");
+        registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/config"), "config");
         scalingJobService.remove(1);
         assertNull(registryRepository.get("1"));
     }
@@ -154,7 +152,7 @@ public final class DistributedScalingJobServiceTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void resetRegistryRepositoryAvailable() {
-        ReflectionUtil.setFieldValue(RegistryRepositoryHolder.class, null, "available", null);
+        ReflectionUtil.setStaticFieldValue(RegistryRepositoryHolder.class, "available", null);
     }
     
     @SneakyThrows(IOException.class)

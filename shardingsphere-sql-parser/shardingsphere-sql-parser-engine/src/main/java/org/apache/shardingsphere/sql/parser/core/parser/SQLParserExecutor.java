@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.core.parser;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.Parser;
@@ -29,8 +27,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
-import java.util.Optional;
-
 /**
  * SQL parser executor.
  */
@@ -39,38 +35,18 @@ public final class SQLParserExecutor {
     
     private final String databaseType;
     
-    private final Cache<String, ParseTree> cache = CacheBuilder.newBuilder().softValues().initialCapacity(2000).maximumSize(65535).build();
-    
     /**
      * Parse SQL.
-     *
+     * 
      * @param sql SQL to be parsed
-     * @param useCache whether use cache
      * @return parse tree
      */
-    public ParseTree parse(final String sql, final boolean useCache) {
-        if (!useCache) {
-            return parse(sql);
-        }
-        return parseAndCacheParseTree(sql);
-    }
-    
-    private ParseTree parse(final String sql) {
+    public ParseTree parse(final String sql) {
         ParseASTNode result = twoPhaseParse(sql);
         if (result.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException("Unsupported SQL of `%s`", sql);
         }
         return result.getRootNode();
-    }
-    
-    private ParseTree parseAndCacheParseTree(final String sql) {
-        Optional<ParseTree> parseTree = Optional.ofNullable(cache.getIfPresent(sql));
-        if (parseTree.isPresent()) {
-            return parseTree.get();
-        }
-        ParseTree result = parse(sql);
-        cache.put(sql, result);
-        return result;
     }
     
     private ParseASTNode twoPhaseParse(final String sql) {

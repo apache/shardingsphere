@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -52,6 +52,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -186,17 +187,17 @@ public final class GroupByStreamMergedResultTest {
     }
     
     private QueryResult mockQueryResult() throws SQLException {
-        QueryResult result = mock(QueryResult.class);
-        when(result.getColumnCount()).thenReturn(6);
-        when(result.getColumnLabel(1)).thenReturn("COUNT(*)");
-        when(result.getColumnLabel(2)).thenReturn("AVG(num)");
-        when(result.getColumnLabel(3)).thenReturn("id");
-        when(result.getColumnLabel(4)).thenReturn("date");
-        when(result.getColumnLabel(5)).thenReturn("AVG_DERIVED_COUNT_0");
-        when(result.getColumnLabel(6)).thenReturn("AVG_DERIVED_SUM_0");
-        when(result.getColumnName(1)).thenReturn("col1");
-        when(result.getColumnName(2)).thenReturn("col2");
-        when(result.getColumnName(3)).thenReturn("col3");
+        QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaData().getColumnCount()).thenReturn(6);
+        when(result.getMetaData().getColumnLabel(1)).thenReturn("COUNT(*)");
+        when(result.getMetaData().getColumnLabel(2)).thenReturn("AVG(num)");
+        when(result.getMetaData().getColumnLabel(3)).thenReturn("id");
+        when(result.getMetaData().getColumnLabel(4)).thenReturn("date");
+        when(result.getMetaData().getColumnLabel(5)).thenReturn("AVG_DERIVED_COUNT_0");
+        when(result.getMetaData().getColumnLabel(6)).thenReturn("AVG_DERIVED_SUM_0");
+        when(result.getMetaData().getColumnName(1)).thenReturn("col1");
+        when(result.getMetaData().getColumnName(2)).thenReturn("col2");
+        when(result.getMetaData().getColumnName(3)).thenReturn("col3");
         return result;
     }
 }

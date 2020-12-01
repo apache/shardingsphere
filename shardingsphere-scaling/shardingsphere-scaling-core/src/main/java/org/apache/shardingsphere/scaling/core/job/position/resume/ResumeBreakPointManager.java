@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
-import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
-import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 
 import java.util.Map;
@@ -40,14 +38,14 @@ public interface ResumeBreakPointManager {
      *
      * @return inventory position map
      */
-    Map<String, PositionManager<InventoryPosition>> getInventoryPositionManagerMap();
+    Map<String, PositionManager> getInventoryPositionManagerMap();
     
     /**
      * Get incremental position map.
      *
      * @return incremental position map
      */
-    Map<String, PositionManager<IncrementalPosition>> getIncrementalPositionManagerMap();
+    Map<String, PositionManager> getIncrementalPositionManagerMap();
     
     /**
      * Persist inventory position.

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.tracing.opentracing.hook;
 
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorDataMap;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.hook.RootInvokeHook;
 import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;

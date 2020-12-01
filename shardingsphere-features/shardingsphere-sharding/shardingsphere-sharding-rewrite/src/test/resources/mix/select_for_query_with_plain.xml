@@ -29,20 +29,20 @@
 
     <rewrite-assertion id="select_with_unqualified_shorthand">
         <input sql="SELECT * FROM t_account_bak" />
-        <output sql="SELECT account_id, plain_password AS password, plain_amount AS amount, status FROM t_account_bak_0" />
-        <output sql="SELECT account_id, plain_password AS password, plain_amount AS amount, status FROM t_account_bak_1" />
+        <output sql="SELECT `account_id`, `plain_password` AS password, `plain_amount` AS amount, `status` FROM t_account_bak_0" />
+        <output sql="SELECT `account_id`, `plain_password` AS password, `plain_amount` AS amount, `status` FROM t_account_bak_1" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_qualified_shorthand">
         <input sql="SELECT a.* FROM t_account_bak a" />
-        <output sql="SELECT a.account_id, a.plain_password AS password, a.plain_amount AS amount, a.status FROM t_account_bak_0 a" />
-        <output sql="SELECT a.account_id, a.plain_password AS password, a.plain_amount AS amount, a.status FROM t_account_bak_1 a" />
+        <output sql="SELECT `a`.`account_id`, `a`.`plain_password` AS password, `a`.`plain_amount` AS amount, `a`.`status` FROM t_account_bak_0 a" />
+        <output sql="SELECT `a`.`account_id`, `a`.`plain_password` AS password, `a`.`plain_amount` AS amount, `a`.`status` FROM t_account_bak_1 a" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_mix_qualified_shorthand_and_other_projection">
         <input sql="SELECT a.*, account_id, 1+1 FROM t_account_bak a" />
-        <output sql="SELECT a.account_id, a.plain_password AS password, a.plain_amount AS amount, a.status, account_id, 1+1 FROM t_account_bak_0 a" />
-        <output sql="SELECT a.account_id, a.plain_password AS password, a.plain_amount AS amount, a.status, account_id, 1+1 FROM t_account_bak_1 a" />
+        <output sql="SELECT `a`.`account_id`, `a`.`plain_password` AS password, `a`.`plain_amount` AS amount, `a`.`status`, account_id, 1+1 FROM t_account_bak_0 a" />
+        <output sql="SELECT `a`.`account_id`, `a`.`plain_password` AS password, `a`.`plain_amount` AS amount, `a`.`status`, account_id, 1+1 FROM t_account_bak_1 a" />
     </rewrite-assertion>
     
     <!-- FIXME -->

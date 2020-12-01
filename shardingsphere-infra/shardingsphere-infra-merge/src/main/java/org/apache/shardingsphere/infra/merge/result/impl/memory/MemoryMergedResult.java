@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.merge.result.impl.memory;
 
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;

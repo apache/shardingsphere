@@ -20,6 +20,7 @@ package org.apache.shardingsphere.ha.yaml.swapper;
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
@@ -38,6 +39,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class HARuleConfigurationYamlSwapperTest {
     
@@ -52,7 +54,8 @@ public final class HARuleConfigurationYamlSwapperTest {
         HADataSourceRuleConfiguration dataSourceConfig =
                 new HADataSourceRuleConfiguration("ds", "primary", Collections.singletonList("replica"), "roundRobin", true);
         YamlHARuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(new HARuleConfiguration(
-                Collections.singleton(dataSourceConfig), ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties()))));
+                Collections.singleton(dataSourceConfig), ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties())),
+                mock(ShardingSphereAlgorithmConfiguration.class)));
         assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
         assertThat(actual.getDataSources().get("ds").getPrimaryDataSourceName(), is("primary"));
         assertThat(actual.getDataSources().get("ds").getReplicaDataSourceNames(), is(Collections.singletonList("replica")));
@@ -63,7 +66,7 @@ public final class HARuleConfigurationYamlSwapperTest {
     public void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
         HADataSourceRuleConfiguration dataSourceConfig = new HADataSourceRuleConfiguration("ds", "primary", Collections.singletonList("replica"), null, true);
         YamlHARuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(
-                new HARuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap()));
+                new HARuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap(), mock(ShardingSphereAlgorithmConfiguration.class)));
         assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
         assertThat(actual.getDataSources().get("ds").getPrimaryDataSourceName(), is("primary"));
         assertThat(actual.getDataSources().get("ds").getReplicaDataSourceNames(), is(Collections.singletonList("replica")));
@@ -93,6 +96,10 @@ public final class HARuleConfigurationYamlSwapperTest {
         result.getDataSources().get("ha_ds").setName("ha_ds");
         result.getDataSources().get("ha_ds").setPrimaryDataSourceName("primary_ds");
         result.getDataSources().get("ha_ds").setReplicaDataSourceNames(Arrays.asList("replica_ds_0", "replica_ds_1"));
+        YamlShardingSphereAlgorithmConfiguration haType = new YamlShardingSphereAlgorithmConfiguration();
+        haType.setType("name");
+        haType.setProps(new Properties());
+        result.setHaType(haType);
         return result;
     }
     

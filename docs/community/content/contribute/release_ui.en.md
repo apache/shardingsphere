@@ -1,6 +1,6 @@
 +++
 title = "ShardingSphere-UI Release Guide"
-weight = 7
+weight = 8
 chapter = true
 +++
 

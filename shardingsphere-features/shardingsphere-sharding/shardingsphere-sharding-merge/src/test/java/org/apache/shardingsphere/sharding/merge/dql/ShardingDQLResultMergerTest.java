@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dql;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByMemoryMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByStreamMergedResult;
@@ -60,6 +60,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -321,16 +322,16 @@ public final class ShardingDQLResultMergerTest {
         List<QueryResult> result = new LinkedList<>();
         QueryResult queryResult = createQueryResult();
         result.add(queryResult);
-        result.add(mock(QueryResult.class));
-        result.add(mock(QueryResult.class));
-        result.add(mock(QueryResult.class));
+        result.add(mock(QueryResult.class, RETURNS_DEEP_STUBS));
+        result.add(mock(QueryResult.class, RETURNS_DEEP_STUBS));
+        result.add(mock(QueryResult.class, RETURNS_DEEP_STUBS));
         return result;
     }
     
     private QueryResult createQueryResult() throws SQLException {
-        QueryResult result = mock(QueryResult.class);
-        when(result.getColumnCount()).thenReturn(1);
-        when(result.getColumnLabel(1)).thenReturn("count(*)");
+        QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaData().getColumnCount()).thenReturn(1);
+        when(result.getMetaData().getColumnLabel(1)).thenReturn("count(*)");
         when(result.getValue(1, Object.class)).thenReturn(0);
         return result;
     }

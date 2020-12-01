@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor;
 
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintSetDatabaseShardingValueCommand;
 
@@ -28,8 +28,8 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.H
 public final class HintSetDatabaseShardingValueExecutor extends AbstractHintUpdateExecutor<HintSetDatabaseShardingValueCommand> {
     
     @Override
-    public BackendResponse execute(final HintSetDatabaseShardingValueCommand command) {
+    public ResponseHeader execute(final HintSetDatabaseShardingValueCommand command) {
         HintManagerHolder.get().setDatabaseShardingValue(command.getValue());
-        return new UpdateResponse();
+        return new UpdateResponseHeader(null);
     }
 }

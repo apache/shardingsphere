@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 148 家公司。
+共计 153 家公司。
 
 ### 金融行业
 <ul>
@@ -36,7 +36,6 @@ chapter = true
     <li><a href="https://www.ktjr.com/" rel="nofollow">开通金融</a></li>
     <li><a href="https://www.tansun.com/" rel="nofollow">天阳宏业</a></li>
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360数科</a></li>
-    
 </ul>
 
 ### 电子商务
@@ -76,8 +75,9 @@ chapter = true
     <li><a href="https://www.shebaotong.com/" rel="nofollow">上海社宝信息科技有限公司</a></li>
     <li><a href="https://www.itrus.com.cn/" rel="nofollow">天威诚信</a></li>
     <li><a href="http://www.dtchuxing.com/" rel="nofollow">公交云</a></li>
-     <li><a href="http://www.ushareit.com/" rel="nofollow">茄子快传</a></li>
-     
+    <li><a href="http://www.ushareit.com/" rel="nofollow">茄子快传</a></li>
+    <li><a href="https://www.xforceplus.com/" rel="nofollow">上海云砺信息科技有限公司</a></li>
+    <li><a href="https://aifanfan.baidu.com/ " rel="nofollow">百度爱番番</a></li>
 </ul>
 
 ### 出行
@@ -108,6 +108,7 @@ chapter = true
     <li><a href="https://www.dianwoda.com/" rel="nofollow">点我达</a></li>   
     <li><a href="https://www.keking.com" rel="nofollow">凯京科技</a></li>
     <li><a href="https://www.jdl.cn/" rel="nofollow">京东物流</a></li>
+    <li><a href="http://www.xbnwl.com/" rel="nofollow">广东喜百年供应链科技有限公司</a></li>
 </ul>
 
 ### 旅游服务
@@ -183,7 +184,6 @@ chapter = true
     <li><a href="http://www.jtkjbike.com/" rel="nofollow">金通科技集团</a></li>
     <li><a href="http://www.iotlead.com/" rel="nofollow">广州理德物联网科技有限公司</a></li>
      <li><a href=" http://tcslwxwl.cn.b2b168.com/" rel="nofollow">神州商龙科技股份有限公司 </a></li>
-    
 </ul>
 
 ### 软件开发及服务
@@ -214,6 +214,7 @@ chapter = true
     <li><a href="https://www.idengyun.com/" rel="nofollow">登云</a></li>
     <li><a href="http://www.aicmonitor.com/" rel="nofollow">航天智控</a></li>
     <li><a href="http://www.dzzd.com" rel="nofollow">玺信阳光</a></li>
+    <li><a href="https://www.garfiel-tech.com/" rel="nofollow">北京加菲猫科技有限公司</a></li>
 </ul>
 
 ### 医疗与健康
@@ -223,8 +224,8 @@ chapter = true
     <li><a href="https://www.zyhealth.com/" rel="nofollow">智云健康</a></li>
     <li><a href="https://www.ddky.com/" rel="nofollow">叮当快药</a></li>
     <li><a href="https://www.keep.com/">Keep</a></li>
-     <li><a href="http://www.dxy.cn/">丁香园</a></li>
-   
+    <li><a href="http://www.dxy.cn/">丁香园</a></li>
+    <li><a href="https://www.mytijian.com">杭州每天健康科技有限公司</a></li>
 </ul>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.scaling.core.datasource;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
+import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,25 +36,25 @@ import static org.junit.Assert.assertThat;
 
 public final class DataSourceManagerTest {
     
-    private List<SyncConfiguration> syncConfigurations;
+    private List<TaskConfiguration> taskConfigurations;
     
     @Before
     @SneakyThrows(IOException.class)
     public void setUp() {
-        syncConfigurations = ScalingConfigurationUtil.initJob("/config.json").getSyncConfigurations();
+        taskConfigurations = ScalingConfigurationUtil.initJob("/config.json").getTaskConfigs();
     }
     
     @Test
     public void assertGetDataSource() {
         DataSourceManager dataSourceManager = new DataSourceManager();
-        DataSource actual = dataSourceManager.getDataSource(syncConfigurations.get(0).getDumperConfiguration().getDataSourceConfiguration());
+        DataSource actual = dataSourceManager.getDataSource(taskConfigurations.get(0).getDumperConfig().getDataSourceConfig());
         assertThat(actual, instanceOf(DataSourceWrapper.class));
     }
     
     @Test
     public void assertClose() throws NoSuchFieldException, IllegalAccessException {
-        DataSourceManager dataSourceManager = new DataSourceManager(syncConfigurations);
-        Map<?, ?> cachedDataSources = ReflectionUtil.getFieldValueFromClass(dataSourceManager, "cachedDataSources", Map.class);
+        DataSourceManager dataSourceManager = new DataSourceManager(taskConfigurations);
+        Map<?, ?> cachedDataSources = ReflectionUtil.getFieldValue(dataSourceManager, "cachedDataSources", Map.class);
         assertNotNull(cachedDataSources);
         assertThat(cachedDataSources.size(), is(2));
         dataSourceManager.close();

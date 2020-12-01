@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor;
 
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintManagerHolder;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintClearCommand;
 
@@ -28,9 +28,9 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.H
 public final class HintClearExecutor extends AbstractHintUpdateExecutor<HintClearCommand> {
     
     @Override
-    public BackendResponse execute(final HintClearCommand command) {
+    public ResponseHeader execute(final HintClearCommand command) {
         HintManagerHolder.get().close();
         HintManagerHolder.remove();
-        return new UpdateResponse();
+        return new UpdateResponseHeader(null);
     }
 }

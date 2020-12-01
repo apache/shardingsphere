@@ -19,10 +19,11 @@ package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
+import org.apache.shardingsphere.scaling.core.exception.UnexpectedDataRecordOrderException;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.GroupedDataRecord;
-import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -33,7 +34,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
-public class DataRecordMergerTest {
+public final class DataRecordMergerTest {
     
     private final DataRecordMerger dataRecordMerger = new DataRecordMerger();
     
@@ -43,14 +44,14 @@ public class DataRecordMergerTest {
     
     private Collection<DataRecord> actual;
     
-    @Test(expected = UnexpectedDataRecordOrder.class)
+    @Test(expected = UnexpectedDataRecordOrderException.class)
     public void assertInsertBeforeInsert() {
         beforeDataRecord = mockInsertDataRecord(1, 1, 1);
         afterDataRecord = mockInsertDataRecord(1, 1, 1);
         actual = dataRecordMerger.merge(Lists.newArrayList(beforeDataRecord, afterDataRecord));
     }
     
-    @Test(expected = UnexpectedDataRecordOrder.class)
+    @Test(expected = UnexpectedDataRecordOrderException.class)
     public void assertUpdateBeforeInsert() {
         beforeDataRecord = mockUpdateDataRecord(1, 2, 2);
         afterDataRecord = mockInsertDataRecord(1, 1, 1);
@@ -196,7 +197,7 @@ public class DataRecordMergerTest {
         assertThat(dataRecord.getColumn(2).getValue(), is(1));
     }
     
-    @Test(expected = UnexpectedDataRecordOrder.class)
+    @Test(expected = UnexpectedDataRecordOrderException.class)
     public void assertDeleteBeforeDelete() {
         beforeDataRecord = mockDeleteDataRecord(1, 1, 1);
         afterDataRecord = mockDeleteDataRecord(1, 1, 1);
@@ -233,7 +234,7 @@ public class DataRecordMergerTest {
     }
     
     private DataRecord mockInsertDataRecord(final String tableName, final int id, final int userId, final int totalPrice) {
-        DataRecord result = new DataRecord(new NopPosition(), 3);
+        DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
         result.setType(ScalingConstant.INSERT);
         result.setTableName(tableName);
         result.addColumn(new Column("id", id, true, true));
@@ -255,7 +256,7 @@ public class DataRecordMergerTest {
     }
     
     private DataRecord mockUpdateDataRecord(final String tableName, final Integer oldId, final int id, final int userId, final int totalPrice) {
-        DataRecord result = new DataRecord(new NopPosition(), 3);
+        DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
         result.setType(ScalingConstant.UPDATE);
         result.setTableName(tableName);
         result.addColumn(new Column("id", oldId, id, null != oldId, true));
@@ -269,7 +270,7 @@ public class DataRecordMergerTest {
     }
     
     private DataRecord mockDeleteDataRecord(final String tableName, final int id, final int userId, final int totalPrice) {
-        DataRecord preDataRecord = new DataRecord(new NopPosition(), 3);
+        DataRecord preDataRecord = new DataRecord(new PlaceholderPosition(), 3);
         preDataRecord.setType(ScalingConstant.DELETE);
         preDataRecord.setTableName(tableName);
         preDataRecord.addColumn(new Column("id", id, true, true));

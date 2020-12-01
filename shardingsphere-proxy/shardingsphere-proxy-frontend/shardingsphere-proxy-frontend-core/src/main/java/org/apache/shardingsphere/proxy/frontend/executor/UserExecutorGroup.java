@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.executor;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.executor.kernel.impl.ShardingSphereExecutorService;
+import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 /**
@@ -34,15 +34,15 @@ public final class UserExecutorGroup {
     
     private static final UserExecutorGroup INSTANCE = new UserExecutorGroup();
     
-    private final ShardingSphereExecutorService shardingSphereExecutorService;
+    private final ExecutorServiceManager executorServiceManager;
     
     @Getter
     private final ListeningExecutorService executorService;
     
     private UserExecutorGroup() {
-        shardingSphereExecutorService = new ShardingSphereExecutorService(
+        executorServiceManager = new ExecutorServiceManager(
                 PROXY_SCHEMA_CONTEXTS.getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.ACCEPTOR_SIZE), NAME_FORMAT);
-        executorService = shardingSphereExecutorService.getExecutorService();
+        executorService = executorServiceManager.getExecutorService();
     }
     
     /**

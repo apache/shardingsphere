@@ -23,13 +23,13 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
@@ -62,7 +62,7 @@ public final class RDLBackendHandlerTest {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     @Test
@@ -86,8 +86,8 @@ public final class RDLBackendHandlerTest {
             assertThat(ex.getMessage(), is("No Registry center to execute `CreateDatabaseStatementContext` SQL"));
         }
         setGovernanceMetaDataContexts(true);
-        BackendResponse response = executeEngine.execute();
-        assertThat(response, instanceOf(UpdateResponse.class));
+        ResponseHeader response = executeEngine.execute();
+        assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
@@ -111,8 +111,8 @@ public final class RDLBackendHandlerTest {
             assertThat(ex.getMessage(), is("No Registry center to execute `DropDatabaseStatementContext` SQL"));
         }
         setGovernanceMetaDataContexts(true);
-        BackendResponse response = executeEngine.execute();
-        assertThat(response, instanceOf(UpdateResponse.class));
+        ResponseHeader response = executeEngine.execute();
+        assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
 
     @Test
@@ -158,8 +158,8 @@ public final class RDLBackendHandlerTest {
             assertThat(ex.getMessage(), is("No Registry center to execute `CreateDataSourcesStatementContext` SQL"));
         }
         setGovernanceMetaDataContexts(true);
-        BackendResponse response = executeEngine.execute();
-        assertThat(response, instanceOf(UpdateResponse.class));
+        ResponseHeader response = executeEngine.execute();
+        assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
@@ -173,8 +173,8 @@ public final class RDLBackendHandlerTest {
             assertThat(ex.getMessage(), is("No Registry center to execute `CreateShardingRuleStatementContext` SQL"));
         }
         setGovernanceMetaDataContexts(true);
-        BackendResponse response = executeEngine.execute();
-        assertThat(response, instanceOf(UpdateResponse.class));
+        ResponseHeader response = executeEngine.execute();
+        assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

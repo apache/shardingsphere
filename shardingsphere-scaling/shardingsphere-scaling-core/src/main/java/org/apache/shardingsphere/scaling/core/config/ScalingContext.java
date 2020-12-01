@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.scaling.core.config;
 
-import org.apache.shardingsphere.scaling.core.execute.engine.ShardingScalingExecuteEngine;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.scaling.core.execute.engine.ShardingScalingExecuteEngine;
 
 /**
  * ShardingSphere-Scaling context.
@@ -34,7 +33,9 @@ public final class ScalingContext {
     
     private ServerConfiguration serverConfig;
     
-    private ShardingScalingExecuteEngine taskExecuteEngine;
+    private ShardingScalingExecuteEngine inventoryDumperExecuteEngine;
+    
+    private ShardingScalingExecuteEngine incrementalDumperExecuteEngine;
     
     private ShardingScalingExecuteEngine importerExecuteEngine;
     
@@ -54,7 +55,8 @@ public final class ScalingContext {
      */
     public void init(final ServerConfiguration serverConfig) {
         this.serverConfig = serverConfig;
-        taskExecuteEngine = ShardingScalingExecuteEngine.newCachedThreadInstance();
+        inventoryDumperExecuteEngine = ShardingScalingExecuteEngine.newFixedThreadInstance(serverConfig.getWorkerThread());
+        incrementalDumperExecuteEngine = ShardingScalingExecuteEngine.newCachedThreadInstance();
         importerExecuteEngine = ShardingScalingExecuteEngine.newFixedThreadInstance(serverConfig.getWorkerThread());
     }
 }

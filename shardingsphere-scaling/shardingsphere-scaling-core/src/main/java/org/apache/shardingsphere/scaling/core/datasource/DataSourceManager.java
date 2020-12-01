@@ -20,8 +20,8 @@ package org.apache.shardingsphere.scaling.core.datasource;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -39,30 +39,30 @@ public final class DataSourceManager implements AutoCloseable {
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
 
     @Getter
-    private final Map<ScalingDataSourceConfiguration, DataSourceWrapper> cachedDataSources = new ConcurrentHashMap<>();
+    private final Map<DataSourceConfiguration, DataSourceWrapper> cachedDataSources = new ConcurrentHashMap<>();
 
     @Getter
-    private final Map<ScalingDataSourceConfiguration, DataSourceWrapper> sourceDataSources = new ConcurrentHashMap<>();
+    private final Map<DataSourceConfiguration, DataSourceWrapper> sourceDataSources = new ConcurrentHashMap<>();
 
-    public DataSourceManager(final List<SyncConfiguration> syncConfigs) {
-        createDataSources(syncConfigs);
+    public DataSourceManager(final List<TaskConfiguration> taskConfigs) {
+        createDataSources(taskConfigs);
     }
     
-    private void createDataSources(final List<SyncConfiguration> syncConfigs) {
-        createSourceDataSources(syncConfigs);
-        createTargetDataSources(syncConfigs.iterator().next().getImporterConfiguration().getDataSourceConfiguration());
+    private void createDataSources(final List<TaskConfiguration> taskConfigs) {
+        createSourceDataSources(taskConfigs);
+        createTargetDataSources(taskConfigs.iterator().next().getImporterConfig().getDataSourceConfig());
     }
     
-    private void createSourceDataSources(final List<SyncConfiguration> syncConfigs) {
-        for (SyncConfiguration syncConfiguration : syncConfigs) {
-            ScalingDataSourceConfiguration dataSourceConfig = syncConfiguration.getDumperConfiguration().getDataSourceConfiguration();
+    private void createSourceDataSources(final List<TaskConfiguration> taskConfigs) {
+        for (TaskConfiguration taskConfig : taskConfigs) {
+            DataSourceConfiguration dataSourceConfig = taskConfig.getDumperConfig().getDataSourceConfig();
             DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
             cachedDataSources.put(dataSourceConfig, dataSource);
             sourceDataSources.put(dataSourceConfig, dataSource);
         }
     }
     
-    private void createTargetDataSources(final ScalingDataSourceConfiguration dataSourceConfig) {
+    private void createTargetDataSources(final DataSourceConfiguration dataSourceConfig) {
         cachedDataSources.put(dataSourceConfig, dataSourceFactory.newInstance(dataSourceConfig));
     }
     
@@ -72,7 +72,7 @@ public final class DataSourceManager implements AutoCloseable {
      * @param dataSourceConfig data source configuration
      * @return data source
      */
-    public DataSource getDataSource(final ScalingDataSourceConfiguration dataSourceConfig) {
+    public DataSource getDataSource(final DataSourceConfiguration dataSourceConfig) {
         if (cachedDataSources.containsKey(dataSourceConfig)) {
             return cachedDataSources.get(dataSourceConfig);
         }

@@ -39,7 +39,7 @@ public final class ImporterFactory {
      * @return importer
      */
     public static Importer newInstance(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
-        return newInstance(importerConfig.getDataSourceConfiguration().getDatabaseType().getName(), importerConfig, dataSourceManager);
+        return newInstance(importerConfig.getDataSourceConfig().getDatabaseType().getName(), importerConfig, dataSourceManager);
     }
     
     /**

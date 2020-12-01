@@ -24,7 +24,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class GroupedDataRecord {
+public final class GroupedDataRecord {
     
     private final String tableName;
     

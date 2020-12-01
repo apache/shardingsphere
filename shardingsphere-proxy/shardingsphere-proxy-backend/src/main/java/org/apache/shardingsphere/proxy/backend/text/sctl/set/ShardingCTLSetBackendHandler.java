@@ -19,14 +19,14 @@ package org.apache.shardingsphere.proxy.backend.text.sctl.set;
 
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -44,7 +44,7 @@ public final class ShardingCTLSetBackendHandler implements TextProtocolBackendHa
     }
     
     @Override
-    public BackendResponse execute() {
+    public ResponseHeader execute() {
         Optional<ShardingCTLSetStatement> shardingTCLStatement = new ShardingCTLSetParser(sql).doParse();
         if (!shardingTCLStatement.isPresent()) {
             throw new InvalidShardingCTLFormatException(sql);
@@ -61,7 +61,7 @@ public final class ShardingCTLSetBackendHandler implements TextProtocolBackendHa
         } else {
             throw new UnsupportedShardingCTLTypeException(sql);
         }
-        return new UpdateResponse();
+        return new UpdateResponseHeader(null);
     }
     
     @Override
@@ -70,7 +70,7 @@ public final class ShardingCTLSetBackendHandler implements TextProtocolBackendHa
     }
     
     @Override
-    public QueryData getQueryData() {
+    public Collection<Object> getRowData() {
         return null;
     }
 }

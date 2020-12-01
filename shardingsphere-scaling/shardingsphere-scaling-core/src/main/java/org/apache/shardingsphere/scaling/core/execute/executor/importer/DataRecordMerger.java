@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
+import org.apache.shardingsphere.scaling.core.exception.UnexpectedDataRecordOrderException;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.GroupedDataRecord;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Data Record merger.
  */
-public class DataRecordMerger {
+public final class DataRecordMerger {
     
     /**
      * Merge data record.
@@ -88,7 +89,7 @@ public class DataRecordMerger {
     private void mergeInsert(final DataRecord dataRecord, final Map<DataRecord.Key, DataRecord> dataRecords) {
         DataRecord beforeDataRecord = dataRecords.get(dataRecord.getKey());
         if (null != beforeDataRecord && !ScalingConstant.DELETE.equals(beforeDataRecord.getType())) {
-            throw new UnexpectedDataRecordOrder(beforeDataRecord, dataRecord);
+            throw new UnexpectedDataRecordOrderException(beforeDataRecord, dataRecord);
         }
         dataRecords.put(dataRecord.getKey(), dataRecord);
     }
@@ -104,7 +105,7 @@ public class DataRecordMerger {
         if (ScalingConstant.DELETE.equals(beforeDataRecord.getType())) {
             throw new UnsupportedOperationException();
         }
-        if (checkUpdatedPrimaryKey(dataRecord) && dataRecords.containsKey(dataRecord.getOldKey())) {
+        if (checkUpdatedPrimaryKey(dataRecord)) {
             dataRecords.remove(dataRecord.getOldKey());
         }
         if (ScalingConstant.INSERT.equals(beforeDataRecord.getType())) {
@@ -119,14 +120,13 @@ public class DataRecordMerger {
             mergedDataRecord.setTableName(dataRecord.getTableName());
             mergedDataRecord.setType(ScalingConstant.UPDATE);
             dataRecords.put(mergedDataRecord.getKey(), mergedDataRecord);
-            return;
         }
     }
     
     private void mergeDelete(final DataRecord dataRecord, final Map<DataRecord.Key, DataRecord> dataRecords) {
         DataRecord beforeDataRecord = dataRecords.get(dataRecord.getKey());
         if (null != beforeDataRecord && (ScalingConstant.DELETE.equals(beforeDataRecord.getType()))) {
-            throw new UnexpectedDataRecordOrder(beforeDataRecord, dataRecord);
+            throw new UnexpectedDataRecordOrderException(beforeDataRecord, dataRecord);
         }
         if (null != beforeDataRecord && ScalingConstant.UPDATE.equals(beforeDataRecord.getType()) && checkUpdatedPrimaryKey(beforeDataRecord)) {
             // primary key updated + delete
@@ -151,7 +151,7 @@ public class DataRecordMerger {
     }
     
     private boolean checkUpdatedPrimaryKey(final DataRecord dataRecord) {
-        return RecordUtil.extractPrimaryColumns(dataRecord).stream().anyMatch(each -> each.isUpdated());
+        return RecordUtil.extractPrimaryColumns(dataRecord).stream().anyMatch(Column::isUpdated);
     }
     
     private DataRecord mergeColumn(final DataRecord preDataRecord, final DataRecord curDataRecord) {

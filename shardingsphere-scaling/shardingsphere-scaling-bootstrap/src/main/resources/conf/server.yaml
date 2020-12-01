@@ -21,9 +21,7 @@ pushTimeout: 1000
 workerThread: 30
 
 #distributedScalingService:
-#  name: scalingJob
+#  name: ScalingJob
 #  registryCenter:
 #    type: ZooKeeper
 #    serverLists: localhost:2181
-#    props:
-#      retryIntervalMilliseconds: 10000

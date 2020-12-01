@@ -44,8 +44,6 @@ public final class DALBackendHandlerFactoryTest {
         TextProtocolBackendHandler textProtocolBackendHandler = DALBackendHandlerFactory.newInstance("", mySQLShowTablesStatement, backendConnection);
         assertThat(textProtocolBackendHandler, instanceOf(ShowTablesBackendHandler.class));
         ShowTablesBackendHandler showTablesBackendHandler = (ShowTablesBackendHandler) textProtocolBackendHandler;
-        assertFieldOfInstance(showTablesBackendHandler, "sqlStatement", is(mySQLShowTablesStatement));
-        assertFieldOfInstance(showTablesBackendHandler, "sql", is(""));
         assertFieldOfInstance(showTablesBackendHandler, "backendConnection", is(backendConnection));
     }
     

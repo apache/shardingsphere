@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.scaling.core.service.impl;
 
-import org.apache.shardingsphere.scaling.core.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.job.ScalingJobProgress;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.preparer.ShardingScalingJobPreparer;
 import org.apache.shardingsphere.scaling.core.schedule.ScalingTaskScheduler;
 import org.apache.shardingsphere.scaling.core.schedule.SyncTaskControlStatus;
@@ -51,8 +51,8 @@ public final class StandaloneScalingJobService extends AbstractScalingJobService
     }
     
     @Override
-    public Optional<ShardingScalingJob> start(final ScalingConfiguration scalingConfiguration) {
-        ShardingScalingJob shardingScalingJob = new ShardingScalingJob(scalingConfiguration);
+    public Optional<ShardingScalingJob> start(final ScalingConfiguration scalingConfig) {
+        ShardingScalingJob shardingScalingJob = new ShardingScalingJob(scalingConfig);
         scalingJobMap.put(shardingScalingJob.getJobId(), shardingScalingJob);
         shardingScalingJobPreparer.prepare(shardingScalingJob);
         if (!SyncTaskControlStatus.PREPARING_FAILURE.name().equals(shardingScalingJob.getStatus())) {

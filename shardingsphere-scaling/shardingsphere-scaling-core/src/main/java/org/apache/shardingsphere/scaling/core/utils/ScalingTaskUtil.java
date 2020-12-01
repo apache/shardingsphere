@@ -18,13 +18,11 @@
 package org.apache.shardingsphere.scaling.core.utils;
 
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
-import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
+import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTask;
-import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTaskGroup;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * Scaling task util.
@@ -37,22 +35,18 @@ public final class ScalingTaskUtil {
      * @param inventoryDataTasks to check inventory tasks
      * @return is finished
      */
-    public static boolean allInventoryTasksFinished(final List<ScalingTask<InventoryPosition>> inventoryDataTasks) {
-        return inventoryDataTasks.stream().allMatch(each -> ((InventoryDataScalingTaskGroup) each).getScalingTasks().stream().allMatch(getFinishPredicate()));
-    }
-    
-    private static Predicate<ScalingTask<InventoryPosition>> getFinishPredicate() {
-        return each -> ((InventoryDataScalingTask) each).getPositionManager().getPosition().isFinished();
+    public static boolean allInventoryTasksFinished(final List<ScalingTask> inventoryDataTasks) {
+        return inventoryDataTasks.stream().allMatch(each -> ((InventoryDataScalingTask) each).getPositionManager().getPosition() instanceof FinishedPosition);
     }
     
     /**
-     * Assembling scaling listener path.
+     * Get scaling listener path.
      *
      * @param paths sub paths.
      * @return path.
      */
-    public static String assemblingPath(final Object... paths) {
-        StringBuilder result = new StringBuilder(ScalingConstant.SCALING_LISTENER);
+    public static String getScalingListenerPath(final Object... paths) {
+        StringBuilder result = new StringBuilder(ScalingConstant.SCALING_LISTENER_PATH);
         for (Object each : paths) {
             result.append("/").append(each);
         }

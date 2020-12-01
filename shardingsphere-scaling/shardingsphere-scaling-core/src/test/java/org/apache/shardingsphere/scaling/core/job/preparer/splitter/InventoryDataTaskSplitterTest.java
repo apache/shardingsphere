@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.scaling.core.job.preparer.splitter;
 
-import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.junit.After;
 import org.junit.Before;
@@ -35,6 +36,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -49,7 +51,9 @@ public final class InventoryDataTaskSplitterTest {
     
     private static final String PASSWORD = "password";
     
-    private SyncConfiguration syncConfig;
+    private static final String DATABASE_TYPE = "H2";
+    
+    private TaskConfiguration taskConfig;
     
     private DataSourceManager dataSourceManager;
     
@@ -59,7 +63,7 @@ public final class InventoryDataTaskSplitterTest {
     public void setUp() {
         DumperConfiguration dumperConfig = mockDumperConfig();
         ImporterConfiguration importerConfig = new ImporterConfiguration();
-        syncConfig = new SyncConfiguration(3, dumperConfig, importerConfig);
+        taskConfig = new TaskConfiguration(new JobConfiguration(), dumperConfig, importerConfig);
         dataSourceManager = new DataSourceManager();
         inventoryDataTaskSplitter = new InventoryDataTaskSplitter();
     }
@@ -71,50 +75,55 @@ public final class InventoryDataTaskSplitterTest {
     
     @Test
     public void assertSplitInventoryDataWithIntPrimary() throws SQLException {
-        initIntPrimaryEnvironment(syncConfig.getDumperConfiguration());
-        Collection<ScalingTask<InventoryPosition>> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfig, dataSourceManager);
+        taskConfig.getJobConfig().setShardingSize(10);
+        initIntPrimaryEnvironment(taskConfig.getDumperConfig());
+        List<ScalingTask> actual = (List<ScalingTask>) inventoryDataTaskSplitter.splitInventoryData(DATABASE_TYPE, taskConfig, dataSourceManager);
         assertNotNull(actual);
-        assertThat(actual.size(), is(3));
+        assertThat(actual.size(), is(10));
+        assertThat(((PrimaryKeyPosition) actual.get(9).getPositionManager().getPosition()).getBeginValue(), is(91L));
+        assertThat(((PrimaryKeyPosition) actual.get(9).getPositionManager().getPosition()).getEndValue(), is(100L));
     }
     
     @Test
     public void assertSplitInventoryDataWithCharPrimary() throws SQLException {
-        initCharPrimaryEnvironment(syncConfig.getDumperConfiguration());
-        Collection<ScalingTask<InventoryPosition>> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfig, dataSourceManager);
+        initCharPrimaryEnvironment(taskConfig.getDumperConfig());
+        Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(DATABASE_TYPE, taskConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
     
     @Test
     public void assertSplitInventoryDataWithUnionPrimary() throws SQLException {
-        initUnionPrimaryEnvironment(syncConfig.getDumperConfiguration());
-        Collection<ScalingTask<InventoryPosition>> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfig, dataSourceManager);
+        initUnionPrimaryEnvironment(taskConfig.getDumperConfig());
+        Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(DATABASE_TYPE, taskConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
     
     @Test
     public void assertSplitInventoryDataWithoutPrimary() throws SQLException {
-        initNoPrimaryEnvironment(syncConfig.getDumperConfiguration());
-        Collection<ScalingTask<InventoryPosition>> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfig, dataSourceManager);
+        initNoPrimaryEnvironment(taskConfig.getDumperConfig());
+        Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(DATABASE_TYPE, taskConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
     
     private void initIntPrimaryEnvironment(final DumperConfiguration dumperConfig) throws SQLException {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
         try (Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement()) {
+             Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (id INT PRIMARY KEY, user_id VARCHAR(12))");
-            statement.execute("INSERT INTO t_order (id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
+            for (int i = 1; i <= 100; i++) {
+                statement.execute(String.format("INSERT INTO t_order (id, user_id) VALUES (%d, 'x')", i));
+            }
         }
     }
     
     private void initCharPrimaryEnvironment(final DumperConfiguration dumperConfig) throws SQLException {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
         try (Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement()) {
+             Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (id CHAR(3) PRIMARY KEY, user_id VARCHAR(12))");
             statement.execute("INSERT INTO t_order (id, user_id) VALUES ('1', 'xxx'), ('999', 'yyy')");
@@ -122,9 +131,9 @@ public final class InventoryDataTaskSplitterTest {
     }
     
     private void initUnionPrimaryEnvironment(final DumperConfiguration dumperConfig) throws SQLException {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
         try (Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement()) {
+             Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (id INT, user_id VARCHAR(12), PRIMARY KEY (id, user_id))");
             statement.execute("INSERT INTO t_order (id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
@@ -132,9 +141,9 @@ public final class InventoryDataTaskSplitterTest {
     }
     
     private void initNoPrimaryEnvironment(final DumperConfiguration dumperConfig) throws SQLException {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
         try (Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement()) {
+             Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (id INT, user_id VARCHAR(12))");
             statement.execute("INSERT INTO t_order (id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
@@ -142,9 +151,9 @@ public final class InventoryDataTaskSplitterTest {
     }
     
     private DumperConfiguration mockDumperConfig() {
-        ScalingDataSourceConfiguration dataSourceConfig = new JDBCScalingDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
+        DataSourceConfiguration dataSourceConfig = new StandardJDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
         DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfiguration(dataSourceConfig);
+        result.setDataSourceConfig(dataSourceConfig);
         Map<String, String> tableMap = new HashMap<>();
         tableMap.put("t_order", "t_order");
         result.setTableNameMap(tableMap);

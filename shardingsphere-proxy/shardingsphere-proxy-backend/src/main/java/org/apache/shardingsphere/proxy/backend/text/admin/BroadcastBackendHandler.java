@@ -22,13 +22,13 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * Backend handler for broadcast.
@@ -45,7 +45,7 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
     private final BackendConnection backendConnection;
     
     @Override
-    public BackendResponse execute() throws SQLException {
+    public ResponseHeader execute() throws SQLException {
         String originalSchema = backendConnection.getSchemaName();
         for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
             backendConnection.setCurrentSchema(each);
@@ -55,7 +55,7 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
             databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection).execute();
         }
         backendConnection.setCurrentSchema(originalSchema);
-        return new UpdateResponse();
+        return new UpdateResponseHeader(sqlStatement);
     }
     
     @Override
@@ -64,7 +64,7 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
     }
     
     @Override
-    public QueryData getQueryData() {
+    public Collection<Object> getRowData() {
         return null;
     }
 }

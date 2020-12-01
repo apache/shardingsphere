@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.scaling.core.job.task.incremental;
 
-import org.apache.shardingsphere.scaling.core.config.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
+import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.fixture.FixtureNopManager;
 import org.apache.shardingsphere.scaling.core.job.SyncProgress;
-import org.apache.shardingsphere.scaling.core.job.position.IncrementalPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultSyncTaskFactory;
 import org.junit.After;
 import org.junit.Before;
@@ -61,7 +61,6 @@ public final class IncrementalDataScalingTaskTest {
         assertTrue(progress instanceof IncrementalDataSyncTaskProgress);
         assertThat(((IncrementalDataSyncTaskProgress) progress).getId(), is("ds0"));
         assertThat(((IncrementalDataSyncTaskProgress) progress).getDelayMillisecond(), is(Long.MAX_VALUE));
-        assertTrue(((IncrementalDataSyncTaskProgress) progress).getPosition() instanceof IncrementalPosition);
     }
     
     @After
@@ -71,19 +70,19 @@ public final class IncrementalDataScalingTaskTest {
     
     private ImporterConfiguration mockImporterConfiguration() {
         ImporterConfiguration result = new ImporterConfiguration();
-        result.setDataSourceConfiguration(new JDBCScalingDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD));
+        result.setDataSourceConfig(new StandardJDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD));
         return result;
     }
     
     private DumperConfiguration mockDumperConfig() {
-        ScalingDataSourceConfiguration dataSourceConfig = new JDBCScalingDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
+        DataSourceConfiguration dataSourceConfig = new StandardJDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceName("ds0");
-        result.setDataSourceConfiguration(dataSourceConfig);
+        result.setDataSourceConfig(dataSourceConfig);
         Map<String, String> tableMap = new HashMap<>(1, 1);
         tableMap.put("t_order", "t_order");
         result.setTableNameMap(tableMap);
-        result.setPositionManager(new FixtureNopManager(""));
+        result.setPositionManager(new PositionManager(new PlaceholderPosition()));
         return result;
     }
 }

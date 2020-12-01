@@ -96,8 +96,7 @@ privilegeLevel
     ;
 
 createUser
-    : CREATE USER (IF NOT EXISTS)? userName userAuthOption? (COMMA_ userName userAuthOption?)*
-    defaultRoleClause? requireClause? connectOption? accountLockPasswordExpireOptions?
+    : CREATE USER (IF NOT EXISTS)? alterUserList defaultRoleClause? requireClause? connectOptions? accountLockPasswordExpireOptions?
     ;
 
 defaultRoleClause
@@ -108,8 +107,8 @@ requireClause
     : REQUIRE (NONE | tlsOption (AND? tlsOption)*)
     ;
 
-connectOption
-    : WITH resourceOption resourceOption*
+connectOptions
+    : WITH connectOption connectOption*
     ;
 
 accountLockPasswordExpireOptions
@@ -117,14 +116,27 @@ accountLockPasswordExpireOptions
     ;
 
 accountLockPasswordExpireOption
-    : passwordOption | lockOption
+    : ACCOUNT (LOCK | UNLOCK)
+    | PASSWORD EXPIRE (DEFAULT | NEVER | INTERVAL NUMBER_ DAY)?
+    | PASSWORD HISTORY (DEFAULT | NUMBER_)
+    | PASSWORD REUSE INTERVAL (DEFAULT | NUMBER_ DAY)
+    | PASSWORD REQUIRE CURRENT (DEFAULT | OPTIONAL)?
+    | FAILED_LOGIN_ATTEMPTS NUMBER_
+    | PASSWORD_LOCK_TIME (NUMBER_ | UNBOUNDED)
     ;
 
 alterUser
-    : ALTER USER (IF EXISTS)? userName userAuthOption? (COMMA_ userName userAuthOption?)*
-    (REQUIRE (NONE | tlsOption (AND? tlsOption)*))? (WITH resourceOption resourceOption*)? (passwordOption | lockOption)*
+    : ALTER USER (IF EXISTS)? alterUserList requireClause? connectOptions? accountLockPasswordExpireOptions?
     | ALTER USER (IF EXISTS)? USER LP_ RP_ userFuncAuthOption
     | ALTER USER (IF EXISTS)? userName DEFAULT ROLE (NONE | ALL | roleName (COMMA_ roleName)*)
+    ;
+
+alterUserEntry
+    : userName userAuthOption?
+    ;
+
+alterUserList
+    : alterUserEntry (COMMA_ alterUserEntry)*
     ;
 
 dropUser
@@ -186,25 +198,12 @@ identifiedBy
     ;
 
 identifiedWith
-    : IDENTIFIED WITH pluginName (BY |AS) (STRING_ | RANDOM PASSWORD)
-      (REPLACE stringLiterals)? (RETAIN CURRENT PASSWORD)?
+    : IDENTIFIED WITH pluginName
+    | IDENTIFIED WITH pluginName BY (STRING_ | RANDOM PASSWORD) (REPLACE stringLiterals)? (RETAIN CURRENT PASSWORD)?
+    | IDENTIFIED WITH pluginName AS textStringHash (RETAIN CURRENT PASSWORD)?
     ;
 
-lockOption
-    : ACCOUNT LOCK | ACCOUNT UNLOCK
-    ;
-
-
-passwordOption
-    : PASSWORD EXPIRE (DEFAULT | NEVER | INTERVAL NUMBER_ DAY)?
-    | PASSWORD HISTORY (DEFAULT | NUMBER_)
-    | PASSWORD REUSE INTERVAL (DEFAULT | NUMBER_ DAY)
-    | PASSWORD REQUIRE CURRENT (DEFAULT | OPTIONAL)?
-    | FAILED_LOGIN_ATTEMPTS NUMBER_
-    | PASSWORD_LOCK_TIME (NUMBER_ | UNBOUNDED)
-    ;
-
-resourceOption
+connectOption
     : MAX_QUERIES_PER_HOUR NUMBER_
     | MAX_UPDATES_PER_HOUR NUMBER_
     | MAX_CONNECTIONS_PER_HOUR NUMBER_

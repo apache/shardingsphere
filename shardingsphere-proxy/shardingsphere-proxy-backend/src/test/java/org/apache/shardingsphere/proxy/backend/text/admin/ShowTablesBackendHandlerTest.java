@@ -22,19 +22,16 @@ import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,13 +54,13 @@ public final class ShowTablesBackendHandlerTest {
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getUsername()).thenReturn("root");
-        tablesBackendHandler = new ShowTablesBackendHandler("show tables", mock(SQLStatement.class), backendConnection);
+        tablesBackendHandler = new ShowTablesBackendHandler(backendConnection);
         Map<String, ShardingSphereMetaData> metaDataMap = getMetaDataMap();
         when(backendConnection.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(metaDataMap, mock(ExecutorKernel.class), getAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), getAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
@@ -84,9 +81,9 @@ public final class ShowTablesBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteShowTablesBackendHandler() throws SQLException {
-        QueryResponse actual = (QueryResponse) tablesBackendHandler.execute();
-        assertThat(actual, instanceOf(QueryResponse.class));
+    public void assertExecuteShowTablesBackendHandler() {
+        QueryResponseHeader actual = (QueryResponseHeader) tablesBackendHandler.execute();
+        assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(actual.getQueryHeaders().size(), is(1));
     }
     
@@ -94,10 +91,7 @@ public final class ShowTablesBackendHandlerTest {
     public void assertShowTablesUsingStream() throws SQLException {
         tablesBackendHandler.execute();
         while (tablesBackendHandler.next()) {
-            QueryData queryData = tablesBackendHandler.getQueryData();
-            assertThat(queryData.getColumnTypes().size(), is(1));
-            assertThat(queryData.getColumnTypes().iterator().next(), is(Types.VARCHAR));
-            assertThat(queryData.getData().size(), is(1));
+            assertThat(tablesBackendHandler.getRowData().size(), is(1));
         }
     }
 }
