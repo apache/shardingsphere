@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response.data;
+package org.apache.shardingsphere.proxy.backend.response.data.impl;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
 
 import java.util.List;
 
 /**
- * Query response data.
+ * Text query response data.
  */
-public interface QueryResponseData {
-
-    /**
-     * Get data.
-     * 
-     * @return data
-     */
-    List<Object> getData();
+@RequiredArgsConstructor
+@Getter
+public final class TextQueryResponseData implements QueryResponseData {
+    
+    private final List<Object> data;
 }
