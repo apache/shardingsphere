@@ -34,19 +34,19 @@ public interface HAType extends ShardingSphereAlgorithm {
      * @param dataSourceMap Data source map
      * @throws SQLException SQL Exception
      */
-    void checkHAConfig(Map<String, DataSource> dataSourceMap) throws SQLException;
+    void checkHAConfig(Map<String, DataSource> dataSourceMap, final String schemaName) throws SQLException;
     
     /**
      * Update primary data source.
      *
      * @param dataSourceMap Data source map
      */
-    void updatePrimaryDataSource(Map<String, DataSource> dataSourceMap);
+    void updatePrimaryDataSource(Map<String, DataSource> dataSourceMap, final String schemaName);
     
     /**
      * Periodical monitor.
      *
      * @param dataSourceMap Data source map
      */
-    void periodicalMonitor(Map<String, DataSource> dataSourceMap);
+    void periodicalMonitor(Map<String, DataSource> dataSourceMap, final String schemaName);
 }

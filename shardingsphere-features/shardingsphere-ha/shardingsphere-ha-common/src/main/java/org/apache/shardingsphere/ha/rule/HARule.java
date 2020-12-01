@@ -57,7 +57,7 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
     
     private final Map<String, HADataSourceRule> dataSourceRules;
     
-    public HARule(final HARuleConfiguration config, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    public HARule(final HARuleConfiguration config, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String schemaName) {
         Preconditions.checkArgument(!config.getDataSources().isEmpty(), "HA data source rules can not be empty.");
         Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
         Preconditions.checkArgument(null != databaseType, "Database type cannot be null.");
@@ -71,15 +71,15 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
         }
         HAType haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaType().getType(), config.getHaType().getProps());
         try {
-            haType.updatePrimaryDataSource(dataSourceMap);
-            haType.checkHAConfig(dataSourceMap);
-            haType.periodicalMonitor(dataSourceMap);
+            haType.updatePrimaryDataSource(dataSourceMap, schemaName);
+            haType.checkHAConfig(dataSourceMap, schemaName);
+            haType.periodicalMonitor(dataSourceMap, schemaName);
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         }
     }
     
-    public HARule(final AlgorithmProvidedHARuleConfiguration config, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    public HARule(final AlgorithmProvidedHARuleConfiguration config, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String schemaName) {
         Preconditions.checkArgument(!config.getDataSources().isEmpty(), "HA data source rules can not be empty.");
         Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
         Preconditions.checkArgument(null != databaseType, "Database type cannot be null.");
@@ -93,9 +93,9 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
         }
         HAType haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaType().getType(), config.getHaType().getProps());
         try {
-            haType.updatePrimaryDataSource(dataSourceMap);
-            haType.checkHAConfig(dataSourceMap);
-            haType.periodicalMonitor(dataSourceMap);
+            haType.updatePrimaryDataSource(dataSourceMap, schemaName);
+            haType.checkHAConfig(dataSourceMap, schemaName);
+            haType.periodicalMonitor(dataSourceMap, schemaName);
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         }

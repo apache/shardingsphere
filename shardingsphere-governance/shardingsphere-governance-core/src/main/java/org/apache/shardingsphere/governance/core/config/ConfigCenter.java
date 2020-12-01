@@ -36,12 +36,14 @@ import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigur
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
+import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceUpdateEvent;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -152,6 +154,29 @@ public final class ConfigCenter {
     @Subscribe
     public synchronized void renew(final SchemaPersistEvent event) {
         persistSchema(event.getSchemaName(), event.getSchema());
+    }
+    
+    /**
+     * Persist new HA rule configurations.
+     *
+     * @param event Data source name update event.
+     */
+    @Subscribe
+    public synchronized void renew(final PrimaryDataSourceUpdateEvent event) {
+        Map<String, DataSourceConfiguration> dataSourceConfigurations = loadDataSourceConfigurations(event.getSchemaName());
+        dataSourceConfigurations.remove(event.getOldPrimaryDataSource());
+        Collection<RuleConfiguration> ruleConfigurations = loadRuleConfigurations(event.getSchemaName());
+        for (RuleConfiguration each : ruleConfigurations) {
+            if (each instanceof HARuleConfiguration) {
+                Collection<HADataSourceRuleConfiguration> haDataSourceRuleConfigurations = ((HARuleConfiguration) each).getDataSources();
+                for (HADataSourceRuleConfiguration each1 : haDataSourceRuleConfigurations) {
+                    each1.setPrimaryDataSourceName(event.getNewPrimaryDataSource());
+                    each1.getReplicaDataSourceNames().remove(event.getOldPrimaryDataSource());
+                }
+            }
+        }
+        persistDataSourceConfigurations(event.getSchemaName(), dataSourceConfigurations);
+        persistRuleConfigurations(event.getSchemaName(), ruleConfigurations);
     }
     
     private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
