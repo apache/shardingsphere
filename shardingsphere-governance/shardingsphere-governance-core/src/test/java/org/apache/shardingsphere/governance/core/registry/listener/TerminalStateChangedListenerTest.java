@@ -22,6 +22,7 @@ import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.state.StateEvent;
+import org.apache.shardingsphere.infra.state.StateType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +31,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -57,5 +60,12 @@ public final class TerminalStateChangedListenerTest {
         Optional<StateEvent> actual = terminalStateChangedListener.createEvent(new DataChangedEvent("/test_ds", RegistryCenterNodeStatus.DISABLED.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
         assertTrue(actual.get().isOn());
+    }
+    
+    @Test
+    public void assertCreateEventWhenLocked() {
+        Optional<StateEvent> actual = terminalStateChangedListener.createEvent(new DataChangedEvent("/test_ds", RegistryCenterNodeStatus.LOCKED.name(), Type.UPDATED));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getType(), is(StateType.LOCK));
     }
 }
