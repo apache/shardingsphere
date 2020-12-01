@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
+import org.apache.shardingsphere.proxy.lock.ProxyLockContext;
+import org.apache.shardingsphere.proxy.lock.StandardLockStrategy;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 /**
@@ -41,5 +43,10 @@ public final class StandardBootstrapInitializer extends AbstractBootstrapInitial
     @Override
     protected TransactionContexts decorateTransactionContexts(final TransactionContexts transactionContexts) {
         return transactionContexts;
+    }
+    
+    @Override
+    protected void initProxyLockContext() {
+        ProxyLockContext.init(new StandardLockStrategy());
     }
 }
