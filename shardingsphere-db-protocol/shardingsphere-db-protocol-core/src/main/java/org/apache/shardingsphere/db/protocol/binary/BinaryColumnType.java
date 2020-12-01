@@ -23,9 +23,9 @@ package org.apache.shardingsphere.db.protocol.binary;
 public interface BinaryColumnType {
     
     /**
-     * Get value.
+     * Get database protocol binary column type value.
      * 
-     * @return value
+     * @return database protocol binary column type value
      */
     int getValue();
 }
