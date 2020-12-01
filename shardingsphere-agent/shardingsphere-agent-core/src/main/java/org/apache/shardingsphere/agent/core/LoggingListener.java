@@ -29,30 +29,28 @@ import net.bytebuddy.utility.JavaModule;
  */
 @Slf4j
 public class LoggingListener implements AgentBuilder.Listener {
-
+    
     @Override
     public void onDiscovery(final String typeName, final ClassLoader classLoader, final JavaModule module, final boolean loaded) {
-
     }
-
+    
     @Override
     public void onTransformation(final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module, final boolean loaded, final DynamicType dynamicType) {
         if (log.isDebugEnabled()) {
             log.debug("On transformation class {}.", typeDescription.getTypeName());
         }
     }
-
+    
     @Override
     public void onIgnored(final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module, final boolean loaded) {
     }
-
+    
     @Override
     public void onError(final String typeName, final ClassLoader classLoader, final JavaModule module, final boolean loaded, final Throwable throwable) {
         log.error("Failed to instrument {}.", typeName, throwable);
     }
-
+    
     @Override
     public void onComplete(final String typeName, final ClassLoader classLoader, final JavaModule module, final boolean loaded) {
-
     }
 }

@@ -33,13 +33,13 @@ import java.util.concurrent.Callable;
  */
 @Slf4j
 public class StaticMethodAroundInterceptor {
-
+    
     private final StaticMethodAroundAdvice advice;
-
+    
     public StaticMethodAroundInterceptor(final StaticMethodAroundAdvice advice) {
         this.advice = advice;
     }
-
+    
     /**
      * Only intercept static method.
      *
@@ -54,7 +54,6 @@ public class StaticMethodAroundInterceptor {
     public Object intercept(final @Origin Class<?> klass, final @Origin Method method, final @AllArguments Object[] args, final @SuperCall Callable<?> uber) {
         final MethodInvocationResult result = new MethodInvocationResult();
         final Object ret;
-
         try {
             advice.afterMethod(klass, method, args, result);
             // CHECKSTYLE:OFF
@@ -62,7 +61,6 @@ public class StaticMethodAroundInterceptor {
             // CHECKSTYLE:ON
             log.error("Failed to execute the pre-method of method[{}] in class[{}].", method.getName(), klass, throwable);
         }
-
         try {
             if (result.isRebased()) {
                 ret = result.getResult();
