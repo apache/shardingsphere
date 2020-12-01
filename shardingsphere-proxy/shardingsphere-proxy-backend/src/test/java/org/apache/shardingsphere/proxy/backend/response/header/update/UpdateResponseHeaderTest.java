@@ -54,8 +54,8 @@ public final class UpdateResponseHeaderTest {
     }
 
     private Collection<ExecuteResult> getExecuteUpdateResults() {
-        UpdateResult updateResult1 = new UpdateResult(1,2L);
-        UpdateResult updateResult2 = new UpdateResult(3,4L);
+        UpdateResult updateResult1 = new UpdateResult(1, 2L);
+        UpdateResult updateResult2 = new UpdateResult(3, 4L);
 
         return Arrays.asList(updateResult1, updateResult2);
     }
