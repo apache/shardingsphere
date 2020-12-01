@@ -20,23 +20,18 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
+        <artifactId>shardingsphere-agent-plugin-tracers</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>shardingsphere-agent</artifactId>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
+    <artifactId>shardingsphere-agent-tracer-sample</artifactId>
 
     <properties>
-        <shade.package>org.apache.shardingsphere.dependencies</shade.package>
+        <entrypoint.class>org.apache.shardingsphere.agent.plugin.trace.SamplePluginDefine</entrypoint.class>
     </properties>
 
-    <modules>
-        <module>shardingsphere-agent-bootstrap</module>
-        <module>shardingsphere-agent-core</module>
-        <module>shardingsphere-agent-plugins</module>
-        <module>shardingsphere-agent-distribution</module>
-    </modules>
 </project>

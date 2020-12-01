@@ -19,53 +19,52 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-agent</artifactId>
+        <artifactId>shardingsphere-agent-plugins</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-agent-plugins</artifactId>
-    <modelVersion>4.0.0</modelVersion>
+
     <packaging>pom</packaging>
+    <artifactId>shardingsphere-agent-plugin-tracers</artifactId>
+
+    <properties>
+        <entrypoint.class/>
+        <tracing.target.directory>${project.basedir}/../target/plugins</tracing.target.directory>
+    </properties>
 
     <modules>
-        <module>shardingsphere-agent-plugin-metrics</module>
-        <module>shardingsphere-agent-plugin-tracers</module>
+        <module>shardingsphere-agent-tracer-sample</module>
     </modules>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-agent-core</artifactId>
-                <version>${project.version}</version>
-                <scope>provided</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-agent-core</artifactId>
+        </dependency>
+    </dependencies>
 
     <build>
-        <finalName>${project.artifactId}-${project.version}.jar</finalName>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Entrypoint>${entrypoint.class}</Entrypoint>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <shadedArtifactAttached>false</shadedArtifactAttached>
-                            <createDependencyReducedPom>true</createDependencyReducedPom>
-                            <createSourcesJar>true</createSourcesJar>
-                            <shadeSourcesContent>true</shadeSourcesContent>
-                        </configuration>
-                    </execution>
-                </executions>
+                <configuration>
+                    <outputFile>${tracing.target.directory}/${project.build.finalName}</outputFile>
+                </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>
