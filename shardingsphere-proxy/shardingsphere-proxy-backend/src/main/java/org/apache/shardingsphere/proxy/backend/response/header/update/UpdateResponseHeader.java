@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.response.header.update;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
@@ -31,17 +32,16 @@ import java.util.List;
 /**
  * Update response header.
  */
+@Getter
 public final class UpdateResponseHeader implements ResponseHeader {
     
-    @Getter
     private final SQLStatement sqlStatement;
     
-    private final List<Integer> updateCounts = new LinkedList<>();
-    
-    @Getter
     private final long lastInsertId;
     
-    @Getter
+    @Getter(AccessLevel.NONE)
+    private final List<Integer> updateCounts = new LinkedList<>();
+    
     private long updateCount;
     
     public UpdateResponseHeader(final SQLStatement sqlStatement) {
@@ -50,11 +50,11 @@ public final class UpdateResponseHeader implements ResponseHeader {
     
     public UpdateResponseHeader(final SQLStatement sqlStatement, final Collection<ExecuteResult> executeResults) {
         this.sqlStatement = sqlStatement;
+        lastInsertId = getLastInsertId(executeResults);
+        updateCount = ((UpdateResult) executeResults.iterator().next()).getUpdateCount();
         for (ExecuteResult each : executeResults) {
-            updateCount = ((UpdateResult) each).getUpdateCount();
             updateCounts.add(((UpdateResult) each).getUpdateCount());
         }
-        lastInsertId = getLastInsertId(executeResults);
     }
     
     private long getLastInsertId(final Collection<ExecuteResult> executeResults) {
