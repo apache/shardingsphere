@@ -30,6 +30,6 @@ public final class HintAddDatabaseShardingValueExecutor extends AbstractHintUpda
     @Override
     public ResponseHeader execute(final HintAddDatabaseShardingValueCommand command) {
         HintManagerHolder.get().addDatabaseShardingValue(command.getLogicTable(), command.getValue());
-        return new UpdateResponseHeader();
+        return new UpdateResponseHeader(null);
     }
 }

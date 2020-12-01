@@ -44,7 +44,7 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
         String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
         if (ProxyContext.getInstance().schemaExists(schema) && isAuthorizedSchema(schema)) {
             backendConnection.setCurrentSchema(schema);
-            return new UpdateResponseHeader();
+            return new UpdateResponseHeader(useStatement);
         }
         throw new UnknownDatabaseException(schema);
         

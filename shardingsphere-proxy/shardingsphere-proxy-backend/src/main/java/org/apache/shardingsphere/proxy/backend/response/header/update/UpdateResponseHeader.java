@@ -17,44 +17,43 @@
 
 package org.apache.shardingsphere.proxy.backend.response.header.update;
 
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Update response header.
  */
+@Getter
 public final class UpdateResponseHeader implements ResponseHeader {
     
-    private final List<Integer> updateCounts = new LinkedList<>();
+    private final SQLStatement sqlStatement;
     
-    @Getter
     private final long lastInsertId;
     
-    @Getter
+    @Getter(AccessLevel.NONE)
+    private final Collection<Integer> updateCounts = new LinkedList<>();
+    
     private long updateCount;
     
-    @Getter
-    @Setter
-    private String type;
-    
-    public UpdateResponseHeader() {
-        this(Collections.emptyList());
+    public UpdateResponseHeader(final SQLStatement sqlStatement) {
+        this(sqlStatement, Collections.emptyList());
     }
     
-    public UpdateResponseHeader(final Collection<ExecuteResult> executeResults) {
+    public UpdateResponseHeader(final SQLStatement sqlStatement, final Collection<ExecuteResult> executeResults) {
+        this.sqlStatement = sqlStatement;
+        lastInsertId = getLastInsertId(executeResults);
+        updateCount = executeResults.iterator().hasNext() ? ((UpdateResult) executeResults.iterator().next()).getUpdateCount() : 0;
         for (ExecuteResult each : executeResults) {
-            updateCount = ((UpdateResult) each).getUpdateCount();
             updateCounts.add(((UpdateResult) each).getUpdateCount());
         }
-        lastInsertId = getLastInsertId(executeResults);
     }
     
     private long getLastInsertId(final Collection<ExecuteResult> executeResults) {
