@@ -19,18 +19,16 @@ package org.apache.shardingsphere.proxy.backend.response.data.binary;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
-
-import java.util.List;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 
 /**
- * Binary query response data.
+ * Binary query response cell.
  */
 @RequiredArgsConstructor
 @Getter
-public final class BinaryQueryResponseData implements QueryResponseData {
+public final class BinaryQueryResponseCell implements QueryResponseCell {
     
-    private final List<Integer> columnTypes;
+    private final int type;
     
-    private final List<Object> data;
+    private final Object data;
 }

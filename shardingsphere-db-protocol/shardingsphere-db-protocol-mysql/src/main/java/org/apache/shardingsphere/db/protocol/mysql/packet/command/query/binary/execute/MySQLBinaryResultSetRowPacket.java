@@ -18,21 +18,20 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.binary.BinaryResultSetRow;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.protocol.MySQLBinaryProtocolValueFactory;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Binary result set row packet for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-resultset-row.html">Binary Protocol Resultset Row</a>
  */
+@RequiredArgsConstructor
 public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     
     private static final int PACKET_HEADER = 0x00;
@@ -43,19 +42,6 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     private final int sequenceId;
     
     private final Collection<BinaryResultSetRow> binaryRows;
-    
-    public MySQLBinaryResultSetRowPacket(final int sequenceId, final List<Object> data, final List<Integer> columnTypes) {
-        this.sequenceId = sequenceId;
-        binaryRows = getBinaryResultSetRows(columnTypes, data);
-    }
-    
-    private Collection<BinaryResultSetRow> getBinaryResultSetRows(final List<Integer> columnTypes, final List<Object> data) {
-        Collection<BinaryResultSetRow> result = new LinkedList<>();
-        for (int i = 0; i < columnTypes.size(); i++) {
-            result.add(new BinaryResultSetRow(MySQLBinaryColumnType.valueOfJDBCType(columnTypes.get(i)), data.get(i)));
-        }
-        return result;
-    }
     
     @Override
     public void write(final MySQLPacketPayload payload) {

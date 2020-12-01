@@ -41,9 +41,10 @@ import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
-import org.apache.shardingsphere.proxy.backend.response.data.binary.BinaryQueryResponseData;
-import org.apache.shardingsphere.proxy.backend.response.data.text.TextQueryResponseData;
+import org.apache.shardingsphere.proxy.backend.response.data.binary.BinaryQueryResponseCell;
+import org.apache.shardingsphere.proxy.backend.response.data.text.TextQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
@@ -205,11 +206,17 @@ public final class DatabaseCommunicationEngine {
      * @throws SQLException SQL exception
      */
     public QueryResponseData getQueryResponseData() throws SQLException {
-        List<Object> row = new ArrayList<>(queryHeaders.size());
+        List<QueryResponseCell> cells = new ArrayList<>(queryHeaders.size());
+        boolean isBinary = isBinary();
         for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {
-            row.add(mergedResult.getValue(columnIndex, Object.class));
+            Object data = mergedResult.getValue(columnIndex, Object.class);
+            if (isBinary) {
+                cells.add(new BinaryQueryResponseCell(queryHeaders.get(columnIndex).getColumnType(), data));
+            } else {
+                cells.add(new TextQueryResponseCell(data));
+            }
         }
-        return isBinary() ? new BinaryQueryResponseData(queryHeaders.stream().map(QueryHeader::getColumnType).collect(Collectors.toList()), row) : new TextQueryResponseData(row);
+        return new QueryResponseData(cells);
     }
     
     private boolean isBinary() {

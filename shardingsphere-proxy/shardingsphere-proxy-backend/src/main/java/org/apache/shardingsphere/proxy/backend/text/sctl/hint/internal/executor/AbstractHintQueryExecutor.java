@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor;
 
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
-import org.apache.shardingsphere.proxy.backend.response.data.text.TextQueryResponseData;
+import org.apache.shardingsphere.proxy.backend.response.data.text.TextQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
@@ -57,10 +58,10 @@ public abstract class AbstractHintQueryExecutor<T extends HintCommand> implement
     
     @Override
     public final QueryResponseData getQueryResponseData() throws SQLException {
-        List<Object> row = new ArrayList<>(queryHeaders.size());
+        List<QueryResponseCell> cells = new ArrayList<>(queryHeaders.size());
         for (int i = 0; i < queryHeaders.size(); i++) {
-            row.add(mergedResult.getValue(i + 1, Object.class));
+            cells.add(new TextQueryResponseCell(mergedResult.getValue(i + 1, Object.class)));
         }
-        return new TextQueryResponseData(row);
+        return new QueryResponseData(cells);
     }
 }
