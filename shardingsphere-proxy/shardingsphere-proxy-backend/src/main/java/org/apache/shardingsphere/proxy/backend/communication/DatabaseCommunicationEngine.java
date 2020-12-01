@@ -45,9 +45,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryH
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -138,21 +135,9 @@ public final class DatabaseCommunicationEngine {
     }
     
     private UpdateResponseHeader processExecuteUpdate(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults) throws SQLException {
-        UpdateResponseHeader result = createUpdateResponse(executionContext, executeResults);
+        UpdateResponseHeader result = new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement(), executeResults);
         refreshSchema(executionContext);
         mergeUpdateCount(executionContext.getSqlStatementContext(), result);
-        return result;
-    }
-    
-    private UpdateResponseHeader createUpdateResponse(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults) {
-        UpdateResponseHeader result = new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement(), executeResults);
-        if (executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement) {
-            result.setType("INSERT");
-        } else if (executionContext.getSqlStatementContext().getSqlStatement() instanceof DeleteStatement) {
-            result.setType("DELETE");
-        } else if (executionContext.getSqlStatementContext().getSqlStatement() instanceof UpdateStatement) {
-            result.setType("UPDATE");
-        }
         return result;
     }
     

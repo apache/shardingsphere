@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.response.header.update;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -44,10 +43,6 @@ public final class UpdateResponseHeader implements ResponseHeader {
     
     @Getter
     private long updateCount;
-    
-    @Getter
-    @Setter
-    private String type;
     
     public UpdateResponseHeader(final SQLStatement sqlStatement) {
         this(sqlStatement, Collections.emptyList());
