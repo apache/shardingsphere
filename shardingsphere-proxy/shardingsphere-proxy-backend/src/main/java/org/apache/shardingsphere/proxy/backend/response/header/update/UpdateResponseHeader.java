@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -32,6 +33,9 @@ import java.util.List;
  * Update response header.
  */
 public final class UpdateResponseHeader implements ResponseHeader {
+    
+    @Getter
+    private final SQLStatement sqlStatement;
     
     private final List<Integer> updateCounts = new LinkedList<>();
     
@@ -45,11 +49,12 @@ public final class UpdateResponseHeader implements ResponseHeader {
     @Setter
     private String type;
     
-    public UpdateResponseHeader() {
-        this(Collections.emptyList());
+    public UpdateResponseHeader(final SQLStatement sqlStatement) {
+        this(sqlStatement, Collections.emptyList());
     }
     
-    public UpdateResponseHeader(final Collection<ExecuteResult> executeResults) {
+    public UpdateResponseHeader(final SQLStatement sqlStatement, final Collection<ExecuteResult> executeResults) {
+        this.sqlStatement = sqlStatement;
         for (ExecuteResult each : executeResults) {
             updateCount = ((UpdateResult) each).getUpdateCount();
             updateCounts.add(((UpdateResult) each).getUpdateCount());

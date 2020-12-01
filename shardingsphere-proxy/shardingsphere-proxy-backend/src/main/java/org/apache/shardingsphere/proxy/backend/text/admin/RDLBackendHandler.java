@@ -79,7 +79,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         }
         // TODO Need to get the executed feedback from registry center for returning.
         GovernanceEventBus.getInstance().post(new SchemaNamePersistEvent(context.getSqlStatement().getDatabaseName(), false));
-        UpdateResponseHeader result = new UpdateResponseHeader();
+        UpdateResponseHeader result = new UpdateResponseHeader(context.getSqlStatement());
         result.setType("CREATE");
         return result;
     }
@@ -90,7 +90,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         }
         // TODO Need to get the executed feedback from registry center for returning.
         GovernanceEventBus.getInstance().post(new SchemaNamePersistEvent(context.getSqlStatement().getDatabaseName(), true));
-        UpdateResponseHeader result = new UpdateResponseHeader();
+        UpdateResponseHeader result = new UpdateResponseHeader(context.getSqlStatement());
         result.setType("DROP");
         return result;
     }
@@ -101,7 +101,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(parameters));
         // TODO Need to get the executed feedback from registry center for returning.
         GovernanceEventBus.getInstance().post(new DataSourcePersistEvent(backendConnection.getSchemaName(), dataSources));
-        UpdateResponseHeader result = new UpdateResponseHeader();
+        UpdateResponseHeader result = new UpdateResponseHeader(context.getSqlStatement());
         result.setType("CREATE");
         return result;
     }
@@ -111,7 +111,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(config));
         // TODO Need to get the executed feedback from registry center for returning.
         GovernanceEventBus.getInstance().post(new RuleConfigurationsPersistEvent(backendConnection.getSchemaName(), rules));
-        UpdateResponseHeader result = new UpdateResponseHeader();
+        UpdateResponseHeader result = new UpdateResponseHeader(context.getSqlStatement());
         result.setType("CREATE");
         return result;
     }

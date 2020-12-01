@@ -30,7 +30,7 @@ public final class SkipBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public ResponseHeader execute() {
-        return new UpdateResponseHeader();
+        return new UpdateResponseHeader(null);
     }
     
     @Override

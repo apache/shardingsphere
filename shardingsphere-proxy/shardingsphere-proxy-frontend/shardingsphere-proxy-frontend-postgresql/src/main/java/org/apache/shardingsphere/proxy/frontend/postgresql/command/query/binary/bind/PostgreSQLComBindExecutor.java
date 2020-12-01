@@ -34,13 +34,14 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -56,7 +57,7 @@ import java.util.stream.Collectors;
 public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     private final PostgreSQLComBindPacket packet;
-            
+    
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Getter
@@ -114,7 +115,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     }
     
     private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponseHeader updateResponseHeader) {
-        return new PostgreSQLCommandCompletePacket(updateResponseHeader.getType(), updateResponseHeader.getUpdateCount());
+        return new PostgreSQLCommandCompletePacket(new PostgreSQLCommand(updateResponseHeader.getSqlStatement()).getSQLCommand(), updateResponseHeader.getUpdateCount());
     }
     
     @Override

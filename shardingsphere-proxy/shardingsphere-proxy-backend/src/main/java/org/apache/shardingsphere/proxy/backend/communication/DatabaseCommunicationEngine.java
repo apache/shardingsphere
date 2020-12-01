@@ -95,7 +95,7 @@ public final class DatabaseCommunicationEngine {
     
     private ResponseHeader doExecute(final ExecutionContext executionContext) throws SQLException {
         if (executionContext.getExecutionUnits().isEmpty()) {
-            return new UpdateResponseHeader();
+            return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
         Collection<ExecuteResult> executeResults = proxySQLExecutor.execute(executionContext);
@@ -145,7 +145,7 @@ public final class DatabaseCommunicationEngine {
     }
     
     private UpdateResponseHeader createUpdateResponse(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults) {
-        UpdateResponseHeader result = new UpdateResponseHeader(executeResults);
+        UpdateResponseHeader result = new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement(), executeResults);
         if (executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement) {
             result.setType("INSERT");
         } else if (executionContext.getSqlStatementContext().getSqlStatement() instanceof DeleteStatement) {

@@ -69,7 +69,7 @@ public final class UnicastBackendHandlerTest {
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), 
                 new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
-        setUnderlyingHandler(new UpdateResponseHeader());
+        setUnderlyingHandler(new UpdateResponseHeader(mock(SQLStatement.class)));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
