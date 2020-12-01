@@ -71,6 +71,7 @@ public final class PluginAdviceDefine {
     
     /**
      * Get class name of target.
+     *
      * @return class name
      */
     public String getClassNameOfTarget() {
@@ -145,7 +146,7 @@ public final class PluginAdviceDefine {
          * Configure the intercepting point around instance method.
          *
          * @param matcher constraints
-         * @return Instance method point builder
+         * @return instance method point builder
          */
         public InstanceMethodPointBuilder aroundInstanceMethod(final ElementMatcher<? super MethodDescription> matcher) {
             return new InstanceMethodPointBuilder(this, matcher);
@@ -155,7 +156,7 @@ public final class PluginAdviceDefine {
          * Configure the intercepting point around instance method.
          *
          * @param matcher constraints
-         * @return Static method point builder
+         * @return static method point builder
          */
         public StaticMethodPointBuilder aroundClassStaticMethod(final ElementMatcher<? super MethodDescription> matcher) {
             return new StaticMethodPointBuilder(this, matcher);
