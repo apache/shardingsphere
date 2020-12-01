@@ -24,7 +24,7 @@ import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.preparer.ScalingJobPreparer;
 import org.apache.shardingsphere.scaling.core.schedule.ScalingTaskScheduler;
-import org.apache.shardingsphere.scaling.core.schedule.ScalingControlStatus;
+import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
 import org.apache.shardingsphere.scaling.core.service.AbstractScalingJobService;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 
@@ -55,7 +55,7 @@ public final class StandaloneScalingJobService extends AbstractScalingJobService
         ScalingJob scalingJob = new ScalingJob(scalingConfig);
         scalingJobMap.put(scalingJob.getJobId(), scalingJob);
         scalingJobPreparer.prepare(scalingJob);
-        if (!ScalingControlStatus.PREPARING_FAILURE.name().equals(scalingJob.getStatus())) {
+        if (!JobStatus.PREPARING_FAILURE.name().equals(scalingJob.getStatus())) {
             ScalingTaskScheduler scalingTaskScheduler = new ScalingTaskScheduler(scalingJob);
             scalingTaskScheduler.start();
             scalingTaskSchedulerMap.put(scalingJob.getJobId(), scalingTaskScheduler);
@@ -69,7 +69,7 @@ public final class StandaloneScalingJobService extends AbstractScalingJobService
             throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", jobId));
         }
         scalingTaskSchedulerMap.get(jobId).stop();
-        scalingJobMap.get(jobId).setStatus(ScalingControlStatus.STOPPED.name());
+        scalingJobMap.get(jobId).setStatus(JobStatus.STOPPED.name());
     }
     
     @Override

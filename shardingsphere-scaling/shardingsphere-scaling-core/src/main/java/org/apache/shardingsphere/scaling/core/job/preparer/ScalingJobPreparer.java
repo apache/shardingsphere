@@ -36,7 +36,7 @@ import org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryDat
 import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
-import org.apache.shardingsphere.scaling.core.schedule.ScalingControlStatus;
+import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 
 import java.util.LinkedList;
@@ -74,7 +74,7 @@ public final class ScalingJobPreparer {
             scalingJob.setDataConsistencyChecker(initDataConsistencyChecker(databaseType, scalingJob));
         } catch (final PrepareFailedException ex) {
             log.error("Preparing scaling job {} failed", scalingJob.getJobId(), ex);
-            scalingJob.setStatus(ScalingControlStatus.PREPARING_FAILURE.name());
+            scalingJob.setStatus(JobStatus.PREPARING_FAILURE.name());
         }
     }
     

@@ -49,8 +49,8 @@ public final class ScalingTaskScheduler implements Runnable {
      * Stop all scaling task.
      */
     public void stop() {
-        if (!ScalingControlStatus.valueOf(scalingJob.getStatus()).isStoppedStatus()) {
-            scalingJob.setStatus(ScalingControlStatus.STOPPING.name());
+        if (JobStatus.valueOf(scalingJob.getStatus()).isRunning()) {
+            scalingJob.setStatus(JobStatus.STOPPING.name());
         }
         for (ScalingTask each : scalingJob.getInventoryTasks()) {
             each.stop();
@@ -73,7 +73,7 @@ public final class ScalingTaskScheduler implements Runnable {
             return true;
         }
         log.info("-------------- Start inventory data sync task --------------");
-        scalingJob.setStatus(ScalingControlStatus.MIGRATE_INVENTORY_DATA.name());
+        scalingJob.setStatus(JobStatus.EXECUTE_INVENTORY_TASK.name());
         ExecuteCallback inventoryDataTaskCallback = createInventoryDataTaskCallback();
         for (ScalingTask each : scalingJob.getInventoryTasks()) {
             ScalingContext.getInstance().getInventoryDumperExecuteEngine().submit(each, inventoryDataTaskCallback);
@@ -96,17 +96,17 @@ public final class ScalingTaskScheduler implements Runnable {
             public void onFailure(final Throwable throwable) {
                 log.error("Inventory task execute failed.", throwable);
                 stop();
-                scalingJob.setStatus(ScalingControlStatus.MIGRATE_INVENTORY_DATA_FAILURE.name());
+                scalingJob.setStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name());
             }
         };
     }
     
     private synchronized void executeIncrementalTask() {
-        if (ScalingControlStatus.SYNCHRONIZE_INCREMENTAL_DATA.name().equals(scalingJob.getStatus())) {
+        if (JobStatus.EXECUTE_INCREMENTAL_TASK.name().equals(scalingJob.getStatus())) {
             return;
         }
         log.info("-------------- Start incremental data sync task --------------");
-        scalingJob.setStatus(ScalingControlStatus.SYNCHRONIZE_INCREMENTAL_DATA.name());
+        scalingJob.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK.name());
         ExecuteCallback IncrementalTaskCallback = createIncrementalTaskCallback();
         for (ScalingTask each : scalingJob.getIncrementalTasks()) {
             ScalingContext.getInstance().getIncrementalDumperExecuteEngine().submit(each, IncrementalTaskCallback);
@@ -118,14 +118,14 @@ public final class ScalingTaskScheduler implements Runnable {
             
             @Override
             public void onSuccess() {
-                scalingJob.setStatus(ScalingControlStatus.STOPPED.name());
+                scalingJob.setStatus(JobStatus.STOPPED.name());
             }
             
             @Override
             public void onFailure(final Throwable throwable) {
                 log.error("Incremental task execute failed.", throwable);
                 stop();
-                scalingJob.setStatus(ScalingControlStatus.SYNCHRONIZE_INCREMENTAL_DATA_FAILURE.name());
+                scalingJob.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name());
             }
         };
     }

@@ -21,56 +21,56 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Scaling control status.
+ * Scaling Job status.
  */
 @RequiredArgsConstructor
 @Getter
-public enum ScalingControlStatus {
+public enum JobStatus {
     
     /**
-     * Task is in running status.
+     * Job is in running status.
      */
-    RUNNING(false),
+    RUNNING(true),
     
     /**
-     * Task is in prepare status.
+     * Job is in prepare status.
      */
-    PREPARING(false),
+    PREPARING(true),
     
     /**
-     * Task is in migrate inventory data status.
+     * Job is in execute inventory task status.
      */
-    MIGRATE_INVENTORY_DATA(false),
+    EXECUTE_INVENTORY_TASK(true),
     
     /**
-     * Task is in synchronize incremental data status.
+     * Job is in execute incremental task status.
      */
-    SYNCHRONIZE_INCREMENTAL_DATA(false),
+    EXECUTE_INCREMENTAL_TASK(true),
     
     /**
-     * Task is stopping.
+     * Job is stopping.
      */
-    STOPPING(false),
+    STOPPING(true),
     
     /**
      * Task has stopped.
      */
-    STOPPED(true),
+    STOPPED(false),
     
     /**
      * Task has stopped by failing to prepare work.
      */
-    PREPARING_FAILURE(true),
+    PREPARING_FAILURE(false),
     
     /**
-     * Task has stopped by failing to migrate inventory data.
+     * Task has stopped by failing to execute inventory task.
      */
-    MIGRATE_INVENTORY_DATA_FAILURE(true),
+    EXECUTE_INVENTORY_TASK_FAILURE(false),
     
     /**
-     * Task has stopped by failing to synchronize incremental data.
+     * Task has stopped by failing to execute incremental task.
      */
-    SYNCHRONIZE_INCREMENTAL_DATA_FAILURE(true);
+    EXECUTE_INCREMENTAL_TASK_FAILURE(false);
     
-    private final boolean stoppedStatus;
+    private final boolean running;
 }
