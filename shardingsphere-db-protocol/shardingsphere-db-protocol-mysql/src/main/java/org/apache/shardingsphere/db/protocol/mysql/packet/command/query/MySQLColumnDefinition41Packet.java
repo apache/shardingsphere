@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.command.query;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
@@ -58,14 +58,14 @@ public final class MySQLColumnDefinition41Packet implements MySQLPacket {
     
     private final int columnLength;
     
-    private final MySQLColumnType columnType;
+    private final MySQLBinaryColumnType columnType;
     
     private final int decimals;
     
     public MySQLColumnDefinition41Packet(final int sequenceId, final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
         this(sequenceId, resultSetMetaData.getSchemaName(columnIndex), resultSetMetaData.getTableName(columnIndex), resultSetMetaData.getTableName(columnIndex), 
                 resultSetMetaData.getColumnLabel(columnIndex), resultSetMetaData.getColumnName(columnIndex), resultSetMetaData.getColumnDisplaySize(columnIndex), 
-                MySQLColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(columnIndex)), resultSetMetaData.getScale(columnIndex));
+                MySQLBinaryColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(columnIndex)), resultSetMetaData.getScale(columnIndex));
     }
     
     /*
@@ -74,12 +74,12 @@ public final class MySQLColumnDefinition41Packet implements MySQLPacket {
      * @see <a href="https://github.com/apache/shardingsphere/issues/4358"></a>
      */
     public MySQLColumnDefinition41Packet(final int sequenceId, final String schema, final String table, final String orgTable,
-                                         final String name, final String orgName, final int columnLength, final MySQLColumnType columnType, final int decimals) {
+                                         final String name, final String orgName, final int columnLength, final MySQLBinaryColumnType columnType, final int decimals) {
         this(sequenceId, 0, schema, table, orgTable, name, orgName, columnLength, columnType, decimals);
     }
     
     public MySQLColumnDefinition41Packet(final int sequenceId, final int flags, final String schema, final String table, final String orgTable,
-                                         final String name, final String orgName, final int columnLength, final MySQLColumnType columnType, final int decimals) {
+                                         final String name, final String orgName, final int columnLength, final MySQLBinaryColumnType columnType, final int decimals) {
         this.sequenceId = sequenceId;
         characterSet = MySQLServerInfo.CHARSET;
         this.flags = flags;
@@ -104,7 +104,7 @@ public final class MySQLColumnDefinition41Packet implements MySQLPacket {
         Preconditions.checkArgument(NEXT_LENGTH == payload.readIntLenenc());
         characterSet = payload.readInt2();
         columnLength = payload.readInt4();
-        columnType = MySQLColumnType.valueOf(payload.readInt1());
+        columnType = MySQLBinaryColumnType.valueOf(payload.readInt1());
         flags = payload.readInt2();
         decimals = payload.readInt1();
         payload.skipReserved(2);

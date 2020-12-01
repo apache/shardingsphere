@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.response.header.update;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -47,19 +46,19 @@ public final class UpdateResponseHeader implements ResponseHeader {
         this(sqlStatement, Collections.emptyList());
     }
     
-    public UpdateResponseHeader(final SQLStatement sqlStatement, final Collection<ExecuteResult> executeResults) {
+    public UpdateResponseHeader(final SQLStatement sqlStatement, final Collection<UpdateResult> updateResults) {
         this.sqlStatement = sqlStatement;
-        lastInsertId = getLastInsertId(executeResults);
-        updateCount = executeResults.iterator().hasNext() ? ((UpdateResult) executeResults.iterator().next()).getUpdateCount() : 0;
-        for (ExecuteResult each : executeResults) {
-            updateCounts.add(((UpdateResult) each).getUpdateCount());
+        lastInsertId = getLastInsertId(updateResults);
+        updateCount = updateResults.iterator().hasNext() ? updateResults.iterator().next().getUpdateCount() : 0;
+        for (UpdateResult each : updateResults) {
+            updateCounts.add(each.getUpdateCount());
         }
     }
     
-    private long getLastInsertId(final Collection<ExecuteResult> executeResults) {
+    private long getLastInsertId(final Collection<UpdateResult> updateResults) {
         long result = 0;
-        for (ExecuteResult each : executeResults) {
-            result = Math.max(result, ((UpdateResult) each).getLastInsertId());
+        for (UpdateResult each : updateResults) {
+            result = Math.max(result, each.getLastInsertId());
         }
         return result;
     }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string;
 
 import io.netty.buffer.ByteBuf;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string.MySQLJsonValueDecoder.JsonValueTypes;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
@@ -52,7 +52,7 @@ public final class MySQLJsonBinlogProtocolValueTest {
     
     @Before
     public void setUp() {
-        columnDef = new MySQLBinlogColumnDef(MySQLColumnType.MySQL_TYPE_JSON);
+        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.MySQL_TYPE_JSON);
         when(payload.getByteBuf()).thenReturn(byteBuf);
         mockJsonValue();
     }

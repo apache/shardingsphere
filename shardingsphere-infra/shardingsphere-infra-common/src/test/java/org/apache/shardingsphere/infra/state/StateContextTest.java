@@ -37,6 +37,12 @@ public final class StateContextTest {
         assertThat(StateContext.getCurrentState(), is(StateType.OK));
     }
     
+    @Test
+    public void assertSwitchStateWithLocked() {
+        StateContext.switchState(new StateEvent(StateType.LOCK, false));
+        assertThat(StateContext.getCurrentState(), is(StateType.LOCK));
+    }
+    
     @After
     public void reset() {
         StateContext.switchState(new StateEvent(StateType.OK, true));

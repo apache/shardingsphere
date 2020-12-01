@@ -13,13 +13,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.core.exception;
+package org.apache.shardingsphere.db.protocol.binary;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Advice not found exception.
+ * Binary result set row.
  */
-public class AdviceNotFoundException extends RuntimeException {
+@RequiredArgsConstructor
+@Getter
+public final class BinaryResultSetRow {
+    
+    private final BinaryColumnType columnType;
+    
+    private final Object data;
 }

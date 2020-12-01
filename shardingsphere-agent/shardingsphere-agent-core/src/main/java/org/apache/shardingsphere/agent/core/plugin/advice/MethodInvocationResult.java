@@ -40,7 +40,7 @@ public class MethodInvocationResult {
     /**
      * Whether or not to discard origin method.
      *
-     * @return to replace the origin result if true.
+     * @return to replace the origin result if true
      */
     public boolean isRebased() {
         return isRebased;
@@ -49,7 +49,7 @@ public class MethodInvocationResult {
     /**
      * Result that is provided by per-method advice.
      *
-     * @return the advice result.
+     * @return the advice result
      */
     public Object getResult() {
         return result;
