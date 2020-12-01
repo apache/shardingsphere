@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.job.preparer.splitter;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
@@ -53,7 +53,7 @@ public final class InventoryDataTaskSplitterTest {
     
     private static final String DATABASE_TYPE = "H2";
     
-    private SyncConfiguration syncConfig;
+    private TaskConfiguration taskConfig;
     
     private DataSourceManager dataSourceManager;
     
@@ -63,7 +63,7 @@ public final class InventoryDataTaskSplitterTest {
     public void setUp() {
         DumperConfiguration dumperConfig = mockDumperConfig();
         ImporterConfiguration importerConfig = new ImporterConfiguration();
-        syncConfig = new SyncConfiguration(new JobConfiguration(), dumperConfig, importerConfig);
+        taskConfig = new TaskConfiguration(new JobConfiguration(), dumperConfig, importerConfig);
         dataSourceManager = new DataSourceManager();
         inventoryDataTaskSplitter = new InventoryDataTaskSplitter();
     }
@@ -75,9 +75,9 @@ public final class InventoryDataTaskSplitterTest {
     
     @Test
     public void assertSplitInventoryDataWithIntPrimary() throws SQLException {
-        syncConfig.getJobConfig().setShardingSize(10);
-        initIntPrimaryEnvironment(syncConfig.getDumperConfig());
-        List<ScalingTask> actual = (List<ScalingTask>) inventoryDataTaskSplitter.splitInventoryData(DATABASE_TYPE, syncConfig, dataSourceManager);
+        taskConfig.getJobConfig().setShardingSize(10);
+        initIntPrimaryEnvironment(taskConfig.getDumperConfig());
+        List<ScalingTask> actual = (List<ScalingTask>) inventoryDataTaskSplitter.splitInventoryData(DATABASE_TYPE, taskConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(10));
         assertThat(((PrimaryKeyPosition) actual.get(9).getPositionManager().getPosition()).getBeginValue(), is(91L));
@@ -86,24 +86,24 @@ public final class InventoryDataTaskSplitterTest {
     
     @Test
     public void assertSplitInventoryDataWithCharPrimary() throws SQLException {
-        initCharPrimaryEnvironment(syncConfig.getDumperConfig());
-        Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(DATABASE_TYPE, syncConfig, dataSourceManager);
+        initCharPrimaryEnvironment(taskConfig.getDumperConfig());
+        Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(DATABASE_TYPE, taskConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
     
     @Test
     public void assertSplitInventoryDataWithUnionPrimary() throws SQLException {
-        initUnionPrimaryEnvironment(syncConfig.getDumperConfig());
-        Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(DATABASE_TYPE, syncConfig, dataSourceManager);
+        initUnionPrimaryEnvironment(taskConfig.getDumperConfig());
+        Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(DATABASE_TYPE, taskConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
     
     @Test
     public void assertSplitInventoryDataWithoutPrimary() throws SQLException {
-        initNoPrimaryEnvironment(syncConfig.getDumperConfig());
-        Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(DATABASE_TYPE, syncConfig, dataSourceManager);
+        initNoPrimaryEnvironment(taskConfig.getDumperConfig());
+        Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(DATABASE_TYPE, taskConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }

@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Sync configuration.
+ * Task configuration.
  */
 @Getter
 @RequiredArgsConstructor
-public final class SyncConfiguration {
+public final class TaskConfiguration {
     
     private final JobConfiguration jobConfig;
     

@@ -68,10 +68,11 @@ public final class ScalingTaskScheduler implements Runnable {
     }
     
     private synchronized boolean executeInventoryDataSyncTask() {
-        log.info("-------------- Start inventory data sync task --------------");
         if (ScalingTaskUtil.allInventoryTasksFinished(shardingScalingJob.getInventoryDataTasks())) {
+            log.info("All inventory tasks finished.");
             return true;
         }
+        log.info("-------------- Start inventory data sync task --------------");
         shardingScalingJob.setStatus(SyncTaskControlStatus.MIGRATE_INVENTORY_DATA.name());
         ExecuteCallback inventoryDataTaskCallback = createInventoryDataTaskCallback();
         for (ScalingTask each : shardingScalingJob.getInventoryDataTasks()) {
@@ -86,6 +87,7 @@ public final class ScalingTaskScheduler implements Runnable {
             @Override
             public void onSuccess() {
                 if (ScalingTaskUtil.allInventoryTasksFinished(shardingScalingJob.getInventoryDataTasks())) {
+                    log.info("All inventory tasks finished.");
                     executeIncrementalDataSyncTask();
                 }
             }
@@ -100,10 +102,10 @@ public final class ScalingTaskScheduler implements Runnable {
     }
     
     private synchronized void executeIncrementalDataSyncTask() {
-        log.info("-------------- Start incremental data sync task --------------");
         if (SyncTaskControlStatus.SYNCHRONIZE_INCREMENTAL_DATA.name().equals(shardingScalingJob.getStatus())) {
             return;
         }
+        log.info("-------------- Start incremental data sync task --------------");
         shardingScalingJob.setStatus(SyncTaskControlStatus.SYNCHRONIZE_INCREMENTAL_DATA.name());
         ExecuteCallback incrementalDataTaskCallback = createIncrementalDataTaskCallback();
         for (ScalingTask each : shardingScalingJob.getIncrementalDataTasks()) {

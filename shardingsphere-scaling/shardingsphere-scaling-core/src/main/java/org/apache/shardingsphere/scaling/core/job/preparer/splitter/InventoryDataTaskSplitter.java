@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
@@ -56,14 +56,14 @@ public final class InventoryDataTaskSplitter {
      * Split inventory data to multi-tasks.
      *
      * @param databaseType database type
-     * @param syncConfig synchronize configuration
+     * @param taskConfig task configuration
      * @param dataSourceManager data source manager
      * @return split inventory data task
      */
-    public Collection<ScalingTask> splitInventoryData(final String databaseType, final SyncConfiguration syncConfig, final DataSourceManager dataSourceManager) {
+    public Collection<ScalingTask> splitInventoryData(final String databaseType, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager) {
         Collection<ScalingTask> result = new LinkedList<>();
-        for (InventoryDumperConfiguration each : splitDumperConfig(databaseType, syncConfig.getJobConfig().getShardingSize(), syncConfig.getDumperConfig(), dataSourceManager)) {
-            result.add(syncTaskFactory.createInventoryDataSyncTask(each, syncConfig.getImporterConfig()));
+        for (InventoryDumperConfiguration each : splitDumperConfig(databaseType, taskConfig.getJobConfig().getShardingSize(), taskConfig.getDumperConfig(), dataSourceManager)) {
+            result.add(syncTaskFactory.createInventoryDataSyncTask(each, taskConfig.getImporterConfig()));
         }
         return result;
     }

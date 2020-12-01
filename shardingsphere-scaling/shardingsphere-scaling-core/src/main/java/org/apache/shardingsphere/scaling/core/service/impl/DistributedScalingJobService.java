@@ -34,7 +34,7 @@ import org.apache.shardingsphere.scaling.core.service.AbstractScalingJobService;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
-import org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.utils.TaskConfigurationUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -58,7 +58,7 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
     @Override
     public Optional<ShardingScalingJob> start(final ScalingConfiguration scalingConfig) {
         ShardingScalingJob shardingScalingJob = new ShardingScalingJob();
-        SyncConfigurationUtil.fillInShardingTables(scalingConfig);
+        TaskConfigurationUtil.fillInShardingTables(scalingConfig);
         updateScalingConfig(shardingScalingJob.getJobId(), scalingConfig);
         return Optional.of(shardingScalingJob);
     }

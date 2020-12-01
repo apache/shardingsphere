@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.datasource;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
 
 import javax.sql.DataSource;
@@ -44,18 +44,18 @@ public final class DataSourceManager implements AutoCloseable {
     @Getter
     private final Map<DataSourceConfiguration, DataSourceWrapper> sourceDataSources = new ConcurrentHashMap<>();
 
-    public DataSourceManager(final List<SyncConfiguration> syncConfigs) {
-        createDataSources(syncConfigs);
+    public DataSourceManager(final List<TaskConfiguration> taskConfigs) {
+        createDataSources(taskConfigs);
     }
     
-    private void createDataSources(final List<SyncConfiguration> syncConfigs) {
-        createSourceDataSources(syncConfigs);
-        createTargetDataSources(syncConfigs.iterator().next().getImporterConfig().getDataSourceConfig());
+    private void createDataSources(final List<TaskConfiguration> taskConfigs) {
+        createSourceDataSources(taskConfigs);
+        createTargetDataSources(taskConfigs.iterator().next().getImporterConfig().getDataSourceConfig());
     }
     
-    private void createSourceDataSources(final List<SyncConfiguration> syncConfigs) {
-        for (SyncConfiguration syncConfig : syncConfigs) {
-            DataSourceConfiguration dataSourceConfig = syncConfig.getDumperConfig().getDataSourceConfig();
+    private void createSourceDataSources(final List<TaskConfiguration> taskConfigs) {
+        for (TaskConfiguration taskConfig : taskConfigs) {
+            DataSourceConfiguration dataSourceConfig = taskConfig.getDumperConfig().getDataSourceConfig();
             DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
             cachedDataSources.put(dataSourceConfig, dataSource);
             sourceDataSources.put(dataSourceConfig, dataSource);

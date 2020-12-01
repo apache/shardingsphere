@@ -25,7 +25,7 @@ import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCData
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
@@ -50,7 +50,7 @@ public final class InventoryDataScalingTaskTest {
     
     private static final String PASSWORD = "password";
     
-    private SyncConfiguration syncConfig;
+    private TaskConfiguration taskConfig;
     
     private DataSourceManager dataSourceManager;
     
@@ -59,7 +59,7 @@ public final class InventoryDataScalingTaskTest {
         DumperConfiguration dumperConfig = mockDumperConfig();
         ImporterConfiguration importerConfig = mockImporterConfig();
         ScalingContext.getInstance().init(new ServerConfiguration());
-        syncConfig = new SyncConfiguration(new JobConfiguration(), dumperConfig, importerConfig);
+        taskConfig = new TaskConfiguration(new JobConfiguration(), dumperConfig, importerConfig);
         dataSourceManager = new DataSourceManager();
     }
     
@@ -70,19 +70,19 @@ public final class InventoryDataScalingTaskTest {
     
     @Test(expected = SyncTaskExecuteException.class)
     public void assertStartWithGetEstimatedRowsFailure() {
-        InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(syncConfig.getDumperConfig());
+        InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
         inventoryDumperConfig.setTableName("t_non_exist");
-        InventoryDataScalingTask inventoryDataSyncTask = new InventoryDataScalingTask(inventoryDumperConfig, syncConfig.getImporterConfig(), dataSourceManager);
+        InventoryDataScalingTask inventoryDataSyncTask = new InventoryDataScalingTask(inventoryDumperConfig, taskConfig.getImporterConfig(), dataSourceManager);
         inventoryDataSyncTask.start();
     }
     
     @Test
     public void assertGetProgress() throws SQLException {
-        initTableData(syncConfig.getDumperConfig());
-        InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(syncConfig.getDumperConfig());
+        initTableData(taskConfig.getDumperConfig());
+        InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
         inventoryDumperConfig.setTableName("t_order");
-        inventoryDumperConfig.setPositionManager(syncConfig.getDumperConfig().getPositionManager());
-        InventoryDataScalingTask inventoryDataSyncTask = new InventoryDataScalingTask(inventoryDumperConfig, syncConfig.getImporterConfig(), dataSourceManager);
+        inventoryDumperConfig.setPositionManager(taskConfig.getDumperConfig().getPositionManager());
+        InventoryDataScalingTask inventoryDataSyncTask = new InventoryDataScalingTask(inventoryDumperConfig, taskConfig.getImporterConfig(), dataSourceManager);
         inventoryDataSyncTask.start();
         assertFalse(((InventoryDataSyncTaskProgress) inventoryDataSyncTask.getProgress()).isFinished());
     }

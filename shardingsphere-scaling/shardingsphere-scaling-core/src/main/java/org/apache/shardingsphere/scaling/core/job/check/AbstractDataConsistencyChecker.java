@@ -50,7 +50,7 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
     
     @Override
     public Map<String, DataConsistencyCheckResult> countCheck() {
-        return shardingScalingJob.getSyncConfigs()
+        return shardingScalingJob.getTaskConfigs()
                 .stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet())
                 .stream().collect(Collectors.toMap(Function.identity(), this::countCheck, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
