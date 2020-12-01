@@ -74,8 +74,9 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
         int index = 0;
         for (MySQLBinaryResultSetRow each : binaryRows) {
             if (null == each.getData()) {
-                result.setNullBit(index++);
+                result.setNullBit(index);
             }
+            index++;
         }
         return result;
     }
