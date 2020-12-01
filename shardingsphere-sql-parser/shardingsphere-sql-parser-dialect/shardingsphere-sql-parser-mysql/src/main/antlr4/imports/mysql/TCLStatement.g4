@@ -64,12 +64,13 @@ releaseSavepoint
     ;
 
 xa
-    : (START | BEGIN) xid (JOIN | RESUME)
-    | END xid (SUSPEND (FOR MIGRATE)?)?
-    | PREPARE xid
-    | COMMIT xid (ONE PHASE)?
-    | ROLLBACK xid
-    | RECOVER (CONVERT xid)?
+    : XA ((START | BEGIN) xid (JOIN | RESUME)
+        | END xid (SUSPEND (FOR MIGRATE)?)?
+        | PREPARE xid
+        | COMMIT xid (ONE PHASE)?
+        | ROLLBACK xid
+        | RECOVER (CONVERT xid)?
+    )
     ;
 
 transactionCharacteristic

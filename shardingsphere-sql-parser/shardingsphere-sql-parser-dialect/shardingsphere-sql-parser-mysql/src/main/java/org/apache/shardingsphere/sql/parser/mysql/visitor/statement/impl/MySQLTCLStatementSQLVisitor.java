@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ScopeCo
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAutoCommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TransactionCharacteristicContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.tcl.AutoCommitSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLXAStatement;
 
 /**
  * TCL Statement SQL visitor for MySQL.
@@ -97,5 +99,10 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
         return new MySQLSavepointStatement();
+    }
+
+    @Override
+    public ASTNode visitXa(final XaContext ctx) {
+        return new MySQLXAStatement();
     }
 }
