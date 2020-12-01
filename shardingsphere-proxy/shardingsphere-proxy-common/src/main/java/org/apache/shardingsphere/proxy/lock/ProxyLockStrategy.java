@@ -15,17 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.event;
+package org.apache.shardingsphere.proxy.lock;
 
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class GovernanceEventBusTest {
+/**
+ * Proxy lock strategy.
+ */
+public interface ProxyLockStrategy {
     
-    @Test
-    public void assertInstance() {
-        assertThat(GovernanceEventBus.getInstance(), is(GovernanceEventBus.getInstance()));
-    }
+    /**
+     * Try to get lock.
+     * 
+     * @return true if get the lock, false if not
+     */
+    boolean tryLock();
+    
+    /**
+     * Release lock.
+     */
+    void releaseLock();
 }

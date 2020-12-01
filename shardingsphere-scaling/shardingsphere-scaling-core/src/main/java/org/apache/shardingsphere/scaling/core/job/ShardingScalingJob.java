@@ -20,11 +20,11 @@ package org.apache.shardingsphere.scaling.core.job;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.schedule.SyncTaskControlStatus;
-import org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.utils.TaskConfigurationUtil;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 
 import java.util.LinkedList;
@@ -44,7 +44,7 @@ public final class ShardingScalingJob {
     
     private int shardingItem;
     
-    private final transient List<SyncConfiguration> syncConfigs = new LinkedList<>();
+    private final transient List<TaskConfiguration> taskConfigs = new LinkedList<>();
     
     private final transient List<ScalingTask> inventoryDataTasks = new LinkedList<>();
     
@@ -68,7 +68,7 @@ public final class ShardingScalingJob {
         this(Optional.ofNullable(scalingConfig.getJobConfiguration().getJobId()).orElse(generateKey()));
         this.scalingConfig = scalingConfig;
         shardingItem = scalingConfig.getJobConfiguration().getShardingItem();
-        syncConfigs.addAll(SyncConfigurationUtil.toSyncConfigs(scalingConfig));
+        taskConfigs.addAll(TaskConfigurationUtil.toTaskConfigs(scalingConfig));
     }
     
     private static SnowflakeKeyGenerateAlgorithm initIdAutoIncreaseGenerator() {

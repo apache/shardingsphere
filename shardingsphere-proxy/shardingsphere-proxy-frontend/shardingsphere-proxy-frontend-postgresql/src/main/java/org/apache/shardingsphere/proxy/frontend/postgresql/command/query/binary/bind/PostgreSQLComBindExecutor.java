@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary
 
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
@@ -34,13 +33,14 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -48,7 +48,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Command bind executor for PostgreSQL.
@@ -56,7 +55,7 @@ import java.util.stream.Collectors;
 public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     private final PostgreSQLComBindPacket packet;
-            
+    
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Getter
@@ -114,7 +113,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     }
     
     private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponseHeader updateResponseHeader) {
-        return new PostgreSQLCommandCompletePacket(updateResponseHeader.getType(), updateResponseHeader.getUpdateCount());
+        return new PostgreSQLCommandCompletePacket(new PostgreSQLCommand(updateResponseHeader.getSqlStatement()).getSQLCommand(), updateResponseHeader.getUpdateCount());
     }
     
     @Override
@@ -125,8 +124,6 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     @Override
     public PostgreSQLPacket getQueryData() throws SQLException {
         QueryResponseData queryData = databaseCommunicationEngine.getQueryResponseData();
-        return packet.isBinaryRowData()
-                ? new PostgreSQLBinaryResultSetRowPacket(queryData.getData(), queryData.getColumnTypes().stream().map(PostgreSQLColumnType::valueOfJDBCType).collect(Collectors.toList()))
-                : new PostgreSQLDataRowPacket(queryData.getData());
+        return packet.isBinaryRowData() ? new PostgreSQLBinaryResultSetRowPacket(queryData.getData(), queryData.getColumnTypes()) : new PostgreSQLDataRowPacket(queryData.getData());
     }
 }

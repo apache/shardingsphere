@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 
 /**
  * Binary prepared statement parameter type for MySQL.
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
 @Getter
 public final class MySQLBinaryStatementParameterType {
     
-    private final MySQLColumnType columnType;
+    private final MySQLBinaryColumnType columnType;
     
     private final int unsignedFlag;
 }

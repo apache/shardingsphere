@@ -19,6 +19,10 @@ grammar RLStatement;
 
 import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
 
+change
+    : changeMasterTo | changeReplicationFilter
+    ;
+
 changeMasterTo
     : CHANGE MASTER TO masterDefs  channelOption?
     ;
@@ -35,6 +39,10 @@ stopSlave
     : STOP SLAVE threadTypes channelOption*
     ;
 
+groupReplication
+    : startGroupReplication | stopGroupReplication
+    ;
+
 startGroupReplication
     : START GROUP_REPLICATION
     ;
@@ -45,14 +53,6 @@ stopGroupReplication
 
 purgeBinaryLog
     : PURGE (BINARY | MASTER) LOGS (TO logName | BEFORE datetimeExpr)
-    ;
-
-resetMaster
-    : RESET MASTER (TO binaryLogFileIndexNumber)?
-    ;
-
-resetSlave
-    : RESET SLAVE ALL? channelOption?
     ;
 
 threadTypes
@@ -72,10 +72,6 @@ utilOption
 
 connectionOptions
     : (USER EQ_ STRING_)? (PASSWORD EQ_ STRING_)? (DEFAULT_AUTH EQ_ STRING_)? (PLUGIN_DIR EQ_ STRING_)?
-    ;
-
-channelOption
-    : FOR CHANNEL STRING_
     ;
 
 masterDefs
@@ -132,8 +128,8 @@ filterDefs
 filterDef
     : REPLICATE_DO_DB EQ_ LP_ schemaNames? RP_
     | REPLICATE_IGNORE_DB EQ_ LP_ schemaNames? RP_
-    | REPLICATE_DO_TABLE EQ_ LP_ tableNames? RP_
-    | REPLICATE_IGNORE_TABLE EQ_ LP_ tableNames? RP_
+    | REPLICATE_DO_TABLE EQ_ LP_ tableList? RP_
+    | REPLICATE_IGNORE_TABLE EQ_ LP_ tableList? RP_
     | REPLICATE_WILD_DO_TABLE EQ_ LP_ wildTables? RP_
     | REPLICATE_WILD_IGNORE_TABLE EQ_ LP_ wildTables? RP_
     | REPLICATE_REWRITE_DB EQ_ LP_ schemaPairs? RP_

@@ -61,7 +61,7 @@ public final class ShardingCTLSetBackendHandler implements TextProtocolBackendHa
         } else {
             throw new UnsupportedShardingCTLTypeException(sql);
         }
-        return new UpdateResponseHeader();
+        return new UpdateResponseHeader(null);
     }
     
     @Override

@@ -49,19 +49,23 @@ public class ShardingSphereAgent {
         SingletonHolder.INSTANCE.put(agentConfiguration);
 
         ByteBuddy byteBuddy = new ByteBuddy().with(TypeValidation.ENABLED);
-
+    
         AgentBuilder builder = new AgentBuilder.Default()
             .with(byteBuddy)
             .ignore(ElementMatchers.isSynthetic())
             .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."))
             .or(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.")));
-
-        PluginLoader pluginLoader = new PluginLoader();
-
+    
+        PluginLoader pluginLoader = PluginLoader.getInstance();
+        pluginLoader.initialAllServices();
+    
         builder.type(pluginLoader.typeMatcher())
                .transform(new ShardingSphereTransformer(pluginLoader))
                .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                .with(new LoggingListener())
                .installOn(instrumentation);
+    
+        pluginLoader.startAllServices();
+        Runtime.getRuntime().addShutdownHook(new Thread(pluginLoader::shutdownAllServices));
     }
 }

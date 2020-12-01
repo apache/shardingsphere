@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.db.protocol.binary;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Sync configuration.
+ * Binary result set row.
  */
-@Getter
 @RequiredArgsConstructor
-public final class SyncConfiguration {
+@Getter
+public final class BinaryResultSetRow {
     
-    private final int concurrency;
+    private final BinaryColumnType columnType;
     
-    private final DumperConfiguration dumperConfig;
-    
-    private final ImporterConfiguration importerConfig;
+    private final Object data;
 }

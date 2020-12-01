@@ -37,5 +37,7 @@ public final class JobConfiguration {
     
     private int shardingItem;
     
+    private int shardingSize = 10000000;
+    
     private boolean running = true;
 }

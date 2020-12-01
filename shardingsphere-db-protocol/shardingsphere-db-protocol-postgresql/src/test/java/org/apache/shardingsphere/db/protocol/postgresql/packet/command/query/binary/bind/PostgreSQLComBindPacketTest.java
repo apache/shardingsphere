@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind;
 
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnType;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementParameterType;
@@ -57,7 +57,7 @@ public final class PostgreSQLComBindPacketTest {
         when(payload.readInt4()).thenReturn(1);
         when(payload.readInt8()).thenReturn(11L);
         String sql = "select * from order where id = ? ";
-        BinaryStatementRegistry.getInstance().get(1).register("sts-id", sql, 1, Collections.singletonList(new PostgreSQLBinaryStatementParameterType(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8)));
+        BinaryStatementRegistry.getInstance().get(1).register("sts-id", sql, 1, Collections.singletonList(new PostgreSQLBinaryStatementParameterType(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_INT8)));
         PostgreSQLComBindPacket bindPacket = new PostgreSQLComBindPacket(payload, 1);
         bindPacket.write(payload);
         assertThat(bindPacket.getSql(), is(sql));

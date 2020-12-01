@@ -46,7 +46,7 @@ public final class AgentConfigurationLoader {
         File configFile = null == specifiedConfigPath ? new File(AgentPathLocator.getAgentPath(), DEFAULT_CONFIG_PATH) : new File(specifiedConfigPath);
         return loadAgentConfiguration(configFile);
     }
-
+    
     private static AgentConfiguration loadAgentConfiguration(final File yamlFile) throws IOException {
         AgentConfiguration result = YamlEngine.unmarshal(yamlFile, AgentConfiguration.class);
         Preconditions.checkNotNull(result, "Agent configuration file `%s` is invalid.", yamlFile.getName());

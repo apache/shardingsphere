@@ -22,11 +22,12 @@ import Symbol, Keyword, MySQLKeyword, Literals, BaseRule, DMLStatement, DALState
 alterStatement
     : alterTable
     | alterDatabase
-    | alterFunction
+    | alterProcedure
     | alterFunction
     | alterEvent
     | alterView
     | alterTablespaceInnodb
+    | alterTablespaceNdb
     | alterLogfileGroup
     | alterInstance
     | alterServer
@@ -186,7 +187,7 @@ partitionNames
     ;
 
 dropTable
-    : DROP TEMPORARY? (TABLE | TABLES) existClause? tableNames restrict?
+    : DROP TEMPORARY? tableOrTables existClause? tableList restrict?
     ;
 
 dropIndex
@@ -220,9 +221,9 @@ alterDatabase
     ;
 
 createDatabaseSpecification_
-    : DEFAULT? characterSet
-    | DEFAULT? COLLATE EQ_? collationName
-    | DEFAULT? ENCRYPTION EQ_? y_or_n=STRING_
+    : defaultCollation
+    | defaultCollation
+    | defaultEncryption
     ;
     
 alterDatabaseSpecification_
@@ -542,7 +543,7 @@ createTableOption
     | option = (CHECKSUM | TABLE_CHECKSUM) EQ_? NUMBER_
     | option = DELAY_KEY_WRITE EQ_? NUMBER_
     | option = ROW_FORMAT EQ_? format = (DEFAULT | DYNAMIC | FIXED | COMPRESSED | REDUNDANT | COMPACT)
-    | option = UNION EQ_? LP_ tableNames RP_
+    | option = UNION EQ_? LP_ tableList RP_
     | defaultCharset
     | defaultCollation
     | option = INSERT_METHOD EQ_? method = (NO| FIRST| LAST)
@@ -554,6 +555,22 @@ createTableOption
     | option = KEY_BLOCK_SIZE EQ_? NUMBER_
     | option = ENGINE_ATTRIBUTE EQ_? jsonAttribute = STRING_
     | option = SECONDARY_ENGINE_ATTRIBUTE EQ_ jsonAttribute = STRING_
+    ;
+
+createSRSStatement
+    : CREATE OR REPLACE SPATIAL REFERENCE SYSTEM NUMBER_ srsAttribute*
+    | CREATE SPATIAL REFERENCE SYSTEM notExistClause? NUMBER_ srsAttribute*
+    ;
+
+dropSRSStatement
+    : DROP SPATIAL REFERENCE SYSTEM notExistClause? NUMBER_
+    ;
+
+srsAttribute
+    : NAME STRING_
+    | DEFINITION STRING_
+    | ORGANIZATION STRING_ IDENTIFIED BY NUMBER_
+    | DESCRIPTION STRING_
     ;
 
 place
@@ -742,9 +759,10 @@ declareHandlerStatement
     ;
 
 getDiagnosticsStatement
-    : GET (CURRENT | STACKED)? DIAGNOSTICS 
-      ((statementInformationItem (COMMA_ statementInformationItem)*) 
-    | (CONDITION conditionNumber conditionInformationItem (COMMA_ conditionInformationItem)*))
+    : GET (CURRENT | STACKED)? DIAGNOSTICS (
+        (statementInformationItem (COMMA_ statementInformationItem)*
+        | (CONDITION conditionNumber conditionInformationItem (COMMA_ conditionInformationItem)*))
+    )
     ;
 
 statementInformationItem

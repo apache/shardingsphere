@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.job.preparer.resumer;
 
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
@@ -63,7 +63,7 @@ public final class SyncPositionResumer {
     private List<ScalingTask> getAllInventoryDataTasks(final ShardingScalingJob shardingScalingJob, 
                                                                           final DataSourceManager dataSourceManager, final ResumeBreakPointManager resumeBreakPointManager) {
         List<ScalingTask> result = new LinkedList<>();
-        for (SyncConfiguration each : shardingScalingJob.getSyncConfigs()) {
+        for (TaskConfiguration each : shardingScalingJob.getTaskConfigs()) {
             MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(each.getDumperConfig().getDataSourceConfig()));
             for (Entry<String, PositionManager> entry : getInventoryPositionMap(each.getDumperConfig(), resumeBreakPointManager).entrySet()) {
                 result.add(syncTaskFactory.createInventoryDataSyncTask(newInventoryDumperConfig(each.getDumperConfig(), metaDataManager, entry), each.getImporterConfig()));
@@ -78,7 +78,7 @@ public final class SyncPositionResumer {
         result.setTableName(splitTable[0].split("\\.")[1]);
         result.setPositionManager(entry.getValue());
         if (2 == splitTable.length) {
-            result.setSpiltNum(Integer.parseInt(splitTable[1]));
+            result.setShardingItem(Integer.parseInt(splitTable[1]));
         }
         result.setPrimaryKey(metaDataManager.getTableMetaData(result.getTableName()).getPrimaryKeyColumns().get(0));
         return result;
@@ -92,9 +92,9 @@ public final class SyncPositionResumer {
     }
 
     private void resumeIncrementalPosition(final ShardingScalingJob shardingScalingJob, final ResumeBreakPointManager resumeBreakPointManager) {
-        for (SyncConfiguration each : shardingScalingJob.getSyncConfigs()) {
+        for (TaskConfiguration each : shardingScalingJob.getTaskConfigs()) {
             each.getDumperConfig().setPositionManager(resumeBreakPointManager.getIncrementalPositionManagerMap().get(each.getDumperConfig().getDataSourceName()));
-            shardingScalingJob.getIncrementalDataTasks().add(syncTaskFactory.createIncrementalDataSyncTask(each.getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
+            shardingScalingJob.getIncrementalDataTasks().add(syncTaskFactory.createIncrementalDataSyncTask(each.getJobConfig().getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
         }
     }
     

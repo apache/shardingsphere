@@ -13,30 +13,27 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package org.apache.shardingsphere.governance.core.event;
+package org.apache.shardingsphere.agent.plugin.trace;
 
-import com.google.common.eventbus.EventBus;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import net.bytebuddy.matcher.ElementMatchers;
+import org.apache.shardingsphere.agent.core.plugin.PluginDefine;
 
 /**
- * Governance event bus.
+ * Sample.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GovernanceEventBus {
+public class SamplePluginDefine extends PluginDefine {
+
+    @Override
+    protected void define() {
+        intercept("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask")
+                .aroundInstanceMethod(ElementMatchers.named("run"))
+                .implement("org.apache.shardingsphere.agent.plugin.trace.SampleAdvice")
+                .build();
     
-    /**
-     * Get instance of governance event bus.
-     *
-     * @return instance of governance event bus
-     */
-    public static EventBus getInstance() {
-        return GovernanceEventBusHolder.INSTANCE;
+        registerService(SampleTracer.class);
     }
-    
-    private static final class GovernanceEventBusHolder {
-        private static final EventBus INSTANCE = new EventBus();
-    }
+
 }

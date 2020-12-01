@@ -51,7 +51,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowDat
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowErrorsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowLikeContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowOtherContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTablesContext;
@@ -285,11 +284,6 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
-    
-    @Override
-    public ASTNode visitShowOther(final ShowOtherContext ctx) {
-        return new MySQLShowOtherStatement();
-    }
 
     @Override
     public ASTNode visitShowVariables(final ShowVariablesContext ctx) {
@@ -327,14 +321,6 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         characterSet.setAssignValue(assignValue);
         MySQLSetStatement result = new MySQLSetStatement();
         result.getVariableAssigns().add(characterSet);
-        if (null != ctx.collationName()) {
-            VariableAssignSegment collation = new VariableAssignSegment();
-            VariableSegment collationVariable = new VariableSegment();
-            collationVariable.setVariable(ctx.COLLATE().getText());
-            collation.setVariable(collationVariable);
-            collation.setAssignValue(ctx.collationName().getText());
-            result.getVariableAssigns().add(collation);
-        }
         return result;
     }
     

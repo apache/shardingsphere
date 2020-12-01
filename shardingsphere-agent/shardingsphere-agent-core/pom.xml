@@ -27,10 +27,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>shardingsphere-agent-core</artifactId>
-    
-    <properties>
-        <shade.package>org.apache.shardingsphere.dependencies</shade.package>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -48,25 +44,6 @@
             <version>${bytebuddy.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
     </dependencies>
 
     <build>

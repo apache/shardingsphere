@@ -41,8 +41,8 @@ public final class AbstractDataConsistencyCheckerTest {
     public void assertCountCheck() {
         ShardingScalingJob shardingScalingJob = mockShardingScalingJob();
         DataConsistencyChecker dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance("H2", shardingScalingJob);
-        initTableData(shardingScalingJob.getSyncConfigs().get(0).getDumperConfig().getDataSourceConfig());
-        initTableData(shardingScalingJob.getSyncConfigs().get(0).getImporterConfig().getDataSourceConfig());
+        initTableData(shardingScalingJob.getTaskConfigs().get(0).getDumperConfig().getDataSourceConfig());
+        initTableData(shardingScalingJob.getTaskConfigs().get(0).getImporterConfig().getDataSourceConfig());
         Map<String, DataConsistencyCheckResult> resultMap = dataConsistencyChecker.countCheck();
         assertTrue(resultMap.get("t1").isCountValid());
         assertThat(resultMap.get("t1").getSourceCount(), is(resultMap.get("t1").getTargetCount()));

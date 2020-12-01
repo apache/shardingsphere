@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.execute.executor.importer;
+package org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder;
 
 import com.google.common.collect.Collections2;
 import lombok.AccessLevel;
@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentMap;
  * Abstract SQL builder.
  */
 @RequiredArgsConstructor
-public abstract class AbstractSQLBuilder {
+public abstract class AbstractScalingSQLBuilder implements ScalingSQLBuilder {
     
     private static final String INSERT_SQL_CACHE_KEY_PREFIX = "INSERT_";
     
@@ -72,12 +72,7 @@ public abstract class AbstractSQLBuilder {
         return new StringBuilder().append(getLeftIdentifierQuoteString()).append(item).append(getRightIdentifierQuoteString());
     }
     
-    /**
-     * Build insert SQL.
-     *
-     * @param dataRecord data record
-     * @return insert SQL
-     */
+    @Override
     public String buildInsertSQL(final DataRecord dataRecord) {
         String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
@@ -98,13 +93,7 @@ public abstract class AbstractSQLBuilder {
         return String.format("INSERT INTO %s(%s) VALUES(%s)", quote(tableName), columnsLiteral, holder);
     }
     
-    /**
-     * Build update SQL.
-     *
-     * @param dataRecord data record
-     * @param conditionColumns condition columns
-     * @return update SQL
-     */
+    @Override
     public String buildUpdateSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
@@ -126,13 +115,7 @@ public abstract class AbstractSQLBuilder {
         return Collections2.filter(columns, Column::isUpdated);
     }
     
-    /**
-     * Build delete SQL.
-     *
-     * @param dataRecord data record
-     * @param conditionColumns condition columns
-     * @return delete SQL
-     */
+    @Override
     public String buildDeleteSQL(final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = DELETE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
@@ -154,13 +137,13 @@ public abstract class AbstractSQLBuilder {
         return where.toString();
     }
     
-    /**
-     * Build count SQL.
-     *
-     * @param tableName table name
-     * @return count SQL
-     */
+    @Override
     public String buildCountSQL(final String tableName) {
         return String.format("SELECT COUNT(*) FROM %s", quote(tableName));
+    }
+    
+    @Override
+    public String buildSplitByPrimaryKeyRangeSQL(final String tableName, final String primaryKey) {
+        return String.format("SELECT MAX(%s) FROM (SELECT %s FROM %s WHERE %s>=? limit ?) t", quote(primaryKey), quote(primaryKey), quote(tableName), quote(primaryKey));
     }
 }

@@ -57,7 +57,7 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
             default:
                 throw new SQLFeatureNotSupportedException(operationType.name());
         }
-        return new UpdateResponseHeader();
+        return new UpdateResponseHeader(null);
     }
     
     @Override

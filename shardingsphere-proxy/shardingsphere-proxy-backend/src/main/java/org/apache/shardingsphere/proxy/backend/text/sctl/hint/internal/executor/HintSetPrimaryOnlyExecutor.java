@@ -32,6 +32,6 @@ public final class HintSetPrimaryOnlyExecutor extends AbstractHintUpdateExecutor
         if (command.isPrimaryOnly()) {
             HintManagerHolder.get().setPrimaryRouteOnly();
         }
-        return new UpdateResponseHeader();
+        return new UpdateResponseHeader(null);
     }
 }
