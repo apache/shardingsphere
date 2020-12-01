@@ -48,7 +48,7 @@ public enum SingletonHolder {
      * @param clazz clazz
      * @return object
      */
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings("unchecked")
     public <T> T get(final Class<T> clazz) {
         return (T) SINGLES.get(clazz.getName());
     }

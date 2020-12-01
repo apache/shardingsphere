@@ -182,7 +182,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
      * @return instance of advice
      */
     @SneakyThrows({ClassNotFoundException.class, IllegalAccessException.class, InstantiationException.class})
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings("unchecked")
     public <T> T getOrCreateInstance(final String classNameOfAdvice) {
 
         if (objectPool.containsKey(classNameOfAdvice)) {
