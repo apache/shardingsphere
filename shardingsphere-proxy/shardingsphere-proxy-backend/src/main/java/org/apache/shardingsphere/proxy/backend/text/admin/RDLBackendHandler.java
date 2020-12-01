@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateShardingRuleStatement;
-import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePersistEvent;
@@ -78,7 +78,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
             throw new DBCreateExistsException(context.getSqlStatement().getDatabaseName());
         }
         // TODO Need to get the executed feedback from registry center for returning.
-        GovernanceEventBus.getInstance().post(new SchemaNamePersistEvent(context.getSqlStatement().getDatabaseName(), false));
+        ShardingSphereEventBus.getInstance().post(new SchemaNamePersistEvent(context.getSqlStatement().getDatabaseName(), false));
         UpdateResponseHeader result = new UpdateResponseHeader();
         result.setType("CREATE");
         return result;
@@ -89,7 +89,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
             throw new DBCreateExistsException(context.getSqlStatement().getDatabaseName());
         }
         // TODO Need to get the executed feedback from registry center for returning.
-        GovernanceEventBus.getInstance().post(new SchemaNamePersistEvent(context.getSqlStatement().getDatabaseName(), true));
+        ShardingSphereEventBus.getInstance().post(new SchemaNamePersistEvent(context.getSqlStatement().getDatabaseName(), true));
         UpdateResponseHeader result = new UpdateResponseHeader();
         result.setType("DROP");
         return result;
@@ -100,7 +100,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(parameters));
         // TODO Need to get the executed feedback from registry center for returning.
-        GovernanceEventBus.getInstance().post(new DataSourcePersistEvent(backendConnection.getSchemaName(), dataSources));
+        ShardingSphereEventBus.getInstance().post(new DataSourcePersistEvent(backendConnection.getSchemaName(), dataSources));
         UpdateResponseHeader result = new UpdateResponseHeader();
         result.setType("CREATE");
         return result;
@@ -110,7 +110,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         YamlShardingRuleConfiguration config = CreateShardingRuleStatementContextConverter.convert(context);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(config));
         // TODO Need to get the executed feedback from registry center for returning.
-        GovernanceEventBus.getInstance().post(new RuleConfigurationsPersistEvent(backendConnection.getSchemaName(), rules));
+        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsPersistEvent(backendConnection.getSchemaName(), rules));
         UpdateResponseHeader result = new UpdateResponseHeader();
         result.setType("CREATE");
         return result;
