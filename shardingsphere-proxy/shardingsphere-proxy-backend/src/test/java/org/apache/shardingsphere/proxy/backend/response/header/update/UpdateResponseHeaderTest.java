@@ -35,10 +35,8 @@ public final class UpdateResponseHeaderTest {
     public void assertPropertiesWhenExecuteResultOfEmptyList() {
         UpdateResponseHeader updateResponseHeader = new UpdateResponseHeader(mock(SQLStatement.class));
         assertThat(updateResponseHeader.getLastInsertId(), is(0L));
-        //before mergeUpdateCount
         assertThat(updateResponseHeader.getUpdateCount(), is(0L));
         updateResponseHeader.mergeUpdateCount();
-        //after mergeUpdateCount
         assertThat(updateResponseHeader.getUpdateCount(), is(0L));
     }
 
@@ -46,17 +44,14 @@ public final class UpdateResponseHeaderTest {
     public void assertPropertiesWhenExecuteResultOfNotEmptyList() {
         UpdateResponseHeader updateResponseHeader = new UpdateResponseHeader(mock(SQLStatement.class), getExecuteUpdateResults());
         assertThat(updateResponseHeader.getLastInsertId(), is(4L));
-        //before mergeUpdateCount
         assertThat(updateResponseHeader.getUpdateCount(), is(1L));
         updateResponseHeader.mergeUpdateCount();
-        //after mergeUpdateCount
         assertThat(updateResponseHeader.getUpdateCount(), is(4L));
     }
 
     private Collection<ExecuteResult> getExecuteUpdateResults() {
         UpdateResult updateResult1 = new UpdateResult(1, 2L);
         UpdateResult updateResult2 = new UpdateResult(3, 4L);
-
         return Arrays.asList(updateResult1, updateResult2);
     }
 }
