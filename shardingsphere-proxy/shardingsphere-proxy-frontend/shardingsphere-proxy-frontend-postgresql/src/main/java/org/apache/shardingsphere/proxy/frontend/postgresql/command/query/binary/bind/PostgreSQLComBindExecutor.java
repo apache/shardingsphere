@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary
 
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
@@ -49,7 +48,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Command bind executor for PostgreSQL.
@@ -126,8 +124,6 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     @Override
     public PostgreSQLPacket getQueryData() throws SQLException {
         QueryResponseData queryData = databaseCommunicationEngine.getQueryResponseData();
-        return packet.isBinaryRowData()
-                ? new PostgreSQLBinaryResultSetRowPacket(queryData.getData(), queryData.getColumnTypes().stream().map(PostgreSQLColumnType::valueOfJDBCType).collect(Collectors.toList()))
-                : new PostgreSQLDataRowPacket(queryData.getData());
+        return packet.isBinaryRowData() ? new PostgreSQLBinaryResultSetRowPacket(queryData.getData(), queryData.getColumnTypes()) : new PostgreSQLDataRowPacket(queryData.getData());
     }
 }

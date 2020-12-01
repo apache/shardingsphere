@@ -18,20 +18,19 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.protocol.MySQLBinaryProtocolValueFactory;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Binary result set row packet for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-resultset-row.html">Binary Protocol Resultset Row</a>
  */
-@RequiredArgsConstructor
 public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     
     private static final int PACKET_HEADER = 0x00;
@@ -44,6 +43,12 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     private final List<Object> data;
     
     private final List<MySQLColumnType> columnTypes;
+    
+    public MySQLBinaryResultSetRowPacket(final int sequenceId, final List<Object> data, final List<Integer> columnTypes) {
+        this.sequenceId = sequenceId;
+        this.data = data;
+        this.columnTypes = columnTypes.stream().map(MySQLColumnType::valueOfJDBCType).collect(Collectors.toList());
+    }
     
     @Override
     public void write(final MySQLPacketPayload payload) {

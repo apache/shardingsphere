@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -27,11 +26,11 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bin
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Binary result set row packet for PostgreSQL.
  */
-@RequiredArgsConstructor
 public final class PostgreSQLBinaryResultSetRowPacket implements PostgreSQLPacket {
     
     @Getter
@@ -41,6 +40,11 @@ public final class PostgreSQLBinaryResultSetRowPacket implements PostgreSQLPacke
     private final List<Object> data;
     
     private final List<PostgreSQLColumnType> columnTypes;
+    
+    public PostgreSQLBinaryResultSetRowPacket(final List<Object> data, final List<Integer> columnTypes) {
+        this.data = data;
+        this.columnTypes = columnTypes.stream().map(PostgreSQLColumnType::valueOfJDBCType).collect(Collectors.toList());
+    }
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
