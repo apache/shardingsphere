@@ -21,4 +21,11 @@ package org.apache.shardingsphere.db.protocol.binary;
  * Binary column type.
  */
 public interface BinaryColumnType {
+    
+    /**
+     * Get value.
+     * 
+     * @return value
+     */
+    int getValue();
 }
