@@ -19,20 +19,21 @@ package org.apache.shardingsphere.db.protocol.mysql.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.type.SQLColumnType;
 
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Column types for MySQL.
+ * Column type for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#column-type">Column Type</a>
  * @see <a href="https://github.com/apache/shardingsphere/issues/4355"></a>
  */
 @RequiredArgsConstructor
 @Getter
-public enum MySQLColumnType {
+public enum MySQLColumnType implements SQLColumnType {
     
     MYSQL_TYPE_DECIMAL(0x00), 
     

@@ -19,17 +19,18 @@ package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.type.SQLColumnType;
 
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Column types for PostgreSQL.
+ * Column type for PostgreSQL.
  */
 @RequiredArgsConstructor
 @Getter
-public enum PostgreSQLColumnType {
+public enum PostgreSQLColumnType implements SQLColumnType {
     
     POSTGRESQL_TYPE_UNSPECIFIED(0),
     
