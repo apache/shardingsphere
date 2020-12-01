@@ -95,6 +95,6 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
     private BinaryRow createBinaryRow(final QueryResponseRow queryResponseRow) {
         return new BinaryRow(queryResponseRow.getCells().stream().map(
-            each -> new BinaryCell(MySQLBinaryColumnType.valueOfJDBCType(((BinaryQueryResponseCell) each).getType()), each.getData())).collect(Collectors.toList()));
+            each -> new BinaryCell(MySQLBinaryColumnType.valueOfJDBCType(((BinaryQueryResponseCell) each).getJdbcType()), each.getData())).collect(Collectors.toList()));
     }
 }

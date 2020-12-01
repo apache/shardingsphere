@@ -136,6 +136,6 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     private BinaryRow createBinaryRow(final QueryResponseRow queryResponseRow) {
         return new BinaryRow(queryResponseRow.getCells().stream().map(
-            each -> new BinaryCell(PostgreSQLBinaryColumnType.valueOfJDBCType(((BinaryQueryResponseCell) each).getType()), each.getData())).collect(Collectors.toList()));
+            each -> new BinaryCell(PostgreSQLBinaryColumnType.valueOfJDBCType(((BinaryQueryResponseCell) each).getJdbcType()), each.getData())).collect(Collectors.toList()));
     }
 }

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 @Getter
 public final class BinaryQueryResponseCell implements QueryResponseCell {
     
-    private final int type;
+    private final int jdbcType;
     
     private final Object data;
 }
