@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher
 import org.apache.shardingsphere.infra.metadata.schema.refresher.spi.SchemaChangedNotifier;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -61,17 +62,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class DatabaseCommunicationEngine {
     
-    private final LogicSQL logicSQL;
-    
     private final ShardingSphereMetaData metaData;
+    
+    private final LogicSQL logicSQL;
     
     private final ProxySQLExecutor proxySQLExecutor;
     
-    private final KernelProcessor kernelProcessor = new KernelProcessor();
+    private final KernelProcessor kernelProcessor;
     
     private List<QueryHeader> queryHeaders;
     
     private MergedResult mergedResult;
+    
+    public DatabaseCommunicationEngine(final String type, final ShardingSphereMetaData metaData, final LogicSQL logicSQL, final BackendConnection backendConnection) {
+        this.metaData = metaData;
+        this.logicSQL = logicSQL;
+        proxySQLExecutor = new ProxySQLExecutor(type, backendConnection);
+        kernelProcessor = new KernelProcessor();
+    }
     
     /**
      * Execute to database.
