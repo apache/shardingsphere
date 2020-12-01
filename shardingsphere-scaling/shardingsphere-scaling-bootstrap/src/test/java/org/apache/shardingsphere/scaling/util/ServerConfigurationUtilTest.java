@@ -22,11 +22,11 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 
-public final class ScalingConfigUtilTest {
+public final class ServerConfigurationUtilTest {
     
     @Test
     public void assertInitScalingConfig() {
-        ScalingConfigUtil.initScalingConfig();
+        ServerConfigurationUtil.initScalingConfig();
         assertNotNull(ScalingContext.getInstance().getServerConfig());
     }
 }

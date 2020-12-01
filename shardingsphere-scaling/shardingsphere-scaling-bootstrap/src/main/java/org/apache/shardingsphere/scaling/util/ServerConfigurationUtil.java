@@ -35,7 +35,7 @@ import java.io.IOException;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-public final class ScalingConfigUtil {
+public final class ServerConfigurationUtil {
     
     private static final String DEFAULT_CONFIG_PATH = "conf/";
     
