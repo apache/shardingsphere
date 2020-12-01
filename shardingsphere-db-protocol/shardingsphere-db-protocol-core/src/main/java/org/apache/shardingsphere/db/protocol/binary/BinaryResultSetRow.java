@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute;
+package org.apache.shardingsphere.db.protocol.binary;
 
-import org.apache.shardingsphere.db.protocol.binary.BinaryResultSetRow;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Binary result set row for MySQL.
+ * Binary result set row.
+ * 
+ * @param <T> database dialect type of binary column type
  */
-public final class MySQLBinaryResultSetRow extends BinaryResultSetRow<MySQLColumnType> {
+@RequiredArgsConstructor
+@Getter
+public abstract class BinaryResultSetRow<T extends SQLColumnType> {
     
-    public MySQLBinaryResultSetRow(final MySQLColumnType columnType, final Object data) {
-        super(columnType, data);
-    }
+    private final T columnType;
+    
+    private final Object data;
 }

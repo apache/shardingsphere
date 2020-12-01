@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.mysql.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.type.SQLColumnType;
+import org.apache.shardingsphere.db.protocol.binary.SQLColumnType;
 
 import java.sql.Types;
 import java.util.HashMap;

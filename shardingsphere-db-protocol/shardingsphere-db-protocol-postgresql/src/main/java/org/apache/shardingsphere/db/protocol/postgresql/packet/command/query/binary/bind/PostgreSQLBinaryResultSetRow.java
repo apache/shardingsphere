@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.binary.BinaryResultSetRow;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnType;
 
 /**
  * Binary result set row for PostgreSQL.
  */
-@RequiredArgsConstructor
-@Getter
-public final class PostgreSQLBinaryResultSetRow {
+public final class PostgreSQLBinaryResultSetRow extends BinaryResultSetRow<PostgreSQLColumnType> {
     
-    private final PostgreSQLColumnType columnType;
-    
-    private final Object data;
+    public PostgreSQLBinaryResultSetRow(final PostgreSQLColumnType columnType, final Object data) {
+        super(columnType, data);
+    }
 }

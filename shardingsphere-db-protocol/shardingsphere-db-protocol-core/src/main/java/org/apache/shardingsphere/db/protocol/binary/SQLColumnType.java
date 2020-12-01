@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.type;
+package org.apache.shardingsphere.db.protocol.binary;
 
 /**
  * SQL column type.
