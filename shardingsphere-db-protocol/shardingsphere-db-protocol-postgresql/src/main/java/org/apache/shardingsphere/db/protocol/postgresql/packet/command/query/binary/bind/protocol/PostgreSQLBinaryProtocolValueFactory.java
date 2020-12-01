@@ -20,6 +20,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bi
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.db.protocol.binary.BinaryColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
 
 import java.util.HashMap;
@@ -31,7 +32,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLBinaryProtocolValueFactory {
     
-    private static final Map<PostgreSQLBinaryColumnType, PostgreSQLBinaryProtocolValue> BINARY_PROTOCOL_VALUES = new HashMap<>();
+    private static final Map<BinaryColumnType, PostgreSQLBinaryProtocolValue> BINARY_PROTOCOL_VALUES = new HashMap<>();
     
     static {
         setUnspecifiedBinaryProtocolValue();
@@ -93,11 +94,11 @@ public final class PostgreSQLBinaryProtocolValueFactory {
     /**
      * Get binary protocol value.
      *
-     * @param columnType column type
+     * @param binaryColumnType binary column type
      * @return binary protocol value
      */
-    public static PostgreSQLBinaryProtocolValue getBinaryProtocolValue(final PostgreSQLBinaryColumnType columnType) {
-        Preconditions.checkArgument(BINARY_PROTOCOL_VALUES.containsKey(columnType), "Cannot find PostgreSQL type '%s' in column type when process binary protocol value", columnType);
-        return BINARY_PROTOCOL_VALUES.get(columnType);
+    public static PostgreSQLBinaryProtocolValue getBinaryProtocolValue(final BinaryColumnType binaryColumnType) {
+        Preconditions.checkArgument(BINARY_PROTOCOL_VALUES.containsKey(binaryColumnType), "Cannot find PostgreSQL type '%s' in column type when process binary protocol value", binaryColumnType);
+        return BINARY_PROTOCOL_VALUES.get(binaryColumnType);
     }
 }

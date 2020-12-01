@@ -38,16 +38,16 @@ public final class PostgreSQLBinaryResultSetRowPacket implements PostgreSQLPacke
     @Getter
     private final char messageType = PostgreSQLCommandPacketType.DATA_ROW.getValue();
     
-    private final Collection<BinaryResultSetRow<PostgreSQLBinaryColumnType>> binaryRows;
+    private final Collection<BinaryResultSetRow> binaryRows;
     
     public PostgreSQLBinaryResultSetRowPacket(final List<Object> data, final List<Integer> columnTypes) {
         binaryRows = getBinaryResultSetRows(columnTypes, data);
     }
     
-    private Collection<BinaryResultSetRow<PostgreSQLBinaryColumnType>> getBinaryResultSetRows(final List<Integer> columnTypes, final List<Object> data) {
-        Collection<BinaryResultSetRow<PostgreSQLBinaryColumnType>> result = new LinkedList<>();
+    private Collection<BinaryResultSetRow> getBinaryResultSetRows(final List<Integer> columnTypes, final List<Object> data) {
+        Collection<BinaryResultSetRow> result = new LinkedList<>();
         for (int i = 0; i < columnTypes.size(); i++) {
-            result.add(new BinaryResultSetRow<>(PostgreSQLBinaryColumnType.valueOfJDBCType(columnTypes.get(i)), data.get(i)));
+            result.add(new BinaryResultSetRow(PostgreSQLBinaryColumnType.valueOfJDBCType(columnTypes.get(i)), data.get(i)));
         }
         return result;
     }
@@ -59,7 +59,7 @@ public final class PostgreSQLBinaryResultSetRowPacket implements PostgreSQLPacke
     }
     
     private void writeValues(final PostgreSQLPacketPayload payload) {
-        for (BinaryResultSetRow<PostgreSQLBinaryColumnType> each : binaryRows) {
+        for (BinaryResultSetRow each : binaryRows) {
             PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(each.getColumnType());
             Object value = each.getData();
             payload.writeInt4(binaryProtocolValue.getColumnLength(value));

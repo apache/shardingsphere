@@ -22,14 +22,12 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Binary result set row.
- * 
- * @param <T> database dialect type of binary column type
  */
 @RequiredArgsConstructor
 @Getter
-public final class BinaryResultSetRow<T extends BinaryColumnType> {
+public final class BinaryResultSetRow {
     
-    private final T columnType;
+    private final BinaryColumnType columnType;
     
     private final Object data;
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.db.protocol.binary.BinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 
 import java.util.HashMap;
@@ -31,7 +32,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLBinaryProtocolValueFactory {
     
-    private static final Map<MySQLBinaryColumnType, MySQLBinaryProtocolValue> BINARY_PROTOCOL_VALUES = new HashMap<>();
+    private static final Map<BinaryColumnType, MySQLBinaryProtocolValue> BINARY_PROTOCOL_VALUES = new HashMap<>();
     
     static {
         setStringLenencBinaryProtocolValue();
@@ -114,11 +115,11 @@ public final class MySQLBinaryProtocolValueFactory {
     /**
      * Get binary protocol value.
      * 
-     * @param columnType column type
+     * @param binaryColumnType binary column type
      * @return binary protocol value
      */
-    public static MySQLBinaryProtocolValue getBinaryProtocolValue(final MySQLBinaryColumnType columnType) {
-        Preconditions.checkArgument(BINARY_PROTOCOL_VALUES.containsKey(columnType), "Cannot find MySQL type '%s' in column type when process binary protocol value", columnType);
-        return BINARY_PROTOCOL_VALUES.get(columnType);
+    public static MySQLBinaryProtocolValue getBinaryProtocolValue(final BinaryColumnType binaryColumnType) {
+        Preconditions.checkArgument(BINARY_PROTOCOL_VALUES.containsKey(binaryColumnType), "Cannot find MySQL type '%s' in column type when process binary protocol value", binaryColumnType);
+        return BINARY_PROTOCOL_VALUES.get(binaryColumnType);
     }
 }

@@ -42,17 +42,17 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     @Getter
     private final int sequenceId;
     
-    private final Collection<BinaryResultSetRow<MySQLBinaryColumnType>> binaryRows;
+    private final Collection<BinaryResultSetRow> binaryRows;
     
     public MySQLBinaryResultSetRowPacket(final int sequenceId, final List<Object> data, final List<Integer> columnTypes) {
         this.sequenceId = sequenceId;
         binaryRows = getBinaryResultSetRows(columnTypes, data);
     }
     
-    private Collection<BinaryResultSetRow<MySQLBinaryColumnType>> getBinaryResultSetRows(final List<Integer> columnTypes, final List<Object> data) {
-        Collection<BinaryResultSetRow<MySQLBinaryColumnType>> result = new LinkedList<>();
+    private Collection<BinaryResultSetRow> getBinaryResultSetRows(final List<Integer> columnTypes, final List<Object> data) {
+        Collection<BinaryResultSetRow> result = new LinkedList<>();
         for (int i = 0; i < columnTypes.size(); i++) {
-            result.add(new BinaryResultSetRow<>(MySQLBinaryColumnType.valueOfJDBCType(columnTypes.get(i)), data.get(i)));
+            result.add(new BinaryResultSetRow(MySQLBinaryColumnType.valueOfJDBCType(columnTypes.get(i)), data.get(i)));
         }
         return result;
     }
@@ -73,7 +73,7 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     private MySQLNullBitmap getNullBitmap() {
         MySQLNullBitmap result = new MySQLNullBitmap(binaryRows.size(), NULL_BITMAP_OFFSET);
         int index = 0;
-        for (BinaryResultSetRow<MySQLBinaryColumnType> each : binaryRows) {
+        for (BinaryResultSetRow each : binaryRows) {
             if (null == each.getData()) {
                 result.setNullBit(index);
             }
@@ -83,7 +83,7 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     }
     
     private void writeValues(final MySQLPacketPayload payload) {
-        for (BinaryResultSetRow<MySQLBinaryColumnType> each : binaryRows) {
+        for (BinaryResultSetRow each : binaryRows) {
             if (null != each.getData()) {
                 MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(each.getColumnType()).write(payload, each.getData());
             }
