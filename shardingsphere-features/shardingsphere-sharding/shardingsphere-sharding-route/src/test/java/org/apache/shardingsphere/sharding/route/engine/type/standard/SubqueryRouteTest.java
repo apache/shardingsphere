@@ -162,4 +162,12 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         assertRoute(sql, parameters);
         hintManager.close();
     }
+
+    @Test
+    public void assertSubqueryWithOneInstance() {
+        String sql = " ";
+        List<Object> parameters = new LinkedList<>();
+        parameters.add(1);;
+        assertRoute(sql, parameters);
+    }
 }
