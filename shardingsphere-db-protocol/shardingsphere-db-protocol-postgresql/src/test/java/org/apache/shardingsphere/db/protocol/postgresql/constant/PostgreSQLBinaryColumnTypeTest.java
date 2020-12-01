@@ -24,32 +24,32 @@ import java.sql.Types;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class PostgreSQLColumnTypeTest {
+public final class PostgreSQLBinaryColumnTypeTest {
     
     @Test
     public void assertValueOfJDBCType() {
-        PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.BIGINT);
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8));
+        PostgreSQLBinaryColumnType sqlColumnType = PostgreSQLBinaryColumnType.valueOfJDBCType(Types.BIGINT);
+        assertThat(sqlColumnType, is(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_INT8));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertValueOfJDBCTypeExThrown() {
-        PostgreSQLColumnType.valueOfJDBCType(Types.REF_CURSOR);
+        PostgreSQLBinaryColumnType.valueOfJDBCType(Types.REF_CURSOR);
     }
     
     @Test
     public void assertValueOf() {
-        PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOf(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8.getValue());
-        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8));
+        PostgreSQLBinaryColumnType sqlColumnType = PostgreSQLBinaryColumnType.valueOf(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_INT8.getValue());
+        assertThat(sqlColumnType, is(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_INT8));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertValueOfExThrown() {
-        PostgreSQLColumnType.valueOf(9999);
+        PostgreSQLBinaryColumnType.valueOf(9999);
     }
     
     @Test
     public void assertGetValue() {
-        assertThat(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8.getValue(), is(20));
+        assertThat(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_INT8.getValue(), is(20));
     }
 }

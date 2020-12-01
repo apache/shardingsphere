@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind;
 
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnType;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValue;
@@ -46,7 +46,7 @@ public final class PostgreSQLBinaryResultSetRowPacket implements PostgreSQLPacke
     private Collection<PostgreSQLBinaryResultSetRow> getBinaryResultSetRows(final List<Integer> columnTypes, final List<Object> data) {
         Collection<PostgreSQLBinaryResultSetRow> result = new LinkedList<>();
         for (int i = 0; i < columnTypes.size(); i++) {
-            result.add(new PostgreSQLBinaryResultSetRow(PostgreSQLColumnType.valueOfJDBCType(columnTypes.get(i)), data.get(i)));
+            result.add(new PostgreSQLBinaryResultSetRow(PostgreSQLBinaryColumnType.valueOfJDBCType(columnTypes.get(i)), data.get(i)));
         }
         return result;
     }

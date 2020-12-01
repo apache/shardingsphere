@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind;
 
 import org.apache.shardingsphere.db.protocol.binary.BinaryResultSetRow;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnType;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
 
 /**
  * Binary result set row for PostgreSQL.
  */
-public final class PostgreSQLBinaryResultSetRow extends BinaryResultSetRow<PostgreSQLColumnType> {
+public final class PostgreSQLBinaryResultSetRow extends BinaryResultSetRow<PostgreSQLBinaryColumnType> {
     
-    public PostgreSQLBinaryResultSetRow(final PostgreSQLColumnType columnType, final Object data) {
+    public PostgreSQLBinaryResultSetRow(final PostgreSQLBinaryColumnType columnType, final Object data) {
         super(columnType, data);
     }
 }

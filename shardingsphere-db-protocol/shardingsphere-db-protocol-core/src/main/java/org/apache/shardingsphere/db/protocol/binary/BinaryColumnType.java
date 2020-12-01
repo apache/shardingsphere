@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.binary;
 
 /**
- * SQL column type.
+ * Binary column type.
  */
-public interface SQLColumnType {
+public interface BinaryColumnType {
 }

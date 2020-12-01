@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute;
 
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.protocol.MySQLBinaryProtocolValueFactory;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
@@ -51,7 +51,7 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     private Collection<MySQLBinaryResultSetRow> getBinaryResultSetRows(final List<Integer> columnTypes, final List<Object> data) {
         Collection<MySQLBinaryResultSetRow> result = new LinkedList<>();
         for (int i = 0; i < columnTypes.size(); i++) {
-            result.add(new MySQLBinaryResultSetRow(MySQLColumnType.valueOfJDBCType(columnTypes.get(i)), data.get(i)));
+            result.add(new MySQLBinaryResultSetRow(MySQLBinaryColumnType.valueOfJDBCType(columnTypes.get(i)), data.get(i)));
         }
         return result;
     }

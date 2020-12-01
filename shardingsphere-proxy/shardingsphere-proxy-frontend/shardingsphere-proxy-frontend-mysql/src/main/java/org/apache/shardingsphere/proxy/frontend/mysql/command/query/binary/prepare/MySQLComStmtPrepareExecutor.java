@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepare;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPrepareOKPacket;
@@ -81,7 +81,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     private Collection<DatabasePacket<?>> createParameterColumnDefinition41Packets(final int parameterCount) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         for (int i = 0; i < parameterCount; i++) {
-            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "?", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
+            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "?", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0));
         }
         result.add(new MySQLEofPacket(++currentSequenceId));
         return result;
@@ -90,7 +90,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     private Collection<DatabasePacket<?>> createProjectionColumnDefinition41Packets(final int projectionCount) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         for (int i = 0; i < projectionCount; i++) {
-            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
+            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0));
         }
         result.add(new MySQLEofPacket(++currentSequenceId));
         return result;

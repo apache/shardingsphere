@@ -19,21 +19,21 @@ package org.apache.shardingsphere.db.protocol.mysql.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.binary.SQLColumnType;
+import org.apache.shardingsphere.db.protocol.binary.BinaryColumnType;
 
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Column type for MySQL.
+ * Binary column type for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#column-type">Column Type</a>
  * @see <a href="https://github.com/apache/shardingsphere/issues/4355"></a>
  */
 @RequiredArgsConstructor
 @Getter
-public enum MySQLColumnType implements SQLColumnType {
+public enum MySQLBinaryColumnType implements BinaryColumnType {
     
     MYSQL_TYPE_DECIMAL(0x00), 
     
@@ -102,9 +102,9 @@ public enum MySQLColumnType implements SQLColumnType {
     
     MYSQL_TYPE_GEOMETRY(0xff);
     
-    private static final Map<Integer, MySQLColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1);
+    private static final Map<Integer, MySQLBinaryColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1);
     
-    private static final Map<Integer, MySQLColumnType> VALUE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1);
+    private static final Map<Integer, MySQLBinaryColumnType> VALUE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1);
     
     private final int value;
     
@@ -130,7 +130,7 @@ public enum MySQLColumnType implements SQLColumnType {
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.LONGVARBINARY, MYSQL_TYPE_VAR_STRING);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.NULL, MYSQL_TYPE_NULL);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BLOB, MYSQL_TYPE_BLOB);
-        for (MySQLColumnType each : values()) {
+        for (MySQLBinaryColumnType each : values()) {
             VALUE_AND_COLUMN_TYPE_MAP.put(each.value, each);
         }
     }
@@ -141,7 +141,7 @@ public enum MySQLColumnType implements SQLColumnType {
      * @param jdbcType JDBC type
      * @return column type enum
      */
-    public static MySQLColumnType valueOfJDBCType(final int jdbcType) {
+    public static MySQLBinaryColumnType valueOfJDBCType(final int jdbcType) {
         if (JDBC_TYPE_AND_COLUMN_TYPE_MAP.containsKey(jdbcType)) {
             return JDBC_TYPE_AND_COLUMN_TYPE_MAP.get(jdbcType);
         }
@@ -154,7 +154,7 @@ public enum MySQLColumnType implements SQLColumnType {
      * @param value value
      * @return column type
      */
-    public static MySQLColumnType valueOf(final int value) {
+    public static MySQLBinaryColumnType valueOf(final int value) {
         if (VALUE_AND_COLUMN_TYPE_MAP.containsKey(value)) {
             return VALUE_AND_COLUMN_TYPE_MAP.get(value);
         }

@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute;
 
 import org.apache.shardingsphere.db.protocol.binary.BinaryResultSetRow;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 
 /**
  * Binary result set row for MySQL.
  */
-public final class MySQLBinaryResultSetRow extends BinaryResultSetRow<MySQLColumnType> {
+public final class MySQLBinaryResultSetRow extends BinaryResultSetRow<MySQLBinaryColumnType> {
     
-    public MySQLBinaryResultSetRow(final MySQLColumnType columnType, final Object data) {
+    public MySQLBinaryResultSetRow(final MySQLBinaryColumnType columnType, final Object data) {
         super(columnType, data);
     }
 }
