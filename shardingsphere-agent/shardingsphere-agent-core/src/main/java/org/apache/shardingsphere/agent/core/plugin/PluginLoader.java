@@ -27,9 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.common.AgentPathLocator;
-import org.apache.shardingsphere.agent.core.exception.AdviceNotFoundException;
 
+import org.apache.shardingsphere.agent.core.common.AgentPathLocator;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -172,10 +171,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
      * @return the plugin definition configurations.
      */
     public PluginAdviceDefine loadPluginAdviceDefine(final TypeDescription typeDescription) {
-        if (pluginDefineMap.containsKey(typeDescription.getTypeName())) {
-            return pluginDefineMap.get(typeDescription.getTypeName());
-        }
-        throw new AdviceNotFoundException();
+        return pluginDefineMap.getOrDefault(typeDescription.getTypeName(), PluginAdviceDefine.createDefault());
     }
     
     /**
@@ -186,6 +182,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
      * @return instance of advice
      */
     @SneakyThrows({ClassNotFoundException.class, IllegalAccessException.class, InstantiationException.class})
+    @SuppressWarnings({"unchecked"})
     public <T> T getOrCreateInstance(final String classNameOfAdvice) {
 
         if (objectPool.containsKey(classNameOfAdvice)) {

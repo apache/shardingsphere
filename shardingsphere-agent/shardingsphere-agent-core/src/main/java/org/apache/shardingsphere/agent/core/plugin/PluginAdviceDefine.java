@@ -19,6 +19,7 @@
 package org.apache.shardingsphere.agent.core.plugin;
 
 import com.google.common.collect.Lists;
+import java.util.Collections;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
@@ -57,6 +58,14 @@ public final class PluginAdviceDefine {
         this.constructorPoints = constructorPoints;
         this.instanceMethodPoints = instanceMethodPoints;
         this.classStaticMethodPoints = classStaticMethodPoints;
+    }
+    
+    /**
+     * Create default plugin advice define.
+     * @return plugin advice define.
+     */
+    public static PluginAdviceDefine createDefault() {
+        return new PluginAdviceDefine("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     }
     
     /**
@@ -164,6 +173,7 @@ public final class PluginAdviceDefine {
          * Instance method intercepting point configuration builder.
          */
         public static final class InstanceMethodPointBuilder {
+            
             private final Builder builder;
             
             private String classNameOfAdvice;
