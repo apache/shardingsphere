@@ -21,7 +21,7 @@ import com.google.common.cache.LoadingCache;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Test;
 
-import static org.hamcrest.core.Is.isA;
+import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.Assert.assertThat;
 
 public class SQLStatementCacheBuilderTest {
