@@ -30,7 +30,7 @@ public class SamplePluginDefine extends PluginDefine {
     protected void define() {
         intercept("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask")
                 .aroundInstanceMethod(ElementMatchers.named("run"))
-                .implement("org.apache.shardingsphere.agent.plugin.trace.")
+                .implement("org.apache.shardingsphere.agent.plugin.trace.SampleAdvice")
                 .build();
     
         registerService(SampleTracer.class);
