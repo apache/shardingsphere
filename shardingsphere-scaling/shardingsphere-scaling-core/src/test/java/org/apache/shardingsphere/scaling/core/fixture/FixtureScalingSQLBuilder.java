@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.AbstractSQLBuilder;
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.SQLBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.AbstractScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
 
 import java.util.Map;
 import java.util.Set;
 
-public final class FixtureSQLBuilder extends AbstractSQLBuilder implements SQLBuilder {
+public final class FixtureScalingSQLBuilder extends AbstractScalingSQLBuilder implements ScalingSQLBuilder {
     
-    public FixtureSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
+    public FixtureScalingSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
         super(shardingColumnsMap);
     }
     

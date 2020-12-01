@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentMap;
  * Abstract SQL builder.
  */
 @RequiredArgsConstructor
-public abstract class AbstractSQLBuilder implements SQLBuilder {
+public abstract class AbstractScalingSQLBuilder implements ScalingSQLBuilder {
     
     private static final String INSERT_SQL_CACHE_KEY_PREFIX = "INSERT_";
     

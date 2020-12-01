@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * SQL builder factory.
  */
-public final class SQLBuilderFactory {
+public final class ScalingSQLBuilderFactory {
     
     /**
      * New instance of SQL builder.
@@ -36,7 +36,7 @@ public final class SQLBuilderFactory {
      * @return SQL builder
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static SQLBuilder newInstance(final String databaseType) {
+    public static ScalingSQLBuilder newInstance(final String databaseType) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
         return scalingEntry.getSQLBuilderClass().getConstructor(Map.class).newInstance(Maps.newHashMap());
     }

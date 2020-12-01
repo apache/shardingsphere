@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.JDBCDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.SQLBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
@@ -78,5 +78,5 @@ public interface ScalingEntry extends DatabaseTypeAwareSPI {
      *
      * @return SQL builder type
      */
-    Class<? extends SQLBuilder> getSQLBuilderClass();
+    Class<? extends ScalingSQLBuilder> getSQLBuilderClass();
 }

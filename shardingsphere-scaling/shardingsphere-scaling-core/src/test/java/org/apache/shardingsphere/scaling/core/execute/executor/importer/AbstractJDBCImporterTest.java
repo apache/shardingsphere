@@ -28,7 +28,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.SQLBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,7 +67,7 @@ public final class AbstractJDBCImporterTest {
     private DataSourceManager dataSourceManager;
     
     @Mock
-    private SQLBuilder sqlBuilder;
+    private ScalingSQLBuilder scalingSqlBuilder;
     
     @Mock
     private DataSourceConfiguration dataSourceConfig;
@@ -91,8 +91,8 @@ public final class AbstractJDBCImporterTest {
         jdbcImporter = new AbstractJDBCImporter(mockImporterConfiguration(), dataSourceManager) {
             
             @Override
-            protected SQLBuilder createSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
-                return sqlBuilder;
+            protected ScalingSQLBuilder createSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
+                return scalingSqlBuilder;
             }
         };
         jdbcImporter.setChannel(channel);
@@ -103,7 +103,7 @@ public final class AbstractJDBCImporterTest {
     @Test
     public void assertWriteInsertDataRecord() throws SQLException {
         DataRecord insertRecord = getDataRecord("INSERT");
-        when(sqlBuilder.buildInsertSQL(insertRecord)).thenReturn(INSERT_SQL);
+        when(scalingSqlBuilder.buildInsertSQL(insertRecord)).thenReturn(INSERT_SQL);
         when(connection.prepareStatement(INSERT_SQL)).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(insertRecord));
         jdbcImporter.run();
@@ -116,7 +116,7 @@ public final class AbstractJDBCImporterTest {
     @Test
     public void assertDeleteDataRecord() throws SQLException {
         DataRecord deleteRecord = getDataRecord("DELETE");
-        when(sqlBuilder.buildDeleteSQL(deleteRecord, mockConditionColumns(deleteRecord))).thenReturn(DELETE_SQL);
+        when(scalingSqlBuilder.buildDeleteSQL(deleteRecord, mockConditionColumns(deleteRecord))).thenReturn(DELETE_SQL);
         when(connection.prepareStatement(DELETE_SQL)).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(deleteRecord));
         jdbcImporter.run();
@@ -128,7 +128,7 @@ public final class AbstractJDBCImporterTest {
     @Test
     public void assertUpdateDataRecord() throws SQLException {
         DataRecord updateRecord = getDataRecord("UPDATE");
-        when(sqlBuilder.buildUpdateSQL(updateRecord, mockConditionColumns(updateRecord))).thenReturn(UPDATE_SQL);
+        when(scalingSqlBuilder.buildUpdateSQL(updateRecord, mockConditionColumns(updateRecord))).thenReturn(UPDATE_SQL);
         when(connection.prepareStatement(UPDATE_SQL)).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(updateRecord));
         jdbcImporter.run();
@@ -142,7 +142,7 @@ public final class AbstractJDBCImporterTest {
     @Test
     public void assertUpdatePrimaryKeyDataRecord() throws SQLException {
         DataRecord updateRecord = getUpdatePrimaryKeyDataRecord();
-        when(sqlBuilder.buildUpdateSQL(updateRecord, mockConditionColumns(updateRecord))).thenReturn(UPDATE_SQL);
+        when(scalingSqlBuilder.buildUpdateSQL(updateRecord, mockConditionColumns(updateRecord))).thenReturn(UPDATE_SQL);
         when(connection.prepareStatement(UPDATE_SQL)).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(updateRecord));
         jdbcImporter.run();

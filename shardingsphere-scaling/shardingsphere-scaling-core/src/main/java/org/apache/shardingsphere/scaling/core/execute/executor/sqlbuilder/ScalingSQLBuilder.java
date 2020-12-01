@@ -25,7 +25,7 @@ import java.util.Collection;
 /**
  * SQL builder.
  */
-public interface SQLBuilder {
+public interface ScalingSQLBuilder {
     
     /**
      * Build insert SQL.

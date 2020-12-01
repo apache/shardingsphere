@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.fixture;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.JDBCDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.SQLBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
@@ -59,8 +59,8 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends SQLBuilder> getSQLBuilderClass() {
-        return FixtureSQLBuilder.class;
+    public Class<? extends ScalingSQLBuilder> getSQLBuilderClass() {
+        return FixtureScalingSQLBuilder.class;
     }
     
     @Override

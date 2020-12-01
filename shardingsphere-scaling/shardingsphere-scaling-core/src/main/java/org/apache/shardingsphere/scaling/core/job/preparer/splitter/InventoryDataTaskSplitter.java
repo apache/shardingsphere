@@ -24,8 +24,8 @@ import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguratio
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.SQLBuilder;
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.SQLBuilderFactory;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilderFactory;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
@@ -126,10 +126,10 @@ public final class InventoryDataTaskSplitter {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         String tableName = inventoryDumperConfig.getTableName();
         String primaryKey = metaDataManager.getTableMetaData(tableName).getPrimaryKeyColumns().get(0);
-        SQLBuilder sqlBuilder = SQLBuilderFactory.newInstance(databaseType);
+        ScalingSQLBuilder scalingSqlBuilder = ScalingSQLBuilderFactory.newInstance(databaseType);
         inventoryDumperConfig.setPrimaryKey(primaryKey);
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sqlBuilder.buildSplitByPrimaryKeyRangeSQL(tableName, primaryKey))) {
+             PreparedStatement ps = connection.prepareStatement(scalingSqlBuilder.buildSplitByPrimaryKeyRangeSQL(tableName, primaryKey))) {
             long beginId = 0;
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
                 ps.setLong(1, beginId);
