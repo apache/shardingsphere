@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.utils;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
-import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTask;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ public final class ScalingTaskUtil {
      * @return is finished
      */
     public static boolean allInventoryTasksFinished(final List<ScalingTask> inventoryDataTasks) {
-        return inventoryDataTasks.stream().allMatch(each -> ((InventoryDataScalingTask) each).getPositionManager().getPosition() instanceof FinishedPosition);
+        return inventoryDataTasks.stream().allMatch(each -> ((InventoryTask) each).getPositionManager().getPosition() instanceof FinishedPosition);
     }
     
     /**

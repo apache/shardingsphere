@@ -46,9 +46,9 @@ public final class ScalingJob {
     
     private final transient List<TaskConfiguration> taskConfigs = new LinkedList<>();
     
-    private final transient List<ScalingTask> inventoryDataTasks = new LinkedList<>();
+    private final transient List<ScalingTask> inventoryTasks = new LinkedList<>();
     
-    private final transient List<ScalingTask> incrementalDataTasks = new LinkedList<>();
+    private final transient List<ScalingTask> incrementalTasks = new LinkedList<>();
     
     private transient ScalingConfiguration scalingConfig;
     

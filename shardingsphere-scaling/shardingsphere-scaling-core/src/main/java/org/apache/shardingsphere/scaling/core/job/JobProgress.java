@@ -35,7 +35,7 @@ public final class JobProgress {
     
     private final String status;
     
-    private final Map<String, Collection<TaskProgress>> inventoryDataScalingTaskProgress = Maps.newHashMap();
+    private final Map<String, Collection<TaskProgress>> InventoryTaskProgress = Maps.newHashMap();
     
-    private final Map<String, Collection<TaskProgress>> incrementalDataScalingTaskProgress = Maps.newHashMap();
+    private final Map<String, Collection<TaskProgress>> IncrementalTaskProgress = Maps.newHashMap();
 }

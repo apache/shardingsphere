@@ -20,8 +20,8 @@ package org.apache.shardingsphere.scaling.core.job.task;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
-import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalDataScalingTask;
-import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTask;
+import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTask;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 
 /**
  * Sync task factory.
@@ -35,7 +35,7 @@ public interface ScalingTaskFactory {
      * @param importerConfig importer configuration
      * @return inventory data sync task
      */
-    InventoryDataScalingTask createInventoryDataScalingTask(InventoryDumperConfiguration inventoryDumperConfig, ImporterConfiguration importerConfig);
+    InventoryTask createInventoryTask(InventoryDumperConfiguration inventoryDumperConfig, ImporterConfiguration importerConfig);
     
     /**
      * Create incremental data sync task.
@@ -45,5 +45,5 @@ public interface ScalingTaskFactory {
      * @param importerConfig importer configuration
      * @return incremental data sync task
      */
-    IncrementalDataScalingTask createIncrementalDataScalingTask(int concurrency, DumperConfiguration dumperConfig, ImporterConfiguration importerConfig);
+    IncrementalTask createIncrementalTask(int concurrency, DumperConfiguration dumperConfig, ImporterConfiguration importerConfig);
 }

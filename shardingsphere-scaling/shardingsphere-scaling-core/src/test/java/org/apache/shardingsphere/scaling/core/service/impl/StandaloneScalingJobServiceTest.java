@@ -64,8 +64,8 @@ public final class StandaloneScalingJobServiceTest {
         assertTrue(shardingScalingJob.isPresent());
         long jobId = shardingScalingJob.get().getJobId();
         JobProgress progress = scalingJobService.getProgress(jobId);
-        assertThat(progress.getIncrementalDataScalingTaskProgress().size(), is(1));
-        assertThat(progress.getInventoryDataScalingTaskProgress().size(), is(1));
+        assertThat(progress.getIncrementalTaskProgress().size(), is(1));
+        assertThat(progress.getInventoryTaskProgress().size(), is(1));
     }
     
     @Test
@@ -92,14 +92,14 @@ public final class StandaloneScalingJobServiceTest {
     }
     
     @Test
-    public void assertIncrementalDataTasksOnly() throws NoSuchFieldException, IllegalAccessException {
+    public void assertIncrementalTasksOnly() throws NoSuchFieldException, IllegalAccessException {
         ReflectionUtil.setStaticFieldValue(ResumeBreakPointManagerFactory.class, "clazz", IncrementalPositionResumeBreakPointManager.class);
         Optional<ScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
         assertTrue(shardingScalingJob.isPresent());
         long jobId = shardingScalingJob.get().getJobId();
         JobProgress progress = scalingJobService.getProgress(jobId);
-        assertThat(progress.getIncrementalDataScalingTaskProgress().size(), is(1));
-        assertThat(progress.getInventoryDataScalingTaskProgress().size(), is(1));
+        assertThat(progress.getIncrementalTaskProgress().size(), is(1));
+        assertThat(progress.getInventoryTaskProgress().size(), is(1));
         ReflectionUtil.setStaticFieldValue(ResumeBreakPointManagerFactory.class, "clazz", FakeResumeBreakPointManager.class);
     }
     

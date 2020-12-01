@@ -42,10 +42,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * Incremental data execute task.
+ * Incremental task.
  */
 @Slf4j
-public final class IncrementalDataScalingTask extends AbstractScalingExecutor implements ScalingTask {
+public final class IncrementalTask extends AbstractScalingExecutor implements ScalingTask {
     
     private final int concurrency;
     
@@ -59,7 +59,7 @@ public final class IncrementalDataScalingTask extends AbstractScalingExecutor im
     
     private long delayMillisecond = Long.MAX_VALUE;
     
-    public IncrementalDataScalingTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig) {
+    public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig) {
         this.concurrency = concurrency;
         this.dumperConfig = dumperConfig;
         this.importerConfig = importerConfig;
@@ -131,6 +131,6 @@ public final class IncrementalDataScalingTask extends AbstractScalingExecutor im
     
     @Override
     public TaskProgress getProgress() {
-        return new IncrementalDataScalingTaskProgress(getTaskId(), delayMillisecond, getPositionManager().getPosition());
+        return new IncrementalTaskProgress(getTaskId(), delayMillisecond, getPositionManager().getPosition());
     }
 }

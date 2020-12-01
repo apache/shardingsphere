@@ -67,7 +67,7 @@ public final class ScalingJobPreparer {
             if (resumeBreakPointManager.isResumable()) {
                 scalingPositionResumer.resumePosition(scalingJob, dataSourceManager, resumeBreakPointManager);
             } else {
-                initIncrementalDataTasks(databaseType, scalingJob, dataSourceManager);
+                initIncrementalTasks(databaseType, scalingJob, dataSourceManager);
                 initInventoryDataTasks(databaseType, scalingJob, dataSourceManager);
                 scalingPositionResumer.persistPosition(scalingJob, resumeBreakPointManager);
             }
@@ -95,14 +95,14 @@ public final class ScalingJobPreparer {
         for (TaskConfiguration each : scalingJob.getTaskConfigs()) {
             allInventoryDataTasks.addAll(inventoryDataTaskSplitter.splitInventoryData(databaseType, each, dataSourceManager));
         }
-        scalingJob.getInventoryDataTasks().addAll(allInventoryDataTasks);
+        scalingJob.getInventoryTasks().addAll(allInventoryDataTasks);
     }
     
-    private void initIncrementalDataTasks(final String databaseType, final ScalingJob scalingJob, final DataSourceManager dataSourceManager) {
+    private void initIncrementalTasks(final String databaseType, final ScalingJob scalingJob, final DataSourceManager dataSourceManager) {
         for (TaskConfiguration each : scalingJob.getTaskConfigs()) {
             DataSourceConfiguration dataSourceConfig = each.getDumperConfig().getDataSourceConfig();
             each.getDumperConfig().setPositionManager(PositionManagerFactory.newInstance(databaseType, dataSourceManager.getDataSource(dataSourceConfig)));
-            scalingJob.getIncrementalDataTasks().add(scalingTaskFactory.createIncrementalDataScalingTask(each.getJobConfig().getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
+            scalingJob.getIncrementalTasks().add(scalingTaskFactory.createIncrementalTask(each.getJobConfig().getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
         }
     }
     

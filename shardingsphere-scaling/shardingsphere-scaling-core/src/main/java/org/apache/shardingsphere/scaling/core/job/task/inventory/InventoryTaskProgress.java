@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.scaling.core.job.TaskProgress;
 
 /**
- * Inventory data sync task progress.
+ * Inventory task progress.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InventoryDataScalingTaskProgress implements TaskProgress {
+public final class InventoryTaskProgress implements TaskProgress {
     
     private final String id;
     

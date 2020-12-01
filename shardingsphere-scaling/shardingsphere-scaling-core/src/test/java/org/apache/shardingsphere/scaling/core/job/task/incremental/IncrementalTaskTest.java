@@ -38,7 +38,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class IncrementalDataScalingTaskTest {
+public final class IncrementalTaskTest {
     
     private static final String DATA_SOURCE_URL = "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
     
@@ -46,26 +46,26 @@ public final class IncrementalDataScalingTaskTest {
     
     private static final String PASSWORD = "password";
     
-    private IncrementalDataScalingTask incrementalDataScalingTask;
+    private IncrementalTask incrementalTask;
     
     @Before
     public void setUp() {
         ScalingContext.getInstance().init(new ServerConfiguration());
-        incrementalDataScalingTask = new DefaultScalingTaskFactory().createIncrementalDataScalingTask(3, mockDumperConfig(), mockImporterConfiguration());
+        incrementalTask = new DefaultScalingTaskFactory().createIncrementalTask(3, mockDumperConfig(), mockImporterConfiguration());
     }
     
     @Test
     public void assertStart() {
-        incrementalDataScalingTask.start();
-        TaskProgress progress = incrementalDataScalingTask.getProgress();
-        assertTrue(progress instanceof IncrementalDataScalingTaskProgress);
-        assertThat(((IncrementalDataScalingTaskProgress) progress).getId(), is("ds0"));
-        assertThat(((IncrementalDataScalingTaskProgress) progress).getDelayMillisecond(), is(Long.MAX_VALUE));
+        incrementalTask.start();
+        TaskProgress progress = incrementalTask.getProgress();
+        assertTrue(progress instanceof IncrementalTaskProgress);
+        assertThat(((IncrementalTaskProgress) progress).getId(), is("ds0"));
+        assertThat(((IncrementalTaskProgress) progress).getDelayMillisecond(), is(Long.MAX_VALUE));
     }
     
     @After
     public void tearDown() {
-        incrementalDataScalingTask.stop();
+        incrementalTask.stop();
     }
     
     private ImporterConfiguration mockImporterConfiguration() {

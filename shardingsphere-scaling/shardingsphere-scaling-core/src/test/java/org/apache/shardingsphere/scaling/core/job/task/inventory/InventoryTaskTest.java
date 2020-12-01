@@ -42,7 +42,7 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
 
-public final class InventoryDataScalingTaskTest {
+public final class InventoryTaskTest {
     
     private static final String DATA_SOURCE_URL = "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
     
@@ -72,8 +72,8 @@ public final class InventoryDataScalingTaskTest {
     public void assertStartWithGetEstimatedRowsFailure() {
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
         inventoryDumperConfig.setTableName("t_non_exist");
-        InventoryDataScalingTask inventoryDataScalingTask = new InventoryDataScalingTask(inventoryDumperConfig, taskConfig.getImporterConfig(), dataSourceManager);
-        inventoryDataScalingTask.start();
+        InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(), dataSourceManager);
+        inventoryTask.start();
     }
     
     @Test
@@ -82,9 +82,9 @@ public final class InventoryDataScalingTaskTest {
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
         inventoryDumperConfig.setTableName("t_order");
         inventoryDumperConfig.setPositionManager(taskConfig.getDumperConfig().getPositionManager());
-        InventoryDataScalingTask inventoryDataScalingTask = new InventoryDataScalingTask(inventoryDumperConfig, taskConfig.getImporterConfig(), dataSourceManager);
-        inventoryDataScalingTask.start();
-        assertFalse(((InventoryDataScalingTaskProgress) inventoryDataScalingTask.getProgress()).isFinished());
+        InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(), dataSourceManager);
+        inventoryTask.start();
+        assertFalse(((InventoryTaskProgress) inventoryTask.getProgress()).isFinished());
     }
     
     private void initTableData(final DumperConfiguration dumperConfig) throws SQLException {

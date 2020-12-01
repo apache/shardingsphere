@@ -57,7 +57,7 @@ public final class ScalingPositionResumer {
     }
     
     private void resumeInventoryPosition(final ScalingJob scalingJob, final DataSourceManager dataSourceManager, final ResumeBreakPointManager resumeBreakPointManager) {
-        scalingJob.getInventoryDataTasks().addAll(getAllInventoryDataTasks(scalingJob, dataSourceManager, resumeBreakPointManager));
+        scalingJob.getInventoryTasks().addAll(getAllInventoryDataTasks(scalingJob, dataSourceManager, resumeBreakPointManager));
     }
     
     private List<ScalingTask> getAllInventoryDataTasks(final ScalingJob scalingJob,
@@ -66,7 +66,7 @@ public final class ScalingPositionResumer {
         for (TaskConfiguration each : scalingJob.getTaskConfigs()) {
             MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(each.getDumperConfig().getDataSourceConfig()));
             for (Entry<String, PositionManager> entry : getInventoryPositionMap(each.getDumperConfig(), resumeBreakPointManager).entrySet()) {
-                result.add(scalingTaskFactory.createInventoryDataScalingTask(newInventoryDumperConfig(each.getDumperConfig(), metaDataManager, entry), each.getImporterConfig()));
+                result.add(scalingTaskFactory.createInventoryTask(newInventoryDumperConfig(each.getDumperConfig(), metaDataManager, entry), each.getImporterConfig()));
             }
         }
         return result;
@@ -94,7 +94,7 @@ public final class ScalingPositionResumer {
     private void resumeIncrementalPosition(final ScalingJob scalingJob, final ResumeBreakPointManager resumeBreakPointManager) {
         for (TaskConfiguration each : scalingJob.getTaskConfigs()) {
             each.getDumperConfig().setPositionManager(resumeBreakPointManager.getIncrementalPositionManagerMap().get(each.getDumperConfig().getDataSourceName()));
-            scalingJob.getIncrementalDataTasks().add(scalingTaskFactory.createIncrementalDataScalingTask(each.getJobConfig().getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
+            scalingJob.getIncrementalTasks().add(scalingTaskFactory.createIncrementalTask(each.getJobConfig().getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
         }
     }
     
@@ -105,8 +105,8 @@ public final class ScalingPositionResumer {
      * @param resumeBreakPointManager resume from break-point manager
      */
     public void persistPosition(final ScalingJob scalingJob, final ResumeBreakPointManager resumeBreakPointManager) {
-        persistIncrementalPosition(scalingJob.getIncrementalDataTasks(), resumeBreakPointManager);
-        persistInventoryPosition(scalingJob.getInventoryDataTasks(), resumeBreakPointManager);
+        persistIncrementalPosition(scalingJob.getIncrementalTasks(), resumeBreakPointManager);
+        persistInventoryPosition(scalingJob.getInventoryTasks(), resumeBreakPointManager);
     }
     
     private void persistInventoryPosition(final List<ScalingTask> inventoryDataTasks, final ResumeBreakPointManager resumeBreakPointManager) {
@@ -116,8 +116,8 @@ public final class ScalingPositionResumer {
         resumeBreakPointManager.persistInventoryPosition();
     }
     
-    private void persistIncrementalPosition(final List<ScalingTask> incrementalDataTasks, final ResumeBreakPointManager resumeBreakPointManager) {
-        for (ScalingTask each : incrementalDataTasks) {
+    private void persistIncrementalPosition(final List<ScalingTask> IncrementalTasks, final ResumeBreakPointManager resumeBreakPointManager) {
+        for (ScalingTask each : IncrementalTasks) {
             resumeBreakPointManager.getIncrementalPositionManagerMap().put(each.getTaskId(), each.getPositionManager());
         }
         resumeBreakPointManager.persistIncrementalPosition();

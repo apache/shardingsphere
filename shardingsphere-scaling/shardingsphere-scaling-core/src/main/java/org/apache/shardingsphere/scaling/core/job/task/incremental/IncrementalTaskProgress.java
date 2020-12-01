@@ -24,11 +24,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Real-time data sync task progress.
+ * Incremental task progress.
  */
 @Getter
 @RequiredArgsConstructor
-public final class IncrementalDataScalingTaskProgress implements TaskProgress {
+public final class IncrementalTaskProgress implements TaskProgress {
     
     private final String id;
     

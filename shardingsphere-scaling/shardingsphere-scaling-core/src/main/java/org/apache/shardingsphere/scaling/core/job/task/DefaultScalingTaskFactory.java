@@ -20,8 +20,8 @@ package org.apache.shardingsphere.scaling.core.job.task;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
-import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalDataScalingTask;
-import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTask;
+import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTask;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 
 /**
  * Default Scaling task factory.
@@ -29,12 +29,12 @@ import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataSc
 public final class DefaultScalingTaskFactory implements ScalingTaskFactory {
     
     @Override
-    public InventoryDataScalingTask createInventoryDataScalingTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig) {
-        return new InventoryDataScalingTask(inventoryDumperConfig, importerConfig);
+    public InventoryTask createInventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig) {
+        return new InventoryTask(inventoryDumperConfig, importerConfig);
     }
     
     @Override
-    public IncrementalDataScalingTask createIncrementalDataScalingTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig) {
-        return new IncrementalDataScalingTask(concurrency, dumperConfig, importerConfig);
+    public IncrementalTask createIncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig) {
+        return new IncrementalTask(concurrency, dumperConfig, importerConfig);
     }
 }

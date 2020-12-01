@@ -63,7 +63,7 @@ public final class InventoryDataTaskSplitter {
     public Collection<ScalingTask> splitInventoryData(final String databaseType, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager) {
         Collection<ScalingTask> result = new LinkedList<>();
         for (InventoryDumperConfiguration each : splitDumperConfig(databaseType, taskConfig.getJobConfig().getShardingSize(), taskConfig.getDumperConfig(), dataSourceManager)) {
-            result.add(scalingTaskFactory.createInventoryDataScalingTask(each, taskConfig.getImporterConfig()));
+            result.add(scalingTaskFactory.createInventoryTask(each, taskConfig.getImporterConfig()));
         }
         return result;
     }

@@ -58,8 +58,8 @@ public final class ScalingPositionResumerTest {
         resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0", new PositionManager(new PrimaryKeyPosition(0, 100)));
         resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0.t_order", new PositionManager(new PlaceholderPosition()));
         scalingPositionResumer.resumePosition(scalingJob, new DataSourceManager(), resumeBreakPointManager);
-        assertThat(scalingJob.getIncrementalDataTasks().size(), is(1));
-        assertTrue(scalingJob.getInventoryDataTasks().isEmpty());
+        assertThat(scalingJob.getIncrementalTasks().size(), is(1));
+        assertTrue(scalingJob.getInventoryTasks().isEmpty());
     }
     
     @Test

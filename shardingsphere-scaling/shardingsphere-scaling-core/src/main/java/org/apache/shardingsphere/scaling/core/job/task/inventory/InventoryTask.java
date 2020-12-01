@@ -41,10 +41,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * Table slice execute task.
+ * Inventory task.
  */
 @Slf4j
-public final class InventoryDataScalingTask extends AbstractScalingExecutor implements ScalingTask {
+public final class InventoryTask extends AbstractScalingExecutor implements ScalingTask {
     
     private final InventoryDumperConfiguration inventoryDumperConfig;
     
@@ -54,11 +54,11 @@ public final class InventoryDataScalingTask extends AbstractScalingExecutor impl
     
     private Dumper dumper;
     
-    public InventoryDataScalingTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig) {
+    public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig) {
         this(inventoryDumperConfig, importerConfig, new DataSourceManager());
     }
     
-    public InventoryDataScalingTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
+    public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
         this.inventoryDumperConfig = inventoryDumperConfig;
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
@@ -125,6 +125,6 @@ public final class InventoryDataScalingTask extends AbstractScalingExecutor impl
     
     @Override
     public TaskProgress getProgress() {
-        return new InventoryDataScalingTaskProgress(getTaskId(), getPositionManager().getPosition() instanceof FinishedPosition);
+        return new InventoryTaskProgress(getTaskId(), getPositionManager().getPosition() instanceof FinishedPosition);
     }
 }
