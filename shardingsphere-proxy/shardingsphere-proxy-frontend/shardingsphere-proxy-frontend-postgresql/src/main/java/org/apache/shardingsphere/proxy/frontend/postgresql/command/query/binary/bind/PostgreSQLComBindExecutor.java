@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.bind;
 
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.binary.BinaryResultSetRow;
+import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
+import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
@@ -129,10 +130,12 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     @Override
     public PostgreSQLPacket getQueryRowPacket() throws SQLException {
         QueryResponseRow queryResponseRow = databaseCommunicationEngine.getQueryResponseRow();
-        return packet.isBinaryRowData()
-                ? new PostgreSQLBinaryResultSetRowPacket(queryResponseRow.getCells().stream().map(
-                    each -> new BinaryResultSetRow(PostgreSQLBinaryColumnType.valueOfJDBCType(((BinaryQueryResponseCell) each).getType()), each.getData())).collect(Collectors.toList()))
+        return packet.isBinaryRowData() ? new PostgreSQLBinaryResultSetRowPacket(createBinaryRow(queryResponseRow))
                 : new PostgreSQLDataRowPacket(queryResponseRow.getCells().stream().map(QueryResponseCell::getData).collect(Collectors.toList()));
     }
-
+    
+    private BinaryRow createBinaryRow(final QueryResponseRow queryResponseRow) {
+        return new BinaryRow(queryResponseRow.getCells().stream().map(
+            each -> new BinaryCell(PostgreSQLBinaryColumnType.valueOfJDBCType(((BinaryQueryResponseCell) each).getType()), each.getData())).collect(Collectors.toList()));
+    }
 }

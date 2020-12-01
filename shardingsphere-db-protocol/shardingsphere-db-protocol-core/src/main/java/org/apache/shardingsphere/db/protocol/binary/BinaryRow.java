@@ -20,14 +20,14 @@ package org.apache.shardingsphere.db.protocol.binary;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+
 /**
- * Binary result set row.
+ * Binary row.
  */
 @RequiredArgsConstructor
 @Getter
-public final class BinaryResultSetRow {
+public final class BinaryRow {
     
-    private final BinaryColumnType columnType;
-    
-    private final Object data;
+    private final Collection<BinaryCell> cells;
 }

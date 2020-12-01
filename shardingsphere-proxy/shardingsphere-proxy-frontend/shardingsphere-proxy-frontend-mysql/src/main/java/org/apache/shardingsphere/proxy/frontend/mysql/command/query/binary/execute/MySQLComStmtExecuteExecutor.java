@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.execute;
 
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.binary.BinaryResultSetRow;
+import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
+import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLBinaryResultSetRowPacket;
@@ -89,7 +90,11 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     @Override
     public MySQLPacket getQueryRowPacket() throws SQLException {
         QueryResponseRow queryResponseRow = databaseCommunicationEngine.getQueryResponseRow();
-        return new MySQLBinaryResultSetRowPacket(++currentSequenceId, queryResponseRow.getCells().stream().map(
-            each -> new BinaryResultSetRow(MySQLBinaryColumnType.valueOfJDBCType(((BinaryQueryResponseCell) each).getType()), each.getData())).collect(Collectors.toList()));
+        return new MySQLBinaryResultSetRowPacket(++currentSequenceId, createBinaryRow(queryResponseRow));
+    }
+    
+    private BinaryRow createBinaryRow(final QueryResponseRow queryResponseRow) {
+        return new BinaryRow(queryResponseRow.getCells().stream().map(
+            each -> new BinaryCell(MySQLBinaryColumnType.valueOfJDBCType(((BinaryQueryResponseCell) each).getType()), each.getData())).collect(Collectors.toList()));
     }
 }

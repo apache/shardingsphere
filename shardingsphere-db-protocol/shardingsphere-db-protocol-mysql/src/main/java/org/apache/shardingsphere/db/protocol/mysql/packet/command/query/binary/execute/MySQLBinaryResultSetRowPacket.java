@@ -19,12 +19,11 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.binary.BinaryResultSetRow;
+import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
+import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.protocol.MySQLBinaryProtocolValueFactory;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-
-import java.util.Collection;
 
 /**
  * Binary result set row packet for MySQL.
@@ -41,7 +40,7 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     @Getter
     private final int sequenceId;
     
-    private final Collection<BinaryResultSetRow> binaryRows;
+    private final BinaryRow row;
     
     @Override
     public void write(final MySQLPacketPayload payload) {
@@ -57,9 +56,9 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     }
     
     private MySQLNullBitmap getNullBitmap() {
-        MySQLNullBitmap result = new MySQLNullBitmap(binaryRows.size(), NULL_BITMAP_OFFSET);
+        MySQLNullBitmap result = new MySQLNullBitmap(row.getCells().size(), NULL_BITMAP_OFFSET);
         int index = 0;
-        for (BinaryResultSetRow each : binaryRows) {
+        for (BinaryCell each : row.getCells()) {
             if (null == each.getData()) {
                 result.setNullBit(index);
             }
@@ -69,7 +68,7 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     }
     
     private void writeValues(final MySQLPacketPayload payload) {
-        for (BinaryResultSetRow each : binaryRows) {
+        for (BinaryCell each : row.getCells()) {
             if (null != each.getData()) {
                 MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(each.getColumnType()).write(payload, each.getData());
             }
