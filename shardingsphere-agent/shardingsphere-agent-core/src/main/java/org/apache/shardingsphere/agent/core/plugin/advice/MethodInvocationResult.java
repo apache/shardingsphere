@@ -22,10 +22,11 @@ package org.apache.shardingsphere.agent.core.plugin.advice;
  * The advice method invocation result.
  */
 public class MethodInvocationResult {
+    
     private boolean isRebased;
-
+    
     private Object result;
-
+    
     /**
      * To replace the origin result.
      *
@@ -35,7 +36,7 @@ public class MethodInvocationResult {
         isRebased = true;
         this.result = result;
     }
-
+    
     /**
      * Whether or not to discard origin method.
      *
@@ -44,7 +45,7 @@ public class MethodInvocationResult {
     public boolean isRebased() {
         return isRebased;
     }
-
+    
     /**
      * Result that is provided by per-method advice.
      *
@@ -53,5 +54,5 @@ public class MethodInvocationResult {
     public Object getResult() {
         return result;
     }
-
+    
 }

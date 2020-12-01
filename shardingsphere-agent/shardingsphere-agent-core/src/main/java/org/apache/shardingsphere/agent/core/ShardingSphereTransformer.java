@@ -44,21 +44,19 @@ import java.util.Map;
  */
 @Slf4j
 public class ShardingSphereTransformer implements AgentBuilder.Transformer {
-
+    
     private final PluginLoader pluginLoader;
-
+    
     public ShardingSphereTransformer(final PluginLoader pluginLoader) {
         this.pluginLoader = pluginLoader;
     }
-
+    
     @Override
     public DynamicType.Builder<?> transform(final DynamicType.Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module) {
         if (pluginLoader.containsType(typeDescription)) {
-
             DynamicType.Builder<?> newBuilder = builder.defineField("_SSExtraData_", Map.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
                     .implement(TargetObject.class)
                     .intercept(FieldAccessor.ofField("_SSExtraData_"));
-
             final PluginAdviceDefine define = pluginLoader.loadPluginAdviceDefine(typeDescription);
             for (ConstructorPoint point : define.getConstructorPoints()) {
                 try {
@@ -71,7 +69,6 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
                     log.error("Failed to load advice class: {}", point.getAdvice(), e);
                 }
             }
-
             for (ClassStaticMethodPoint point : define.getClassStaticMethodPoints()) {
                 try {
                     final StaticMethodAroundInterceptor interceptor = new StaticMethodAroundInterceptor(pluginLoader.getOrCreateInstance(point.getAdvice()));
@@ -83,7 +80,6 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
                     log.error("Failed to load advice class: {}", point.getAdvice(), e);
                 }
             }
-
             for (InstanceMethodPoint point : define.getInstanceMethodPoints()) {
                 try {
                     final MethodAroundInterceptor interceptor = new MethodAroundInterceptor(pluginLoader.getOrCreateInstance(point.getAdvice()));
@@ -97,7 +93,6 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
             }
             return newBuilder;
         }
-
         return builder;
     }
 }

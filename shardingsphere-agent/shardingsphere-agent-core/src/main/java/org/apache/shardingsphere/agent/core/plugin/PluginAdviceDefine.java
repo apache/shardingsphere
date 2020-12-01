@@ -108,6 +108,7 @@ public final class PluginAdviceDefine {
      * Plugin advice configuration builder.
      */
     public static final class Builder {
+        
         private final List<ConstructorPoint> constructorPoints = Lists.newArrayList();
         
         private final List<InstanceMethodPoint> instanceMethodPoints = Lists.newArrayList();
@@ -149,7 +150,6 @@ public final class PluginAdviceDefine {
         public StaticMethodPointBuilder aroundClassStaticMethod(final ElementMatcher<? super MethodDescription> matcher) {
             return new StaticMethodPointBuilder(this, matcher);
         }
-        
         
         /**
          * Build configuration.
@@ -214,6 +214,7 @@ public final class PluginAdviceDefine {
          * Static method intercepting point configuration builder.
          */
         public static final class StaticMethodPointBuilder {
+            
             private final Builder builder;
             
             private String classNameOfAdvice;
@@ -258,13 +259,13 @@ public final class PluginAdviceDefine {
                 builder.classStaticMethodPoints.add(new ClassStaticMethodPoint(matcher, classNameOfAdvice, overrideArgs));
                 return builder;
             }
-            
         }
         
         /**
          * Instance constructor intercepting point configuration builder.
          */
         public static final class ConstructorPointBuilder {
+            
             private final Builder builder;
             
             private String classNameOfAdvice;

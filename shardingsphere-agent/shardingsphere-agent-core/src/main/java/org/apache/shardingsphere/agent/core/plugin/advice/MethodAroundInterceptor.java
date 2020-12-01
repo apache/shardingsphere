@@ -34,12 +34,13 @@ import java.util.concurrent.Callable;
  */
 @Slf4j
 public class MethodAroundInterceptor {
+    
     private final MethodAroundAdvice advice;
-
+    
     public MethodAroundInterceptor(final MethodAroundAdvice advice) {
         this.advice = advice;
     }
-
+    
     /**
      * Only intercept instance method.
      *
@@ -54,9 +55,7 @@ public class MethodAroundInterceptor {
     public Object intercept(final @This Object target, final @Origin Method method, final @AllArguments Object[] args, final @SuperCall Callable<?> uber) {
         final TargetObject instance = (TargetObject) target;
         final MethodInvocationResult result = new MethodInvocationResult();
-
         Object ret;
-
         try {
             advice.beforeMethod(instance, method, args, result);
             // CHECKSTYLE:OFF
@@ -64,7 +63,6 @@ public class MethodAroundInterceptor {
             // CHECKSTYLE:ON
             log.error("Failed to execute the pre-method of method[{}] in class[{}].", method.getName(), target.getClass(), throwable);
         }
-
         try {
             if (result.isRebased()) {
                 ret = result.getResult();

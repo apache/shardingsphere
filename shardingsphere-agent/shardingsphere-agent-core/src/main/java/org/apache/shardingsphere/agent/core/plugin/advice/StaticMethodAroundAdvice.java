@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
  * Weaving the advice around the static methods of target class.
  */
 public interface StaticMethodAroundAdvice {
-
+    
     /**
      * Intercept the target method and weave the method before origin method. It will invoke before the origin calling.
      *
@@ -34,7 +34,7 @@ public interface StaticMethodAroundAdvice {
      * @param result wrapped class of result to detect whether or not to execute the origin method.
      */
     void beforeMethod(Class<?> klass, Method method, Object[] args, MethodInvocationResult result);
-
+    
     /**
      * Intercept the target method and weave the method after origin method. It will invoke after the origin calling.
      *
@@ -44,7 +44,7 @@ public interface StaticMethodAroundAdvice {
      * @param result wrapped class of result to detect whether or not to execute the origin method.
      */
     void afterMethod(Class<?> klass, Method method, Object[] args, MethodInvocationResult result);
-
+    
     /**
      * Weaving the method after origin method throwing.
      *
