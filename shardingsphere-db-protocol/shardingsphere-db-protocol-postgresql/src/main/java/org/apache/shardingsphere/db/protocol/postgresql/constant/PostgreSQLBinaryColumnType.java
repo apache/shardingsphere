@@ -19,17 +19,18 @@ package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.binary.BinaryColumnType;
 
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Column types for PostgreSQL.
+ * Binary column type for PostgreSQL.
  */
 @RequiredArgsConstructor
 @Getter
-public enum PostgreSQLColumnType {
+public enum PostgreSQLBinaryColumnType implements BinaryColumnType {
     
     POSTGRESQL_TYPE_UNSPECIFIED(0),
     
@@ -151,7 +152,7 @@ public enum PostgreSQLColumnType {
     
     POSTGRESQL_TYPE_REF_CURSOR_ARRAY(2201);
     
-    private static final Map<Integer, PostgreSQLColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1);
+    private static final Map<Integer, PostgreSQLBinaryColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1);
     
     private final int value;
     
@@ -179,7 +180,7 @@ public enum PostgreSQLColumnType {
      * @param jdbcType JDBC type
      * @return PostgreSQL column type enum
      */
-    public static PostgreSQLColumnType valueOfJDBCType(final int jdbcType) {
+    public static PostgreSQLBinaryColumnType valueOfJDBCType(final int jdbcType) {
         if (JDBC_TYPE_AND_COLUMN_TYPE_MAP.containsKey(jdbcType)) {
             return JDBC_TYPE_AND_COLUMN_TYPE_MAP.get(jdbcType);
         }
@@ -192,8 +193,8 @@ public enum PostgreSQLColumnType {
      * @param value value
      * @return PostgreSQL column type
      */
-    public static PostgreSQLColumnType valueOf(final int value) {
-        for (PostgreSQLColumnType each : values()) {
+    public static PostgreSQLBinaryColumnType valueOf(final int value) {
+        for (PostgreSQLBinaryColumnType each : values()) {
             if (value == each.value) {
                 return each;
             }

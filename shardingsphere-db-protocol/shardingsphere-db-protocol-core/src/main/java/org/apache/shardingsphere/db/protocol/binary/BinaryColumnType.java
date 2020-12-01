@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
+package org.apache.shardingsphere.db.protocol.binary;
 
 /**
- * Binary prepared statement parameter type for MySQL.
+ * Binary column type.
  */
-@RequiredArgsConstructor
-@Getter
-public final class MySQLBinaryStatementParameterType {
+public interface BinaryColumnType {
     
-    private final MySQLBinaryColumnType columnType;
-    
-    private final int unsignedFlag;
+    /**
+     * Get database protocol binary column type value.
+     * 
+     * @return database protocol binary column type value
+     */
+    int getValue();
 }

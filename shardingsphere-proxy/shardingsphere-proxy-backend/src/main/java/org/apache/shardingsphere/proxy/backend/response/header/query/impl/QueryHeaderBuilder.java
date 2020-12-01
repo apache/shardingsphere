@@ -31,7 +31,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * Query header.
+ * Query header builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class QueryHeaderBuilder {
