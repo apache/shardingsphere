@@ -40,21 +40,33 @@ import java.util.List;
  * </code>
  */
 public final class PluginAdviceDefine {
-
+    
+    private final String classNameOfTarget;
+    
     private final List<ConstructorPoint> constructorPoints;
-
+    
     private final List<InstanceMethodPoint> instanceMethodPoints;
-
+    
     private final List<ClassStaticMethodPoint> classStaticMethodPoints;
-
-    private PluginAdviceDefine(final List<ConstructorPoint> constructorPoints,
+    
+    private PluginAdviceDefine(final String classNameOfTarget,
+                               final List<ConstructorPoint> constructorPoints,
                                final List<InstanceMethodPoint> instanceMethodPoints,
                                final List<ClassStaticMethodPoint> classStaticMethodPoints) {
+        this.classNameOfTarget = classNameOfTarget;
         this.constructorPoints = constructorPoints;
         this.instanceMethodPoints = instanceMethodPoints;
         this.classStaticMethodPoints = classStaticMethodPoints;
     }
-
+    
+    /**
+     * Get class name of target.
+     * @return class name.
+     */
+    public String getClassNameOfTarget() {
+        return classNameOfTarget;
+    }
+    
     /**
      * Intercept target class.
      *
@@ -64,7 +76,7 @@ public final class PluginAdviceDefine {
     public static Builder intercept(final String classNameOfTarget) {
         return new Builder(classNameOfTarget);
     }
-
+    
     /**
      * To get static method point configurations.
      *
@@ -73,7 +85,7 @@ public final class PluginAdviceDefine {
     public List<ClassStaticMethodPoint> getClassStaticMethodPoints() {
         return classStaticMethodPoints;
     }
-
+    
     /**
      * To get constructor point configurations.
      *
@@ -82,7 +94,7 @@ public final class PluginAdviceDefine {
     public List<ConstructorPoint> getConstructorPoints() {
         return constructorPoints;
     }
-
+    
     /**
      * To get instance point configurations.
      *
@@ -91,34 +103,23 @@ public final class PluginAdviceDefine {
     public List<InstanceMethodPoint> getInstanceMethodPoints() {
         return instanceMethodPoints;
     }
-
+    
     /**
      * Plugin advice configuration builder.
      */
     public static final class Builder {
         private final List<ConstructorPoint> constructorPoints = Lists.newArrayList();
-
+        
         private final List<InstanceMethodPoint> instanceMethodPoints = Lists.newArrayList();
-
+        
         private final List<ClassStaticMethodPoint> classStaticMethodPoints = Lists.newArrayList();
-
+        
         private final String classNameOfTarget;
-
+        
         private Builder(final String classNameOfTarget) {
             this.classNameOfTarget = classNameOfTarget;
         }
-
-        /**
-         * Intercept the new target.
-         *
-         * @param classNameOfTarget the class name of target.
-         * @return configuration builder.
-         */
-        public Builder intercept(final String classNameOfTarget) {
-            // TODO not-implemented yet
-            return this;
-        }
-
+        
         /**
          * Configure the intercepting point on constructor.
          *
@@ -128,54 +129,54 @@ public final class PluginAdviceDefine {
         public ConstructorPointBuilder onConstructor(final ElementMatcher<? super MethodDescription> matcher) {
             return new ConstructorPointBuilder(this, matcher);
         }
-
+        
         /**
          * Configure the intercepting point around instance method.
          *
          * @param matcher constraints
          * @return configuration builder
          */
-        public InstanceMethodPointBuilder method(final ElementMatcher<? super MethodDescription> matcher) {
+        public InstanceMethodPointBuilder aroundInstanceMethod(final ElementMatcher<? super MethodDescription> matcher) {
             return new InstanceMethodPointBuilder(this, matcher);
         }
-
+        
         /**
          * Configure the intercepting point around instance method.
          *
          * @param matcher constraints
          * @return configuration builder
          */
-        public StaticMethodPointBuilder staticMethod(final ElementMatcher<? super MethodDescription> matcher) {
+        public StaticMethodPointBuilder aroundClassStaticMethod(final ElementMatcher<? super MethodDescription> matcher) {
             return new StaticMethodPointBuilder(this, matcher);
         }
-
-
+        
+        
         /**
          * Build configuration.
          *
          * @return plugin advice definition.
          */
         public PluginAdviceDefine install() {
-            return new PluginAdviceDefine(constructorPoints, instanceMethodPoints, classStaticMethodPoints);
+            return new PluginAdviceDefine(classNameOfTarget, constructorPoints, instanceMethodPoints, classStaticMethodPoints);
         }
-
+        
         /**
          * Instance method intercepting point configuration builder.
          */
         public static final class InstanceMethodPointBuilder {
             private final Builder builder;
-
+            
             private String classNameOfAdvice;
-
+            
             private boolean overrideArgs;
-
+            
             private ElementMatcher<? super MethodDescription> matcher;
-
+            
             private InstanceMethodPointBuilder(final Builder builder, final ElementMatcher<? super MethodDescription> matcher) {
                 this.builder = builder;
                 this.matcher = matcher;
             }
-
+            
             /**
              * Configure implementation for interceptor point.
              *
@@ -186,7 +187,7 @@ public final class PluginAdviceDefine {
                 this.classNameOfAdvice = classNameOfAdvice;
                 return this;
             }
-
+            
             /**
              * Configure whether or not override the origin method arguments.
              *
@@ -197,7 +198,7 @@ public final class PluginAdviceDefine {
                 this.overrideArgs = overrideArgs;
                 return this;
             }
-
+            
             /**
              * Build instance methods configuration.
              *
@@ -208,24 +209,24 @@ public final class PluginAdviceDefine {
                 return builder;
             }
         }
-
+        
         /**
          * Static method intercepting point configuration builder.
          */
         public static final class StaticMethodPointBuilder {
             private final Builder builder;
-
+            
             private String classNameOfAdvice;
-
+            
             private boolean overrideArgs;
-
+            
             private ElementMatcher<? super MethodDescription> matcher;
-
+            
             private StaticMethodPointBuilder(final Builder builder, final ElementMatcher<? super MethodDescription> matcher) {
                 this.builder = builder;
                 this.matcher = ElementMatchers.isStatic().and(matcher);
             }
-
+            
             /**
              * Configure implementation for intercepting point.
              *
@@ -236,7 +237,7 @@ public final class PluginAdviceDefine {
                 this.classNameOfAdvice = classNameOfAdvice;
                 return this;
             }
-
+            
             /**
              * Configure whether or not override the origin method arguments.
              *
@@ -247,7 +248,7 @@ public final class PluginAdviceDefine {
                 this.overrideArgs = overrideArgs;
                 return this;
             }
-
+            
             /**
              * Build static methods configuration.
              *
@@ -257,24 +258,24 @@ public final class PluginAdviceDefine {
                 builder.classStaticMethodPoints.add(new ClassStaticMethodPoint(matcher, classNameOfAdvice, overrideArgs));
                 return builder;
             }
-
+            
         }
-
+        
         /**
          * Instance constructor intercepting point configuration builder.
          */
         public static final class ConstructorPointBuilder {
             private final Builder builder;
-
+            
             private String classNameOfAdvice;
-
+            
             private ElementMatcher<? super MethodDescription> matcher;
-
+            
             private ConstructorPointBuilder(final Builder builder, final ElementMatcher<? super MethodDescription> matcher) {
                 this.builder = builder;
                 this.matcher = ElementMatchers.isConstructor().and(matcher);
             }
-
+            
             /**
              * Configure implementation for intercepting point.
              *
@@ -285,7 +286,7 @@ public final class PluginAdviceDefine {
                 this.classNameOfAdvice = classNameOfAdvice;
                 return this;
             }
-
+            
             /**
              * Build constructor point configuration.
              *
