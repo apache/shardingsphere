@@ -40,7 +40,10 @@ public final class StateContext {
             CURRENT_STATE.set(StateType.CIRCUIT_BREAK);
             return;
         }
-        // TODO check lock state
+        if (StateType.LOCK == event.getType()) {
+            CURRENT_STATE.set(StateType.LOCK);
+            return;
+        }
         CURRENT_STATE.set(StateType.OK);
     }
     
