@@ -15,17 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.event;
+package org.apache.shardingsphere.infra.eventbus;
 
-import org.junit.Test;
+import com.google.common.eventbus.EventBus;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class GovernanceEventBusTest {
+/**
+ * ShardingSphere event bus.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingSphereEventBus {
     
-    @Test
-    public void assertInstance() {
-        assertThat(GovernanceEventBus.getInstance(), is(GovernanceEventBus.getInstance()));
+    /**
+     * Get instance of ShardingSphere event bus.
+     *
+     * @return instance of ShardingSphere event bus
+     */
+    public static EventBus getInstance() {
+        return ShardingSphereEventBusHolder.INSTANCE;
+    }
+    
+    private static final class ShardingSphereEventBusHolder {
+        private static final EventBus INSTANCE = new EventBus();
     }
 }
