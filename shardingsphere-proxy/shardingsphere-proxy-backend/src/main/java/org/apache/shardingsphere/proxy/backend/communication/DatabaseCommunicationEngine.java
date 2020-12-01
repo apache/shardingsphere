@@ -42,7 +42,7 @@ import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.binary.BinaryQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.text.TextQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -200,12 +200,12 @@ public final class DatabaseCommunicationEngine {
     }
     
     /**
-     * Get query response data.
+     * Get query response row.
      *
-     * @return query response data
+     * @return query response row
      * @throws SQLException SQL exception
      */
-    public QueryResponseData getQueryResponseData() throws SQLException {
+    public QueryResponseRow getQueryResponseRow() throws SQLException {
         List<QueryResponseCell> cells = new ArrayList<>(queryHeaders.size());
         boolean isBinary = isBinary();
         for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {
@@ -216,7 +216,7 @@ public final class DatabaseCommunicationEngine {
                 cells.add(new TextQueryResponseCell(data));
             }
         }
-        return new QueryResponseData(cells);
+        return new QueryResponseRow(cells);
     }
     
     private boolean isBinary() {

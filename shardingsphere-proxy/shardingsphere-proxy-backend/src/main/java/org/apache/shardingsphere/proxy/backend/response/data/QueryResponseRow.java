@@ -23,11 +23,11 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 /**
- * Query response data.
+ * Query response row.
  */
 @RequiredArgsConstructor
 @Getter
-public final class QueryResponseData {
+public final class QueryResponseRow {
     
     private final List<QueryResponseCell> cells;
 }

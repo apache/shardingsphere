@@ -30,7 +30,7 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.binary.BinaryQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -87,9 +87,9 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     }
     
     @Override
-    public MySQLPacket getQueryData() throws SQLException {
-        QueryResponseData queryResponseData = databaseCommunicationEngine.getQueryResponseData();
-        return new MySQLBinaryResultSetRowPacket(++currentSequenceId, queryResponseData.getCells().stream().map(
+    public MySQLPacket getQueryRowPacket() throws SQLException {
+        QueryResponseRow queryResponseRow = databaseCommunicationEngine.getQueryResponseRow();
+        return new MySQLBinaryResultSetRowPacket(++currentSequenceId, queryResponseRow.getCells().stream().map(
             each -> new BinaryResultSetRow(MySQLBinaryColumnType.valueOfJDBCType(((BinaryQueryResponseCell) each).getType()), each.getData())).collect(Collectors.toList()));
     }
 }

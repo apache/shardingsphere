@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal;
 
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 
 import java.sql.SQLException;
 
@@ -44,10 +44,10 @@ public interface HintCommandExecutor<T extends HintCommand> {
     boolean next() throws SQLException;
     
     /**
-     * Get query response data.
+     * Get query response row.
      *
-     * @return query response data
+     * @return query response row
      * @throws SQLException SQL exception
      */
-    QueryResponseData getQueryResponseData() throws SQLException;
+    QueryResponseRow getQueryResponseRow() throws SQLException;
 }

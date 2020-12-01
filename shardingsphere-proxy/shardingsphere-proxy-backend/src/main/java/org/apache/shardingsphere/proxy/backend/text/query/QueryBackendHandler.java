@@ -64,6 +64,6 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public Collection<Object> getRowData() throws SQLException {
-        return databaseCommunicationEngine.getQueryResponseData().getCells().stream().map(QueryResponseCell::getData).collect(Collectors.toList());
+        return databaseCommunicationEngine.getQueryResponseRow().getCells().stream().map(QueryResponseCell::getData).collect(Collectors.toList());
     }
 }
