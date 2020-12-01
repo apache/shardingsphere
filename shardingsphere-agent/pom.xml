@@ -29,14 +29,14 @@
     <artifactId>shardingsphere-agent</artifactId>
     <packaging>pom</packaging>
 
+    <properties>
+        <shade.package>org.apache.shardingsphere.dependencies</shade.package>
+    </properties>
+
     <modules>
         <module>shardingsphere-agent-bootstrap</module>
         <module>shardingsphere-agent-core</module>
         <module>shardingsphere-agent-plugins</module>
         <module>shardingsphere-agent-distribution</module>
     </modules>
-
-    <properties>
-        <shade.package>org.apache.shardingsphere.dependencies</shade.package>
-    </properties>
 </project>
