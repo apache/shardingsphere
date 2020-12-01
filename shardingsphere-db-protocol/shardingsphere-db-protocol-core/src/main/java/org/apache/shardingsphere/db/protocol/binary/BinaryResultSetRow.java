@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class BinaryResultSetRow<T extends BinaryColumnType> {
+public final class BinaryResultSetRow<T extends BinaryColumnType> {
     
     private final T columnType;
     
