@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job.preparer;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
@@ -60,8 +60,8 @@ public final class ShardingScalingJobPreparer {
      * @param shardingScalingJob sharding scaling job
      */
     public void prepare(final ShardingScalingJob shardingScalingJob) {
-        String databaseType = shardingScalingJob.getSyncConfigs().get(0).getDumperConfig().getDataSourceConfig().getDatabaseType().getName();
-        try (DataSourceManager dataSourceManager = new DataSourceManager(shardingScalingJob.getSyncConfigs())) {
+        String databaseType = shardingScalingJob.getTaskConfigs().get(0).getDumperConfig().getDataSourceConfig().getDatabaseType().getName();
+        try (DataSourceManager dataSourceManager = new DataSourceManager(shardingScalingJob.getTaskConfigs())) {
             checkDataSources(databaseType, dataSourceManager);
             ResumeBreakPointManager resumeBreakPointManager = getResumeBreakPointManager(databaseType, shardingScalingJob);
             if (resumeBreakPointManager.isResumable()) {
@@ -92,14 +92,14 @@ public final class ShardingScalingJobPreparer {
     
     private void initInventoryDataTasks(final String databaseType, final ShardingScalingJob shardingScalingJob, final DataSourceManager dataSourceManager) {
         List<ScalingTask> allInventoryDataTasks = new LinkedList<>();
-        for (SyncConfiguration each : shardingScalingJob.getSyncConfigs()) {
+        for (TaskConfiguration each : shardingScalingJob.getTaskConfigs()) {
             allInventoryDataTasks.addAll(inventoryDataTaskSplitter.splitInventoryData(databaseType, each, dataSourceManager));
         }
         shardingScalingJob.getInventoryDataTasks().addAll(allInventoryDataTasks);
     }
     
     private void initIncrementalDataTasks(final String databaseType, final ShardingScalingJob shardingScalingJob, final DataSourceManager dataSourceManager) {
-        for (SyncConfiguration each : shardingScalingJob.getSyncConfigs()) {
+        for (TaskConfiguration each : shardingScalingJob.getTaskConfigs()) {
             DataSourceConfiguration dataSourceConfig = each.getDumperConfig().getDataSourceConfig();
             each.getDumperConfig().setPositionManager(PositionManagerFactory.newInstance(databaseType, dataSourceManager.getDataSource(dataSourceConfig)));
             shardingScalingJob.getIncrementalDataTasks().add(syncTaskFactory.createIncrementalDataSyncTask(each.getJobConfig().getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
