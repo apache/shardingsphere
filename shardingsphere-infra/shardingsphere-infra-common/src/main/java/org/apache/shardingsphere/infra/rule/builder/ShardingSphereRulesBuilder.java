@@ -47,10 +47,12 @@ public final class ShardingSphereRulesBuilder {
      * @param ruleConfigurations rule configurations
      * @param databaseType database type
      * @param dataSourceMap data source map
+     * @param schemaName schema name
      * @return rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> build(final Collection<RuleConfiguration> ruleConfigurations, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String schemaName) {
+    public static Collection<ShardingSphereRule> build(final Collection<RuleConfiguration> ruleConfigurations, final DatabaseType databaseType,
+                                                       final Map<String, DataSource> dataSourceMap, final String schemaName) {
         Map<RuleConfiguration, ShardingSphereRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(ruleConfigurations, ShardingSphereRuleBuilder.class);
         setResources(builders.values(), databaseType, dataSourceMap, schemaName);
         return builders.entrySet().stream().map(entry -> entry.getValue().build(entry.getKey())).collect(Collectors.toList());

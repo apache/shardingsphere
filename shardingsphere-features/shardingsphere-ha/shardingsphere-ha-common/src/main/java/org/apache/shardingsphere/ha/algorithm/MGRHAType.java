@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.ha.algorithm;
 
-import com.google.common.eventbus.EventBus;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.ha.spi.HAType;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceUpdateEvent;
 
@@ -99,7 +99,7 @@ public final class MGRHAType implements HAType {
         String primary = queryPrimaryDataSource(dataSourceMap, schemaName);
         if (!"".equals(primary)) {
             primaryDataSource = primary;
-            new EventBus().post(new PrimaryDataSourceUpdateEvent(schemaName, primaryDataSource, primaryDataSource));
+            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, primaryDataSource, primaryDataSource));
         }
     }
     
