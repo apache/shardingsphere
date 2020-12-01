@@ -107,9 +107,9 @@ public final class ScalingTaskScheduler implements Runnable {
         }
         log.info("-------------- Start incremental data sync task --------------");
         scalingJob.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK.name());
-        ExecuteCallback IncrementalTaskCallback = createIncrementalTaskCallback();
+        ExecuteCallback incrementalTaskCallback = createIncrementalTaskCallback();
         for (ScalingTask each : scalingJob.getIncrementalTasks()) {
-            ScalingContext.getInstance().getIncrementalDumperExecuteEngine().submit(each, IncrementalTaskCallback);
+            ScalingContext.getInstance().getIncrementalDumperExecuteEngine().submit(each, incrementalTaskCallback);
         }
     }
     

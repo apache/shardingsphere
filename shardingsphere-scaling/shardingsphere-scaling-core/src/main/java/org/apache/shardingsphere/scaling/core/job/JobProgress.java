@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Scaling job progress.
+ * Job progress.
  */
 @Getter
 @RequiredArgsConstructor
@@ -35,7 +35,7 @@ public final class JobProgress {
     
     private final String status;
     
-    private final Map<String, Collection<TaskProgress>> InventoryTaskProgress = Maps.newHashMap();
+    private final Map<String, Collection<TaskProgress>> inventoryTaskProgress = Maps.newHashMap();
     
-    private final Map<String, Collection<TaskProgress>> IncrementalTaskProgress = Maps.newHashMap();
+    private final Map<String, Collection<TaskProgress>> incrementalTaskProgress = Maps.newHashMap();
 }
