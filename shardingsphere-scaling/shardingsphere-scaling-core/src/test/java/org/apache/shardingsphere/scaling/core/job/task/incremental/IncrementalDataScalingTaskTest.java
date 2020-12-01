@@ -23,10 +23,10 @@ import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCData
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.job.SyncProgress;
+import org.apache.shardingsphere.scaling.core.job.TaskProgress;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
-import org.apache.shardingsphere.scaling.core.job.task.DefaultSyncTaskFactory;
+import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,26 +46,26 @@ public final class IncrementalDataScalingTaskTest {
     
     private static final String PASSWORD = "password";
     
-    private IncrementalDataScalingTask incrementalDataSyncTask;
+    private IncrementalDataScalingTask incrementalDataScalingTask;
     
     @Before
     public void setUp() {
         ScalingContext.getInstance().init(new ServerConfiguration());
-        incrementalDataSyncTask = new DefaultSyncTaskFactory().createIncrementalDataSyncTask(3, mockDumperConfig(), mockImporterConfiguration());
+        incrementalDataScalingTask = new DefaultScalingTaskFactory().createIncrementalDataScalingTask(3, mockDumperConfig(), mockImporterConfiguration());
     }
     
     @Test
     public void assertStart() {
-        incrementalDataSyncTask.start();
-        SyncProgress progress = incrementalDataSyncTask.getProgress();
-        assertTrue(progress instanceof IncrementalDataSyncTaskProgress);
-        assertThat(((IncrementalDataSyncTaskProgress) progress).getId(), is("ds0"));
-        assertThat(((IncrementalDataSyncTaskProgress) progress).getDelayMillisecond(), is(Long.MAX_VALUE));
+        incrementalDataScalingTask.start();
+        TaskProgress progress = incrementalDataScalingTask.getProgress();
+        assertTrue(progress instanceof IncrementalDataScalingTaskProgress);
+        assertThat(((IncrementalDataScalingTaskProgress) progress).getId(), is("ds0"));
+        assertThat(((IncrementalDataScalingTaskProgress) progress).getDelayMillisecond(), is(Long.MAX_VALUE));
     }
     
     @After
     public void tearDown() {
-        incrementalDataSyncTask.stop();
+        incrementalDataScalingTask.stop();
     }
     
     private ImporterConfiguration mockImporterConfiguration() {

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
-import org.apache.shardingsphere.scaling.core.schedule.SyncTaskControlStatus;
+import org.apache.shardingsphere.scaling.core.schedule.ScalingControlStatus;
 import org.apache.shardingsphere.scaling.core.utils.TaskConfigurationUtil;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 
@@ -54,7 +54,7 @@ public final class ShardingScalingJob {
     
     private transient DataConsistencyChecker dataConsistencyChecker;
     
-    private String status = SyncTaskControlStatus.RUNNING.name();
+    private String status = ScalingControlStatus.RUNNING.name();
     
     public ShardingScalingJob() {
         this(generateKey());

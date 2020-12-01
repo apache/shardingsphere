@@ -26,7 +26,7 @@ import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataSc
 /**
  * Sync task factory.
  */
-public interface SyncTaskFactory {
+public interface ScalingTaskFactory {
     
     /**
      * Create inventory data sync task.
@@ -35,7 +35,7 @@ public interface SyncTaskFactory {
      * @param importerConfig importer configuration
      * @return inventory data sync task
      */
-    InventoryDataScalingTask createInventoryDataSyncTask(InventoryDumperConfiguration inventoryDumperConfig, ImporterConfiguration importerConfig);
+    InventoryDataScalingTask createInventoryDataScalingTask(InventoryDumperConfiguration inventoryDumperConfig, ImporterConfiguration importerConfig);
     
     /**
      * Create incremental data sync task.
@@ -45,5 +45,5 @@ public interface SyncTaskFactory {
      * @param importerConfig importer configuration
      * @return incremental data sync task
      */
-    IncrementalDataScalingTask createIncrementalDataSyncTask(int concurrency, DumperConfiguration dumperConfig, ImporterConfiguration importerConfig);
+    IncrementalDataScalingTask createIncrementalDataScalingTask(int concurrency, DumperConfiguration dumperConfig, ImporterConfiguration importerConfig);
 }

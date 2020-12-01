@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Sync task control status.
+ * Scaling control status.
  */
 @RequiredArgsConstructor
 @Getter
-public enum SyncTaskControlStatus {
+public enum ScalingControlStatus {
     
     /**
      * Task is in running status.

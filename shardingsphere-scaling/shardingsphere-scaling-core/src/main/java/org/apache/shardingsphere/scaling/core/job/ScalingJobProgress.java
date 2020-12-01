@@ -29,13 +29,13 @@ import java.util.Map;
  */
 @Getter
 @RequiredArgsConstructor
-public final class ScalingJobProgress implements SyncProgress {
+public final class ScalingJobProgress {
     
     private final long id;
     
     private final String status;
     
-    private final Map<String, Collection<SyncProgress>> inventoryDataSyncTaskProgress = Maps.newHashMap();
+    private final Map<String, Collection<TaskProgress>> inventoryDataScalingTaskProgress = Maps.newHashMap();
     
-    private final Map<String, Collection<SyncProgress>> incrementalDataSyncTaskProgress = Maps.newHashMap();
+    private final Map<String, Collection<TaskProgress>> incrementalDataScalingTaskProgress = Maps.newHashMap();
 }

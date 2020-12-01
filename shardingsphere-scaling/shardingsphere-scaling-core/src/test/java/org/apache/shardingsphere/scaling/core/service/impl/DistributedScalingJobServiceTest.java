@@ -27,8 +27,8 @@ import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.job.ScalingJobProgress;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
-import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalDataSyncTaskProgress;
-import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataSyncTaskProgress;
+import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalDataScalingTaskProgress;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTaskProgress;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
@@ -115,11 +115,11 @@ public final class DistributedScalingJobServiceTest {
         registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/position/1/incremental"),
                 "{'ds2':{'filename':binlog1,'position':4,'delay':2},'ds4':{'filename':binlog2,'position':4,'delay':4}}");
         ScalingJobProgress actual = scalingJobService.getProgress(1);
-        assertThat(actual.getInventoryDataSyncTaskProgress().get("0").stream()
-                .map(each -> (InventoryDataSyncTaskProgress) each)
-                .filter(InventoryDataSyncTaskProgress::isFinished).count(), is(2L));
-        assertTrue(actual.getIncrementalDataSyncTaskProgress().get("1").stream()
-                .map(each -> (IncrementalDataSyncTaskProgress) each)
+        assertThat(actual.getInventoryDataScalingTaskProgress().get("0").stream()
+                .map(each -> (InventoryDataScalingTaskProgress) each)
+                .filter(InventoryDataScalingTaskProgress::isFinished).count(), is(2L));
+        assertTrue(actual.getIncrementalDataScalingTaskProgress().get("1").stream()
+                .map(each -> (IncrementalDataScalingTaskProgress) each)
                 .filter(each -> "ds2".equals(each.getId()))
                 .allMatch(each -> 2 == each.getDelayMillisecond()));
     }

@@ -24,9 +24,9 @@ import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManager;
-import org.apache.shardingsphere.scaling.core.job.task.DefaultSyncTaskFactory;
+import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
-import org.apache.shardingsphere.scaling.core.job.task.SyncTaskFactory;
+import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
 
 import java.util.LinkedHashMap;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
  */
 public final class SyncPositionResumer {
     
-    private final SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
+    private final ScalingTaskFactory scalingTaskFactory = new DefaultScalingTaskFactory();
     
     /**
      * Resume position from resume from break-point manager.
@@ -66,7 +66,7 @@ public final class SyncPositionResumer {
         for (TaskConfiguration each : shardingScalingJob.getTaskConfigs()) {
             MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(each.getDumperConfig().getDataSourceConfig()));
             for (Entry<String, PositionManager> entry : getInventoryPositionMap(each.getDumperConfig(), resumeBreakPointManager).entrySet()) {
-                result.add(syncTaskFactory.createInventoryDataSyncTask(newInventoryDumperConfig(each.getDumperConfig(), metaDataManager, entry), each.getImporterConfig()));
+                result.add(scalingTaskFactory.createInventoryDataScalingTask(newInventoryDumperConfig(each.getDumperConfig(), metaDataManager, entry), each.getImporterConfig()));
             }
         }
         return result;
@@ -94,7 +94,7 @@ public final class SyncPositionResumer {
     private void resumeIncrementalPosition(final ShardingScalingJob shardingScalingJob, final ResumeBreakPointManager resumeBreakPointManager) {
         for (TaskConfiguration each : shardingScalingJob.getTaskConfigs()) {
             each.getDumperConfig().setPositionManager(resumeBreakPointManager.getIncrementalPositionManagerMap().get(each.getDumperConfig().getDataSourceName()));
-            shardingScalingJob.getIncrementalDataTasks().add(syncTaskFactory.createIncrementalDataSyncTask(each.getJobConfig().getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
+            shardingScalingJob.getIncrementalDataTasks().add(scalingTaskFactory.createIncrementalDataScalingTask(each.getJobConfig().getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
         }
     }
     

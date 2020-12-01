@@ -31,7 +31,7 @@ import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.position.resume.FakeResumeBreakPointManager;
 import org.apache.shardingsphere.scaling.core.job.position.resume.IncrementalPositionResumeBreakPointManager;
 import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManagerFactory;
-import org.apache.shardingsphere.scaling.core.schedule.SyncTaskControlStatus;
+import org.apache.shardingsphere.scaling.core.schedule.ScalingControlStatus;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
@@ -64,8 +64,8 @@ public final class StandaloneScalingJobServiceTest {
         assertTrue(shardingScalingJob.isPresent());
         long jobId = shardingScalingJob.get().getJobId();
         ScalingJobProgress progress = scalingJobService.getProgress(jobId);
-        assertThat(progress.getIncrementalDataSyncTaskProgress().size(), is(1));
-        assertThat(progress.getInventoryDataSyncTaskProgress().size(), is(1));
+        assertThat(progress.getIncrementalDataScalingTaskProgress().size(), is(1));
+        assertThat(progress.getInventoryDataScalingTaskProgress().size(), is(1));
     }
     
     @Test
@@ -75,7 +75,7 @@ public final class StandaloneScalingJobServiceTest {
         long jobId = shardingScalingJob.get().getJobId();
         scalingJobService.stop(jobId);
         ScalingJobProgress progress = scalingJobService.getProgress(jobId);
-        assertThat(progress.getStatus(), is(SyncTaskControlStatus.STOPPED.name()));
+        assertThat(progress.getStatus(), is(ScalingControlStatus.STOPPED.name()));
         scalingJobService.remove(jobId);
     }
     
@@ -98,8 +98,8 @@ public final class StandaloneScalingJobServiceTest {
         assertTrue(shardingScalingJob.isPresent());
         long jobId = shardingScalingJob.get().getJobId();
         ScalingJobProgress progress = scalingJobService.getProgress(jobId);
-        assertThat(progress.getIncrementalDataSyncTaskProgress().size(), is(1));
-        assertThat(progress.getInventoryDataSyncTaskProgress().size(), is(1));
+        assertThat(progress.getIncrementalDataScalingTaskProgress().size(), is(1));
+        assertThat(progress.getInventoryDataScalingTaskProgress().size(), is(1));
         ReflectionUtil.setStaticFieldValue(ResumeBreakPointManagerFactory.class, "clazz", FakeResumeBreakPointManager.class);
     }
     

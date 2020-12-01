@@ -24,17 +24,17 @@ import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalDa
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTask;
 
 /**
- * Default sync task factory.
+ * Default Scaling task factory.
  */
-public final class DefaultSyncTaskFactory implements SyncTaskFactory {
+public final class DefaultScalingTaskFactory implements ScalingTaskFactory {
     
     @Override
-    public InventoryDataScalingTask createInventoryDataSyncTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig) {
+    public InventoryDataScalingTask createInventoryDataScalingTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig) {
         return new InventoryDataScalingTask(inventoryDumperConfig, importerConfig);
     }
     
     @Override
-    public IncrementalDataScalingTask createIncrementalDataSyncTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig) {
+    public IncrementalDataScalingTask createIncrementalDataScalingTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig) {
         return new IncrementalDataScalingTask(concurrency, dumperConfig, importerConfig);
     }
 }

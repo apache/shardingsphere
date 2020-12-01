@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.postgresql.component;
 import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
+import org.apache.shardingsphere.scaling.core.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
@@ -86,7 +86,7 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor i
                 pushRecord(walEventConverter.convert(event));
             }
         } catch (final SQLException ex) {
-            throw new SyncTaskExecuteException(ex);
+            throw new ScalingTaskExecuteException(ex);
         }
     }
     

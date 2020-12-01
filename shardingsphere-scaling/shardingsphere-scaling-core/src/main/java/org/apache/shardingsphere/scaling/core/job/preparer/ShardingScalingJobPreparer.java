@@ -33,10 +33,10 @@ import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChe
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceCheckerCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.preparer.resumer.SyncPositionResumer;
 import org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryDataTaskSplitter;
-import org.apache.shardingsphere.scaling.core.job.task.DefaultSyncTaskFactory;
+import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
-import org.apache.shardingsphere.scaling.core.job.task.SyncTaskFactory;
-import org.apache.shardingsphere.scaling.core.schedule.SyncTaskControlStatus;
+import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
+import org.apache.shardingsphere.scaling.core.schedule.ScalingControlStatus;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 
 import java.util.LinkedList;
@@ -48,7 +48,7 @@ import java.util.List;
 @Slf4j
 public final class ShardingScalingJobPreparer {
     
-    private final SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
+    private final ScalingTaskFactory scalingTaskFactory = new DefaultScalingTaskFactory();
     
     private final InventoryDataTaskSplitter inventoryDataTaskSplitter = new InventoryDataTaskSplitter();
     
@@ -74,7 +74,7 @@ public final class ShardingScalingJobPreparer {
             shardingScalingJob.setDataConsistencyChecker(initDataConsistencyChecker(databaseType, shardingScalingJob));
         } catch (final PrepareFailedException ex) {
             log.error("Preparing sharding scaling job {} failed", shardingScalingJob.getJobId(), ex);
-            shardingScalingJob.setStatus(SyncTaskControlStatus.PREPARING_FAILURE.name());
+            shardingScalingJob.setStatus(ScalingControlStatus.PREPARING_FAILURE.name());
         }
     }
     
@@ -102,7 +102,7 @@ public final class ShardingScalingJobPreparer {
         for (TaskConfiguration each : shardingScalingJob.getTaskConfigs()) {
             DataSourceConfiguration dataSourceConfig = each.getDumperConfig().getDataSourceConfig();
             each.getDumperConfig().setPositionManager(PositionManagerFactory.newInstance(databaseType, dataSourceManager.getDataSource(dataSourceConfig)));
-            shardingScalingJob.getIncrementalDataTasks().add(syncTaskFactory.createIncrementalDataSyncTask(each.getJobConfig().getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
+            shardingScalingJob.getIncrementalDataTasks().add(scalingTaskFactory.createIncrementalDataScalingTask(each.getJobConfig().getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
         }
     }
     
