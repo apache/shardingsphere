@@ -158,7 +158,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
      * To detect the type whether or not exists.
      *
      * @param typeDescription TypeDescription
-     * @return contains when it is true.
+     * @return contains when it is true
      */
     public boolean containsType(final TypeDescription typeDescription) {
         return pluginDefineMap.containsKey(typeDescription.getTypeName());
@@ -168,7 +168,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
      * Load the definition configuration by TypeDescription.
      *
      * @param typeDescription TypeDescription
-     * @return the plugin definition configurations.
+     * @return the plugin definition configurations
      */
     public PluginAdviceDefine loadPluginAdviceDefine(final TypeDescription typeDescription) {
         return pluginDefineMap.getOrDefault(typeDescription.getTypeName(), PluginAdviceDefine.createDefault());
@@ -178,13 +178,12 @@ public final class PluginLoader extends ClassLoader implements Closeable {
      * To get or create instance of the advice class. Create new one and caching when it is not exist.
      *
      * @param classNameOfAdvice class name of advice
-     * @param <T> advice type.
+     * @param <T> advice type
      * @return instance of advice
      */
     @SneakyThrows({ClassNotFoundException.class, IllegalAccessException.class, InstantiationException.class})
     @SuppressWarnings("unchecked")
     public <T> T getOrCreateInstance(final String classNameOfAdvice) {
-
         if (objectPool.containsKey(classNameOfAdvice)) {
             return (T) objectPool.get(classNameOfAdvice);
         }
