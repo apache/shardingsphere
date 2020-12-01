@@ -27,9 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.common.AgentPathLocator;
-import org.apache.shardingsphere.agent.core.exception.AdviceNotFoundException;
 
+import org.apache.shardingsphere.agent.core.common.AgentPathLocator;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -59,7 +58,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     
     private final List<Service> services = Lists.newArrayList();
     
-    private Map<String, PluginAdviceDefine> pluginDefineMap;
+    private Map<String, PluginAdviceDefinition> pluginDefineMap;
     
     private PluginLoader() {
         try {
@@ -106,9 +105,9 @@ public final class PluginLoader extends ClassLoader implements Closeable {
         return INSTANCE;
     }
     
-    private Map<String, PluginAdviceDefine> loadAllPlugins() throws IOException {
+    private Map<String, PluginAdviceDefinition> loadAllPlugins() throws IOException {
         File[] jarFiles = AgentPathLocator.getAgentPath().listFiles(file -> file.getName().endsWith(".jar"));
-        ImmutableMap.Builder<String, PluginAdviceDefine> pluginDefineMap = ImmutableMap.builder();
+        ImmutableMap.Builder<String, PluginAdviceDefinition> pluginDefineMap = ImmutableMap.builder();
         if (jarFiles == null) {
             return pluginDefineMap.build();
         }
@@ -125,16 +124,15 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             }
             ByteStreams.copy(jar.getInputStream(jar.getEntry(classNameToPath(entrypoint))), outputStream);
             try {
-                PluginDefine config = (PluginDefine) defineClass(entrypoint, outputStream.toByteArray(), 0, outputStream.size())
-                        .newInstance();
-                config.getAllServices().forEach(klass -> {
+                PluginDefinition pluginDefinition = (PluginDefinition) defineClass(entrypoint, outputStream.toByteArray(), 0, outputStream.size()).newInstance();
+                pluginDefinition.getAllServices().forEach(klass -> {
                     try {
                         services.add(klass.newInstance());
                     } catch (InstantiationException | IllegalAccessException e) {
                         log.error("Failed to create service instance, {}.", klass.getTypeName(), e);
                     }
                 });
-                config.build().forEach(plugin -> pluginDefineMap.put(plugin.getClassNameOfTarget(), plugin));
+                pluginDefinition.build().forEach(plugin -> pluginDefineMap.put(plugin.getClassNameOfTarget(), plugin));
             } catch (InstantiationException | IllegalAccessException e) {
                 log.error("Failed to load plugin definition, {}.", entrypoint, e);
             }
@@ -159,7 +157,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
      * To detect the type whether or not exists.
      *
      * @param typeDescription TypeDescription
-     * @return contains when it is true.
+     * @return contains when it is true
      */
     public boolean containsType(final TypeDescription typeDescription) {
         return pluginDefineMap.containsKey(typeDescription.getTypeName());
@@ -169,25 +167,22 @@ public final class PluginLoader extends ClassLoader implements Closeable {
      * Load the definition configuration by TypeDescription.
      *
      * @param typeDescription TypeDescription
-     * @return the plugin definition configurations.
+     * @return the plugin definition configurations
      */
-    public PluginAdviceDefine loadPluginAdviceDefine(final TypeDescription typeDescription) {
-        if (pluginDefineMap.containsKey(typeDescription.getTypeName())) {
-            return pluginDefineMap.get(typeDescription.getTypeName());
-        }
-        throw new AdviceNotFoundException();
+    public PluginAdviceDefinition loadPluginAdviceDefine(final TypeDescription typeDescription) {
+        return pluginDefineMap.getOrDefault(typeDescription.getTypeName(), PluginAdviceDefinition.createDefault());
     }
     
     /**
      * To get or create instance of the advice class. Create new one and caching when it is not exist.
      *
      * @param classNameOfAdvice class name of advice
-     * @param <T> advice type.
+     * @param <T> advice type
      * @return instance of advice
      */
     @SneakyThrows({ClassNotFoundException.class, IllegalAccessException.class, InstantiationException.class})
+    @SuppressWarnings("unchecked")
     public <T> T getOrCreateInstance(final String classNameOfAdvice) {
-
         if (objectPool.containsKey(classNameOfAdvice)) {
             return (T) objectPool.get(classNameOfAdvice);
         }
@@ -195,8 +190,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
         try {
             Object inst = objectPool.get(classNameOfAdvice);
             if (Objects.isNull(inst)) {
-                inst = Class.forName(classNameOfAdvice, true, this)
-                        .newInstance();
+                inst = Class.forName(classNameOfAdvice, true, this).newInstance();
                 objectPool.put(classNameOfAdvice, inst);
             }
             return (T) inst;

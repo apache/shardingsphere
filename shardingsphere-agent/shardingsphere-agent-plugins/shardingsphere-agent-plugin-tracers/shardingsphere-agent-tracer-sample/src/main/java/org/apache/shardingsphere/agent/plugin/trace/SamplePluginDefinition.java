@@ -19,12 +19,12 @@
 package org.apache.shardingsphere.agent.plugin.trace;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.plugin.PluginDefine;
+import org.apache.shardingsphere.agent.core.plugin.PluginDefinition;
 
 /**
- * Sample.
+ * Sample plugin definition.
  */
-public class SamplePluginDefine extends PluginDefine {
+public class SamplePluginDefinition extends PluginDefinition {
 
     @Override
     protected void define() {
@@ -32,8 +32,6 @@ public class SamplePluginDefine extends PluginDefine {
                 .aroundInstanceMethod(ElementMatchers.named("run"))
                 .implement("org.apache.shardingsphere.agent.plugin.trace.SampleAdvice")
                 .build();
-    
         registerService(SampleTracer.class);
     }
-
 }

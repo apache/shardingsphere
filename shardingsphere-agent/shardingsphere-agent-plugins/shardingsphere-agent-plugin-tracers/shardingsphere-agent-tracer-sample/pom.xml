@@ -31,7 +31,7 @@
     <artifactId>shardingsphere-agent-tracer-sample</artifactId>
 
     <properties>
-        <entrypoint.class>org.apache.shardingsphere.agent.plugin.trace.SamplePluginDefine</entrypoint.class>
+        <entrypoint.class>org.apache.shardingsphere.agent.plugin.trace.SamplePluginDefinition</entrypoint.class>
     </properties>
 
 </project>

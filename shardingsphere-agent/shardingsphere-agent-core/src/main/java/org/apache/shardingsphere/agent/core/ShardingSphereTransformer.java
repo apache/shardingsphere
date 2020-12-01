@@ -27,7 +27,7 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.utility.JavaModule;
-import org.apache.shardingsphere.agent.core.plugin.PluginAdviceDefine;
+import org.apache.shardingsphere.agent.core.plugin.PluginAdviceDefinition;
 import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
 import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorMethodInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodAroundInterceptor;
@@ -57,7 +57,7 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
             DynamicType.Builder<?> newBuilder = builder.defineField("_SSExtraData_", Map.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
                     .implement(TargetObject.class)
                     .intercept(FieldAccessor.ofField("_SSExtraData_"));
-            final PluginAdviceDefine define = pluginLoader.loadPluginAdviceDefine(typeDescription);
+            final PluginAdviceDefinition define = pluginLoader.loadPluginAdviceDefine(typeDescription);
             for (ConstructorPoint point : define.getConstructorPoints()) {
                 try {
                     final ConstructorMethodInterceptor interceptor = new ConstructorMethodInterceptor(pluginLoader.getOrCreateInstance(point.getAdvice()));
@@ -72,8 +72,7 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
             for (ClassStaticMethodPoint point : define.getClassStaticMethodPoints()) {
                 try {
                     final StaticMethodAroundInterceptor interceptor = new StaticMethodAroundInterceptor(pluginLoader.getOrCreateInstance(point.getAdvice()));
-                    newBuilder = newBuilder.method(point.getMethodsMatcher())
-                            .intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
+                    newBuilder = newBuilder.method(point.getMethodsMatcher()).intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
                     // CHECKSTYLE:OFF
                 } catch (Exception e) {
                     // CHECKSTYLE:ON
@@ -83,8 +82,7 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
             for (InstanceMethodPoint point : define.getInstanceMethodPoints()) {
                 try {
                     final MethodAroundInterceptor interceptor = new MethodAroundInterceptor(pluginLoader.getOrCreateInstance(point.getAdvice()));
-                    newBuilder = newBuilder.method(point.getMethodMatcher())
-                            .intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
+                    newBuilder = newBuilder.method(point.getMethodMatcher()).intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
                     // CHECKSTYLE:OFF
                 } catch (Exception e) {
                     // CHECKSTYLE:ON
