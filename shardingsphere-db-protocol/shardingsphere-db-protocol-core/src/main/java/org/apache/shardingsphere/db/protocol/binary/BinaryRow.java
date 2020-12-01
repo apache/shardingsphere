@@ -15,37 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.command.executor;
+package org.apache.shardingsphere.db.protocol.binary;
 
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.sql.SQLException;
+import java.util.Collection;
 
 /**
- * Query command executor.
+ * Binary row.
  */
-public interface QueryCommandExecutor extends CommandExecutor {
+@RequiredArgsConstructor
+@Getter
+public final class BinaryRow {
     
-    /**
-     * Get response type.
-     *
-     * @return response type
-     */
-    ResponseType getResponseType();
-    
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
-     * @throws SQLException SQL exception
-     */
-    boolean next() throws SQLException;
-    
-    /**
-     * Get query row packet.
-     *
-     * @return database packet of query row
-     * @throws SQLException SQL exception
-     */
-    DatabasePacket<?> getQueryRowPacket() throws SQLException;
+    private final Collection<BinaryCell> cells;
 }
