@@ -850,39 +850,3 @@ executeStatement
 executeVarList
     : userVariable (COMMA_ userVariable)*
     ;
-
-getDiagnostics
-    : GET (CURRENT | STACKED)? DIAGNOSTICS (
-        statementInformationItem (COMMA_ statementInformationItem)*
-        | CONDITION signalAllowedExpr conditionInformationItem (COMMA_ conditionInformationItem)*
-    )
-    ;
-
-signalAllowedExpr
-    : literals
-    | variable
-    | identifier (DOT_ identifier)?
-    ;
-
-statementInformationItem
-    : (variable | identifier) EQ_ (NUMBER | ROW_COUNT)
-    ;
-
-conditionInformationItem
-    : (variable | identifier) EQ_ (signalInformationItemName| RETURNED_SQLSTATE)
-    ;
-
-signalInformationItemName
-    : CLASS_ORIGIN
-    | SUBCLASS_ORIGIN
-    | CONSTRAINT_CATALOG
-    | CONSTRAINT_SCHEMA
-    | CONSTRAINT_NAME
-    | CATALOG_NAME
-    | SCHEMA_NAME
-    | TABLE_NAME
-    | COLUMN_NAME
-    | CURSOR_NAME
-    | MESSAGE_TEXT
-    | MYSQL_ERRNO
-    ;
