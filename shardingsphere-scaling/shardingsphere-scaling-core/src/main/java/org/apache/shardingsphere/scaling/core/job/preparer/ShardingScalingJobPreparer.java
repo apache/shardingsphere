@@ -31,7 +31,7 @@ import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPoi
 import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManagerFactory;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceCheckerCheckerFactory;
-import org.apache.shardingsphere.scaling.core.job.preparer.resumer.SyncPositionResumer;
+import org.apache.shardingsphere.scaling.core.job.preparer.resumer.ScalingPositionResumer;
 import org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryDataTaskSplitter;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
@@ -52,7 +52,7 @@ public final class ShardingScalingJobPreparer {
     
     private final InventoryDataTaskSplitter inventoryDataTaskSplitter = new InventoryDataTaskSplitter();
     
-    private final SyncPositionResumer syncPositionResumer = new SyncPositionResumer();
+    private final ScalingPositionResumer scalingPositionResumer = new ScalingPositionResumer();
     
     /**
      * Do prepare work for sharding scaling job.
@@ -65,11 +65,11 @@ public final class ShardingScalingJobPreparer {
             checkDataSources(databaseType, dataSourceManager);
             ResumeBreakPointManager resumeBreakPointManager = getResumeBreakPointManager(databaseType, shardingScalingJob);
             if (resumeBreakPointManager.isResumable()) {
-                syncPositionResumer.resumePosition(shardingScalingJob, dataSourceManager, resumeBreakPointManager);
+                scalingPositionResumer.resumePosition(shardingScalingJob, dataSourceManager, resumeBreakPointManager);
             } else {
                 initIncrementalDataTasks(databaseType, shardingScalingJob, dataSourceManager);
                 initInventoryDataTasks(databaseType, shardingScalingJob, dataSourceManager);
-                syncPositionResumer.persistPosition(shardingScalingJob, resumeBreakPointManager);
+                scalingPositionResumer.persistPosition(shardingScalingJob, resumeBreakPointManager);
             }
             shardingScalingJob.setDataConsistencyChecker(initDataConsistencyChecker(databaseType, shardingScalingJob));
         } catch (final PrepareFailedException ex) {

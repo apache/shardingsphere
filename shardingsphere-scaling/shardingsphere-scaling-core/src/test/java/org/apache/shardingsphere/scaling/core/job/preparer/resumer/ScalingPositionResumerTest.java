@@ -39,17 +39,17 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public final class SyncPositionResumerTest {
+public final class ScalingPositionResumerTest {
     
     private ShardingScalingJob shardingScalingJob;
     
-    private SyncPositionResumer syncPositionResumer;
+    private ScalingPositionResumer scalingPositionResumer;
     
     @Before
     public void setUp() {
         ScalingContext.getInstance().init(new ServerConfiguration());
         shardingScalingJob = mockShardingScalingJob();
-        syncPositionResumer = new SyncPositionResumer();
+        scalingPositionResumer = new ScalingPositionResumer();
     }
     
     @Test
@@ -57,7 +57,7 @@ public final class SyncPositionResumerTest {
         ResumeBreakPointManager resumeBreakPointManager = ResumeBreakPointManagerFactory.newInstance("MySQL", "/scalingTest/position/0");
         resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0", new PositionManager(new PrimaryKeyPosition(0, 100)));
         resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0.t_order", new PositionManager(new PlaceholderPosition()));
-        syncPositionResumer.resumePosition(shardingScalingJob, new DataSourceManager(), resumeBreakPointManager);
+        scalingPositionResumer.resumePosition(shardingScalingJob, new DataSourceManager(), resumeBreakPointManager);
         assertThat(shardingScalingJob.getIncrementalDataTasks().size(), is(1));
         assertTrue(shardingScalingJob.getInventoryDataTasks().isEmpty());
     }
@@ -65,7 +65,7 @@ public final class SyncPositionResumerTest {
     @Test
     public void assertPersistPosition() {
         ResumeBreakPointManager resumeBreakPointManager = mock(ResumeBreakPointManager.class);
-        syncPositionResumer.persistPosition(shardingScalingJob, resumeBreakPointManager);
+        scalingPositionResumer.persistPosition(shardingScalingJob, resumeBreakPointManager);
         verify(resumeBreakPointManager).persistIncrementalPosition();
         verify(resumeBreakPointManager).persistInventoryPosition();
     }

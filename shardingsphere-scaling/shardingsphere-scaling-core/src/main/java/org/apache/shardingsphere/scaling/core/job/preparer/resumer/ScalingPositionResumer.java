@@ -38,9 +38,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Synchronize position resumer.
+ * Scaling position resumer.
  */
-public final class SyncPositionResumer {
+public final class ScalingPositionResumer {
     
     private final ScalingTaskFactory scalingTaskFactory = new DefaultScalingTaskFactory();
     
