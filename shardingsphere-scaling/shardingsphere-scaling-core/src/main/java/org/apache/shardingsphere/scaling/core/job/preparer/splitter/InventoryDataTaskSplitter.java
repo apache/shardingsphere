@@ -56,7 +56,7 @@ public final class InventoryDataTaskSplitter {
      * Split inventory data to multi-tasks.
      *
      * @param databaseType database type
-     * @param taskConfig synchronize configuration
+     * @param taskConfig task configuration
      * @param dataSourceManager data source manager
      * @return split inventory data task
      */
