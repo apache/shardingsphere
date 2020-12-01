@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor
 
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
-import org.apache.shardingsphere.proxy.backend.response.data.impl.TextQueryResponseData;
+import org.apache.shardingsphere.proxy.backend.response.data.text.TextQueryResponseData;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;

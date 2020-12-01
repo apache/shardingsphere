@@ -23,7 +23,7 @@ import java.util.List;
  * Query response data.
  */
 public interface QueryResponseData {
-
+    
     /**
      * Get data.
      * 

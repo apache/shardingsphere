@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response.data.impl;
+package org.apache.shardingsphere.proxy.backend.response.data.text;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
