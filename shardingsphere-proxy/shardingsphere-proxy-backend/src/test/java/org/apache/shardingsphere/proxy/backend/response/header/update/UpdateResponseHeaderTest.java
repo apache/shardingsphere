@@ -37,9 +37,7 @@ public final class UpdateResponseHeaderTest {
         assertThat(updateResponseHeader.getLastInsertId(), is(0L));
         //before mergeUpdateCount
         assertThat(updateResponseHeader.getUpdateCount(), is(0L));
-
         updateResponseHeader.mergeUpdateCount();
-
         //after mergeUpdateCount
         assertThat(updateResponseHeader.getUpdateCount(), is(0L));
     }
@@ -50,9 +48,7 @@ public final class UpdateResponseHeaderTest {
         assertThat(updateResponseHeader.getLastInsertId(), is(4L));
         //before mergeUpdateCount
         assertThat(updateResponseHeader.getUpdateCount(), is(1L));
-
         updateResponseHeader.mergeUpdateCount();
-
         //after mergeUpdateCount
         assertThat(updateResponseHeader.getUpdateCount(), is(4L));
     }
