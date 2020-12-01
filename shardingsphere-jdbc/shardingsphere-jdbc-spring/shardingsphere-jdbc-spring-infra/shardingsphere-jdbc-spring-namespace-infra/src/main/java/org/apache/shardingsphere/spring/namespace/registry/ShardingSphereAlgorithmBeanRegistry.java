@@ -25,6 +25,7 @@ import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.ParserContext;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * ShardingSphere algorithm bean registry.
@@ -45,7 +46,7 @@ public final class ShardingSphereAlgorithmBeanRegistry {
         String algorithmFactoryBeanClassName = algorithmFactoryBeanClass.getName();
         Map<String, RuntimeBeanReference> result = new ManagedMap<>(beanDefinitionNames.length);
         for (String each : beanDefinitionNames) {
-            if (parserContext.getRegistry().getBeanDefinition(each).getBeanClassName().equals(algorithmFactoryBeanClassName)) {
+            if (Objects.equals(parserContext.getRegistry().getBeanDefinition(each).getBeanClassName(), algorithmFactoryBeanClassName)) {
                 result.put(each, new RuntimeBeanReference(each));
             }
         }
