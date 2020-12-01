@@ -50,7 +50,7 @@ public final class UpdateResponseHeader implements ResponseHeader {
     public UpdateResponseHeader(final SQLStatement sqlStatement, final Collection<ExecuteResult> executeResults) {
         this.sqlStatement = sqlStatement;
         lastInsertId = getLastInsertId(executeResults);
-        updateCount = ((UpdateResult) executeResults.iterator().next()).getUpdateCount();
+        updateCount = executeResults.iterator().hasNext() ? ((UpdateResult) executeResults.iterator().next()).getUpdateCount() : 0;
         for (ExecuteResult each : executeResults) {
             updateCounts.add(((UpdateResult) each).getUpdateCount());
         }
