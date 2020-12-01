@@ -15,33 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.component;
+package org.apache.shardingsphere.scaling.core.fixture;
 
-import com.google.common.collect.Maps;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.AbstractScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
-import org.apache.shardingsphere.scaling.core.job.check.AbstractDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 
-import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
-/**
- * PostgreSQL data consistency checker.
- */
-public final class PostgreSQLDataConsistencyChecker extends AbstractDataConsistencyChecker implements DataConsistencyChecker {
+public final class FixtureScalingSQLBuilder extends AbstractScalingSQLBuilder implements ScalingSQLBuilder {
     
-    public PostgreSQLDataConsistencyChecker(final ShardingScalingJob shardingScalingJob) {
-        super(shardingScalingJob);
+    public FixtureScalingSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
+        super(shardingColumnsMap);
     }
     
     @Override
-    public Map<String, Boolean> dataCheck() {
-        return Collections.emptyMap();
+    protected String getLeftIdentifierQuoteString() {
+        return "`";
     }
     
     @Override
-    protected ScalingSQLBuilder getSqlBuilder() {
-        return new PostgreSQLScalingSQLBuilder(Maps.newHashMap());
+    protected String getRightIdentifierQuoteString() {
+        return "`";
     }
 }

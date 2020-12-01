@@ -83,7 +83,7 @@ public final class SyncConfigurationUtil {
         for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
             DumperConfiguration dumperConfig = createDumperConfig(entry.getKey(), sourceDataSource.get(entry.getKey()).getProps(), entry.getValue());
             ImporterConfiguration importerConfig = createImporterConfig(scalingConfig, shardingColumnsMap);
-            result.add(new SyncConfiguration(scalingConfig.getJobConfiguration().getConcurrency(), dumperConfig, importerConfig));
+            result.add(new SyncConfiguration(scalingConfig.getJobConfiguration(), dumperConfig, importerConfig));
         }
         return result;
     }

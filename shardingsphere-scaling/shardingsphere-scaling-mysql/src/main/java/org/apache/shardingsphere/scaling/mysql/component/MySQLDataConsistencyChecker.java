@@ -97,7 +97,7 @@ public final class MySQLDataConsistencyChecker extends AbstractDataConsistencyCh
     }
     
     @Override
-    protected MySQLSQLBuilder getSqlBuilder() {
-        return new MySQLSQLBuilder(Maps.newHashMap());
+    protected MySQLScalingSQLBuilder getSqlBuilder() {
+        return new MySQLScalingSQLBuilder(Maps.newHashMap());
     }
 }

@@ -32,6 +32,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRe
 import org.apache.shardingsphere.scaling.core.execute.executor.record.GroupedDataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -54,7 +55,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     
     private final DataSourceManager dataSourceManager;
     
-    private final AbstractSQLBuilder sqlBuilder;
+    private final ScalingSQLBuilder scalingSqlBuilder;
     
     @Setter
     private Channel channel;
@@ -62,7 +63,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     protected AbstractJDBCImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
-        sqlBuilder = createSQLBuilder(importerConfig.getShardingColumnsMap());
+        scalingSqlBuilder = createSQLBuilder(importerConfig.getShardingColumnsMap());
     }
     
     /**
@@ -71,7 +72,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
      * @param shardingColumnsMap sharding columns map
      * @return SQL builder
      */
-    protected abstract AbstractSQLBuilder createSQLBuilder(Map<String, Set<String>> shardingColumnsMap);
+    protected abstract ScalingSQLBuilder createSQLBuilder(Map<String, Set<String>> shardingColumnsMap);
     
     @Override
     public final void start() {
@@ -153,7 +154,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     }
     
     private void executeBatchInsert(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
-        String insertSql = sqlBuilder.buildInsertSQL(dataRecords.get(0));
+        String insertSql = scalingSqlBuilder.buildInsertSQL(dataRecords.get(0));
         PreparedStatement ps = connection.prepareStatement(insertSql);
         ps.setQueryTimeout(30);
         for (DataRecord each : dataRecords) {
@@ -174,7 +175,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
         List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, importerConfig.getShardingColumnsMap().get(record.getTableName()));
         List<Column> updatedColumns = RecordUtil.extractUpdatedColumns(record);
-        String updateSql = sqlBuilder.buildUpdateSQL(record, conditionColumns);
+        String updateSql = scalingSqlBuilder.buildUpdateSQL(record, conditionColumns);
         PreparedStatement ps = connection.prepareStatement(updateSql);
         for (int i = 0; i < updatedColumns.size(); i++) {
             ps.setObject(i + 1, updatedColumns.get(i).getValue());
@@ -190,7 +191,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     
     private void executeBatchDelete(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
         List<Column> conditionColumns = RecordUtil.extractConditionColumns(dataRecords.get(0), importerConfig.getShardingColumnsMap().get(dataRecords.get(0).getTableName()));
-        String deleteSQL = sqlBuilder.buildDeleteSQL(dataRecords.get(0), conditionColumns);
+        String deleteSQL = scalingSqlBuilder.buildDeleteSQL(dataRecords.get(0), conditionColumns);
         PreparedStatement ps = connection.prepareStatement(deleteSQL);
         ps.setQueryTimeout(30);
         for (DataRecord each : dataRecords) {

@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class SyncConfiguration {
     
-    private final int concurrency;
+    private final JobConfiguration jobConfig;
     
     private final DumperConfiguration dumperConfig;
     
