@@ -68,7 +68,7 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
     
     private String generateSyncTaskId(final InventoryDumperConfiguration inventoryDumperConfig) {
         String result = String.format("%s.%s", inventoryDumperConfig.getDataSourceName(), inventoryDumperConfig.getTableName());
-        return null == inventoryDumperConfig.getSpiltNum() ? result : result + "#" + inventoryDumperConfig.getSpiltNum();
+        return null == inventoryDumperConfig.getShardingItem() ? result : result + "#" + inventoryDumperConfig.getShardingItem();
     }
     
     @Override

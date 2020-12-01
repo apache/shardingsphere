@@ -15,28 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.event;
+package org.apache.shardingsphere.db.protocol.binary;
 
-import com.google.common.eventbus.EventBus;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Governance event bus.
+ * Binary result set row.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GovernanceEventBus {
+@RequiredArgsConstructor
+@Getter
+public final class BinaryResultSetRow {
     
-    /**
-     * Get instance of governance event bus.
-     *
-     * @return instance of governance event bus
-     */
-    public static EventBus getInstance() {
-        return GovernanceEventBusHolder.INSTANCE;
-    }
+    private final BinaryColumnType columnType;
     
-    private static final class GovernanceEventBusHolder {
-        private static final EventBus INSTANCE = new EventBus();
-    }
+    private final Object data;
 }

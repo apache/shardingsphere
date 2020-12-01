@@ -25,15 +25,16 @@ import net.bytebuddy.matcher.ElementMatcher;
  * Configuration of constructor intercepting point.
  */
 public class ConstructorPoint {
+    
     private final ElementMatcher<? super MethodDescription> matcher;
-
+    
     private final String advice;
-
+    
     public ConstructorPoint(final ElementMatcher<? super MethodDescription> matcher, final String advice) {
         this.matcher = matcher;
         this.advice = advice;
     }
-
+    
     /**
      * To detect target constructor constraints.
      *
@@ -42,14 +43,13 @@ public class ConstructorPoint {
     public ElementMatcher<? super MethodDescription> getConstructorMatcher() {
         return matcher;
     }
-
+    
     /**
      * To get the class name of advice.
      *
-     * @return the class name of advice.
+     * @return the class name of advice
      */
     public String getAdvice() {
         return advice;
     }
-
 }

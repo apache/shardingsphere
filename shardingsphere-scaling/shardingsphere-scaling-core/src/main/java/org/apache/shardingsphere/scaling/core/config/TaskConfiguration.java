@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.event;
+package org.apache.shardingsphere.scaling.core.config;
 
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class GovernanceEventBusTest {
+/**
+ * Task configuration.
+ */
+@Getter
+@RequiredArgsConstructor
+public final class TaskConfiguration {
     
-    @Test
-    public void assertInstance() {
-        assertThat(GovernanceEventBus.getInstance(), is(GovernanceEventBus.getInstance()));
-    }
+    private final JobConfiguration jobConfig;
+    
+    private final DumperConfiguration dumperConfig;
+    
+    private final ImporterConfiguration importerConfig;
 }

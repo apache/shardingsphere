@@ -31,6 +31,6 @@ public final class HintClearExecutor extends AbstractHintUpdateExecutor<HintClea
     public ResponseHeader execute(final HintClearCommand command) {
         HintManagerHolder.get().close();
         HintManagerHolder.remove();
-        return new UpdateResponseHeader();
+        return new UpdateResponseHeader(null);
     }
 }

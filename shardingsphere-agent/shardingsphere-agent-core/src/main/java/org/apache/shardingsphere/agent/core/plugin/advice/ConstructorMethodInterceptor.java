@@ -28,12 +28,13 @@ import net.bytebuddy.implementation.bind.annotation.This;
  */
 @Slf4j
 public class ConstructorMethodInterceptor {
+    
     private final ConstructorAdvice advice;
-
+    
     public ConstructorMethodInterceptor(final ConstructorAdvice advice) {
         this.advice = advice;
     }
-
+    
     /**
      * Intercept constructor.
      *
@@ -50,5 +51,4 @@ public class ConstructorMethodInterceptor {
             log.error("Constructor advice execution error. class: {}", target.getClass().getTypeName(), throwable);
         }
     }
-
 }

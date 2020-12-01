@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute;
 
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.Types;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -38,7 +38,7 @@ public final class MySQLBinaryResultSetRowPacketTest {
     
     @Test 
     public void assertWrite() {
-        MySQLBinaryResultSetRowPacket actual = new MySQLBinaryResultSetRowPacket(1, Arrays.asList("value", null), Arrays.asList(MySQLColumnType.MYSQL_TYPE_STRING, MySQLColumnType.MYSQL_TYPE_STRING));
+        MySQLBinaryResultSetRowPacket actual = new MySQLBinaryResultSetRowPacket(1, Arrays.asList("value", null), Arrays.asList(Types.CHAR, Types.CHAR));
         assertThat(actual.getSequenceId(), is(1));
         actual.write(payload);
         verify(payload).writeInt1(0x00);

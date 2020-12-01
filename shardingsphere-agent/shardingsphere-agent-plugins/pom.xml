@@ -27,18 +27,26 @@
     <artifactId>shardingsphere-agent-plugins</artifactId>
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
+
     <modules>
         <module>shardingsphere-agent-plugin-metrics</module>
+        <module>shardingsphere-agent-plugin-tracers</module>
     </modules>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <shade.package>org.apache.shardingsphere.dependencies</shade.package>
-        <shade.net.bytebuddy.source>net.bytebuddy</shade.net.bytebuddy.source>
-        <shade.net.bytebuddy.target>${shade.package}.${shade.net.bytebuddy.source}</shade.net.bytebuddy.target>
-    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-agent-core</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
 
     <build>
+        <finalName>${project.artifactId}-${project.version}.jar</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -50,30 +58,14 @@
                         </goals>
                         <configuration>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <createDependencyReducedPom>true</createDependencyReducedPom>
                             <createSourcesJar>true</createSourcesJar>
                             <shadeSourcesContent>true</shadeSourcesContent>
-                            <artifactSet>
-                                <excludes>
-                                    <exclude>net.bytebuddy:byte-buddy:jar:</exclude>
-                                    <exclude>com.google.*:*</exclude>
-                                    <exclude>com.google.guava:guava</exclude>
-                                    <exclude>org.checkerframework:checker-compat-qual</exclude>
-                                    <exclude>org.codehaus.mojo:animal-sniffer-annotations</exclude>
-                                    <exclude>io.perfmark:*</exclude>
-                                    <exclude>org.slf4j:*</exclude>
-                                </excludes>
-                            </artifactSet>
-                            <relocations>
-                                <relocation>
-                                    <pattern>${shade.net.bytebuddy.source}</pattern>
-                                    <shadedPattern>${shade.net.bytebuddy.target}</shadedPattern>
-                                </relocation>
-                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
+
 </project>

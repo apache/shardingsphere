@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package org.apache.shardingsphere.proxy.lock;
 
 /**
- * Sync configuration.
+ * Proxy lock strategy.
  */
-@Getter
-@RequiredArgsConstructor
-public final class SyncConfiguration {
+public interface ProxyLockStrategy {
     
-    private final int concurrency;
+    /**
+     * Try to get lock.
+     * 
+     * @return true if get the lock, false if not
+     */
+    boolean tryLock();
     
-    private final DumperConfiguration dumperConfig;
-    
-    private final ImporterConfiguration importerConfig;
+    /**
+     * Release lock.
+     */
+    void releaseLock();
 }

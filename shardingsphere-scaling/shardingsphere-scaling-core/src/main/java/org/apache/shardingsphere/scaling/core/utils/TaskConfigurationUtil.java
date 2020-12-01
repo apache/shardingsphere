@@ -29,7 +29,7 @@ import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
@@ -59,19 +59,19 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Sync configuration Util.
+ * Task configuration Util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SyncConfigurationUtil {
+public final class TaskConfigurationUtil {
     
     /**
-     * Split Scaling configuration to Sync configurations.
+     * Split Scaling configuration to task configurations.
      *
      * @param scalingConfig scaling configuration
-     * @return list of sync configurations
+     * @return list of task configurations
      */
-    public static Collection<SyncConfiguration> toSyncConfigs(final ScalingConfiguration scalingConfig) {
-        Collection<SyncConfiguration> result = new LinkedList<>();
+    public static Collection<TaskConfiguration> toTaskConfigs(final ScalingConfiguration scalingConfig) {
+        Collection<TaskConfiguration> result = new LinkedList<>();
         ShardingSphereJDBCDataSourceConfiguration sourceConfig = getSourceConfig(scalingConfig);
         ShardingRuleConfiguration sourceRuleConfig = ConfigurationYamlConverter.loadShardingRuleConfig(sourceConfig.getRule());
         Map<String, org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration> sourceDataSource = ConfigurationYamlConverter.loadDataSourceConfigs(sourceConfig.getDataSource());
@@ -83,7 +83,7 @@ public final class SyncConfigurationUtil {
         for (Entry<String, Map<String, String>> entry : dataSourceTableNameMap.entrySet()) {
             DumperConfiguration dumperConfig = createDumperConfig(entry.getKey(), sourceDataSource.get(entry.getKey()).getProps(), entry.getValue());
             ImporterConfiguration importerConfig = createImporterConfig(scalingConfig, shardingColumnsMap);
-            result.add(new SyncConfiguration(scalingConfig.getJobConfiguration().getConcurrency(), dumperConfig, importerConfig));
+            result.add(new TaskConfiguration(scalingConfig.getJobConfiguration(), dumperConfig, importerConfig));
         }
         return result;
     }

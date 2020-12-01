@@ -27,11 +27,11 @@ import org.postgresql.replication.LogSequenceNumber;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class PostgreSQLSqlBuilderTest {
+public final class PostgreSQLScalingSQLBuilderTest {
     
     @Test
     public void assertBuildInsertSQL() {
-        String actual = new PostgreSQLSQLBuilder(Maps.newHashMap()).buildInsertSQL(mockDataRecord());
+        String actual = new PostgreSQLScalingSQLBuilder(Maps.newHashMap()).buildInsertSQL(mockDataRecord());
         assertThat(actual, is("INSERT INTO \"t_order\"(\"id\",\"name\") VALUES(?,?) ON CONFLICT (id) DO NOTHING"));
     }
     
