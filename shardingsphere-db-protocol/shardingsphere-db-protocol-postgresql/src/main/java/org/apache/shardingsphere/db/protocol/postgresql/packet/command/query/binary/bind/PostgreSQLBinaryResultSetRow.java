@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnType;
 
 /**
- * Binary result set row for MySQL.
+ * Binary result set row for PostgreSQL.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLBinaryResultSetRow {
+public final class PostgreSQLBinaryResultSetRow {
     
-    private final MySQLColumnType columnType;
+    private final PostgreSQLColumnType columnType;
     
     private final Object data;
 }

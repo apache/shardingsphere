@@ -25,8 +25,9 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bin
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Binary result set row packet for PostgreSQL.
@@ -36,26 +37,30 @@ public final class PostgreSQLBinaryResultSetRowPacket implements PostgreSQLPacke
     @Getter
     private final char messageType = PostgreSQLCommandPacketType.DATA_ROW.getValue();
     
-    @Getter
-    private final List<Object> data;
-    
-    private final List<PostgreSQLColumnType> columnTypes;
+    private final Collection<PostgreSQLBinaryResultSetRow> binaryRows;
     
     public PostgreSQLBinaryResultSetRowPacket(final List<Object> data, final List<Integer> columnTypes) {
-        this.data = data;
-        this.columnTypes = columnTypes.stream().map(PostgreSQLColumnType::valueOfJDBCType).collect(Collectors.toList());
+        binaryRows = getBinaryResultSetRows(columnTypes, data);
+    }
+    
+    private Collection<PostgreSQLBinaryResultSetRow> getBinaryResultSetRows(final List<Integer> columnTypes, final List<Object> data) {
+        Collection<PostgreSQLBinaryResultSetRow> result = new LinkedList<>();
+        for (int i = 0; i < columnTypes.size(); i++) {
+            result.add(new PostgreSQLBinaryResultSetRow(PostgreSQLColumnType.valueOfJDBCType(columnTypes.get(i)), data.get(i)));
+        }
+        return result;
     }
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-        payload.writeInt2(data.size());
+        payload.writeInt2(binaryRows.size());
         writeValues(payload);
     }
     
     private void writeValues(final PostgreSQLPacketPayload payload) {
-        for (int i = 0; i < columnTypes.size(); i++) {
-            PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(columnTypes.get(i));
-            Object value = data.get(i);
+        for (PostgreSQLBinaryResultSetRow each : binaryRows) {
+            PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(each.getColumnType());
+            Object value = each.getData();
             payload.writeInt4(binaryProtocolValue.getColumnLength(value));
             binaryProtocolValue.write(payload, value);
         }

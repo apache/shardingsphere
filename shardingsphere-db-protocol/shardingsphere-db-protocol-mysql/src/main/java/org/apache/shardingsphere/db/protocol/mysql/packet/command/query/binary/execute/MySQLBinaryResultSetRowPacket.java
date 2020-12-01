@@ -45,10 +45,10 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     
     public MySQLBinaryResultSetRowPacket(final int sequenceId, final List<Object> data, final List<Integer> columnTypes) {
         this.sequenceId = sequenceId;
-        binaryRows = getMySQLBinaryResultSetRows(columnTypes, data);
+        binaryRows = getBinaryResultSetRows(columnTypes, data);
     }
     
-    private Collection<MySQLBinaryResultSetRow> getMySQLBinaryResultSetRows(final List<Integer> columnTypes, final List<Object> data) {
+    private Collection<MySQLBinaryResultSetRow> getBinaryResultSetRows(final List<Integer> columnTypes, final List<Object> data) {
         Collection<MySQLBinaryResultSetRow> result = new LinkedList<>();
         for (int i = 0; i < columnTypes.size(); i++) {
             result.add(new MySQLBinaryResultSetRow(MySQLColumnType.valueOfJDBCType(columnTypes.get(i)), data.get(i)));

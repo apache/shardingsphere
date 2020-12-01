@@ -41,7 +41,6 @@ public final class PostgreSQLBinaryResultSetRowPacketTest {
     @Test
     public void assertWriteStringData() {
         PostgreSQLBinaryResultSetRowPacket rowPacket = new PostgreSQLBinaryResultSetRowPacket(Arrays.asList("value", "b"), Arrays.asList(Types.VARCHAR, Types.VARCHAR));
-        assertThat(rowPacket.getData().size(), is(2));
         rowPacket.write(payload);
         verify(payload).writeInt2(2);
         verify(payload).writeInt4(5);
@@ -53,7 +52,6 @@ public final class PostgreSQLBinaryResultSetRowPacketTest {
     @Test
     public void assertWriteIntData() {
         PostgreSQLBinaryResultSetRowPacket rowPacket = new PostgreSQLBinaryResultSetRowPacket(Collections.singletonList(10), Collections.singletonList(Types.INTEGER));
-        assertThat(rowPacket.getData().size(), is(1));
         rowPacket.write(payload);
         verify(payload).writeInt2(1);
         verify(payload).writeInt4(4);
