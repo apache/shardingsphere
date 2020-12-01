@@ -16,10 +16,10 @@
 #
 
 ######################################################################################################
-# 
+#
 # Here you can configure the rules for the proxy.
 # This example is configuration of HA rule.
-# 
+#
 ######################################################################################################
 #
 #schemaName: ha_db
@@ -72,53 +72,52 @@
 #
 ######################################################################################################
 
-schemaName: ha_db
-
-dataSources:
-  primary_ds:
-    url: jdbc:mysql://172.25.28.22:8000/demo_ds?serverTimezone=UTC&useSSL=false
-    username: mgr_test
-    password: mgr_test
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 50
-    minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
-  replica_ds_0:
-    url: jdbc:mysql://172.25.28.23:8000/demo_ds?serverTimezone=UTC&useSSL=false
-    username: mgr_test
-    password: mgr_test
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 50
-    minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
-  replica_ds_1:
-    url: jdbc:mysql://172.25.28.26:8000/demo_ds?serverTimezone=UTC&useSSL=false
-    username: mgr_test
-    password: mgr_test
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 50
-    minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
-
-rules:
-  - !HA
-    dataSources:
-      pr_ds:
-        name: pr_ds
-        primaryDataSourceName: primary_ds
-        replicaDataSourceNames:
-          - replica_ds_0
-          - replica_ds_1
-        readWriteSplit: false
-
-    haType:
-      type: MGR
-      props:
-        groupName: 92504d5b-6dec-11e8-91ea-246e9612aaf1
-        keepAliveSeconds: '5'
+#schemaName: ha_db
+#
+#dataSources:
+#  primary_ds:
+#    url: jdbc:mysql://127.0.0.1:3306/demo_primary_ds?serverTimezone=UTC&useSSL=false
+#    username: root
+#    password:
+#    connectionTimeoutMilliseconds: 30000
+#    idleTimeoutMilliseconds: 60000
+#    maxLifetimeMilliseconds: 1800000
+#    maxPoolSize: 50
+#    minPoolSize: 1
+#    maintenanceIntervalMilliseconds: 30000
+#  replica_ds_0:
+#    url: jdbc:mysql://127.0.0.1:3306/demo_replica_ds_0?serverTimezone=UTC&useSSL=false
+#    username: root
+#    password:
+#    connectionTimeoutMilliseconds: 30000
+#    idleTimeoutMilliseconds: 60000
+#    maxLifetimeMilliseconds: 1800000
+#    maxPoolSize: 50
+#    minPoolSize: 1
+#    maintenanceIntervalMilliseconds: 30000
+#  replica_ds_1:
+#    url: jdbc:mysql://127.0.0.1:3306/demo_replica_ds_1?serverTimezone=UTC&useSSL=false
+#    username: root
+#    password:
+#    connectionTimeoutMilliseconds: 30000
+#    idleTimeoutMilliseconds: 60000
+#    maxLifetimeMilliseconds: 1800000
+#    maxPoolSize: 50
+#    minPoolSize: 1
+#    maintenanceIntervalMilliseconds: 30000
+#
+#rules:
+#- !HA
+#  dataSources:
+#    pr_ds:
+#      name: pr_ds
+#      primaryDataSourceName: primary_ds
+#      replicaDataSourceNames:
+#        - replica_ds_0
+#        - replica_ds_1
+#      readWriteSplit: false
+#  haType:
+#    type: MGR
+#    props:
+#      groupName: 92504d5b-6dec-11e8-91ea-246e9612aaf1
+#      keepAliveSeconds: '5'
