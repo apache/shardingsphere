@@ -34,12 +34,6 @@ import static org.mockito.Mockito.mock;
 public final class PostgreSQLCommandTest {
 
     @Test
-    public void assertPostgreSQLCommandWhenSQLStatementInstanceOfUnEnumeration() {
-        PostgreSQLCommand postgreSQLCommand = new PostgreSQLCommand(mock(SQLStatement.class));
-        assertThat(postgreSQLCommand.getSQLCommand(), is(""));
-    }
-
-    @Test
     public void assertPostgreSQLCommandWhenSQLStatementInstanceOfInsertStatement() {
         PostgreSQLCommand postgreSQLCommand = new PostgreSQLCommand(mock(InsertStatement.class));
         assertThat(postgreSQLCommand.getSQLCommand(), is("INSERT"));
@@ -79,5 +73,11 @@ public final class PostgreSQLCommandTest {
     public void assertPostgreSQLCommandWhenSQLStatementInstanceOfCreateShardingRuleStatement() {
         PostgreSQLCommand postgreSQLCommand = new PostgreSQLCommand(mock(CreateShardingRuleStatement.class));
         assertThat(postgreSQLCommand.getSQLCommand(), is("CREATE"));
+    }
+
+    @Test
+    public void assertPostgreSQLCommandWhenSQLStatementInstanceOfUnEnumeration() {
+        PostgreSQLCommand postgreSQLCommand = new PostgreSQLCommand(mock(SQLStatement.class));
+        assertThat(postgreSQLCommand.getSQLCommand(), is(""));
     }
 }
