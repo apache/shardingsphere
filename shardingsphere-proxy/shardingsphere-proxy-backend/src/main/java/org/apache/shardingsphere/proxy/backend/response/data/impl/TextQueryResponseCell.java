@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response.data.binary;
+package org.apache.shardingsphere.proxy.backend.response.data.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 
 /**
- * Binary query response cell.
+ * Text query response cell.
  */
 @RequiredArgsConstructor
 @Getter
-public final class BinaryQueryResponseCell implements QueryResponseCell {
-    
-    private final int type;
+public final class TextQueryResponseCell implements QueryResponseCell {
     
     private final Object data;
 }
