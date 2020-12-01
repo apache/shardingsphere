@@ -58,7 +58,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     
     private final List<Service> services = Lists.newArrayList();
     
-    private Map<String, PluginAdviceDefine> pluginDefineMap;
+    private Map<String, PluginAdviceDefinition> pluginDefineMap;
     
     private PluginLoader() {
         try {
@@ -105,9 +105,9 @@ public final class PluginLoader extends ClassLoader implements Closeable {
         return INSTANCE;
     }
     
-    private Map<String, PluginAdviceDefine> loadAllPlugins() throws IOException {
+    private Map<String, PluginAdviceDefinition> loadAllPlugins() throws IOException {
         File[] jarFiles = AgentPathLocator.getAgentPath().listFiles(file -> file.getName().endsWith(".jar"));
-        ImmutableMap.Builder<String, PluginAdviceDefine> pluginDefineMap = ImmutableMap.builder();
+        ImmutableMap.Builder<String, PluginAdviceDefinition> pluginDefineMap = ImmutableMap.builder();
         if (jarFiles == null) {
             return pluginDefineMap.build();
         }
@@ -124,16 +124,15 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             }
             ByteStreams.copy(jar.getInputStream(jar.getEntry(classNameToPath(entrypoint))), outputStream);
             try {
-                PluginDefine config = (PluginDefine) defineClass(entrypoint, outputStream.toByteArray(), 0, outputStream.size())
-                        .newInstance();
-                config.getAllServices().forEach(klass -> {
+                PluginDefinition pluginDefinition = (PluginDefinition) defineClass(entrypoint, outputStream.toByteArray(), 0, outputStream.size()).newInstance();
+                pluginDefinition.getAllServices().forEach(klass -> {
                     try {
                         services.add(klass.newInstance());
                     } catch (InstantiationException | IllegalAccessException e) {
                         log.error("Failed to create service instance, {}.", klass.getTypeName(), e);
                     }
                 });
-                config.build().forEach(plugin -> pluginDefineMap.put(plugin.getClassNameOfTarget(), plugin));
+                pluginDefinition.build().forEach(plugin -> pluginDefineMap.put(plugin.getClassNameOfTarget(), plugin));
             } catch (InstantiationException | IllegalAccessException e) {
                 log.error("Failed to load plugin definition, {}.", entrypoint, e);
             }
@@ -170,8 +169,8 @@ public final class PluginLoader extends ClassLoader implements Closeable {
      * @param typeDescription TypeDescription
      * @return the plugin definition configurations
      */
-    public PluginAdviceDefine loadPluginAdviceDefine(final TypeDescription typeDescription) {
-        return pluginDefineMap.getOrDefault(typeDescription.getTypeName(), PluginAdviceDefine.createDefault());
+    public PluginAdviceDefinition loadPluginAdviceDefine(final TypeDescription typeDescription) {
+        return pluginDefineMap.getOrDefault(typeDescription.getTypeName(), PluginAdviceDefinition.createDefault());
     }
     
     /**
@@ -191,8 +190,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
         try {
             Object inst = objectPool.get(classNameOfAdvice);
             if (Objects.isNull(inst)) {
-                inst = Class.forName(classNameOfAdvice, true, this)
-                        .newInstance();
+                inst = Class.forName(classNameOfAdvice, true, this).newInstance();
                 objectPool.put(classNameOfAdvice, inst);
             }
             return (T) inst;

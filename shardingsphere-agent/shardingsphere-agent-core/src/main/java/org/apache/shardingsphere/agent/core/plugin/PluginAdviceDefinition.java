@@ -30,17 +30,17 @@ import org.apache.shardingsphere.agent.core.plugin.point.InstanceMethodPoint;
 import java.util.List;
 
 /**
- * Plugin advice define.
+ * Plugin advice definition.
  *
  * <code>
- * PluginAdviceDefine.intercept("Target.class")
+ * PluginAdviceDefinition.intercept("Target.class")
  * .onConstructor(ElementMatchers.any()).implement("Advice.class").build()
  * .method(ElementMatchers.named("greet").implement("Advice.class").build()
  * .staticMethod(ElementMatchers.named("of").implement("OfAdvice.class").build()
  * .install();
  * </code>
  */
-public final class PluginAdviceDefine {
+public final class PluginAdviceDefinition {
     
     private final String classNameOfTarget;
     
@@ -50,10 +50,10 @@ public final class PluginAdviceDefine {
     
     private final List<ClassStaticMethodPoint> classStaticMethodPoints;
     
-    private PluginAdviceDefine(final String classNameOfTarget,
-                               final List<ConstructorPoint> constructorPoints,
-                               final List<InstanceMethodPoint> instanceMethodPoints,
-                               final List<ClassStaticMethodPoint> classStaticMethodPoints) {
+    private PluginAdviceDefinition(final String classNameOfTarget,
+                                   final List<ConstructorPoint> constructorPoints,
+                                   final List<InstanceMethodPoint> instanceMethodPoints,
+                                   final List<ClassStaticMethodPoint> classStaticMethodPoints) {
         this.classNameOfTarget = classNameOfTarget;
         this.constructorPoints = constructorPoints;
         this.instanceMethodPoints = instanceMethodPoints;
@@ -63,10 +63,10 @@ public final class PluginAdviceDefine {
     /**
      * Create default plugin advice definition.
      *
-     * @return plugin advice define
+     * @return plugin advice definition
      */
-    public static PluginAdviceDefine createDefault() {
-        return new PluginAdviceDefine("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    public static PluginAdviceDefinition createDefault() {
+        return new PluginAdviceDefinition("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     }
     
     /**
@@ -116,7 +116,7 @@ public final class PluginAdviceDefine {
     }
     
     /**
-     * Plugin advice configuration builder.
+     * Plugin advice definition configuration builder.
      */
     public static final class Builder {
         
@@ -163,12 +163,12 @@ public final class PluginAdviceDefine {
         }
         
         /**
-         * Build configuration.
+         * Build plugin advice definition.
          *
          * @return plugin advice definition
          */
-        public PluginAdviceDefine install() {
-            return new PluginAdviceDefine(classNameOfTarget, constructorPoints, instanceMethodPoints, classStaticMethodPoints);
+        public PluginAdviceDefinition install() {
+            return new PluginAdviceDefinition(classNameOfTarget, constructorPoints, instanceMethodPoints, classStaticMethodPoints);
         }
         
         /**
