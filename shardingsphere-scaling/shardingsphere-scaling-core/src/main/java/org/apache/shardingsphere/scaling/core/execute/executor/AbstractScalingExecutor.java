@@ -23,11 +23,11 @@ import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 
 /**
- * Abstract sharding scaling executor.
+ * Abstract scaling executor.
  */
 @Setter
 @Getter
-public abstract class AbstractShardingScalingExecutor implements ShardingScalingExecutor {
+public abstract class AbstractScalingExecutor implements ScalingExecutor {
     
     @Setter(AccessLevel.PROTECTED)
     @Getter(AccessLevel.PROTECTED)

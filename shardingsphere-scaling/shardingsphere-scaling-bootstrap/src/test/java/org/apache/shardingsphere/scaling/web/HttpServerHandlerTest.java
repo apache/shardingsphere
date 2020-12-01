@@ -31,7 +31,7 @@ import io.netty.util.CharsetUtil;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.execute.engine.ShardingScalingExecuteEngine;
+import org.apache.shardingsphere.scaling.core.execute.engine.TaskExecuteEngine;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.apache.shardingsphere.scaling.util.ScalingConfigurationUtil;
 import org.junit.Before;
@@ -62,7 +62,7 @@ public final class HttpServerHandlerTest {
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
         ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", new ServerConfiguration());
-        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "inventoryDumperExecuteEngine", mock(ShardingScalingExecuteEngine.class));
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "inventoryDumperExecuteEngine", mock(TaskExecuteEngine.class));
         httpServerHandler = new HttpServerHandler();
     }
     

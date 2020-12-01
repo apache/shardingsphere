@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.service;
 
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public interface ScalingJobService {
      *
      * @return scaling job service list
      */
-    List<ShardingScalingJob> listJobs();
+    List<ScalingJob> listJobs();
     
     /**
      * Check new yaml proxy configuration if should scaling.
@@ -53,7 +53,7 @@ public interface ScalingJobService {
      * @param scalingConfig scaling job configuration
      * @return scaling job
      */
-    Optional<ShardingScalingJob> start(ScalingConfiguration scalingConfig);
+    Optional<ScalingJob> start(ScalingConfiguration scalingConfig);
     
     
     /**
@@ -63,7 +63,7 @@ public interface ScalingJobService {
      * @param newYamlProxyConfig new yaml proxy configuration
      * @return scaling job
      */
-    Optional<ShardingScalingJob> start(String oldYamlProxyConfig, String newYamlProxyConfig);
+    Optional<ScalingJob> start(String oldYamlProxyConfig, String newYamlProxyConfig);
     
     /**
      * Stop a job.
@@ -78,7 +78,7 @@ public interface ScalingJobService {
      * @param jobId job id
      * @return {@code ShardingScalingJob} instance
      */
-    ShardingScalingJob getJob(long jobId);
+    ScalingJob getJob(long jobId);
     
     /**
      * Get job progress.

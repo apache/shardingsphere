@@ -24,7 +24,7 @@ import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.engine.ExecuteCallback;
-import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
+import org.apache.shardingsphere.scaling.core.execute.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.MemoryChannel;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.DumperFactory;
@@ -44,7 +44,7 @@ import java.util.concurrent.Future;
  * Table slice execute task.
  */
 @Slf4j
-public final class InventoryDataScalingTask extends AbstractShardingScalingExecutor implements ScalingTask {
+public final class InventoryDataScalingTask extends AbstractScalingExecutor implements ScalingTask {
     
     private final InventoryDumperConfiguration inventoryDumperConfig;
     

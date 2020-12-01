@@ -24,7 +24,7 @@ import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.TaskProgress;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionGroup;
@@ -51,16 +51,16 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
     private static final RegistryRepository REGISTRY_REPOSITORY = RegistryRepositoryHolder.getInstance();
     
     @Override
-    public List<ShardingScalingJob> listJobs() {
+    public List<ScalingJob> listJobs() {
         return REGISTRY_REPOSITORY.getChildrenKeys(ScalingConstant.SCALING_LISTENER_PATH).stream().map(each -> getJob(Long.parseLong(each))).collect(Collectors.toList());
     }
     
     @Override
-    public Optional<ShardingScalingJob> start(final ScalingConfiguration scalingConfig) {
-        ShardingScalingJob shardingScalingJob = new ShardingScalingJob();
+    public Optional<ScalingJob> start(final ScalingConfiguration scalingConfig) {
+        ScalingJob scalingJob = new ScalingJob();
         TaskConfigurationUtil.fillInShardingTables(scalingConfig);
-        updateScalingConfig(shardingScalingJob.getJobId(), scalingConfig);
-        return Optional.of(shardingScalingJob);
+        updateScalingConfig(scalingJob.getJobId(), scalingConfig);
+        return Optional.of(scalingJob);
     }
     
     @Override
@@ -75,8 +75,8 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
     }
     
     @Override
-    public ShardingScalingJob getJob(final long jobId) {
-        ShardingScalingJob result = new ShardingScalingJob(jobId);
+    public ScalingJob getJob(final long jobId) {
+        ScalingJob result = new ScalingJob(jobId);
         result.setScalingConfig(GSON.fromJson(REGISTRY_REPOSITORY.get(ScalingTaskUtil.getScalingListenerPath(jobId, ScalingConstant.CONFIG)), ScalingConfiguration.class));
         return result;
     }

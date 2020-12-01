@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
@@ -41,14 +41,14 @@ import static org.mockito.Mockito.verify;
 
 public final class ScalingPositionResumerTest {
     
-    private ShardingScalingJob shardingScalingJob;
+    private ScalingJob scalingJob;
     
     private ScalingPositionResumer scalingPositionResumer;
     
     @Before
     public void setUp() {
         ScalingContext.getInstance().init(new ServerConfiguration());
-        shardingScalingJob = mockShardingScalingJob();
+        scalingJob = mockShardingScalingJob();
         scalingPositionResumer = new ScalingPositionResumer();
     }
     
@@ -57,21 +57,21 @@ public final class ScalingPositionResumerTest {
         ResumeBreakPointManager resumeBreakPointManager = ResumeBreakPointManagerFactory.newInstance("MySQL", "/scalingTest/position/0");
         resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0", new PositionManager(new PrimaryKeyPosition(0, 100)));
         resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0.t_order", new PositionManager(new PlaceholderPosition()));
-        scalingPositionResumer.resumePosition(shardingScalingJob, new DataSourceManager(), resumeBreakPointManager);
-        assertThat(shardingScalingJob.getIncrementalDataTasks().size(), is(1));
-        assertTrue(shardingScalingJob.getInventoryDataTasks().isEmpty());
+        scalingPositionResumer.resumePosition(scalingJob, new DataSourceManager(), resumeBreakPointManager);
+        assertThat(scalingJob.getIncrementalDataTasks().size(), is(1));
+        assertTrue(scalingJob.getInventoryDataTasks().isEmpty());
     }
     
     @Test
     public void assertPersistPosition() {
         ResumeBreakPointManager resumeBreakPointManager = mock(ResumeBreakPointManager.class);
-        scalingPositionResumer.persistPosition(shardingScalingJob, resumeBreakPointManager);
+        scalingPositionResumer.persistPosition(scalingJob, resumeBreakPointManager);
         verify(resumeBreakPointManager).persistIncrementalPosition();
         verify(resumeBreakPointManager).persistInventoryPosition();
     }
     
     @SneakyThrows(IOException.class)
-    private ShardingScalingJob mockShardingScalingJob() {
+    private ScalingJob mockShardingScalingJob() {
         return ScalingConfigurationUtil.initJob("/config.json");
     }
 }

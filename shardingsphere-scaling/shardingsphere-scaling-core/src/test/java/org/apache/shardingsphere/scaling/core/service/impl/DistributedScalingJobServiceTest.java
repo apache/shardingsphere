@@ -26,7 +26,7 @@ import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalDataScalingTaskProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTaskProgress;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
@@ -79,7 +79,7 @@ public final class DistributedScalingJobServiceTest {
     
     @Test
     public void assertStartWithScalingConfig() {
-        Optional<ShardingScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
+        Optional<ScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
         assertTrue(shardingScalingJob.isPresent());
         assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(shardingScalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":true"));
     }
@@ -90,14 +90,14 @@ public final class DistributedScalingJobServiceTest {
         String oldConfig = ScalingConfigurationUtil.getConfig("/proxy_config-sharding_1.yaml");
         String newConfig = ScalingConfigurationUtil.getConfig("/proxy_config-sharding_2.yaml");
         assertFalse(scalingJobService.start(oldConfig, oldConfig).isPresent());
-        Optional<ShardingScalingJob> shardingScalingJob = scalingJobService.start(oldConfig, newConfig);
+        Optional<ScalingJob> shardingScalingJob = scalingJobService.start(oldConfig, newConfig);
         assertTrue(shardingScalingJob.isPresent());
         assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(shardingScalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":true"));
     }
     
     @Test
     public void assertStop() {
-        Optional<ShardingScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
+        Optional<ScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
         assertTrue(shardingScalingJob.isPresent());
         scalingJobService.stop(shardingScalingJob.get().getJobId());
         assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(shardingScalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":false"));
