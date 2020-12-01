@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.response.data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Query response row.
@@ -29,5 +29,5 @@ import java.util.List;
 @Getter
 public final class QueryResponseRow {
     
-    private final List<QueryResponseCell> cells;
+    private final Collection<QueryResponseCell> cells;
 }

@@ -69,7 +69,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     private Collection<DatabasePacket<?>> createColumnDefinition41Packets() throws SQLException {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         while (databaseCommunicationEngine.next()) {
-            String columnName = databaseCommunicationEngine.getQueryResponseRow().getCells().get(0).getData().toString();
+            String columnName = databaseCommunicationEngine.getQueryResponseRow().getCells().iterator().next().getData().toString();
             result.add(new MySQLColumnDefinition41Packet(
                     ++currentSequenceId, schemaName, packet.getTable(), packet.getTable(), columnName, columnName, 100, MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
