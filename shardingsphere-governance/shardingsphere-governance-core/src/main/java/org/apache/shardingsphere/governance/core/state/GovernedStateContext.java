@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.state;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.infra.state.StateContext;
 
@@ -31,7 +31,7 @@ public final class GovernedStateContext {
      * Start up governed state machine.
      */
     public static void startUp() {
-        GovernanceEventBus.getInstance().register(new GovernedStateContext());
+        ShardingSphereEventBus.getInstance().register(new GovernedStateContext());
     }
     
     /**

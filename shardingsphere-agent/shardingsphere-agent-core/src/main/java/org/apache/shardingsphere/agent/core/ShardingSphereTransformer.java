@@ -44,25 +44,23 @@ import java.util.Map;
  */
 @Slf4j
 public class ShardingSphereTransformer implements AgentBuilder.Transformer {
-
+    
     private final PluginLoader pluginLoader;
-
+    
     public ShardingSphereTransformer(final PluginLoader pluginLoader) {
         this.pluginLoader = pluginLoader;
     }
-
+    
     @Override
     public DynamicType.Builder<?> transform(final DynamicType.Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module) {
         if (pluginLoader.containsType(typeDescription)) {
-
             DynamicType.Builder<?> newBuilder = builder.defineField("_SSExtraData_", Map.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
                     .implement(TargetObject.class)
                     .intercept(FieldAccessor.ofField("_SSExtraData_"));
-
             final PluginAdviceDefine define = pluginLoader.loadPluginAdviceDefine(typeDescription);
             for (ConstructorPoint point : define.getConstructorPoints()) {
                 try {
-                    final ConstructorMethodInterceptor interceptor = new ConstructorMethodInterceptor(pluginLoader.getInstance(point.getAdvice()));
+                    final ConstructorMethodInterceptor interceptor = new ConstructorMethodInterceptor(pluginLoader.getOrCreateInstance(point.getAdvice()));
                     newBuilder = newBuilder.constructor(point.getConstructorMatcher())
                             .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(interceptor)));
                     // CHECKSTYLE:OFF
@@ -71,10 +69,9 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
                     log.error("Failed to load advice class: {}", point.getAdvice(), e);
                 }
             }
-
             for (ClassStaticMethodPoint point : define.getClassStaticMethodPoints()) {
                 try {
-                    final StaticMethodAroundInterceptor interceptor = new StaticMethodAroundInterceptor(pluginLoader.getInstance(point.getAdvice()));
+                    final StaticMethodAroundInterceptor interceptor = new StaticMethodAroundInterceptor(pluginLoader.getOrCreateInstance(point.getAdvice()));
                     newBuilder = newBuilder.method(point.getMethodsMatcher())
                             .intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
                     // CHECKSTYLE:OFF
@@ -83,10 +80,9 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
                     log.error("Failed to load advice class: {}", point.getAdvice(), e);
                 }
             }
-
             for (InstanceMethodPoint point : define.getInstanceMethodPoints()) {
                 try {
-                    final MethodAroundInterceptor interceptor = new MethodAroundInterceptor(pluginLoader.getInstance(point.getAdvice()));
+                    final MethodAroundInterceptor interceptor = new MethodAroundInterceptor(pluginLoader.getOrCreateInstance(point.getAdvice()));
                     newBuilder = newBuilder.method(point.getMethodMatcher())
                             .intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
                     // CHECKSTYLE:OFF
@@ -97,7 +93,6 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
             }
             return newBuilder;
         }
-
         return builder;
     }
 }

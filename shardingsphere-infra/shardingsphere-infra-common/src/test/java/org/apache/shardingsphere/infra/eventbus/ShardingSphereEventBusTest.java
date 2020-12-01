@@ -15,40 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.utils;
+package org.apache.shardingsphere.infra.eventbus;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import org.junit.Test;
 
-/**
- * Singleton holder.
- */
-public enum SingletonHolder {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class ShardingSphereEventBusTest {
     
-    /**
-     * Instance singleton.
-     */
-    INSTANCE;
-    
-    private static final Map<String, Object> SINGLES = new ConcurrentHashMap<>();
-    
-    /**
-     * Put entity object.
-     *
-     * @param entity entity object
-     */
-    public void put(final Object entity) {
-        SINGLES.put(entity.getClass().getName(), entity);
-    }
-    
-    /**
-     * Get object.
-     *
-     * @param <T> type parameter
-     * @param clazz clazz
-     * @return object
-     */
-    public <T> T get(final Class<T> clazz) {
-        return (T) SINGLES.get(clazz.getName());
+    @Test
+    public void assertInstance() {
+        assertThat(ShardingSphereEventBus.getInstance(), is(ShardingSphereEventBus.getInstance()));
     }
 }

@@ -15,40 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.utils;
+package org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder;
+
+import com.google.common.collect.Maps;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
+import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Singleton holder.
+ * Scaling SQL builder factory.
  */
-public enum SingletonHolder {
+public final class ScalingSQLBuilderFactory {
     
     /**
-     * Instance singleton.
-     */
-    INSTANCE;
-    
-    private static final Map<String, Object> SINGLES = new ConcurrentHashMap<>();
-    
-    /**
-     * Put entity object.
+     * New instance of SQL builder.
      *
-     * @param entity entity object
+     * @param databaseType database type
+     * @return SQL builder
      */
-    public void put(final Object entity) {
-        SINGLES.put(entity.getClass().getName(), entity);
-    }
-    
-    /**
-     * Get object.
-     *
-     * @param <T> type parameter
-     * @param clazz clazz
-     * @return object
-     */
-    public <T> T get(final Class<T> clazz) {
-        return (T) SINGLES.get(clazz.getName());
+    @SneakyThrows(ReflectiveOperationException.class)
+    public static ScalingSQLBuilder newInstance(final String databaseType) {
+        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
+        return scalingEntry.getSQLBuilderClass().getConstructor(Map.class).newInstance(Maps.newHashMap());
     }
 }

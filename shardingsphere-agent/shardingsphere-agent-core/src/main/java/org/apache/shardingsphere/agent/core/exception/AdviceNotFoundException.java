@@ -13,30 +13,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package org.apache.shardingsphere.governance.core.event;
-
-import com.google.common.eventbus.EventBus;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+package org.apache.shardingsphere.agent.core.exception;
 
 /**
- * Governance event bus.
+ * Advice not found exception.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GovernanceEventBus {
-    
-    /**
-     * Get instance of governance event bus.
-     *
-     * @return instance of governance event bus
-     */
-    public static EventBus getInstance() {
-        return GovernanceEventBusHolder.INSTANCE;
-    }
-    
-    private static final class GovernanceEventBusHolder {
-        private static final EventBus INSTANCE = new EventBus();
-    }
+public class AdviceNotFoundException extends RuntimeException {
 }

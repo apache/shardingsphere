@@ -15,40 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.utils;
+package org.apache.shardingsphere.infra.eventbus;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import com.google.common.eventbus.EventBus;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Singleton holder.
+ * ShardingSphere event bus.
  */
-public enum SingletonHolder {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingSphereEventBus {
     
     /**
-     * Instance singleton.
-     */
-    INSTANCE;
-    
-    private static final Map<String, Object> SINGLES = new ConcurrentHashMap<>();
-    
-    /**
-     * Put entity object.
+     * Get instance of ShardingSphere event bus.
      *
-     * @param entity entity object
+     * @return instance of ShardingSphere event bus
      */
-    public void put(final Object entity) {
-        SINGLES.put(entity.getClass().getName(), entity);
+    public static EventBus getInstance() {
+        return ShardingSphereEventBusHolder.INSTANCE;
     }
     
-    /**
-     * Get object.
-     *
-     * @param <T> type parameter
-     * @param clazz clazz
-     * @return object
-     */
-    public <T> T get(final Class<T> clazz) {
-        return (T) SINGLES.get(clazz.getName());
+    private static final class ShardingSphereEventBusHolder {
+        private static final EventBus INSTANCE = new EventBus();
     }
 }

@@ -22,7 +22,7 @@ package org.apache.shardingsphere.agent.core.plugin.advice;
  * Super(origin) method invoker for ByteBuddy only.
  */
 public interface OverrideArgsInvoker {
-
+    
     /**
      * Invocation origin method.
      *
@@ -30,5 +30,5 @@ public interface OverrideArgsInvoker {
      * @return the result of the origin method.
      */
     Object call(Object[] args);
-
+    
 }

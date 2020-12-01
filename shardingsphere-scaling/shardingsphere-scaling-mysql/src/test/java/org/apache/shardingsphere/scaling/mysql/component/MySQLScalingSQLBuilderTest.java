@@ -29,9 +29,9 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class MySQLSQLBuilderTest {
+public final class MySQLScalingSQLBuilderTest {
     
-    private final MySQLSQLBuilder sqlBuilder = new MySQLSQLBuilder(ImmutableMap.<String, Set<String>>builder().put("t2", Sets.newHashSet("sc")).build());
+    private final MySQLScalingSQLBuilder sqlBuilder = new MySQLScalingSQLBuilder(ImmutableMap.<String, Set<String>>builder().put("t2", Sets.newHashSet("sc")).build());
     
     @Test
     public void assertBuildInsertSQL() {

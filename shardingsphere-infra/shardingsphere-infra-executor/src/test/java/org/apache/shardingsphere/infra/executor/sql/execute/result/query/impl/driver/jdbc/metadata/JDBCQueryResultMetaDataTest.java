@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -43,6 +44,13 @@ public final class JDBCQueryResultMetaDataTest {
         when(result.getColumnName(1)).thenReturn("order_id");
         when(result.getColumnLabel(1)).thenReturn("oid");
         when(result.getColumnTypeName(1)).thenReturn("INT");
+        when(result.getTableName(1)).thenReturn("order");
+        when(result.getColumnType(1)).thenReturn(Types.INTEGER);
+        when(result.getColumnDisplaySize(1)).thenReturn(10);
+        when(result.getScale(1)).thenReturn(0);
+        when(result.isSigned(1)).thenReturn(true);
+        when(result.isNullable(1)).thenReturn(ResultSetMetaData.columnNoNulls);
+        when(result.isAutoIncrement(1)).thenReturn(true);
         return result;
     }
     
@@ -64,5 +72,40 @@ public final class JDBCQueryResultMetaDataTest {
     @Test
     public void assertGetColumnTypeName() throws SQLException {
         assertThat(queryResultMetaData.getColumnTypeName(1), is("INT"));
+    }
+    
+    @Test
+    public void assertGetTableName() throws SQLException {
+        assertThat(queryResultMetaData.getTableName(1), is("order"));
+    }
+    
+    @Test
+    public void assertGetColumnType() throws SQLException {
+        assertThat(queryResultMetaData.getColumnType(1), is(Types.INTEGER));
+    }
+    
+    @Test
+    public void assertGetColumnLength() throws SQLException {
+        assertThat(queryResultMetaData.getColumnLength(1), is(10));
+    }
+    
+    @Test
+    public void assertGetDecimals() throws SQLException {
+        assertThat(queryResultMetaData.getDecimals(1), is(0));
+    }
+    
+    @Test
+    public void assertIsSigned() throws SQLException {
+        assertThat(queryResultMetaData.isSigned(1), is(true));
+    }
+    
+    @Test
+    public void assertIsNotNull() throws SQLException {
+        assertThat(queryResultMetaData.isNotNull(1), is(true));
+    }
+    
+    @Test
+    public void assertIsAutoIncrement() throws SQLException {
+        assertThat(queryResultMetaData.isAutoIncrement(1), is(true));
     }
 }

@@ -15,17 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.event;
+package org.apache.shardingsphere.scaling.core.fixture;
 
-import org.junit.Test;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.AbstractScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.Map;
+import java.util.Set;
 
-public final class GovernanceEventBusTest {
+public final class FixtureScalingSQLBuilder extends AbstractScalingSQLBuilder implements ScalingSQLBuilder {
     
-    @Test
-    public void assertInstance() {
-        assertThat(GovernanceEventBus.getInstance(), is(GovernanceEventBus.getInstance()));
+    public FixtureScalingSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
+        super(shardingColumnsMap);
+    }
+    
+    @Override
+    protected String getLeftIdentifierQuoteString() {
+        return "`";
+    }
+    
+    @Override
+    protected String getRightIdentifierQuoteString() {
+        return "`";
     }
 }
