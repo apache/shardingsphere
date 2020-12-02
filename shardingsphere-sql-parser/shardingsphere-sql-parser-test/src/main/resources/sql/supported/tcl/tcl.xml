@@ -48,4 +48,11 @@
     <sql-case id="commit_in_pg" value="COMMIT TRANSACTION AND NO CHAIN" db-types="PostgreSQL" />
     <sql-case id="rollback_in_pg" value="ROLLBACK TRANSACTION AND CHAIN" db-types="PostgreSQL" />
     <sql-case id="begin_with_transaction_mode" value="BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="PostgreSQL" />
+    <sql-case id="xa-recover" value="XA RECOVER" db-types="MySQL" />
+    <sql-case id="xa-start" value="XA start 'abcdef7' join" db-types="MySQL" />
+    <sql-case id="xa-begin" value="XA begin 'abcdef7' join" db-types="MySQL" />
+    <sql-case id="xa-end" value="XA end 'abcdef7'" db-types="MySQL" />
+    <sql-case id="xa-prepare" value="XA prepare 'abcdef7'" db-types="MySQL" />
+    <sql-case id="xa-commit" value="XA commit 'abcdef7'" db-types="MySQL" />
+    <sql-case id="xa-rollback" value="XA rollback 'abcdef7'" db-types="MySQL" />
 </sql-cases>

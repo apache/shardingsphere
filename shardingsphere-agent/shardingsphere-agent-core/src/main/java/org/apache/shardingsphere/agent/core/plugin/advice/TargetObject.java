@@ -26,14 +26,14 @@ public interface TargetObject {
     /**
      * Get the variable from context.
      *
-     * @return the attachment.
+     * @return the attachment
      */
     Object getAttachment();
     
     /**
      * Store a variable into context.
      *
-     * @param attachment what variable you want to store.
+     * @param attachment what variable you want to store
      */
     void setAttachment(Object attachment);
 }

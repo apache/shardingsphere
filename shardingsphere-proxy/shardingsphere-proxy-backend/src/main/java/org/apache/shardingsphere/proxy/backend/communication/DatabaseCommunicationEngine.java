@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher
 import org.apache.shardingsphere.infra.metadata.schema.refresher.spi.SchemaChangedNotifier;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -60,17 +62,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class DatabaseCommunicationEngine {
     
-    private final LogicSQL logicSQL;
-    
     private final ShardingSphereMetaData metaData;
+    
+    private final LogicSQL logicSQL;
     
     private final ProxySQLExecutor proxySQLExecutor;
     
-    private final KernelProcessor kernelProcessor = new KernelProcessor();
+    private final KernelProcessor kernelProcessor;
     
     private List<QueryHeader> queryHeaders;
     
     private MergedResult mergedResult;
+    
+    public DatabaseCommunicationEngine(final String type, final ShardingSphereMetaData metaData, final LogicSQL logicSQL, final BackendConnection backendConnection) {
+        this.metaData = metaData;
+        this.logicSQL = logicSQL;
+        proxySQLExecutor = new ProxySQLExecutor(type, backendConnection);
+        kernelProcessor = new KernelProcessor();
+    }
     
     /**
      * Execute to database.
@@ -98,30 +107,30 @@ public final class DatabaseCommunicationEngine {
         Collection<ExecuteResult> executeResults = proxySQLExecutor.execute(executionContext);
         ExecuteResult executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
-                ? processExecuteQuery(executionContext, executeResults, (QueryResult) executeResultSample) : processExecuteUpdate(executionContext, executeResults);
+                ? processExecuteQuery(executionContext, executeResults.stream().map(each -> (QueryResult) each).collect(Collectors.toList()), (QueryResult) executeResultSample)
+                : processExecuteUpdate(executionContext, executeResults.stream().map(each -> (UpdateResult) each).collect(Collectors.toList()));
     }
     
-    private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, 
-                                                    final Collection<ExecuteResult> executeResults, final QueryResult executeResultSample) throws SQLException {
-        queryHeaders = createQueryHeaders(executionContext, executeResultSample);
-        mergedResult = mergeQuery(executionContext.getSqlStatementContext(), executeResults.stream().map(each -> (QueryResult) each).collect(Collectors.toList()));
+    private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
+        queryHeaders = createQueryHeaders(executionContext, queryResultSample);
+        mergedResult = mergeQuery(executionContext.getSqlStatementContext(), queryResults);
         return new QueryResponseHeader(queryHeaders);
     }
     
-    private List<QueryHeader> createQueryHeaders(final ExecutionContext executionContext, final QueryResult executeResultSample) throws SQLException {
-        int columnCount = executeResultSample.getMetaData().getColumnCount();
+    private List<QueryHeader> createQueryHeaders(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
+        int columnCount = queryResultSample.getMetaData().getColumnCount();
         List<QueryHeader> result = new ArrayList<>(columnCount);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            result.add(createQueryHeader(executionContext, executeResultSample, metaData, columnIndex));
+            result.add(createQueryHeader(executionContext, queryResultSample, metaData, columnIndex));
         }
         return result;
     }
     
     private QueryHeader createQueryHeader(final ExecutionContext executionContext,
-                                          final QueryResult executeResultSample, final ShardingSphereMetaData metaData, final int columnIndex) throws SQLException {
+                                          final QueryResult queryResultSample, final ShardingSphereMetaData metaData, final int columnIndex) throws SQLException {
         return hasSelectExpandProjections(executionContext.getSqlStatementContext())
-                ? QueryHeaderBuilder.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), executeResultSample, metaData, columnIndex)
-                : QueryHeaderBuilder.build(executeResultSample, metaData, columnIndex);
+                ? QueryHeaderBuilder.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample, metaData, columnIndex)
+                : QueryHeaderBuilder.build(queryResultSample, metaData, columnIndex);
     }
     
     private boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
@@ -134,8 +143,8 @@ public final class DatabaseCommunicationEngine {
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
-    private UpdateResponseHeader processExecuteUpdate(final ExecutionContext executionContext, final Collection<ExecuteResult> executeResults) throws SQLException {
-        UpdateResponseHeader result = new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement(), executeResults);
+    private UpdateResponseHeader processExecuteUpdate(final ExecutionContext executionContext, final Collection<UpdateResult> updateResults) throws SQLException {
+        UpdateResponseHeader result = new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement(), updateResults);
         refreshSchema(executionContext);
         mergeUpdateCount(executionContext.getSqlStatementContext(), result);
         return result;

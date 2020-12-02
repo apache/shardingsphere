@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind;
 
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
@@ -25,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -40,9 +40,7 @@ public final class PostgreSQLBinaryResultSetRowPacketTest {
     
     @Test
     public void assertWriteStringData() {
-        PostgreSQLBinaryResultSetRowPacket rowPacket = new PostgreSQLBinaryResultSetRowPacket(Arrays.asList("value", "b"),
-                Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR, PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR));
-        assertThat(rowPacket.getData().size(), is(2));
+        PostgreSQLBinaryResultSetRowPacket rowPacket = new PostgreSQLBinaryResultSetRowPacket(Arrays.asList("value", "b"), Arrays.asList(Types.VARCHAR, Types.VARCHAR));
         rowPacket.write(payload);
         verify(payload).writeInt2(2);
         verify(payload).writeInt4(5);
@@ -53,8 +51,7 @@ public final class PostgreSQLBinaryResultSetRowPacketTest {
     
     @Test
     public void assertWriteIntData() {
-        PostgreSQLBinaryResultSetRowPacket rowPacket = new PostgreSQLBinaryResultSetRowPacket(Collections.singletonList(10), Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
-        assertThat(rowPacket.getData().size(), is(1));
+        PostgreSQLBinaryResultSetRowPacket rowPacket = new PostgreSQLBinaryResultSetRowPacket(Collections.singletonList(10), Collections.singletonList(Types.INTEGER));
         rowPacket.write(payload);
         verify(payload).writeInt2(1);
         verify(payload).writeInt4(4);
@@ -63,8 +60,7 @@ public final class PostgreSQLBinaryResultSetRowPacketTest {
     
     @Test
     public void assertGetMessageType() {
-        PostgreSQLBinaryResultSetRowPacket rowPacket = new PostgreSQLBinaryResultSetRowPacket(null, null);
+        PostgreSQLBinaryResultSetRowPacket rowPacket = new PostgreSQLBinaryResultSetRowPacket(Collections.emptyList(), Collections.emptyList());
         assertThat(rowPacket.getMessageType(), is(PostgreSQLCommandPacketType.DATA_ROW.getValue()));
     }
-    
 }

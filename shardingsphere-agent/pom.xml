@@ -25,9 +25,13 @@
         <artifactId>shardingsphere</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
+
     <artifactId>shardingsphere-agent</artifactId>
     <packaging>pom</packaging>
-    <name>${project.artifactId}</name>
+
+    <properties>
+        <shade.package>org.apache.shardingsphere.dependencies</shade.package>
+    </properties>
 
     <modules>
         <module>shardingsphere-agent-bootstrap</module>

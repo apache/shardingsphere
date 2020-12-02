@@ -31,12 +31,12 @@ public interface MethodAroundAdvice {
      * @param target the target object
      * @param method the target method
      * @param args all method arguments
-     * @param result wrapped class of result to detect whether or not to execute the origin method.
+     * @param result wrapped class of result to detect whether or not to execute the origin method
      */
     void beforeMethod(TargetObject target, Method method, Object[] args, MethodInvocationResult result);
     
     /**
-     * Intercept the target method and weave the method after origin method.  It will invoke after the origin calling.
+     * Intercept the target method and weave the method after origin method.  It will invoke after the origin calling
      *
      * @param target the target object
      * @param method the target method
@@ -51,7 +51,7 @@ public interface MethodAroundAdvice {
      * @param target the target object
      * @param method the target method
      * @param args all method arguments
-     * @param throwable exception from target method.
+     * @param throwable exception from target method
      */
     void onThrowing(TargetObject target, Method method, Object[] args, Throwable throwable);
 }

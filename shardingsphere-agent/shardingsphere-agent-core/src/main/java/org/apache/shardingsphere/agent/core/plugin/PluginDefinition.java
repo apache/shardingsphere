@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
 /**
  * Plugin definition.
  */
-public abstract class PluginDefine {
+public abstract class PluginDefinition {
     
-    private final Map<String, PluginAdviceDefine.Builder> defineMap = Maps.newHashMap();
+    private final Map<String, PluginAdviceDefinition.Builder> defineMap = Maps.newHashMap();
     
     private final List<Class<? extends Service>> services = Lists.newArrayList();
     
@@ -39,11 +39,11 @@ public abstract class PluginDefine {
      */
     protected abstract void define();
     
-    protected PluginAdviceDefine.Builder intercept(final String classNameOfTarget) {
+    protected PluginAdviceDefinition.Builder intercept(final String classNameOfTarget) {
         if (defineMap.containsKey(classNameOfTarget)) {
             return defineMap.get(classNameOfTarget);
         }
-        PluginAdviceDefine.Builder builder = PluginAdviceDefine.intercept(classNameOfTarget);
+        PluginAdviceDefinition.Builder builder = PluginAdviceDefinition.intercept(classNameOfTarget);
         defineMap.put(classNameOfTarget, builder);
         return builder;
     }
@@ -62,9 +62,9 @@ public abstract class PluginDefine {
      *
      * @return configurations.
      */
-    public final List<PluginAdviceDefine> build() {
+    public final List<PluginAdviceDefinition> build() {
         define();
-        return defineMap.values().stream().map(PluginAdviceDefine.Builder::install).collect(Collectors.toList());
+        return defineMap.values().stream().map(PluginAdviceDefinition.Builder::install).collect(Collectors.toList());
     }
     
     /**
