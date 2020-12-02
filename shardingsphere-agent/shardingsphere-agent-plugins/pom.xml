@@ -61,6 +61,17 @@
                             <createDependencyReducedPom>true</createDependencyReducedPom>
                             <createSourcesJar>true</createSourcesJar>
                             <shadeSourcesContent>true</shadeSourcesContent>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>net.bytebuddy:byte-buddy:jar:</exclude>
+                                    <exclude>org.checkerframework:checker-qual:jar:</exclude>
+                                    <exclude>com.google.*:*</exclude>
+                                    <exclude>com.google.guava:guava:*</exclude>
+                                    <exclude>org.slf4j:*</exclude>
+                                    <exclude>org.yaml:snakeyaml:*</exclude>
+                                    <exclude>org.apache.commons:logging:*</exclude>
+                                </excludes>
+                            </artifactSet>
                         </configuration>
                     </execution>
                 </executions>
