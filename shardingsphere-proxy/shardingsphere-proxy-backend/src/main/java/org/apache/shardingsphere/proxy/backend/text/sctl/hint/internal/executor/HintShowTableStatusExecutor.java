@@ -49,9 +49,9 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
     @Override
     protected List<QueryHeader> createQueryHeaders() {
         List<QueryHeader> result = new ArrayList<>(3);
-        result.add(new QueryHeader("", "", "table_name", "", 255, Types.CHAR, "CHAR", 0, false, false, false, false));
-        result.add(new QueryHeader("", "", "database_sharding_values", "", 255, Types.CHAR, "CHAR", 0, false, false, false, false));
-        result.add(new QueryHeader("", "", "table_sharding_values", "", 255, Types.CHAR, "CHAR", 0, false, false, false, false));
+        result.add(new QueryHeader("", "", "table_name", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader("", "", "database_sharding_values", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader("", "", "table_sharding_values", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         return result;
     }
     
