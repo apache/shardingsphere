@@ -85,7 +85,7 @@ public final class StandaloneScalingJobService extends AbstractScalingJobService
         ScalingJob scalingJob = scalingJobMap.get(jobId);
         JobProgress result = new JobProgress(jobId, scalingJob.getStatus());
         if (scalingTaskSchedulerMap.containsKey(jobId)) {
-            result.getInventoryTaskProgress().put("0", scalingTaskSchedulerMap.get(jobId).getInventoryDataTaskProgress());
+            result.getInventoryTaskProgress().put("0", scalingTaskSchedulerMap.get(jobId).getInventoryTaskProgress());
             result.getIncrementalTaskProgress().put("0", scalingTaskSchedulerMap.get(jobId).getIncrementalTaskProgress());
         }
         return result;

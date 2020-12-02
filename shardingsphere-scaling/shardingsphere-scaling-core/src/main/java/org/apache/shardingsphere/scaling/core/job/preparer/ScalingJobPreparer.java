@@ -32,7 +32,7 @@ import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPoi
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceCheckerCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.preparer.resumer.ScalingPositionResumer;
-import org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryDataTaskSplitter;
+import org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryTaskSplitter;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
@@ -50,7 +50,7 @@ public final class ScalingJobPreparer {
     
     private final ScalingTaskFactory scalingTaskFactory = new DefaultScalingTaskFactory();
     
-    private final InventoryDataTaskSplitter inventoryDataTaskSplitter = new InventoryDataTaskSplitter();
+    private final InventoryTaskSplitter inventoryTaskSplitter = new InventoryTaskSplitter();
     
     private final ScalingPositionResumer scalingPositionResumer = new ScalingPositionResumer();
     
@@ -68,7 +68,7 @@ public final class ScalingJobPreparer {
                 scalingPositionResumer.resumePosition(scalingJob, dataSourceManager, resumeBreakPointManager);
             } else {
                 initIncrementalTasks(databaseType, scalingJob, dataSourceManager);
-                initInventoryDataTasks(databaseType, scalingJob, dataSourceManager);
+                initInventoryTasks(databaseType, scalingJob, dataSourceManager);
                 scalingPositionResumer.persistPosition(scalingJob, resumeBreakPointManager);
             }
             scalingJob.setDataConsistencyChecker(initDataConsistencyChecker(databaseType, scalingJob));
@@ -90,12 +90,12 @@ public final class ScalingJobPreparer {
         dataSourceChecker.checkVariable(dataSourceManager.getSourceDataSources().values());
     }
     
-    private void initInventoryDataTasks(final String databaseType, final ScalingJob scalingJob, final DataSourceManager dataSourceManager) {
-        List<ScalingTask> allInventoryDataTasks = new LinkedList<>();
+    private void initInventoryTasks(final String databaseType, final ScalingJob scalingJob, final DataSourceManager dataSourceManager) {
+        List<ScalingTask> allInventoryTasks = new LinkedList<>();
         for (TaskConfiguration each : scalingJob.getTaskConfigs()) {
-            allInventoryDataTasks.addAll(inventoryDataTaskSplitter.splitInventoryData(databaseType, each, dataSourceManager));
+            allInventoryTasks.addAll(inventoryTaskSplitter.splitInventoryData(databaseType, each, dataSourceManager));
         }
-        scalingJob.getInventoryTasks().addAll(allInventoryDataTasks);
+        scalingJob.getInventoryTasks().addAll(allInventoryTasks);
     }
     
     private void initIncrementalTasks(final String databaseType, final ScalingJob scalingJob, final DataSourceManager dataSourceManager) {

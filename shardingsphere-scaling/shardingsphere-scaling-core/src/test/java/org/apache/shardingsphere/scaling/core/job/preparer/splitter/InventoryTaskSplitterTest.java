@@ -43,7 +43,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public final class InventoryDataTaskSplitterTest {
+public final class InventoryTaskSplitterTest {
     
     private static final String DATA_SOURCE_URL = "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
     
@@ -57,7 +57,7 @@ public final class InventoryDataTaskSplitterTest {
     
     private DataSourceManager dataSourceManager;
     
-    private InventoryDataTaskSplitter inventoryDataTaskSplitter;
+    private InventoryTaskSplitter inventoryTaskSplitter;
     
     @Before
     public void setUp() {
@@ -65,7 +65,7 @@ public final class InventoryDataTaskSplitterTest {
         ImporterConfiguration importerConfig = new ImporterConfiguration();
         taskConfig = new TaskConfiguration(new JobConfiguration(), dumperConfig, importerConfig);
         dataSourceManager = new DataSourceManager();
-        inventoryDataTaskSplitter = new InventoryDataTaskSplitter();
+        inventoryTaskSplitter = new InventoryTaskSplitter();
     }
     
     @After
@@ -77,7 +77,7 @@ public final class InventoryDataTaskSplitterTest {
     public void assertSplitInventoryDataWithIntPrimary() throws SQLException {
         taskConfig.getJobConfig().setShardingSize(10);
         initIntPrimaryEnvironment(taskConfig.getDumperConfig());
-        List<ScalingTask> actual = (List<ScalingTask>) inventoryDataTaskSplitter.splitInventoryData(DATABASE_TYPE, taskConfig, dataSourceManager);
+        List<ScalingTask> actual = (List<ScalingTask>) inventoryTaskSplitter.splitInventoryData(DATABASE_TYPE, taskConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(10));
         assertThat(((PrimaryKeyPosition) actual.get(9).getPositionManager().getPosition()).getBeginValue(), is(91L));
@@ -87,7 +87,7 @@ public final class InventoryDataTaskSplitterTest {
     @Test
     public void assertSplitInventoryDataWithCharPrimary() throws SQLException {
         initCharPrimaryEnvironment(taskConfig.getDumperConfig());
-        Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(DATABASE_TYPE, taskConfig, dataSourceManager);
+        Collection<ScalingTask> actual = inventoryTaskSplitter.splitInventoryData(DATABASE_TYPE, taskConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
@@ -95,7 +95,7 @@ public final class InventoryDataTaskSplitterTest {
     @Test
     public void assertSplitInventoryDataWithUnionPrimary() throws SQLException {
         initUnionPrimaryEnvironment(taskConfig.getDumperConfig());
-        Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(DATABASE_TYPE, taskConfig, dataSourceManager);
+        Collection<ScalingTask> actual = inventoryTaskSplitter.splitInventoryData(DATABASE_TYPE, taskConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
@@ -103,7 +103,7 @@ public final class InventoryDataTaskSplitterTest {
     @Test
     public void assertSplitInventoryDataWithoutPrimary() throws SQLException {
         initNoPrimaryEnvironment(taskConfig.getDumperConfig());
-        Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(DATABASE_TYPE, taskConfig, dataSourceManager);
+        Collection<ScalingTask> actual = inventoryTaskSplitter.splitInventoryData(DATABASE_TYPE, taskConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }

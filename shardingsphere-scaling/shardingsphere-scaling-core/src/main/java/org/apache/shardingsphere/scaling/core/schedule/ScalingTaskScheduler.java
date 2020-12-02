@@ -74,14 +74,14 @@ public final class ScalingTaskScheduler implements Runnable {
         }
         log.info("-------------- Start inventory data sync task --------------");
         scalingJob.setStatus(JobStatus.EXECUTE_INVENTORY_TASK.name());
-        ExecuteCallback inventoryDataTaskCallback = createInventoryDataTaskCallback();
+        ExecuteCallback inventoryTaskCallback = createInventoryTaskCallback();
         for (ScalingTask each : scalingJob.getInventoryTasks()) {
-            ScalingContext.getInstance().getInventoryDumperExecuteEngine().submit(each, inventoryDataTaskCallback);
+            ScalingContext.getInstance().getInventoryDumperExecuteEngine().submit(each, inventoryTaskCallback);
         }
         return false;
     }
     
-    private ExecuteCallback createInventoryDataTaskCallback() {
+    private ExecuteCallback createInventoryTaskCallback() {
         return new ExecuteCallback() {
             
             @Override
@@ -135,7 +135,7 @@ public final class ScalingTaskScheduler implements Runnable {
      *
      * @return all inventory data task progress
      */
-    public Collection<TaskProgress> getInventoryDataTaskProgress() {
+    public Collection<TaskProgress> getInventoryTaskProgress() {
         return scalingJob.getInventoryTasks().stream()
                 .map(ScalingTask::getProgress)
                 .collect(Collectors.toList());

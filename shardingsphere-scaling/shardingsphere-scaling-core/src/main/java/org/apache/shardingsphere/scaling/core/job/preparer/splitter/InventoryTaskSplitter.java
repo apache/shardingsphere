@@ -48,7 +48,7 @@ import java.util.List;
  * Inventory data task splitter.
  */
 @Slf4j
-public final class InventoryDataTaskSplitter {
+public final class InventoryTaskSplitter {
     
     private final ScalingTaskFactory scalingTaskFactory = new DefaultScalingTaskFactory();
     
