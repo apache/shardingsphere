@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.binary;
+package org.apache.shardingsphere.proxy.backend.response.data;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+
 /**
- * Binary result set row.
+ * Query response row.
  */
 @RequiredArgsConstructor
 @Getter
-public final class BinaryResultSetRow {
+public final class QueryResponseRow {
     
-    private final BinaryColumnType columnType;
-    
-    private final Object data;
+    private final Collection<QueryResponseCell> cells;
 }

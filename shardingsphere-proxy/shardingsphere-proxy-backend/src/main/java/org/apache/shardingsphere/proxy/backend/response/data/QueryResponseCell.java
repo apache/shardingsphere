@@ -17,19 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.response.data;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.List;
-
 /**
- * Query response data.
+ * Query response cell.
  */
-@RequiredArgsConstructor
-@Getter
-public final class QueryResponseData {
+public interface QueryResponseCell {
     
-    private final List<Integer> columnTypes;
-    
-    private final List<Object> data;
+    /**
+     * Get data.
+     * 
+     * @return data
+     */
+    Object getData();
 }

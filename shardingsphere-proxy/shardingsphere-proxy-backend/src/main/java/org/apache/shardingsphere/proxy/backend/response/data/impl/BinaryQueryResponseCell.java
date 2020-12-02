@@ -15,37 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.command.executor;
+package org.apache.shardingsphere.proxy.backend.response.data.impl;
 
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-
-import java.sql.SQLException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 
 /**
- * Query command executor.
+ * Binary query response cell.
  */
-public interface QueryCommandExecutor extends CommandExecutor {
+@RequiredArgsConstructor
+@Getter
+public final class BinaryQueryResponseCell implements QueryResponseCell {
     
-    /**
-     * Get response type.
-     *
-     * @return response type
-     */
-    ResponseType getResponseType();
+    private final int jdbcType;
     
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
-     * @throws SQLException SQL exception
-     */
-    boolean next() throws SQLException;
-    
-    /**
-     * Get query row packet.
-     *
-     * @return database packet of query row
-     * @throws SQLException SQL exception
-     */
-    DatabasePacket<?> getQueryRowPacket() throws SQLException;
+    private final Object data;
 }
