@@ -21,7 +21,7 @@ import com.google.gson.Gson;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -56,8 +56,8 @@ public final class ScalingConfigurationUtil {
      * @return ShardingScalingJob
      * @throws IOException IO exception
      */
-    public static ShardingScalingJob initJob(final String configFile) throws IOException {
-        return new ShardingScalingJob(initConfig(configFile));
+    public static ScalingJob initJob(final String configFile) throws IOException {
+        return new ScalingJob(initConfig(configFile));
     }
     
     /**

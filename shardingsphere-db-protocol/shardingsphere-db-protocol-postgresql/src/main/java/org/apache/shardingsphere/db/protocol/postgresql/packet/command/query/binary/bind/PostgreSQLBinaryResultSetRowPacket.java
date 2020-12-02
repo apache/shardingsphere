@@ -19,14 +19,13 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bi
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnType;
+import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
+import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-
-import java.util.List;
 
 /**
  * Binary result set row packet for PostgreSQL.
@@ -36,22 +35,19 @@ public final class PostgreSQLBinaryResultSetRowPacket implements PostgreSQLPacke
     
     @Getter
     private final char messageType = PostgreSQLCommandPacketType.DATA_ROW.getValue();
-    
-    @Getter
-    private final List<Object> data;
-    
-    private final List<PostgreSQLColumnType> columnTypes;
+
+    private final BinaryRow row;
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-        payload.writeInt2(data.size());
+        payload.writeInt2(row.getCells().size());
         writeValues(payload);
     }
     
     private void writeValues(final PostgreSQLPacketPayload payload) {
-        for (int i = 0; i < columnTypes.size(); i++) {
-            PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(columnTypes.get(i));
-            Object value = data.get(i);
+        for (BinaryCell each : row.getCells()) {
+            PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(each.getColumnType());
+            Object value = each.getData();
             payload.writeInt4(binaryProtocolValue.getColumnLength(value));
             binaryProtocolValue.write(payload, value);
         }

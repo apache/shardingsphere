@@ -55,7 +55,7 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
             databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection).execute();
         }
         backendConnection.setCurrentSchema(originalSchema);
-        return new UpdateResponseHeader();
+        return new UpdateResponseHeader(sqlStatement);
     }
     
     @Override

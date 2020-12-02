@@ -35,4 +35,5 @@
     <sql-case id="set_parameter_equal_boolean" value="SET extra_float_digits = true" db-types="PostgreSQL" />
     <sql-case id="set_parameter_equal_list" value="SET extra_float_digits = 1,2,3" db-types="PostgreSQL" />
     <sql-case id="set_parameter_equal_number_with_signal" value="SET extra_float_digits = -10.5" db-types="PostgreSQL" />
+    <sql-case id="set_names" value="SET NAMES 'utf8' COLLATE 'utf8_general_ci'" db-types="MySQL" />
 </sql-cases>

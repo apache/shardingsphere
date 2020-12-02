@@ -25,7 +25,7 @@ import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceFactory;
-import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
+import org.apache.shardingsphere.scaling.core.execute.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
@@ -56,7 +56,7 @@ import java.util.Random;
  * MySQL binlog dumper.
  */
 @Slf4j
-public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor implements LogDumper {
+public final class MySQLBinlogDumper extends AbstractScalingExecutor implements LogDumper {
     
     private final BinlogPosition binlogPosition;
     

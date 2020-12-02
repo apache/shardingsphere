@@ -29,7 +29,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <shade.package>org.apache.shardingsphere.dependencies</shade.package>
         <premain.class>org.apache.shardingsphere.agent.bootstrap.ShardingSphereAgent</premain.class>
         <can.redefine.classes>true</can.redefine.classes>
         <can.retransform.classes>true</can.retransform.classes>

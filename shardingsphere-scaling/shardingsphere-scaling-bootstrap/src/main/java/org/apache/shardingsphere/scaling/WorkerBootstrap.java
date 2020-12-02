@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.spi.ScalingWorkerLoader;
-import org.apache.shardingsphere.scaling.util.ScalingConfigUtil;
+import org.apache.shardingsphere.scaling.util.ServerConfigurationUtil;
 
 import java.util.Optional;
 
@@ -41,7 +41,7 @@ public final class WorkerBootstrap {
     public static void main(final String[] args) {
         // CHECKSTYLE:ON
         log.info("ShardingSphere-Scaling Worker Startup");
-        ScalingConfigUtil.initScalingConfig();
+        ServerConfigurationUtil.initScalingConfig();
         Optional<String> type = ScalingWorkerLoader.initScalingWorker();
         if (!type.isPresent()) {
             log.error("None worker found.");

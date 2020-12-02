@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.postgresql.component;
 
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.AbstractDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 
@@ -31,8 +31,8 @@ import java.util.Map;
  */
 public final class PostgreSQLDataConsistencyChecker extends AbstractDataConsistencyChecker implements DataConsistencyChecker {
     
-    public PostgreSQLDataConsistencyChecker(final ShardingScalingJob shardingScalingJob) {
-        super(shardingScalingJob);
+    public PostgreSQLDataConsistencyChecker(final ScalingJob scalingJob) {
+        super(scalingJob);
     }
     
     @Override

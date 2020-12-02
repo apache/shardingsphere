@@ -50,21 +50,21 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
     
     @Override
     public ResponseHeader execute() {
-        QueryResponseHeader result = createQueryResponse(backendConnection.getSchemaName());
+        QueryResponseHeader result = createQueryResponseHeader(backendConnection.getSchemaName());
         if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
             return result;
         }
         RawQueryResultMetaData metaData = new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData(
-                null, result.getQueryHeaders().get(0).getColumnName(), result.getQueryHeaders().get(0).getColumnLabel(), Types.VARCHAR, "VARCHAR", 255, 0, false, false, false)));
+                "", result.getQueryHeaders().get(0).getColumnName(), result.getQueryHeaders().get(0).getColumnLabel(), Types.VARCHAR, "VARCHAR", 255, 0, false, false, false)));
         Collection<String> allTableNames = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getSchema().getAllTableNames();
         List<MemoryQueryResultDataRow> rows = allTableNames.stream().map(each -> new MemoryQueryResultDataRow(Collections.singletonList(each))).collect(Collectors.toList());
         queryResult = new RawMemoryQueryResult(metaData, rows);
         return result;
     }
     
-    private QueryResponseHeader createQueryResponse(final String schemaName) {
+    private QueryResponseHeader createQueryResponseHeader(final String schemaName) {
         String column = String.format("Tables_in_%s", schemaName);
-        return new QueryResponseHeader(Collections.singletonList(new QueryHeader(schemaName, "", column, column, 64, Types.VARCHAR, "VARCHAR", 0, false, false, false, false)));
+        return new QueryResponseHeader(Collections.singletonList(new QueryHeader(schemaName, "", column, column, Types.VARCHAR, "VARCHAR", 255, 0, false, false, false, false)));
     }
     
     @Override

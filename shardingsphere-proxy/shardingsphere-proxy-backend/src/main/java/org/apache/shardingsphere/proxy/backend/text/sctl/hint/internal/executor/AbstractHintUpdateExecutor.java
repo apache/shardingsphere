@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor;
 
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintCommand;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 
@@ -32,7 +32,7 @@ public abstract class AbstractHintUpdateExecutor<T extends HintCommand> implemen
     }
     
     @Override
-    public final QueryResponseData getQueryResponseData() {
+    public final QueryResponseRow getQueryResponseRow() {
         return null;
     }
 }

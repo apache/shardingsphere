@@ -39,6 +39,14 @@
             <outputDirectory>conf</outputDirectory>
             <fileMode>0644</fileMode>
         </fileSet>
+
+        <fileSet>
+            <directory>${project.basedir}/../shardingsphere-agent-plugins/shardingsphere-agent-plugin-tracers/target/plugins</directory>
+            <outputDirectory>./plugins</outputDirectory>
+            <includes>
+                <include>**-${module.version}.jar</include>
+            </includes>
+        </fileSet>
     </fileSets>
 
     <moduleSets>
@@ -50,7 +58,7 @@
             </includes>
             <binaries>
                 <unpack>false</unpack>
-                <outputDirectory>/</outputDirectory>
+                <outputDirectory>./</outputDirectory>
                 <includeDependencies>false</includeDependencies>
                 <outputFileNameMapping>shardingsphere-agent.jar</outputFileNameMapping>
             </binaries>
@@ -63,7 +71,7 @@
             </includes>
             <binaries>
                 <unpack>false</unpack>
-                <outputDirectory>/plugin</outputDirectory>
+                <outputDirectory>./plugins</outputDirectory>
                 <includeDependencies>false</includeDependencies>
                 <outputFileNameMapping>${module.artifactId}-${module.version}.jar</outputFileNameMapping>
             </binaries>

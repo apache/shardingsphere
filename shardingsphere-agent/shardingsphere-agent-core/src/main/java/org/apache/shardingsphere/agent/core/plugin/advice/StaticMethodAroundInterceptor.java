@@ -46,12 +46,12 @@ public class StaticMethodAroundInterceptor {
      * @param klass the class of target
      * @param method the intercepted method
      * @param args the all arguments of method
-     * @param uber the origin method invocation
+     * @param callable the origin method invocation
      * @return the return value of target invocation
      */
     @RuntimeType
     @SneakyThrows
-    public Object intercept(final @Origin Class<?> klass, final @Origin Method method, final @AllArguments Object[] args, final @SuperCall Callable<?> uber) {
+    public Object intercept(final @Origin Class<?> klass, final @Origin Method method, final @AllArguments Object[] args, final @SuperCall Callable<?> callable) {
         final MethodInvocationResult result = new MethodInvocationResult();
         final Object ret;
         try {
@@ -65,7 +65,7 @@ public class StaticMethodAroundInterceptor {
             if (result.isRebased()) {
                 ret = result.getResult();
             } else {
-                ret = uber.call();
+                ret = callable.call();
             }
             // CHECKSTYLE:OFF
         } catch (Throwable throwable) {

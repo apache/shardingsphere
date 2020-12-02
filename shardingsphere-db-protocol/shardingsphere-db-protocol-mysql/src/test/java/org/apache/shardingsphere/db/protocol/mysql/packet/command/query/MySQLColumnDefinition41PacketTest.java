@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query;
 
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
@@ -60,7 +60,7 @@ public final class MySQLColumnDefinition41PacketTest {
     
     @Test
     public void assertWriteWithPayload() {
-        when(payload.readInt1()).thenReturn(1, MySQLColumnType.MYSQL_TYPE_LONG.getValue(), 0);
+        when(payload.readInt1()).thenReturn(1, MySQLBinaryColumnType.MYSQL_TYPE_LONG.getValue(), 0);
         when(payload.readInt2()).thenReturn(MySQLServerInfo.CHARSET, 0);
         when(payload.readInt4()).thenReturn(10);
         when(payload.readIntLenenc()).thenReturn(0x0cL);
@@ -79,7 +79,7 @@ public final class MySQLColumnDefinition41PacketTest {
         verify(payload).writeIntLenenc(0x0c);
         verify(payload).writeInt2(MySQLServerInfo.CHARSET);
         verify(payload).writeInt4(10);
-        verify(payload).writeInt1(MySQLColumnType.MYSQL_TYPE_LONG.getValue());
+        verify(payload).writeInt1(MySQLBinaryColumnType.MYSQL_TYPE_LONG.getValue());
         verify(payload).writeInt2(0);
         verify(payload).writeInt1(0);
         verify(payload).writeReserved(2);

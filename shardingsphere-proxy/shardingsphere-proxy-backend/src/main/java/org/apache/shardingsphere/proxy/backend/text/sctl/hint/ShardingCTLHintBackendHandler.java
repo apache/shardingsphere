@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintComma
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Sharding CTL hint backend handler.
@@ -66,6 +68,6 @@ public final class ShardingCTLHintBackendHandler implements TextProtocolBackendH
     
     @Override
     public Collection<Object> getRowData() throws SQLException {
-        return hintCommandExecutor.getQueryResponseData().getData();
+        return hintCommandExecutor.getQueryResponseRow().getCells().stream().map(QueryResponseCell::getData).collect(Collectors.toList());
     }
 }

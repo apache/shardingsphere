@@ -24,7 +24,7 @@ import org.apache.shardingsphere.scaling.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -46,11 +46,11 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
-    private final ShardingScalingJob shardingScalingJob;
+    private final ScalingJob scalingJob;
     
     @Override
     public Map<String, DataConsistencyCheckResult> countCheck() {
-        return shardingScalingJob.getSyncConfigs()
+        return scalingJob.getTaskConfigs()
                 .stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet())
                 .stream().collect(Collectors.toMap(Function.identity(), this::countCheck, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
@@ -78,11 +78,11 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
     }
     
     protected DataSourceWrapper getSourceDataSource() {
-        return dataSourceFactory.newInstance(shardingScalingJob.getScalingConfig().getRuleConfiguration().getSource().unwrap());
+        return dataSourceFactory.newInstance(scalingJob.getScalingConfig().getRuleConfiguration().getSource().unwrap());
     }
     
     protected DataSourceWrapper getTargetDataSource() {
-        return dataSourceFactory.newInstance(shardingScalingJob.getScalingConfig().getRuleConfiguration().getTarget().unwrap());
+        return dataSourceFactory.newInstance(scalingJob.getScalingConfig().getRuleConfiguration().getTarget().unwrap());
     }
     
     protected abstract ScalingSQLBuilder getSqlBuilder();

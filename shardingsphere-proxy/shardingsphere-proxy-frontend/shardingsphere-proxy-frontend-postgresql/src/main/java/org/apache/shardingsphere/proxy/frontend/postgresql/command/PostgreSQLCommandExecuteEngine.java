@@ -93,7 +93,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
                 context.flush();
                 backendConnection.getResourceLock().doAwait();
             }
-            DatabasePacket<?> resultValue = queryCommandExecutor.getQueryData();
+            DatabasePacket<?> resultValue = queryCommandExecutor.getQueryRowPacket();
             context.write(resultValue);
             if (proxyFrontendFlushThreshold == count) {
                 context.flush();
