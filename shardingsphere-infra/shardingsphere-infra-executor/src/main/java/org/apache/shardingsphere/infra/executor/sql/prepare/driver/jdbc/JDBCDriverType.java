@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.builder;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * JDBC execution unit builder type.
+ * JDBC driver type.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JDBCExecutionUnitBuilderType {
+public final class JDBCDriverType {
     
     public static final String STATEMENT = "JDBC.STATEMENT";
     
