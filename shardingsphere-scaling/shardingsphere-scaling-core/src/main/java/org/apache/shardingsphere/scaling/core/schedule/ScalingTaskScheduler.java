@@ -72,7 +72,7 @@ public final class ScalingTaskScheduler implements Runnable {
             log.info("All inventory tasks finished.");
             return true;
         }
-        log.info("-------------- Start inventory data sync task --------------");
+        log.info("-------------- Start inventory task --------------");
         scalingJob.setStatus(JobStatus.EXECUTE_INVENTORY_TASK.name());
         ExecuteCallback inventoryTaskCallback = createInventoryTaskCallback();
         for (ScalingTask each : scalingJob.getInventoryTasks()) {
@@ -105,7 +105,7 @@ public final class ScalingTaskScheduler implements Runnable {
         if (JobStatus.EXECUTE_INCREMENTAL_TASK.name().equals(scalingJob.getStatus())) {
             return;
         }
-        log.info("-------------- Start incremental data sync task --------------");
+        log.info("-------------- Start incremental task --------------");
         scalingJob.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK.name());
         ExecuteCallback incrementalTaskCallback = createIncrementalTaskCallback();
         for (ScalingTask each : scalingJob.getIncrementalTasks()) {

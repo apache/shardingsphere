@@ -24,26 +24,26 @@ import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTa
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 
 /**
- * Sync task factory.
+ * Scaling task factory.
  */
 public interface ScalingTaskFactory {
     
     /**
-     * Create inventory data sync task.
+     * Create inventory task.
      *
      * @param inventoryDumperConfig inventory dumper configuration
      * @param importerConfig importer configuration
-     * @return inventory data sync task
+     * @return inventory task
      */
     InventoryTask createInventoryTask(InventoryDumperConfiguration inventoryDumperConfig, ImporterConfiguration importerConfig);
     
     /**
-     * Create incremental data sync task.
+     * Create incremental task.
      *
      * @param concurrency concurrency
      * @param dumperConfig dumper configuration
      * @param importerConfig importer configuration
-     * @return incremental data sync task
+     * @return incremental task
      */
     IncrementalTask createIncrementalTask(int concurrency, DumperConfiguration dumperConfig, ImporterConfiguration importerConfig);
 }

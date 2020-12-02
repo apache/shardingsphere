@@ -22,14 +22,14 @@ import org.apache.shardingsphere.scaling.core.job.TaskProgress;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 
 /**
- * Sync task interface.
+ * Scaling task interface.
  */
 public interface ScalingTask extends ScalingExecutor {
     
     /**
-     * Get synchronize progress.
+     * Get Task progress.
      *
-     * @return migrate progress
+     * @return Task progress
      */
     TaskProgress getProgress();
     
