@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * Auto Acknowledge BitSet channel.
  */
-public final class AutoAcknowledgeBitSetChannel extends AbstractBitSetChannel {
+public final class AutoAcknowledgeChannel extends AbstractBitSetChannel {
     
     @Override
     public void pushRecord(final Record dataRecord, final long index) {

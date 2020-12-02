@@ -26,13 +26,13 @@ import java.util.BitSet;
 
 import static org.junit.Assert.assertTrue;
 
-public final class AutoAcknowledgeBitSetChannelTest {
+public final class AutoAcknowledgeChannelTest {
     
-    private AutoAcknowledgeBitSetChannel channel;
+    private AutoAcknowledgeChannel channel;
     
     @Before
     public void setUp() {
-        channel = new AutoAcknowledgeBitSetChannel();
+        channel = new AutoAcknowledgeChannel();
     }
     
     @Test

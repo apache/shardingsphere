@@ -29,7 +29,7 @@ import java.util.concurrent.BlockingQueue;
 /**
  * Blocking queue BitSet channel.
  */
-public final class BlockingQueueBitSetChannel extends AbstractBitSetChannel {
+public final class BlockingQueueChannel extends AbstractBitSetChannel {
     
     private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(ScalingContext.getInstance().getServerConfig().getBlockQueueSize());
     

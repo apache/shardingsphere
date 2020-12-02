@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.scaling.core.execute.executor.channel;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.AutoAcknowledgeBitSetChannel;
+import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.AutoAcknowledgeChannel;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.BitSetChannel;
-import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.BlockingQueueBitSetChannel;
+import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.BlockingQueueChannel;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.PlaceholderRecord;
@@ -48,7 +48,7 @@ public final class DistributionChannel implements Channel {
     
     private final BitSetChannel[] channels;
     
-    private final BitSetChannel autoAckChannel = new AutoAcknowledgeBitSetChannel();
+    private final BitSetChannel autoAckChannel = new AutoAcknowledgeChannel();
     
     private final Map<String, Integer> channelAssignment = new HashMap<>();
     
@@ -67,7 +67,7 @@ public final class DistributionChannel implements Channel {
         this.ackCallback = ackCallback;
         channels = new BitSetChannel[channelNumber];
         for (int i = 0; i < channelNumber; i++) {
-            channels[i] = new BlockingQueueBitSetChannel();
+            channels[i] = new BlockingQueueChannel();
         }
         scheduleAckRecords();
     }
