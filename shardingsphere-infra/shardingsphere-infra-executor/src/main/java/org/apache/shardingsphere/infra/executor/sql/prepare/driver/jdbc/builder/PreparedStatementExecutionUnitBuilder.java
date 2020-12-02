@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 
 import java.sql.Connection;
@@ -48,6 +49,6 @@ public final class PreparedStatementExecutionUnitBuilder implements JDBCExecutio
     
     @Override
     public String getType() {
-        return JDBCExecutionUnitBuilderType.PREPARED_STATEMENT;
+        return JDBCDriverType.PREPARED_STATEMENT;
     }
 }
