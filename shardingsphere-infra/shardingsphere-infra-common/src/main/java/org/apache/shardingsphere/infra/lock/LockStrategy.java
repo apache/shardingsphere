@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.lock;
+package org.apache.shardingsphere.infra.lock;
 
 /**
- * Proxy lock strategy.
+ * Lock strategy.
  */
-public interface ProxyLockStrategy {
+public interface LockStrategy {
     
     /**
      * Try to get lock.

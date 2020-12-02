@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.lock;
+package org.apache.shardingsphere.proxy.backend.exception;
 
 /**
- * Standard lock strategy.
+ * Lock wait timeout exception.
  */
-public final class StandardLockStrategy implements ProxyLockStrategy {
+public final class LockWaitTimeoutException extends BackendException {
     
-    @Override
-    public boolean tryLock() {
-        // TODO
-        return false;
-    }
-    
-    @Override
-    public void releaseLock() {
-        // TODO
-    }
+    private static final long serialVersionUID = 2599713085782288003L;
 }

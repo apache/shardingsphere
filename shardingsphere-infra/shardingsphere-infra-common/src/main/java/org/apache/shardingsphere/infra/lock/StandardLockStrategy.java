@@ -15,36 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.lock;
+package org.apache.shardingsphere.infra.lock;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Proxy lock context.
+ * Standard lock strategy.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProxyLockContext {
+public final class StandardLockStrategy implements LockStrategy {
     
-    private static final AtomicReference<ProxyLockStrategy> PROXY_LOCK_STRATEGY = new AtomicReference<>();
+    private final ReentrantLock lock = new ReentrantLock();
     
-    /**
-     * Init proxy lock strategy.
-     * 
-     * @param proxyLockStrategy proxy lock strategy
-     */
-    public static void init(final ProxyLockStrategy proxyLockStrategy) {
-        PROXY_LOCK_STRATEGY.set(proxyLockStrategy);
+    @Override
+    public boolean tryLock() {
+        return lock.tryLock();
     }
     
-    /**
-     * Get proxy lock strategy.
-     * 
-     * @return proxy lock strategy
-     */
-    public static ProxyLockStrategy getProxyLockStrategy() {
-        return PROXY_LOCK_STRATEGY.get();
+    @Override
+    public void releaseLock() {
+        lock.unlock();
     }
 }

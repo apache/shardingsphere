@@ -15,28 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.lock;
+package org.apache.shardingsphere.infra.lock;
 
-import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Governance proxy lock strategy.
+ * Lock context.
  */
-public final class GovernanceLockStrategy implements ProxyLockStrategy {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class LockContext {
     
-    private final GovernanceFacade governanceFacade;
+    private static final AtomicReference<LockStrategy> LOCK_STRATEGY = new AtomicReference<>();
     
-    public GovernanceLockStrategy(final GovernanceFacade governanceFacade) {
-        this.governanceFacade = governanceFacade;
+    /**
+     * Init lock strategy.
+     * 
+     * @param lockStrategy lock strategy
+     */
+    public static void init(final LockStrategy lockStrategy) {
+        LOCK_STRATEGY.set(lockStrategy);
     }
     
-    @Override
-    public boolean tryLock() {
-        return governanceFacade.getLockCenter().tryGlobalLock();
-    }
-    
-    @Override
-    public void releaseLock() {
-        governanceFacade.getLockCenter().releaseGlobalLock();
+    /**
+     * Get lock strategy.
+     * 
+     * @return lock strategy
+     */
+    public static LockStrategy getLockStrategy() {
+        return LOCK_STRATEGY.get();
     }
 }
