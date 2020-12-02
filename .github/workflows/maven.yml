@@ -39,7 +39,7 @@ jobs:
           java-version: 8
       - name: Build with Maven
         run: |
-          ./mvnw -B clean install cobertura:cobertura -Dmaven.javadoc.skip=true
+          ./mvnw -B clean cobertura:cobertura -Dmaven.javadoc.skip=true install
           cd examples
           ./mvnw -B clean package -DskipTests
 
@@ -56,7 +56,7 @@ jobs:
           java-version: 8
       - name: Build with Maven
         run: |
-          ./mvnw -B clean install cobertura:cobertura -Dmaven.javadoc.skip=true
+          ./mvnw -B clean cobertura:cobertura -Dmaven.javadoc.skip=true install
           cd examples
           ./mvnw -B clean package -DskipTests
           cd ..
