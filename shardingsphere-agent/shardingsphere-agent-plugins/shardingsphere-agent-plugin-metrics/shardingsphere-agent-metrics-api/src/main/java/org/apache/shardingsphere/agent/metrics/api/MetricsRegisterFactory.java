@@ -15,27 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config;
-
-import lombok.Data;
+package org.apache.shardingsphere.agent.metrics.api;
 
 /**
- * Agent configuration.
+ * Metrics register factory.
  */
-@Data
-public class AgentConfiguration {
+public interface MetricsRegisterFactory {
     
-    private String applicationName;
-    
-    private MetricsConfiguration metrics;
-    
-    @Data
-    public static class MetricsConfiguration {
-        
-        private String host;
-        
-        private int port = 9090;
-        
-        private boolean jvmEnabled;
-    }
+    /**
+     * New instance metrics register.
+     *
+     * @return the metrics register
+     */
+    MetricsRegister newInstance();
 }

@@ -15,10 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics;
+package org.apache.shardingsphere.agent.metrics.api.entity;
+
+import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.apache.shardingsphere.agent.metrics.api.enums.MetricType;
 
 /**
- * Metrics registry.
+ * Metric.
  */
-public class MetricsRegistry {
+@Getter
+@AllArgsConstructor
+public class Metric {
+    
+    private final MetricType type;
+    
+    private String method;
+    
+    private final String name;
+    
+    private final String doc;
+    
+    private final List<String> labels;
 }

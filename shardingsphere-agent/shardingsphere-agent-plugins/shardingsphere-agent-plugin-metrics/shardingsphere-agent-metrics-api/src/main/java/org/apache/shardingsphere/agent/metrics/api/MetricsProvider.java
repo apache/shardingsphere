@@ -15,27 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config;
+package org.apache.shardingsphere.agent.metrics.api;
 
-import lombok.Data;
+import org.apache.shardingsphere.agent.core.utils.AgentServiceLoader;
+import org.apache.shardingsphere.agent.metrics.api.prometheus.PrometheusMetricsRegisterFactory;
 
 /**
- * Agent configuration.
+ * The enum Metrics provider.
  */
-@Data
-public class AgentConfiguration {
+public enum MetricsProvider {
     
-    private String applicationName;
+    /**
+     * Instance metrics provider.
+     */
+    INSTANCE;
     
-    private MetricsConfiguration metrics;
+    private static MetricsRegisterFactory metricRegisterFactory;
     
-    @Data
-    public static class MetricsConfiguration {
-        
-        private String host;
-        
-        private int port = 9090;
-        
-        private boolean jvmEnabled;
+    static {
+        metricRegisterFactory = AgentServiceLoader.getServiceLoader(MetricsRegisterFactory.class).newServiceInstances().orElse(new PrometheusMetricsRegisterFactory());
+    }
+    
+    /**
+     * Create metric system metric register.
+     *
+     * @return the metric register
+     */
+    public MetricsRegister newInstance() {
+        return metricRegisterFactory.newInstance();
     }
 }
