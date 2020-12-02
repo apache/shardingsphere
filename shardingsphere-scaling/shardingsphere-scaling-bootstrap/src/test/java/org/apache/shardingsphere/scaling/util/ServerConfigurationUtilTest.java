@@ -15,28 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.fixture;
+package org.apache.shardingsphere.scaling.util;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
+import org.junit.Test;
 
-import java.util.Collections;
-import java.util.Map;
+import static org.junit.Assert.assertNotNull;
 
-@RequiredArgsConstructor
-public final class FixtureDataConsistencyChecker implements DataConsistencyChecker {
+public final class ServerConfigurationUtilTest {
     
-    private final ScalingJob scalingJob;
-    
-    @Override
-    public Map<String, DataConsistencyCheckResult> countCheck() {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    public Map<String, Boolean> dataCheck() {
-        return Collections.emptyMap();
+    @Test
+    public void assertInitScalingConfig() {
+        ServerConfigurationUtil.initScalingConfig();
+        assertNotNull(ScalingContext.getInstance().getServerConfig());
     }
 }

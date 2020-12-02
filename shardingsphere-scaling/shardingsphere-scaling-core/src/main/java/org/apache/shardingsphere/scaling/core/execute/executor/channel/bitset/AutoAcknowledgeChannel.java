@@ -15,24 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.task.incremental;
+package org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset;
 
-import org.apache.shardingsphere.scaling.core.job.SyncProgress;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 /**
- * Real-time data sync task progress.
+ * Auto Acknowledge BitSet channel.
  */
-@Getter
-@RequiredArgsConstructor
-public final class IncrementalDataSyncTaskProgress implements SyncProgress {
+public final class AutoAcknowledgeChannel extends AbstractBitSetChannel {
     
-    private final String id;
+    @Override
+    public void pushRecord(final Record dataRecord, final long index) {
+        getManualBitSet().set(index);
+        getToBeAckRecords().add(dataRecord);
+        setAcknowledgedIndex(index + 1);
+    }
     
-    private final long delayMillisecond;
+    @Override
+    public List<Record> fetchRecords(final int batchSize, final int timeout) {
+        throw new UnsupportedOperationException("Auto ack channel can not fetch records.");
+    }
     
-    private final Position<?> position;
+    @Override
+    public void ack() {
+        throw new UnsupportedOperationException("Auto ack channel do not have to ack.");
+    }
 }

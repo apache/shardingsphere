@@ -15,27 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job;
+package org.apache.shardingsphere.scaling.core.execute.executor;
 
-import com.google.common.collect.Maps;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
-import java.util.Map;
+import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 
 /**
- * Scaling job progress.
+ * Abstract scaling executor.
  */
+@Setter
 @Getter
-@RequiredArgsConstructor
-public final class ScalingJobProgress implements SyncProgress {
+public abstract class AbstractScalingExecutor implements ScalingExecutor {
     
-    private final long id;
+    @Setter(AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
+    private boolean running;
     
-    private final String status;
+    private String taskId;
     
-    private final Map<String, Collection<SyncProgress>> inventoryDataSyncTaskProgress = Maps.newHashMap();
+    private PositionManager positionManager;
     
-    private final Map<String, Collection<SyncProgress>> incrementalDataSyncTaskProgress = Maps.newHashMap();
+    @Override
+    public void start() {
+        running = true;
+    }
+    
+    @Override
+    public void stop() {
+        running = false;
+    }
+    
+    @Override
+    public final void run() {
+        start();
+    }
 }

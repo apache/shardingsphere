@@ -22,16 +22,16 @@ import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
+import org.apache.shardingsphere.scaling.core.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.engine.ExecuteCallback;
-import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
+import org.apache.shardingsphere.scaling.core.execute.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.DistributionChannel;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.DumperFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.ImporterFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.scaling.core.job.SyncProgress;
+import org.apache.shardingsphere.scaling.core.job.TaskProgress;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
@@ -42,10 +42,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * Incremental data execute task.
+ * Incremental task.
  */
 @Slf4j
-public final class IncrementalDataScalingTask extends AbstractShardingScalingExecutor implements ScalingTask {
+public final class IncrementalTask extends AbstractScalingExecutor implements ScalingTask {
     
     private final int concurrency;
     
@@ -59,7 +59,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     
     private long delayMillisecond = Long.MAX_VALUE;
     
-    public IncrementalDataScalingTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig) {
+    public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig) {
         this.concurrency = concurrency;
         this.dumperConfig = dumperConfig;
         this.importerConfig = importerConfig;
@@ -117,7 +117,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
             future.get();
         } catch (final InterruptedException ignored) {
         } catch (final ExecutionException ex) {
-            throw new SyncTaskExecuteException(String.format("Task %s execute failed ", getTaskId()), ex.getCause());
+            throw new ScalingTaskExecuteException(String.format("Task %s execute failed ", getTaskId()), ex.getCause());
         }
     }
     
@@ -130,7 +130,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     }
     
     @Override
-    public SyncProgress getProgress() {
-        return new IncrementalDataSyncTaskProgress(getTaskId(), delayMillisecond, getPositionManager().getPosition());
+    public TaskProgress getProgress() {
+        return new IncrementalTaskProgress(getTaskId(), delayMillisecond, getPositionManager().getPosition());
     }
 }

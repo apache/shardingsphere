@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.execute.engine;
 
-import org.apache.shardingsphere.scaling.core.execute.executor.ShardingScalingExecutor;
+import org.apache.shardingsphere.scaling.core.execute.executor.ScalingExecutor;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -27,11 +27,11 @@ import java.util.concurrent.RejectedExecutionException;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
-public final class ShardingScalingExecuteEngineTest {
+public final class TaskExecuteEngineTest {
     
     @Test
     public void assertSubmitMoreThanMaxWorkerNumber() {
-        ShardingScalingExecuteEngine executeEngine = ShardingScalingExecuteEngine.newFixedThreadInstance(2);
+        TaskExecuteEngine executeEngine = TaskExecuteEngine.newFixedThreadInstance(2);
         try {
             for (int i = 0; i < 5; i++) {
                 Future<?> submit = executeEngine.submit(mockShardingScalingExecutor());
@@ -44,7 +44,7 @@ public final class ShardingScalingExecuteEngineTest {
     
     @Test
     public void assertSubmitAllMoreThanMaxWorkerNumber() {
-        ShardingScalingExecuteEngine executeEngine = ShardingScalingExecuteEngine.newFixedThreadInstance(2);
+        TaskExecuteEngine executeEngine = TaskExecuteEngine.newFixedThreadInstance(2);
         try {
             for (int i = 0; i < 5; i++) {
                 Future<?> submit = executeEngine.submitAll(Collections.singletonList(mockShardingScalingExecutor()), mockExecuteCallback());
@@ -69,8 +69,8 @@ public final class ShardingScalingExecuteEngineTest {
         };
     }
     
-    private ShardingScalingExecutor mockShardingScalingExecutor() {
-        return new ShardingScalingExecutor() {
+    private ScalingExecutor mockShardingScalingExecutor() {
+        return new ScalingExecutor() {
             @Override
             public void run() {
                 try {

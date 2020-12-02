@@ -22,16 +22,16 @@ import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
+import org.apache.shardingsphere.scaling.core.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.engine.ExecuteCallback;
-import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
+import org.apache.shardingsphere.scaling.core.execute.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.MemoryChannel;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.DumperFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.ImporterFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.scaling.core.job.SyncProgress;
+import org.apache.shardingsphere.scaling.core.job.TaskProgress;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
@@ -41,10 +41,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * Table slice execute task.
+ * Inventory task.
  */
 @Slf4j
-public final class InventoryDataScalingTask extends AbstractShardingScalingExecutor implements ScalingTask {
+public final class InventoryTask extends AbstractScalingExecutor implements ScalingTask {
     
     private final InventoryDumperConfiguration inventoryDumperConfig;
     
@@ -54,19 +54,19 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
     
     private Dumper dumper;
     
-    public InventoryDataScalingTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig) {
+    public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig) {
         this(inventoryDumperConfig, importerConfig, new DataSourceManager());
     }
     
-    public InventoryDataScalingTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
+    public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
         this.inventoryDumperConfig = inventoryDumperConfig;
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
-        setTaskId(generateSyncTaskId(inventoryDumperConfig));
+        setTaskId(generateTaskId(inventoryDumperConfig));
         setPositionManager(inventoryDumperConfig.getPositionManager());
     }
     
-    private String generateSyncTaskId(final InventoryDumperConfiguration inventoryDumperConfig) {
+    private String generateTaskId(final InventoryDumperConfiguration inventoryDumperConfig) {
         String result = String.format("%s.%s", inventoryDumperConfig.getDataSourceName(), inventoryDumperConfig.getTableName());
         return null == inventoryDumperConfig.getShardingItem() ? result : result + "#" + inventoryDumperConfig.getShardingItem();
     }
@@ -111,7 +111,7 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
             future.get();
         } catch (final InterruptedException ignored) {
         } catch (final ExecutionException ex) {
-            throw new SyncTaskExecuteException(String.format("Task %s execute failed ", getTaskId()), ex.getCause());
+            throw new ScalingTaskExecuteException(String.format("Task %s execute failed ", getTaskId()), ex.getCause());
         }
     }
     
@@ -124,7 +124,7 @@ public final class InventoryDataScalingTask extends AbstractShardingScalingExecu
     }
     
     @Override
-    public SyncProgress getProgress() {
-        return new InventoryDataSyncTaskProgress(getTaskId(), getPositionManager().getPosition() instanceof FinishedPosition);
+    public TaskProgress getProgress() {
+        return new InventoryTaskProgress(getTaskId(), getPositionManager().getPosition() instanceof FinishedPosition);
     }
 }

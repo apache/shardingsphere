@@ -26,8 +26,8 @@ import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguratio
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
-import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
+import org.apache.shardingsphere.scaling.core.exception.ScalingTaskExecuteException;
+import org.apache.shardingsphere.scaling.core.execute.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
@@ -50,7 +50,7 @@ import java.sql.SQLException;
  * Abstract JDBC dumper implement.
  */
 @Slf4j
-public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor implements JDBCDumper {
+public abstract class AbstractJDBCDumper extends AbstractScalingExecutor implements JDBCDumper {
     
     @Getter(AccessLevel.PROTECTED)
     private final InventoryDumperConfiguration inventoryDumperConfig;
@@ -101,7 +101,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
         } catch (final SQLException ex) {
             stop();
             channel.close();
-            throw new SyncTaskExecuteException(ex);
+            throw new ScalingTaskExecuteException(ex);
         } finally {
             pushRecord(new FinishedRecord(new PlaceholderPosition()));
         }

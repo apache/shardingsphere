@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.task.inventory;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.SyncProgress;
+package org.apache.shardingsphere.scaling.core.execute.executor;
 
 /**
- * Inventory data sync task progress.
+ * Scaling executor.
  */
-@RequiredArgsConstructor
-@Getter
-public final class InventoryDataSyncTaskProgress implements SyncProgress {
-    
-    private final String id;
-    
-    private final boolean finished;
+public interface ScalingExecutor extends Runnable {
+
+    /**
+     * Start run execute.
+     */
+    void start();
+
+    /**
+     * Stop running execute.
+     */
+    void stop();
 }

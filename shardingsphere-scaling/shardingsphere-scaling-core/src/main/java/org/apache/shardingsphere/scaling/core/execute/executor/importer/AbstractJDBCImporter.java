@@ -23,8 +23,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
-import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
+import org.apache.shardingsphere.scaling.core.exception.ScalingTaskExecuteException;
+import org.apache.shardingsphere.scaling.core.execute.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  * Abstract JDBC importer implementation.
  */
 @Slf4j
-public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecutor implements Importer {
+public abstract class AbstractJDBCImporter extends AbstractScalingExecutor implements Importer {
     
     private static final DataRecordMerger MERGER = new DataRecordMerger();
     
@@ -116,7 +116,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     private void flushInternal(final DataSource dataSource, final List<DataRecord> buffer) {
         boolean success = tryFlush(dataSource, buffer);
         if (isRunning() && !success) {
-            throw new SyncTaskExecuteException("write failed.");
+            throw new ScalingTaskExecuteException("write failed.");
         }
     }
     

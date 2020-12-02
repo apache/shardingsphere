@@ -36,7 +36,7 @@ import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobServiceFactory;
 import org.apache.shardingsphere.scaling.util.ResponseContentUtil;
@@ -84,14 +84,14 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     }
     
     private void startJob(final ChannelHandlerContext context, final String requestBody) {
-        Optional<ShardingScalingJob> shardingScalingJob = SCALING_JOB_SERVICE.start(GSON.fromJson(requestBody, ScalingConfiguration.class));
+        Optional<ScalingJob> shardingScalingJob = SCALING_JOB_SERVICE.start(GSON.fromJson(requestBody, ScalingConfiguration.class));
         Preconditions.checkState(shardingScalingJob.isPresent());
         response(ResponseContentUtil.build(shardingScalingJob.get()), context, HttpResponseStatus.OK);
     }
     
     private void listJobs(final ChannelHandlerContext context) {
-        List<ShardingScalingJob> shardingScalingJobs = SCALING_JOB_SERVICE.listJobs();
-        response(ResponseContentUtil.build(shardingScalingJobs), context, HttpResponseStatus.OK);
+        List<ScalingJob> scalingJobs = SCALING_JOB_SERVICE.listJobs();
+        response(ResponseContentUtil.build(scalingJobs), context, HttpResponseStatus.OK);
     }
     
     private void getJobProgress(final ChannelHandlerContext context, final String requestPath) {

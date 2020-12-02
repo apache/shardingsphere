@@ -25,7 +25,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
-import org.apache.shardingsphere.scaling.core.execute.executor.ShardingScalingExecutor;
+import org.apache.shardingsphere.scaling.core.execute.executor.ScalingExecutor;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
@@ -35,53 +35,53 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * Sharding scaling executor engine.
+ * Scaling executor engine.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingScalingExecuteEngine {
+public final class TaskExecuteEngine {
     
     public static final String THREAD_NAME_FORMAT = "ShardingScaling-execute-%d";
     
     private final ListeningExecutorService executorService;
     
     /**
-     * Create sharding scaling execute engine instance with cached thread pool.
+     * Create task execute engine instance with cached thread pool.
      *
-     * @return sharding scaling execute engine instance
+     * @return task execute engine instance
      */
-    public static ShardingScalingExecuteEngine newCachedThreadInstance() {
-        return new ShardingScalingExecuteEngine(MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(ExecutorThreadFactoryBuilder.build(THREAD_NAME_FORMAT))));
+    public static TaskExecuteEngine newCachedThreadInstance() {
+        return new TaskExecuteEngine(MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(ExecutorThreadFactoryBuilder.build(THREAD_NAME_FORMAT))));
     }
     
     /**
-     * Create sharding scaling execute engine instance with fixed thread pool.
+     * Create task execute engine instance with fixed thread pool.
      *
      * @param threadNumber thread number
-     * @return sharding scaling execute engine instance
+     * @return task execute engine instance
      */
-    public static ShardingScalingExecuteEngine newFixedThreadInstance(final int threadNumber) {
-        return new ShardingScalingExecuteEngine(MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(threadNumber, ExecutorThreadFactoryBuilder.build(THREAD_NAME_FORMAT))));
+    public static TaskExecuteEngine newFixedThreadInstance(final int threadNumber) {
+        return new TaskExecuteEngine(MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(threadNumber, ExecutorThreadFactoryBuilder.build(THREAD_NAME_FORMAT))));
     }
     
     /**
      * Submit a {@code ShardingScalingExecutor} without callback to execute.
      *
-     * @param shardingScalingExecutor sharding scaling executor
+     * @param scalingExecutor scaling executor
      * @return execute future
      */
-    public Future<?> submit(final ShardingScalingExecutor shardingScalingExecutor) {
-        return executorService.submit(shardingScalingExecutor);
+    public Future<?> submit(final ScalingExecutor scalingExecutor) {
+        return executorService.submit(scalingExecutor);
     }
     
     /**
      * Submit a {@code ShardingScalingExecutor} with callback {@code ExecuteCallback} to execute.
      *
-     * @param shardingScalingExecutor sharding scaling executor
+     * @param scalingExecutor scaling executor
      * @param executeCallback execute callback
      * @return execute future
      */
-    public Future<?> submit(final ShardingScalingExecutor shardingScalingExecutor, final ExecuteCallback executeCallback) {
-        ListenableFuture<?> result = executorService.submit(shardingScalingExecutor);
+    public Future<?> submit(final ScalingExecutor scalingExecutor, final ExecuteCallback executeCallback) {
+        ListenableFuture<?> result = executorService.submit(scalingExecutor);
         Futures.addCallback(result, new ExecuteFutureCallback<>(executeCallback), executorService);
         return result;
     }
@@ -89,13 +89,13 @@ public final class ShardingScalingExecuteEngine {
     /**
      * Submit a collection of {@code ShardingScalingExecutor} with callback {@code ExecuteCallback} to execute.
      *
-     * @param shardingScalingExecutors sharding scaling executor
+     * @param shardingScalingExecutors scaling executor
      * @param executeCallback execute callback
      * @return execute future of all
      */
-    public Future<?> submitAll(final Collection<? extends ShardingScalingExecutor> shardingScalingExecutors, final ExecuteCallback executeCallback) {
+    public Future<?> submitAll(final Collection<? extends ScalingExecutor> shardingScalingExecutors, final ExecuteCallback executeCallback) {
         Collection<ListenableFuture<?>> listenableFutures = new ArrayList<>(shardingScalingExecutors.size());
-        for (ShardingScalingExecutor each : shardingScalingExecutors) {
+        for (ScalingExecutor each : shardingScalingExecutors) {
             ListenableFuture<?> listenableFuture = executorService.submit(each);
             listenableFutures.add(listenableFuture);
         }

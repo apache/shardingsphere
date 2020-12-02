@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.execute.executor;
+package org.apache.shardingsphere.scaling.core.exception;
 
 /**
- * Sharding scaling executor.
+ * Scaling task run exception.
  */
-public interface ShardingScalingExecutor extends Runnable {
-
-    /**
-     * Start run execute.
-     */
-    void start();
-
-    /**
-     * Stop running execute.
-     */
-    void stop();
+public final class ScalingTaskExecuteException extends RuntimeException {
+    
+    private static final long serialVersionUID = 1797495940081148743L;
+    
+    public ScalingTaskExecuteException(final String message) {
+        super(message);
+    }
+    
+    public ScalingTaskExecuteException(final Throwable cause) {
+        super(cause);
+    }
+    
+    public ScalingTaskExecuteException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+    
 }

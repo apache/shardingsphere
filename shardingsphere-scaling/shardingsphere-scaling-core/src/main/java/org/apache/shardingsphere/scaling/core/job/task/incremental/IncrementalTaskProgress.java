@@ -15,18 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.util;
+package org.apache.shardingsphere.scaling.core.job.task.incremental;
 
-import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.junit.Test;
+import org.apache.shardingsphere.scaling.core.job.TaskProgress;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 
-import static org.junit.Assert.assertNotNull;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-public final class ScalingConfigUtilTest {
+/**
+ * Incremental task progress.
+ */
+@Getter
+@RequiredArgsConstructor
+public final class IncrementalTaskProgress implements TaskProgress {
     
-    @Test
-    public void assertInitScalingConfig() {
-        ScalingConfigUtil.initScalingConfig();
-        assertNotNull(ScalingContext.getInstance().getServerConfig());
-    }
+    private final String id;
+    
+    private final long delayMillisecond;
+    
+    private final Position<?> position;
 }

@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.exception;
+package org.apache.shardingsphere.scaling.core.job.task.inventory;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.scaling.core.job.TaskProgress;
 
 /**
- * Synchronize task run exception.
+ * Inventory task progress.
  */
-public final class SyncTaskExecuteException extends RuntimeException {
+@RequiredArgsConstructor
+@Getter
+public final class InventoryTaskProgress implements TaskProgress {
     
-    private static final long serialVersionUID = 1797495940081148743L;
+    private final String id;
     
-    public SyncTaskExecuteException(final String message) {
-        super(message);
-    }
-    
-    public SyncTaskExecuteException(final Throwable cause) {
-        super(cause);
-    }
-    
-    public SyncTaskExecuteException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-    
+    private final boolean finished;
 }

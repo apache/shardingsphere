@@ -29,9 +29,9 @@ import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.Scalin
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
-import org.apache.shardingsphere.scaling.core.job.task.DefaultSyncTaskFactory;
+import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
-import org.apache.shardingsphere.scaling.core.job.task.SyncTaskFactory;
+import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
 
 import javax.sql.DataSource;
@@ -48,9 +48,9 @@ import java.util.List;
  * Inventory data task splitter.
  */
 @Slf4j
-public final class InventoryDataTaskSplitter {
+public final class InventoryTaskSplitter {
     
-    private final SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
+    private final ScalingTaskFactory scalingTaskFactory = new DefaultScalingTaskFactory();
     
     /**
      * Split inventory data to multi-tasks.
@@ -63,7 +63,7 @@ public final class InventoryDataTaskSplitter {
     public Collection<ScalingTask> splitInventoryData(final String databaseType, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager) {
         Collection<ScalingTask> result = new LinkedList<>();
         for (InventoryDumperConfiguration each : splitDumperConfig(databaseType, taskConfig.getJobConfig().getShardingSize(), taskConfig.getDumperConfig(), dataSourceManager)) {
-            result.add(syncTaskFactory.createInventoryDataSyncTask(each, taskConfig.getImporterConfig()));
+            result.add(scalingTaskFactory.createInventoryTask(each, taskConfig.getImporterConfig()));
         }
         return result;
     }

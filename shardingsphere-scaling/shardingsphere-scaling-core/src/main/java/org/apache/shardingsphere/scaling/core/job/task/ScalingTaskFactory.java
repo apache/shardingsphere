@@ -20,21 +20,30 @@ package org.apache.shardingsphere.scaling.core.job.task;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
-import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalDataScalingTask;
-import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTask;
+import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTask;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 
 /**
- * Default sync task factory.
+ * Scaling task factory.
  */
-public final class DefaultSyncTaskFactory implements SyncTaskFactory {
+public interface ScalingTaskFactory {
     
-    @Override
-    public InventoryDataScalingTask createInventoryDataSyncTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig) {
-        return new InventoryDataScalingTask(inventoryDumperConfig, importerConfig);
-    }
+    /**
+     * Create inventory task.
+     *
+     * @param inventoryDumperConfig inventory dumper configuration
+     * @param importerConfig importer configuration
+     * @return inventory task
+     */
+    InventoryTask createInventoryTask(InventoryDumperConfiguration inventoryDumperConfig, ImporterConfiguration importerConfig);
     
-    @Override
-    public IncrementalDataScalingTask createIncrementalDataSyncTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig) {
-        return new IncrementalDataScalingTask(concurrency, dumperConfig, importerConfig);
-    }
+    /**
+     * Create incremental task.
+     *
+     * @param concurrency concurrency
+     * @param dumperConfig dumper configuration
+     * @param importerConfig importer configuration
+     * @return incremental task
+     */
+    IncrementalTask createIncrementalTask(int concurrency, DumperConfiguration dumperConfig, ImporterConfiguration importerConfig);
 }

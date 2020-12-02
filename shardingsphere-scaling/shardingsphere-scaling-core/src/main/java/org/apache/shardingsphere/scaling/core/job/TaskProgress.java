@@ -15,40 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.execute.executor;
-
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
+package org.apache.shardingsphere.scaling.core.job;
 
 /**
- * Abstract sharding scaling executor.
+ * Scaling progress.
  */
-@Setter
-@Getter
-public abstract class AbstractShardingScalingExecutor implements ShardingScalingExecutor {
-    
-    @Setter(AccessLevel.PROTECTED)
-    @Getter(AccessLevel.PROTECTED)
-    private boolean running;
-    
-    private String taskId;
-    
-    private PositionManager positionManager;
-    
-    @Override
-    public void start() {
-        running = true;
-    }
-    
-    @Override
-    public void stop() {
-        running = false;
-    }
-    
-    @Override
-    public final void run() {
-        start();
-    }
+public interface TaskProgress {
 }

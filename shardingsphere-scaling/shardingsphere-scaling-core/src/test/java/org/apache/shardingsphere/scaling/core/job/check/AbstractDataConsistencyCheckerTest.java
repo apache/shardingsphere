@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.job.check;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
 import org.junit.Test;
 
@@ -39,10 +39,10 @@ public final class AbstractDataConsistencyCheckerTest {
     
     @Test
     public void assertCountCheck() {
-        ShardingScalingJob shardingScalingJob = mockShardingScalingJob();
-        DataConsistencyChecker dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance("H2", shardingScalingJob);
-        initTableData(shardingScalingJob.getTaskConfigs().get(0).getDumperConfig().getDataSourceConfig());
-        initTableData(shardingScalingJob.getTaskConfigs().get(0).getImporterConfig().getDataSourceConfig());
+        ScalingJob scalingJob = mockShardingScalingJob();
+        DataConsistencyChecker dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance("H2", scalingJob);
+        initTableData(scalingJob.getTaskConfigs().get(0).getDumperConfig().getDataSourceConfig());
+        initTableData(scalingJob.getTaskConfigs().get(0).getImporterConfig().getDataSourceConfig());
         Map<String, DataConsistencyCheckResult> resultMap = dataConsistencyChecker.countCheck();
         assertTrue(resultMap.get("t1").isCountValid());
         assertThat(resultMap.get("t1").getSourceCount(), is(resultMap.get("t1").getTargetCount()));
@@ -60,7 +60,7 @@ public final class AbstractDataConsistencyCheckerTest {
     }
     
     @SneakyThrows(IOException.class)
-    private ShardingScalingJob mockShardingScalingJob() {
+    private ScalingJob mockShardingScalingJob() {
         return ScalingConfigurationUtil.initJob("/config.json");
     }
 }

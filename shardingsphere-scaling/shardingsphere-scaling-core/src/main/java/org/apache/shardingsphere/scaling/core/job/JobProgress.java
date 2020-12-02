@@ -17,8 +17,25 @@
 
 package org.apache.shardingsphere.scaling.core.job;
 
+import com.google.common.collect.Maps;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
+import java.util.Map;
+
 /**
- * Sync progress.
+ * Job progress.
  */
-public interface SyncProgress {
+@Getter
+@RequiredArgsConstructor
+public final class JobProgress {
+    
+    private final long id;
+    
+    private final String status;
+    
+    private final Map<String, Collection<TaskProgress>> inventoryTaskProgress = Maps.newHashMap();
+    
+    private final Map<String, Collection<TaskProgress>> incrementalTaskProgress = Maps.newHashMap();
 }
