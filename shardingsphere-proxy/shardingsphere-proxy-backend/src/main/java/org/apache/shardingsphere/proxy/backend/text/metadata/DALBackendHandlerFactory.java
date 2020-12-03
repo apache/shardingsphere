@@ -22,14 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.ShowDatabasesBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.ShowTablesBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.UseDatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 
 /**
  * DAL backend handler factory.
@@ -46,15 +40,6 @@ public final class DALBackendHandlerFactory {
      * @return backend handler
      */
     public static TextProtocolBackendHandler newInstance(final DALStatement dalStatement, final String sql, final BackendConnection backendConnection) {
-        if (dalStatement instanceof MySQLUseStatement) {
-            return new UseDatabaseBackendHandler((MySQLUseStatement) dalStatement, backendConnection);
-        }
-        if (dalStatement instanceof MySQLShowDatabasesStatement) {
-            return new ShowDatabasesBackendHandler(backendConnection);
-        }
-        if (dalStatement instanceof MySQLShowTablesStatement) {
-            return new ShowTablesBackendHandler(backendConnection);
-        }
         if (dalStatement instanceof SetStatement) {
             return new BroadcastBackendHandler(dalStatement, sql, backendConnection);
         }
