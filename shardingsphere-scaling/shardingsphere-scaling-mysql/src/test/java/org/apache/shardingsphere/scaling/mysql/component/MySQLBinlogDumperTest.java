@@ -57,7 +57,7 @@ public final class MySQLBinlogDumperTest {
     
     private static final String URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
     
-    private MySQLBinlogDumper mySQLBinlogDumper;
+    private MySQLBinlogDumper mysqlBinlogDumper;
     
     private MemoryChannel channel;
     
@@ -68,8 +68,8 @@ public final class MySQLBinlogDumperTest {
         initTableData(dumperConfig);
         channel = new MemoryChannel(records -> {
         });
-        mySQLBinlogDumper = new MySQLBinlogDumper(dumperConfig, new BinlogPosition("binlog-000001", 4L));
-        mySQLBinlogDumper.setChannel(channel);
+        mysqlBinlogDumper = new MySQLBinlogDumper(dumperConfig, new BinlogPosition("binlog-000001", 4L));
+        mysqlBinlogDumper.setChannel(channel);
     }
     
     private DumperConfiguration mockDumperConfiguration() {
@@ -160,6 +160,6 @@ public final class MySQLBinlogDumperTest {
     
     @SneakyThrows({NoSuchMethodException.class, ReflectiveOperationException.class})
     private void invokeHandleEvent(final JdbcUri uri, final AbstractBinlogEvent event) {
-        ReflectionUtil.invokeMethod(mySQLBinlogDumper, "handleEvent", new Class[]{JdbcUri.class, AbstractBinlogEvent.class}, new Object[]{uri, event});
+        ReflectionUtil.invokeMethod(mysqlBinlogDumper, "handleEvent", new Class[]{JdbcUri.class, AbstractBinlogEvent.class}, new Object[]{uri, event});
     }
 }
