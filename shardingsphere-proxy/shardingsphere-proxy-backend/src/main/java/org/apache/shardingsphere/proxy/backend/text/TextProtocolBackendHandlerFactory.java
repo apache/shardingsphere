@@ -24,9 +24,10 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.data.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.metadata.DALBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.metadata.RDLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.metadata.schema.SchemaBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.metadata.schema.SchemaBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.sctl.utils.SCTLUtils;
@@ -70,13 +71,13 @@ public final class TextProtocolBackendHandlerFactory {
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((TCLStatement) sqlStatement, sql, backendConnection);
         }
-        Optional<TextProtocolBackendHandler> schemaBackendHandler = SchemaBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
+        Optional<SchemaBackendHandler> schemaBackendHandler = SchemaBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
         if (schemaBackendHandler.isPresent()) {
             return schemaBackendHandler.get();
         }
         if (sqlStatement instanceof DALStatement) {
             return DALBackendHandlerFactory.newInstance((DALStatement) sqlStatement, sql, backendConnection);
         }
-        return new DatabaseBackendHandler(sqlStatement, sql, backendConnection);
+        return new SchemaAssignedDatabaseBackendHandler(sqlStatement, sql, backendConnection);
     }
 }

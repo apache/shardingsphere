@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.environment.BroadcastBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.data.BroadcastDatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
@@ -61,7 +61,7 @@ public final class TransactionBackendHandlerFactoryTest {
     
     @Test
     public void assertBroadcastBackendHandlerReturnedWhenTCLStatementNotHit() {
-        assertThat(TransactionBackendHandlerFactory.newInstance(mock(TCLStatement.class), null, null), instanceOf(BroadcastBackendHandler.class));
+        assertThat(TransactionBackendHandlerFactory.newInstance(mock(TCLStatement.class), null, null), instanceOf(BroadcastDatabaseBackendHandler.class));
     }
     
     @SuppressWarnings("unchecked")
