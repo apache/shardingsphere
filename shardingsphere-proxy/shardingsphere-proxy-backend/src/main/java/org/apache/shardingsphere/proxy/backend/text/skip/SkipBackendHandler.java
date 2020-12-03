@@ -22,6 +22,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Skip backend handler.
@@ -40,6 +41,6 @@ public final class SkipBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public Collection<Object> getRowData() {
-        return null;
+        return Collections.emptyList();
     }
 }

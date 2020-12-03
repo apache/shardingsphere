@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Query response row.
@@ -30,4 +31,13 @@ import java.util.Collection;
 public final class QueryResponseRow {
     
     private final Collection<QueryResponseCell> cells;
+    
+    /**
+     * Get row data.
+     * 
+     * @return row data
+     */
+    public Collection<Object> getData() {
+        return cells.stream().map(QueryResponseCell::getData).collect(Collectors.toList());
+    }
 }
