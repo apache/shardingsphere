@@ -28,15 +28,15 @@ import java.util.Map;
 public final class TestHATypeFixture implements HAType {
     
     @Override
-    public void checkHAConfig(final Map<String, DataSource> dataSourceMap) {
+    public void checkHAConfig(final Map<String, DataSource> dataSourceMap, final String schemaName) {
     }
     
     @Override
-    public void updatePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
+    public void updatePrimaryDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName) {
     }
     
     @Override
-    public void periodicalMonitor(final Map<String, DataSource> dataSourceMap) {
+    public void periodicalMonitor(final Map<String, DataSource> dataSourceMap, final String schemaName) {
     }
     
     @Override

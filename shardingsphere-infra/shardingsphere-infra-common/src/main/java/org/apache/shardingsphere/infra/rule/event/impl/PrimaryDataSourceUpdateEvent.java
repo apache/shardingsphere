@@ -15,33 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ha.route.fixture;
+package org.apache.shardingsphere.infra.rule.event.impl;
 
-import org.apache.shardingsphere.ha.spi.HAType;
-
-import javax.sql.DataSource;
-import java.util.Map;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 
 /**
- * Test HA type.
+ * Primary data source update event.
  */
-public final class TestRouteHATypeFixture implements HAType {
+@RequiredArgsConstructor
+@Getter
+public final class PrimaryDataSourceUpdateEvent implements RuleChangedEvent {
     
-    @Override
-    public void checkHAConfig(final Map<String, DataSource> dataSourceMap, final String schemaName) {
-    }
+    private final String schemaName;
     
-    @Override
-    public void updatePrimaryDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName) {
-
-    }
+    private final String newPrimaryDataSource;
     
-    @Override
-    public void periodicalMonitor(final Map<String, DataSource> dataSourceMap, final String schemaName) {
-    }
-    
-    @Override
-    public String getType() {
-        return "TestRoute";
-    }
+    private final String oldPrimaryDataSource;
 }

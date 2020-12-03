@@ -47,21 +47,24 @@ public final class ShardingSphereRulesBuilder {
      * @param ruleConfigurations rule configurations
      * @param databaseType database type
      * @param dataSourceMap data source map
+     * @param schemaName schema name
      * @return rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> build(final Collection<RuleConfiguration> ruleConfigurations, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    public static Collection<ShardingSphereRule> build(final Collection<RuleConfiguration> ruleConfigurations, final DatabaseType databaseType,
+                                                       final Map<String, DataSource> dataSourceMap, final String schemaName) {
         Map<RuleConfiguration, ShardingSphereRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(ruleConfigurations, ShardingSphereRuleBuilder.class);
-        setResources(builders.values(), databaseType, dataSourceMap);
+        setResources(builders.values(), databaseType, dataSourceMap, schemaName);
         return builders.entrySet().stream().map(entry -> entry.getValue().build(entry.getKey())).collect(Collectors.toList());
     }
     
     @SuppressWarnings("rawtypes")
-    private static void setResources(final Collection<ShardingSphereRuleBuilder> builders, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    private static void setResources(final Collection<ShardingSphereRuleBuilder> builders, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String schemaName) {
         for (ShardingSphereRuleBuilder each : builders) {
             if (each instanceof ResourceAware) {
                 ((ResourceAware) each).setDatabaseType(databaseType);
                 ((ResourceAware) each).setDataSourceMap(dataSourceMap);
+                ((ResourceAware) each).setSchemaName(schemaName);
             }
         }
     }
