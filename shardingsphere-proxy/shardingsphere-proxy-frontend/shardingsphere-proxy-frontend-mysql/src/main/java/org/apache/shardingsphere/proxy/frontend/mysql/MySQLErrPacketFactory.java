@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurat
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.LockWaitTimeoutException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
@@ -97,6 +98,9 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof RuleNotExistsException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_SP_DOES_NOT_EXIST);
+        }
+        if (cause instanceof LockWaitTimeoutException) {
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_LOCKING_SERVICE_TIMEOUT);
         }
         return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }
