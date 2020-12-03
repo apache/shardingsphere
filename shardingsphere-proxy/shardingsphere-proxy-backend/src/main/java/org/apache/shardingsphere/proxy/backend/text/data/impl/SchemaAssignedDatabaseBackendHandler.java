@@ -15,56 +15,53 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.data;
+package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
- * Backend handler for broadcast.
+ * Database backend handler with assigned schema.
  */
 @RequiredArgsConstructor
-public final class BroadcastDatabaseBackendHandler implements DatabaseBackendHandler {
+public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBackendHandler {
     
     private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();
     
     private final SQLStatement sqlStatement;
-    
+
     private final String sql;
     
     private final BackendConnection backendConnection;
     
+    private DatabaseCommunicationEngine databaseCommunicationEngine;
+    
     @Override
     public ResponseHeader execute() throws SQLException {
-        String originalSchema = backendConnection.getSchemaName();
-        for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
-            backendConnection.setCurrentSchema(each);
-            if (!ProxyContext.getInstance().getMetaData(each).isComplete()) {
-                throw new RuleNotExistsException();
-            }
-            databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection).execute();
+        if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
+            throw new RuleNotExistsException();
         }
-        backendConnection.setCurrentSchema(originalSchema);
-        return new UpdateResponseHeader(sqlStatement);
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);
+        return databaseCommunicationEngine.execute();
     }
     
     @Override
-    public boolean next() {
-        return false;
+    public boolean next() throws SQLException {
+        return databaseCommunicationEngine.next();
     }
     
     @Override
-    public Collection<Object> getRowData() {
-        return Collections.emptyList();
+    public Collection<Object> getRowData() throws SQLException {
+        return databaseCommunicationEngine.getQueryResponseRow().getData();
     }
 }

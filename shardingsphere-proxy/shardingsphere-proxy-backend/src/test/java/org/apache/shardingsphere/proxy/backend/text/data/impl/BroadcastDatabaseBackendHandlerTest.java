@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.data;
+package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;

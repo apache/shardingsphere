@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.data.BroadcastDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.data.UnicastDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 
