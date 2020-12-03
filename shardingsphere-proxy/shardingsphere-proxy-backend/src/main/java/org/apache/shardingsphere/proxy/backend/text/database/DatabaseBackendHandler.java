@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.query;
+package org.apache.shardingsphere.proxy.backend.text.database;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -34,10 +34,10 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Backend handler with query.
+ * Database backend handler.
  */
 @RequiredArgsConstructor
-public final class QueryBackendHandler implements TextProtocolBackendHandler {
+public final class DatabaseBackendHandler implements TextProtocolBackendHandler {
     
     private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();
     
