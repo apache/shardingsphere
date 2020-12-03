@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * Metric type.
  */
+@Getter
 @RequiredArgsConstructor
 public enum MetricType {
     
@@ -44,6 +45,5 @@ public enum MetricType {
      */
     HISTOGRAM(Histogram.class);
     
-    @Getter
     private final Class<?> type;
 }
