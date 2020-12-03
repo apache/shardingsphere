@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.metadata.schema;
+package org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.metadata.schema.SchemaBackendHandler;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  * Backend handler for show tables.
  */
 @RequiredArgsConstructor
-public final class ShowTablesBackendHandler implements TextProtocolBackendHandler {
+public final class ShowTablesBackendHandler implements SchemaBackendHandler {
     
     private final BackendConnection backendConnection;
     
