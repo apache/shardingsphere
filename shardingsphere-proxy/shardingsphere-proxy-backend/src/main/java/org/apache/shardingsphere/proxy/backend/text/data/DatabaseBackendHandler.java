@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.skip;
+package org.apache.shardingsphere.proxy.backend.text.data;
 
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 /**
- * Skip backend handler.
+ * Database backend handler.
  */
-public final class SkipBackendHandler implements TextProtocolBackendHandler {
-    
-    @Override
-    public ResponseHeader execute() {
-        return new UpdateResponseHeader(null);
-    }
+public interface DatabaseBackendHandler extends TextProtocolBackendHandler {
 }

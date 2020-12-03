@@ -20,22 +20,24 @@ package org.apache.shardingsphere.proxy.backend.text;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.text.admin.DALBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.admin.RDLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.database.DatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.metadata.rdl.RDLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.metadata.schema.SchemaBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.metadata.schema.SchemaBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.sctl.utils.SCTLUtils;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandlerFactory;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
+
+import java.util.Optional;
 
 /**
  * Text protocol backend handler factory.
@@ -61,15 +63,16 @@ public final class TextProtocolBackendHandlerFactory {
             return ShardingCTLBackendHandlerFactory.newInstance(trimSQL, backendConnection);
         }
         SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(databaseType.getName()).parse(sql, false);
-        if (sqlStatement instanceof RDLStatement || sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
-            return new RDLBackendHandler(backendConnection, sqlStatement);
-        }
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((TCLStatement) sqlStatement, sql, backendConnection);
         }
-        if (sqlStatement instanceof DALStatement) {
-            return DALBackendHandlerFactory.newInstance((DALStatement) sqlStatement, sql, backendConnection);
+        Optional<SchemaBackendHandler> schemaBackendHandler = SchemaBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
+        if (schemaBackendHandler.isPresent()) {
+            return schemaBackendHandler.get();
         }
-        return new DatabaseBackendHandler(sqlStatement, sql, backendConnection, true);
+        if (sqlStatement instanceof RDLStatement || sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
+            return new RDLBackendHandler(backendConnection, sqlStatement);
+        }
+        return DatabaseBackendHandlerFactory.newInstance(sqlStatement, sql, backendConnection);
     }
 }

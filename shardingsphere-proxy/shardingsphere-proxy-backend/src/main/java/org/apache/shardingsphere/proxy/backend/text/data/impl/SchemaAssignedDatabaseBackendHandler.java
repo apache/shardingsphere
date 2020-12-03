@@ -15,61 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.database;
+package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Map;
 
 /**
- * Database backend handler.
+ * Database backend handler with assigned schema.
  */
 @RequiredArgsConstructor
-public final class DatabaseBackendHandler implements TextProtocolBackendHandler {
+public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBackendHandler {
     
     private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();
     
     private final SQLStatement sqlStatement;
-
+    
     private final String sql;
     
     private final BackendConnection backendConnection;
-    
-    private final boolean schemaSelectedRequired;
     
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        if (!schemaSelectedRequired && null == backendConnection.getSchemaName()) {
-            // TODO should remove set default ShardingSphere schema after parser can recognize all DAL broadcast SQL.
-            backendConnection.setCurrentSchema(getFirstSchemaName());
-        }
         if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
             throw new RuleNotExistsException();
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);
         return databaseCommunicationEngine.execute();
-    }
-    
-    private String getFirstSchemaName() {
-        Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap();
-        if (metaDataMap.isEmpty()) {
-            throw new NoDatabaseSelectedException();
-        }
-        return metaDataMap.keySet().iterator().next();
     }
     
     @Override

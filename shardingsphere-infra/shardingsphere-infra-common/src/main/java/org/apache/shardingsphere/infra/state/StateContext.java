@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.state;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.lock.LockContext;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -38,13 +39,19 @@ public final class StateContext {
     public static void switchState(final StateEvent event) {
         if (StateType.CIRCUIT_BREAK == event.getType() && event.isOn()) {
             CURRENT_STATE.set(StateType.CIRCUIT_BREAK);
-            return;
-        }
-        if (StateType.LOCK == event.getType()) {
+        } else if (StateType.LOCK == event.getType()) {
             CURRENT_STATE.set(StateType.LOCK);
+        } else {
+            CURRENT_STATE.set(StateType.OK);    
+        }
+        signalAll();
+    }
+    
+    private static void signalAll() {
+        if (getCurrentState() == StateType.LOCK) {
             return;
         }
-        CURRENT_STATE.set(StateType.OK);
+        LockContext.signalAll();
     }
     
     /**
