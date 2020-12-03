@@ -43,7 +43,7 @@ public final class ConditionValueInOperatorGeneratorTest {
     private final Column column = new Column("id", "tbl");
     
     @Before
-    public void setup(){
+    public void setup() {
         ShardingSphereServiceLoader.register(DatetimeService.class);
     }
     
