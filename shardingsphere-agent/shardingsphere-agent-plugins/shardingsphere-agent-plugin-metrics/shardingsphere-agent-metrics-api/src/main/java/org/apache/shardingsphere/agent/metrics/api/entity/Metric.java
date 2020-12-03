@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config;
+package org.apache.shardingsphere.agent.metrics.api.entity;
 
-import lombok.Data;
+import java.util.List;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.metrics.api.enums.MetricType;
 
 /**
- * Agent configuration.
+ * Metric.
  */
-@Data
-public class AgentConfiguration {
+@Getter
+@RequiredArgsConstructor
+public final class Metric {
     
-    private String applicationName;
+    private final MetricType type;
     
-    private MetricsConfiguration metrics;
+    private final String name;
     
-    @Data
-    public static class MetricsConfiguration {
-        
-        private String host;
-        
-        private int port = 9090;
-        
-        private boolean jvmInformationCollectorEnabled;
-    }
+    private final String document;
+    
+    private final List<String> labels;
 }

@@ -15,27 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config;
+package org.apache.shardingsphere.agent.metrics.api.enums;
 
-import lombok.Data;
+import io.prometheus.client.Counter;
+import io.prometheus.client.Gauge;
+import io.prometheus.client.Histogram;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Agent configuration.
+ * Metric type.
  */
-@Data
-public class AgentConfiguration {
+@Getter
+@RequiredArgsConstructor
+public enum MetricType {
     
-    private String applicationName;
+    /**
+     * Counter metric type.
+     */
+    COUNTER(Counter.class),
     
-    private MetricsConfiguration metrics;
+    /**
+     * Gauge metric type.
+     */
+    GAUGE(Gauge.class),
     
-    @Data
-    public static class MetricsConfiguration {
-        
-        private String host;
-        
-        private int port = 9090;
-        
-        private boolean jvmInformationCollectorEnabled;
-    }
+    /**
+     * Histogram metric type.
+     */
+    HISTOGRAM(Histogram.class);
+    
+    private final Class<?> type;
 }

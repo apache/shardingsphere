@@ -15,27 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config;
+package org.apache.shardingsphere.agent.metrics.api.prometheus;
 
-import lombok.Data;
+import org.apache.shardingsphere.agent.metrics.api.MetricsRegister;
+import org.apache.shardingsphere.agent.metrics.api.MetricsRegisterFactory;
 
 /**
- * Agent configuration.
+ * Prometheus metrics register factory.
  */
-@Data
-public class AgentConfiguration {
+public final class PrometheusMetricsRegisterFactory implements MetricsRegisterFactory {
     
-    private String applicationName;
-    
-    private MetricsConfiguration metrics;
-    
-    @Data
-    public static class MetricsConfiguration {
-        
-        private String host;
-        
-        private int port = 9090;
-        
-        private boolean jvmInformationCollectorEnabled;
+    @Override
+    public MetricsRegister newInstance() {
+        return PrometheusMetricsRegister.getInstance();
     }
 }

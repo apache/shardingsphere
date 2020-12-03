@@ -21,26 +21,44 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-agent-plugins</artifactId>
+        <artifactId>shardingsphere-agent-plugin-metrics</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
-    <modules>
-        <module>shardingsphere-agent-metrics-api</module>
-        <module>shardingsphere-agent-metrics-bootstrap</module>
-    </modules>
-    <artifactId>shardingsphere-agent-plugin-metrics</artifactId>
+    <packaging>jar</packaging>
+    <artifactId>shardingsphere-agent-metrics-bootstrap</artifactId>
 
     <properties>
-        <entrypoint.class/>
-        <metrics.target.directory>${project.basedir}/../target/plugins</metrics.target.directory>
+        <entrypoint.class>org.apache.shardingsphere.agent.metrics.bootstrap.MetricsPluginDefinition</entrypoint.class>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-core</artifactId>
+            <artifactId>shardingsphere-agent-metrics-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Entrypoint>${entrypoint.class}</Entrypoint>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <configuration>
+                    <outputFile>${metrics.target.directory}/${project.build.finalName}</outputFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
