@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin;
+package org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -23,7 +23,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.metadata.schema.SchemaBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 
@@ -33,7 +33,7 @@ import java.util.Collection;
  * Use database backend handler.
  */
 @RequiredArgsConstructor
-public final class UseDatabaseBackendHandler implements TextProtocolBackendHandler {
+public final class UseDatabaseBackendHandler implements SchemaBackendHandler {
     
     private final MySQLUseStatement useStatement;
     
@@ -47,21 +47,10 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
             return new UpdateResponseHeader(useStatement);
         }
         throw new UnknownDatabaseException(schema);
-        
     }
     
     private boolean isAuthorizedSchema(final String schema) {
         Collection<String> authorizedSchemas = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getUsers().get(backendConnection.getUsername()).getAuthorizedSchemas();
         return authorizedSchemas.isEmpty() || authorizedSchemas.contains(schema);
-    }
-    
-    @Override
-    public boolean next() {
-        return false;
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return null;
     }
 }
