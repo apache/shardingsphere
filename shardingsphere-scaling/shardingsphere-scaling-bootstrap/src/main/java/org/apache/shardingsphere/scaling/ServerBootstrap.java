@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.util.ScalingConfigUtil;
+import org.apache.shardingsphere.scaling.util.ServerConfigurationUtil;
 import org.apache.shardingsphere.scaling.web.HttpServerInitializer;
 
 /**
@@ -45,15 +45,15 @@ public final class ServerBootstrap {
      * @param args running args
      */
     // CHECKSTYLE:OFF
-    @SneakyThrows
     public static void main(final String[] args) {
         // CHECKSTYLE:ON
         log.info("ShardingSphere-Scaling Server Startup");
-        ScalingConfigUtil.initScalingConfig();
+        ServerConfigurationUtil.initScalingConfig();
         startScalingServer();
     }
     
-    private static void startScalingServer() throws InterruptedException {
+    @SneakyThrows(InterruptedException.class)
+    private static void startScalingServer() {
         log.info("Start scaling server");
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();

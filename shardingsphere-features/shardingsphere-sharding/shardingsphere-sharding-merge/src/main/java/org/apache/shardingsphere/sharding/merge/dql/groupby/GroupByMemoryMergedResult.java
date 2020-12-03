@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.merge.dql.groupby;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnit;
@@ -118,7 +118,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     
     private List<Boolean> getValueCaseSensitive(final QueryResult queryResult, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
         List<Boolean> result = Lists.newArrayList(false);
-        for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
+        for (int columnIndex = 1; columnIndex <= queryResult.getMetaData().getColumnCount(); columnIndex++) {
             result.add(getValueCaseSensitiveFromTables(queryResult, selectStatementContext, schema, columnIndex));
         }
         return result;
@@ -130,7 +130,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
             String tableName = each.getTableName().getIdentifier().getValue();
             TableMetaData tableMetaData = schema.get(tableName);
             Map<String, ColumnMetaData> columns = tableMetaData.getColumns();
-            String columnName = queryResult.getColumnName(columnIndex);
+            String columnName = queryResult.getMetaData().getColumnName(columnIndex);
             if (columns.containsKey(columnName)) {
                 return columns.get(columnName).isCaseSensitive();
             }

@@ -24,14 +24,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * Singleton holder.
  */
 public enum SingletonHolder {
-
+    
     /**
      * Instance singleton.
      */
     INSTANCE;
     
     private static final Map<String, Object> SINGLES = new ConcurrentHashMap<>();
-
+    
     /**
      * Put entity object.
      *
@@ -40,7 +40,7 @@ public enum SingletonHolder {
     public void put(final Object entity) {
         SINGLES.put(entity.getClass().getName(), entity);
     }
-
+    
     /**
      * Get object.
      *
@@ -48,6 +48,7 @@ public enum SingletonHolder {
      * @param clazz clazz
      * @return object
      */
+    @SuppressWarnings("unchecked")
     public <T> T get(final Class<T> clazz) {
         return (T) SINGLES.get(clazz.getName());
     }

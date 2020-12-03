@@ -64,6 +64,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SingleT
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableFactorContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableReferencesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TemporalLiteralsContext;
@@ -83,7 +84,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ViewNam
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ViewNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BooleanPrimaryContext;
@@ -312,14 +312,14 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     }
     
     @Override
-    public final ASTNode visitTableNames(final TableNamesContext ctx) {
+    public ASTNode visitTableList(final TableListContext ctx) {
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
         for (TableNameContext each : ctx.tableName()) {
             result.getValue().add((SimpleTableSegment) visit(each));
         }
         return result;
     }
-    
+
     @Override
     public final ASTNode visitViewNames(final ViewNamesContext ctx) {
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();

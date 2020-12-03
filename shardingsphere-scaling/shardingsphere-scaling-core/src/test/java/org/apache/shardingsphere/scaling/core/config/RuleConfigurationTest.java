@@ -18,6 +18,10 @@
 package org.apache.shardingsphere.scaling.core.config;
 
 import com.google.gson.JsonObject;
+import org.apache.shardingsphere.scaling.core.config.RuleConfiguration.DataSourceConfigurationWrapper;
+import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.fixture.FixtureShardingSphereJDBCConfiguration;
 import org.junit.Test;
 
@@ -28,47 +32,42 @@ import static org.junit.Assert.assertThat;
 public final class RuleConfigurationTest {
     
     @Test
-    public void assertToJDBConfiguration() {
-        RuleConfiguration.DataSourceConf dataSourceConf = new RuleConfiguration.DataSourceConf();
-        dataSourceConf.setType("jdbc");
+    public void assertToJDBConfig() {
         String jdbcUrl = "jdbc:h2:mem:test_db_2;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
         String username = "root";
         String password = "password";
-        dataSourceConf.setParameter(mockJDBCConfiguration(jdbcUrl, username, password));
-        ScalingDataSourceConfiguration actual = dataSourceConf.toTypedDataSourceConfiguration();
-        assertThat(actual, instanceOf(JDBCScalingDataSourceConfiguration.class));
-        JDBCScalingDataSourceConfiguration jdbcDataSourceConfig = (JDBCScalingDataSourceConfiguration) actual;
+        DataSourceConfiguration actual = mockStandardJDBCDataSourceConfigWrapper(jdbcUrl, username, password).unwrap();
+        assertThat(actual, instanceOf(StandardJDBCDataSourceConfiguration.class));
+        StandardJDBCDataSourceConfiguration jdbcDataSourceConfig = (StandardJDBCDataSourceConfiguration) actual;
         assertThat(jdbcDataSourceConfig.getJdbcUrl(), is(jdbcUrl));
         assertThat(jdbcDataSourceConfig.getUsername(), is(username));
         assertThat(jdbcDataSourceConfig.getPassword(), is(password));
     }
     
-    private JsonObject mockJDBCConfiguration(final String jdbcUrl, final String username, final String password) {
-        JsonObject result = new JsonObject();
-        result.addProperty("jdbcUrl", jdbcUrl);
-        result.addProperty("username", username);
-        result.addProperty("password", password);
-        return result;
-    }
-    
     @Test
     public void assertToShardingSphereJDBConfiguration() {
-        RuleConfiguration.DataSourceConf dataSourceConf = new RuleConfiguration.DataSourceConf();
-        dataSourceConf.setType("shardingSphereJdbc");
         String dataSource = FixtureShardingSphereJDBCConfiguration.DATA_SOURCE;
         String rule = FixtureShardingSphereJDBCConfiguration.RULE;
-        dataSourceConf.setParameter(mockShardingSphereJDBCConfiguration(dataSource, rule));
-        ScalingDataSourceConfiguration actual = dataSourceConf.toTypedDataSourceConfiguration();
-        assertThat(actual, instanceOf(ShardingSphereJDBCScalingDataSourceConfiguration.class));
-        ShardingSphereJDBCScalingDataSourceConfiguration shardingSphereJDBCConfig = (ShardingSphereJDBCScalingDataSourceConfiguration) actual;
+        DataSourceConfigurationWrapper dataSourceConfigurationWrapper = getDataSourceConfigurationWrapper(dataSource, rule);
+        DataSourceConfiguration actual = dataSourceConfigurationWrapper.unwrap();
+        assertThat(actual, instanceOf(ShardingSphereJDBCDataSourceConfiguration.class));
+        ShardingSphereJDBCDataSourceConfiguration shardingSphereJDBCConfig = (ShardingSphereJDBCDataSourceConfiguration) actual;
         assertThat(shardingSphereJDBCConfig.getDataSource(), is(dataSource));
         assertThat(shardingSphereJDBCConfig.getRule(), is(rule));
     }
     
-    private JsonObject mockShardingSphereJDBCConfiguration(final String dataSource, final String rule) {
-        JsonObject result = new JsonObject();
-        result.addProperty("dataSource", dataSource);
-        result.addProperty("rule", rule);
-        return result;
+    private DataSourceConfigurationWrapper mockStandardJDBCDataSourceConfigWrapper(final String jdbcUrl, final String username, final String password) {
+        JsonObject parameter = new JsonObject();
+        parameter.addProperty("jdbcUrl", jdbcUrl);
+        parameter.addProperty("username", username);
+        parameter.addProperty("password", password);
+        return new DataSourceConfigurationWrapper("JDBC", parameter);
+    }
+    
+    private DataSourceConfigurationWrapper getDataSourceConfigurationWrapper(final String dataSource, final String rule) {
+        JsonObject parameter = new JsonObject();
+        parameter.addProperty("dataSource", dataSource);
+        parameter.addProperty("rule", rule);
+        return new DataSourceConfigurationWrapper("shardingSphereJdbc", parameter);
     }
 }

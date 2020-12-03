@@ -75,31 +75,34 @@ public final class PostgreSQLPositionManagerTest {
     
     @Test
     public void assertGetCurrentPositionOnPostgreSQL96() throws SQLException {
-        PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager(dataSource);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(6);
+        PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager(dataSource);
         WalPosition actual = postgreSQLPositionManager.getPosition();
         assertThat(actual.getLogSequenceNumber(), is(LogSequenceNumber.valueOf(POSTGRESQL_96_LSN)));
     }
     
     @Test
     public void assertGetCurrentPositionOnPostgreSQL10() throws SQLException {
-        PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager(dataSource);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(10);
+        PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager(dataSource);
         WalPosition actual = postgreSQLPositionManager.getPosition();
         assertThat(actual.getLogSequenceNumber(), is(LogSequenceNumber.valueOf(POSTGRESQL_10_LSN)));
     }
     
     @Test(expected = RuntimeException.class)
     public void assertGetCurrentPositionThrowException() throws SQLException {
-        PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager(dataSource);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(4);
+        PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager(dataSource);
         postgreSQLPositionManager.getPosition();
     }
     
     @Test
+    @SneakyThrows(SQLException.class)
     public void assertUpdateCurrentPosition() {
+        when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
+        when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(6);
         PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager(dataSource);
         WalPosition expected = new WalPosition(LogSequenceNumber.valueOf(POSTGRESQL_96_LSN));
         postgreSQLPositionManager.setPosition(expected);

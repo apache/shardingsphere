@@ -441,8 +441,8 @@
         <column-definition type="VARCHAR" start-index="111" stop-index="129">
             <column name="column3" />
         </column-definition>
-        <constraint-definition start-index="132" stop-index="171">
-            <index-column name="order_id" start-index="163" stop-index="170"/>
+        <constraint-definition index-name="order_id_index" start-index="132" stop-index="190">
+            <index-column name="order_id" start-index="182" stop-index="189"/>
         </constraint-definition>
     </create-table>
     

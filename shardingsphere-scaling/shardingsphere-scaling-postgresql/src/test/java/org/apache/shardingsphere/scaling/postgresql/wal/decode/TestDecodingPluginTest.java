@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.postgresql.wal.decode;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
+import org.apache.shardingsphere.scaling.core.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.PlaceholderEvent;
@@ -85,7 +85,7 @@ public final class TestDecodingPluginTest {
         assertTrue(actual instanceof PlaceholderEvent);
     }
     
-    @Test(expected = SyncTaskExecuteException.class)
+    @Test(expected = ScalingTaskExecuteException.class)
     public void assertDecodeUnknownRowEventType() {
         ByteBuffer data = ByteBuffer.wrap("table public.test: UNKNOWN: data[character varying]:'1 2 3'''".getBytes());
         new TestDecodingPlugin(null).decode(data, logSequenceNumber);

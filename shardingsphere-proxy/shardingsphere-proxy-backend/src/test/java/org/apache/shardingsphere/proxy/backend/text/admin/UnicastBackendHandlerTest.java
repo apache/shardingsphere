@@ -22,14 +22,14 @@ import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
@@ -68,8 +68,8 @@ public final class UnicastBackendHandlerTest {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
-        setUnderlyingHandler(new UpdateResponse());
+                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        setUnderlyingHandler(new UpdateResponseHeader(mock(SQLStatement.class)));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
@@ -85,8 +85,8 @@ public final class UnicastBackendHandlerTest {
         UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", mock(SQLStatement.class), backendConnection);
         backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 8));
         setDatabaseCommunicationEngine(backendHandler);
-        BackendResponse actual = backendHandler.execute();
-        assertThat(actual, instanceOf(UpdateResponse.class));
+        ResponseHeader actual = backendHandler.execute();
+        assertThat(actual, instanceOf(UpdateResponseHeader.class));
         backendHandler.execute();
     }
     
@@ -95,14 +95,14 @@ public final class UnicastBackendHandlerTest {
         backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
         UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", mock(SQLStatement.class), backendConnection);
         setDatabaseCommunicationEngine(backendHandler);
-        BackendResponse actual = backendHandler.execute();
-        assertThat(actual, instanceOf(UpdateResponse.class));
+        ResponseHeader actual = backendHandler.execute();
+        assertThat(actual, instanceOf(UpdateResponseHeader.class));
         backendHandler.execute();
     }
     
-    private void setUnderlyingHandler(final BackendResponse backendResponse) throws SQLException {
+    private void setUnderlyingHandler(final ResponseHeader responseHeader) throws SQLException {
         DatabaseCommunicationEngine databaseCommunicationEngine = mock(DatabaseCommunicationEngine.class);
-        when(databaseCommunicationEngine.execute()).thenReturn(backendResponse);
+        when(databaseCommunicationEngine.execute()).thenReturn(responseHeader);
         when(databaseCommunicationEngineFactory.newTextProtocolInstance(any(), anyString(), any())).thenReturn(databaseCommunicationEngine);
     }
     

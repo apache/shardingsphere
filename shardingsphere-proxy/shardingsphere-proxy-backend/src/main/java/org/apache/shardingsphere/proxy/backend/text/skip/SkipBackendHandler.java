@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.text.skip;
 
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Skip backend handler.
@@ -29,8 +30,8 @@ import java.util.List;
 public final class SkipBackendHandler implements TextProtocolBackendHandler {
     
     @Override
-    public BackendResponse execute() {
-        return new UpdateResponse();
+    public ResponseHeader execute() {
+        return new UpdateResponseHeader(null);
     }
     
     @Override
@@ -39,7 +40,7 @@ public final class SkipBackendHandler implements TextProtocolBackendHandler {
     }
     
     @Override
-    public List<Object> getRowData() {
-        return null;
+    public Collection<Object> getRowData() {
+        return Collections.emptyList();
     }
 }

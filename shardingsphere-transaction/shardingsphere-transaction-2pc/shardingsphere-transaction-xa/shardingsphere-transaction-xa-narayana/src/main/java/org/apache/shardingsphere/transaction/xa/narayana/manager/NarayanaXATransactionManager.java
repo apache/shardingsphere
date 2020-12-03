@@ -29,7 +29,6 @@ import javax.sql.XADataSource;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
-import java.util.Properties;
 
 /**
  * Narayana transaction manager.
@@ -79,15 +78,5 @@ public final class NarayanaXATransactionManager implements XATransactionManager 
     @Override
     public String getType() {
         return "narayana";
-    }
-    
-    @Override
-    public Properties getProps() {
-        return null;
-    }
-    
-    @Override
-    public void setProps(final Properties props) {
-        
     }
 }

@@ -24,22 +24,24 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,7 +62,7 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
     private Iterator<ExecutionUnit> executionUnits;
     
     @Override
-    public BackendResponse execute() {
+    public ResponseHeader execute() {
         Optional<ShardingCTLExplainStatement> explainStatement = new ShardingCTLExplainParser(sql).doParse();
         if (!explainStatement.isPresent()) {
             throw new InvalidShardingCTLFormatException(sql);
@@ -72,9 +74,9 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
         LogicSQL logicSQL = createLogicSQL(metaData, explainStatement.get());
         executionUnits = kernelProcessor.generateExecutionContext(logicSQL, metaData, ProxyContext.getInstance().getMetaDataContexts().getProps()).getExecutionUnits().iterator();
         queryHeaders = new ArrayList<>(2);
-        queryHeaders.add(new QueryHeader("", "", "datasource_name", "", 255, Types.CHAR, 0, false, false, false, false));
-        queryHeaders.add(new QueryHeader("", "", "sql", "", 255, Types.CHAR, 0, false, false, false, false));
-        return new QueryResponse(queryHeaders);
+        queryHeaders.add(new QueryHeader("", "", "datasource_name", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        queryHeaders.add(new QueryHeader("", "", "sql", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        return new QueryResponseHeader(queryHeaders);
     }
     
     private LogicSQL createLogicSQL(final ShardingSphereMetaData metaData, final ShardingCTLExplainStatement explainStatement) {
@@ -91,11 +93,11 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
     }
     
     @Override
-    public List<Object> getRowData() {
+    public Collection<Object> getRowData() {
         ExecutionUnit executionUnit = executionUnits.next();
-        List<Object> row = new ArrayList<>(queryHeaders.size());
-        row.add(executionUnit.getDataSourceName());
-        row.add(executionUnit.getSqlUnit().getSql());
-        return row;
+        Collection<Object> result = new LinkedList<>();
+        result.add(executionUnit.getDataSourceName());
+        result.add(executionUnit.getSqlUnit().getSql());
+        return result;
     }
 }

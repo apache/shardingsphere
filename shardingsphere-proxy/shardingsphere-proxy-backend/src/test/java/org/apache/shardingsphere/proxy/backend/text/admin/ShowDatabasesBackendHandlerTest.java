@@ -22,11 +22,11 @@ import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,7 +60,7 @@ public final class ShowDatabasesBackendHandlerTest {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(
-                getMetaDataMap(), mock(ExecutorKernel.class), getAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                getMetaDataMap(), mock(ExecutorEngine.class), getAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
@@ -80,8 +80,8 @@ public final class ShowDatabasesBackendHandlerTest {
     
     @Test
     public void assertExecuteShowDatabaseBackendHandler() {
-        QueryResponse actual = (QueryResponse) showDatabasesBackendHandler.execute();
-        assertThat(actual, instanceOf(QueryResponse.class));
+        QueryResponseHeader actual = (QueryResponseHeader) showDatabasesBackendHandler.execute();
+        assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(actual.getQueryHeaders().size(), is(1));
     }
     

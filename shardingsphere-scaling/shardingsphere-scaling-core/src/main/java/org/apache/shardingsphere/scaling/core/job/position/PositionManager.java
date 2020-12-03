@@ -17,24 +17,27 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.sql.DataSource;
+
 /**
- * Database itself data synchronize position manager.
- * Such as mysql binlog, postgreSQL wal.
- * Or use primary key as position.
+ * Scaling position manager.
  */
-public interface PositionManager<T extends Position> {
+@Getter
+@Setter
+public class PositionManager {
     
-    /**
-     * Get position.
-     *
-     * @return position
-     */
-    T getPosition();
+    private DataSource dataSource;
     
-    /**
-     * Set Position.
-     *
-     * @param position position.
-     */
-    void setPosition(T position);
+    private Position<?> position;
+    
+    public PositionManager(final DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+    
+    public PositionManager(final Position<?> position) {
+        this.position = position;
+    }
 }

@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.driver.jdbc.core.datasource.metadata;
 
 import lombok.Getter;
-import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.driver.jdbc.adapter.AdaptedDatabaseMetaData;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 
 import java.security.SecureRandom;
 import java.sql.Connection;
@@ -42,7 +42,7 @@ import java.util.Random;
 @Getter
 public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaData {
     
-    private final AbstractConnectionAdapter connection;
+    private final ShardingSphereConnection connection;
     
     private final Collection<ShardingSphereRule> rules;
     
@@ -56,7 +56,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     private DatabaseMetaData currentDatabaseMetaData;
     
-    public ShardingSphereDatabaseMetaData(final AbstractConnectionAdapter connection) {
+    public ShardingSphereDatabaseMetaData(final ShardingSphereConnection connection) {
         super(connection.getMetaDataContexts().getDefaultMetaData().getResource().getCachedDatabaseMetaData());
         this.connection = connection;
         rules = connection.getMetaDataContexts().getDefaultMetaData().getRuleMetaData().getRules();

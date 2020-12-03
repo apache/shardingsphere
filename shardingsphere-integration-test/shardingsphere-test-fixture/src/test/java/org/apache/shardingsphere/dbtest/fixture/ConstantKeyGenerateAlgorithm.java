@@ -17,17 +17,9 @@
 
 package org.apache.shardingsphere.dbtest.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Properties;
-
 public final class ConstantKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
-    
-    @Getter
-    @Setter
-    private Properties props = new Properties();
     
     @Override
     public void init() {

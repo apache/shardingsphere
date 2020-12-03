@@ -17,40 +17,54 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import lombok.AllArgsConstructor;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+
+import java.io.IOException;
 
 /**
  * Use primary key as position.
  */
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class PrimaryKeyPosition implements InventoryPosition {
+@JsonAdapter(PrimaryKeyPosition.PositionTypeAdapter.class)
+public final class PrimaryKeyPosition implements Position<PrimaryKeyPosition> {
     
-    private static final Gson GSON = new Gson();
+    private final long beginValue;
     
-    private final boolean finished = false;
-    
-    private long beginValue;
-    
-    private long endValue;
+    private final long endValue;
     
     @Override
-    public int compareTo(final Position position) {
+    public int compareTo(final PrimaryKeyPosition position) {
         if (null == position) {
             return 1;
         }
-        return Long.compare(beginValue, ((PrimaryKeyPosition) position).beginValue);
+        return Long.compare(beginValue, position.beginValue);
     }
     
-    @Override
-    public JsonElement toJson() {
-        return GSON.toJsonTree(new long[]{beginValue, endValue});
+    /**
+     * Position type adapter.
+     */
+    public static class PositionTypeAdapter extends TypeAdapter<PrimaryKeyPosition> {
+        
+        @Override
+        public void write(final JsonWriter out, final PrimaryKeyPosition value) throws IOException {
+            out.beginArray();
+            out.value(value.getBeginValue());
+            out.value(value.getEndValue());
+            out.endArray();
+        }
+        
+        @Override
+        public PrimaryKeyPosition read(final JsonReader in) throws IOException {
+            in.beginArray();
+            PrimaryKeyPosition result = new PrimaryKeyPosition(in.nextLong(), in.nextLong());
+            in.endArray();
+            return result;
+        }
     }
 }

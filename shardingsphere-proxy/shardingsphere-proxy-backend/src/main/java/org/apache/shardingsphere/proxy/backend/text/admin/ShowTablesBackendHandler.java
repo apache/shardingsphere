@@ -18,23 +18,24 @@
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.query.raw.QueryResultRow;
-import org.apache.shardingsphere.infra.executor.sql.query.raw.RawQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.query.raw.metadata.QueryResultMetaData;
-import org.apache.shardingsphere.infra.executor.sql.query.raw.metadata.QueryResultRowMetaData;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,39 +47,37 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
     
     private final BackendConnection backendConnection;
     
-    private QueryResponse queryResponse;
+    private QueryResult queryResult;
     
     @Override
-    public BackendResponse execute() {
-        QueryResponse result = createQueryResponse(backendConnection.getSchemaName());
-        if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
-            return result;
+    public ResponseHeader execute() throws SQLException {
+        RawQueryResultMetaData queryResultMetaData = createQueryResultMetaData();
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
+        if (ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
+            Collection<String> allTableNames = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getSchema().getAllTableNames();
+            List<MemoryQueryResultDataRow> rows = allTableNames.stream().map(each -> new MemoryQueryResultDataRow(Collections.singletonList(each))).collect(Collectors.toList());
+            queryResult = new RawMemoryQueryResult(queryResultMetaData, rows);
+        } else {
+            queryResult = new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        QueryResultMetaData metaData = new QueryResultMetaData(
-                Collections.singletonList(new QueryResultRowMetaData(result.getQueryHeaders().get(0).getColumnName(), result.getQueryHeaders().get(0).getColumnLabel(), "VARCHAR")));
-        Collection<String> allTableNames = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getSchema().getAllTableNames();
-        List<QueryResultRow> rows = allTableNames.stream().map(each -> new QueryResultRow(Collections.singletonList(each))).collect(Collectors.toList());
-        QueryResult queryResult = new RawQueryResult(metaData, rows);
-        result.getQueryResults().add(queryResult);
-        queryResponse = result;
-        return result;
+        return new QueryResponseHeader(Collections.singletonList(QueryHeaderBuilder.build(queryResult, metaData, 1)));
     }
     
-    private QueryResponse createQueryResponse(final String schemaName) {
-        String column = String.format("Tables_in_%s", schemaName);
-        return new QueryResponse(Collections.singletonList(new QueryHeader(schemaName, "", column, column, 64, Types.VARCHAR, 0, false, false, false, false)));
+    private RawQueryResultMetaData createQueryResultMetaData() {
+        String column = String.format("Tables_in_%s", backendConnection.getSchemaName());
+        return new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", column, column, Types.VARCHAR, "VARCHAR", 255, 0, false, false, false)));
     }
     
     @Override
     public boolean next() throws SQLException {
-        return null != queryResponse && queryResponse.getQueryResults().get(0).next();
+        return null != queryResult && queryResult.next();
     }
     
     @Override
-    public List<Object> getRowData() throws SQLException {
-        List<Object> result = new ArrayList<>(queryResponse.getQueryHeaders().size());
-        for (int columnIndex = 1; columnIndex <= queryResponse.getQueryHeaders().size(); columnIndex++) {
-            result.add(queryResponse.getQueryResults().get(0).getValue(columnIndex, Object.class));
+    public Collection<Object> getRowData() throws SQLException {
+        Collection<Object> result = new LinkedList<>();
+        for (int columnIndex = 1; columnIndex <= queryResult.getMetaData().getColumnCount(); columnIndex++) {
+            result.add(queryResult.getValue(columnIndex, Object.class));
         }
         return result;
     }

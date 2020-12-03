@@ -349,16 +349,28 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         if (null != ctx.KEY() && null != ctx.PRIMARY()) {
             result.getPrimaryKeyColumns().addAll(getKeyColumnsFromKeyListWithExpression(ctx.keyListWithExpression()));
+            return result;
         }
         if (null != ctx.FOREIGN()) {
             result.setReferencedTable((SimpleTableSegment) visit(ctx.referenceDefinition()));
+            return result;
         }
         if (null != ctx.UNIQUE()) {
             result.getIndexColumns().addAll(getKeyColumnsFromKeyListWithExpression(ctx.keyListWithExpression()));
             if (null != ctx.indexNameAndType()) {
-                result.setIndexName(new IndexSegment(ctx.indexNameAndType().indexName().start.getStartIndex(), ctx.indexNameAndType().indexName().stop.getStopIndex(),
-                        (IdentifierValue) visit(ctx.indexNameAndType().indexName())));
+                result.setIndexName((IndexSegment) visit(ctx.indexNameAndType().indexName()));
             }
+            return result;
+        }
+        if (null != ctx.checkConstraint()) {
+            return result;
+        }
+        result.getIndexColumns().addAll(getKeyColumnsFromKeyListWithExpression(ctx.keyListWithExpression()));
+        if (null != ctx.indexName()) {
+            result.setIndexName((IndexSegment) visit(ctx.indexName()));
+        }
+        if (null != ctx.indexNameAndType()) {
+            result.setIndexName((IndexSegment) visit(ctx.indexNameAndType().indexName()));
         }
         return result;
     }
@@ -392,7 +404,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         MySQLDropTableStatement result = new MySQLDropTableStatement();
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
+        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
     }
     

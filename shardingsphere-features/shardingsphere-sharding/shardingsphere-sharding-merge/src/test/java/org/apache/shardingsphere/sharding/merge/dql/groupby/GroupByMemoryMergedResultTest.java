@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
@@ -46,6 +46,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -157,13 +158,13 @@ public final class GroupByMemoryMergedResultTest {
     }
     
     private QueryResult createQueryResult() throws SQLException {
-        QueryResult result = mock(QueryResult.class);
-        when(result.getColumnCount()).thenReturn(5);
-        when(result.getColumnLabel(1)).thenReturn("COUNT(*)");
-        when(result.getColumnLabel(2)).thenReturn("AVG(num)");
-        when(result.getColumnLabel(3)).thenReturn("id");
-        when(result.getColumnLabel(4)).thenReturn("AVG_DERIVED_COUNT_0");
-        when(result.getColumnLabel(5)).thenReturn("AVG_DERIVED_SUM_0");
+        QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaData().getColumnCount()).thenReturn(5);
+        when(result.getMetaData().getColumnLabel(1)).thenReturn("COUNT(*)");
+        when(result.getMetaData().getColumnLabel(2)).thenReturn("AVG(num)");
+        when(result.getMetaData().getColumnLabel(3)).thenReturn("id");
+        when(result.getMetaData().getColumnLabel(4)).thenReturn("AVG_DERIVED_COUNT_0");
+        when(result.getMetaData().getColumnLabel(5)).thenReturn("AVG_DERIVED_SUM_0");
         return result;
     }
 }

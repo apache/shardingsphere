@@ -23,7 +23,7 @@ import org.apache.shardingsphere.scaling.core.exception.UnexpectedDataRecordOrde
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.GroupedDataRecord;
-import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -234,7 +234,7 @@ public final class DataRecordMergerTest {
     }
     
     private DataRecord mockInsertDataRecord(final String tableName, final int id, final int userId, final int totalPrice) {
-        DataRecord result = new DataRecord(new NopPosition(), 3);
+        DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
         result.setType(ScalingConstant.INSERT);
         result.setTableName(tableName);
         result.addColumn(new Column("id", id, true, true));
@@ -256,7 +256,7 @@ public final class DataRecordMergerTest {
     }
     
     private DataRecord mockUpdateDataRecord(final String tableName, final Integer oldId, final int id, final int userId, final int totalPrice) {
-        DataRecord result = new DataRecord(new NopPosition(), 3);
+        DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
         result.setType(ScalingConstant.UPDATE);
         result.setTableName(tableName);
         result.addColumn(new Column("id", oldId, id, null != oldId, true));
@@ -270,7 +270,7 @@ public final class DataRecordMergerTest {
     }
     
     private DataRecord mockDeleteDataRecord(final String tableName, final int id, final int userId, final int totalPrice) {
-        DataRecord preDataRecord = new DataRecord(new NopPosition(), 3);
+        DataRecord preDataRecord = new DataRecord(new PlaceholderPosition(), 3);
         preDataRecord.setType(ScalingConstant.DELETE);
         preDataRecord.setTableName(tableName);
         preDataRecord.addColumn(new Column("id", id, true, true));

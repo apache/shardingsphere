@@ -31,7 +31,7 @@ import io.netty.util.CharsetUtil;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.execute.engine.ShardingScalingExecuteEngine;
+import org.apache.shardingsphere.scaling.core.execute.engine.TaskExecuteEngine;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.apache.shardingsphere.scaling.util.ScalingConfigurationUtil;
 import org.junit.Before;
@@ -51,8 +51,6 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public final class HttpServerHandlerTest {
     
-    private static final Gson GSON = new Gson();
-    
     private HttpServerHandler httpServerHandler;
     
     @Mock
@@ -64,7 +62,7 @@ public final class HttpServerHandlerTest {
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
         ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", new ServerConfiguration());
-        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "taskExecuteEngine", mock(ShardingScalingExecuteEngine.class));
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "inventoryDumperExecuteEngine", mock(TaskExecuteEngine.class));
         httpServerHandler = new HttpServerHandler();
     }
     
@@ -178,7 +176,7 @@ public final class HttpServerHandlerTest {
     
     @SneakyThrows(IOException.class)
     private long startScalingJob(final String configFile) {
-        ByteBuf byteBuf = Unpooled.copiedBuffer(GSON.toJson(ScalingConfigurationUtil.initConfig(configFile)), CharsetUtil.UTF_8);
+        ByteBuf byteBuf = Unpooled.copiedBuffer(new Gson().toJson(ScalingConfigurationUtil.initConfig(configFile)), CharsetUtil.UTF_8);
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/scaling/job/start", byteBuf);
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
         ArgumentCaptor<FullHttpResponse> argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);

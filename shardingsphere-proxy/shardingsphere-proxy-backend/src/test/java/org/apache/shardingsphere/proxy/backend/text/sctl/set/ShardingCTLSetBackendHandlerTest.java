@@ -21,12 +21,12 @@ import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -54,7 +54,7 @@ public final class ShardingCTLSetBackendHandlerTest {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
@@ -69,8 +69,8 @@ public final class ShardingCTLSetBackendHandlerTest {
     public void assertSwitchTransactionTypeXA() {
         backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set transaction_type=XA", backendConnection);
-        BackendResponse actual = shardingCTLBackendHandler.execute();
-        assertThat(actual, instanceOf(UpdateResponse.class));
+        ResponseHeader actual = shardingCTLBackendHandler.execute();
+        assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(backendConnection.getTransactionStatus().getTransactionType(), is(TransactionType.XA));
     }
     
@@ -78,8 +78,8 @@ public final class ShardingCTLSetBackendHandlerTest {
     public void assertSwitchTransactionTypeBASE() {
         backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set  transaction_type=BASE", backendConnection);
-        BackendResponse actual = shardingCTLBackendHandler.execute();
-        assertThat(actual, instanceOf(UpdateResponse.class));
+        ResponseHeader actual = shardingCTLBackendHandler.execute();
+        assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(backendConnection.getTransactionStatus().getTransactionType(), is(TransactionType.BASE));
     }
     
@@ -87,8 +87,8 @@ public final class ShardingCTLSetBackendHandlerTest {
     public void assertSwitchTransactionTypeLOCAL() {
         backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set transaction_type=LOCAL", backendConnection);
-        BackendResponse actual = shardingCTLBackendHandler.execute();
-        assertThat(actual, instanceOf(UpdateResponse.class));
+        ResponseHeader actual = shardingCTLBackendHandler.execute();
+        assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(backendConnection.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
     }
     

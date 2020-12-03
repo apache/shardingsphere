@@ -36,8 +36,6 @@ public final class YamlProxyRuleConfiguration implements YamlConfiguration {
     
     private String schemaName;
     
-    private Map<String, Object> dataSourceCommon = new HashMap<>();
-    
     private Map<String, YamlDataSourceParameter> dataSources = new HashMap<>();
     
     private YamlDataSourceParameter dataSource;

@@ -40,6 +40,18 @@
             <artifactId>shardingsphere-agent-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>${bytebuddy.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy-agent</artifactId>
+            <version>${bytebuddy.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -69,9 +81,21 @@
                             </transformers>
                             <artifactSet>
                                 <excludes>
+                                    <exclude>net.bytebuddy:byte-buddy:jar:</exclude>
+                                    <exclude>com.google.*:*</exclude>
+                                    <exclude>com.google.guava:guava:*</exclude>
+                                    <exclude>org.checkerframework:checker-qual:*</exclude>
                                     <exclude>org.slf4j:*</exclude>
+                                    <exclude>org.yaml:snakeyaml:*</exclude>
+                                    <exclude>org.apache.commons:logging:*</exclude>
                                 </excludes>
                             </artifactSet>
+                            <relocations>
+                                <relocation>
+                                    <pattern>net.bytebuddy</pattern>
+                                    <shadedPattern>${shade.package}.net.bytebuddy</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>

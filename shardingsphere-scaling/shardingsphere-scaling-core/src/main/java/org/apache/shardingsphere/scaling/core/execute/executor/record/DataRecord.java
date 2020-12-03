@@ -48,7 +48,7 @@ public final class DataRecord extends Record {
     
     private String tableName;
     
-    public DataRecord(final Position position, final int columnCount) {
+    public DataRecord(final Position<?> position, final int columnCount) {
         super(position);
         columns = new ArrayList<>(columnCount);
     }

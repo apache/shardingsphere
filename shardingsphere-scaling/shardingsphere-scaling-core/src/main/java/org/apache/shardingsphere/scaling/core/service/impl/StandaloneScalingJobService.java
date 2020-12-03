@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.scaling.core.service.impl;
 
-import org.apache.shardingsphere.scaling.core.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
-import org.apache.shardingsphere.scaling.core.job.ScalingJobProgress;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
-import org.apache.shardingsphere.scaling.core.job.preparer.ShardingScalingJobPreparer;
+import org.apache.shardingsphere.scaling.core.job.JobProgress;
+import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
+import org.apache.shardingsphere.scaling.core.job.preparer.ScalingJobPreparer;
 import org.apache.shardingsphere.scaling.core.schedule.ScalingTaskScheduler;
-import org.apache.shardingsphere.scaling.core.schedule.SyncTaskControlStatus;
+import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
 import org.apache.shardingsphere.scaling.core.service.AbstractScalingJobService;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 
@@ -39,28 +39,28 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class StandaloneScalingJobService extends AbstractScalingJobService implements ScalingJobService {
     
-    private final Map<Long, ShardingScalingJob> scalingJobMap = new ConcurrentHashMap<>();
+    private final Map<Long, ScalingJob> scalingJobMap = new ConcurrentHashMap<>();
     
     private final Map<Long, ScalingTaskScheduler> scalingTaskSchedulerMap = new ConcurrentHashMap<>();
     
-    private final ShardingScalingJobPreparer shardingScalingJobPreparer = new ShardingScalingJobPreparer();
+    private final ScalingJobPreparer scalingJobPreparer = new ScalingJobPreparer();
     
     @Override
-    public List<ShardingScalingJob> listJobs() {
+    public List<ScalingJob> listJobs() {
         return new LinkedList<>(scalingJobMap.values());
     }
     
     @Override
-    public Optional<ShardingScalingJob> start(final ScalingConfiguration scalingConfiguration) {
-        ShardingScalingJob shardingScalingJob = new ShardingScalingJob(scalingConfiguration);
-        scalingJobMap.put(shardingScalingJob.getJobId(), shardingScalingJob);
-        shardingScalingJobPreparer.prepare(shardingScalingJob);
-        if (!SyncTaskControlStatus.PREPARING_FAILURE.name().equals(shardingScalingJob.getStatus())) {
-            ScalingTaskScheduler scalingTaskScheduler = new ScalingTaskScheduler(shardingScalingJob);
+    public Optional<ScalingJob> start(final ScalingConfiguration scalingConfig) {
+        ScalingJob scalingJob = new ScalingJob(scalingConfig);
+        scalingJobMap.put(scalingJob.getJobId(), scalingJob);
+        scalingJobPreparer.prepare(scalingJob);
+        if (!JobStatus.PREPARING_FAILURE.name().equals(scalingJob.getStatus())) {
+            ScalingTaskScheduler scalingTaskScheduler = new ScalingTaskScheduler(scalingJob);
             scalingTaskScheduler.start();
-            scalingTaskSchedulerMap.put(shardingScalingJob.getJobId(), scalingTaskScheduler);
+            scalingTaskSchedulerMap.put(scalingJob.getJobId(), scalingTaskScheduler);
         }
-        return Optional.of(shardingScalingJob);
+        return Optional.of(scalingJob);
     }
     
     @Override
@@ -69,24 +69,24 @@ public final class StandaloneScalingJobService extends AbstractScalingJobService
             throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", jobId));
         }
         scalingTaskSchedulerMap.get(jobId).stop();
-        scalingJobMap.get(jobId).setStatus(SyncTaskControlStatus.STOPPED.name());
+        scalingJobMap.get(jobId).setStatus(JobStatus.STOPPED.name());
     }
     
     @Override
-    public ShardingScalingJob getJob(final long jobId) {
+    public ScalingJob getJob(final long jobId) {
         return scalingJobMap.get(jobId);
     }
     
     @Override
-    public ScalingJobProgress getProgress(final long jobId) {
+    public JobProgress getProgress(final long jobId) {
         if (!scalingJobMap.containsKey(jobId)) {
             throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", jobId));
         }
-        ShardingScalingJob shardingScalingJob = scalingJobMap.get(jobId);
-        ScalingJobProgress result = new ScalingJobProgress(jobId, shardingScalingJob.getStatus());
+        ScalingJob scalingJob = scalingJobMap.get(jobId);
+        JobProgress result = new JobProgress(jobId, scalingJob.getStatus());
         if (scalingTaskSchedulerMap.containsKey(jobId)) {
-            result.getInventoryDataSyncTaskProgress().put("0", scalingTaskSchedulerMap.get(jobId).getInventoryDataTaskProgress());
-            result.getIncrementalDataSyncTaskProgress().put("0", scalingTaskSchedulerMap.get(jobId).getIncrementalDataTaskProgress());
+            result.getInventoryTaskProgress().put("0", scalingTaskSchedulerMap.get(jobId).getInventoryTaskProgress());
+            result.getIncrementalTaskProgress().put("0", scalingTaskSchedulerMap.get(jobId).getIncrementalTaskProgress());
         }
         return result;
     }

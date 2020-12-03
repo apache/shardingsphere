@@ -21,14 +21,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Use database backend handler.
@@ -41,11 +40,11 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     private final BackendConnection backendConnection;
     
     @Override
-    public BackendResponse execute() {
+    public ResponseHeader execute() {
         String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
         if (ProxyContext.getInstance().schemaExists(schema) && isAuthorizedSchema(schema)) {
             backendConnection.setCurrentSchema(schema);
-            return new UpdateResponse();
+            return new UpdateResponseHeader(useStatement);
         }
         throw new UnknownDatabaseException(schema);
         
@@ -62,7 +61,7 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     }
     
     @Override
-    public List<Object> getRowData() {
+    public Collection<Object> getRowData() {
         return null;
     }
 }

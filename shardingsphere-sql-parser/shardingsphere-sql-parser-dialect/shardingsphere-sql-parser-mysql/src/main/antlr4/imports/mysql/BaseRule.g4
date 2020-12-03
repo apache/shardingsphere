@@ -85,7 +85,7 @@ nullValueLiterals
     ;
 
 collationName
-   : identifier | STRING_ | BINARY
+   : textOrIdentifier | BINARY
    ;
 
 identifier
@@ -152,6 +152,14 @@ variable
     : (AT_? AT_)? scope? DOT_? internalVariableName
     ;
 
+userVariable
+    : AT_ textOrIdentifier
+    ;
+
+systemVariable
+    : AT_ AT_ scope? textOrIdentifier (DOT_ identifier)?
+    ;
+
 scope
     : GLOBAL | PERSIST | PERSIST_ONLY | SESSION | LOCAL
     ;
@@ -175,7 +183,7 @@ schemaNames
     ;
 
 charsetName
-    : identifier | BINARY | DEFAULT
+    : textOrIdentifier | BINARY
     ;
 
 schemaPairs
@@ -245,8 +253,8 @@ name
     : identifier
     ;
 
-tableNames
-    : LP_? tableName (COMMA_ tableName)* RP_?
+tableList
+    : tableName (COMMA_ tableName)*
     ;
     
 viewNames
@@ -315,6 +323,10 @@ triggerName
 
 triggerTime
     : BEFORE | AFTER
+    ;
+
+tableOrTables
+    : TABLE | TABLES
     ;
 
 userOrRole
@@ -642,7 +654,7 @@ dataType
     | dataTypeName = BIT fieldLength?
     | dataTypeName = (BOOL | BOOLEAN)
     | dataTypeName = CHAR fieldLength? charsetWithOptBinary?
-    | nchar fieldLength? BINARY?
+    | (dataTypeName = NCHAR | dataTypeName = NATIONAL CHAR) fieldLength? BINARY?
     | dataTypeName = BINARY fieldLength?
     | (dataTypeName = CHAR VARYING | dataTypeName = VARCHAR) fieldLength charsetWithOptBinary?
     | (dataTypeName = NATIONAL VARCHAR | dataTypeName = NVARCHAR | dataTypeName = NCHAR VARCHAR | dataTypeName = NATIONAL CHAR VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
@@ -765,11 +777,11 @@ collectionOptions
     ;
 
 characterSet
-    : charset EQ_? charsetName
+    : charset charsetName
     ;
 
 collateClause
-    : COLLATE EQ_? collationName
+    : COLLATE collationName
     ;
 
 ignoredIdentifier
@@ -819,4 +831,22 @@ unionOption
 noWriteToBinLog
     : LOCAL
     | NO_WRITE_TO_BINLOG
+    ;
+
+channelOption
+    : FOR CHANNEL STRING_
+    ;
+
+preparedStatement
+    : PREPARE identifier FROM (stringLiterals | userVariable)
+    | executeStatement
+    | (DEALLOCATE | DROP) PREPARE identifier
+    ;
+
+executeStatement
+    : EXECUTE identifier (USING executeVarList)?
+    ;
+
+executeVarList
+    : userVariable (COMMA_ userVariable)*
     ;

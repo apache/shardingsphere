@@ -18,13 +18,11 @@
 package org.apache.shardingsphere.scaling.core.utils;
 
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
-import org.apache.shardingsphere.scaling.core.job.position.InventoryPosition;
+import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
-import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTask;
-import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTaskGroup;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * Scaling task util.
@@ -34,15 +32,11 @@ public final class ScalingTaskUtil {
     /**
      * All inventory tasks is finished.
      *
-     * @param inventoryDataTasks to check inventory tasks
+     * @param inventoryTasks to check inventory tasks
      * @return is finished
      */
-    public static boolean allInventoryTasksFinished(final List<ScalingTask<InventoryPosition>> inventoryDataTasks) {
-        return inventoryDataTasks.stream().allMatch(each -> ((InventoryDataScalingTaskGroup) each).getScalingTasks().stream().allMatch(getFinishPredicate()));
-    }
-    
-    private static Predicate<ScalingTask<InventoryPosition>> getFinishPredicate() {
-        return each -> ((InventoryDataScalingTask) each).getPositionManager().getPosition().isFinished();
+    public static boolean allInventoryTasksFinished(final List<ScalingTask> inventoryTasks) {
+        return inventoryTasks.stream().allMatch(each -> ((InventoryTask) each).getPositionManager().getPosition() instanceof FinishedPosition);
     }
     
     /**

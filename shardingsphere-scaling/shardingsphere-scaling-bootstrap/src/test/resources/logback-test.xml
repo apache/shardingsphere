@@ -27,7 +27,7 @@
     </logger>
     <logger name="com.zaxxer.hikari" level="warn" />
     <logger name="org.apache.shardingsphere.scaling.web.HttpServerHandler" level="off" />
-    <logger name="org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryDataTaskSplitter" level="off" />
+    <logger name="org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryTaskSplitter" level="off" />
     
     <root>
         <level value="info" />

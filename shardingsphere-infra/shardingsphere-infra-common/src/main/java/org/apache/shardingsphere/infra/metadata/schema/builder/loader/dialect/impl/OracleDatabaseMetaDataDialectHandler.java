@@ -17,25 +17,18 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.impl;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Database meta data dialect handler of Oracle.
  */
-@Getter
-@Setter
 public final class OracleDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
     
-    private Properties props;
-
     @SuppressWarnings("ReturnOfNull")
     @Override
     public String getSchema(final Connection connection) {

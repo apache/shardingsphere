@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.scaling.postgresql.component;
 
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
+import org.apache.shardingsphere.scaling.core.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.MemoryChannel;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.apache.shardingsphere.scaling.postgresql.wal.LogicalReplication;
@@ -58,7 +58,7 @@ public final class PostgreSQLWalDumperTest {
     
     private PostgreSQLWalDumper postgreSQLWalDumper;
     
-    private JDBCScalingDataSourceConfiguration jdbcDataSourceConfig;
+    private StandardJDBCDataSourceConfiguration jdbcDataSourceConfig;
     
     private MemoryChannel channel;
     
@@ -73,9 +73,9 @@ public final class PostgreSQLWalDumperTest {
     }
     
     private DumperConfiguration mockDumperConfiguration() {
-        jdbcDataSourceConfig = new JDBCScalingDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root");
+        jdbcDataSourceConfig = new StandardJDBCDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root");
         DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfiguration(jdbcDataSourceConfig);
+        result.setDataSourceConfig(jdbcDataSourceConfig);
         return result;
     }
     
@@ -91,7 +91,7 @@ public final class PostgreSQLWalDumperTest {
             when(pgReplicationStream.readPending()).thenReturn(null).thenReturn(data).thenThrow(new SQLException(""));
             when(pgReplicationStream.getLastReceiveLSN()).thenReturn(LogSequenceNumber.valueOf(101L));
             postgreSQLWalDumper.start();
-        } catch (final SyncTaskExecuteException ignored) {
+        } catch (final ScalingTaskExecuteException ignored) {
         }
         assertThat(channel.fetchRecords(100, 0).size(), is(1));
     }

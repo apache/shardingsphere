@@ -19,10 +19,9 @@ package org.apache.shardingsphere.scaling;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.spi.ScalingWorkerLoader;
-import org.apache.shardingsphere.scaling.util.ScalingConfigUtil;
+import org.apache.shardingsphere.scaling.util.ServerConfigurationUtil;
 
 import java.util.Optional;
 
@@ -39,11 +38,10 @@ public final class WorkerBootstrap {
      * @param args running args
      */
     // CHECKSTYLE:OFF
-    @SneakyThrows
     public static void main(final String[] args) {
         // CHECKSTYLE:ON
         log.info("ShardingSphere-Scaling Worker Startup");
-        ScalingConfigUtil.initScalingConfig();
+        ServerConfigurationUtil.initScalingConfig();
         Optional<String> type = ScalingWorkerLoader.initScalingWorker();
         if (!type.isPresent()) {
             log.error("None worker found.");
@@ -56,7 +54,7 @@ public final class WorkerBootstrap {
     private static synchronized void wait0() {
         try {
             WorkerBootstrap.class.wait();
-        } catch (InterruptedException ignored) {
+        } catch (final InterruptedException ignored) {
         }
     }
 }

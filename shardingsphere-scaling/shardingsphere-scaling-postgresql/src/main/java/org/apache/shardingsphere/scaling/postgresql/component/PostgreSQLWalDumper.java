@@ -19,9 +19,9 @@ package org.apache.shardingsphere.scaling.postgresql.component;
 
 import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JDBCScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
-import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
+import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.exception.ScalingTaskExecuteException;
+import org.apache.shardingsphere.scaling.core.execute.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
@@ -43,7 +43,7 @@ import java.sql.SQLException;
 /**
  * PostgreSQL WAL dumper.
  */
-public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor<WalPosition> implements LogDumper {
+public final class PostgreSQLWalDumper extends AbstractScalingExecutor implements LogDumper {
     
     private final WalPosition walPosition;
     
@@ -56,9 +56,9 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor<W
     @Setter
     private Channel channel;
     
-    public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final Position position) {
+    public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final Position<WalPosition> position) {
         walPosition = (WalPosition) position;
-        if (!JDBCScalingDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfiguration().getClass())) {
+        if (!StandardJDBCDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
             throw new UnsupportedOperationException("PostgreSQLWalDumper only support JDBCDataSourceConfiguration");
         }
         this.dumperConfig = dumperConfig;
@@ -73,10 +73,9 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor<W
     
     private void dump() {
         try {
-            Connection pgConnection = logicalReplication.createPgConnection((JDBCScalingDataSourceConfiguration) dumperConfig.getDataSourceConfiguration());
+            Connection pgConnection = logicalReplication.createPgConnection((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig());
             DecodingPlugin decodingPlugin = new TestDecodingPlugin(pgConnection.unwrap(PgConnection.class).getTimestampUtils());
-            PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection,
-                    PostgreSQLPositionManager.SLOT_NAME, walPosition.getLogSequenceNumber());
+            PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionManager.SLOT_NAME, walPosition.getLogSequenceNumber());
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
                 if (null == message) {
@@ -87,7 +86,7 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor<W
                 pushRecord(walEventConverter.convert(event));
             }
         } catch (final SQLException ex) {
-            throw new SyncTaskExecuteException(ex);
+            throw new ScalingTaskExecuteException(ex);
         }
     }
     

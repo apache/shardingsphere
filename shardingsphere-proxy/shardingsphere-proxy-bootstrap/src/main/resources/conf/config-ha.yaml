@@ -116,3 +116,8 @@
 #        - replica_ds_0
 #        - replica_ds_1
 #      readWriteSplit: false
+#  haType:
+#    type: MGR
+#    props:
+#      groupName: 92504d5b-6dec-11e8-91ea-246e9612aaf1
+#      keepAliveSeconds: '5'
