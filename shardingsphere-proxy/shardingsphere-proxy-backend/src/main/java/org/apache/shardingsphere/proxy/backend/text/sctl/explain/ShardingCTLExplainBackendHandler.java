@@ -74,8 +74,8 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
         LogicSQL logicSQL = createLogicSQL(metaData, explainStatement.get());
         executionUnits = kernelProcessor.generateExecutionContext(logicSQL, metaData, ProxyContext.getInstance().getMetaDataContexts().getProps()).getExecutionUnits().iterator();
         queryHeaders = new ArrayList<>(2);
-        queryHeaders.add(new QueryHeader("", "", "datasource_name", "", 255, Types.CHAR, "CHAR", 0, false, false, false, false));
-        queryHeaders.add(new QueryHeader("", "", "sql", "", 255, Types.CHAR, "CHAR", 0, false, false, false, false));
+        queryHeaders.add(new QueryHeader("", "", "datasource_name", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        queryHeaders.add(new QueryHeader("", "", "sql", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         return new QueryResponseHeader(queryHeaders);
     }
     

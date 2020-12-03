@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.call
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.builder.JDBCExecutionUnitBuilderType;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback.impl.ProxyPreparedStatementExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback.impl.ProxyStatementExecutorCallback;
@@ -44,10 +44,10 @@ public final class ProxyJDBCExecutorCallbackFactory {
      */
     public static ProxyJDBCExecutorCallback newInstance(final String type, final DatabaseType databaseType, final BackendConnection backendConnection,
                                                         final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean isFetchMetaData) {
-        if (JDBCExecutionUnitBuilderType.STATEMENT.equals(type)) {
+        if (JDBCDriverType.STATEMENT.equals(type)) {
             return new ProxyStatementExecutorCallback(databaseType, backendConnection, isExceptionThrown, isReturnGeneratedKeys, isFetchMetaData);
         }
-        if (JDBCExecutionUnitBuilderType.PREPARED_STATEMENT.equals(type)) {
+        if (JDBCDriverType.PREPARED_STATEMENT.equals(type)) {
             return new ProxyPreparedStatementExecutorCallback(databaseType, backendConnection, isExceptionThrown, isReturnGeneratedKeys, isFetchMetaData);
         }
         throw new UnsupportedOperationException(String.format("Unsupported driver type: `%s`", type));

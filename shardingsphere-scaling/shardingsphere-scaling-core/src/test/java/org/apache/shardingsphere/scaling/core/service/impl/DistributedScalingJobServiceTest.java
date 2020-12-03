@@ -25,10 +25,10 @@ import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
-import org.apache.shardingsphere.scaling.core.job.ScalingJobProgress;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
-import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalDataSyncTaskProgress;
-import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataSyncTaskProgress;
+import org.apache.shardingsphere.scaling.core.job.JobProgress;
+import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
@@ -79,7 +79,7 @@ public final class DistributedScalingJobServiceTest {
     
     @Test
     public void assertStartWithScalingConfig() {
-        Optional<ShardingScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
+        Optional<ScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
         assertTrue(shardingScalingJob.isPresent());
         assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(shardingScalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":true"));
     }
@@ -90,14 +90,14 @@ public final class DistributedScalingJobServiceTest {
         String oldConfig = ScalingConfigurationUtil.getConfig("/proxy_config-sharding_1.yaml");
         String newConfig = ScalingConfigurationUtil.getConfig("/proxy_config-sharding_2.yaml");
         assertFalse(scalingJobService.start(oldConfig, oldConfig).isPresent());
-        Optional<ShardingScalingJob> shardingScalingJob = scalingJobService.start(oldConfig, newConfig);
+        Optional<ScalingJob> shardingScalingJob = scalingJobService.start(oldConfig, newConfig);
         assertTrue(shardingScalingJob.isPresent());
         assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(shardingScalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":true"));
     }
     
     @Test
     public void assertStop() {
-        Optional<ShardingScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
+        Optional<ScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
         assertTrue(shardingScalingJob.isPresent());
         scalingJobService.stop(shardingScalingJob.get().getJobId());
         assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(shardingScalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":false"));
@@ -114,12 +114,12 @@ public final class DistributedScalingJobServiceTest {
                 "{'unfinished': {'ds2.table1#1':[0,100],'ds2.table1#2':[160,200],'ds2.table3':[]},'finished':['ds2.table2#1','ds2.table2#2']}");
         registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/position/1/incremental"),
                 "{'ds2':{'filename':binlog1,'position':4,'delay':2},'ds4':{'filename':binlog2,'position':4,'delay':4}}");
-        ScalingJobProgress actual = scalingJobService.getProgress(1);
-        assertThat(actual.getInventoryDataSyncTaskProgress().get("0").stream()
-                .map(each -> (InventoryDataSyncTaskProgress) each)
-                .filter(InventoryDataSyncTaskProgress::isFinished).count(), is(2L));
-        assertTrue(actual.getIncrementalDataSyncTaskProgress().get("1").stream()
-                .map(each -> (IncrementalDataSyncTaskProgress) each)
+        JobProgress actual = scalingJobService.getProgress(1);
+        assertThat(actual.getInventoryTaskProgress().get("0").stream()
+                .map(each -> (InventoryTaskProgress) each)
+                .filter(InventoryTaskProgress::isFinished).count(), is(2L));
+        assertTrue(actual.getIncrementalTaskProgress().get("1").stream()
+                .map(each -> (IncrementalTaskProgress) each)
                 .filter(each -> "ds2".equals(each.getId()))
                 .allMatch(each -> 2 == each.getDelayMillisecond()));
     }
