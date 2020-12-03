@@ -58,6 +58,6 @@ public final class DALBackendHandlerFactory {
         if (dalStatement instanceof SetStatement) {
             return new BroadcastBackendHandler(dalStatement, sql, backendConnection);
         }
-        return new DatabaseBackendHandler(dalStatement, sql, backendConnection, false);
+        return new DatabaseBackendHandler(dalStatement, sql, backendConnection);
     }
 }
