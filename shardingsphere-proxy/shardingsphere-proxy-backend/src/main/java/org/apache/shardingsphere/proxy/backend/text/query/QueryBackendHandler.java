@@ -57,7 +57,7 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public boolean next() throws SQLException {
-        return null != databaseCommunicationEngine && databaseCommunicationEngine.next();
+        return databaseCommunicationEngine.next();
     }
     
     @Override
