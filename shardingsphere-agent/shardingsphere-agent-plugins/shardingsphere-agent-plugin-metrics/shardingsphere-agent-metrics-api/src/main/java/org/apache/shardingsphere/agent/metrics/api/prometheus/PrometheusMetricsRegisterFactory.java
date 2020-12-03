@@ -23,7 +23,7 @@ import org.apache.shardingsphere.agent.metrics.api.MetricsRegisterFactory;
 /**
  * Prometheus metrics register factory.
  */
-public class PrometheusMetricsRegisterFactory implements MetricsRegisterFactory {
+public final class PrometheusMetricsRegisterFactory implements MetricsRegisterFactory {
     
     @Override
     public MetricsRegister newInstance() {

@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Build info collector.
  */
-public class BuildInfoCollector extends Collector {
+public final class BuildInfoCollector extends Collector {
     
     @Override
     public List<MetricFamilySamples> collect() {

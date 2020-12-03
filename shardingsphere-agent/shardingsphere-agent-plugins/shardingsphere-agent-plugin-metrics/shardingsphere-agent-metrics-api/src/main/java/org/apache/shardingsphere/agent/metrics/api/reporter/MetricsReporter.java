@@ -26,7 +26,7 @@ import org.apache.shardingsphere.agent.metrics.api.entity.Metric;
 /**
  * Metrics reporter.
  */
-public class MetricsReporter {
+public final class MetricsReporter {
     
     private static final MetricsRegister METRICS_REGISTER = MetricsProvider.INSTANCE.newInstance();
     
