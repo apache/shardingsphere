@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.admin.DALBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.admin.RDLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.query.QueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.database.DatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.sctl.utils.SCTLUtils;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
@@ -70,6 +70,6 @@ public final class TextProtocolBackendHandlerFactory {
         if (sqlStatement instanceof DALStatement) {
             return DALBackendHandlerFactory.newInstance((DALStatement) sqlStatement, sql, backendConnection);
         }
-        return new QueryBackendHandler(sqlStatement, sql, backendConnection, true);
+        return new DatabaseBackendHandler(sqlStatement, sql, backendConnection, true);
     }
 }

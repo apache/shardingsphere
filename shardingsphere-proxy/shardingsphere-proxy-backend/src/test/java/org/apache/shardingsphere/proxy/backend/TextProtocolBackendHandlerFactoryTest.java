@@ -27,7 +27,7 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFa
 import org.apache.shardingsphere.proxy.backend.text.admin.BroadcastBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.ShowDatabasesBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.UseDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.query.QueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.database.DatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.set.ShardingCTLSetBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.show.ShardingCTLShowBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
@@ -169,23 +169,23 @@ public final class TextProtocolBackendHandlerFactoryTest {
     public void assertNewInstanceWithShow() {
         String sql = "SHOW VARIABLES LIKE '%x%'";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(QueryBackendHandler.class));
+        assertThat(actual, instanceOf(DatabaseBackendHandler.class));
         sql = "SHOW VARIABLES WHERE Variable_name ='language'";
         actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(QueryBackendHandler.class));
+        assertThat(actual, instanceOf(DatabaseBackendHandler.class));
         sql = "SHOW CHARACTER SET";
         actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(QueryBackendHandler.class));
+        assertThat(actual, instanceOf(DatabaseBackendHandler.class));
         sql = "SHOW COLLATION";
         actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(QueryBackendHandler.class));
+        assertThat(actual, instanceOf(DatabaseBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithQuery() {
         String sql = "select * from t_order limit 1";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(QueryBackendHandler.class));
+        assertThat(actual, instanceOf(DatabaseBackendHandler.class));
     }
     
     @Test
