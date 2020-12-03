@@ -39,7 +39,7 @@ public final class DatabaseBackendHandlerFactory {
      * @param sqlStatement SQL statement
      * @param sql SQL
      * @param backendConnection backend connection
-     * @return backend handler
+     * @return database backend handler
      */
     public static DatabaseBackendHandler newInstance(final SQLStatement sqlStatement, final String sql, final BackendConnection backendConnection) {
         if (sqlStatement instanceof SetStatement) {

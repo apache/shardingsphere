@@ -63,15 +63,15 @@ public final class TextProtocolBackendHandlerFactory {
             return ShardingCTLBackendHandlerFactory.newInstance(trimSQL, backendConnection);
         }
         SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(databaseType.getName()).parse(sql, false);
-        if (sqlStatement instanceof RDLStatement || sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
-            return new RDLBackendHandler(backendConnection, sqlStatement);
-        }
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((TCLStatement) sqlStatement, sql, backendConnection);
         }
         Optional<SchemaBackendHandler> schemaBackendHandler = SchemaBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
         if (schemaBackendHandler.isPresent()) {
             return schemaBackendHandler.get();
+        }
+        if (sqlStatement instanceof RDLStatement || sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
+            return new RDLBackendHandler(backendConnection, sqlStatement);
         }
         return DatabaseBackendHandlerFactory.newInstance(sqlStatement, sql, backendConnection);
     }

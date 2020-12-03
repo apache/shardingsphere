@@ -39,7 +39,7 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
     private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();
     
     private final SQLStatement sqlStatement;
-
+    
     private final String sql;
     
     private final BackendConnection backendConnection;
