@@ -85,7 +85,7 @@ public interface MetricsRegister {
     /**
      * Record time by duration.
      *
-     * @param name  name
+     * @param name name
      * @param labelValues label values
      * @param duration duration
      */
