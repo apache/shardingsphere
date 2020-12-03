@@ -27,63 +27,63 @@ public interface MetricsRegister {
      *
      * @param name  name
      * @param labelNames label names
-     * @param doc doc
+     * @param document document for gauge
      */
-    void registerGauge(String name, String[] labelNames, String doc);
+    void registerGauge(String name, String[] labelNames, String document);
     
     /**
      * Register counter.
      *
      * @param name name
      * @param labelNames label names
-     * @param doc doc
+     * @param document document for counter
      */
-    void registerCounter(String name, String[] labelNames, String doc);
+    void registerCounter(String name, String[] labelNames, String document);
     
     /**
      * Register histogram.
      *
      * @param name name
      * @param labelNames label names
-     * @param doc doc
+     * @param document document for histogram
      */
-    void registerHistogram(String name, String[] labelNames, String doc);
+    void registerHistogram(String name, String[] labelNames, String document);
     
     /**
-     * Counter inc.
+     * Counter increment.
      *
      * @param name name
      * @param labelValues label values
      */
-    void counterInc(String name, String[] labelValues);
+    void counterIncrement(String name, String[] labelValues);
     
     /**
-     * counter inc.
+     * Counter increment by count.
      *
      * @param name name
      * @param labelValues label values
      * @param count count
      */
-    void counterInc(String name, String[] labelValues, long count);
+    void counterIncrement(String name, String[] labelValues, long count);
     
     /**
-     * Gauge inc.
+     * Gauge increment.
      *
      * @param name name
      * @param labelValues label values
      */
-    void gaugeInc(String name, String[] labelValues);
+    void gaugeIncrement(String name, String[] labelValues);
     
     /**
-     * Gauge dec.
+     * Gauge decrement.
      *
      * @param name name
      * @param labelValues label values
      */
-    void gaugeDec(String name, String[] labelValues);
+    void gaugeDecrement(String name, String[] labelValues);
     
     /**
-     * Record time.
+     * Record time by duration.
      *
      * @param name  name
      * @param labelValues label values

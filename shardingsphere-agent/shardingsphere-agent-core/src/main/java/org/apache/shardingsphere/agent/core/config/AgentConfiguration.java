@@ -36,6 +36,6 @@ public class AgentConfiguration {
         
         private int port = 9090;
         
-        private boolean jvmEnabled;
+        private boolean jvmInformationCollectorEnabled;
     }
 }

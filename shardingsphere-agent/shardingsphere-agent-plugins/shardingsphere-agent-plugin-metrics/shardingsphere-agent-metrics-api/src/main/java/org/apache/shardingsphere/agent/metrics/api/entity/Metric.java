@@ -18,24 +18,22 @@
 package org.apache.shardingsphere.agent.metrics.api.entity;
 
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.metrics.api.enums.MetricType;
 
 /**
  * Metric.
  */
 @Getter
-@AllArgsConstructor
-public class Metric {
+@RequiredArgsConstructor
+public final class Metric {
     
     private final MetricType type;
     
-    private String method;
-    
     private final String name;
     
-    private final String doc;
+    private final String document;
     
     private final List<String> labels;
 }

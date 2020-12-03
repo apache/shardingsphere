@@ -37,9 +37,9 @@ public enum MetricsProvider {
     }
     
     /**
-     * Create metric system metric register.
+     * Create metric register.
      *
-     * @return the metric register
+     * @return metric register
      */
     public MetricsRegister newInstance() {
         return metricRegisterFactory.newInstance();

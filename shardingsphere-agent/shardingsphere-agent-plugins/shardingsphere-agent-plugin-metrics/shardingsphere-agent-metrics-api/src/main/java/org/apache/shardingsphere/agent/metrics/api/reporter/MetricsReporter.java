@@ -33,19 +33,19 @@ public class MetricsReporter {
     /**
      * Register metrics.
      *
-     * @param metrics the metrics
+     * @param metrics metric collection
      */
     public static void registerMetrics(final Collection<Metric> metrics) {
         for (Metric metric : metrics) {
             switch (metric.getType()) {
                 case COUNTER:
-                    registerCounter(metric.getName(), getLabelNames(metric.getLabels()), metric.getDoc());
+                    registerCounter(metric.getName(), getLabelNames(metric.getLabels()), metric.getDocument());
                     break;
                 case GAUGE:
-                    registerGauge(metric.getName(), getLabelNames(metric.getLabels()), metric.getDoc());
+                    registerGauge(metric.getName(), getLabelNames(metric.getLabels()), metric.getDocument());
                     break;
                 case HISTOGRAM:
-                    registerHistogram(metric.getName(), getLabelNames(metric.getLabels()), metric.getDoc());
+                    registerHistogram(metric.getName(), getLabelNames(metric.getLabels()), metric.getDocument());
                     break;
                 default:
                     throw new RuntimeException("we not support metric registration for type: " + metric.getType());
@@ -58,10 +58,10 @@ public class MetricsReporter {
      *
      * @param name name
      * @param labelNames label names
-     * @param doc doc
+     * @param document document for counter
      */
-    public static void registerCounter(final String name, final String[] labelNames, final String doc) {
-        METRICS_REGISTER.registerCounter(name, labelNames, doc);
+    public static void registerCounter(final String name, final String[] labelNames, final String document) {
+        METRICS_REGISTER.registerCounter(name, labelNames, document);
     }
     
     /**
@@ -69,10 +69,10 @@ public class MetricsReporter {
      *
      * @param name name
      * @param labelNames label names
-     * @param doc doc
+     * @param document document for gauge
      */
-    public static void registerGauge(final String name, final String[] labelNames, final String doc) {
-        METRICS_REGISTER.registerGauge(name, labelNames, doc);
+    public static void registerGauge(final String name, final String[] labelNames, final String document) {
+        METRICS_REGISTER.registerGauge(name, labelNames, document);
     }
     
     /**
@@ -80,55 +80,55 @@ public class MetricsReporter {
      *
      * @param name name
      * @param labelNames label names
-     * @param doc doc
+     * @param document document for histogram
      */
-    public static void registerHistogram(final String name, final String[] labelNames, final String doc) {
-        METRICS_REGISTER.registerHistogram(name, labelNames, doc);
+    public static void registerHistogram(final String name, final String[] labelNames, final String document) {
+        METRICS_REGISTER.registerHistogram(name, labelNames, document);
     }
     
     /**
-     * Counter inc.
+     * Counter increment.
      *
      * @param name name
      * @param labelValues label values
      */
-    public static void counterInc(final String name, final String[] labelValues) {
-        METRICS_REGISTER.counterInc(name, labelValues);
+    public static void counterIncrement(final String name, final String[] labelValues) {
+        METRICS_REGISTER.counterIncrement(name, labelValues);
     }
     
     /**
-     * Counter inc.
+     * Counter increment by count.
      *
      * @param name name
      * @param labelValues label values
-     * @param counter counter
+     * @param count count
      */
-    public static void counterInc(final String name, final String[] labelValues, final long counter) {
-        METRICS_REGISTER.counterInc(name, labelValues, counter);
+    public static void counterIncrement(final String name, final String[] labelValues, final long count) {
+        METRICS_REGISTER.counterIncrement(name, labelValues, count);
     }
     
     /**
-     * Gauge inc.
-     *
-     * @param name name
-     * @param labelValues label values
-     */
-    public static void gaugeInc(final String name, final String[] labelValues) {
-        METRICS_REGISTER.gaugeInc(name, labelValues);
-    }
-    
-    /**
-     * Gauge dec.
+     * Gauge increment.
      *
      * @param name name
      * @param labelValues label values
      */
-    public static void gaugeDec(final String name, final String[] labelValues) {
-        METRICS_REGISTER.gaugeDec(name, labelValues);
+    public static void gaugeIncrement(final String name, final String[] labelValues) {
+        METRICS_REGISTER.gaugeIncrement(name, labelValues);
     }
     
     /**
-     * Record time.
+     * Gauge decrement.
+     *
+     * @param name name
+     * @param labelValues label values
+     */
+    public static void gaugeDecrement(final String name, final String[] labelValues) {
+        METRICS_REGISTER.gaugeDecrement(name, labelValues);
+    }
+    
+    /**
+     * Record time by duration.
      *
      * @param name name
      * @param labelValues label values

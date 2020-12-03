@@ -61,9 +61,9 @@ public final class PrometheusMetricsRegister implements MetricsRegister {
     }
     
     @Override
-    public void registerCounter(final String name, final String[] labelNames, final String doc) {
+    public void registerCounter(final String name, final String[] labelNames, final String document) {
         if (!COUNTER_MAP.containsKey(name)) {
-            Counter.Builder builder = Counter.build().name(name).help(doc);
+            Counter.Builder builder = Counter.build().name(name).help(document);
             if (null != labelNames) {
                 builder.labelNames(labelNames);
             }
@@ -72,9 +72,9 @@ public final class PrometheusMetricsRegister implements MetricsRegister {
     }
     
     @Override
-    public void registerGauge(final String name, final String[] labelNames, final String doc) {
+    public void registerGauge(final String name, final String[] labelNames, final String document) {
         if (!GAUGE_MAP.containsKey(name)) {
-            Gauge.Builder builder = Gauge.build().name(name).help(doc);
+            Gauge.Builder builder = Gauge.build().name(name).help(document);
             if (null != labelNames) {
                 builder.labelNames(labelNames);
             }
@@ -83,9 +83,9 @@ public final class PrometheusMetricsRegister implements MetricsRegister {
     }
     
     @Override
-    public void registerHistogram(final String name, final String[] labelNames, final String doc) {
+    public void registerHistogram(final String name, final String[] labelNames, final String document) {
         if (!HISTOGRAM_MAP.containsKey(name)) {
-            Histogram.Builder builder = Histogram.build().name(name).help(doc);
+            Histogram.Builder builder = Histogram.build().name(name).help(document);
             if (null != labelNames) {
                 builder.labelNames(labelNames);
             }
@@ -94,7 +94,7 @@ public final class PrometheusMetricsRegister implements MetricsRegister {
     }
     
     @Override
-    public void counterInc(final String name, final String[] labelValues) {
+    public void counterIncrement(final String name, final String[] labelValues) {
         Counter counter = COUNTER_MAP.get(name);
         if (null != labelValues) {
             counter.labels(labelValues).inc();
@@ -104,7 +104,7 @@ public final class PrometheusMetricsRegister implements MetricsRegister {
     }
     
     @Override
-    public void counterInc(final String name, final String[] labelValues, final long count) {
+    public void counterIncrement(final String name, final String[] labelValues, final long count) {
         Counter counter = COUNTER_MAP.get(name);
         if (null != labelValues) {
             counter.labels(labelValues).inc(count);
@@ -114,7 +114,7 @@ public final class PrometheusMetricsRegister implements MetricsRegister {
     }
     
     @Override
-    public void gaugeInc(final String name, final String[] labelValues) {
+    public void gaugeIncrement(final String name, final String[] labelValues) {
         Gauge gauge = GAUGE_MAP.get(name);
         if (null != labelValues) {
             gauge.labels(labelValues).inc();
@@ -124,7 +124,7 @@ public final class PrometheusMetricsRegister implements MetricsRegister {
     }
     
     @Override
-    public void gaugeDec(final String name, final String[] labelValues) {
+    public void gaugeDecrement(final String name, final String[] labelValues) {
         Gauge gauge = GAUGE_MAP.get(name);
         if (null != labelValues) {
             gauge.labels(labelValues).dec();
@@ -161,7 +161,7 @@ public final class PrometheusMetricsRegister implements MetricsRegister {
     }
     
     private void registerJvm() {
-        boolean enabled = metricsConfiguration.isJvmEnabled();
+        boolean enabled = metricsConfiguration.isJvmInformationCollectorEnabled();
         if (enabled) {
             new BuildInfoCollector().register();
             DefaultExports.initialize();
