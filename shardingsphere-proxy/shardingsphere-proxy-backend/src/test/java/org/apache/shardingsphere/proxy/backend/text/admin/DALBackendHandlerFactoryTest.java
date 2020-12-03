@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.database.DatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
@@ -39,9 +40,9 @@ public final class DALBackendHandlerFactoryTest {
     
     @Test
     public void assertShowTablesBackendHandlerReturnedWhenMySQLShowTablesStatement() {
-        MySQLShowTablesStatement mySQLShowTablesStatement = mock(MySQLShowTablesStatement.class);
+        MySQLShowTablesStatement mysqlShowTablesStatement = mock(MySQLShowTablesStatement.class);
         BackendConnection backendConnection = mock(BackendConnection.class);
-        TextProtocolBackendHandler textProtocolBackendHandler = DALBackendHandlerFactory.newInstance("", mySQLShowTablesStatement, backendConnection);
+        TextProtocolBackendHandler textProtocolBackendHandler = DALBackendHandlerFactory.newInstance(mysqlShowTablesStatement, "", backendConnection);
         assertThat(textProtocolBackendHandler, instanceOf(ShowTablesBackendHandler.class));
         ShowTablesBackendHandler showTablesBackendHandler = (ShowTablesBackendHandler) textProtocolBackendHandler;
         assertFieldOfInstance(showTablesBackendHandler, "backendConnection", is(backendConnection));
@@ -49,19 +50,19 @@ public final class DALBackendHandlerFactoryTest {
     
     @Test
     public void assertUseDatabaseBackendHandlerReturnedWhenMySQLUseStatement() {
-        MySQLUseStatement mySQLUseStatement = mock(MySQLUseStatement.class);
+        MySQLUseStatement mysqlUseStatement = mock(MySQLUseStatement.class);
         BackendConnection backendConnection = mock(BackendConnection.class);
-        TextProtocolBackendHandler textProtocolBackendHandler = DALBackendHandlerFactory.newInstance("", mySQLUseStatement, backendConnection);
+        TextProtocolBackendHandler textProtocolBackendHandler = DALBackendHandlerFactory.newInstance(mysqlUseStatement, "", backendConnection);
         assertThat(textProtocolBackendHandler, instanceOf(UseDatabaseBackendHandler.class));
         UseDatabaseBackendHandler useDatabaseBackendHandler = (UseDatabaseBackendHandler) textProtocolBackendHandler;
-        assertFieldOfInstance(useDatabaseBackendHandler, "useStatement", is(mySQLUseStatement));
+        assertFieldOfInstance(useDatabaseBackendHandler, "useStatement", is(mysqlUseStatement));
         assertFieldOfInstance(useDatabaseBackendHandler, "backendConnection", is(backendConnection));
     }
     
     @Test
     public void assertShowDatabasesBackendHandlerReturnedWhenMySQLShowDatabasesStatement() {
         BackendConnection backendConnection = mock(BackendConnection.class);
-        TextProtocolBackendHandler textProtocolBackendHandler = DALBackendHandlerFactory.newInstance("", mock(MySQLShowDatabasesStatement.class), backendConnection);
+        TextProtocolBackendHandler textProtocolBackendHandler = DALBackendHandlerFactory.newInstance(mock(MySQLShowDatabasesStatement.class), "", backendConnection);
         assertThat(textProtocolBackendHandler, instanceOf(ShowDatabasesBackendHandler.class));
         ShowDatabasesBackendHandler showDatabasesBackendHandler = (ShowDatabasesBackendHandler) textProtocolBackendHandler;
         assertFieldOfInstance(showDatabasesBackendHandler, "backendConnection", is(backendConnection));
@@ -71,7 +72,7 @@ public final class DALBackendHandlerFactoryTest {
     public void assertBroadcastBackendHandlerReturnedWhenSetStatement() {
         SetStatement setStatement = mock(SetStatement.class);
         BackendConnection backendConnection = mock(BackendConnection.class);
-        TextProtocolBackendHandler textProtocolBackendHandler = DALBackendHandlerFactory.newInstance("", setStatement, backendConnection);
+        TextProtocolBackendHandler textProtocolBackendHandler = DALBackendHandlerFactory.newInstance(setStatement, "", backendConnection);
         assertThat(textProtocolBackendHandler, instanceOf(BroadcastBackendHandler.class));
         BroadcastBackendHandler broadcastBackendHandler = (BroadcastBackendHandler) textProtocolBackendHandler;
         assertFieldOfInstance(broadcastBackendHandler, "sqlStatement", is(setStatement));
@@ -80,15 +81,15 @@ public final class DALBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertUnicastBackendHandlerReturnedWhenOtherDALStatement() {
+    public void assertDatabaseBackendHandlerReturnedWhenOtherDALStatement() {
         DALStatement dalStatement = mock(DALStatement.class);
         BackendConnection backendConnection = mock(BackendConnection.class);
-        TextProtocolBackendHandler textProtocolBackendHandler = DALBackendHandlerFactory.newInstance("", dalStatement, backendConnection);
-        assertThat(textProtocolBackendHandler, instanceOf(UnicastBackendHandler.class));
-        UnicastBackendHandler unicastBackendHandler = (UnicastBackendHandler) textProtocolBackendHandler;
-        assertFieldOfInstance(unicastBackendHandler, "sqlStatement", is(dalStatement));
-        assertFieldOfInstance(unicastBackendHandler, "sql", is(""));
-        assertFieldOfInstance(unicastBackendHandler, "backendConnection", is(backendConnection));
+        TextProtocolBackendHandler textProtocolBackendHandler = DALBackendHandlerFactory.newInstance(dalStatement, "", backendConnection);
+        assertThat(textProtocolBackendHandler, instanceOf(DatabaseBackendHandler.class));
+        DatabaseBackendHandler backendHandler = (DatabaseBackendHandler) textProtocolBackendHandler;
+        assertFieldOfInstance(backendHandler, "sqlStatement", is(dalStatement));
+        assertFieldOfInstance(backendHandler, "sql", is(""));
+        assertFieldOfInstance(backendHandler, "backendConnection", is(backendConnection));
     }
     
     @SuppressWarnings("unchecked")

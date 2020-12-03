@@ -46,7 +46,7 @@ public final class MySQLJdbcDumperTest {
     
     private DataSourceManager dataSourceManager;
     
-    private MySQLJdbcDumper mySQLJdbcDumper;
+    private MySQLJdbcDumper mysqlJdbcDumper;
     
     @Mock
     private Connection connection;
@@ -54,7 +54,7 @@ public final class MySQLJdbcDumperTest {
     @Before
     public void setUp() {
         dataSourceManager = new DataSourceManager();
-        mySQLJdbcDumper = new MySQLJdbcDumper(mockInventoryDumperConfiguration(), dataSourceManager);
+        mysqlJdbcDumper = new MySQLJdbcDumper(mockInventoryDumperConfiguration(), dataSourceManager);
     }
     
     private InventoryDumperConfiguration mockInventoryDumperConfiguration() {
@@ -89,8 +89,8 @@ public final class MySQLJdbcDumperTest {
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIMESTAMP);
         when(resultSetMetaData.getColumnType(2)).thenReturn(Types.VARCHAR);
-        mySQLJdbcDumper.readValue(resultSet, 1);
-        mySQLJdbcDumper.readValue(resultSet, 2);
+        mysqlJdbcDumper.readValue(resultSet, 1);
+        mysqlJdbcDumper.readValue(resultSet, 2);
         verify(resultSet).getString(1);
         verify(resultSet).getObject(2);
     }
@@ -98,7 +98,7 @@ public final class MySQLJdbcDumperTest {
     @Test
     public void assertCreatePreparedStatement() throws SQLException {
         when(connection.prepareStatement("", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)).thenReturn(mock(PreparedStatement.class));
-        PreparedStatement preparedStatement = mySQLJdbcDumper.createPreparedStatement(connection, "");
+        PreparedStatement preparedStatement = mysqlJdbcDumper.createPreparedStatement(connection, "");
         verify(preparedStatement).setFetchSize(Integer.MIN_VALUE);
     }
 }

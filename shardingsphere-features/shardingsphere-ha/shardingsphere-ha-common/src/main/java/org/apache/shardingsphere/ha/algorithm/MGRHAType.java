@@ -20,7 +20,9 @@ package org.apache.shardingsphere.ha.algorithm;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.ha.spi.HAType;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceUpdateEvent;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -46,16 +48,18 @@ public final class MGRHAType implements HAType {
     
     private static final String SINGLE_PRIMARY = "SELECT * FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_single_primary_mode'";
     
-    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+    private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
     
     private String primaryDataSource;
+    
+    private String oldPrimaryDataSource;
     
     @Getter
     @Setter
     private Properties props = new Properties();
     
     @Override
-    public void checkHAConfig(final Map<String, DataSource> dataSourceMap) throws SQLException {
+    public void checkHAConfig(final Map<String, DataSource> dataSourceMap, final String schemaName) throws SQLException {
         try (Connection connection = dataSourceMap.get(primaryDataSource).getConnection();
              Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(PLUGIN_STATUS);
@@ -93,42 +97,51 @@ public final class MGRHAType implements HAType {
     }
     
     @Override
-    public void updatePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
-        String primary = queryPrimaryDataSource(dataSourceMap);
-        if (!"".equals(primary)) {
+    public void updatePrimaryDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName) {
+        String primary = determinePrimaryDataSource(dataSourceMap);
+        if ("".equals(primary)) {
+            return;
+        }
+        if (null == oldPrimaryDataSource && null == primaryDataSource) {
+            oldPrimaryDataSource = primary;
             primaryDataSource = primary;
+            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, primaryDataSource, oldPrimaryDataSource));
+            return;
+        }
+        if (!primary.equals(oldPrimaryDataSource)) {
+            oldPrimaryDataSource = primaryDataSource;
+            primaryDataSource = primary;
+            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, primaryDataSource, oldPrimaryDataSource));
         }
     }
     
-    private String queryPrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
+    private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
         String result = "";
-        String urlResult = "";
+        String address = "";
         for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             DataSource dataSource = entry.getValue();
-            String url = "";
             String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
                     + "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
             try (Connection connection = dataSource.getConnection();
                  Statement statement = connection.createStatement();
                  ResultSet resultSet = statement.executeQuery(sql)) {
                 while (resultSet.next()) {
-                    url = resultSet.getString("MEMBER_HOST");
-                    url += ":";
-                    url += resultSet.getString("MEMBER_PORT");
+                    address = resultSet.getString("MEMBER_HOST");
+                    address += ":";
+                    address += resultSet.getString("MEMBER_PORT");
                 }
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
             }
-            if (null != url && !"".equals(url) && !"".equals(urlResult) && !urlResult.equals(url)) {
-                return result;
+            if (null != address && !"".equals(address)) {
+                break;
             }
-            urlResult = url;
         }
         for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             DataSource dataSource = entry.getValue();
             try (Connection connection = dataSource.getConnection()) {
-                if (connection.getMetaData().getURL().contains(urlResult)) {
+                if (connection.getMetaData().getURL().contains(address)) {
                     result = entry.getKey();
                     break;
                 }
@@ -141,9 +154,9 @@ public final class MGRHAType implements HAType {
     }
     
     @Override
-    public void periodicalMonitor(final Map<String, DataSource> dataSourceMap) {
-        Runnable runnable = () -> updatePrimaryDataSource(dataSourceMap);
-        scheduledExecutorService.scheduleAtFixedRate(runnable, 0, Integer.parseInt(props.getProperty("keepAliveSeconds")), TimeUnit.SECONDS);
+    public void periodicalMonitor(final Map<String, DataSource> dataSourceMap, final String schemaName) {
+        Runnable runnable = () -> updatePrimaryDataSource(dataSourceMap, schemaName);
+        SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(runnable, 0, Integer.parseInt(props.getProperty("keepAliveSeconds")), TimeUnit.SECONDS);
     }
     
     @Override

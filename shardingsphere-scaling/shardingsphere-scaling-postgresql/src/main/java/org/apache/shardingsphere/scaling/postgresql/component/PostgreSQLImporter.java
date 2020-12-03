@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * postgreSQL importer.
+ * PostgreSQL importer.
  */
 public final class PostgreSQLImporter extends AbstractJDBCImporter {
     

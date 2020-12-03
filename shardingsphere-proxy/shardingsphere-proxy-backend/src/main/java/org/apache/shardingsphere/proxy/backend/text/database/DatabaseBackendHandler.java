@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin;
+package org.apache.shardingsphere.proxy.backend.text.database;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -34,36 +34,42 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Backend handler for unicast.
+ * Database backend handler.
  */
 @RequiredArgsConstructor
-public final class UnicastBackendHandler implements TextProtocolBackendHandler {
+public final class DatabaseBackendHandler implements TextProtocolBackendHandler {
     
     private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();
     
+    private final SQLStatement sqlStatement;
+
     private final String sql;
     
-    private final SQLStatement sqlStatement;
-    
     private final BackendConnection backendConnection;
+    
+    private final boolean schemaSelectedRequired;
     
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        if (null == backendConnection.getSchemaName()) {
-            Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap();
-            if (metaDataMap.isEmpty()) {
-                throw new NoDatabaseSelectedException();
-            }
-            if (!metaDataMap.values().iterator().next().isComplete()) {
-                throw new RuleNotExistsException();
-            }
-            // TODO we should remove set default ShardingSphere schema after parser can recognize all DAL broadcast SQL.
-            backendConnection.setCurrentSchema(metaDataMap.keySet().iterator().next());
+        if (!schemaSelectedRequired && null == backendConnection.getSchemaName()) {
+            // TODO should remove set default ShardingSphere schema after parser can recognize all DAL broadcast SQL.
+            backendConnection.setCurrentSchema(getFirstSchemaName());
+        }
+        if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
+            throw new RuleNotExistsException();
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);
         return databaseCommunicationEngine.execute();
+    }
+    
+    private String getFirstSchemaName() {
+        Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap();
+        if (metaDataMap.isEmpty()) {
+            throw new NoDatabaseSelectedException();
+        }
+        return metaDataMap.keySet().iterator().next();
     }
     
     @Override

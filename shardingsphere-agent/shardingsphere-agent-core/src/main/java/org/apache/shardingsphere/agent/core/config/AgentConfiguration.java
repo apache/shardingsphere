@@ -34,6 +34,8 @@ public class AgentConfiguration {
         
         private String host;
         
-        private int port;
+        private int port = 9090;
+        
+        private boolean jvmInformationCollectorEnabled;
     }
 }
