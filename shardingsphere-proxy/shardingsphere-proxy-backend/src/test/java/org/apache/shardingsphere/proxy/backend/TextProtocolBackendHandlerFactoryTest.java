@@ -27,7 +27,7 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFa
 import org.apache.shardingsphere.proxy.backend.text.metadata.BroadcastBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.metadata.ShowDatabasesBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.metadata.UseDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.database.DatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.set.ShardingCTLSetBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.show.ShardingCTLShowBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
