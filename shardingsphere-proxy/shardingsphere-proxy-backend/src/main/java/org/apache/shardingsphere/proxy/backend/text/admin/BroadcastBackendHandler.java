@@ -38,9 +38,9 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
     
     private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();
     
-    private final String sql;
-    
     private final SQLStatement sqlStatement;
+    
+    private final String sql;
     
     private final BackendConnection backendConnection;
     

@@ -80,7 +80,7 @@ public final class BroadcastBackendHandlerTest {
     @Test
     public void assertExecuteSuccess() throws SQLException {
         mockDatabaseCommunicationEngine(new UpdateResponseHeader(mock(SQLStatement.class)));
-        BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", mock(SQLStatement.class), backendConnection);
+        BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler(mock(SQLStatement.class), "SET timeout = 1000", backendConnection);
         setBackendHandlerFactory(broadcastBackendHandler);
         ResponseHeader actual = broadcastBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));

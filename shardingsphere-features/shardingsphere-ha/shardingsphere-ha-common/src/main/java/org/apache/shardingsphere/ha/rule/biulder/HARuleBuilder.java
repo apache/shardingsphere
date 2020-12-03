@@ -38,9 +38,11 @@ public final class HARuleBuilder implements ShardingSphereRuleBuilder<HARule, HA
     
     private Map<String, DataSource> dataSourceMap;
     
+    private String schemaName;
+    
     @Override
     public HARule build(final HARuleConfiguration ruleConfig) {
-        return new HARule(ruleConfig, databaseType, dataSourceMap);
+        return new HARule(ruleConfig, databaseType, dataSourceMap, schemaName);
     }
     
     @Override

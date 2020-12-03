@@ -42,8 +42,8 @@ public final class ResponsePacketBuilderTest {
     
     @Test
     public void assertBuildQueryResponsePackets() {
-        QueryHeader queryHeader1 = new QueryHeader("schema1", "table1", "columnLabel1", "columnName1", 4, 5, "VARCHAR", 6, false, true, false, true);
-        QueryHeader queryHeader2 = new QueryHeader("schema2", "table2", "columnLabel2", "columnName2", 7, 8, "VARCHAR", 9, false, true, true, true);
+        QueryHeader queryHeader1 = new QueryHeader("schema1", "table1", "columnLabel1", "columnName1", 5, "VARCHAR", 4, 6, false, true, false, true);
+        QueryHeader queryHeader2 = new QueryHeader("schema2", "table2", "columnLabel2", "columnName2", 8, "VARCHAR", 7, 9, false, true, true, true);
         List<QueryHeader> queryHeaders = Arrays.asList(queryHeader1, queryHeader2);
         QueryResponseHeader queryResponseHeader = new QueryResponseHeader(queryHeaders);
         Collection<DatabasePacket<?>> actual = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader);

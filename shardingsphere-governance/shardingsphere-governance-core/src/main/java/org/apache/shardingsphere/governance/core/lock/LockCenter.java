@@ -67,7 +67,9 @@ public final class LockCenter {
      * Unlock instance.
      */
     public void unlock() {
-        registryCenter.persistInstanceData(governedState.recoverState().toString());
+        if (governedState.getState().toString().equalsIgnoreCase(RegistryCenterNodeStatus.LOCKED.toString())) {
+            registryCenter.persistInstanceData(governedState.recoverState().toString());    
+        }
     }
     
     /**
