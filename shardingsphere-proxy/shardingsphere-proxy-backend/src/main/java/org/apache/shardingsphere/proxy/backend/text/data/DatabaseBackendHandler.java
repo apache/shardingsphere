@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.database;
+package org.apache.shardingsphere.proxy.backend.text.data;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -28,6 +28,7 @@ import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -47,13 +48,11 @@ public final class DatabaseBackendHandler implements TextProtocolBackendHandler 
     
     private final BackendConnection backendConnection;
     
-    private final boolean schemaSelectedRequired;
-    
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        if (!schemaSelectedRequired && null == backendConnection.getSchemaName()) {
+        if (null == backendConnection.getSchemaName() && !isSchemaSelectedRequired()) {
             // TODO should remove set default ShardingSphere schema after parser can recognize all DAL broadcast SQL.
             backendConnection.setCurrentSchema(getFirstSchemaName());
         }
@@ -62,6 +61,10 @@ public final class DatabaseBackendHandler implements TextProtocolBackendHandler 
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);
         return databaseCommunicationEngine.execute();
+    }
+    
+    private boolean isSchemaSelectedRequired() {
+        return sqlStatement instanceof DALStatement;
     }
     
     private String getFirstSchemaName() {

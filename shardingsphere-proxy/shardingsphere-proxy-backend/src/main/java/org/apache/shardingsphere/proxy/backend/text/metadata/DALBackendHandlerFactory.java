@@ -15,13 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin;
+package org.apache.shardingsphere.proxy.backend.text.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.database.DatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.metadata.schema.ShowDatabasesBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.metadata.schema.ShowTablesBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.metadata.schema.UseDatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
@@ -55,6 +58,6 @@ public final class DALBackendHandlerFactory {
         if (dalStatement instanceof SetStatement) {
             return new BroadcastBackendHandler(dalStatement, sql, backendConnection);
         }
-        return new DatabaseBackendHandler(dalStatement, sql, backendConnection, false);
+        return new DatabaseBackendHandler(dalStatement, sql, backendConnection);
     }
 }

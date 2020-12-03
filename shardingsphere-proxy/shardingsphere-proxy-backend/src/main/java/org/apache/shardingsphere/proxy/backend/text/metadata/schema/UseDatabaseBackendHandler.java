@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin;
+package org.apache.shardingsphere.proxy.backend.text.metadata.schema;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Use database backend handler.
@@ -47,7 +48,6 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
             return new UpdateResponseHeader(useStatement);
         }
         throw new UnknownDatabaseException(schema);
-        
     }
     
     private boolean isAuthorizedSchema(final String schema) {
@@ -62,6 +62,6 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     
     @Override
     public Collection<Object> getRowData() {
-        return null;
+        return Collections.emptyList();
     }
 }
