@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.metadata;
+package org.apache.shardingsphere.proxy.backend.text.metadata.environment;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Backend handler for broadcast.
@@ -65,6 +66,6 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
     
     @Override
     public Collection<Object> getRowData() {
-        return null;
+        return Collections.emptyList();
     }
 }
