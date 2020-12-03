@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.metadata;
+package org.apache.shardingsphere.proxy.backend.text.metadata.rdl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateDataSourcesStatement;
@@ -55,7 +55,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Backer handler for RDL.
+ * Backend handler for RDL.
  */
 @RequiredArgsConstructor
 public final class RDLBackendHandler implements TextProtocolBackendHandler {
@@ -137,15 +137,5 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     
     private boolean isRegistryCenterExisted() {
         return !(ProxyContext.getInstance().getMetaDataContexts() instanceof StandardMetaDataContexts);
-    }
-    
-    @Override
-    public boolean next() {
-        return false;
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return Collections.emptyList();
     }
 }

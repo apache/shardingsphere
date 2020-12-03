@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.metadata.schema;
+package org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.text.metadata.schema.SchemaBackendHandler;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 
 import java.sql.SQLException;
@@ -37,7 +37,7 @@ import java.util.LinkedList;
  * Show databases backend handler.
  */
 @RequiredArgsConstructor
-public final class ShowDatabasesBackendHandler implements TextProtocolBackendHandler {
+public final class ShowDatabasesBackendHandler implements SchemaBackendHandler {
     
     private final BackendConnection backendConnection;
     
@@ -61,7 +61,7 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     
     @Override
     public boolean next() throws SQLException {
-        return null != mergedResult && mergedResult.next();
+        return mergedResult.next();
     }
     
     @Override

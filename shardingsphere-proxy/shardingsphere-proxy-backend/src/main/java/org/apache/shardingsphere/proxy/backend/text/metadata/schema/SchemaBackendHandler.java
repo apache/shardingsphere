@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.data;
+package org.apache.shardingsphere.proxy.backend.text.metadata.schema;
 
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 /**
- * Database backend handler.
+ * Schema backend handler.
  */
-public interface DatabaseBackendHandler extends TextProtocolBackendHandler {
+public interface SchemaBackendHandler extends TextProtocolBackendHandler {
 }
