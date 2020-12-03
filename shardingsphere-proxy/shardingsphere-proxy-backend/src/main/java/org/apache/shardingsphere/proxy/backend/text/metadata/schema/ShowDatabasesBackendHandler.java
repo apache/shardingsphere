@@ -61,7 +61,7 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     
     @Override
     public boolean next() throws SQLException {
-        return null != mergedResult && mergedResult.next();
+        return mergedResult.next();
     }
     
     @Override

@@ -70,7 +70,7 @@ public final class ShowTablesBackendHandler implements TextProtocolBackendHandle
     
     @Override
     public boolean next() throws SQLException {
-        return null != queryResult && queryResult.next();
+        return queryResult.next();
     }
     
     @Override
