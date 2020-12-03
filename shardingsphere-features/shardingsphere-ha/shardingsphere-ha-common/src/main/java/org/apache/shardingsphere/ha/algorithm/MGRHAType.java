@@ -52,6 +52,8 @@ public final class MGRHAType implements HAType {
     
     private String primaryDataSource;
     
+    private String oldPrimaryDataSource;
+    
     @Getter
     @Setter
     private Properties props = new Properties();
@@ -96,42 +98,50 @@ public final class MGRHAType implements HAType {
     
     @Override
     public void updatePrimaryDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName) {
-        String primary = queryPrimaryDataSource(dataSourceMap, schemaName);
-        if (!"".equals(primary)) {
+        String primary = determinePrimaryDataSource(dataSourceMap);
+        if ("".equals(primary)) {
+            return;
+        }
+        if (null == oldPrimaryDataSource && null == primaryDataSource) {
+            oldPrimaryDataSource = primary;
             primaryDataSource = primary;
-            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, primaryDataSource, primaryDataSource));
+            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, primaryDataSource, oldPrimaryDataSource));
+            return;
+        }
+        if (!primary.equals(oldPrimaryDataSource)) {
+            oldPrimaryDataSource = primaryDataSource;
+            primaryDataSource = primary;
+            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, primaryDataSource, oldPrimaryDataSource));
         }
     }
     
-    private String queryPrimaryDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName) {
+    private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
         String result = "";
-        String urlResult = "";
+        String address = "";
         for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             DataSource dataSource = entry.getValue();
-            String url = "";
             String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
                     + "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
             try (Connection connection = dataSource.getConnection();
                  Statement statement = connection.createStatement();
                  ResultSet resultSet = statement.executeQuery(sql)) {
                 while (resultSet.next()) {
-                    url = resultSet.getString("MEMBER_HOST");
-                    url += ":";
-                    url += resultSet.getString("MEMBER_PORT");
+                    address = resultSet.getString("MEMBER_HOST");
+                    address += ":";
+                    address += resultSet.getString("MEMBER_PORT");
                 }
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
             }
-            if (null != url && !"".equals(url) && !"".equals(urlResult) && !urlResult.equals(url)) {
-                return result;
+            if (null != address && !"".equals(address)) {
+                break;
             }
-            urlResult = url;
         }
         for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             DataSource dataSource = entry.getValue();
             try (Connection connection = dataSource.getConnection()) {
-                if (connection.getMetaData().getURL().contains(urlResult)) {
+                if (connection.getMetaData().getURL().contains(address)) {
                     result = entry.getKey();
                     break;
                 }
