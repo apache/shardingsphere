@@ -24,9 +24,9 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.admin.BroadcastBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.ShowDatabasesBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.UseDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.metadata.BroadcastBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.metadata.ShowDatabasesBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.metadata.UseDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.database.DatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.set.ShardingCTLSetBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.show.ShardingCTLShowBackendHandler;
