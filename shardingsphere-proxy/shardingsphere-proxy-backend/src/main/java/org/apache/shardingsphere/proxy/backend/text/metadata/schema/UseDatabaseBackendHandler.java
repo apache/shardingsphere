@@ -48,7 +48,6 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
             return new UpdateResponseHeader(useStatement);
         }
         throw new UnknownDatabaseException(schema);
-        
     }
     
     private boolean isAuthorizedSchema(final String schema) {
