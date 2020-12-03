@@ -138,14 +138,4 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     private boolean isRegistryCenterExisted() {
         return !(ProxyContext.getInstance().getMetaDataContexts() instanceof StandardMetaDataContexts);
     }
-    
-    @Override
-    public boolean next() {
-        return false;
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return Collections.emptyList();
-    }
 }

@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Use database backend handler.
@@ -53,15 +52,5 @@ public final class UseDatabaseBackendHandler implements SchemaBackendHandler {
     private boolean isAuthorizedSchema(final String schema) {
         Collection<String> authorizedSchemas = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getUsers().get(backendConnection.getUsername()).getAuthorizedSchemas();
         return authorizedSchemas.isEmpty() || authorizedSchemas.contains(schema);
-    }
-    
-    @Override
-    public boolean next() {
-        return false;
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return Collections.emptyList();
     }
 }

@@ -28,8 +28,6 @@ import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Backend handler for broadcast.
@@ -57,15 +55,5 @@ public final class BroadcastDatabaseBackendHandler implements DatabaseBackendHan
         }
         backendConnection.setCurrentSchema(originalSchema);
         return new UpdateResponseHeader(sqlStatement);
-    }
-    
-    @Override
-    public boolean next() {
-        return false;
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return Collections.emptyList();
     }
 }
