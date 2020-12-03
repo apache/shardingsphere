@@ -18,7 +18,7 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Java CI with Maven
+name: Java CI with Maven(Windows)
 
 on:
   push:
@@ -28,19 +28,23 @@ on:
 
 jobs:
   build:
-
-    runs-on: macos-latest
-
+    runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.8
-    - name: Build with Maven
-      run: |
-        mvn -B clean install cobertura:cobertura -Dmaven.javadoc.skip=true
-        cd examples
-        mvn -B clean package -DskipTests
-        cd ..
-        bash <(curl -s https://codecov.io/bash)
+      - name: Cache Maven Repos
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Support longpaths
+        run: git config --system core.longpaths true
+      - uses: actions/checkout@v2
+      - name: Set up JDK 8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+      - name: Build with Maven
+        run: ./mvnw -B clean cobertura:cobertura -D"maven.javadoc.skip"=true install
+      - name: Build examples with Maven
+        run: ./mvnw -B -f examples/pom.xml clean package -DskipTests

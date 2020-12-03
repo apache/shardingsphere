@@ -15,46 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin;
+package org.apache.shardingsphere.proxy.backend.text.metadata.schema;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.database.DatabaseBackendHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.ShowDatabasesBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.ShowTablesBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.UseDatabaseBackendHandler;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 
+import java.util.Optional;
+
 /**
- * DAL backend handler factory.
+ * Schema backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DALBackendHandlerFactory {
+public final class SchemaBackendHandlerFactory {
     
     /**
-     * New instance of backend handler.
+     * New instance of schema backend handler.
      * 
-     * @param dalStatement DAL statement
-     * @param sql SQL
+     * @param sqlStatement SQL statement
      * @param backendConnection backend connection
-     * @return backend handler
+     * @return schema backend handler
      */
-    public static TextProtocolBackendHandler newInstance(final DALStatement dalStatement, final String sql, final BackendConnection backendConnection) {
-        if (dalStatement instanceof MySQLUseStatement) {
-            return new UseDatabaseBackendHandler((MySQLUseStatement) dalStatement, backendConnection);
+    public static Optional<SchemaBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
+        if (sqlStatement instanceof MySQLUseStatement) {
+            return Optional.of(new UseDatabaseBackendHandler((MySQLUseStatement) sqlStatement, backendConnection));
         }
-        if (dalStatement instanceof MySQLShowDatabasesStatement) {
-            return new ShowDatabasesBackendHandler(backendConnection);
+        if (sqlStatement instanceof MySQLShowDatabasesStatement) {
+            return Optional.of(new ShowDatabasesBackendHandler(backendConnection));
         }
-        if (dalStatement instanceof MySQLShowTablesStatement) {
-            return new ShowTablesBackendHandler(backendConnection);
+        if (sqlStatement instanceof MySQLShowTablesStatement) {
+            return Optional.of(new ShowTablesBackendHandler(backendConnection));
         }
-        if (dalStatement instanceof SetStatement) {
-            return new BroadcastBackendHandler(dalStatement, sql, backendConnection);
-        }
-        return new DatabaseBackendHandler(dalStatement, sql, backendConnection, false);
+        return Optional.empty();
     }
 }

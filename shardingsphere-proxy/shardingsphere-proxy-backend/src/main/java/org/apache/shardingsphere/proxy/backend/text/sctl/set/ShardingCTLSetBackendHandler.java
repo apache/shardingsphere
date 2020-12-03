@@ -26,7 +26,6 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardi
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
-import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -62,15 +61,5 @@ public final class ShardingCTLSetBackendHandler implements TextProtocolBackendHa
             throw new UnsupportedShardingCTLTypeException(sql);
         }
         return new UpdateResponseHeader(null);
-    }
-    
-    @Override
-    public boolean next() {
-        return false;
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return null;
     }
 }

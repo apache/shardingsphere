@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin;
+package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
@@ -55,7 +55,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class BroadcastBackendHandlerTest {
+public final class BroadcastDatabaseBackendHandlerTest {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     
@@ -80,7 +80,7 @@ public final class BroadcastBackendHandlerTest {
     @Test
     public void assertExecuteSuccess() throws SQLException {
         mockDatabaseCommunicationEngine(new UpdateResponseHeader(mock(SQLStatement.class)));
-        BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler(mock(SQLStatement.class), "SET timeout = 1000", backendConnection);
+        BroadcastDatabaseBackendHandler broadcastBackendHandler = new BroadcastDatabaseBackendHandler(mock(SQLStatement.class), "SET timeout = 1000", backendConnection);
         setBackendHandlerFactory(broadcastBackendHandler);
         ResponseHeader actual = broadcastBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
@@ -105,7 +105,7 @@ public final class BroadcastBackendHandlerTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setBackendHandlerFactory(final BroadcastBackendHandler schemaBroadcastBackendHandler) {
+    private void setBackendHandlerFactory(final BroadcastDatabaseBackendHandler schemaBroadcastBackendHandler) {
         Field field = schemaBroadcastBackendHandler.getClass().getDeclaredField("databaseCommunicationEngineFactory");
         field.setAccessible(true);
         field.set(schemaBroadcastBackendHandler, databaseCommunicationEngineFactory);
