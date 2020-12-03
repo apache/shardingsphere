@@ -24,8 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.DALBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.metadata.RDLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.metadata.schema.SchemaBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.metadata.schema.SchemaBackendHandlerFactory;
@@ -34,7 +33,6 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.utils.SCTLUtils;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandlerFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
@@ -75,9 +73,6 @@ public final class TextProtocolBackendHandlerFactory {
         if (schemaBackendHandler.isPresent()) {
             return schemaBackendHandler.get();
         }
-        if (sqlStatement instanceof DALStatement) {
-            return DALBackendHandlerFactory.newInstance((DALStatement) sqlStatement, sql, backendConnection);
-        }
-        return new SchemaAssignedDatabaseBackendHandler(sqlStatement, sql, backendConnection);
+        return DatabaseBackendHandlerFactory.newInstance(sqlStatement, sql, backendConnection);
     }
 }

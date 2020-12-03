@@ -15,35 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.metadata;
+package org.apache.shardingsphere.proxy.backend.text.data;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBackendHandler;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 
 /**
- * DAL backend handler factory.
+ * Database backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DALBackendHandlerFactory {
+public final class DatabaseBackendHandlerFactory {
     
     /**
-     * New instance of backend handler.
+     * New instance of database backend handler.
      * 
-     * @param dalStatement DAL statement
+     * @param sqlStatement SQL statement
      * @param sql SQL
      * @param backendConnection backend connection
      * @return backend handler
      */
-    public static TextProtocolBackendHandler newInstance(final DALStatement dalStatement, final String sql, final BackendConnection backendConnection) {
-        if (dalStatement instanceof SetStatement) {
-            return new BroadcastDatabaseBackendHandler(dalStatement, sql, backendConnection);
+    public static DatabaseBackendHandler newInstance(final SQLStatement sqlStatement, final String sql, final BackendConnection backendConnection) {
+        if (sqlStatement instanceof SetStatement) {
+            return new BroadcastDatabaseBackendHandler(sqlStatement, sql, backendConnection);
         }
-        return new UnicastDatabaseBackendHandler(dalStatement, sql, backendConnection);
+        if (sqlStatement instanceof DALStatement) {
+            return new UnicastDatabaseBackendHandler(sqlStatement, sql, backendConnection);
+        }
+        return new SchemaAssignedDatabaseBackendHandler(sqlStatement, sql, backendConnection); 
     }
 }
