@@ -39,12 +39,12 @@ public final class TransactionBackendHandlerFactory {
     /**
      * New instance of backend handler.
      * 
-     * @param sql SQL
      * @param tclStatement TCL statement
+     * @param sql SQL
      * @param backendConnection backend connection
      * @return backend handler
      */
-    public static TextProtocolBackendHandler newInstance(final String sql, final TCLStatement tclStatement, final BackendConnection backendConnection) {
+    public static TextProtocolBackendHandler newInstance(final TCLStatement tclStatement, final String sql, final BackendConnection backendConnection) {
         if (tclStatement instanceof BeginTransactionStatement) {
             return new TransactionBackendHandler(TransactionOperationType.BEGIN, backendConnection);
         }
@@ -60,6 +60,6 @@ public final class TransactionBackendHandlerFactory {
         if (tclStatement instanceof RollbackStatement) {
             return new TransactionBackendHandler(TransactionOperationType.ROLLBACK, backendConnection);
         }
-        return new BroadcastBackendHandler(sql, tclStatement, backendConnection);
+        return new BroadcastBackendHandler(tclStatement, sql, backendConnection);
     }
 }

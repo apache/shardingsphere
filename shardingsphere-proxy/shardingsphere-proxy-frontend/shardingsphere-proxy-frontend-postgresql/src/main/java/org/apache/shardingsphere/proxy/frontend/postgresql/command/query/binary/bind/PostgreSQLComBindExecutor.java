@@ -36,7 +36,6 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -130,8 +129,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     @Override
     public PostgreSQLPacket getQueryRowPacket() throws SQLException {
         QueryResponseRow queryResponseRow = databaseCommunicationEngine.getQueryResponseRow();
-        return packet.isBinaryRowData() ? new PostgreSQLBinaryResultSetRowPacket(createBinaryRow(queryResponseRow))
-                : new PostgreSQLDataRowPacket(queryResponseRow.getCells().stream().map(QueryResponseCell::getData).collect(Collectors.toList()));
+        return packet.isBinaryRowData() ? new PostgreSQLBinaryResultSetRowPacket(createBinaryRow(queryResponseRow)) : new PostgreSQLDataRowPacket(queryResponseRow.getData());
     }
     
     private BinaryRow createBinaryRow(final QueryResponseRow queryResponseRow) {

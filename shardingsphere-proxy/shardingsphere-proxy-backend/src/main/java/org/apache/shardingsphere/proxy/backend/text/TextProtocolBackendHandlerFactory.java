@@ -65,11 +65,11 @@ public final class TextProtocolBackendHandlerFactory {
             return new RDLBackendHandler(backendConnection, sqlStatement);
         }
         if (sqlStatement instanceof TCLStatement) {
-            return TransactionBackendHandlerFactory.newInstance(sql, (TCLStatement) sqlStatement, backendConnection);
+            return TransactionBackendHandlerFactory.newInstance((TCLStatement) sqlStatement, sql, backendConnection);
         }
         if (sqlStatement instanceof DALStatement) {
-            return DALBackendHandlerFactory.newInstance(sql, (DALStatement) sqlStatement, backendConnection);
+            return DALBackendHandlerFactory.newInstance((DALStatement) sqlStatement, sql, backendConnection);
         }
-        return new QueryBackendHandler(sql, sqlStatement, backendConnection);
+        return new QueryBackendHandler(sqlStatement, sql, backendConnection, true);
     }
 }

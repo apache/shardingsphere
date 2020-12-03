@@ -38,9 +38,11 @@ public final class AlgorithmProvidedHARuleBuilder implements ShardingSphereRuleB
     
     private Map<String, DataSource> dataSourceMap;
     
+    private String schemaName;
+    
     @Override
     public HARule build(final AlgorithmProvidedHARuleConfiguration ruleConfig) {
-        return new HARule(ruleConfig, databaseType, dataSourceMap);
+        return new HARule(ruleConfig, databaseType, dataSourceMap, schemaName);
     }
     
     @Override
