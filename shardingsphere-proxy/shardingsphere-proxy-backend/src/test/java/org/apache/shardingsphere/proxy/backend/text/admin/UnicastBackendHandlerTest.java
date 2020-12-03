@@ -82,7 +82,7 @@ public final class UnicastBackendHandlerTest {
     
     @Test
     public void assertExecuteWhileSchemaIsNull() throws SQLException {
-        UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", mock(SQLStatement.class), backendConnection);
+        UnicastBackendHandler backendHandler = new UnicastBackendHandler(mock(SQLStatement.class), "show variable like %s", backendConnection);
         backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 8));
         setDatabaseCommunicationEngine(backendHandler);
         ResponseHeader actual = backendHandler.execute();
@@ -93,7 +93,7 @@ public final class UnicastBackendHandlerTest {
     @Test
     public void assertExecuteWhileSchemaNotNull() throws SQLException {
         backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
-        UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", mock(SQLStatement.class), backendConnection);
+        UnicastBackendHandler backendHandler = new UnicastBackendHandler(mock(SQLStatement.class), "show variable like %s", backendConnection);
         setDatabaseCommunicationEngine(backendHandler);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
