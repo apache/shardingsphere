@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.query.QueryBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
@@ -54,6 +55,6 @@ public final class DALBackendHandlerFactory {
         if (dalStatement instanceof SetStatement) {
             return new BroadcastBackendHandler(dalStatement, sql, backendConnection);
         }
-        return new UnicastBackendHandler(dalStatement, sql, backendConnection);
+        return new QueryBackendHandler(dalStatement, sql, backendConnection, false);
     }
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.query.QueryBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
@@ -84,11 +85,11 @@ public final class DALBackendHandlerFactoryTest {
         DALStatement dalStatement = mock(DALStatement.class);
         BackendConnection backendConnection = mock(BackendConnection.class);
         TextProtocolBackendHandler textProtocolBackendHandler = DALBackendHandlerFactory.newInstance(dalStatement, "", backendConnection);
-        assertThat(textProtocolBackendHandler, instanceOf(UnicastBackendHandler.class));
-        UnicastBackendHandler unicastBackendHandler = (UnicastBackendHandler) textProtocolBackendHandler;
-        assertFieldOfInstance(unicastBackendHandler, "sqlStatement", is(dalStatement));
-        assertFieldOfInstance(unicastBackendHandler, "sql", is(""));
-        assertFieldOfInstance(unicastBackendHandler, "backendConnection", is(backendConnection));
+        assertThat(textProtocolBackendHandler, instanceOf(QueryBackendHandler.class));
+        QueryBackendHandler backendHandler = (QueryBackendHandler) textProtocolBackendHandler;
+        assertFieldOfInstance(backendHandler, "sqlStatement", is(dalStatement));
+        assertFieldOfInstance(backendHandler, "sql", is(""));
+        assertFieldOfInstance(backendHandler, "backendConnection", is(backendConnection));
     }
     
     @SuppressWarnings("unchecked")

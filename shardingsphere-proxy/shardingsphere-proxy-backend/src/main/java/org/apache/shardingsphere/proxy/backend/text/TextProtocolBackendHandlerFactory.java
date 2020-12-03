@@ -70,6 +70,6 @@ public final class TextProtocolBackendHandlerFactory {
         if (sqlStatement instanceof DALStatement) {
             return DALBackendHandlerFactory.newInstance((DALStatement) sqlStatement, sql, backendConnection);
         }
-        return new QueryBackendHandler(sqlStatement, sql, backendConnection);
+        return new QueryBackendHandler(sqlStatement, sql, backendConnection, true);
     }
 }
