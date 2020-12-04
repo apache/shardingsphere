@@ -1,4 +1,21 @@
-package org.apache.shardingsphere.proxy.backend.text.database;
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
@@ -14,13 +31,13 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -32,18 +49,18 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DatabaseBackendHandlerTest {
+public class SchemaAssignedDatabaseBackendHandlerTest {
 
-    private static final String EXECUTE_SQL = "SET timeout = 1000";
+    private static final String EXECUTE_SQL = "USE test";
 
     private static final String SCHEMA_PATTERN = "schema_%s";
 
-    private DatabaseBackendHandler databaseBackendHandler;
+    private SchemaAssignedDatabaseBackendHandler schemaAssignedDatabaseBackendHandler;
 
     @Mock
     private BackendConnection backendConnection;
@@ -63,8 +80,8 @@ public class DatabaseBackendHandlerTest {
                 new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), getAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         when(backendConnection.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
         mockDatabaseCommunicationEngine(new UpdateResponseHeader(mock(SQLStatement.class)));
-        databaseBackendHandler = new DatabaseBackendHandler(mock(SQLStatement.class), EXECUTE_SQL, backendConnection, false);
-        setBackendHandlerFactory(databaseBackendHandler);
+        schemaAssignedDatabaseBackendHandler = new SchemaAssignedDatabaseBackendHandler(mock(SQLStatement.class), EXECUTE_SQL, backendConnection);
+        setBackendHandlerFactory(schemaAssignedDatabaseBackendHandler);
     }
 
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
@@ -98,15 +115,15 @@ public class DatabaseBackendHandlerTest {
 
     @Test
     public void assertExecuteDatabaseBackendHandler() throws SQLException {
-        ResponseHeader actual = databaseBackendHandler.execute();
+        ResponseHeader actual = schemaAssignedDatabaseBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
     }
 
     @Test
     public void assertDatabaseUsingStream() throws SQLException {
-        databaseBackendHandler.execute();
-        while (databaseBackendHandler.next()) {
-            assertThat(databaseBackendHandler.getRowData().size(), is(1));
+        schemaAssignedDatabaseBackendHandler.execute();
+        while (schemaAssignedDatabaseBackendHandler.next()) {
+            assertThat(schemaAssignedDatabaseBackendHandler.getRowData().size(), is(1));
         }
     }
 }
