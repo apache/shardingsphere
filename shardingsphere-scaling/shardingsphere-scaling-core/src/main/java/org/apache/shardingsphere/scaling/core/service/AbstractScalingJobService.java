@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.scaling.core.service;
 
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.utils.ProxyConfigurationUtil;
-import org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.utils.TaskConfigurationUtil;
 
 import java.util.Map;
 import java.util.Optional;
@@ -35,7 +35,7 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
     @Override
     public boolean shouldScaling(final String oldYamlProxyConfig, final String newYamlProxyConfig) {
         ScalingConfiguration scalingConfig = ProxyConfigurationUtil.toScalingConfig(oldYamlProxyConfig, newYamlProxyConfig);
-        SyncConfigurationUtil.fillInShardingTables(scalingConfig);
+        TaskConfigurationUtil.fillInShardingTables(scalingConfig);
         return shouldScaling(scalingConfig);
     }
     
@@ -44,9 +44,9 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
     }
     
     @Override
-    public Optional<ShardingScalingJob> start(final String oldYamlProxyConfig, final String newYamlProxyConfig) {
+    public Optional<ScalingJob> start(final String oldYamlProxyConfig, final String newYamlProxyConfig) {
         ScalingConfiguration scalingConfig = ProxyConfigurationUtil.toScalingConfig(oldYamlProxyConfig, newYamlProxyConfig);
-        SyncConfigurationUtil.fillInShardingTables(scalingConfig);
+        TaskConfigurationUtil.fillInShardingTables(scalingConfig);
         if (!shouldScaling(scalingConfig)) {
             return Optional.empty();
         }
@@ -61,11 +61,11 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
     /**
      * Do data consistency check.
      *
-     * @param shardingScalingJob sharding scaling job
+     * @param scalingJob scaling job
      * @return data consistency check result
      */
-    protected Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final ShardingScalingJob shardingScalingJob) {
-        DataConsistencyChecker dataConsistencyChecker = shardingScalingJob.getDataConsistencyChecker();
+    protected Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final ScalingJob scalingJob) {
+        DataConsistencyChecker dataConsistencyChecker = scalingJob.getDataConsistencyChecker();
         Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.countCheck();
         if (result.values().stream().allMatch(DataConsistencyCheckResult::isCountValid)) {
             Map<String, Boolean> dataCheckResult = dataConsistencyChecker.dataCheck();

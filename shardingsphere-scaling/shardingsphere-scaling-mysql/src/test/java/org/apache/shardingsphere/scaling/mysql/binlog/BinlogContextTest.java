@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.mysql.binlog;
 
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.junit.Before;
@@ -70,7 +70,7 @@ public final class BinlogContextTest {
     public void assertGetColumnDefs() {
         binlogContext.putTableMapEvent(TEST_TABLE_ID, tableMapEventPacket);
         List<MySQLBinlogColumnDef> columnDefs = new ArrayList<>(1);
-        columnDefs.add(new MySQLBinlogColumnDef(MySQLColumnType.MYSQL_TYPE_LONG));
+        columnDefs.add(new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_LONG));
         when(tableMapEventPacket.getColumnDefs()).thenReturn(columnDefs);
         assertThat(binlogContext.getColumnDefs(TEST_TABLE_ID), is(columnDefs));
     }

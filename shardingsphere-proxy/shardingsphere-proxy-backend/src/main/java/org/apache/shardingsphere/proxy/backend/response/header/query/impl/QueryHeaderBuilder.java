@@ -31,7 +31,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * Query header.
+ * Query header builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class QueryHeaderBuilder {
@@ -79,14 +79,14 @@ public final class QueryHeaderBuilder {
             primaryKey = false;
         }
         String columnLabel = queryResult.getMetaData().getColumnLabel(columnIndex);
-        int columnLength = queryResult.getMetaData().getColumnLength(columnIndex);
         int columnType = queryResult.getMetaData().getColumnType(columnIndex);
         String columnTypeName = queryResult.getMetaData().getColumnTypeName(columnIndex);
+        int columnLength = queryResult.getMetaData().getColumnLength(columnIndex);
         int decimals = queryResult.getMetaData().getDecimals(columnIndex);
         boolean signed = queryResult.getMetaData().isSigned(columnIndex);
         boolean notNull = queryResult.getMetaData().isNotNull(columnIndex);
         boolean autoIncrement = queryResult.getMetaData().isAutoIncrement(columnIndex);
-        return new QueryHeader(schemaName, tableName, columnLabel, columnName, columnLength, columnType, columnTypeName, decimals, signed, primaryKey, notNull, autoIncrement);
+        return new QueryHeader(schemaName, tableName, columnLabel, columnName, columnType, columnTypeName, columnLength, decimals, signed, primaryKey, notNull, autoIncrement);
     }
     
     private static String getColumnName(final ProjectionsContext projectionsContext, final QueryResult queryResult, final int columnIndex) throws SQLException {

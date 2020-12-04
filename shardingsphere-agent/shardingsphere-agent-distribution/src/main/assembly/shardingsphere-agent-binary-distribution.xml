@@ -39,33 +39,34 @@
             <outputDirectory>conf</outputDirectory>
             <fileMode>0644</fileMode>
         </fileSet>
+
+        <fileSet>
+            <directory>${project.basedir}/../shardingsphere-agent-plugins/shardingsphere-agent-plugin-tracers/target/plugins</directory>
+            <outputDirectory>./plugins</outputDirectory>
+            <includes>
+                <include>**.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/../shardingsphere-agent-plugins/shardingsphere-agent-plugin-metrics/target/plugins</directory>
+            <outputDirectory>./plugins</outputDirectory>
+            <includes>
+                <include>**.jar</include>
+            </includes>
+        </fileSet>
     </fileSets>
 
     <moduleSets>
         <moduleSet>
             <useAllReactorProjects>true</useAllReactorProjects>
-
             <includes>
                 <include>*:shardingsphere-agent-bootstrap</include>
             </includes>
             <binaries>
                 <unpack>false</unpack>
-                <outputDirectory>/</outputDirectory>
+                <outputDirectory>./</outputDirectory>
                 <includeDependencies>false</includeDependencies>
                 <outputFileNameMapping>shardingsphere-agent.jar</outputFileNameMapping>
-            </binaries>
-        </moduleSet>
-        <moduleSet>
-            <useAllReactorProjects>true</useAllReactorProjects>
-
-            <includes>
-                <include>*:shardingsphere-agent-plugin-metrics</include>
-            </includes>
-            <binaries>
-                <unpack>false</unpack>
-                <outputDirectory>/plugin</outputDirectory>
-                <includeDependencies>false</includeDependencies>
-                <outputFileNameMapping>${module.artifactId}-${module.version}.jar</outputFileNameMapping>
             </binaries>
         </moduleSet>
     </moduleSets>

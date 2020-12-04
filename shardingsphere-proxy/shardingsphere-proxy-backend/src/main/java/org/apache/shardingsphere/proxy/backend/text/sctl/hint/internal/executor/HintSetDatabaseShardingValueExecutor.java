@@ -30,6 +30,6 @@ public final class HintSetDatabaseShardingValueExecutor extends AbstractHintUpda
     @Override
     public ResponseHeader execute(final HintSetDatabaseShardingValueCommand command) {
         HintManagerHolder.get().setDatabaseShardingValue(command.getValue());
-        return new UpdateResponseHeader();
+        return new UpdateResponseHeader(null);
     }
 }

@@ -66,6 +66,6 @@ public final class ShardingCTLHintBackendHandler implements TextProtocolBackendH
     
     @Override
     public Collection<Object> getRowData() throws SQLException {
-        return hintCommandExecutor.getQueryResponseData().getData();
+        return hintCommandExecutor.getQueryResponseRow().getData();
     }
 }

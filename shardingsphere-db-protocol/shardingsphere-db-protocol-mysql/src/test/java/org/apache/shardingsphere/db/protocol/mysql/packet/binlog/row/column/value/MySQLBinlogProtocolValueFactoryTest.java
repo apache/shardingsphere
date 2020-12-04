@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value;
 
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.integer.MySQLTinyBinlogProtocolValue;
 import org.junit.Test;
 
@@ -28,11 +28,11 @@ public final class MySQLBinlogProtocolValueFactoryTest {
     
     @Test
     public void assertGetBinlogProtocolValue() {
-        assertThat(MySQLBinlogProtocolValueFactory.getBinlogProtocolValue(MySQLColumnType.MYSQL_TYPE_TINY), instanceOf(MySQLTinyBinlogProtocolValue.class));
+        assertThat(MySQLBinlogProtocolValueFactory.getBinlogProtocolValue(MySQLBinaryColumnType.MYSQL_TYPE_TINY), instanceOf(MySQLTinyBinlogProtocolValue.class));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertGetBinlogProtocolValueFailure() {
-        MySQLBinlogProtocolValueFactory.getBinlogProtocolValue(MySQLColumnType.MYSQL_TYPE_GEOMETRY);
+        MySQLBinlogProtocolValueFactory.getBinlogProtocolValue(MySQLBinaryColumnType.MYSQL_TYPE_GEOMETRY);
     }
 }

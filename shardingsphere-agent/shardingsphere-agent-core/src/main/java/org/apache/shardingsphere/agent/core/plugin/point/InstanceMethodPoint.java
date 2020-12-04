@@ -50,7 +50,7 @@ public class InstanceMethodPoint {
     /**
      * To get the class name of advice.
      *
-     * @return the class name of advice.
+     * @return the class name of advice
      */
     public String getAdvice() {
         return advice;

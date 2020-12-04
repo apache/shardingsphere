@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.lock;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.event.GovernanceEventBus;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockAddedEvent;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
@@ -48,7 +48,7 @@ public final class LockCenter {
         this.lockNode = new LockNode();
         this.governedState = new GovernedState();
         this.registryRepository.initLock(lockNode.getGlobalLockNodePath());
-        GovernanceEventBus.getInstance().register(this);
+        ShardingSphereEventBus.getInstance().register(this);
     }
     
     /**
@@ -67,7 +67,9 @@ public final class LockCenter {
      * Unlock instance.
      */
     public void unlock() {
-        registryCenter.persistInstanceData(governedState.recoverState().toString());
+        if (governedState.getState().toString().equalsIgnoreCase(RegistryCenterNodeStatus.LOCKED.toString())) {
+            registryCenter.persistInstanceData(governedState.recoverState().toString());    
+        }
     }
     
     /**
@@ -85,12 +87,6 @@ public final class LockCenter {
      */
     public void releaseGlobalLock() {
         registryRepository.releaseLock();
-    }
-    
-    /**
-     * Delete global lock.
-     */
-    public void deleteGlobalLock() {
         registryRepository.delete(lockNode.getGlobalLockNodePath());
     }
 }

@@ -37,51 +37,51 @@ public final class RawQueryResultMetaData implements QueryResultMetaData {
     
     @Override
     public String getTableName(final int columnIndex) {
-        return columns.get(columnIndex).getTableName();
+        return columns.get(columnIndex - 1).getTableName();
     }
     
     @Override
     public String getColumnName(final int columnIndex) {
-        return columns.get(columnIndex).getName();
+        return columns.get(columnIndex - 1).getName();
     }
     
     @Override
     public String getColumnLabel(final int columnIndex) {
-        return columns.get(columnIndex).getLabel();
+        return columns.get(columnIndex - 1).getLabel();
     }
     
     @Override
     public int getColumnType(final int columnIndex) {
-        return columns.get(columnIndex).getType();
+        return columns.get(columnIndex - 1).getType();
     }
     
     @Override
     public String getColumnTypeName(final int columnIndex) {
-        return columns.get(columnIndex).getTypeName();
+        return columns.get(columnIndex - 1).getTypeName();
     }
     
     @Override
     public int getColumnLength(final int columnIndex) {
-        return columns.get(columnIndex).getLength();
+        return columns.get(columnIndex - 1).getLength();
     }
     
     @Override
     public int getDecimals(final int columnIndex) {
-        return columns.get(columnIndex).getDecimals();
+        return columns.get(columnIndex - 1).getDecimals();
     }
     
     @Override
     public boolean isSigned(final int columnIndex) {
-        return columns.get(columnIndex).isSigned();
+        return columns.get(columnIndex - 1).isSigned();
     }
     
     @Override
     public boolean isNotNull(final int columnIndex) {
-        return columns.get(columnIndex).isNotNull();
+        return columns.get(columnIndex - 1).isNotNull();
     }
     
     @Override
     public boolean isAutoIncrement(final int columnIndex) {
-        return columns.get(columnIndex).isAutoIncrement();
+        return columns.get(columnIndex - 1).isAutoIncrement();
     }
 }
