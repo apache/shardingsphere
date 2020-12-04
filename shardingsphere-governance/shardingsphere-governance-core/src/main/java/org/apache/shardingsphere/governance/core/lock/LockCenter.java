@@ -87,12 +87,6 @@ public final class LockCenter {
      */
     public void releaseGlobalLock() {
         registryRepository.releaseLock();
-    }
-    
-    /**
-     * Delete global lock.
-     */
-    public void deleteGlobalLock() {
         registryRepository.delete(lockNode.getGlobalLockNodePath());
     }
 }
