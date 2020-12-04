@@ -56,6 +56,6 @@ public enum ClassBasedShardingAlgorithmStrategy {
                 return each;
             }
         }
-        throw new IllegalArgumentException(String.format("Illegal class based sharding strategy value %d", value));
+        throw new IllegalArgumentException(String.format("Illegal class based sharding strategy value `%s`.", value));
     }
 }

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -47,20 +48,27 @@ public class ClassBasedShardingAlgorithm implements StandardShardingAlgorithm<Co
     private HintShardingAlgorithm hintShardingAlgorithm;
 
     @Getter
+    private ClassBasedShardingAlgorithmStrategy strategy;
+
+    @Getter
+    private String algorithmClassName;
+
+    @Getter
     @Setter
     private Properties props = new Properties();
 
     @Override
     public void init() {
-        String strategy = props.getProperty(STRATEGY_KEY);
-        Preconditions.checkNotNull(strategy, "The props %s cannot be null when uses class based sharding strategy.", STRATEGY_KEY);
-        String algorithmClassName = props.getProperty(ALGORITHM_CLASS_NAME_KEY);
-        Preconditions.checkNotNull(algorithmClassName, "The props %s cannot be null when uses class based sharding strategy.", ALGORITHM_CLASS_NAME_KEY);
+        String strategyStr = props.getProperty(STRATEGY_KEY);
+        Preconditions.checkNotNull(strategyStr, "The props`%s` cannot be null when uses class based sharding strategy.", STRATEGY_KEY);
 
-        ClassBasedShardingAlgorithmStrategy classBasedShardingAlgorithmStrategy = ClassBasedShardingAlgorithmStrategy.valueFrom(strategy.trim());
-        Preconditions.checkNotNull(classBasedShardingAlgorithmStrategy, "Unknown class based sharding strategy %s.", strategy);
+        strategy = ClassBasedShardingAlgorithmStrategy.valueFrom(strategyStr.trim());
+        Preconditions.checkArgument(Objects.nonNull(strategy), "Unknown class based sharding strategy %s.", strategy);
 
-        createAlgorithmInstance(classBasedShardingAlgorithmStrategy, algorithmClassName);
+        algorithmClassName = props.getProperty(ALGORITHM_CLASS_NAME_KEY);
+        Preconditions.checkNotNull(algorithmClassName, "The props `%s` cannot be null when uses class based sharding strategy.", ALGORITHM_CLASS_NAME_KEY);
+
+        createAlgorithmInstance(strategy, algorithmClassName);
     }
 
     private void createAlgorithmInstance(final ClassBasedShardingAlgorithmStrategy classBasedShardingAlgorithmStrategy, final String algorithmClassName) {
