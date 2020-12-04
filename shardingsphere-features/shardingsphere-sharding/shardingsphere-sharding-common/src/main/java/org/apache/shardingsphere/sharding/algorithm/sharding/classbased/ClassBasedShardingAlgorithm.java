@@ -29,13 +29,12 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Properties;
 
 /**
  * Class based sharding algorithm.
  */
-public class ClassBasedShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ComplexKeysShardingAlgorithm<Comparable<?>>, HintShardingAlgorithm<Comparable<?>> {
+public final class ClassBasedShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ComplexKeysShardingAlgorithm<Comparable<?>>, HintShardingAlgorithm<Comparable<?>> {
 
     private static final String STRATEGY_KEY = "strategy";
 
@@ -48,7 +47,7 @@ public class ClassBasedShardingAlgorithm implements StandardShardingAlgorithm<Co
     private HintShardingAlgorithm hintShardingAlgorithm;
 
     @Getter
-    private ClassBasedShardingAlgorithmStrategy strategy;
+    private ClassBasedShardingAlgorithmStrategyType strategy;
 
     @Getter
     private String algorithmClassName;
@@ -59,30 +58,27 @@ public class ClassBasedShardingAlgorithm implements StandardShardingAlgorithm<Co
 
     @Override
     public void init() {
-        String strategyStr = props.getProperty(STRATEGY_KEY);
-        Preconditions.checkNotNull(strategyStr, "The props`%s` cannot be null when uses class based sharding strategy.", STRATEGY_KEY);
-
-        strategy = ClassBasedShardingAlgorithmStrategy.valueFrom(strategyStr.trim());
-        Preconditions.checkArgument(Objects.nonNull(strategy), "Unknown class based sharding strategy %s.", strategy);
-
+        String strategyKey = props.getProperty(STRATEGY_KEY);
+        Preconditions.checkNotNull(strategyKey, "The props`%s` cannot be null when uses class based sharding strategy.", STRATEGY_KEY);
+        strategy = ClassBasedShardingAlgorithmStrategyType.valueOf(strategyKey.toUpperCase().trim());
         algorithmClassName = props.getProperty(ALGORITHM_CLASS_NAME_KEY);
         Preconditions.checkNotNull(algorithmClassName, "The props `%s` cannot be null when uses class based sharding strategy.", ALGORITHM_CLASS_NAME_KEY);
-
-        createAlgorithmInstance(strategy, algorithmClassName);
+        createAlgorithmInstance();
     }
 
-    private void createAlgorithmInstance(final ClassBasedShardingAlgorithmStrategy classBasedShardingAlgorithmStrategy, final String algorithmClassName) {
-        if (ClassBasedShardingAlgorithmStrategy.STANDARD == classBasedShardingAlgorithmStrategy) {
-            standardShardingAlgorithm = ClassBasedShardingAlgorithmFactory.newInstance(algorithmClassName, StandardShardingAlgorithm.class);
-            return;
-        }
-        if (ClassBasedShardingAlgorithmStrategy.COMPLEX == classBasedShardingAlgorithmStrategy) {
-            complexKeysShardingAlgorithm = ClassBasedShardingAlgorithmFactory.newInstance(algorithmClassName, ComplexKeysShardingAlgorithm.class);
-            return;
-        }
-        if (ClassBasedShardingAlgorithmStrategy.HINT == classBasedShardingAlgorithmStrategy) {
-            hintShardingAlgorithm = ClassBasedShardingAlgorithmFactory.newInstance(algorithmClassName, HintShardingAlgorithm.class);
-            return;
+    private void createAlgorithmInstance() {
+        switch (strategy) {
+            case STANDARD:
+                standardShardingAlgorithm = ClassBasedShardingAlgorithmFactory.newInstance(algorithmClassName, StandardShardingAlgorithm.class);
+                break;
+            case COMPLEX:
+                complexKeysShardingAlgorithm = ClassBasedShardingAlgorithmFactory.newInstance(algorithmClassName, ComplexKeysShardingAlgorithm.class);
+                break;
+            case HINT:
+                hintShardingAlgorithm = ClassBasedShardingAlgorithmFactory.newInstance(algorithmClassName, HintShardingAlgorithm.class);
+                break;
+            default:
+                break;
         }
     }
 

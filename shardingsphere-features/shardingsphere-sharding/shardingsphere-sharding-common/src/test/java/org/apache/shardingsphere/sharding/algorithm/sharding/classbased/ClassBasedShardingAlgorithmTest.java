@@ -35,13 +35,13 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ClassBasedShardingAlgorithmTest {
+public final class ClassBasedShardingAlgorithmTest {
 
     @Test
     public void assertStandardStrategyInit() {
         ClassBasedShardingAlgorithm shardingAlgorithm = getStandardShardingAlgorithm();
         assertThat(shardingAlgorithm.getType(), is("CLASS_BASED"));
-        assertThat(shardingAlgorithm.getStrategy(), is(ClassBasedShardingAlgorithmStrategy.STANDARD));
+        assertThat(shardingAlgorithm.getStrategy(), is(ClassBasedShardingAlgorithmStrategyType.STANDARD));
         assertThat(shardingAlgorithm.getAlgorithmClassName(), is(ClassBasedStandardShardingAlgorithmFixture.class.getName()));
     }
 
@@ -56,6 +56,13 @@ public class ClassBasedShardingAlgorithmTest {
     public void assertInitWithWrongStrategy() {
         ClassBasedShardingAlgorithm shardingAlgorithm = new ClassBasedShardingAlgorithm();
         shardingAlgorithm.getProps().setProperty("strategy", "wrong");
+        shardingAlgorithm.init();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void assertInitWithNullClass() {
+        ClassBasedShardingAlgorithm shardingAlgorithm = new ClassBasedShardingAlgorithm();
+        shardingAlgorithm.getProps().setProperty("strategy", "standard");
         shardingAlgorithm.init();
     }
 
@@ -93,7 +100,7 @@ public class ClassBasedShardingAlgorithmTest {
     @Test
     public void assertComplexKeysDoSharding() {
         ClassBasedShardingAlgorithm shardingAlgorithm = getComplexKeysShardingAlgorithm();
-        assertThat(shardingAlgorithm.getStrategy(), is(ClassBasedShardingAlgorithmStrategy.COMPLEX));
+        assertThat(shardingAlgorithm.getStrategy(), is(ClassBasedShardingAlgorithmStrategyType.COMPLEX));
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new ComplexKeysShardingValue<>("t_order", null, null));
         assertThat(actual.size(), is(4));
@@ -102,7 +109,7 @@ public class ClassBasedShardingAlgorithmTest {
     @Test
     public void assertHintDoSharding() {
         ClassBasedShardingAlgorithm shardingAlgorithm = getHintShardingAlgorithm();
-        assertThat(shardingAlgorithm.getStrategy(), is(ClassBasedShardingAlgorithmStrategy.HINT));
+        assertThat(shardingAlgorithm.getStrategy(), is(ClassBasedShardingAlgorithmStrategyType.HINT));
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new HintShardingValue<>("t_order", "order_id", null));
         assertThat(actual.size(), is(4));

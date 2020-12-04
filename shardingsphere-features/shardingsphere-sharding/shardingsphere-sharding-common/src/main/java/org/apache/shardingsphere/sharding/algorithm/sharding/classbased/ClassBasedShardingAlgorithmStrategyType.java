@@ -17,45 +17,24 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.classbased;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
  * Class based sharding strategy.
  */
-@RequiredArgsConstructor
-@Getter
-public enum ClassBasedShardingAlgorithmStrategy {
+public enum ClassBasedShardingAlgorithmStrategyType {
 
     /**
      * The sharding strategy is standard.
      */
-    STANDARD("standard"),
+    STANDARD,
 
     /**
      * The sharding strategy is complex.
      */
-    COMPLEX("complex"),
+    COMPLEX,
 
     /**
      * The sharding strategy is hint.
      */
-    HINT("hint");
+    HINT
 
-    private final String value;
-
-    /**
-     * Value of Class based sharding strategy.
-     *
-     * @param value value
-     * @return Class based sharding strategy
-     */
-    public static ClassBasedShardingAlgorithmStrategy valueFrom(final String value) {
-        for (ClassBasedShardingAlgorithmStrategy each : values()) {
-            if (each.value.equals(value)) {
-                return each;
-            }
-        }
-        throw new IllegalArgumentException(String.format("Illegal class based sharding strategy value `%s`.", value));
-    }
 }

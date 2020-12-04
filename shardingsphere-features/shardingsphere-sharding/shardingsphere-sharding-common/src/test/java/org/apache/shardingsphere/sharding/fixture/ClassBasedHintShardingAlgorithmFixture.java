@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 
 import java.util.Collection;
 
-public class ClassBasedHintShardingAlgorithmFixture implements HintShardingAlgorithm<Integer> {
+public final class ClassBasedHintShardingAlgorithmFixture implements HintShardingAlgorithm<Integer> {
 
     @Override
     public void init() {

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
  * ShardingSphere class based algorithm factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ClassBasedShardingAlgorithmFactory {
+public final class ClassBasedShardingAlgorithmFactory {
 
     /**
      * Create sharding algorithm.
