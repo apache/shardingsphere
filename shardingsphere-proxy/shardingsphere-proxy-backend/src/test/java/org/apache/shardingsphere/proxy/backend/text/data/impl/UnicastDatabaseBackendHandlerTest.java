@@ -55,7 +55,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UnicastDatabaseBackendHandlerTest {
+public final class UnicastDatabaseBackendHandlerTest {
 
     private static final String EXECUTE_SQL = "SELECT 1 FROM user WHERE id = 1";
 
@@ -74,7 +74,6 @@ public class UnicastDatabaseBackendHandlerTest {
 
     @Before
     public void setUp() throws IllegalAccessException, NoSuchFieldException, SQLException {
-
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(),

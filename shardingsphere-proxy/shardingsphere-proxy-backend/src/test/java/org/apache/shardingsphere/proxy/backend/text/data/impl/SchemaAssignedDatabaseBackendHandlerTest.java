@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SchemaAssignedDatabaseBackendHandlerTest {
+public final class SchemaAssignedDatabaseBackendHandlerTest {
 
     private static final String EXECUTE_SQL = "USE test";
 
@@ -73,7 +73,6 @@ public class SchemaAssignedDatabaseBackendHandlerTest {
 
     @Before
     public void setUp() throws IllegalAccessException, NoSuchFieldException, SQLException {
-
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(),

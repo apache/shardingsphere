@@ -30,7 +30,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class DatabaseBackendHandlerFactoryTest {
+public final class DatabaseBackendHandlerFactoryTest {
 
     @Mock
     private BackendConnection backendConnection;
