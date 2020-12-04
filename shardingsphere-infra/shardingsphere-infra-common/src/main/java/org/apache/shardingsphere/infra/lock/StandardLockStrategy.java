@@ -44,4 +44,9 @@ public final class StandardLockStrategy implements LockStrategy {
         lock.unlock();
         StateContext.switchState(new StateEvent(StateType.OK, true));
     }
+    
+    @Override
+    public boolean checkLock() {
+        return StateContext.getCurrentState() == StateType.LOCK;
+    }
 }
