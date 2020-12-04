@@ -25,6 +25,7 @@ execute
     | update
     | delete
     | replace
+    | binlog
     | createTable
     | alterStatement
     | repairTable

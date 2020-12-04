@@ -107,3 +107,11 @@ UL_BINARY
 AUTOCOMMIT
     : A U T O C O M M I T
     ;
+
+INNODB
+    : 'INNODB'
+    ;
+
+REDO_LOG
+    : 'REDO_LOG'
+    ;
