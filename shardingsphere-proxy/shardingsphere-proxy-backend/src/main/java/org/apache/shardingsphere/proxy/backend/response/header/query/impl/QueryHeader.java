@@ -35,11 +35,11 @@ public final class QueryHeader {
     
     private final String columnName;
     
-    private final int columnLength;
-    
     private final int columnType;
     
     private final String columnTypeName;
+    
+    private final int columnLength;
     
     private final int decimals;
     

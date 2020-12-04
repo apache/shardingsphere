@@ -14,7 +14,7 @@ chapter = true
 | *Implementation Class*   | *Description*                                                                   |
 | ------------------------ | ------------------------------------------------------------------------------- |
 | MySQLFrontendEngine      | Base on MySQL database protocol                                                 |
-| PostgreSQLFrontendEngine | Base on postgreSQL database protocol                                            |
+| PostgreSQLFrontendEngine | Base on PostgreSQL database protocol                                            |
 
 ## JDBCDriverURLRecognizer
 

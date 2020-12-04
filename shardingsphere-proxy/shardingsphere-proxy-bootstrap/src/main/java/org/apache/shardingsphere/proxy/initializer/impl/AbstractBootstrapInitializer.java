@@ -65,7 +65,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         initOpenTracing();
         setDatabaseServerInfo();
-        initProxyLockContext();
+        initLockContext();
         shardingSphereProxy.start(port);
     }
     
@@ -129,5 +129,5 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     
     protected abstract TransactionContexts decorateTransactionContexts(TransactionContexts transactionContexts);
     
-    protected abstract void initProxyLockContext();
+    protected abstract void initLockContext();
 }

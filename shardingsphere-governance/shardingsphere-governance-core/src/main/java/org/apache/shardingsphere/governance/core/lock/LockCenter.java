@@ -67,7 +67,9 @@ public final class LockCenter {
      * Unlock instance.
      */
     public void unlock() {
-        registryCenter.persistInstanceData(governedState.recoverState().toString());
+        if (governedState.getState().toString().equalsIgnoreCase(RegistryCenterNodeStatus.LOCKED.toString())) {
+            registryCenter.persistInstanceData(governedState.recoverState().toString());    
+        }
     }
     
     /**
@@ -85,12 +87,6 @@ public final class LockCenter {
      */
     public void releaseGlobalLock() {
         registryRepository.releaseLock();
-    }
-    
-    /**
-     * Delete global lock.
-     */
-    public void deleteGlobalLock() {
         registryRepository.delete(lockNode.getGlobalLockNodePath());
     }
 }

@@ -56,7 +56,7 @@ public final class PostgreSQLWalDumperTest {
     
     private WalPosition position;
     
-    private PostgreSQLWalDumper postgreSQLWalDumper;
+    private PostgreSQLWalDumper walDumper;
     
     private StandardJDBCDataSourceConfiguration jdbcDataSourceConfig;
     
@@ -66,10 +66,10 @@ public final class PostgreSQLWalDumperTest {
     public void setUp() {
         ScalingContext.getInstance().init(new ServerConfiguration());
         position = new WalPosition(LogSequenceNumber.valueOf(100L));
-        postgreSQLWalDumper = new PostgreSQLWalDumper(mockDumperConfiguration(), position);
+        walDumper = new PostgreSQLWalDumper(mockDumperConfiguration(), position);
         channel = new MemoryChannel(records -> {
         });
-        postgreSQLWalDumper.setChannel(channel);
+        walDumper.setChannel(channel);
     }
     
     private DumperConfiguration mockDumperConfiguration() {
@@ -82,7 +82,7 @@ public final class PostgreSQLWalDumperTest {
     @Test
     public void assertStart() throws SQLException, NoSuchFieldException, IllegalAccessException {
         try {
-            ReflectionUtil.setFieldValue(postgreSQLWalDumper, "logicalReplication", logicalReplication);
+            ReflectionUtil.setFieldValue(walDumper, "logicalReplication", logicalReplication);
             when(logicalReplication.createPgConnection(jdbcDataSourceConfig)).thenReturn(pgConnection);
             when(pgConnection.unwrap(PgConnection.class)).thenReturn(pgConnection);
             when(pgConnection.getTimestampUtils()).thenReturn(null);
@@ -90,7 +90,7 @@ public final class PostgreSQLWalDumperTest {
             ByteBuffer data = ByteBuffer.wrap("table public.test: DELETE: data[integer]:1".getBytes());
             when(pgReplicationStream.readPending()).thenReturn(null).thenReturn(data).thenThrow(new SQLException(""));
             when(pgReplicationStream.getLastReceiveLSN()).thenReturn(LogSequenceNumber.valueOf(101L));
-            postgreSQLWalDumper.start();
+            walDumper.start();
         } catch (final ScalingTaskExecuteException ignored) {
         }
         assertThat(channel.fetchRecords(100, 0).size(), is(1));
