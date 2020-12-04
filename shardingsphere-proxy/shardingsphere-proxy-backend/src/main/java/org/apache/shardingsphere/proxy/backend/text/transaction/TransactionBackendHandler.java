@@ -26,7 +26,6 @@ import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.Collection;
 
 /**
  * Do transaction operation.
@@ -58,15 +57,5 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
                 throw new SQLFeatureNotSupportedException(operationType.name());
         }
         return new UpdateResponseHeader(null);
-    }
-    
-    @Override
-    public boolean next() {
-        return false;
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return null;
     }
 }

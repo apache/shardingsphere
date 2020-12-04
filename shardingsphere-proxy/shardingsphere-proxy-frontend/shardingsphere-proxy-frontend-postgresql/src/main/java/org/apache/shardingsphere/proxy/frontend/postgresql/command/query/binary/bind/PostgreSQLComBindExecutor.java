@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.bind;
 
 import lombok.Getter;
+import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
+import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
@@ -33,7 +36,8 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
+import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
@@ -48,6 +52,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Command bind executor for PostgreSQL.
@@ -122,8 +127,13 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     }
     
     @Override
-    public PostgreSQLPacket getQueryData() throws SQLException {
-        QueryResponseData queryData = databaseCommunicationEngine.getQueryResponseData();
-        return packet.isBinaryRowData() ? new PostgreSQLBinaryResultSetRowPacket(queryData.getData(), queryData.getColumnTypes()) : new PostgreSQLDataRowPacket(queryData.getData());
+    public PostgreSQLPacket getQueryRowPacket() throws SQLException {
+        QueryResponseRow queryResponseRow = databaseCommunicationEngine.getQueryResponseRow();
+        return packet.isBinaryRowData() ? new PostgreSQLBinaryResultSetRowPacket(createBinaryRow(queryResponseRow)) : new PostgreSQLDataRowPacket(queryResponseRow.getData());
+    }
+    
+    private BinaryRow createBinaryRow(final QueryResponseRow queryResponseRow) {
+        return new BinaryRow(queryResponseRow.getCells().stream().map(
+            each -> new BinaryCell(PostgreSQLBinaryColumnType.valueOfJDBCType(((BinaryQueryResponseCell) each).getJdbcType()), each.getData())).collect(Collectors.toList()));
     }
 }

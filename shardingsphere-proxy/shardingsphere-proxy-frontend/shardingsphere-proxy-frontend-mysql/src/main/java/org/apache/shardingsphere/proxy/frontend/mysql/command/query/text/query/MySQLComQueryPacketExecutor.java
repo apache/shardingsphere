@@ -76,7 +76,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     }
     
     @Override
-    public MySQLPacket getQueryData() throws SQLException {
+    public MySQLPacket getQueryRowPacket() throws SQLException {
         return new MySQLTextResultSetRowPacket(++currentSequenceId, textProtocolBackendHandler.getRowData());
     }
 }

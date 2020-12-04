@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.execute;
 
 import lombok.Getter;
+import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
+import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLBinaryResultSetRowPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
@@ -28,7 +31,8 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseData;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
+import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -39,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * COM_STMT_EXECUTE command executor for MySQL.
@@ -83,8 +88,13 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     }
     
     @Override
-    public MySQLPacket getQueryData() throws SQLException {
-        QueryResponseData queryData = databaseCommunicationEngine.getQueryResponseData();
-        return new MySQLBinaryResultSetRowPacket(++currentSequenceId, queryData.getData(), queryData.getColumnTypes());
+    public MySQLPacket getQueryRowPacket() throws SQLException {
+        QueryResponseRow queryResponseRow = databaseCommunicationEngine.getQueryResponseRow();
+        return new MySQLBinaryResultSetRowPacket(++currentSequenceId, createBinaryRow(queryResponseRow));
+    }
+    
+    private BinaryRow createBinaryRow(final QueryResponseRow queryResponseRow) {
+        return new BinaryRow(queryResponseRow.getCells().stream().map(
+            each -> new BinaryCell(MySQLBinaryColumnType.valueOfJDBCType(((BinaryQueryResponseCell) each).getJdbcType()), each.getData())).collect(Collectors.toList()));
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.fixture;
 
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.AbstractDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
@@ -29,8 +29,8 @@ import java.util.Map;
 
 public final class FixtureDataConsistencyChecker extends AbstractDataConsistencyChecker implements DataConsistencyChecker {
     
-    public FixtureDataConsistencyChecker(final ShardingScalingJob shardingScalingJob) {
-        super(shardingScalingJob);
+    public FixtureDataConsistencyChecker(final ScalingJob scalingJob) {
+        super(scalingJob);
     }
     
     @Override

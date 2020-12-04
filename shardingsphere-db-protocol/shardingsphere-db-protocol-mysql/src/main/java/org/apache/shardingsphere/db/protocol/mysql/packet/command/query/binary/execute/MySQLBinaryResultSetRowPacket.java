@@ -18,21 +18,19 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute;
 
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.binary.BinaryResultSetRow;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
+import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.protocol.MySQLBinaryProtocolValueFactory;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Binary result set row packet for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-resultset-row.html">Binary Protocol Resultset Row</a>
  */
+@RequiredArgsConstructor
 public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     
     private static final int PACKET_HEADER = 0x00;
@@ -42,20 +40,7 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     @Getter
     private final int sequenceId;
     
-    private final Collection<BinaryResultSetRow> binaryRows;
-    
-    public MySQLBinaryResultSetRowPacket(final int sequenceId, final List<Object> data, final List<Integer> columnTypes) {
-        this.sequenceId = sequenceId;
-        binaryRows = getBinaryResultSetRows(columnTypes, data);
-    }
-    
-    private Collection<BinaryResultSetRow> getBinaryResultSetRows(final List<Integer> columnTypes, final List<Object> data) {
-        Collection<BinaryResultSetRow> result = new LinkedList<>();
-        for (int i = 0; i < columnTypes.size(); i++) {
-            result.add(new BinaryResultSetRow(MySQLBinaryColumnType.valueOfJDBCType(columnTypes.get(i)), data.get(i)));
-        }
-        return result;
-    }
+    private final BinaryRow row;
     
     @Override
     public void write(final MySQLPacketPayload payload) {
@@ -71,9 +56,9 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     }
     
     private MySQLNullBitmap getNullBitmap() {
-        MySQLNullBitmap result = new MySQLNullBitmap(binaryRows.size(), NULL_BITMAP_OFFSET);
+        MySQLNullBitmap result = new MySQLNullBitmap(row.getCells().size(), NULL_BITMAP_OFFSET);
         int index = 0;
-        for (BinaryResultSetRow each : binaryRows) {
+        for (BinaryCell each : row.getCells()) {
             if (null == each.getData()) {
                 result.setNullBit(index);
             }
@@ -83,7 +68,7 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     }
     
     private void writeValues(final MySQLPacketPayload payload) {
-        for (BinaryResultSetRow each : binaryRows) {
+        for (BinaryCell each : row.getCells()) {
             if (null != each.getData()) {
                 MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(each.getColumnType()).write(payload, each.getData());
             }

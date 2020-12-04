@@ -57,6 +57,15 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>com.google.errorprone:error_prone_annotations:jar:</exclude>
+                                    <exclude>com.google.code.findbugs:jsr305:jar:</exclude>
+                                    <exclude>org.checkerframework:checker-qual:jar:</exclude>
+                                    <exclude>com.google.guava:listenablefuture:jar:*</exclude>
+                                    <exclude>com.google.j2objc:j2objc-annotations:jar:*</exclude>
+                                </excludes>
+                            </artifactSet>
                             <relocations>
                                 <relocation>
                                     <pattern>org.yaml</pattern>
@@ -73,10 +82,6 @@
                                 <relocation>
                                     <pattern>org.apache.commons</pattern>
                                     <shadedPattern>${shade.package}.org.apache.commons</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.checkerframework</pattern>
-                                    <shadedPattern>${shade.package}.org.checkerframework</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
