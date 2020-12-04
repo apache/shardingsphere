@@ -15,31 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
-
-import lombok.Getter;
-import lombok.Setter;
+package org.apache.shardingsphere.scaling.core.service;
 
 /**
- * Job configuration.
+ * Scaling callback.
  */
-@Setter
-@Getter
-public final class JobConfiguration {
+public interface ScalingCallback {
     
-    private Long jobId;
+    /**
+     * Callback when execute success.
+     */
+    void onSuccess();
     
-    private int concurrency = 3;
-    
-    private int retryTimes = 3;
-    
-    private String[] shardingTables;
-    
-    private int shardingItem;
-    
-    private int shardingSize = 1000 * 10000;
-    
-    private boolean running = true;
-    
-    private long allowDelay = 60 * 1000L;
+    /**
+     * Callback when execute failure.
+     */
+    void onFailure();
 }
