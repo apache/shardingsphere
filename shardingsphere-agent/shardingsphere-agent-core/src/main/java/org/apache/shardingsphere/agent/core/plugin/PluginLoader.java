@@ -52,19 +52,19 @@ import java.util.zip.ZipEntry;
  */
 @Slf4j
 public final class PluginLoader extends ClassLoader implements Closeable {
-
+    
     private static final PluginLoader INSTANCE = new PluginLoader();
-
+    
     private final ConcurrentHashMap<String, Object> objectPool = new ConcurrentHashMap<>();
-
+    
     private final ReentrantLock lock = new ReentrantLock();
-
+    
     private final List<JarFile> jars = Lists.newArrayList();
-
+    
     private final List<Service> services = Lists.newArrayList();
-
+    
     private Map<String, PluginAdviceDefinition> pluginDefineMap;
-
+    
     private PluginLoader() {
         try {
             pluginDefineMap = loadAllPlugins();
@@ -72,7 +72,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             log.error("Failed to load plugins.");
         }
     }
-
+    
     @Override
     protected Class<?> findClass(final String name) throws ClassNotFoundException {
         String path = classNameToPath(name);
@@ -89,7 +89,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
         }
         throw new ClassNotFoundException("Class " + name + " not found.");
     }
-
+    
     @Override
     public void close() {
         for (JarFile jar : jars) {
@@ -100,7 +100,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             }
         }
     }
-
+    
     /**
      * To get plugin loader instance.
      *
@@ -109,7 +109,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     public static PluginLoader getInstance() {
         return INSTANCE;
     }
-
+    
     private Map<String, PluginAdviceDefinition> loadAllPlugins() throws IOException {
         File[] jarFiles = AgentPathLocator.getAgentPath().listFiles(file -> file.getName().endsWith(".jar"));
         ImmutableMap.Builder<String, PluginAdviceDefinition> pluginDefineMap = ImmutableMap.builder();
@@ -117,7 +117,11 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             return pluginDefineMap.build();
         }
         AgentConfiguration configuration = SingletonHolder.INSTANCE.get(AgentConfiguration.class);
-        Set<String> activatedPlugins = Sets.newHashSet(configuration.getActivatedPlugins());
+        List<String> activatedLists = configuration.getActivatedPlugins();
+        if (activatedLists == null) {
+            activatedLists = Lists.newArrayList();
+        }
+        Set<String> activatedPlugins = Sets.newHashSet(activatedLists);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         for (File jarFile : jarFiles) {
             outputStream.reset();
@@ -149,11 +153,11 @@ public final class PluginLoader extends ClassLoader implements Closeable {
         }
         return pluginDefineMap.build();
     }
-
+    
     private String classNameToPath(final String className) {
         return className.replace(".", "/") + ".class";
     }
-
+    
     /**
      * To find all intercepting target classes then to build TypeMatcher.
      *
@@ -162,7 +166,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     public ElementMatcher<? super TypeDescription> typeMatcher() {
         return ElementMatchers.anyOf(pluginDefineMap.keySet().stream().map(ElementMatchers::named).toArray());
     }
-
+    
     /**
      * To detect the type whether or not exists.
      *
@@ -172,7 +176,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     public boolean containsType(final TypeDescription typeDescription) {
         return pluginDefineMap.containsKey(typeDescription.getTypeName());
     }
-
+    
     /**
      * Load the definition configuration by TypeDescription.
      *
@@ -182,7 +186,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     public PluginAdviceDefinition loadPluginAdviceDefine(final TypeDescription typeDescription) {
         return pluginDefineMap.getOrDefault(typeDescription.getTypeName(), PluginAdviceDefinition.createDefault());
     }
-
+    
     /**
      * To get or create instance of the advice class. Create new one and caching when it is not exist.
      *
@@ -208,7 +212,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             lock.unlock();
         }
     }
-
+    
     /**
      * Initial all services.
      */
@@ -223,7 +227,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             }
         });
     }
-
+    
     /**
      * Start all services.
      */
@@ -238,7 +242,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             }
         });
     }
-
+    
     /**
      * Shutdown all services.
      */

@@ -30,7 +30,7 @@ public class AgentConfiguration {
     private String applicationName;
     
     private MetricsConfiguration metrics;
-
+    
     private List<String> activatedPlugins;
     
     @Data
