@@ -20,7 +20,11 @@ package org.apache.shardingsphere.infra.lock;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Lock context.
@@ -29,6 +33,12 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class LockContext {
     
     private static final AtomicReference<LockStrategy> LOCK_STRATEGY = new AtomicReference<>();
+    
+    private static final Lock LOCK = new ReentrantLock();
+    
+    private static final Condition CONDITION = LOCK.newCondition();
+    
+    private static final long TIME_OUT_SECONDS = 50L;
     
     /**
      * Init lock strategy.
@@ -46,5 +56,35 @@ public final class LockContext {
      */
     public static LockStrategy getLockStrategy() {
         return LOCK_STRATEGY.get();
+    }
+    
+    /**
+     * Waiting for unlock.
+     * 
+     * @return false if wait timeout exceeded, else true
+     */
+    public static boolean await() {
+        LOCK.lock();
+        try {
+            return CONDITION.await(TIME_OUT_SECONDS, TimeUnit.SECONDS);
+            // CHECKSTYLE:OFF
+        } catch (InterruptedException e) {
+            // CHECKSTYLE:ON
+        } finally {
+            LOCK.unlock();
+        }
+        return false;
+    }
+    
+    /**
+     * Notify all blocked tasks.
+     */
+    public static void signalAll() {
+        LOCK.lock();
+        try {
+            CONDITION.signalAll();
+        } finally {
+            LOCK.unlock();
+        }
     }
 }

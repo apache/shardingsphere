@@ -17,21 +17,23 @@
 
 package org.apache.shardingsphere.ha.api.config.rule;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 /**
  * HA data source rule configuration.
  */
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
 public final class HADataSourceRuleConfiguration {
     
     private final String name;
     
-    private final String primaryDataSourceName;
+    @Setter
+    private String primaryDataSourceName;
     
     private final List<String> replicaDataSourceNames;
     

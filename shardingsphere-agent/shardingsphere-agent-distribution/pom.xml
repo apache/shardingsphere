@@ -35,12 +35,6 @@
             <artifactId>shardingsphere-agent-bootstrap</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-plugin-metrics</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
     <build>

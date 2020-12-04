@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.infra.lock;
 
+import org.apache.shardingsphere.infra.state.StateContext;
+import org.apache.shardingsphere.infra.state.StateEvent;
+import org.apache.shardingsphere.infra.state.StateType;
+
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -28,11 +32,16 @@ public final class StandardLockStrategy implements LockStrategy {
     
     @Override
     public boolean tryLock() {
-        return lock.tryLock();
+        boolean result = lock.tryLock();
+        if (result) {
+            StateContext.switchState(new StateEvent(StateType.LOCK, true));
+        }
+        return result;
     }
     
     @Override
     public void releaseLock() {
         lock.unlock();
+        StateContext.switchState(new StateEvent(StateType.OK, true));
     }
 }
