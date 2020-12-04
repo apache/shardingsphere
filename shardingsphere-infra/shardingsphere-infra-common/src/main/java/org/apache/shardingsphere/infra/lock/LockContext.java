@@ -38,7 +38,7 @@ public final class LockContext {
     
     private static final Condition CONDITION = LOCK.newCondition();
     
-    private static final long TIME_OUT_SECONDS = 60L;
+    private static final long TIME_OUT_SECONDS = 50L;
     
     /**
      * Init lock strategy.
