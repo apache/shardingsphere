@@ -19,6 +19,8 @@ package org.apache.shardingsphere.agent.core.config;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * Agent configuration.
  */
@@ -28,6 +30,8 @@ public class AgentConfiguration {
     private String applicationName;
     
     private MetricsConfiguration metrics;
+
+    private List<String> activatedPlugins;
     
     @Data
     public static class MetricsConfiguration {
