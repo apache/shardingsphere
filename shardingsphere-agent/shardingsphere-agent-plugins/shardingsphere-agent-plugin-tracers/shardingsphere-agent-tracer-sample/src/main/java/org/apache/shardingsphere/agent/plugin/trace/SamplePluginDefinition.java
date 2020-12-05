@@ -26,6 +26,10 @@ import org.apache.shardingsphere.agent.core.plugin.PluginDefinition;
  */
 public class SamplePluginDefinition extends PluginDefinition {
 
+    public SamplePluginDefinition() {
+        super("");
+    }
+
     @Override
     protected void define() {
         intercept("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask")

@@ -33,6 +33,12 @@ public abstract class PluginDefinition {
     private final Map<String, PluginAdviceDefinition.Builder> defineMap = Maps.newHashMap();
     
     private final List<Class<? extends Service>> services = Lists.newArrayList();
+
+    private final String pluginName;
+
+    public PluginDefinition(final String pluginName) {
+        this.pluginName = pluginName;
+    }
     
     /**
      * Define the plugin here.
@@ -51,7 +57,7 @@ public abstract class PluginDefinition {
     /**
      * Register service to agent.
      *
-     * @param service the class of Service.
+     * @param service the class of Service
      */
     protected void registerService(final Class<? extends Service> service) {
         services.add(service);
@@ -60,7 +66,7 @@ public abstract class PluginDefinition {
     /**
      * To build Plugin definition.
      *
-     * @return configurations.
+     * @return configurations
      */
     public final List<PluginAdviceDefinition> build() {
         define();
@@ -70,9 +76,18 @@ public abstract class PluginDefinition {
     /**
      * To get all services.
      *
-     * @return all services.
+     * @return all services
      */
     public List<Class<? extends Service>> getAllServices() {
         return services;
+    }
+
+    /**
+     * To get plugin name.
+     *
+     * @return plugin name
+     */
+    public String getPluginName() {
+        return pluginName;
     }
 }
