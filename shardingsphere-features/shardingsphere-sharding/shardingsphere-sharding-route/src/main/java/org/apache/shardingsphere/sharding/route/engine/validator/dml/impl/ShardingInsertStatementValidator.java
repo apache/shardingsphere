@@ -32,6 +32,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 
+import com.google.common.base.Preconditions;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +42,8 @@ import java.util.Optional;
  * Sharding insert statement validator.
  */
 public final class ShardingInsertStatementValidator extends ShardingDMLStatementValidator<InsertStatement> {
+
+    private boolean needCheckShardingKey;
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext, 
@@ -63,7 +67,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
             throw new ShardingSphereException("The table inserted and the table selected must be the same or bind tables.");
         }
         if (insertSelectSegment.isPresent() && isNeedMergeShardingValues(sqlStatementContext, shardingRule)) {
-            checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
+            needCheckShardingKey = checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
         }
     }
     
@@ -90,5 +94,8 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     
     @Override
     public void postValidate(final InsertStatement sqlStatement, final RouteContext routeContext) {
+        if (needCheckShardingKey) {
+            Preconditions.checkState(routeContext.getRouteUnits().size() > 0, "Sharding value must same with subquery.");
+        }
     }
 }
