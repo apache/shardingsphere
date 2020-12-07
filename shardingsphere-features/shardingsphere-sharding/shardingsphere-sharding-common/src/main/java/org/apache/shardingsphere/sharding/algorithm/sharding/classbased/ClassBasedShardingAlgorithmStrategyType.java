@@ -15,29 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.sharding.algorithm.sharding.classbased;
 
 /**
- * Lock strategy.
+ * Class based sharding strategy.
  */
-public interface LockStrategy {
-    
+public enum ClassBasedShardingAlgorithmStrategyType {
+
     /**
-     * Try to get lock.
-     * 
-     * @return true if get the lock, false if not
+     * The sharding strategy is standard.
      */
-    boolean tryLock();
-    
+    STANDARD,
+
     /**
-     * Release lock.
+     * The sharding strategy is complex.
      */
-    void releaseLock();
-    
+    COMPLEX,
+
     /**
-     * Check lock state.
-     * 
-     * @return true if all instances were locked, else false
+     * The sharding strategy is hint.
      */
-    boolean checkLock();
+    HINT
+
 }

@@ -101,3 +101,16 @@ There is no built-in complex sharding algorithm in Apache ShardingSphere.
 ## Hint Sharding Algorithm
 
 There is no built-in hint sharding algorithm in Apache ShardingSphere.
+
+## Class Based Sharding Algorithm
+
+Realize custom extension by configuring the sharding strategy type and algorithm class name.
+
+Type：CLASS_BASED
+
+Attributes：
+
+| *Name*           | *DataType* | *Description*                                              |
+| ------------------ | --------- | -------------------------------------------------- |
+| strategy           | String    | Sharding strategy type, support STANDARD, COMPLEX or HINT (case insensitive) |
+| algorithmClassName | String    | Fully qualified name of sharding algorithm                                   |

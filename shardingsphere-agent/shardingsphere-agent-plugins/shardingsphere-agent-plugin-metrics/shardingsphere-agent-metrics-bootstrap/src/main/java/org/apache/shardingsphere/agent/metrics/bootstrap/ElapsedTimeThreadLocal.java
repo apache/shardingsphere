@@ -15,29 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.agent.metrics.bootstrap;
 
 /**
- * Lock strategy.
+ * The enum Elapsed time thread local.
  */
-public interface LockStrategy {
+public enum ElapsedTimeThreadLocal {
     
     /**
-     * Try to get lock.
-     * 
-     * @return true if get the lock, false if not
+     * Instance elapsed time thread local.
      */
-    boolean tryLock();
+    INSTANCE;
+    
+    private static final ThreadLocal<Long> CURRENT_LOCAL = new ThreadLocal<>();
     
     /**
-     * Release lock.
+     * Set.
+     *
+     * @param time the time
      */
-    void releaseLock();
+    public void set(final long time) {
+        CURRENT_LOCAL.set(time);
+    }
     
     /**
-     * Check lock state.
-     * 
-     * @return true if all instances were locked, else false
+     * Get long.
+     *
+     * @return the long
      */
-    boolean checkLock();
+    public Long get() {
+        return CURRENT_LOCAL.get();
+    }
+    
+    /**
+     * Remove.
+     */
+    public void remove() {
+        CURRENT_LOCAL.remove();
+    }
 }

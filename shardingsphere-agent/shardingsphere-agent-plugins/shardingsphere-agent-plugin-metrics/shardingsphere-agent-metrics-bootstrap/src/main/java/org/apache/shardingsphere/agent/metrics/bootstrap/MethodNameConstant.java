@@ -13,31 +13,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.agent.metrics.bootstrap;
 
 /**
- * Lock strategy.
+ * Method name constant.
  */
-public interface LockStrategy {
+public final class MethodNameConstant {
+
+    public static final String CHANNEL_ACTIVE = "channelActive";
     
-    /**
-     * Try to get lock.
-     * 
-     * @return true if get the lock, false if not
-     */
-    boolean tryLock();
+    public static final String CHANNEL_READ = "channelRead";
     
-    /**
-     * Release lock.
-     */
-    void releaseLock();
+    public static final String CHANNEL_INACTIVE = "channelInactive";
     
-    /**
-     * Check lock state.
-     * 
-     * @return true if all instances were locked, else false
-     */
-    boolean checkLock();
+    public static final String COMMIT = "commit";
+    
+    public static final String ROLL_BACK = "rollback";
+    
 }

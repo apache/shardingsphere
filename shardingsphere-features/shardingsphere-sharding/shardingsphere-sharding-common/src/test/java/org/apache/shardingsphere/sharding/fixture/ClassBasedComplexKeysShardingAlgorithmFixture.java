@@ -15,29 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.sharding.fixture;
 
-/**
- * Lock strategy.
- */
-public interface LockStrategy {
-    
-    /**
-     * Try to get lock.
-     * 
-     * @return true if get the lock, false if not
-     */
-    boolean tryLock();
-    
-    /**
-     * Release lock.
-     */
-    void releaseLock();
-    
-    /**
-     * Check lock state.
-     * 
-     * @return true if all instances were locked, else false
-     */
-    boolean checkLock();
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
+
+import java.util.Collection;
+
+public final class ClassBasedComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<Integer> {
+
+    @Override
+    public void init() {
+    }
+
+    @Override
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
+        return availableTargetNames;
+    }
+
+    @Override
+    public String getType() {
+        return null;
+    }
 }

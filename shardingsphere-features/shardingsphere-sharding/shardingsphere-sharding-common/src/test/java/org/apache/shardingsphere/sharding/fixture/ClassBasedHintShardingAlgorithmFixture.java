@@ -13,28 +13,28 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.metrics.bootstrap;
+package org.apache.shardingsphere.sharding.fixture;
 
-import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.plugin.PluginDefinition;
+import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 
-/**
- * Metrics plugin definition.
- */
-public class MetricsPluginDefinition extends PluginDefinition {
+import java.util.Collection;
 
-    public MetricsPluginDefinition() {
-        super("sample-metrics");
+public final class ClassBasedHintShardingAlgorithmFixture implements HintShardingAlgorithm<Integer> {
+
+    @Override
+    public void init() {
     }
 
     @Override
-    protected void define() {
-        intercept("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask")
-                .aroundInstanceMethod(ElementMatchers.named("run"))
-                .implement("org.apache.shardingsphere.agent.plugin.trace.SampleAdvice")
-                .build();
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Integer> shardingValue) {
+        return availableTargetNames;
+    }
+
+    @Override
+    public String getType() {
+        return null;
     }
 }
