@@ -100,3 +100,17 @@ Apache ShardingSphere 暂无内置复合分片算法。
 ## Hint 分片算法
 
 Apache ShardingSphere 暂无内置 Hint 分片算法。
+
+## 自定义类分片算法
+
+通过配置分片策略类型和算法类名，实现自定义扩展。
+
+类型：CLASS_BASED
+
+可配置属性：
+
+| *属性名称*           | *数据类型* | *说明*                                              |
+| ------------------ | --------- | -------------------------------------------------- |
+| strategy           | String    | 分片策略类型，支持STANDARD、COMPLEX或HINT（不区分大小写） |
+| algorithmClassName | String    | 分片算法全限定名                                      |
+

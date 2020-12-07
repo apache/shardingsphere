@@ -20,6 +20,7 @@ chapter = true
 | MutableIntervalShardingAlgorithm    | Mutable interval sharding algorithm     |
 | VolumeBasedRangeShardingAlgorithm   | Volume based range sharding algorithm   |
 | BoundaryBasedRangeShardingAlgorithm | Boundary based range sharding algorithm |
+| ClassBasedShardingAlgorithm         | Class based sharding algorithm          |
 
 ## KeyGenerateAlgorithm
 
