@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class AbstractStatementExecutor {
+public class AbstractStatementExecutor {
     
     static {
         ShardingSphereServiceLoader.register(SchemaChangedNotifier.class);
@@ -65,8 +65,18 @@ public abstract class AbstractStatementExecutor {
     
     private final JDBCExecutor jdbcExecutor;
     
-    protected final int executeUpdate(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, 
-                                      final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
+    /**
+     * Execute update.
+     *
+     * @param executionGroups execution groups
+     * @param sqlStatementContext SQL statement context
+     * @param routeUnits route units
+     * @param callback JDBC executor callback
+     * @return effected records count
+     * @throws SQLException SQL exception
+     */
+    public int executeUpdate(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, 
+                             final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
         List<Integer> results = jdbcExecutor.execute(executionGroups, callback);
         refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatementContext.getSqlStatement(), routeUnits);
         return isNeedAccumulate(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
@@ -98,7 +108,17 @@ public abstract class AbstractStatementExecutor {
         return updateResults.stream().mapToInt(each -> null == each ? 0 : each).sum();
     }
     
-    protected final boolean execute(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final SQLStatement sqlStatement,
+    /**
+     * Execute SQL.
+     *
+     * @param executionGroups execution groups
+     * @param sqlStatement SQL statement
+     * @param routeUnits route units
+     * @param callback JDBC executor callback
+     * @return return true if is DQL, false if is DML
+     * @throws SQLException SQL exception
+     */
+    public boolean execute(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final SQLStatement sqlStatement,
                                     final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
         List<Boolean> results = jdbcExecutor.execute(executionGroups, callback);
         refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatement, routeUnits);
