@@ -33,7 +33,7 @@ import java.sql.Statement;
  */
 public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryResult> {
     
-    public ExecuteQueryCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
+    protected ExecuteQueryCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
         super(databaseType, isExceptionThrown);
     }
     
