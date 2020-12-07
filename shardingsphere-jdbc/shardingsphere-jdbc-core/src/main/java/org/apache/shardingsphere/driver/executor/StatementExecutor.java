@@ -53,7 +53,12 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     @Override
     public List<QueryResult> executeQuery(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        JDBCExecutorCallback<QueryResult> jdbcExecutorCallback = new JDBCExecutorCallback<QueryResult>(getMetaDataContexts().getDatabaseType(), isExceptionThrown) {
+        JDBCExecutorCallback<QueryResult> callback = createJDBCExecutorCallbackWithQueryResult(isExceptionThrown);
+        return getJdbcExecutor().execute(executionGroups, callback);
+    }
+    
+    private JDBCExecutorCallback<QueryResult> createJDBCExecutorCallbackWithQueryResult(final boolean isExceptionThrown) {
+        return new JDBCExecutorCallback<QueryResult>(getMetaDataContexts().getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -65,7 +70,6 @@ public final class StatementExecutor extends AbstractStatementExecutor {
                 return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new JDBCStreamQueryResult(resultSet) : new JDBCMemoryQueryResult(resultSet);
             }
         };
-        return getJdbcExecutor().execute(executionGroups, jdbcExecutorCallback);
     }
     
     @Override
