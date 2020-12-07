@@ -29,10 +29,7 @@
     <artifactId>shardingsphere-agent-metrics-bootstrap</artifactId>
 
     <properties>
-        <entrypoint.class>org.apache.shardingsphere.agent.metrics.bootstrap.definition.CommandExecutorTaskPluginDefinition</entrypoint.class>
-        <entrypoint.class>org.apache.shardingsphere.agent.metrics.bootstrap.definition.ChannelHandlerPluginDefinition</entrypoint.class>
-        <entrypoint.class>org.apache.shardingsphere.agent.metrics.bootstrap.definition.DataNodeRouterPluginDefinition</entrypoint.class>
-        <entrypoint.class>org.apache.shardingsphere.agent.metrics.bootstrap.definition.TransactionPluginDefinition</entrypoint.class>
+        <entrypoint.class>org.apache.shardingsphere.agent.metrics.bootstrap.definition.MetricsPluginDefinition</entrypoint.class>
         <shardingsphere.version>5.0.0-RC1-SNAPSHOT</shardingsphere.version>
     </properties>
 
