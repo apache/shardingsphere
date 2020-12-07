@@ -37,25 +37,10 @@ public final class AgentTypedSPIRegistry {
      * @return registered service
      */
     public static <T extends AgentTypedSPI> T getRegisteredService(final Class<T> typedSPIClass, final String type) {
-        Optional<T> serviceInstance = AgentServiceLoader.getServiceLoader(typedSPIClass).newServiceInstances().filter(each -> each.getType().equalsIgnoreCase(type));
+        Optional<T> serviceInstance = AgentServiceLoader.getServiceLoader(typedSPIClass).newServiceInstances().stream().filter(each -> each.getType().equalsIgnoreCase(type)).findFirst();
         if (serviceInstance.isPresent()) {
             return serviceInstance.get();
         }
         throw new AgentServiceProviderNotFoundException(typedSPIClass, type);
-    }
-    
-    /**
-     * Get registered service.
-     *
-     * @param typedSPIClass typed SPI class
-     * @param <T> type
-     * @return registered service
-     */
-    public static <T extends AgentTypedSPI> T getRegisteredService(final Class<T> typedSPIClass) {
-        Optional<T> serviceInstance = AgentServiceLoader.getServiceLoader(typedSPIClass).newServiceInstances();
-        if (serviceInstance.isPresent()) {
-            return serviceInstance.get();
-        }
-        throw new AgentServiceProviderNotFoundException(typedSPIClass);
     }
 }
