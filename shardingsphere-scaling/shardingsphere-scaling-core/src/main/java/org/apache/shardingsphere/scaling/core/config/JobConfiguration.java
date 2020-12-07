@@ -37,7 +37,9 @@ public final class JobConfiguration {
     
     private int shardingItem;
     
-    private int shardingSize = 10000000;
+    private int shardingSize = 1000 * 10000;
     
     private boolean running = true;
+    
+    private long allowDelay = 60 * 1000L;
 }

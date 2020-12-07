@@ -26,6 +26,10 @@ import org.apache.shardingsphere.agent.core.plugin.PluginDefinition;
  */
 public class MetricsPluginDefinition extends PluginDefinition {
 
+    public MetricsPluginDefinition() {
+        super("sample-metrics");
+    }
+
     @Override
     protected void define() {
         intercept("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask")
