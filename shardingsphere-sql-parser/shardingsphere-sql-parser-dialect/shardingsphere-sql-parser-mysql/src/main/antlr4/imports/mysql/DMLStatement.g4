@@ -28,11 +28,23 @@ insertSpecification
     ;
 
 insertValuesClause
-    : (LP_ RP_ | columnNames)? (VALUES | VALUE) (assignmentValues (COMMA_ assignmentValues)* | rowConstructorList) valueReference?
+    : (LP_ fields? RP_ )? (VALUES | VALUE) (assignmentValues (COMMA_ assignmentValues)* | rowConstructorList) valueReference?
+    ;
+
+fields
+    : insertIdentifier (COMMA_ insertIdentifier)*
+    ;
+
+insertIdentifier
+    : columnRef | tableWild
+    ;
+
+tableWild
+    : identifier DOT_ (identifier DOT_)? ASTERISK_
     ;
 
 insertSelectClause
-    : valueReference? columnNames? select
+    : valueReference? (LP_ fields? RP_)? select
     ;
 
 onDuplicateKeyClause
@@ -56,11 +68,11 @@ replaceSpecification
     ;
 
 replaceValuesClause
-    : columnNames? (VALUES | VALUE) (assignmentValues (COMMA_ assignmentValues)* | rowConstructorList) valueReference?
+    : (LP_ fields? RP_)? (VALUES | VALUE) (assignmentValues (COMMA_ assignmentValues)* | rowConstructorList) valueReference?
     ;
 
 replaceSelectClause
-    : valueReference? columnNames? select
+    : valueReference? (LP_ fields? RP_)? select
     ;
 
 update
@@ -72,7 +84,7 @@ updateSpecification_
     ;
 
 assignment
-    : columnName EQ_ assignmentValue
+    : columnRef EQ_ assignmentValue
     ;
 
 setAssignmentsClause
@@ -89,7 +101,7 @@ assignmentValue
     ;
 
 blobValue
-    : UL_BINARY STRING_
+    : UL_BINARY string_
     ;
 
 delete
@@ -175,7 +187,7 @@ handlerCloseStatement
     ;
 
 importStatement
-    : IMPORT TABLE FROM STRING_ (COMMA_ STRING_)?
+    : IMPORT TABLE FROM string_ (COMMA_ string_)?
     ;
 
 loadStatement
@@ -185,7 +197,7 @@ loadStatement
 loadDataStatement
     : LOAD DATA
       (LOW_PRIORITY | CONCURRENT)? LOCAL? 
-      INFILE STRING_
+      INFILE string_
       (REPLACE | IGNORE)?
       INTO TABLE tableName partitionNames?
       (CHARACTER SET identifier)?
@@ -199,11 +211,11 @@ loadDataStatement
 loadXmlStatement
     : LOAD XML
       (LOW_PRIORITY | CONCURRENT)? LOCAL? 
-      INFILE STRING_
+      INFILE string_
       (REPLACE | IGNORE)?
       INTO TABLE tableName
       (CHARACTER SET identifier)?
-      (ROWS IDENTIFIED BY LT_ STRING_ GT_)?
+      (ROWS IDENTIFIED BY LT_ string_ GT_)?
       ( IGNORE numberLiterals (LINES | ROWS) )?
       fieldOrVarSpec?
       (setAssignmentsClause)?
@@ -217,10 +229,6 @@ tableValueConstructor
     : VALUES rowConstructorList
     ;
 
-columnDesignator
-    : STRING_
-    ;
-
 rowConstructorList
     : ROW assignmentValues (COMMA_ ROW assignmentValues)*
     ;
@@ -230,7 +238,7 @@ withClause
     ;
 
 cteClause
-    : ignoredIdentifier columnNames? AS subquery
+    : identifier (LP_ columnNames RP_)? AS subquery
     ;
 
 selectSpecification
@@ -274,7 +282,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName partitionNames? (AS? alias)? indexHintList? | subquery AS? alias columnNames? | LP_ tableReferences RP_
+    : tableName partitionNames? (AS? alias)? indexHintList? | subquery AS? alias (LP_ columnNames RP_)? | LP_ tableReferences RP_
     ;
 
 partitionNames
@@ -310,7 +318,7 @@ naturalJoinType
     ;
 
 joinSpecification
-    : ON expr | USING columnNames
+    : ON expr | USING LP_ columnNames RP_
     ;
 
 whereClause
@@ -342,7 +350,7 @@ windowClause
     ;
 
 windowItem
-    : ignoredIdentifier AS LP_ windowSpecification RP_
+    : identifier AS LP_ windowSpecification RP_
     ;
 
 subquery
@@ -350,16 +358,16 @@ subquery
     ;
 
 selectLinesInto
-    : STARTING BY STRING_ | TERMINATED BY STRING_
+    : STARTING BY string_ | TERMINATED BY string_
     ;
 
 selectFieldsInto
-    : TERMINATED BY STRING_ | OPTIONALLY? ENCLOSED BY STRING_ | ESCAPED BY STRING_
+    : TERMINATED BY string_ | OPTIONALLY? ENCLOSED BY string_ | ESCAPED BY string_
     ;
 
 selectIntoExpression
-    : INTO variable (COMMA_ variable )* | INTO DUMPFILE STRING_
-    | (INTO OUTFILE STRING_ (CHARACTER SET IDENTIFIER_)?((FIELDS | COLUMNS) selectFieldsInto+)? (LINES selectLinesInto+)?)
+    : INTO variable (COMMA_ variable )* | INTO DUMPFILE string_
+    | (INTO OUTFILE string_ (CHARACTER SET charsetName)?((FIELDS | COLUMNS) selectFieldsInto+)? (LINES selectLinesInto+)?)
     ;
 
 lockClause

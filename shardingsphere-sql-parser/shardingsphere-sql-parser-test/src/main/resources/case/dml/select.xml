@@ -23,6 +23,19 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_sqlmode_ansi_quotes" >
+        <projections start-index="7" stop-index="10">
+            <expression-projection start-index="7" stop-index="10" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-delimiter='"' end-delimiter='"' start-index="17" stop-index="25" />
+        </from>
+<!--        TODO support where-->
+        <where start-index="27" stop-index="49">
+
+        </where>
+    </select>
+
     <select sql-case-id="select_with_union">
     </select>
     

@@ -19,14 +19,6 @@ lexer grammar Literals;
 
 import Alphabet, Symbol;
 
-INNODB_
-    : 'INNODB'
-    ;
-    
-REDO_LOG_
-    : 'REDO_LOG'
-    ;
-    
 FILESIZE_LITERAL
     : INT_NUM_ ('K'|'M'|'G'|'T')
     ;
@@ -34,10 +26,6 @@ FILESIZE_LITERAL
 IDENTIFIER_
     : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
     |  BQ_ ~'`'+ BQ_
-    ;
-
-STRING_
-    : DOUBLE_QUOTED_TEXT | SINGLE_QUOTED_TEXT
     ;
 
 SINGLE_QUOTED_TEXT

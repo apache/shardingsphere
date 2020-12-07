@@ -102,5 +102,5 @@ lockOption
     ;
 
 xid
-    : STRING_ (COMMA_ STRING_)* numberLiterals?
+    : string_ (COMMA_ string_)* numberLiterals?
     ;
