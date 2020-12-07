@@ -21,9 +21,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Execute callback for JDBC statement.
+ * Execute callback.
  */
-public interface StatementExecuteCallback {
+public interface ExecuteCallback {
     
     /**
      * Execute.
