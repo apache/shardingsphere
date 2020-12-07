@@ -35,8 +35,12 @@ public final class AgentPathLocator {
     @Getter
     private static File agentPath;
     
+    @Getter
+    private static File pluginPath;
+    
     static {
         agentPath = locatorPath();
+        pluginPath = buildPluginPath();
     }
     
     private static File locatorPath() {
@@ -71,5 +75,9 @@ public final class AgentPathLocator {
             log.error("Can not locate agent jar file by url:" + url);
             return null;
         }
+    }
+    
+    private static File buildPluginPath() {
+        return new File(agentPath.getPath() + "/plugins");
     }
 }

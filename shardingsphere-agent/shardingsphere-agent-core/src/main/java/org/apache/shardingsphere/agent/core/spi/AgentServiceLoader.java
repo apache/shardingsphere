@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.utils;
+package org.apache.shardingsphere.agent.core.spi;
 
 import java.util.Collection;
 import java.util.LinkedList;

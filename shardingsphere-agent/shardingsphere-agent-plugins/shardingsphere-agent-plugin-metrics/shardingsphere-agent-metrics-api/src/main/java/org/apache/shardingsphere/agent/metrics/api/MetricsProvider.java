@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.agent.metrics.api;
 
-import org.apache.shardingsphere.agent.core.utils.AgentServiceLoader;
-import org.apache.shardingsphere.agent.metrics.api.prometheus.PrometheusMetricsRegisterFactory;
+import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
+import org.apache.shardingsphere.agent.core.spi.TypedSPIRegistry;
+import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
 
 /**
  * The enum Metrics provider.
@@ -33,7 +34,8 @@ public enum MetricsProvider {
     private static MetricsRegisterFactory metricRegisterFactory;
     
     static {
-        metricRegisterFactory = AgentServiceLoader.getServiceLoader(MetricsRegisterFactory.class).newServiceInstances().orElse(new PrometheusMetricsRegisterFactory());
+        AgentConfiguration.MetricsConfiguration metricsConfiguration = SingletonHolder.INSTANCE.get(AgentConfiguration.class).getMetrics();
+        metricRegisterFactory = TypedSPIRegistry.getRegisteredService(MetricsRegisterFactory.class, metricsConfiguration.getType());
     }
     
     /**

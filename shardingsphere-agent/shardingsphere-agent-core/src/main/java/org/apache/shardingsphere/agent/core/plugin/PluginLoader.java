@@ -111,7 +111,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     }
     
     private Map<String, PluginAdviceDefinition> loadAllPlugins() throws IOException {
-        File[] jarFiles = AgentPathLocator.getAgentPath().listFiles(file -> file.getName().endsWith(".jar"));
+        File[] jarFiles = AgentPathLocator.getPluginPath().listFiles(file -> file.getName().endsWith(".jar"));
         ImmutableMap.Builder<String, PluginAdviceDefinition> pluginDefineMap = ImmutableMap.builder();
         if (jarFiles == null) {
             return pluginDefineMap.build();
