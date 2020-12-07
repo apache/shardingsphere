@@ -65,17 +65,15 @@ public abstract class AbstractStatementExecutor {
     
     private final JDBCExecutor jdbcExecutor;
     
-    /**
-     * Execute update.
-     *
-     * @param executionGroups execution groups
-     * @param sqlStatementContext SQL statement context
-     * @param routeUnits route units
-     * @return effected records count
-     * @throws SQLException SQL exception
-     */
-    public abstract int executeUpdate(Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, 
-                                      SQLStatementContext<?> sqlStatementContext, Collection<RouteUnit> routeUnits) throws SQLException;
+    protected final int executeUpdate(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, 
+                              final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
+        List<Integer> results = jdbcExecutor.execute(executionGroups, callback);
+        refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatementContext.getSqlStatement(), routeUnits);
+        if (isNeedAccumulate(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(), sqlStatementContext)) {
+            return accumulate(results);
+        }
+        return null == results.get(0) ? 0 : results.get(0);
+    }
     
     /**
      * Execute SQL.
@@ -115,8 +113,8 @@ public abstract class AbstractStatementExecutor {
     }
     
     protected final boolean executeAndRefreshMetaData(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final SQLStatement sqlStatement,
-                                                      final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> jdbcExecutorCallback) throws SQLException {
-        List<Boolean> result = jdbcExecutor.execute(executionGroups, jdbcExecutorCallback);
+                                                      final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
+        List<Boolean> result = jdbcExecutor.execute(executionGroups, callback);
         refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatement, routeUnits);
         return null != result && !result.isEmpty() && null != result.get(0) && result.get(0);
     }

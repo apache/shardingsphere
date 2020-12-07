@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import javax.sql.DataSource;
@@ -34,9 +33,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Prepared statement executor.
@@ -47,18 +44,23 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         super(dataSourceMap, metaDataContexts, jdbcExecutor);
     }
     
-    @Override
+    /**
+     * Execute update.
+     *
+     * @param executionGroups execution groups
+     * @param sqlStatementContext SQL statement context
+     * @param routeUnits route units
+     * @return effected records count
+     * @throws SQLException SQL exception
+     */
     public int executeUpdate(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, 
                              final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
-        boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        JDBCExecutorCallback<Integer> callback = createJDBCExecutorCallbackWithInteger(isExceptionThrown);
-        List<Integer> results = getJdbcExecutor().execute(executionGroups, callback);
-        refreshSchema(getMetaDataContexts().getDefaultMetaData(), sqlStatementContext.getSqlStatement(), routeUnits);
-        return isNeedAccumulate(getMetaDataContexts().getDefaultMetaData().getRuleMetaData().getRules().stream().filter(
-            rule -> rule instanceof DataNodeContainedRule).collect(Collectors.toList()), sqlStatementContext) ? accumulate(results) : results.get(0);
+        JDBCExecutorCallback<Integer> callback = createExecuteUpdateCallback();
+        return executeUpdate(executionGroups, sqlStatementContext, routeUnits, callback);
     }
     
-    private JDBCExecutorCallback<Integer> createJDBCExecutorCallbackWithInteger(final boolean isExceptionThrown) {
+    private JDBCExecutorCallback<Integer> createExecuteUpdateCallback() {
+        boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         return new JDBCExecutorCallback<Integer>(getMetaDataContexts().getDatabaseType(), isExceptionThrown) {
             
             @Override
@@ -70,12 +72,12 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
     @Override
     public boolean execute(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
-        boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        JDBCExecutorCallback<Boolean> callback = createJDBCExecutorCallbackWithBoolean(isExceptionThrown);
+        JDBCExecutorCallback<Boolean> callback = createJDBCExecuteCallback();
         return executeAndRefreshMetaData(executionGroups, sqlStatement, routeUnits, callback);
     }
     
-    private JDBCExecutorCallback<Boolean> createJDBCExecutorCallbackWithBoolean(final boolean isExceptionThrown) {
+    private JDBCExecutorCallback<Boolean> createJDBCExecuteCallback() {
+        boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         return new JDBCExecutorCallback<Boolean>(getMetaDataContexts().getDatabaseType(), isExceptionThrown) {
             
             @Override

@@ -26,16 +26,13 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Statement executor.
@@ -46,7 +43,15 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         super(dataSourceMap, metaDataContexts, jdbcExecutor);
     }
     
-    @Override
+    /**
+     * Execute update.
+     *
+     * @param executionGroups execution groups
+     * @param sqlStatementContext SQL statement context
+     * @param routeUnits route units
+     * @return effected records count
+     * @throws SQLException SQL exception
+     */
     public int executeUpdate(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, 
                              final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
         return executeUpdate(executionGroups, (sql, statement) -> statement.executeUpdate(sql), sqlStatementContext, routeUnits);
@@ -97,26 +102,19 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         return executeUpdate(executionGroups, (sql, statement) -> statement.executeUpdate(sql, columnNames), sqlStatementContext, routeUnits);
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
     private int executeUpdate(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final Updater updater,
                               final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        JDBCExecutorCallback jdbcExecutorCallback = new JDBCExecutorCallback<Integer>(getMetaDataContexts().getDatabaseType(), isExceptionThrown) {
+        JDBCExecutorCallback<Integer> callback = new JDBCExecutorCallback<Integer>(getMetaDataContexts().getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return updater.executeUpdate(sql, statement);
             }
         };
-        List<Integer> results = getJdbcExecutor().execute(executionGroups, jdbcExecutorCallback);
-        refreshSchema(getMetaDataContexts().getDefaultMetaData(), sqlStatementContext.getSqlStatement(), routeUnits);
-        if (isNeedAccumulate(getMetaDataContexts().getDefaultMetaData().getRuleMetaData().getRules().stream().filter(
-            rule -> rule instanceof DataNodeContainedRule).collect(Collectors.toList()), sqlStatementContext)) {
-            return accumulate(results);
-        }
-        return null == results.get(0) ? 0 : results.get(0);
+        return executeUpdate(executionGroups, sqlStatementContext, routeUnits, callback);
     }
-    
+
     @Override
     public boolean execute(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
         return execute(executionGroups, (sql, statement) -> statement.execute(sql), sqlStatement, routeUnits);
