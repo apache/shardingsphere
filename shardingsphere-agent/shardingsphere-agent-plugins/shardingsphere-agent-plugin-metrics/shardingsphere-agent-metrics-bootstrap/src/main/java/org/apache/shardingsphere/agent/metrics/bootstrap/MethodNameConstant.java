@@ -18,23 +18,19 @@
 
 package org.apache.shardingsphere.agent.metrics.bootstrap;
 
-import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.plugin.PluginDefinition;
-
 /**
- * Metrics plugin definition.
+ * Method name constant.
  */
-public class MetricsPluginDefinition extends PluginDefinition {
+public final class MethodNameConstant {
 
-    public MetricsPluginDefinition() {
-        super("sample-metrics");
-    }
-
-    @Override
-    protected void define() {
-        intercept("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask")
-                .aroundInstanceMethod(ElementMatchers.named("run"))
-                .implement("org.apache.shardingsphere.agent.plugin.trace.SampleAdvice")
-                .build();
-    }
+    public static final String CHANNEL_ACTIVE = "channelActive";
+    
+    public static final String CHANNEL_READ = "channelRead";
+    
+    public static final String CHANNEL_INACTIVE = "channelInactive";
+    
+    public static final String COMMIT = "commit";
+    
+    public static final String ROLL_BACK = "rollback";
+    
 }
