@@ -111,9 +111,7 @@ public final class DatabaseCommunicationEngine {
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
-        if (needLock(executionContext) && !LockContext.getLockStrategy().tryLock()) {
-            throw new LockWaitTimeoutException();
-        }
+        lockForDDL(executionContext);
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
         Collection<ExecuteResult> executeResults = proxySQLExecutor.execute(executionContext);
         ExecuteResult executeResultSample = executeResults.iterator().next();
@@ -122,12 +120,27 @@ public final class DatabaseCommunicationEngine {
                 : processExecuteUpdate(executionContext, executeResults.stream().map(each -> (UpdateResult) each).collect(Collectors.toList()));
     }
     
+    private void lockForDDL(final ExecutionContext executionContext) {
+        if (needLock(executionContext)) {
+            if (!LockContext.getLockStrategy().tryLock()) {
+                throw new LockWaitTimeoutException();
+            }
+            checkLock();
+        }
+    }
+    
     private boolean needLock(final ExecutionContext executionContext) {
         SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
         if (null == sqlStatement) {
             return false;
         }
         return SchemaRefresherFactory.newInstance(sqlStatement).isPresent();
+    }
+    
+    private void checkLock() {
+        if (!LockContext.getLockStrategy().checkLock()) {
+            throw new LockWaitTimeoutException();
+        }
     }
     
     private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {

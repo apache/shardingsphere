@@ -33,4 +33,11 @@ public interface LockStrategy {
      * Release lock.
      */
     void releaseLock();
+    
+    /**
+     * Check lock state.
+     * 
+     * @return true if all instances were locked, else false
+     */
+    boolean checkLock();
 }
