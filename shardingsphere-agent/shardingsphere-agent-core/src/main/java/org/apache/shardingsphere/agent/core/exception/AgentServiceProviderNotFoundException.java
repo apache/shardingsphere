@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.core.exception;
 
 /**
- * Service provider not found exception.
+ * Agent service provider not found exception.
  */
 public final class AgentServiceProviderNotFoundException extends RuntimeException {
     
