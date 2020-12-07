@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.executor.callback.impl;
 
-import org.apache.shardingsphere.driver.executor.callback.JDBCExecuteQueryCallback;
+import org.apache.shardingsphere.driver.executor.callback.ExecuteQueryCallback;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.sql.ResultSet;
@@ -27,7 +27,7 @@ import java.sql.Statement;
 /**
  * Statement execute query callback.
  */
-public final class StatementExecuteQueryCallback extends JDBCExecuteQueryCallback {
+public final class StatementExecuteQueryCallback extends ExecuteQueryCallback {
     
     public StatementExecuteQueryCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
         super(databaseType, isExceptionThrown);
