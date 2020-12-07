@@ -51,11 +51,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * JDBC statement executor.
+ * Driver JDBC executor.
  */
 @RequiredArgsConstructor
 @Getter
-public final class JDBCStatementExecutor {
+public final class DriverJDBCExecutor {
     
     static {
         ShardingSphereServiceLoader.register(SchemaChangedNotifier.class);

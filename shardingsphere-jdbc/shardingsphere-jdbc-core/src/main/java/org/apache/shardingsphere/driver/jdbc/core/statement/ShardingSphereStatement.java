@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.driver.executor.JDBCStatementExecutor;
+import org.apache.shardingsphere.driver.executor.DriverJDBCExecutor;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteCallback;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteUpdateCallback;
 import org.apache.shardingsphere.driver.executor.callback.impl.StatementExecuteQueryCallback;
@@ -94,7 +94,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private final StatementOption statementOption;
     
-    private final JDBCStatementExecutor jdbcStatementExecutor;
+    private final DriverJDBCExecutor jdbcStatementExecutor;
     
     private final RawExecutor rawExecutor;
     
@@ -121,7 +121,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         statements = new LinkedList<>();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         JDBCExecutor jdbcExecutor = new JDBCExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction());
-        jdbcStatementExecutor = new JDBCStatementExecutor(connection.getDataSourceMap(), metaDataContexts, jdbcExecutor);
+        jdbcStatementExecutor = new DriverJDBCExecutor(connection.getDataSourceMap(), metaDataContexts, jdbcExecutor);
         rawExecutor = new RawExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction());
         kernelProcessor = new KernelProcessor();
     }
