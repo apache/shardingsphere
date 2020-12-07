@@ -56,14 +56,14 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     public ExecuteResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
         if (fetchMetaData && !hasMetaData) {
             hasMetaData = true;
-            return executeSQL(statement, sql, connectionMode, true);
+            return executeSQL(sql, statement, connectionMode, true);
         }
-        return executeSQL(statement, sql, connectionMode, false);
+        return executeSQL(sql, statement, connectionMode, false);
     }
     
-    private ExecuteResult executeSQL(final Statement statement, final String sql, final ConnectionMode connectionMode, final boolean withMetadata) throws SQLException {
+    private ExecuteResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final boolean withMetadata) throws SQLException {
         backendConnection.add(statement);
-        if (execute(statement, sql, isReturnGeneratedKeys)) {
+        if (execute(sql, statement, isReturnGeneratedKeys)) {
             ResultSet resultSet = statement.getResultSet();
             backendConnection.add(resultSet);
             return createQueryResult(resultSet, connectionMode);
@@ -71,7 +71,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
         return new UpdateResult(statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
     }
     
-    protected abstract boolean execute(Statement statement, String sql, boolean isReturnGeneratedKeys) throws SQLException;
+    protected abstract boolean execute(String sql, Statement statement, boolean isReturnGeneratedKeys) throws SQLException;
     
     private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
         return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new JDBCStreamQueryResult(resultSet) : new JDBCMemoryQueryResult(resultSet);
