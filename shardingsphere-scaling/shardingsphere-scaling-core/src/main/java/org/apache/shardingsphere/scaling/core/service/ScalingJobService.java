@@ -39,15 +39,6 @@ public interface ScalingJobService {
     List<ScalingJob> listJobs();
     
     /**
-     * Check new yaml proxy configuration if should scaling.
-     *
-     * @param oldYamlProxyConfig old yaml proxy configuration
-     * @param newYamlProxyConfig new yaml proxy configuration
-     * @return if should scaling
-     */
-    boolean shouldScaling(String oldYamlProxyConfig, String newYamlProxyConfig);
-    
-    /**
      * Start scaling job.
      *
      * @param scalingConfig scaling job configuration
@@ -55,15 +46,17 @@ public interface ScalingJobService {
      */
     Optional<ScalingJob> start(ScalingConfiguration scalingConfig);
     
-    
     /**
-     * Start scaling job if it should scaling.
+     * Start scaling job.
      *
-     * @param oldYamlProxyConfig old yaml proxy configuration
-     * @param newYamlProxyConfig new yaml proxy configuration
+     * @param sourceDataSource source data source
+     * @param sourceRule source rule
+     * @param targetDataSource target data source
+     * @param targetRule target rule
+     * @param scalingCallback scaling callback
      * @return scaling job
      */
-    Optional<ScalingJob> start(String oldYamlProxyConfig, String newYamlProxyConfig);
+    Optional<ScalingJob> start(String sourceDataSource, String sourceRule, String targetDataSource, String targetRule, ScalingCallback scalingCallback);
     
     /**
      * Stop a job.

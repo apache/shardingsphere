@@ -29,6 +29,10 @@ public final class CommandExecutorTaskPluginDefinition extends PluginDefinition 
     
     private static final String COMMAND_EXECUTOR_TASK_CLASS = "org.apache.shardingsphere.agent.metrics.bootstrap.CommandExecutorTaskAdvice";
 
+    public MetricsPluginDefinition() {
+        super("sample-metrics");
+    }
+
     @Override
     protected void define() {
         intercept(ENHANCE_CLASS)

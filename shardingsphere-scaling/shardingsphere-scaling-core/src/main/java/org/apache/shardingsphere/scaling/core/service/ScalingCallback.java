@@ -13,29 +13,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.plugin.trace;
-
-import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.plugin.PluginDefinition;
+package org.apache.shardingsphere.scaling.core.service;
 
 /**
- * Sample plugin definition.
+ * Scaling callback.
  */
-public class SamplePluginDefinition extends PluginDefinition {
-
-    public SamplePluginDefinition() {
-        super("");
-    }
-
-    @Override
-    protected void define() {
-        intercept("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask")
-                .aroundInstanceMethod(ElementMatchers.named("run"))
-                .implement("org.apache.shardingsphere.agent.plugin.trace.SampleAdvice")
-                .build();
-        registerService(SampleTracer.class);
-    }
+public interface ScalingCallback {
+    
+    /**
+     * Callback when execute success.
+     */
+    void onSuccess();
+    
+    /**
+     * Callback when execute failure.
+     */
+    void onFailure();
 }

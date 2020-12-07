@@ -21,6 +21,7 @@ package org.apache.shardingsphere.agent.core.plugin;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +30,14 @@ import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 
 import org.apache.shardingsphere.agent.core.common.AgentPathLocator;
+import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
+import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
+
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -111,11 +116,16 @@ public final class PluginLoader extends ClassLoader implements Closeable {
         if (jarFiles == null) {
             return pluginDefineMap.build();
         }
+        AgentConfiguration configuration = SingletonHolder.INSTANCE.get(AgentConfiguration.class);
+        List<String> activatedLists = configuration.getActivatedPlugins();
+        if (activatedLists == null) {
+            activatedLists = Lists.newArrayList();
+        }
+        Set<String> activatedPlugins = Sets.newHashSet(activatedLists);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         for (File jarFile : jarFiles) {
             outputStream.reset();
             JarFile jar = new JarFile(jarFile, true);
-            jars.add(jar);
             Attributes attributes = jar.getManifest().getMainAttributes();
             String entrypoint = attributes.getValue("Entrypoint");
             if (Strings.isNullOrEmpty(entrypoint)) {
@@ -125,6 +135,9 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             ByteStreams.copy(jar.getInputStream(jar.getEntry(classNameToPath(entrypoint))), outputStream);
             try {
                 PluginDefinition pluginDefinition = (PluginDefinition) defineClass(entrypoint, outputStream.toByteArray(), 0, outputStream.size()).newInstance();
+                if (!activatedPlugins.isEmpty() && !activatedPlugins.contains(pluginDefinition.getPluginName())) {
+                    continue;
+                }
                 pluginDefinition.getAllServices().forEach(klass -> {
                     try {
                         services.add(klass.newInstance());
@@ -136,6 +149,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             } catch (InstantiationException | IllegalAccessException e) {
                 log.error("Failed to load plugin definition, {}.", entrypoint, e);
             }
+            jars.add(jar);
         }
         return pluginDefineMap.build();
     }

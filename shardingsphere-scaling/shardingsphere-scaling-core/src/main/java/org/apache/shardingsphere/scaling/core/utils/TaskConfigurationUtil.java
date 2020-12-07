@@ -237,10 +237,10 @@ public final class TaskConfigurationUtil {
         }
         ShardingSphereJDBCDataSourceConfiguration target =
                 (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfiguration().getTarget().unwrap();
-        List<String> result = new ArrayList<>();
         Set<String> modifiedDataSources = getModifiedDataSources(source.getDataSource(), target.getDataSource());
         Map<String, ShardingTableRuleConfiguration> oldShardingRuleConfigMap = getShardingRuleConfigMap(source.getRule());
         Map<String, ShardingTableRuleConfiguration> newShardingRuleConfigMap = getShardingRuleConfigMap(target.getRule());
+        List<String> result = new ArrayList<>();
         newShardingRuleConfigMap.keySet().forEach(each -> {
             if (!oldShardingRuleConfigMap.containsKey(each)) {
                 return;
