@@ -66,13 +66,36 @@ public abstract class AbstractStatementExecutor {
     private final JDBCExecutor jdbcExecutor;
     
     protected final int executeUpdate(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, 
-                              final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
+                                      final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
         List<Integer> results = jdbcExecutor.execute(executionGroups, callback);
         refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatementContext.getSqlStatement(), routeUnits);
-        if (isNeedAccumulate(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(), sqlStatementContext)) {
-            return accumulate(results);
+        return isNeedAccumulate(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    protected final void refreshSchema(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
+        if (null == sqlStatement) {
+            return;
         }
-        return null == results.get(0) ? 0 : results.get(0);
+        Optional<SchemaRefresher> schemaRefresher = SchemaRefresherFactory.newInstance(sqlStatement);
+        if (schemaRefresher.isPresent()) {
+            Collection<String> routeDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
+            SchemaBuilderMaterials materials = new SchemaBuilderMaterials(metaDataContexts.getDatabaseType(), dataSourceMap, metaData.getRuleMetaData().getRules(), metaDataContexts.getProps());
+            schemaRefresher.get().refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, materials);
+            notifySchemaChanged(metaData.getSchema());
+        }
+    }
+    
+    private void notifySchemaChanged(final ShardingSphereSchema schema) {
+        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(DefaultSchema.LOGIC_NAME, schema));
+    }
+    
+    private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext<?> sqlStatementContext) {
+        return rules.stream().anyMatch(each -> ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
+    }
+    
+    private int accumulate(final List<Integer> updateResults) {
+        return updateResults.stream().mapToInt(each -> null == each ? 0 : each).sum();
     }
     
     /**
@@ -86,36 +109,10 @@ public abstract class AbstractStatementExecutor {
      */
     public abstract boolean execute(Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, SQLStatement sqlStatement, Collection<RouteUnit> routeUnits) throws SQLException;
     
-    protected final boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext<?> sqlStatementContext) {
-        return rules.stream().anyMatch(each -> ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
-    }
-    
-    protected final int accumulate(final List<Integer> results) {
-        return results.stream().mapToInt(each -> null == each ? 0 : each).sum();
-    }
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    protected final void refreshSchema(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
-        if (null == sqlStatement) {
-            return;
-        }
-        Optional<SchemaRefresher> schemaRefresher = SchemaRefresherFactory.newInstance(sqlStatement);
-        if (schemaRefresher.isPresent()) {
-            Collection<String> routeDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
-            SchemaBuilderMaterials materials = new SchemaBuilderMaterials(metaDataContexts.getDatabaseType(), dataSourceMap, metaData.getRuleMetaData().getRules(), metaDataContexts.getProps());
-            schemaRefresher.get().refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, materials);
-            notifySchemaChanged(DefaultSchema.LOGIC_NAME, metaData.getSchema());
-        }
-    }
-    
-    private void notifySchemaChanged(final String schemaName, final ShardingSphereSchema schema) {
-        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(schemaName, schema));
-    }
-    
     protected final boolean executeAndRefreshMetaData(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final SQLStatement sqlStatement,
                                                       final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
-        List<Boolean> result = jdbcExecutor.execute(executionGroups, callback);
+        List<Boolean> results = jdbcExecutor.execute(executionGroups, callback);
         refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatement, routeUnits);
-        return null != result && !result.isEmpty() && null != result.get(0) && result.get(0);
+        return null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
     }
 }
