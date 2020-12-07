@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
@@ -52,8 +51,8 @@ import java.util.stream.Collectors;
 /**
  * Abstract statement executor.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public abstract class AbstractStatementExecutor {
     
     static {
@@ -65,6 +64,29 @@ public abstract class AbstractStatementExecutor {
     private final MetaDataContexts metaDataContexts;
     
     private final JDBCExecutor jdbcExecutor;
+    
+    /**
+     * Execute update.
+     *
+     * @param executionGroups execution groups
+     * @param sqlStatementContext SQL statement context
+     * @param routeUnits route units
+     * @return effected records count
+     * @throws SQLException SQL exception
+     */
+    public abstract int executeUpdate(Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, 
+                                      SQLStatementContext<?> sqlStatementContext, Collection<RouteUnit> routeUnits) throws SQLException;
+    
+    /**
+     * Execute SQL.
+     *
+     * @param executionGroups execution groups
+     * @param sqlStatement SQL statement
+     * @param routeUnits route units
+     * @return return true if is DQL, false if is DML
+     * @throws SQLException SQL exception
+     */
+    public abstract boolean execute(Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, SQLStatement sqlStatement, Collection<RouteUnit> routeUnits) throws SQLException;
     
     protected final boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext<?> sqlStatementContext) {
         return rules.stream().anyMatch(each -> ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
@@ -98,36 +120,4 @@ public abstract class AbstractStatementExecutor {
         refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatement, routeUnits);
         return null != result && !result.isEmpty() && null != result.get(0) && result.get(0);
     }
-    
-    /**
-     * Execute SQL.
-     *
-     * @param executionGroups execution groups
-     * @param sqlStatement SQL statement
-     * @param routeUnits route units
-     * @return return true if is DQL, false if is DML
-     * @throws SQLException SQL exception
-     */
-    public abstract boolean execute(Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, SQLStatement sqlStatement, Collection<RouteUnit> routeUnits) throws SQLException;
-    
-    /**
-     * Execute query.
-     *
-     * @param executionGroups execution groups
-     * @return query results
-     * @throws SQLException SQL exception
-     */
-    public abstract List<QueryResult> executeQuery(Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) throws SQLException;
-    
-    /**
-     * Execute update.
-     *
-     * @param executionGroups execution groups
-     * @param sqlStatementContext SQL statement context
-     * @param routeUnits route units
-     * @return effected records count
-     * @throws SQLException SQL exception
-     */
-    public abstract int executeUpdate(Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, 
-                                      SQLStatementContext<?> sqlStatementContext, Collection<RouteUnit> routeUnits) throws SQLException;
 }
