@@ -17,25 +17,24 @@
 
 package org.apache.shardingsphere.driver.executor.callback.impl;
 
-import org.apache.shardingsphere.driver.executor.callback.DriverJDBCExecutorCallback;
+import org.apache.shardingsphere.driver.executor.callback.JDBCExecuteQueryCallback;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Prepared statement executor callback for driver.
+ * Statement execute query callback.
  */
-public final class DriverPreparedStatementExecutorCallback extends DriverJDBCExecutorCallback {
+public final class StatementExecuteQueryCallback extends JDBCExecuteQueryCallback {
     
-    public DriverPreparedStatementExecutorCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
+    public StatementExecuteQueryCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
         super(databaseType, isExceptionThrown);
     }
     
     @Override
-    protected ResultSet execute(final String sql, final Statement statement) throws SQLException {
-        return ((PreparedStatement) statement).executeQuery();
+    protected ResultSet executeQuery(final String sql, final Statement statement) throws SQLException {
+        return statement.executeQuery(sql);
     }
 }

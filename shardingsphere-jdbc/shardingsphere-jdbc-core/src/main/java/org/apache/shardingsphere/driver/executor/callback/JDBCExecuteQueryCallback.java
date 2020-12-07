@@ -29,19 +29,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * JDBC executor callback for driver.
+ * JDBC execute query callback.
  */
-public abstract class DriverJDBCExecutorCallback extends JDBCExecutorCallback<QueryResult> {
+public abstract class JDBCExecuteQueryCallback extends JDBCExecutorCallback<QueryResult> {
     
-    public DriverJDBCExecutorCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
+    public JDBCExecuteQueryCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
         super(databaseType, isExceptionThrown);
     }
     
     @Override
     protected final QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
-        ResultSet resultSet = execute(sql, statement);
+        ResultSet resultSet = executeQuery(sql, statement);
         return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new JDBCStreamQueryResult(resultSet) : new JDBCMemoryQueryResult(resultSet);
     }
     
-    protected abstract ResultSet execute(String sql, Statement statement) throws SQLException;
+    protected abstract ResultSet executeQuery(String sql, Statement statement) throws SQLException;
 }
