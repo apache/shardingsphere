@@ -20,13 +20,13 @@ package org.apache.shardingsphere.agent.core.spi;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.core.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.agent.core.exception.AgentServiceProviderNotFoundException;
 
 /**
- * Typed SPI registry.
+ *  Agent typed SPI registry.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TypedSPIRegistry {
+public final class AgentTypedSPIRegistry {
     
     /**
      * Get registered service.
@@ -36,12 +36,12 @@ public final class TypedSPIRegistry {
      * @param <T> type
      * @return registered service
      */
-    public static <T extends TypedSPI> T getRegisteredService(final Class<T> typedSPIClass, final String type) {
+    public static <T extends AgentTypedSPI> T getRegisteredService(final Class<T> typedSPIClass, final String type) {
         Optional<T> serviceInstance = AgentServiceLoader.getServiceLoader(typedSPIClass).newServiceInstances().filter(each -> each.getType().equalsIgnoreCase(type));
         if (serviceInstance.isPresent()) {
             return serviceInstance.get();
         }
-        throw new ServiceProviderNotFoundException(typedSPIClass, type);
+        throw new AgentServiceProviderNotFoundException(typedSPIClass, type);
     }
     
     /**
@@ -51,11 +51,11 @@ public final class TypedSPIRegistry {
      * @param <T> type
      * @return registered service
      */
-    public static <T extends TypedSPI> T getRegisteredService(final Class<T> typedSPIClass) {
+    public static <T extends AgentTypedSPI> T getRegisteredService(final Class<T> typedSPIClass) {
         Optional<T> serviceInstance = AgentServiceLoader.getServiceLoader(typedSPIClass).newServiceInstances();
         if (serviceInstance.isPresent()) {
             return serviceInstance.get();
         }
-        throw new ServiceProviderNotFoundException(typedSPIClass);
+        throw new AgentServiceProviderNotFoundException(typedSPIClass);
     }
 }

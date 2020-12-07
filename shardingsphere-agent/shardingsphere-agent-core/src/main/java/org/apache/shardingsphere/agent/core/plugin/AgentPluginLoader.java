@@ -48,12 +48,12 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 /**
- * Plugins loader.
+ * Agent plugin loader.
  */
 @Slf4j
-public final class PluginLoader extends ClassLoader implements Closeable {
+public final class AgentPluginLoader extends ClassLoader implements Closeable {
     
-    private static final PluginLoader INSTANCE = new PluginLoader();
+    private static final AgentPluginLoader INSTANCE = new AgentPluginLoader();
     
     private final ConcurrentHashMap<String, Object> objectPool = new ConcurrentHashMap<>();
     
@@ -65,7 +65,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     
     private Map<String, PluginAdviceDefinition> pluginDefineMap;
     
-    private PluginLoader() {
+    private AgentPluginLoader() {
         try {
             pluginDefineMap = loadAllPlugins();
         } catch (IOException ioe) {
@@ -102,11 +102,11 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     }
     
     /**
-     * To get plugin loader instance.
+     * To get agent plugin loader instance.
      *
      * @return plugin loader
      */
-    public static PluginLoader getInstance() {
+    public static AgentPluginLoader getInstance() {
         return INSTANCE;
     }
     

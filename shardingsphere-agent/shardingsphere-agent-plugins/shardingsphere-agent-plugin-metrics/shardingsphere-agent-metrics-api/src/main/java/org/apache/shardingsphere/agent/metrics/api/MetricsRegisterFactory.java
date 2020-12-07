@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.agent.metrics.api;
 
-import org.apache.shardingsphere.agent.core.spi.TypedSPI;
+import org.apache.shardingsphere.agent.core.spi.AgentTypedSPI;
 
 /**
  * Metrics register factory.
  */
-public interface MetricsRegisterFactory extends TypedSPI {
+public interface MetricsRegisterFactory extends AgentTypedSPI {
     
     /**
      * New instance metrics register.

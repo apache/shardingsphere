@@ -39,11 +39,11 @@ public final class AgentPathLocator {
     private static File pluginPath;
     
     static {
-        agentPath = locatorPath();
-        pluginPath = buildPluginPath();
+        agentPath = locatorAgentPath();
+        pluginPath = locatorAgentPluginPath();
     }
     
-    private static File locatorPath() {
+    private static File locatorAgentPath() {
         String classResourcePath = AgentPathLocator.class.getName().replaceAll("\\.", "/") + ".class";
         URL resource = ClassLoader.getSystemClassLoader().getResource(classResourcePath);
         if (resource != null) {
@@ -77,7 +77,7 @@ public final class AgentPathLocator {
         }
     }
     
-    private static File buildPluginPath() {
+    private static File locatorAgentPluginPath() {
         return new File(agentPath.getPath() + "/plugins");
     }
 }

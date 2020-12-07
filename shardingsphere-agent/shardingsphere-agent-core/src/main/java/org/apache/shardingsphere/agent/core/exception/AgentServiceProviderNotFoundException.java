@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.spi;
+package org.apache.shardingsphere.agent.core.exception;
 
 /**
- * Typed SPI.
+ * Service provider not found exception.
  */
-public interface TypedSPI {
+public final class AgentServiceProviderNotFoundException extends RuntimeException {
     
-    /**
-     * Get type.
-     * 
-     * @return type
-     */
-    String getType();
+    private static final long serialVersionUID = -3730257541332863235L;
+    
+    public AgentServiceProviderNotFoundException(final Class<?> clazz) {
+        super(String.format("No implementation class load from SPI `%s`.", clazz.getName()));
+    }
+    
+    public AgentServiceProviderNotFoundException(final Class<?> clazz, final String type) {
+        super(String.format("No implementation class load from SPI `%s` with type `%s`.", clazz.getName(), type));
+    }
 }
