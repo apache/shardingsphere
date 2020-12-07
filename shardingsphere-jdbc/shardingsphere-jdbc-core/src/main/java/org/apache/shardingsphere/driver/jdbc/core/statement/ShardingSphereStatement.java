@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.executor.JDBCStatementExecutor;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteCallback;
-import org.apache.shardingsphere.driver.executor.callback.StatementExecuteUpdateCallback;
+import org.apache.shardingsphere.driver.executor.callback.ExecuteUpdateCallback;
 import org.apache.shardingsphere.driver.executor.callback.impl.StatementExecuteQueryCallback;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
@@ -222,7 +222,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
     }
     
-    private int executeUpdate(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final StatementExecuteUpdateCallback updater,
+    private int executeUpdate(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final ExecuteUpdateCallback updater,
                               final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         JDBCExecutorCallback<Integer> callback = new JDBCExecutorCallback<Integer>(metaDataContexts.getDatabaseType(), isExceptionThrown) {
