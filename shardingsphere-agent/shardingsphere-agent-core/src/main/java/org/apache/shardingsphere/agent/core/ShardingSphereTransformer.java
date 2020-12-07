@@ -28,7 +28,7 @@ import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.utility.JavaModule;
 import org.apache.shardingsphere.agent.core.plugin.PluginAdviceDefinition;
-import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
+import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
 import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorMethodInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodAroundInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundInterceptor;
@@ -45,22 +45,22 @@ import java.util.Map;
 @Slf4j
 public class ShardingSphereTransformer implements AgentBuilder.Transformer {
     
-    private final PluginLoader pluginLoader;
+    private final AgentPluginLoader agentPluginLoader;
     
-    public ShardingSphereTransformer(final PluginLoader pluginLoader) {
-        this.pluginLoader = pluginLoader;
+    public ShardingSphereTransformer(final AgentPluginLoader agentPluginLoader) {
+        this.agentPluginLoader = agentPluginLoader;
     }
     
     @Override
     public DynamicType.Builder<?> transform(final DynamicType.Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module) {
-        if (pluginLoader.containsType(typeDescription)) {
+        if (agentPluginLoader.containsType(typeDescription)) {
             DynamicType.Builder<?> newBuilder = builder.defineField("_SSExtraData_", Map.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
                     .implement(TargetObject.class)
                     .intercept(FieldAccessor.ofField("_SSExtraData_"));
-            final PluginAdviceDefinition define = pluginLoader.loadPluginAdviceDefine(typeDescription);
+            final PluginAdviceDefinition define = agentPluginLoader.loadPluginAdviceDefine(typeDescription);
             for (ConstructorPoint point : define.getConstructorPoints()) {
                 try {
-                    final ConstructorMethodInterceptor interceptor = new ConstructorMethodInterceptor(pluginLoader.getOrCreateInstance(point.getAdvice()));
+                    final ConstructorMethodInterceptor interceptor = new ConstructorMethodInterceptor(agentPluginLoader.getOrCreateInstance(point.getAdvice()));
                     newBuilder = newBuilder.constructor(point.getConstructorMatcher())
                             .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(interceptor)));
                     // CHECKSTYLE:OFF
@@ -71,7 +71,7 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
             }
             for (ClassStaticMethodPoint point : define.getClassStaticMethodPoints()) {
                 try {
-                    final StaticMethodAroundInterceptor interceptor = new StaticMethodAroundInterceptor(pluginLoader.getOrCreateInstance(point.getAdvice()));
+                    final StaticMethodAroundInterceptor interceptor = new StaticMethodAroundInterceptor(agentPluginLoader.getOrCreateInstance(point.getAdvice()));
                     newBuilder = newBuilder.method(point.getMethodsMatcher()).intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
                     // CHECKSTYLE:OFF
                 } catch (Exception e) {
@@ -81,7 +81,7 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
             }
             for (InstanceMethodPoint point : define.getInstanceMethodPoints()) {
                 try {
-                    final MethodAroundInterceptor interceptor = new MethodAroundInterceptor(pluginLoader.getOrCreateInstance(point.getAdvice()));
+                    final MethodAroundInterceptor interceptor = new MethodAroundInterceptor(agentPluginLoader.getOrCreateInstance(point.getAdvice()));
                     newBuilder = newBuilder.method(point.getMethodMatcher()).intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
                     // CHECKSTYLE:OFF
                 } catch (Exception e) {

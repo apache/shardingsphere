@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api;
-
-import org.apache.shardingsphere.agent.core.spi.AgentTypedSPI;
+package org.apache.shardingsphere.agent.core.spi;
 
 /**
- * Metrics register factory.
+ * Agent typed SPI.
  */
-public interface MetricsRegisterFactory extends AgentTypedSPI {
+public interface AgentTypedSPI {
     
     /**
-     * New instance metrics register.
-     *
-     * @return the metrics register
+     * Get type.
+     * 
+     * @return type
      */
-    MetricsRegister newInstance();
+    String getType();
 }

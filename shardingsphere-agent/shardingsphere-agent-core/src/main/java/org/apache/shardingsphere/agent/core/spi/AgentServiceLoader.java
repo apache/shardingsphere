@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.utils;
+package org.apache.shardingsphere.agent.core.spi;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -68,8 +67,8 @@ public final class AgentServiceLoader<T> {
      *
      * @return service instances
      */
-    public Optional<T> newServiceInstances() {
-        return serviceMap.get(service).stream().findFirst();
+    public Collection<T> newServiceInstances() {
+        return serviceMap.get(service);
     }
     
     private void register(final Class<T> service) {

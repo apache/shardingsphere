@@ -29,4 +29,9 @@ public final class PrometheusMetricsRegisterFactory implements MetricsRegisterFa
     public MetricsRegister newInstance() {
         return PrometheusMetricsRegister.getInstance();
     }
+    
+    @Override
+    public String getType() {
+        return "prometheus";
+    }
 }

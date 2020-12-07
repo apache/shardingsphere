@@ -36,6 +36,8 @@ public class AgentConfiguration {
     @Data
     public static class MetricsConfiguration {
         
+        private String type = "prometheus";
+        
         private String host;
         
         private int port = 9090;

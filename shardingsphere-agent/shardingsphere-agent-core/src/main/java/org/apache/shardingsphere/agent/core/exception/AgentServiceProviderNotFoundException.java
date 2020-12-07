@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api;
-
-import org.apache.shardingsphere.agent.core.spi.AgentTypedSPI;
+package org.apache.shardingsphere.agent.core.exception;
 
 /**
- * Metrics register factory.
+ * Agent service provider not found exception.
  */
-public interface MetricsRegisterFactory extends AgentTypedSPI {
+public final class AgentServiceProviderNotFoundException extends RuntimeException {
     
-    /**
-     * New instance metrics register.
-     *
-     * @return the metrics register
-     */
-    MetricsRegister newInstance();
+    private static final long serialVersionUID = -3730257541332863235L;
+    
+    public AgentServiceProviderNotFoundException(final Class<?> clazz) {
+        super(String.format("No implementation class load from SPI `%s`.", clazz.getName()));
+    }
+    
+    public AgentServiceProviderNotFoundException(final Class<?> clazz, final String type) {
+        super(String.format("No implementation class load from SPI `%s` with type `%s`.", clazz.getName(), type));
+    }
 }
