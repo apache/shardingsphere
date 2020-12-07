@@ -22,7 +22,7 @@ import org.apache.shardingsphere.agent.core.spi.AgentTypedSPIRegistry;
 import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
 
 /**
- * The enum Metrics provider.
+ * The enum metrics provider.
  */
 public enum MetricsProvider {
     

@@ -29,7 +29,7 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 
-import org.apache.shardingsphere.agent.core.common.AgentPathLocator;
+import org.apache.shardingsphere.agent.core.common.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
 
@@ -111,7 +111,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     }
     
     private Map<String, PluginAdviceDefinition> loadAllPlugins() throws IOException {
-        File[] jarFiles = AgentPathLocator.getPluginPath().listFiles(file -> file.getName().endsWith(".jar"));
+        File[] jarFiles = AgentPathBuilder.getPluginPath().listFiles(file -> file.getName().endsWith(".jar"));
         ImmutableMap.Builder<String, PluginAdviceDefinition> pluginDefineMap = ImmutableMap.builder();
         if (jarFiles == null) {
             return pluginDefineMap.build();

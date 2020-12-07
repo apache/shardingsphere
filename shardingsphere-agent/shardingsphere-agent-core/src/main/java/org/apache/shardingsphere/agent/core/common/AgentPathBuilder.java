@@ -30,7 +30,7 @@ import org.apache.shardingsphere.agent.core.exception.ShardingSphereAgentExcepti
  * Agent path locator.
  */
 @Slf4j
-public final class AgentPathLocator {
+public final class AgentPathBuilder {
     
     @Getter
     private static File agentPath;
@@ -39,12 +39,12 @@ public final class AgentPathLocator {
     private static File pluginPath;
     
     static {
-        agentPath = locatorAgentPath();
-        pluginPath = locatorAgentPluginPath();
+        agentPath = buildAgentPath();
+        pluginPath = buildAgentPluginPath();
     }
     
-    private static File locatorAgentPath() {
-        String classResourcePath = AgentPathLocator.class.getName().replaceAll("\\.", "/") + ".class";
+    private static File buildAgentPath() {
+        String classResourcePath = AgentPathBuilder.class.getName().replaceAll("\\.", "/") + ".class";
         URL resource = ClassLoader.getSystemClassLoader().getResource(classResourcePath);
         if (resource != null) {
             String url = resource.toString();
@@ -77,7 +77,7 @@ public final class AgentPathLocator {
         }
     }
     
-    private static File locatorAgentPluginPath() {
+    private static File buildAgentPluginPath() {
         return new File(agentPath.getPath() + "/plugins");
     }
 }
