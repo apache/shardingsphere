@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.executor;
 
+import org.apache.shardingsphere.driver.executor.callback.DriverJDBCExecutorCallback;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
@@ -26,8 +27,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -59,16 +58,11 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     }
     
     private JDBCExecutorCallback<QueryResult> createJDBCExecutorCallbackWithQueryResult(final boolean isExceptionThrown) {
-        return new JDBCExecutorCallback<QueryResult>(getMetaDataContexts().getDatabaseType(), isExceptionThrown) {
+        return new DriverJDBCExecutorCallback(getMetaDataContexts().getDatabaseType(), isExceptionThrown) {
             
             @Override
-            protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException { 
-                return createQueryResult(statement, connectionMode);
-            }
-            
-            private QueryResult createQueryResult(final Statement statement, final ConnectionMode connectionMode) throws SQLException {
-                ResultSet resultSet = ((PreparedStatement) statement).executeQuery();
-                return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new JDBCStreamQueryResult(resultSet) : new JDBCMemoryQueryResult(resultSet);
+            protected ResultSet execute(final String sql, final Statement statement) throws SQLException {
+                return ((PreparedStatement) statement).executeQuery();
             }
         };
     }
