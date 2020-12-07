@@ -73,7 +73,7 @@ public abstract class AbstractStatementExecutor {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    protected final void refreshSchema(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
+    private void refreshSchema(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
         if (null == sqlStatement) {
             return;
         }
@@ -91,26 +91,15 @@ public abstract class AbstractStatementExecutor {
     }
     
     private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext<?> sqlStatementContext) {
-        return rules.stream().anyMatch(each -> ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
+        return rules.stream().anyMatch(each -> each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
     }
     
     private int accumulate(final List<Integer> updateResults) {
         return updateResults.stream().mapToInt(each -> null == each ? 0 : each).sum();
     }
     
-    /**
-     * Execute SQL.
-     *
-     * @param executionGroups execution groups
-     * @param sqlStatement SQL statement
-     * @param routeUnits route units
-     * @return return true if is DQL, false if is DML
-     * @throws SQLException SQL exception
-     */
-    public abstract boolean execute(Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, SQLStatement sqlStatement, Collection<RouteUnit> routeUnits) throws SQLException;
-    
-    protected final boolean executeAndRefreshMetaData(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final SQLStatement sqlStatement,
-                                                      final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
+    protected final boolean execute(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final SQLStatement sqlStatement,
+                                    final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
         List<Boolean> results = jdbcExecutor.execute(executionGroups, callback);
         refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatement, routeUnits);
         return null != results && !results.isEmpty() && null != results.get(0) && results.get(0);

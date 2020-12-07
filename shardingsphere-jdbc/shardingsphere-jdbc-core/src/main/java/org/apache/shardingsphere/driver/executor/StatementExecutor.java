@@ -114,8 +114,16 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         };
         return executeUpdate(executionGroups, sqlStatementContext, routeUnits, callback);
     }
-
-    @Override
+    
+    /**
+     * Execute SQL.
+     *
+     * @param executionGroups execution groups
+     * @param sqlStatement SQL statement
+     * @param routeUnits route units
+     * @return return true if is DQL, false if is DML
+     * @throws SQLException SQL exception
+     */
     public boolean execute(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
         return execute(executionGroups, (sql, statement) -> statement.execute(sql), sqlStatement, routeUnits);
     }
@@ -176,7 +184,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
                 return executor.execute(sql, statement);
             }
         };
-        return executeAndRefreshMetaData(executionGroups, sqlStatement, routeUnits, jdbcExecutorCallback);
+        return execute(executionGroups, sqlStatement, routeUnits, jdbcExecutorCallback);
     }
     
     private interface Updater {

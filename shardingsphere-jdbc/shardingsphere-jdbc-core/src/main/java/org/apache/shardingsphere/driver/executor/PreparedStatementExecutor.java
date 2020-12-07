@@ -70,13 +70,21 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         };
     }
     
-    @Override
+    /**
+     * Execute SQL.
+     *
+     * @param executionGroups execution groups
+     * @param sqlStatement SQL statement
+     * @param routeUnits route units
+     * @return return true if is DQL, false if is DML
+     * @throws SQLException SQL exception
+     */
     public boolean execute(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
-        JDBCExecutorCallback<Boolean> callback = createJDBCExecuteCallback();
-        return executeAndRefreshMetaData(executionGroups, sqlStatement, routeUnits, callback);
+        JDBCExecutorCallback<Boolean> callback = createExecuteCallback();
+        return execute(executionGroups, sqlStatement, routeUnits, callback);
     }
     
-    private JDBCExecutorCallback<Boolean> createJDBCExecuteCallback() {
+    private JDBCExecutorCallback<Boolean> createExecuteCallback() {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         return new JDBCExecutorCallback<Boolean>(getMetaDataContexts().getDatabaseType(), isExceptionThrown) {
             
