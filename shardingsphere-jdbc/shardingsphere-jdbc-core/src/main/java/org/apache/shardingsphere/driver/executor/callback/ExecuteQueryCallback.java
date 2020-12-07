@@ -29,11 +29,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * JDBC execute query callback.
+ * Execute query callback.
  */
-public abstract class JDBCExecuteQueryCallback extends JDBCExecutorCallback<QueryResult> {
+public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryResult> {
     
-    public JDBCExecuteQueryCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
+    public ExecuteQueryCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
         super(databaseType, isExceptionThrown);
     }
     
