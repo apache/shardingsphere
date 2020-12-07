@@ -19,10 +19,9 @@ package org.apache.shardingsphere.driver.executor;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -30,10 +29,7 @@ import org.junit.Test;
 
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -62,76 +58,6 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         super.setUp();
         ShardingSphereConnection connection = getConnection();
         actual = spy(new PreparedStatementExecutor(connection.getDataSourceMap(), connection.getMetaDataContexts(), new JDBCExecutor(getExecutorEngine(), false)));
-    }
-    
-    @Test
-    public void assertNoStatement() throws SQLException {
-        assertFalse(actual.execute(Collections.emptyList(), mock(SQLStatement.class), null));
-        assertThat(actual.executeUpdate(Collections.emptyList(), createSQLStatementContext(), null), is(0));
-        assertThat(actual.executeQuery(Collections.emptyList()).size(), is(0));
-    }
-    
-    @Test
-    public void assertExecuteQueryForSinglePreparedStatementSuccess() throws SQLException {
-        PreparedStatement preparedStatement = getPreparedStatement();
-        ResultSet resultSet = mock(ResultSet.class);
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(resultSetMetaData.getColumnName(1)).thenReturn("column");
-        when(resultSetMetaData.getColumnLabel(1)).thenReturn("column");
-        when(resultSetMetaData.getTableName(1)).thenReturn("table_x");
-        when(resultSetMetaData.getColumnCount()).thenReturn(1);
-        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.VARCHAR);
-        when(resultSet.getString(1)).thenReturn("value");
-        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        assertThat(actual.executeQuery(getExecutionGroups(Collections.singletonList(preparedStatement), true)).iterator().next().getValue(1, String.class), is("value"));
-    }
-    
-    @Test
-    public void assertExecuteQueryForMultiplePreparedStatementsSuccess() throws SQLException {
-        PreparedStatement preparedStatement1 = getPreparedStatement();
-        PreparedStatement preparedStatement2 = getPreparedStatement();
-        ResultSet resultSet1 = mock(ResultSet.class);
-        ResultSet resultSet2 = mock(ResultSet.class);
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(resultSetMetaData.getColumnName(1)).thenReturn("column");
-        when(resultSetMetaData.getColumnLabel(1)).thenReturn("column");
-        when(resultSetMetaData.getTableName(1)).thenReturn("table_x");
-        when(resultSetMetaData.getColumnCount()).thenReturn(1);
-        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.INTEGER);
-        when(resultSet1.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSet2.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSet1.getInt(1)).thenReturn(1);
-        when(resultSet2.getInt(1)).thenReturn(2);
-        when(preparedStatement1.executeQuery()).thenReturn(resultSet1);
-        when(preparedStatement2.executeQuery()).thenReturn(resultSet2);
-        List<QueryResult> result = actual.executeQuery(getExecutionGroups(Arrays.asList(preparedStatement1, preparedStatement2), true));
-        assertThat(String.valueOf(result.get(0).getValue(1, int.class)), is("1"));
-        assertThat(String.valueOf(result.get(1).getValue(1, int.class)), is("2"));
-        verify(preparedStatement1).executeQuery();
-        verify(preparedStatement2).executeQuery();
-    }
-    
-    @Test
-    public void assertExecuteQueryForSinglePreparedStatementFailure() throws SQLException {
-        PreparedStatement preparedStatement = getPreparedStatement();
-        SQLException ex = new SQLException("");
-        when(preparedStatement.executeQuery()).thenThrow(ex);
-        assertThat(actual.executeQuery(getExecutionGroups(Collections.singletonList(preparedStatement), true)), is(Collections.singletonList((QueryResult) null)));
-        verify(preparedStatement).executeQuery();
-    }
-    
-    @Test
-    public void assertExecuteQueryForMultiplePreparedStatementsFailure() throws SQLException {
-        PreparedStatement preparedStatement1 = getPreparedStatement();
-        PreparedStatement preparedStatement2 = getPreparedStatement();
-        SQLException ex = new SQLException("");
-        when(preparedStatement1.executeQuery()).thenThrow(ex);
-        when(preparedStatement2.executeQuery()).thenThrow(ex);
-        List<QueryResult> actualQueryResults = actual.executeQuery(getExecutionGroups(Arrays.asList(preparedStatement1, preparedStatement2), true));
-        assertThat(actualQueryResults, is(Arrays.asList((QueryResult) null, null)));
-        verify(preparedStatement1).executeQuery();
-        verify(preparedStatement2).executeQuery();
     }
     
     @Test

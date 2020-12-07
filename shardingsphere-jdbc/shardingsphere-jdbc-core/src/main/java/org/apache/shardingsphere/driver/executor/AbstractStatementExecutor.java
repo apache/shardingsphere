@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
@@ -52,8 +51,8 @@ import java.util.stream.Collectors;
 /**
  * Abstract statement executor.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public abstract class AbstractStatementExecutor {
     
     static {
@@ -65,15 +64,6 @@ public abstract class AbstractStatementExecutor {
     private final MetaDataContexts metaDataContexts;
     
     private final JDBCExecutor jdbcExecutor;
-    
-    /**
-     * Execute query.
-     *
-     * @param executionGroups execution groups
-     * @return query results
-     * @throws SQLException SQL exception
-     */
-    public abstract List<QueryResult> executeQuery(Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) throws SQLException;
     
     /**
      * Execute update.
