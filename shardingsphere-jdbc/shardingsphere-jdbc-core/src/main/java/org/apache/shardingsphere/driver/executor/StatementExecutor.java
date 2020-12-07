@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.executor;
 
-import org.apache.shardingsphere.driver.executor.callback.DriverJDBCExecutorCallback;
+import org.apache.shardingsphere.driver.executor.callback.impl.DriverStatementExecutorCallback;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
@@ -52,18 +51,8 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     @Override
     public List<QueryResult> executeQuery(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        JDBCExecutorCallback<QueryResult> callback = createJDBCExecutorCallbackWithQueryResult(isExceptionThrown);
+        JDBCExecutorCallback<QueryResult> callback = new DriverStatementExecutorCallback(getMetaDataContexts().getDatabaseType(), isExceptionThrown);
         return getJdbcExecutor().execute(executionGroups, callback);
-    }
-    
-    private JDBCExecutorCallback<QueryResult> createJDBCExecutorCallbackWithQueryResult(final boolean isExceptionThrown) {
-        return new DriverJDBCExecutorCallback(getMetaDataContexts().getDatabaseType(), isExceptionThrown) {
-            
-            @Override
-            protected ResultSet execute(final String sql, final Statement statement) throws SQLException {
-                return statement.executeQuery(sql);
-            }
-        };
     }
     
     @Override
