@@ -67,8 +67,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
             }
             
             private QueryResult createQueryResult(final Statement statement, final ConnectionMode connectionMode) throws SQLException {
-                PreparedStatement preparedStatement = (PreparedStatement) statement;
-                ResultSet resultSet = preparedStatement.executeQuery();
+                ResultSet resultSet = ((PreparedStatement) statement).executeQuery();
                 return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new JDBCStreamQueryResult(resultSet) : new JDBCMemoryQueryResult(resultSet);
             }
         };
