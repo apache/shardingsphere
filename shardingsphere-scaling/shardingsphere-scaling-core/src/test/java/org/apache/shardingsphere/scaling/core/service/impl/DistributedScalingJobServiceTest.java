@@ -24,12 +24,14 @@ import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
+import org.apache.shardingsphere.scaling.core.service.ScalingCallback;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
@@ -40,6 +42,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -69,15 +72,6 @@ public final class DistributedScalingJobServiceTest {
     }
     
     @Test
-    @SneakyThrows(IOException.class)
-    public void assertShouldScaling() {
-        String oldConfig = ScalingConfigurationUtil.getConfig("/proxy_config-sharding_1.yaml");
-        String newConfig = ScalingConfigurationUtil.getConfig("/proxy_config-sharding_2.yaml");
-        assertFalse(scalingJobService.shouldScaling(oldConfig, oldConfig));
-        assertTrue(scalingJobService.shouldScaling(oldConfig, newConfig));
-    }
-    
-    @Test
     public void assertStartWithScalingConfig() {
         Optional<ScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
         assertTrue(shardingScalingJob.isPresent());
@@ -85,14 +79,22 @@ public final class DistributedScalingJobServiceTest {
     }
     
     @Test
-    @SneakyThrows(IOException.class)
-    public void assertStartWithProxyConfig() {
-        String oldConfig = ScalingConfigurationUtil.getConfig("/proxy_config-sharding_1.yaml");
-        String newConfig = ScalingConfigurationUtil.getConfig("/proxy_config-sharding_2.yaml");
-        assertFalse(scalingJobService.start(oldConfig, oldConfig).isPresent());
-        Optional<ScalingJob> shardingScalingJob = scalingJobService.start(oldConfig, newConfig);
-        assertTrue(shardingScalingJob.isPresent());
-        assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(shardingScalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":true"));
+    public void assertStartWithCallbackImmediately() {
+        ScalingConfiguration scalingConfig = mockScalingConfiguration();
+        ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfiguration().getSource().unwrap();
+        AtomicBoolean successCallback = new AtomicBoolean();
+        Optional<ScalingJob> scalingJob = scalingJobService.start(source.getDataSource(), source.getRule(), source.getDataSource(), source.getRule(), mockScalingCallback(successCallback));
+        assertFalse(scalingJob.isPresent());
+        assertTrue(successCallback.get());
+    }
+    
+    @Test
+    public void assertStartWithCallbackSuccess() throws IOException {
+        ScalingConfiguration scalingConfig = ScalingConfigurationUtil.initConfig("/config_sharding_sphere_jdbc_target.json");
+        ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfiguration().getSource().unwrap();
+        ShardingSphereJDBCDataSourceConfiguration target = (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfiguration().getTarget().unwrap();
+        Optional<ScalingJob> scalingJob = scalingJobService.start(source.getDataSource(), source.getRule(), target.getDataSource(), target.getRule(), mockScalingCallback());
+        assertTrue(scalingJob.isPresent());
     }
     
     @Test
@@ -148,6 +150,33 @@ public final class DistributedScalingJobServiceTest {
         ServerConfiguration result = new ServerConfiguration();
         result.setDistributedScalingService(distributedScalingService);
         return result;
+    }
+    
+    private ScalingCallback mockScalingCallback() {
+        return new ScalingCallback() {
+            
+            @Override
+            public void onSuccess() {
+            }
+            
+            @Override
+            public void onFailure() {
+            }
+        };
+    }
+    
+    private ScalingCallback mockScalingCallback(final AtomicBoolean successCallback) {
+        return new ScalingCallback() {
+            
+            @Override
+            public void onSuccess() {
+                successCallback.set(true);
+            }
+            
+            @Override
+            public void onFailure() {
+            }
+        };
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
