@@ -32,8 +32,8 @@ public class SamplePluginDefinition extends PluginDefinition {
 
     @Override
     protected void define() {
-        intercept("org.Test")
-                .aroundInstanceMethod(ElementMatchers.named("run"))
+        intercept("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask")
+                .aroundInstanceMethod(ElementMatchers.named("executeCommand"))
                 .implement("org.apache.shardingsphere.agent.plugin.trace.SampleAdvice")
                 .build();
     }
