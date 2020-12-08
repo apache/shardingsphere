@@ -65,8 +65,8 @@ public final class LockCenterTest {
     
     @Test
     public void assertTryGlobalLock() {
-        lockCenter.tryGlobalLock();
-        verify(registryRepository).tryLock(eq(5L), eq(TimeUnit.SECONDS));
+        lockCenter.tryGlobalLock(50L);
+        verify(registryRepository).tryLock(eq(50L), eq(TimeUnit.MILLISECONDS));
     }
     
     @Test

@@ -54,7 +54,7 @@ public final class LockContextTest {
             }
             LockContext.signalAll();
         }).start();
-        boolean result = LockContext.await();
+        boolean result = LockContext.await(300L);
         assertTrue(result);
         assertTrue(System.currentTimeMillis() - startTime >= 200L);
     }

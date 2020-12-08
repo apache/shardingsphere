@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,8 +48,8 @@ public final class GovernanceLockStrategyTest {
     
     @Test
     public void assertTryLock() {
-        lockStrategy.tryLock();
-        verify(lockCenter).tryGlobalLock();
+        lockStrategy.tryLock(50L);
+        verify(lockCenter).tryGlobalLock(eq(50L));
     }
     
     @Test

@@ -122,7 +122,7 @@ public final class DatabaseCommunicationEngine {
     
     private void lockForDDL(final ExecutionContext executionContext) {
         if (needLock(executionContext)) {
-            if (!LockContext.getLockStrategy().tryLock()) {
+            if (!LockContext.getLockStrategy().tryLock(ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS))) {
                 throw new LockWaitTimeoutException();
             }
             checkLock();
@@ -130,11 +130,7 @@ public final class DatabaseCommunicationEngine {
     }
     
     private boolean needLock(final ExecutionContext executionContext) {
-        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        if (null == sqlStatement) {
-            return false;
-        }
-        return SchemaRefresherFactory.newInstance(sqlStatement).isPresent();
+        return SchemaRefresherFactory.newInstance(executionContext.getSqlStatementContext().getSqlStatement()).isPresent();
     }
     
     private void checkLock() {
@@ -185,9 +181,6 @@ public final class DatabaseCommunicationEngine {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void refreshSchema(final ExecutionContext executionContext) throws SQLException {
         SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        if (null == sqlStatement) {
-            return;
-        }
         Optional<SchemaRefresher> schemaRefresher = SchemaRefresherFactory.newInstance(sqlStatement);
         if (schemaRefresher.isPresent()) {
             try {

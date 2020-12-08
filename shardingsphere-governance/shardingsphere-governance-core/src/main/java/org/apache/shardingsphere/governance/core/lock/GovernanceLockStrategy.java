@@ -39,8 +39,8 @@ public final class GovernanceLockStrategy implements LockStrategy {
     }
     
     @Override
-    public boolean tryLock() {
-        return governanceFacade.getLockCenter().tryGlobalLock();
+    public boolean tryLock(final Long timeout) {
+        return governanceFacade.getLockCenter().tryGlobalLock(timeout);
     }
     
     @Override
