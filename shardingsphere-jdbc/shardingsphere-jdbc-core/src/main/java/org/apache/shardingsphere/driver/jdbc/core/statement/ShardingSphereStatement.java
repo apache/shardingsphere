@@ -94,7 +94,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private final StatementOption statementOption;
     
-    private final DriverJDBCExecutor jdbcStatementExecutor;
+    private final DriverJDBCExecutor driverJDBCExecutor;
     
     private final RawExecutor rawExecutor;
     
@@ -121,7 +121,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         statements = new LinkedList<>();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         JDBCExecutor jdbcExecutor = new JDBCExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction());
-        jdbcStatementExecutor = new DriverJDBCExecutor(connection.getDataSourceMap(), metaDataContexts, jdbcExecutor);
+        driverJDBCExecutor = new DriverJDBCExecutor(connection.getDataSourceMap(), metaDataContexts, jdbcExecutor);
         rawExecutor = new RawExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction());
         kernelProcessor = new KernelProcessor();
     }
@@ -140,7 +140,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             } else {
                 Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
                 cacheStatements(executionGroups);
-                queryResults = jdbcStatementExecutor.executeQuery(
+                queryResults = driverJDBCExecutor.executeQuery(
                         executionGroups, new StatementExecuteQueryCallback(metaDataContexts.getDatabaseType(), SQLExecutorExceptionHandler.isExceptionThrown()));
             }
             MergedResult mergedResult = mergeQuery(queryResults);
@@ -231,7 +231,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 return updater.executeUpdate(sql, statement);
             }
         };
-        return jdbcStatementExecutor.executeUpdate(executionGroups, sqlStatementContext, routeUnits, callback);
+        return driverJDBCExecutor.executeUpdate(executionGroups, sqlStatementContext, routeUnits, callback);
     }
     
     @Override
@@ -317,7 +317,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 return executor.execute(sql, statement);
             }
         };
-        return jdbcStatementExecutor.execute(executionGroups, sqlStatement, routeUnits, jdbcExecutorCallback);
+        return driverJDBCExecutor.execute(executionGroups, sqlStatement, routeUnits, jdbcExecutorCallback);
     }
     
     private ExecutionContext createExecutionContext(final String sql) throws SQLException {
