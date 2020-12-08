@@ -262,7 +262,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
      * To get or create instance of the advice class. Create new one and caching when it is not exist.
      *
      * @param classNameOfAdvice class name of advice
-     * @param <T>               advice type
+     * @param <T> advice type
      * @return instance of advice
      */
     @SneakyThrows({ClassNotFoundException.class, IllegalAccessException.class, InstantiationException.class})
