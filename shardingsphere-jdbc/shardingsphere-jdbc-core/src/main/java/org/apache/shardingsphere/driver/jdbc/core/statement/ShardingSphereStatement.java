@@ -134,15 +134,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         ResultSet result;
         try {
             executionContext = createExecutionContext(sql);
-            List<QueryResult> queryResults;
-            if (metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
-                queryResults = rawExecutor.executeQuery(createRawExecutionGroups(), new RawSQLExecutorCallback());
-            } else {
-                Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
-                cacheStatements(executionGroups);
-                queryResults = driverJDBCExecutor.executeQuery(
-                        executionGroups, new StatementExecuteQueryCallback(metaDataContexts.getDatabaseType(), SQLExecutorExceptionHandler.isExceptionThrown()));
-            }
+            List<QueryResult> queryResults = executeQuery();
             MergedResult mergedResult = mergeQuery(queryResults);
             result = new ShardingSphereResultSet(statements.stream().map(this::getResultSet).collect(Collectors.toList()), mergedResult, this, executionContext);
         } finally {
@@ -150,6 +142,15 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
         currentResultSet = result;
         return result;
+    }
+    
+    private List<QueryResult> executeQuery() throws SQLException {
+        if (metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
+            return rawExecutor.executeQuery(createRawExecutionGroups(), new RawSQLExecutorCallback());
+        }
+        Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
+        cacheStatements(executionGroups);
+        return driverJDBCExecutor.executeQuery(executionGroups, new StatementExecuteQueryCallback(metaDataContexts.getDatabaseType(), SQLExecutorExceptionHandler.isExceptionThrown()));
     }
     
     @Override
