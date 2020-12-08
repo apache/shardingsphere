@@ -53,6 +53,7 @@ public class ShardingSphereAgent {
             .ignore(ElementMatchers.isSynthetic())
             .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."));
         AgentPluginLoader agentPluginLoader = AgentPluginLoader.getInstance();
+        agentPluginLoader.loadAllPlugins();
         agentPluginLoader.initialAllServices();
         builder.type(agentPluginLoader.typeMatcher())
                .transform(new ShardingSphereTransformer(agentPluginLoader))
