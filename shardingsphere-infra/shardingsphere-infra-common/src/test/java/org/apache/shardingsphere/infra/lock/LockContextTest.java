@@ -44,7 +44,6 @@ public final class LockContextTest {
     
     @Test
     public void assetAwait() {
-        long startTime = System.currentTimeMillis();
         new Thread(() -> {
             try {
                 TimeUnit.MILLISECONDS.sleep(200L);
@@ -54,8 +53,7 @@ public final class LockContextTest {
             }
             LockContext.signalAll();
         }).start();
-        boolean result = LockContext.await(300L);
+        boolean result = LockContext.await(400L);
         assertTrue(result);
-        assertTrue(System.currentTimeMillis() - startTime >= 200L);
     }
 }
