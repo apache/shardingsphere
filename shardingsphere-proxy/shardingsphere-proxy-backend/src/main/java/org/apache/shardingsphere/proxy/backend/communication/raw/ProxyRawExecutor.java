@@ -52,15 +52,9 @@ public final class ProxyRawExecutor {
     public Collection<ExecuteResult> execute(final Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups, final RawSQLExecutorCallback callback) throws SQLException {
         // TODO Load query header for first query
         List<ExecuteResult> results = execute(executionGroups, null, callback);
-        // TODO refresh metadata
         if (null == results || results.isEmpty() || null == results.get(0)) {
             return Collections.singleton(new UpdateResult(0, 0L));
         }
-        // CHECKSTYLE:OFF
-        if (results.get(0) instanceof UpdateResult) {
-            // TODO refresh metadata
-        }
-        // CHECKSTYLE:ON
         return results;
     }
     
