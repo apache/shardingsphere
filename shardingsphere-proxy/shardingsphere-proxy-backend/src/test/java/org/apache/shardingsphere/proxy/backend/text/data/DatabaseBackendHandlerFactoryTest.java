@@ -24,35 +24,40 @@ import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBac
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.Test;
-import org.mockito.Mock;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class DatabaseBackendHandlerFactoryTest {
-
-    @Mock
-    private BackendConnection backendConnection;
-
+    
     @Test
     public void assertNewInstanceReturnedBroadcastDatabaseBackendHandler() {
-        String sql = "SELECT 1 FROM user WHERE id BETWEEN 1001 AND 3001";
-        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(mock(SetStatement.class), sql, backendConnection);
+        String sql = "SET a=1";
+        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(mock(SetStatement.class), sql, mock(BackendConnection.class));
         assertThat(actual, instanceOf(BroadcastDatabaseBackendHandler.class));
     }
-
+    
     @Test
-    public void assertNewInstanceReturnedUnicastDatabaseBackendHandler() {
-        String sql = "SELECT 1 FROM user WHERE id = 1";
-        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(mock(DALStatement.class), sql, backendConnection);
+    public void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithDAL() {
+        String sql = "DESC tbl";
+        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(mock(DALStatement.class), sql, mock(BackendConnection.class));
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
     }
-
+    
+    @Test
+    public void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithQueryWithoutFrom() {
+        String sql = "SELECT 1";
+        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(mock(SelectStatement.class), sql, mock(BackendConnection.class));
+        assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
+    }
+    
     @Test
     public void assertNewInstanceReturnedSchemaAssignedDatabaseBackendHandler() {
-        String sql = "USE test";
-        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(mock(SQLStatement.class), sql, backendConnection);
+        String sql = "SELECT 1 FROM user WHERE id = 1";
+        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(mock(SQLStatement.class), sql, mock(BackendConnection.class));
         assertThat(actual, instanceOf(SchemaAssignedDatabaseBackendHandler.class));
     }
 }
