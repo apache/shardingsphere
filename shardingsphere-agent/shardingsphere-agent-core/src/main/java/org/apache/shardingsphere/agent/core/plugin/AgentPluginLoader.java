@@ -21,14 +21,13 @@ package org.apache.shardingsphere.agent.core.plugin;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatchers;
-
 import org.apache.shardingsphere.agent.core.common.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
@@ -37,10 +36,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.jar.Attributes;
@@ -52,6 +51,9 @@ import java.util.zip.ZipEntry;
  */
 @Slf4j
 public final class AgentPluginLoader extends ClassLoader implements Closeable {
+    static {
+        registerAsParallelCapable();
+    }
     
     private static final AgentPluginLoader INSTANCE = new AgentPluginLoader();
     
@@ -112,9 +114,9 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     
     private Map<String, PluginAdviceDefinition> loadAllPlugins() throws IOException {
         File[] jarFiles = AgentPathBuilder.getPluginPath().listFiles(file -> file.getName().endsWith(".jar"));
-        ImmutableMap.Builder<String, PluginAdviceDefinition> pluginDefineMap = ImmutableMap.builder();
+        Map<String, PluginAdviceDefinition> pluginDefineMap = Maps.newHashMap();
         if (jarFiles == null) {
-            return pluginDefineMap.build();
+            return pluginDefineMap;
         }
         AgentConfiguration configuration = SingletonHolder.INSTANCE.get(AgentConfiguration.class);
         List<String> activatedLists = configuration.getActivatedPlugins();
@@ -132,6 +134,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
                 log.warn("Entrypoint is not setting in {}.", jarFile.getName());
                 continue;
             }
+            jars.add(jar);
             ByteStreams.copy(jar.getInputStream(jar.getEntry(classNameToPath(entrypoint))), outputStream);
             try {
                 PluginDefinition pluginDefinition = (PluginDefinition) defineClass(entrypoint, outputStream.toByteArray(), 0, outputStream.size()).newInstance();
@@ -145,13 +148,22 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
                         log.error("Failed to create service instance, {}.", klass.getTypeName(), e);
                     }
                 });
-                pluginDefinition.build().forEach(plugin -> pluginDefineMap.put(plugin.getClassNameOfTarget(), plugin));
+                pluginDefinition.build().forEach(plugin -> {
+                    String target = plugin.getClassNameOfTarget();
+                    if (pluginDefineMap.containsKey(target)) {
+                        PluginAdviceDefinition definition = pluginDefineMap.get(target);
+                        definition.getConstructorPoints().addAll(plugin.getConstructorPoints());
+                        definition.getInstanceMethodPoints().addAll(plugin.getInstanceMethodPoints());
+                        definition.getClassStaticMethodPoints().addAll(plugin.getClassStaticMethodPoints());
+                    } else {
+                        pluginDefineMap.put(target, plugin);
+                    }
+                });
             } catch (InstantiationException | IllegalAccessException e) {
                 log.error("Failed to load plugin definition, {}.", entrypoint, e);
             }
-            jars.add(jar);
         }
-        return pluginDefineMap.build();
+        return ImmutableMap.<String, PluginAdviceDefinition>builder().putAll(pluginDefineMap).build();
     }
     
     private String classNameToPath(final String className) {
@@ -164,7 +176,23 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
      * @return type matcher
      */
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return ElementMatchers.anyOf(pluginDefineMap.keySet().stream().map(ElementMatchers::named).toArray());
+        return new ElementMatcher.Junction<TypeDescription>() {
+            
+            @Override
+            public boolean matches(final TypeDescription target) {
+                return pluginDefineMap.containsKey(target.getTypeName());
+            }
+            
+            @Override
+            public <U extends TypeDescription> Junction<U> and(final ElementMatcher<? super U> other) {
+                return null;
+            }
+            
+            @Override
+            public <U extends TypeDescription> Junction<U> or(final ElementMatcher<? super U> other) {
+                return null;
+            }
+        };
     }
     
     /**
@@ -191,7 +219,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
      * To get or create instance of the advice class. Create new one and caching when it is not exist.
      *
      * @param classNameOfAdvice class name of advice
-     * @param <T> advice type
+     * @param <T>               advice type
      * @return instance of advice
      */
     @SneakyThrows({ClassNotFoundException.class, IllegalAccessException.class, InstantiationException.class})

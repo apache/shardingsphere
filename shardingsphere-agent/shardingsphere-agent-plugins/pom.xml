@@ -44,7 +44,6 @@
         </dependencies>
     </dependencyManagement>
 
-
     <build>
         <finalName>${project.artifactId}-${project.version}.jar</finalName>
         <plugins>
