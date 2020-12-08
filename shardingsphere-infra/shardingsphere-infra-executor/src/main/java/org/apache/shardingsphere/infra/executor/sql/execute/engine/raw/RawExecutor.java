@@ -23,14 +23,12 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Raw executor.
@@ -43,61 +41,27 @@ public final class RawExecutor {
     private final boolean serial;
     
     /**
-     * Execute query.
-     *
-     * @param executionGroups execution groups
-     * @param callback raw SQL execute callback
-     * @return Query results
-     * @throws SQLException SQL exception
-     */
-    public List<QueryResult> executeQuery(final Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups, final RawSQLExecutorCallback callback) throws SQLException {
-        return doExecute(executionGroups, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
-    }
-    
-    /**
-     * Execute update.
-     *
-     * @param executionGroups execution groups
-     * @param callback raw SQL execute callback
-     * @return update count
-     * @throws SQLException SQL exception
-     */
-    public int executeUpdate(final Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups, final RawSQLExecutorCallback callback) throws SQLException {
-        List<Integer> results = doExecute(executionGroups, callback).stream().map(each -> ((UpdateResult) each).getUpdateCount()).collect(Collectors.toList());
-        // TODO check is need to accumulate
-        // TODO refresh metadata
-        return accumulate(results);
-    }
-    
-    private int accumulate(final List<Integer> results) {
-        int result = 0;
-        for (Integer each : results) {
-            result += null == each ? 0 : each;
-        }
-        return result;
-    }
-    
-    /**
      * Execute.
      *
      * @param executionGroups execution groups
      * @param callback raw SQL execute callback
-     * @return return true if is DQL, false if is DML
+     * @return execute results
      * @throws SQLException SQL exception
      */
-    public boolean execute(final Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups, final RawSQLExecutorCallback callback) throws SQLException {
-        List<ExecuteResult> results = doExecute(executionGroups, callback);
-        // TODO refresh metadata
+    public Collection<ExecuteResult> execute(final Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups, final RawSQLExecutorCallback callback) throws SQLException {
+        // TODO Load query header for first query
+        List<ExecuteResult> results = execute(executionGroups, null, callback);
         if (null == results || results.isEmpty() || null == results.get(0)) {
-            return false;
+            return Collections.singleton(new UpdateResult(0, 0L));
         }
-        return results.get(0) instanceof QueryResult;
+        return results;
     }
     
     @SuppressWarnings("unchecked")
-    private <T> List<T> doExecute(final Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups, final RawSQLExecutorCallback callback) throws SQLException {
+    private <T> List<T> execute(final Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups, 
+                                final RawSQLExecutorCallback firstCallback, final RawSQLExecutorCallback callback) throws SQLException {
         try {
-            return executorEngine.execute((Collection) executionGroups, null, callback, serial);
+            return executorEngine.execute((Collection) executionGroups, firstCallback, callback, serial);
         } catch (final SQLException ex) {
             SQLExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();

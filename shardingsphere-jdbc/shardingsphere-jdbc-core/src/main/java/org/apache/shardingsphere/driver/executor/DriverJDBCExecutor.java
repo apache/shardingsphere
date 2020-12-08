@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.executor;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteQueryCallback;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -54,7 +53,6 @@ import java.util.stream.Collectors;
  * Driver JDBC executor.
  */
 @RequiredArgsConstructor
-@Getter
 public final class DriverJDBCExecutor {
     
     static {
