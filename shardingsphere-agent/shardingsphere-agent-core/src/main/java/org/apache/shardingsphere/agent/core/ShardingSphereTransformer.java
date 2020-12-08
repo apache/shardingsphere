@@ -86,7 +86,6 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
                     // CHECKSTYLE:OFF
                 } catch (Throwable e) {
                     // CHECKSTYLE:ON
-                    e.printStackTrace();
                     log.error("Failed to load advice class: {}", point.getAdvice(), e);
                 }
             }
