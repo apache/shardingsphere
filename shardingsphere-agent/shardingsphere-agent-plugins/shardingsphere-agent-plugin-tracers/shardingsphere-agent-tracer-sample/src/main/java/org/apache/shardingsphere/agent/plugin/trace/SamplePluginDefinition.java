@@ -27,15 +27,14 @@ import org.apache.shardingsphere.agent.core.plugin.PluginDefinition;
 public class SamplePluginDefinition extends PluginDefinition {
 
     public SamplePluginDefinition() {
-        super("");
+        super("sample");
     }
 
     @Override
     protected void define() {
         intercept("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask")
-                .aroundInstanceMethod(ElementMatchers.named("run"))
+                .aroundInstanceMethod(ElementMatchers.named("executeCommand"))
                 .implement("org.apache.shardingsphere.agent.plugin.trace.SampleAdvice")
                 .build();
-        registerService(SampleTracer.class);
     }
 }

@@ -44,7 +44,11 @@ allClause
     ;
 
 privileges
-    : privilegeType columnNames? (COMMA_ privilegeType columnNames?)*
+    : privilege (COMMA_ privilege)*
+    ;
+
+privilege
+    : privilegeType (LP_ columnNames RP_)?
     ;
 
 privilegeType
@@ -164,7 +168,7 @@ setRole
     ;
 
 setPassword
-    : SET PASSWORD (FOR userName)? authOption (REPLACE STRING_)? (RETAIN CURRENT PASSWORD)?
+    : SET PASSWORD (FOR userName)? authOption (REPLACE string_)? (RETAIN CURRENT PASSWORD)?
     ;
 
 authOption
@@ -194,12 +198,12 @@ userAuthOption
     ;
 
 identifiedBy
-    : IDENTIFIED BY (STRING_ | RANDOM PASSWORD) (REPLACE STRING_)? (RETAIN CURRENT PASSWORD)?
+    : IDENTIFIED BY (string_ | RANDOM PASSWORD) (REPLACE string_)? (RETAIN CURRENT PASSWORD)?
     ;
 
 identifiedWith
     : IDENTIFIED WITH pluginName
-    | IDENTIFIED WITH pluginName BY (STRING_ | RANDOM PASSWORD) (REPLACE stringLiterals)? (RETAIN CURRENT PASSWORD)?
+    | IDENTIFIED WITH pluginName BY (string_ | RANDOM PASSWORD) (REPLACE stringLiterals)? (RETAIN CURRENT PASSWORD)?
     | IDENTIFIED WITH pluginName AS textStringHash (RETAIN CURRENT PASSWORD)?
     ;
 
@@ -211,7 +215,7 @@ connectOption
     ;
 
 tlsOption
-    : SSL | X509 | CIPHER STRING_ | ISSUER STRING_ | SUBJECT STRING_
+    : SSL | X509 | CIPHER string_ | ISSUER string_ | SUBJECT string_
     ;
 
 userFuncAuthOption

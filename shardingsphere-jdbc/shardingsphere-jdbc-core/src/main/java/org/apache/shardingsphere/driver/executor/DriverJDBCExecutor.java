@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.driver.executor;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.driver.executor.callback.ExecuteQueryCallback;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -50,11 +50,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Abstract statement executor.
+ * Driver JDBC executor.
  */
-@Getter
 @RequiredArgsConstructor
-public abstract class AbstractStatementExecutor {
+public final class DriverJDBCExecutor {
     
     static {
         ShardingSphereServiceLoader.register(SchemaChangedNotifier.class);
@@ -66,16 +65,37 @@ public abstract class AbstractStatementExecutor {
     
     private final JDBCExecutor jdbcExecutor;
     
-    protected final boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext<?> sqlStatementContext) {
-        return rules.stream().anyMatch(each -> ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
+    /**
+     * Execute query.
+     *
+     * @param executionGroups execution groups
+     * @param callback execute query callback
+     * @return query results
+     * @throws SQLException SQL exception
+     */
+    public List<QueryResult> executeQuery(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final ExecuteQueryCallback callback) throws SQLException {
+        return jdbcExecutor.execute(executionGroups, callback);
     }
     
-    protected final int accumulate(final List<Integer> results) {
-        return results.stream().mapToInt(each -> null == each ? 0 : each).sum();
+    /**
+     * Execute update.
+     *
+     * @param executionGroups execution groups
+     * @param sqlStatementContext SQL statement context
+     * @param routeUnits route units
+     * @param callback JDBC executor callback
+     * @return effected records count
+     * @throws SQLException SQL exception
+     */
+    public int executeUpdate(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, 
+                             final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
+        List<Integer> results = jdbcExecutor.execute(executionGroups, callback);
+        refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatementContext.getSqlStatement(), routeUnits);
+        return isNeedAccumulate(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    protected final void refreshSchema(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
+    private void refreshSchema(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
         if (null == sqlStatement) {
             return;
         }
@@ -84,19 +104,20 @@ public abstract class AbstractStatementExecutor {
             Collection<String> routeDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
             SchemaBuilderMaterials materials = new SchemaBuilderMaterials(metaDataContexts.getDatabaseType(), dataSourceMap, metaData.getRuleMetaData().getRules(), metaDataContexts.getProps());
             schemaRefresher.get().refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, materials);
-            notifySchemaChanged(DefaultSchema.LOGIC_NAME, metaData.getSchema());
+            notifySchemaChanged(metaData.getSchema());
         }
     }
     
-    private void notifySchemaChanged(final String schemaName, final ShardingSphereSchema schema) {
-        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(schemaName, schema));
+    private void notifySchemaChanged(final ShardingSphereSchema schema) {
+        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(DefaultSchema.LOGIC_NAME, schema));
     }
     
-    protected final boolean executeAndRefreshMetaData(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final SQLStatement sqlStatement,
-                                                      final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> jdbcExecutorCallback) throws SQLException {
-        List<Boolean> result = jdbcExecutor.execute(executionGroups, jdbcExecutorCallback);
-        refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatement, routeUnits);
-        return null != result && !result.isEmpty() && null != result.get(0) && result.get(0);
+    private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext<?> sqlStatementContext) {
+        return rules.stream().anyMatch(each -> each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
+    }
+    
+    private int accumulate(final List<Integer> updateResults) {
+        return updateResults.stream().mapToInt(each -> null == each ? 0 : each).sum();
     }
     
     /**
@@ -105,29 +126,14 @@ public abstract class AbstractStatementExecutor {
      * @param executionGroups execution groups
      * @param sqlStatement SQL statement
      * @param routeUnits route units
+     * @param callback JDBC executor callback
      * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    public abstract boolean execute(Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, SQLStatement sqlStatement, Collection<RouteUnit> routeUnits) throws SQLException;
-    
-    /**
-     * Execute query.
-     *
-     * @param executionGroups execution groups
-     * @return query results
-     * @throws SQLException SQL exception
-     */
-    public abstract List<QueryResult> executeQuery(Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) throws SQLException;
-    
-    /**
-     * Execute update.
-     *
-     * @param executionGroups execution groups
-     * @param sqlStatementContext SQL statement context
-     * @param routeUnits route units
-     * @return effected records count
-     * @throws SQLException SQL exception
-     */
-    public abstract int executeUpdate(Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, 
-                                      SQLStatementContext<?> sqlStatementContext, Collection<RouteUnit> routeUnits) throws SQLException;
+    public boolean execute(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final SQLStatement sqlStatement,
+                           final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
+        List<Boolean> results = jdbcExecutor.execute(executionGroups, callback);
+        refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatement, routeUnits);
+        return null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
+    }
 }

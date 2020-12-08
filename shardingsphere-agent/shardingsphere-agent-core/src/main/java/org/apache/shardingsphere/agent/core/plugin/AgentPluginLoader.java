@@ -21,15 +21,19 @@ package org.apache.shardingsphere.agent.core.plugin;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.jar.JarEntry;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatchers;
-
-import org.apache.shardingsphere.agent.core.common.AgentPathLocator;
+import org.apache.shardingsphere.agent.core.common.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
 
@@ -37,10 +41,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.jar.Attributes;
@@ -48,12 +52,16 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 /**
- * Plugins loader.
+ * Agent plugin loader.
  */
 @Slf4j
-public final class PluginLoader extends ClassLoader implements Closeable {
+public final class AgentPluginLoader extends ClassLoader implements Closeable {
     
-    private static final PluginLoader INSTANCE = new PluginLoader();
+    static {
+        registerAsParallelCapable();
+    }
+    
+    private static volatile AgentPluginLoader agentPluginLoader;
     
     private final ConcurrentHashMap<String, Object> objectPool = new ConcurrentHashMap<>();
     
@@ -63,15 +71,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     
     private final List<Service> services = Lists.newArrayList();
     
-    private Map<String, PluginAdviceDefinition> pluginDefineMap;
-    
-    private PluginLoader() {
-        try {
-            pluginDefineMap = loadAllPlugins();
-        } catch (IOException ioe) {
-            log.error("Failed to load plugins.");
-        }
-    }
+    private Map<String, PluginAdviceDefinition> pluginDefineMap = Maps.newHashMap();
     
     @Override
     protected Class<?> findClass(final String name) throws ClassNotFoundException {
@@ -91,6 +91,29 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     }
     
     @Override
+    protected Enumeration<URL> findResources(final String name) throws IOException {
+        List<URL> allResources = new LinkedList<>();
+        for (JarFile jar : jars) {
+            JarEntry entry = jar.getJarEntry(name);
+            if (null != entry) {
+                allResources.add(new URL("jar:file:" + AgentPathBuilder.getAgentPath().getAbsolutePath() + "!/" + name));
+            }
+        }
+        final Iterator<URL> iterator = allResources.iterator();
+        return new Enumeration<URL>() {
+            @Override
+            public boolean hasMoreElements() {
+                return iterator.hasNext();
+            }
+            
+            @Override
+            public URL nextElement() {
+                return iterator.next();
+            }
+        };
+    }
+    
+    @Override
     public void close() {
         for (JarFile jar : jars) {
             try {
@@ -102,23 +125,35 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     }
     
     /**
-     * To get plugin loader instance.
+     * To get agent plugin loader instance.
      *
      * @return plugin loader
      */
-    public static PluginLoader getInstance() {
-        return INSTANCE;
+    public static AgentPluginLoader getInstance() {
+        if (null == agentPluginLoader) {
+            synchronized (AgentPluginLoader.class) {
+                if (null == agentPluginLoader) {
+                    agentPluginLoader = new AgentPluginLoader();
+                }
+            }
+        }
+        return agentPluginLoader;
     }
     
-    private Map<String, PluginAdviceDefinition> loadAllPlugins() throws IOException {
-        File[] jarFiles = AgentPathLocator.getAgentPath().listFiles(file -> file.getName().endsWith(".jar"));
-        ImmutableMap.Builder<String, PluginAdviceDefinition> pluginDefineMap = ImmutableMap.builder();
-        if (jarFiles == null) {
-            return pluginDefineMap.build();
+    /**
+     * Load all plugins.
+     *
+     * @throws IOException the IO exception
+     */
+    public void loadAllPlugins() throws IOException {
+        File[] jarFiles = AgentPathBuilder.getPluginPath().listFiles(file -> file.getName().endsWith(".jar"));
+        if (null == jarFiles) {
+            return;
         }
+        Map<String, PluginAdviceDefinition> pluginAdviceDefinitionMap = Maps.newHashMap();
         AgentConfiguration configuration = SingletonHolder.INSTANCE.get(AgentConfiguration.class);
         List<String> activatedLists = configuration.getActivatedPlugins();
-        if (activatedLists == null) {
+        if (null == activatedLists) {
             activatedLists = Lists.newArrayList();
         }
         Set<String> activatedPlugins = Sets.newHashSet(activatedLists);
@@ -126,6 +161,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
         for (File jarFile : jarFiles) {
             outputStream.reset();
             JarFile jar = new JarFile(jarFile, true);
+            jars.add(jar);
             Attributes attributes = jar.getManifest().getMainAttributes();
             String entrypoint = attributes.getValue("Entrypoint");
             if (Strings.isNullOrEmpty(entrypoint)) {
@@ -145,13 +181,22 @@ public final class PluginLoader extends ClassLoader implements Closeable {
                         log.error("Failed to create service instance, {}.", klass.getTypeName(), e);
                     }
                 });
-                pluginDefinition.build().forEach(plugin -> pluginDefineMap.put(plugin.getClassNameOfTarget(), plugin));
+                pluginDefinition.build().forEach(plugin -> {
+                    String target = plugin.getClassNameOfTarget();
+                    if (pluginAdviceDefinitionMap.containsKey(target)) {
+                        PluginAdviceDefinition definition = pluginAdviceDefinitionMap.get(target);
+                        definition.getConstructorPoints().addAll(plugin.getConstructorPoints());
+                        definition.getInstanceMethodPoints().addAll(plugin.getInstanceMethodPoints());
+                        definition.getClassStaticMethodPoints().addAll(plugin.getClassStaticMethodPoints());
+                    } else {
+                        pluginAdviceDefinitionMap.put(target, plugin);
+                    }
+                });
             } catch (InstantiationException | IllegalAccessException e) {
                 log.error("Failed to load plugin definition, {}.", entrypoint, e);
             }
-            jars.add(jar);
         }
-        return pluginDefineMap.build();
+        pluginDefineMap = ImmutableMap.<String, PluginAdviceDefinition>builder().putAll(pluginAdviceDefinitionMap).build();
     }
     
     private String classNameToPath(final String className) {
@@ -164,7 +209,23 @@ public final class PluginLoader extends ClassLoader implements Closeable {
      * @return type matcher
      */
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return ElementMatchers.anyOf(pluginDefineMap.keySet().stream().map(ElementMatchers::named).toArray());
+        return new ElementMatcher.Junction<TypeDescription>() {
+            
+            @Override
+            public boolean matches(final TypeDescription target) {
+                return pluginDefineMap.containsKey(target.getTypeName());
+            }
+            
+            @Override
+            public <U extends TypeDescription> Junction<U> and(final ElementMatcher<? super U> other) {
+                return null;
+            }
+            
+            @Override
+            public <U extends TypeDescription> Junction<U> or(final ElementMatcher<? super U> other) {
+                return null;
+            }
+        };
     }
     
     /**
@@ -190,8 +251,8 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     /**
      * To get or create instance of the advice class. Create new one and caching when it is not exist.
      *
+     * @param <T>               advice type
      * @param classNameOfAdvice class name of advice
-     * @param <T> advice type
      * @return instance of advice
      */
     @SneakyThrows({ClassNotFoundException.class, IllegalAccessException.class, InstantiationException.class})

@@ -22,7 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.core.common.AgentPathLocator;
+import org.apache.shardingsphere.agent.core.common.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.yaml.YamlEngine;
 
 /**
@@ -43,7 +43,7 @@ public final class AgentConfigurationLoader {
      */
     public static AgentConfiguration load() throws IOException {
         String specifiedConfigPath = System.getProperty(SPECIFIED_CONFIG_PATH);
-        File configFile = null == specifiedConfigPath ? new File(AgentPathLocator.getAgentPath(), DEFAULT_CONFIG_PATH) : new File(specifiedConfigPath);
+        File configFile = null == specifiedConfigPath ? new File(AgentPathBuilder.getAgentPath(), DEFAULT_CONFIG_PATH) : new File(specifiedConfigPath);
         return loadAgentConfiguration(configFile);
     }
     
