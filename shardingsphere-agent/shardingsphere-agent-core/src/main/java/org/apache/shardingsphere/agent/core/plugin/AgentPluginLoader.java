@@ -24,6 +24,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.jar.JarEntry;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.description.type.TypeDescription;
@@ -51,11 +56,12 @@ import java.util.zip.ZipEntry;
  */
 @Slf4j
 public final class AgentPluginLoader extends ClassLoader implements Closeable {
+    
     static {
         registerAsParallelCapable();
     }
     
-    private static final AgentPluginLoader INSTANCE = new AgentPluginLoader();
+    private static volatile AgentPluginLoader agentPluginLoader;
     
     private final ConcurrentHashMap<String, Object> objectPool = new ConcurrentHashMap<>();
     
@@ -65,15 +71,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     
     private final List<Service> services = Lists.newArrayList();
     
-    private Map<String, PluginAdviceDefinition> pluginDefineMap;
-    
-    private AgentPluginLoader() {
-        try {
-            pluginDefineMap = loadAllPlugins();
-        } catch (IOException ioe) {
-            log.error("Failed to load plugins.");
-        }
-    }
+    private Map<String, PluginAdviceDefinition> pluginDefineMap = Maps.newHashMap();
     
     @Override
     protected Class<?> findClass(final String name) throws ClassNotFoundException {
@@ -93,6 +91,29 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     }
     
     @Override
+    protected Enumeration<URL> findResources(final String name) throws IOException {
+        List<URL> allResources = new LinkedList<>();
+        for (JarFile jar : jars) {
+            JarEntry entry = jar.getJarEntry(name);
+            if (null != entry) {
+                allResources.add(new URL("jar:file:" + AgentPathBuilder.getAgentPath().getAbsolutePath() + "!/" + name));
+            }
+        }
+        final Iterator<URL> iterator = allResources.iterator();
+        return new Enumeration<URL>() {
+            @Override
+            public boolean hasMoreElements() {
+                return iterator.hasNext();
+            }
+            
+            @Override
+            public URL nextElement() {
+                return iterator.next();
+            }
+        };
+    }
+    
+    @Override
     public void close() {
         for (JarFile jar : jars) {
             try {
@@ -109,18 +130,30 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
      * @return plugin loader
      */
     public static AgentPluginLoader getInstance() {
-        return INSTANCE;
+        if (null == agentPluginLoader) {
+            synchronized (AgentPluginLoader.class) {
+                if (null == agentPluginLoader) {
+                    agentPluginLoader = new AgentPluginLoader();
+                }
+            }
+        }
+        return agentPluginLoader;
     }
     
-    private Map<String, PluginAdviceDefinition> loadAllPlugins() throws IOException {
+    /**
+     * Load all plugins.
+     *
+     * @throws IOException the IO exception
+     */
+    public void loadAllPlugins() throws IOException {
         File[] jarFiles = AgentPathBuilder.getPluginPath().listFiles(file -> file.getName().endsWith(".jar"));
-        Map<String, PluginAdviceDefinition> pluginDefineMap = Maps.newHashMap();
-        if (jarFiles == null) {
-            return pluginDefineMap;
+        if (null == jarFiles) {
+            return;
         }
+        Map<String, PluginAdviceDefinition> pluginAdviceDefinitionMap = Maps.newHashMap();
         AgentConfiguration configuration = SingletonHolder.INSTANCE.get(AgentConfiguration.class);
         List<String> activatedLists = configuration.getActivatedPlugins();
-        if (activatedLists == null) {
+        if (null == activatedLists) {
             activatedLists = Lists.newArrayList();
         }
         Set<String> activatedPlugins = Sets.newHashSet(activatedLists);
@@ -128,13 +161,13 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
         for (File jarFile : jarFiles) {
             outputStream.reset();
             JarFile jar = new JarFile(jarFile, true);
+            jars.add(jar);
             Attributes attributes = jar.getManifest().getMainAttributes();
             String entrypoint = attributes.getValue("Entrypoint");
             if (Strings.isNullOrEmpty(entrypoint)) {
                 log.warn("Entrypoint is not setting in {}.", jarFile.getName());
                 continue;
             }
-            jars.add(jar);
             ByteStreams.copy(jar.getInputStream(jar.getEntry(classNameToPath(entrypoint))), outputStream);
             try {
                 PluginDefinition pluginDefinition = (PluginDefinition) defineClass(entrypoint, outputStream.toByteArray(), 0, outputStream.size()).newInstance();
@@ -150,20 +183,20 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
                 });
                 pluginDefinition.build().forEach(plugin -> {
                     String target = plugin.getClassNameOfTarget();
-                    if (pluginDefineMap.containsKey(target)) {
-                        PluginAdviceDefinition definition = pluginDefineMap.get(target);
+                    if (pluginAdviceDefinitionMap.containsKey(target)) {
+                        PluginAdviceDefinition definition = pluginAdviceDefinitionMap.get(target);
                         definition.getConstructorPoints().addAll(plugin.getConstructorPoints());
                         definition.getInstanceMethodPoints().addAll(plugin.getInstanceMethodPoints());
                         definition.getClassStaticMethodPoints().addAll(plugin.getClassStaticMethodPoints());
                     } else {
-                        pluginDefineMap.put(target, plugin);
+                        pluginAdviceDefinitionMap.put(target, plugin);
                     }
                 });
             } catch (InstantiationException | IllegalAccessException e) {
                 log.error("Failed to load plugin definition, {}.", entrypoint, e);
             }
         }
-        return ImmutableMap.<String, PluginAdviceDefinition>builder().putAll(pluginDefineMap).build();
+        pluginDefineMap = ImmutableMap.<String, PluginAdviceDefinition>builder().putAll(pluginAdviceDefinitionMap).build();
     }
     
     private String classNameToPath(final String className) {
@@ -218,8 +251,8 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     /**
      * To get or create instance of the advice class. Create new one and caching when it is not exist.
      *
+     * @param <T>               advice type
      * @param classNameOfAdvice class name of advice
-     * @param <T> advice type
      * @return instance of advice
      */
     @SneakyThrows({ClassNotFoundException.class, IllegalAccessException.class, InstantiationException.class})
