@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.context.kernel;
 
+import org.apache.shardingsphere.infra.audit.SQLAuditEngine;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
@@ -46,9 +48,11 @@ public final class KernelProcessor {
      * @param metaData ShardingSphere meta data
      * @param props configuration properties
      * @return execution context
+     * @throws SQLException SQL exception
      */
-    public ExecutionContext generateExecutionContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ConfigurationProperties props) {
+    public ExecutionContext generateExecutionContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ConfigurationProperties props) throws SQLException {
         Collection<ShardingSphereRule> rules = metaData.getRuleMetaData().getRules();
+        new SQLAuditEngine().audit(logicSQL.getSqlStatementContext().getSqlStatement(), logicSQL.getParameters(), metaData.getName(), rules);
         SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(rules, props);
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
         RouteContext routeContext = sqlRouteEngine.route(logicSQL, metaData);
