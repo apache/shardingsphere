@@ -78,7 +78,7 @@ Total: 153 companies.
     <li><a href="http://www.dtchuxing.com/" rel="nofollow">Bus Cloud</a></li>
     <li><a href="http://www.ushareit.com/" rel="nofollow">Shareit</a></li>
     <li><a href="https://www.xforceplus.com/" rel="nofollow">Xforceplus</a></li>
-    <li><a href="https://aifanfan.baidu.com/ " rel="nofollow">Baidu aifanfan</a></li>
+    <li><a href="https://aifanfan.baidu.com/" rel="nofollow">Baidu aifanfan</a></li>
     <li><a href="http://www.meicloud.com/" rel="nofollow">Midea Cloud</a></li>
 </ul>
 
