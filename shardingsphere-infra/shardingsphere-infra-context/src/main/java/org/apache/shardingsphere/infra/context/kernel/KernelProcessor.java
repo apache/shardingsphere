@@ -17,18 +17,20 @@
 
 package org.apache.shardingsphere.infra.context.kernel;
 
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
 
 import java.util.Collection;
 
@@ -53,6 +55,14 @@ public final class KernelProcessor {
         SQLRewriteEntry rewriteEntry = new SQLRewriteEntry(metaData.getSchema(), props, rules);
         SQLRewriteResult rewriteResult = rewriteEntry.rewrite(logicSQL.getSql(), logicSQL.getParameters(), sqlStatementContext, routeContext);
         Collection<ExecutionUnit> executionUnits = ExecutionContextBuilder.build(metaData, rewriteResult, sqlStatementContext);
-        return new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
+        ExecutionContext result = new ExecutionContext(sqlStatementContext, executionUnits, routeContext);
+        logSQL(logicSQL, props, result);
+        return result;
+    }
+    
+    private void logSQL(final LogicSQL logicSQL, final ConfigurationProperties props, final ExecutionContext executionContext) {
+        if (props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
+            SQLLogger.logSQL(logicSQL, props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
+        }
     }
 }
