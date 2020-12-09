@@ -29,7 +29,7 @@ import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
  */
 public final class CommandExecutorTaskAdvice implements MethodAroundAdvice {
     
-    private static final String METRICS_NAME = " proxy_execute_latency_millis";
+    private static final String METRICS_NAME = "proxy_execute_latency_millis";
     
     static {
         MetricsReporter.registerHistogram(METRICS_NAME, "the shardingsphere proxy executor latency millis");

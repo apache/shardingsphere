@@ -157,9 +157,9 @@ public final class PrometheusMetricsRegister implements MetricsRegister {
         }
         try {
             httpServer = new HTTPServer(inetSocketAddress, CollectorRegistry.defaultRegistry, true);
-            log.info(String.format("you start prometheus metrics http server host is: %s , port is: %s", inetSocketAddress.getPort(), inetSocketAddress.getPort()));
-        } catch (IOException e) {
-            log.error("you start prometheus metrics http server is error", e);
+            log.info(String.format("you start prometheus metrics http server host is: %s , port is: %s", inetSocketAddress.getHostString(), inetSocketAddress.getPort()));
+        } catch (final IOException exception) {
+            log.error("you start prometheus metrics http server is error", exception);
         }
     }
     

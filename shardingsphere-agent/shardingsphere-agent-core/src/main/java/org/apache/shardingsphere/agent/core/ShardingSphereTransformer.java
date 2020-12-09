@@ -64,7 +64,7 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
                     final ConstructorMethodInterceptor interceptor = new ConstructorMethodInterceptor(agentPluginLoader.getOrCreateInstance(point.getAdvice()));
                     newBuilder = newBuilder.constructor(point.getConstructorMatcher()).intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(interceptor)));
                     // CHECKSTYLE:OFF
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     // CHECKSTYLE:ON
                     log.error("Failed to load advice class: {}", point.getAdvice(), e);
                 }
@@ -74,7 +74,7 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
                     final StaticMethodAroundInterceptor interceptor = new StaticMethodAroundInterceptor(agentPluginLoader.getOrCreateInstance(point.getAdvice()));
                     newBuilder = newBuilder.method(point.getMethodsMatcher()).intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
                     // CHECKSTYLE:OFF
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     // CHECKSTYLE:ON
                     log.error("Failed to load advice class: {}", point.getAdvice(), e);
                 }
@@ -84,7 +84,7 @@ public class ShardingSphereTransformer implements AgentBuilder.Transformer {
                     final MethodAroundInterceptor interceptor = new MethodAroundInterceptor(agentPluginLoader.getOrCreateInstance(point.getAdvice()));
                     newBuilder = newBuilder.method(point.getMethodMatcher()).intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
                     // CHECKSTYLE:OFF
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     // CHECKSTYLE:ON
                     log.error("Failed to load advice class: {}", point.getAdvice(), e);
                 }

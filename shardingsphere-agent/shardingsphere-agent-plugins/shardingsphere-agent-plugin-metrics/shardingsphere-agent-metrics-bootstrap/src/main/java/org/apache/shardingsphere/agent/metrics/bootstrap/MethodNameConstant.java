@@ -32,5 +32,4 @@ public final class MethodNameConstant {
     public static final String COMMIT = "commit";
     
     public static final String ROLL_BACK = "rollback";
-    
 }

@@ -18,12 +18,15 @@
 
 package org.apache.shardingsphere.agent.core.plugin.advice;
 
+import lombok.Getter;
+
 /**
  * The advice method invocation result.
  */
+@Getter
 public class MethodInvocationResult {
     
-    private boolean isRebased;
+    private boolean rebased;
     
     private Object result;
     
@@ -33,26 +36,7 @@ public class MethodInvocationResult {
      * @param result rebase the origin result
      */
     public void rebase(final Object result) {
-        isRebased = true;
+        rebased = true;
         this.result = result;
     }
-    
-    /**
-     * Whether or not to discard origin method.
-     *
-     * @return to replace the origin result if true
-     */
-    public boolean isRebased() {
-        return isRebased;
-    }
-    
-    /**
-     * Result that is provided by per-method advice.
-     *
-     * @return the advice result
-     */
-    public Object getResult() {
-        return result;
-    }
-    
 }

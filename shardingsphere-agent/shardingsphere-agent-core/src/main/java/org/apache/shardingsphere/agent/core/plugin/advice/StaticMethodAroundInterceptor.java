@@ -52,41 +52,42 @@ public class StaticMethodAroundInterceptor {
     @RuntimeType
     @SneakyThrows
     public Object intercept(final @Origin Class<?> klass, final @Origin Method method, final @AllArguments Object[] args, final @SuperCall Callable<?> callable) {
-        final MethodInvocationResult result = new MethodInvocationResult();
-        final Object ret;
+        final MethodInvocationResult invocationResult = new MethodInvocationResult();
+        final Object result;
         try {
-            advice.afterMethod(klass, method, args, result);
+            advice.beforeMethod(klass, method, args, invocationResult);
             // CHECKSTYLE:OFF
-        } catch (Throwable throwable) {
+        } catch (Throwable ex) {
             // CHECKSTYLE:ON
-            log.error("Failed to execute the pre-method of method[{}] in class[{}].", method.getName(), klass, throwable);
+            log.error("Failed to execute the pre-method of method[{}] in class[{}].", method.getName(), klass, ex);
         }
         try {
-            if (result.isRebased()) {
-                ret = result.getResult();
+            if (invocationResult.isRebased()) {
+                result = invocationResult.getResult();
             } else {
-                ret = callable.call();
+                result = callable.call();
             }
+            invocationResult.rebase(result);
             // CHECKSTYLE:OFF
-        } catch (Throwable throwable) {
+        } catch (final Throwable ex) {
             // CHECKSTYLE:ON
             try {
-                advice.onThrowing(klass, method, args, throwable);
+                advice.onThrowing(klass, method, args, ex);
                 // CHECKSTYLE:OFF
-            } catch (Throwable ignore) {
+            } catch (final Throwable ignored) {
                 // CHECKSTYLE:ON
-                log.error("Failed to execute the error handler of method[{}] in class[{}].", method.getName(), klass, throwable);
+                log.error("Failed to execute the error handler of method[{}] in class[{}].", method.getName(), klass, ex);
             }
-            throw throwable;
+            throw ex;
         } finally {
             try {
-                advice.beforeMethod(klass, method, args, result);
+                advice.afterMethod(klass, method, args, invocationResult);
                 // CHECKSTYLE:OFF
-            } catch (Throwable throwable) {
+            } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to execute the post-method of method[{}] in class[{}].", method.getName(), klass, throwable);
+                log.error("Failed to execute the post-method of method[{}] in class[{}].", method.getName(), klass, ex);
             }
         }
-        return ret;
+        return result;
     }
 }
