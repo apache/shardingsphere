@@ -17,67 +17,56 @@
 
 package org.apache.shardingsphere.proxy.backend.text.metadata.schema;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.ShowCurrentDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.ShowDatabasesBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.ShowTablesBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.UseDatabaseBackendHandler;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
-import org.hamcrest.Matcher;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class SchemaBackendHandlerFactoryTest {
     
     @Test
-    public void assertShowTablesBackendHandlerReturnedWhenMySQLShowTablesStatement() {
-        MySQLShowTablesStatement mysqlShowTablesStatement = mock(MySQLShowTablesStatement.class);
-        BackendConnection backendConnection = mock(BackendConnection.class);
-        Optional<SchemaBackendHandler> schemaBackendHandler = SchemaBackendHandlerFactory.newInstance(mysqlShowTablesStatement, backendConnection);
-        assertTrue(schemaBackendHandler.isPresent());
-        assertThat(schemaBackendHandler.get(), instanceOf(ShowTablesBackendHandler.class));
-        ShowTablesBackendHandler showTablesBackendHandler = (ShowTablesBackendHandler) schemaBackendHandler.get();
-        assertFieldOfInstance(showTablesBackendHandler, "backendConnection", is(backendConnection));
+    public void assertUseDatabase() {
+        Optional<SchemaBackendHandler> actual = SchemaBackendHandlerFactory.newInstance(mock(MySQLUseStatement.class), mock(BackendConnection.class));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(UseDatabaseBackendHandler.class));
     }
     
     @Test
-    public void assertUseDatabaseBackendHandlerReturnedWhenMySQLUseStatement() {
-        MySQLUseStatement mysqlUseStatement = mock(MySQLUseStatement.class);
-        BackendConnection backendConnection = mock(BackendConnection.class);
-        Optional<SchemaBackendHandler> schemaBackendHandler = SchemaBackendHandlerFactory.newInstance(mysqlUseStatement, backendConnection);
-        assertTrue(schemaBackendHandler.isPresent());
-        assertThat(schemaBackendHandler.get(), instanceOf(UseDatabaseBackendHandler.class));
-        UseDatabaseBackendHandler useDatabaseBackendHandler = (UseDatabaseBackendHandler) schemaBackendHandler.get();
-        assertFieldOfInstance(useDatabaseBackendHandler, "useStatement", is(mysqlUseStatement));
-        assertFieldOfInstance(useDatabaseBackendHandler, "backendConnection", is(backendConnection));
+    public void assertShowDatabases() {
+        Optional<SchemaBackendHandler> actual = SchemaBackendHandlerFactory.newInstance(mock(MySQLShowDatabasesStatement.class), mock(BackendConnection.class));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(ShowDatabasesBackendHandler.class));
     }
     
     @Test
-    public void assertShowDatabasesBackendHandlerReturnedWhenMySQLShowDatabasesStatement() {
-        BackendConnection backendConnection = mock(BackendConnection.class);
-        Optional<SchemaBackendHandler> schemaBackendHandler = SchemaBackendHandlerFactory.newInstance(mock(MySQLShowDatabasesStatement.class), backendConnection);
-        assertTrue(schemaBackendHandler.isPresent());
-        assertThat(schemaBackendHandler.get(), instanceOf(ShowDatabasesBackendHandler.class));
-        ShowDatabasesBackendHandler showDatabasesBackendHandler = (ShowDatabasesBackendHandler) schemaBackendHandler.get();
-        assertFieldOfInstance(showDatabasesBackendHandler, "backendConnection", is(backendConnection));
+    public void assertShowCurrentDatabase() {
+        SelectStatement sqlStatement = mock(SelectStatement.class, RETURNS_DEEP_STUBS);
+        when(sqlStatement.getProjections().getProjections().iterator().next()).thenReturn(new ExpressionProjectionSegment(0, 0, ShowCurrentDatabaseBackendHandler.FUNCTION_NAME));
+        Optional<SchemaBackendHandler> actual = SchemaBackendHandlerFactory.newInstance(sqlStatement, mock(BackendConnection.class));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(ShowCurrentDatabaseBackendHandler.class));
     }
     
-    @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
-    private <S, T> void assertFieldOfInstance(final S classInstance, final String fieldName, final Matcher<T> matcher) {
-        Field field = classInstance.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        T value = (T) field.get(classInstance);
-        assertThat(value, matcher);
+    @Test
+    public void assertShowTables() {
+        Optional<SchemaBackendHandler> actual = SchemaBackendHandlerFactory.newInstance(mock(MySQLShowTablesStatement.class), mock(BackendConnection.class));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(ShowTablesBackendHandler.class));
     }
 }
