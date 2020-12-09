@@ -96,7 +96,12 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Whether enable hint for ShardingSphere-Proxy.
      */
-    PROXY_HINT_ENABLED("proxy-hint-enabled", String.valueOf(Boolean.FALSE), boolean.class);
+    PROXY_HINT_ENABLED("proxy-hint-enabled", String.valueOf(Boolean.FALSE), boolean.class),
+    
+    /**
+     * The length of time in milliseconds an SQL waits for a global lock before giving up.
+     */
+    LOCK_WAIT_TIMEOUT_MILLISECONDS("lock-wait-timeout-milliseconds", String.valueOf(5000L), long.class);
     
     private final String key;
     

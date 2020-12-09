@@ -38,8 +38,6 @@ public final class LockContext {
     
     private static final Condition CONDITION = LOCK.newCondition();
     
-    private static final long TIME_OUT_SECONDS = 50L;
-    
     /**
      * Init lock strategy.
      * 
@@ -61,12 +59,13 @@ public final class LockContext {
     /**
      * Waiting for unlock.
      * 
+     * @param timeout the maximum time in milliseconds to wait
      * @return false if wait timeout exceeded, else true
      */
-    public static boolean await() {
+    public static boolean await(final Long timeout) {
         LOCK.lock();
         try {
-            return CONDITION.await(TIME_OUT_SECONDS, TimeUnit.SECONDS);
+            return CONDITION.await(timeout, TimeUnit.MILLISECONDS);
             // CHECKSTYLE:OFF
         } catch (InterruptedException e) {
             // CHECKSTYLE:ON
