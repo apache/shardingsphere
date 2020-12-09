@@ -24,6 +24,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPlu
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.context.auth.impl.StandardAuthenticationContext;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -115,13 +116,16 @@ public final class MySQLAuthenticationHandlerTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void initProxyContext(final Authentication authentication) {
-        Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
-        field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), getMetaDataContexts(authentication));
+        Field authContext = ProxyContext.getInstance().getClass().getDeclaredField("authContext");
+        authContext.setAccessible(true);
+        authContext.set(ProxyContext.getInstance(), new StandardAuthenticationContext(authentication));
+        Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
+        metaDataContexts.setAccessible(true);
+        metaDataContexts.set(ProxyContext.getInstance(), getMetaDataContexts());
     }
     
-    private MetaDataContexts getMetaDataContexts(final Authentication authentication) {
-        return new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), authentication, new ConfigurationProperties(new Properties()), new MySQLDatabaseType());
+    private MetaDataContexts getMetaDataContexts() {
+        return new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), new MySQLDatabaseType());
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {

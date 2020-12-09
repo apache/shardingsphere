@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.context.metadata;
 
-import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -58,13 +57,6 @@ public interface MetaDataContexts extends Closeable {
      * @return executor engine
      */
     ExecutorEngine getExecutorEngine();
-    
-    /**
-     * Get authentication.
-     * 
-     * @return authentication
-     */
-    Authentication getAuthentication();
     
     /**
      * Get configuration properties.

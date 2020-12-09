@@ -30,7 +30,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.security.MessageDigest;
 import java.util.Collection;
-import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Authentication handler for PostgreSQL.
@@ -49,7 +49,7 @@ public final class PostgreSQLAuthenticationHandler {
      */
     public static PostgreSQLLoginResult loginWithMd5Password(final String username, final String databaseName, final byte[] md5Salt, final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
         ProxyUser proxyUser = null;
-        for (Map.Entry<String, ProxyUser> entry : ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getUsers().entrySet()) {
+        for (Entry<String, ProxyUser> entry : ProxyContext.getInstance().getAuthContext().getAuthentication().getUsers().entrySet()) {
             if (entry.getKey().equals(username)) {
                 proxyUser = entry.getValue();
                 break;

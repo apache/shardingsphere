@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.context.auth.impl.StandardAuthenticationContext;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -59,10 +60,13 @@ public final class UseDatabaseBackendHandlerTest {
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         backendConnection = mock(BackendConnection.class);
         when(backendConnection.getUsername()).thenReturn("root");
+        Field authContext = ProxyContext.getInstance().getClass().getDeclaredField("authContext");
+        authContext.setAccessible(true);
+        authContext.set(ProxyContext.getInstance(), new StandardAuthenticationContext(getAuthentication()));
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), getAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {

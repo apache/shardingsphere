@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.context;
 
-import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.context.auth.AuthenticationContext;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -40,7 +40,6 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -61,19 +60,21 @@ public final class ProxyContextTest {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(mockMetaDataMap(mockDataSourceMap), 
-                mock(ExecutorEngine.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         Optional<DataSource> actual = ProxyContext.getInstance().getDataSourceSample();
         assertThat(actual, is(Optional.of(mockDataSourceMap.get("ds_1"))));
     }
     
     @Test
     public void assertInit() {
+        AuthenticationContext authContext = mock(AuthenticationContext.class);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
         ProxyContext proxyContext = ProxyContext.getInstance();
-        proxyContext.init(metaDataContexts, transactionContexts);
-        assertEquals(metaDataContexts, proxyContext.getMetaDataContexts());
-        assertEquals(transactionContexts, proxyContext.getTransactionContexts());
+        proxyContext.init(authContext, metaDataContexts, transactionContexts);
+        assertThat(proxyContext.getAuthContext(), is(authContext));
+        assertThat(proxyContext.getMetaDataContexts(), is(metaDataContexts));
+        assertThat(proxyContext.getTransactionContexts(), is(transactionContexts));
     }
     
     @Test
@@ -82,7 +83,7 @@ public final class ProxyContextTest {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         assertTrue(ProxyContext.getInstance().schemaExists("schema"));
         assertFalse(ProxyContext.getInstance().schemaExists("schema_2"));
     }
@@ -103,7 +104,7 @@ public final class ProxyContextTest {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(),
-                new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         ProxyContext.getInstance().getMetaData("schema1");
     }
     
@@ -113,7 +114,7 @@ public final class ProxyContextTest {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(),
-                new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         assertThat(metaDataMap.get("schema"), is(ProxyContext.getInstance().getMetaData("schema")));
     }
     
@@ -123,7 +124,7 @@ public final class ProxyContextTest {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         assertThat(new LinkedHashSet<>(ProxyContext.getInstance().getAllSchemaNames()), is(metaDataMap.keySet()));
     }
     

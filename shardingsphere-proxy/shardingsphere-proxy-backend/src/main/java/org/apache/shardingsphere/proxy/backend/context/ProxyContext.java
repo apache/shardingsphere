@@ -19,6 +19,9 @@ package org.apache.shardingsphere.proxy.backend.context;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.context.auth.AuthenticationContext;
+import org.apache.shardingsphere.infra.context.auth.impl.StandardAuthenticationContext;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -42,6 +45,8 @@ public final class ProxyContext {
     private static final ProxyContext INSTANCE = new ProxyContext();
     
     private final JDBCBackendDataSource backendDataSource;
+
+    private AuthenticationContext authContext;
     
     private MetaDataContexts metaDataContexts;
     
@@ -49,6 +54,7 @@ public final class ProxyContext {
     
     private ProxyContext() {
         backendDataSource = new JDBCBackendDataSource();
+        authContext = new StandardAuthenticationContext(new Authentication());
         metaDataContexts = new StandardMetaDataContexts();
         transactionContexts = new StandardTransactionContexts();
     }
@@ -65,10 +71,12 @@ public final class ProxyContext {
     /**
      * Initialize proxy meta data contexts.
      *
+     * @param authContext authentication context
      * @param metaDataContexts meta data contexts
      * @param transactionContexts transaction manager engine contexts
      */
-    public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts) {
+    public void init(final AuthenticationContext authContext, final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts) {
+        this.authContext = authContext;
         this.metaDataContexts = metaDataContexts;
         this.transactionContexts = transactionContexts;
     }

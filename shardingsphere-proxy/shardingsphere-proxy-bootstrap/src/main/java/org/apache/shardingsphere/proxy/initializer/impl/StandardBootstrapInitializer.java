@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
+import org.apache.shardingsphere.infra.context.auth.AuthenticationContext;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.StandardLockStrategy;
@@ -33,6 +34,11 @@ public final class StandardBootstrapInitializer extends AbstractBootstrapInitial
     @Override
     protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
         return new YamlProxyConfigurationSwapper().swap(yamlConfig);
+    }
+    
+    @Override
+    protected AuthenticationContext decorateAuthenticationContext(final AuthenticationContext authContext) {
+        return authContext;
     }
     
     @Override

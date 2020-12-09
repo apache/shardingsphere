@@ -21,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.context.auth.AuthenticationContext;
+import org.apache.shardingsphere.infra.context.auth.impl.StandardAuthenticationContext;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -60,20 +62,24 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     @Override
     public final void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = getProxyConfiguration(yamlConfig);
+        AuthenticationContext authContext = decorateAuthenticationContext(createAuthenticationContext(proxyConfig));
         MetaDataContexts metaDataContexts = decorateMetaDataContexts(createMetaDataContexts(proxyConfig));
         TransactionContexts transactionContexts = decorateTransactionContexts(createTransactionContexts(metaDataContexts));
-        ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
+        ProxyContext.getInstance().init(authContext, metaDataContexts, transactionContexts);
         initOpenTracing();
         setDatabaseServerInfo();
         initLockContext();
         shardingSphereProxy.start(port);
     }
     
+    private AuthenticationContext createAuthenticationContext(final ProxyConfiguration proxyConfig) {
+        return new StandardAuthenticationContext(proxyConfig.getAuthentication());
+    }
+    
     private MetaDataContexts createMetaDataContexts(final ProxyConfiguration proxyConfig) throws SQLException {
         DatabaseType databaseType = containsDataSources(proxyConfig.getSchemaDataSources()) ? getDatabaseType(proxyConfig.getSchemaDataSources()) : new MySQLDatabaseType();
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(proxyConfig.getSchemaDataSources());
-        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(
-                databaseType, dataSourcesMap, proxyConfig.getSchemaRules(), proxyConfig.getAuthentication(), proxyConfig.getProps());
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(databaseType, dataSourcesMap, proxyConfig.getSchemaRules(), proxyConfig.getProps());
         return metaDataContextsBuilder.build();
     }
     
@@ -124,6 +130,8 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     protected abstract ProxyConfiguration getProxyConfiguration(YamlProxyConfiguration yamlConfig);
+    
+    protected abstract AuthenticationContext decorateAuthenticationContext(AuthenticationContext authContext);
     
     protected abstract MetaDataContexts decorateMetaDataContexts(MetaDataContexts metaDataContexts);
     

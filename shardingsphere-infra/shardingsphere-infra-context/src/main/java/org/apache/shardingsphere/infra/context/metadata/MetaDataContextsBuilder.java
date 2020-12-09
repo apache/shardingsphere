@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.context.metadata;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -31,8 +30,8 @@ import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
@@ -60,23 +59,15 @@ public final class MetaDataContextsBuilder {
     
     private final Map<String, Collection<RuleConfiguration>> ruleConfigs;
     
-    private final Authentication authentication;
-    
     private final ConfigurationProperties props;
     
     private final ExecutorEngine executorEngine;
     
     public MetaDataContextsBuilder(final DatabaseType databaseType, final Map<String, Map<String, DataSource>> dataSources,
                                    final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Properties props) {
-        this(databaseType, dataSources, ruleConfigs, new Authentication(), props);
-    }
-    
-    public MetaDataContextsBuilder(final DatabaseType databaseType, final Map<String, Map<String, DataSource>> dataSources,
-                                   final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Authentication authentication, final Properties props) {
         this.databaseType = databaseType;
         this.dataSources = dataSources;
         this.ruleConfigs = ruleConfigs;
-        this.authentication = authentication;
         this.props = new ConfigurationProperties(null == props ? new Properties() : props);
         executorEngine = new ExecutorEngine(this.props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
     }
@@ -92,7 +83,7 @@ public final class MetaDataContextsBuilder {
         for (String each : ruleConfigs.keySet()) {
             mataDataMap.put(each, buildMetaData(each));
         }
-        return new StandardMetaDataContexts(mataDataMap, executorEngine, authentication, props, databaseType);
+        return new StandardMetaDataContexts(mataDataMap, executorEngine, props, databaseType);
     }
     
     private ShardingSphereMetaData buildMetaData(final String schemaName) throws SQLException {

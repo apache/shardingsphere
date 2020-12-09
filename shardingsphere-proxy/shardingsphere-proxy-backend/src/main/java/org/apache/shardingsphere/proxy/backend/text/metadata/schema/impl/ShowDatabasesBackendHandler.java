@@ -52,7 +52,7 @@ public final class ShowDatabasesBackendHandler implements SchemaBackendHandler {
     
     private Collection<Object> getSchemaNames() {
         Collection<Object> result = new LinkedList<>(ProxyContext.getInstance().getAllSchemaNames());
-        Collection<String> authorizedSchemas = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getUsers().get(backendConnection.getUsername()).getAuthorizedSchemas();
+        Collection<String> authorizedSchemas = ProxyContext.getInstance().getAuthContext().getAuthentication().getUsers().get(backendConnection.getUsername()).getAuthorizedSchemas();
         if (!authorizedSchemas.isEmpty()) {
             result.retainAll(authorizedSchemas);
         }

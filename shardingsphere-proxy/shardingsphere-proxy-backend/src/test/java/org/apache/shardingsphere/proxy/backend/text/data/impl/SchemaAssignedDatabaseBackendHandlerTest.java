@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.context.auth.impl.StandardAuthenticationContext;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -38,20 +39,22 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SchemaAssignedDatabaseBackendHandlerTest {
@@ -73,10 +76,13 @@ public final class SchemaAssignedDatabaseBackendHandlerTest {
 
     @Before
     public void setUp() throws IllegalAccessException, NoSuchFieldException, SQLException {
+        Field authContext = ProxyContext.getInstance().getClass().getDeclaredField("authContext");
+        authContext.setAccessible(true);
+        authContext.set(ProxyContext.getInstance(), new StandardAuthenticationContext(getAuthentication()));
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(),
-                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), getAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
         when(backendConnection.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
         mockDatabaseCommunicationEngine(new UpdateResponseHeader(mock(SQLStatement.class)));
         schemaAssignedDatabaseBackendHandler = new SchemaAssignedDatabaseBackendHandler(mock(SQLStatement.class), EXECUTE_SQL, backendConnection);

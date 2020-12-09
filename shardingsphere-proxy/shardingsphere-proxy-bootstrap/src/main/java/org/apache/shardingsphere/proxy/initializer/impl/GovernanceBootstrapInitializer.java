@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
+import org.apache.shardingsphere.governance.context.auth.GovernanceAuthenticationContext;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapp
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
+import org.apache.shardingsphere.infra.context.auth.AuthenticationContext;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -112,6 +114,11 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final Collection<String> schemaNames) {
         return schemaNames.stream()
              .collect(Collectors.toMap(each -> each, each -> governanceFacade.getConfigCenter().loadRuleConfigurations(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    }
+    
+    @Override
+    protected AuthenticationContext decorateAuthenticationContext(final AuthenticationContext authContext) {
+        return new GovernanceAuthenticationContext(authContext);
     }
     
     @Override

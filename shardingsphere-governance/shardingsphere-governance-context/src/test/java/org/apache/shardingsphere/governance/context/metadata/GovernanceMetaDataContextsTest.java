@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.context.metadata;
 
 import org.apache.shardingsphere.governance.core.config.ConfigCenter;
-import org.apache.shardingsphere.governance.core.event.model.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.governance.core.lock.LockCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
-import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
@@ -75,8 +73,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class GovernanceMetaDataContextsTest {
     
-    private final Authentication authentication = new Authentication();
-    
     private final ConfigurationProperties props = new ConfigurationProperties(new Properties());
     
     @Mock
@@ -111,7 +107,7 @@ public final class GovernanceMetaDataContextsTest {
         when(governanceFacade.getLockCenter()).thenReturn(lockCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
         governanceMetaDataContexts = new GovernanceMetaDataContexts(
-                new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), authentication, props, databaseType), governanceFacade);
+                new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), props, databaseType), governanceFacade);
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
@@ -135,11 +131,6 @@ public final class GovernanceMetaDataContextsTest {
     @Test
     public void assertGetDefaultMetaData() {
         assertNull(governanceMetaDataContexts.getDefaultMetaData());
-    }
-    
-    @Test
-    public void assertGetAuthentication() {
-        assertThat(governanceMetaDataContexts.getAuthentication(), is(authentication));
     }
     
     @Test
@@ -179,14 +170,6 @@ public final class GovernanceMetaDataContextsTest {
         PropertiesChangedEvent event = new PropertiesChangedEvent(properties);
         governanceMetaDataContexts.renew(event);
         assertThat(governanceMetaDataContexts.getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is("true"));
-    }
-    
-    @Test
-    public void assertAuthenticationChanged() {
-        Authentication authentication = new Authentication();
-        AuthenticationChangedEvent event = new AuthenticationChangedEvent(authentication);
-        governanceMetaDataContexts.renew(event);
-        assertThat(governanceMetaDataContexts.getAuthentication(), is(authentication));
     }
     
     @Test

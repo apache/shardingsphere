@@ -50,7 +50,7 @@ public final class UseDatabaseBackendHandler implements SchemaBackendHandler {
     }
     
     private boolean isAuthorizedSchema(final String schema) {
-        Collection<String> authorizedSchemas = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getUsers().get(backendConnection.getUsername()).getAuthorizedSchemas();
+        Collection<String> authorizedSchemas = ProxyContext.getInstance().getAuthContext().getAuthentication().getUsers().get(backendConnection.getUsername()).getAuthorizedSchemas();
         return authorizedSchemas.isEmpty() || authorizedSchemas.contains(schema);
     }
 }

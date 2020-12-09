@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -101,7 +100,7 @@ public final class BackendConnectionTest {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         field.setAccessible(true);
         field.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {

@@ -61,7 +61,7 @@ public final class MySQLAuthenticationHandler {
     }
     
     private Optional<ProxyUser> getUser(final String username) {
-        for (Entry<String, ProxyUser> entry : PROXY_SCHEMA_CONTEXTS.getMetaDataContexts().getAuthentication().getUsers().entrySet()) {
+        for (Entry<String, ProxyUser> entry : PROXY_SCHEMA_CONTEXTS.getAuthContext().getAuthentication().getUsers().entrySet()) {
             if (entry.getKey().equals(username)) {
                 return Optional.of(entry.getValue());
             }
