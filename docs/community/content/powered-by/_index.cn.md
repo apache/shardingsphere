@@ -36,6 +36,7 @@ chapter = true
     <li><a href="https://www.ktjr.com/" rel="nofollow">开通金融</a></li>
     <li><a href="https://www.tansun.com/" rel="nofollow">天阳宏业</a></li>
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360数科</a></li>
+    <li><a href="https://www.ccbft.com/" rel="nofollow">建信金融科技</a></li>
 </ul>
 
 ### 电子商务
@@ -77,7 +78,8 @@ chapter = true
     <li><a href="http://www.dtchuxing.com/" rel="nofollow">公交云</a></li>
     <li><a href="http://www.ushareit.com/" rel="nofollow">茄子快传</a></li>
     <li><a href="https://www.xforceplus.com/" rel="nofollow">上海云砺信息科技有限公司</a></li>
-    <li><a href="https://aifanfan.baidu.com/ " rel="nofollow">百度爱番番</a></li>
+    <li><a href="https://aifanfan.baidu.com/" rel="nofollow">百度爱番番</a></li>
+    <li><a href="http://www.meicloud.com/" rel="nofollow">美云智数</a></li>
 </ul>
 
 ### 出行
