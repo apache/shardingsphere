@@ -1,7 +1,7 @@
 +++
-pre = "<b>5.8. </b>"
+pre = "<b>5.9. </b>"
 title = "Distributed Governance"
-weight = 8
+weight = 9
 chapter = true
 +++
 
