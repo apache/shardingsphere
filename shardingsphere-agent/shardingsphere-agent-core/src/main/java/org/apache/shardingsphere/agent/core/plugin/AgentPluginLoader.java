@@ -24,11 +24,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.jar.JarEntry;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.description.type.TypeDescription;
@@ -41,6 +37,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -48,6 +48,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -67,20 +68,23 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     
     private final ReentrantLock lock = new ReentrantLock();
     
-    private final List<JarFile> jars = Lists.newArrayList();
+    private final List<UberJar> jars = Lists.newArrayList();
     
     private final List<Service> services = Lists.newArrayList();
     
-    private Map<String, PluginAdviceDefinition> pluginDefineMap = Maps.newHashMap();
+    private Map<String, PluginAdviceDefinition> pluginDefineMap;
+    
+    private AgentPluginLoader() {
+    }
     
     @Override
     protected Class<?> findClass(final String name) throws ClassNotFoundException {
         String path = classNameToPath(name);
-        for (JarFile jar : jars) {
-            ZipEntry entry = jar.getEntry(path);
+        for (UberJar jar : jars) {
+            ZipEntry entry = jar.jarFile.getEntry(path);
             if (Objects.nonNull(entry)) {
                 try {
-                    byte[] data = ByteStreams.toByteArray(jar.getInputStream(entry));
+                    byte[] data = ByteStreams.toByteArray(jar.jarFile.getInputStream(entry));
                     return defineClass(name, data, 0, data.length);
                 } catch (IOException ioe) {
                     log.error("Failed to load class {}.", name, ioe);
@@ -91,33 +95,39 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     }
     
     @Override
-    protected Enumeration<URL> findResources(final String name) throws IOException {
-        List<URL> allResources = new LinkedList<>();
-        for (JarFile jar : jars) {
-            JarEntry entry = jar.getJarEntry(name);
-            if (null != entry) {
-                allResources.add(new URL("jar:file:" + AgentPathBuilder.getAgentPath().getAbsolutePath() + "!/" + name));
+    protected Enumeration<URL> findResources(final String name) {
+        List<URL> resources = Lists.newArrayList();
+        for (UberJar jar : jars) {
+            JarEntry entry = jar.jarFile.getJarEntry(name);
+            if (entry != null) {
+                try {
+                    resources.add(new URL("jar:file:" + jar.sourcePath.getAbsolutePath() + "!/" + name));
+                } catch (MalformedURLException ignored) {
+                }
             }
         }
-        final Iterator<URL> iterator = allResources.iterator();
-        return new Enumeration<URL>() {
-            @Override
-            public boolean hasMoreElements() {
-                return iterator.hasNext();
+        return Collections.enumeration(resources);
+    }
+    
+    @Override
+    protected URL findResource(final String name) {
+        for (UberJar jar : jars) {
+            JarEntry entry = jar.jarFile.getJarEntry(name);
+            if (entry != null) {
+                try {
+                    return new URL("jar:file:" + jar.sourcePath.getAbsolutePath() + "!/" + name);
+                } catch (MalformedURLException ignored) {
+                }
             }
-            
-            @Override
-            public URL nextElement() {
-                return iterator.next();
-            }
-        };
+        }
+        return null;
     }
     
     @Override
     public void close() {
-        for (JarFile jar : jars) {
+        for (UberJar jar : jars) {
             try {
-                jar.close();
+                jar.jarFile.close();
             } catch (IOException ioe) {
                 log.error("", ioe);
             }
@@ -161,7 +171,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
         for (File jarFile : jarFiles) {
             outputStream.reset();
             JarFile jar = new JarFile(jarFile, true);
-            jars.add(jar);
+            jars.add(new UberJar(jar, jarFile));
             Attributes attributes = jar.getManifest().getMainAttributes();
             String entrypoint = attributes.getValue("Entrypoint");
             if (Strings.isNullOrEmpty(entrypoint)) {
@@ -251,8 +261,8 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     /**
      * To get or create instance of the advice class. Create new one and caching when it is not exist.
      *
-     * @param <T>               advice type
      * @param classNameOfAdvice class name of advice
+     * @param <T> advice type
      * @return instance of advice
      */
     @SneakyThrows({ClassNotFoundException.class, IllegalAccessException.class, InstantiationException.class})
@@ -317,5 +327,12 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
                 log.error("Failed to shutdown service.");
             }
         });
+    }
+    
+    @RequiredArgsConstructor
+    private static class UberJar {
+        private final JarFile jarFile;
+        
+        private final File sourcePath;
     }
 }
