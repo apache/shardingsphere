@@ -358,8 +358,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private LogicSQL createLogicSQL(final String sql) {
         ShardingSphereSchema schema = metaDataContexts.getDefaultMetaData().getSchema();
-        ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getDatabaseType()));
-        SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getDatabaseType()));
+        SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schema, Collections.emptyList(), sqlStatement);
         return new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
     }
@@ -381,6 +381,10 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroups) {
             statements.addAll(each.getInputs().stream().map(JDBCExecutionUnit::getStorageResource).collect(Collectors.toList()));
         }
+        replay();
+    }
+    
+    private void replay() {
         statements.forEach(this::replayMethodsInvocation);
     }
     

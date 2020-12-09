@@ -179,7 +179,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
         Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
         cacheStatements(executionGroups);
-        reply();
         return driverJDBCExecutor.executeQuery(executionGroups, new PreparedStatementExecuteQueryCallback(metaDataContexts.getDatabaseType(), SQLExecutorExceptionHandler.isExceptionThrown()));
     }
     
@@ -194,7 +193,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
             cacheStatements(executionGroups);
-            reply();
             return driverJDBCExecutor.executeUpdate(
                     executionGroups, executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits(), createExecuteUpdateCallback());
         } finally {
@@ -233,7 +231,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
             cacheStatements(executionGroups);
-            reply();
             return driverJDBCExecutor.execute(
                     executionGroups, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getRouteContext().getRouteUnits(), createExecuteCallback());
         } finally {
@@ -325,26 +322,23 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }
     
-    private void reply() {
-        setParametersForStatements();
-        replayMethodForStatements();
-    }
-    
     private void cacheStatements(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) {
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroups) {
             statements.addAll(each.getInputs().stream().map(jdbcExecutionUnit -> (PreparedStatement) jdbcExecutionUnit.getStorageResource()).collect(Collectors.toList()));
             parameterSets.addAll(each.getInputs().stream().map(input -> input.getExecutionUnit().getSqlUnit().getParameters()).collect(Collectors.toList()));
         }
+        replay();
     }
     
-    private void setParametersForStatements() {
+    private void replay() {
+        replaySetParameter();
+        statements.forEach(this::replayMethodsInvocation);
+    }
+    
+    private void replaySetParameter() {
         for (int i = 0; i < statements.size(); i++) {
             replaySetParameter(statements.get(i), parameterSets.get(i));
         }
-    }
-    
-    private void replayMethodForStatements() {
-        statements.forEach(this::replayMethodsInvocation);
     }
     
     private void clearPrevious() throws SQLException {
