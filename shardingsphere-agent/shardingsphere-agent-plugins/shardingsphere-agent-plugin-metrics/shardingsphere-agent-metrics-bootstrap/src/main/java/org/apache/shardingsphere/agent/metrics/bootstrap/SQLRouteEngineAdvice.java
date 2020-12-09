@@ -24,6 +24,7 @@ import org.apache.shardingsphere.agent.core.plugin.advice.MethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.plugin.advice.TargetObject;
 import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -34,9 +35,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 /**
- * Data node router advice.
+ * SQL route engine advice.
  */
-public final class DataNodeRouterAdvice implements MethodAroundAdvice {
+public final class SQLRouteEngineAdvice implements MethodAroundAdvice {
     
     private static final String SELECT = "sql_select_total";
     
@@ -61,15 +62,16 @@ public final class DataNodeRouterAdvice implements MethodAroundAdvice {
     
     @Override
     public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        SQLStatement sqlStatement = (SQLStatement) args[0];
+        LogicSQL logicSQL = (LogicSQL) args[0];
+        SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof InsertStatement) {
-            MetricsReporter.counterIncrement(SELECT);
+            MetricsReporter.counterIncrement(INSERT);
         } else if (sqlStatement instanceof DeleteStatement) {
             MetricsReporter.counterIncrement(DELETE);
         } else if (sqlStatement instanceof UpdateStatement) {
             MetricsReporter.counterIncrement(UPDATE);
         } else if (sqlStatement instanceof SelectStatement) {
-            MetricsReporter.counterIncrement(INSERT);
+            MetricsReporter.counterIncrement(SELECT);
         }
     }
 

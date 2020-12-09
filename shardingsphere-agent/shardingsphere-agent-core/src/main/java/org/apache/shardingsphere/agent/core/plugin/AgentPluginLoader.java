@@ -86,8 +86,8 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
                 try {
                     byte[] data = ByteStreams.toByteArray(jar.jarFile.getInputStream(entry));
                     return defineClass(name, data, 0, data.length);
-                } catch (IOException ioe) {
-                    log.error("Failed to load class {}.", name, ioe);
+                } catch (final IOException ex) {
+                    log.error("Failed to load class {}.", name, ex);
                 }
             }
         }
@@ -99,10 +99,10 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
         List<URL> resources = Lists.newArrayList();
         for (UberJar jar : jars) {
             JarEntry entry = jar.jarFile.getJarEntry(name);
-            if (entry != null) {
+            if (Objects.nonNull(entry)) {
                 try {
                     resources.add(new URL("jar:file:" + jar.sourcePath.getAbsolutePath() + "!/" + name));
-                } catch (MalformedURLException ignored) {
+                } catch (final MalformedURLException ignored) {
                 }
             }
         }
@@ -113,10 +113,10 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     protected URL findResource(final String name) {
         for (UberJar jar : jars) {
             JarEntry entry = jar.jarFile.getJarEntry(name);
-            if (entry != null) {
+            if (Objects.nonNull(entry)) {
                 try {
                     return new URL("jar:file:" + jar.sourcePath.getAbsolutePath() + "!/" + name);
-                } catch (MalformedURLException ignored) {
+                } catch (final MalformedURLException ignored) {
                 }
             }
         }
@@ -128,8 +128,8 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
         for (UberJar jar : jars) {
             try {
                 jar.jarFile.close();
-            } catch (IOException ioe) {
-                log.error("", ioe);
+            } catch (final IOException ex) {
+                log.error("close is ", ex);
             }
         }
     }
@@ -187,8 +187,8 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
                 pluginDefinition.getAllServices().forEach(klass -> {
                     try {
                         services.add(klass.newInstance());
-                    } catch (InstantiationException | IllegalAccessException e) {
-                        log.error("Failed to create service instance, {}.", klass.getTypeName(), e);
+                    } catch (InstantiationException | IllegalAccessException ex) {
+                        log.error("Failed to create service instance, {}.", klass.getTypeName(), ex);
                     }
                 });
                 pluginDefinition.build().forEach(plugin -> {
@@ -202,8 +202,8 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
                         pluginAdviceDefinitionMap.put(target, plugin);
                     }
                 });
-            } catch (InstantiationException | IllegalAccessException e) {
-                log.error("Failed to load plugin definition, {}.", entrypoint, e);
+            } catch (final InstantiationException | IllegalAccessException ex) {
+                log.error("Failed to load plugin definition, {}.", entrypoint, ex);
             }
         }
         pluginDefineMap = ImmutableMap.<String, PluginAdviceDefinition>builder().putAll(pluginAdviceDefinitionMap).build();
@@ -292,9 +292,9 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
             try {
                 service.setup();
                 // CHECKSTYLE:OFF
-            } catch (Exception e) {
+            } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to initial service.");
+                log.error("Failed to initial service.", ex);
             }
         });
     }
@@ -307,9 +307,9 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
             try {
                 service.start();
                 // CHECKSTYLE:OFF
-            } catch (Exception e) {
+            } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to start service.");
+                log.error("Failed to start service.", ex);
             }
         });
     }
@@ -322,15 +322,16 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
             try {
                 service.cleanup();
                 // CHECKSTYLE:OFF
-            } catch (Exception e) {
+            } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to shutdown service.");
+                log.error("Failed to shutdown service.", ex);
             }
         });
     }
     
     @RequiredArgsConstructor
     private static class UberJar {
+        
         private final JarFile jarFile;
         
         private final File sourcePath;

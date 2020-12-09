@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.core.exception.ShardingSphereAgentException;
 
 /**
- * Agent path locator.
+ * Agent path builder.
  */
 @Slf4j
 public final class AgentPathBuilder {
@@ -71,8 +71,8 @@ public final class AgentPathBuilder {
         try {
             File agentJarFile = new File(new URL(realUrl).toURI());
             return agentJarFile.exists() ? agentJarFile.getParentFile() : null;
-        } catch (MalformedURLException | URISyntaxException e) {
-            log.error("Can not locate agent jar file by url:" + url);
+        } catch (final MalformedURLException | URISyntaxException ex) {
+            log.error(String.format("Can not locate agent jar file by url %s", url), ex);
             return null;
         }
     }

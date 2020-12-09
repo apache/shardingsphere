@@ -24,11 +24,10 @@ package org.apache.shardingsphere.agent.core.plugin.advice;
 public interface OverrideArgsInvoker {
     
     /**
-     * Invocation origin method.
+     * Call invocation origin method.
      *
      * @param args the origin method arguments
      * @return the result of the origin method
      */
     Object call(Object[] args);
-    
 }
