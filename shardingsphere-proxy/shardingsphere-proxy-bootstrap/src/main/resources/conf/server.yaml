@@ -55,3 +55,4 @@
 #  query-with-cipher-column: true
 #  sql-show: false
 #  check-table-metadata-enabled: false
+#  lock-wait-timeout-milliseconds: 5000 # The maximum time to wait for a lock

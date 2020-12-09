@@ -15,30 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.infra.audit;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Lock strategy.
+ * SQL state for audit fail.
  */
-public interface LockStrategy {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AuditSQLState {
     
-    /**
-     * Try to get lock.
-     * 
-     * @param timeout the maximum time in milliseconds to acquire lock
-     * @return true if get the lock, false if not
-     */
-    boolean tryLock(Long timeout);
+    public static final String COMMON_AUDIT_FAIL = "AU001";
     
-    /**
-     * Release lock.
-     */
-    void releaseLock();
-    
-    /**
-     * Check lock state.
-     * 
-     * @return true if all instances were locked, else false
-     */
-    boolean checkLock();
+    public static final int COMMON_VENDOR_CODE = 50000;
 }

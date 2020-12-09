@@ -75,11 +75,11 @@ public final class LockCenter {
     /**
      * Try to get global lock.
      * 
+     * @param timeout the maximum time in milliseconds to acquire lock
      * @return true if get the lock, false if not
      */
-    public boolean tryGlobalLock() {
-        // TODO timeout and retry
-        return registryRepository.tryLock(5, TimeUnit.SECONDS);
+    public boolean tryGlobalLock(final Long timeout) {
+        return registryRepository.tryLock(timeout, TimeUnit.MILLISECONDS);
     }
     
     /**

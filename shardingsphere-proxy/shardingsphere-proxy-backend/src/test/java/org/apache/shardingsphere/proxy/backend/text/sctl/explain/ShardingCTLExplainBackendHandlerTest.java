@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
@@ -73,7 +74,7 @@ public final class ShardingCTLExplainBackendHandlerTest {
     }
     
     @Test
-    public void assertGetRowData() {
+    public void assertGetRowData() throws SQLException {
         handler.execute();
         assertTrue(handler.next());
         Iterator<Object> iterator = handler.getRowData().iterator();

@@ -15,30 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.infra.audit;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Lock strategy.
+ * SQL audit result.
  */
-public interface LockStrategy {
+@RequiredArgsConstructor
+@Getter
+public final class SQLAuditResult {
     
-    /**
-     * Try to get lock.
-     * 
-     * @param timeout the maximum time in milliseconds to acquire lock
-     * @return true if get the lock, false if not
-     */
-    boolean tryLock(Long timeout);
+    private final boolean isPassed;
     
-    /**
-     * Release lock.
-     */
-    void releaseLock();
-    
-    /**
-     * Check lock state.
-     * 
-     * @return true if all instances were locked, else false
-     */
-    boolean checkLock();
+    private final String failedReason;
 }

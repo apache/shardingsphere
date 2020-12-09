@@ -29,9 +29,9 @@ import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
  */
 public final class TransactionAdvice implements MethodAroundAdvice {
     
-    private static final String COMMIT = "proxy_transaction_commit";
+    private static final String COMMIT = "proxy_transaction_commit_total";
     
-    private static final String ROLLBACK = "proxy_transaction_rollback";
+    private static final String ROLLBACK = "proxy_transaction_rollback_total";
     
     static {
         MetricsReporter.registerCounter(COMMIT, "the shardingsphere proxy transaction commit count total");

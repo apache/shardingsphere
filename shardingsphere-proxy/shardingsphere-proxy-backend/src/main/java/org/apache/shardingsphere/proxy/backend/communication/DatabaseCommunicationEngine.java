@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
-import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
@@ -96,18 +95,10 @@ public final class DatabaseCommunicationEngine {
      * @throws SQLException SQL exception
      */
     public ResponseHeader execute() throws SQLException {
-        ExecutionContext executionContext = kernelProcessor.generateExecutionContext(logicSQL, metaData, ProxyContext.getInstance().getMetaDataContexts().getProps());
-        logSQL(executionContext);
-        return doExecute(executionContext);
+        return execute(kernelProcessor.generateExecutionContext(logicSQL, metaData, ProxyContext.getInstance().getMetaDataContexts().getProps()));
     }
     
-    private void logSQL(final ExecutionContext executionContext) {
-        if (ProxyContext.getInstance().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
-            SQLLogger.logSQL(logicSQL, ProxyContext.getInstance().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
-        }
-    }
-    
-    private ResponseHeader doExecute(final ExecutionContext executionContext) throws SQLException {
+    private ResponseHeader execute(final ExecutionContext executionContext) throws SQLException {
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
@@ -122,7 +113,7 @@ public final class DatabaseCommunicationEngine {
     
     private void lockForDDL(final ExecutionContext executionContext) {
         if (needLock(executionContext)) {
-            if (!LockContext.getLockStrategy().tryLock()) {
+            if (!LockContext.getLockStrategy().tryLock(ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS))) {
                 throw new LockWaitTimeoutException();
             }
             checkLock();
@@ -130,11 +121,7 @@ public final class DatabaseCommunicationEngine {
     }
     
     private boolean needLock(final ExecutionContext executionContext) {
-        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        if (null == sqlStatement) {
-            return false;
-        }
-        return SchemaRefresherFactory.newInstance(sqlStatement).isPresent();
+        return SchemaRefresherFactory.newInstance(executionContext.getSqlStatementContext().getSqlStatement()).isPresent();
     }
     
     private void checkLock() {
@@ -185,9 +172,6 @@ public final class DatabaseCommunicationEngine {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void refreshSchema(final ExecutionContext executionContext) throws SQLException {
         SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        if (null == sqlStatement) {
-            return;
-        }
         Optional<SchemaRefresher> schemaRefresher = SchemaRefresherFactory.newInstance(sqlStatement);
         if (schemaRefresher.isPresent()) {
             try {

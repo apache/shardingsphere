@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.infra.audit;
+
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
+import java.util.List;
 
 /**
- * Lock strategy.
+ * SQL auditor.
+ * 
+ * @param <T> type of ShardingSphere rule
  */
-public interface LockStrategy {
+public interface SQLAuditor<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
-     * Try to get lock.
+     * Audit SQL.
      * 
-     * @param timeout the maximum time in milliseconds to acquire lock
-     * @return true if get the lock, false if not
+     * @param sqlStatement SQL statement
+     * @param parameters SQL parameters
+     * @param schemaName schema name
+     * @param rule ShardingSphere rule
+     * @return SQL audit result
      */
-    boolean tryLock(Long timeout);
-    
-    /**
-     * Release lock.
-     */
-    void releaseLock();
-    
-    /**
-     * Check lock state.
-     * 
-     * @return true if all instances were locked, else false
-     */
-    boolean checkLock();
+    SQLAuditResult audit(SQLStatement sqlStatement, List<Object> parameters, String schemaName, T rule);
 }

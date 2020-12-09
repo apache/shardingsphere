@@ -35,9 +35,9 @@ public final class MetricsPluginDefinition extends PluginDefinition {
     
     private static final String CHANNEL_HANDLER_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.bootstrap.ChannelHandlerAdvice";
     
-    private static final String DATA_NODE_ROUTER_ENHANCE_CLASS = "org.apache.shardingsphere.infra.route.DataNodeRouter";
+    private static final String SQL_ROUTER_ENGINE_ENHANCE_CLASS = "org.apache.shardingsphere.infra.route.engine.SQLRouteEngine";
     
-    private static final String DATA_NODE_ROUTER_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.bootstrap.DataNodeRouterAdvice";
+    private static final String SQL_ROUTER_ENGINE_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.bootstrap.SQLRouteEngineAdvice";
     
     private static final String TRANSACTION_ENHANCE_CLASS = "org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager";
     
@@ -58,9 +58,9 @@ public final class MetricsPluginDefinition extends PluginDefinition {
                         .or(ElementMatchers.named(MethodNameConstant.CHANNEL_READ)))
                 .implement(CHANNEL_HANDLER_ADVICE_CLASS)
                 .build();
-        intercept(DATA_NODE_ROUTER_ENHANCE_CLASS)
+        intercept(SQL_ROUTER_ENGINE_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named("route"))
-                .implement(DATA_NODE_ROUTER_ADVICE_CLASS)
+                .implement(SQL_ROUTER_ENGINE_ADVICE_CLASS)
                 .build();
         intercept(TRANSACTION_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(MethodNameConstant.COMMIT).or(ElementMatchers.named(MethodNameConstant.ROLL_BACK)))

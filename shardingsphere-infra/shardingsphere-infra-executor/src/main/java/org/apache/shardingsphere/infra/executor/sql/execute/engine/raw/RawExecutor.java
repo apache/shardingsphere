@@ -44,7 +44,7 @@ public final class RawExecutor {
      * Execute.
      *
      * @param executionGroups execution groups
-     * @param callback raw SQL execute callback
+     * @param callback raw SQL executor callback
      * @return execute results
      * @throws SQLException SQL exception
      */
