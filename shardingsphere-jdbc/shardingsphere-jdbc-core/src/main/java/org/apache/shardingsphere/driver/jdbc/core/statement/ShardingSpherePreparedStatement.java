@@ -300,7 +300,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return result;
     }
     
-    private ExecutionContext createExecutionContext() {
+    private ExecutionContext createExecutionContext() throws SQLException {
         LogicSQL logicSQL = createLogicSQL();
         ExecutionContext result = kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getDefaultMetaData(), metaDataContexts.getProps());
         findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.addAll(generatedKey.getGeneratedValues()));
@@ -362,7 +362,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     @Override
-    public void addBatch() {
+    public void addBatch() throws SQLException {
         try {
             executionContext = createExecutionContext();
             batchPreparedStatementExecutor.addBatchForExecutionUnits(executionContext.getExecutionUnits());
