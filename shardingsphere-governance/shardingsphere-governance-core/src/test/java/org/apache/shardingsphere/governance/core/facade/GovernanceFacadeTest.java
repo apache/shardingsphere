@@ -24,7 +24,7 @@ import org.apache.shardingsphere.governance.core.facade.util.FieldUtil;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -75,7 +75,7 @@ public final class GovernanceFacadeTest {
         Map<String, DataSourceConfiguration> dataSourceConfigMap = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));
         Map<String, Collection<RuleConfiguration>> ruleConfigurationMap = Collections.singletonMap("sharding_db", Collections.singletonList(mock(RuleConfiguration.class)));
         ShardingSphereUser user = new ShardingSphereUser("root", Collections.singleton("db1"));
-        Authentication authentication = new Authentication();
+        MemoryAuthentication authentication = new MemoryAuthentication();
         authentication.getUsers().put("root", user);
         Properties props = new Properties();
         governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigMap), ruleConfigurationMap, authentication, props);

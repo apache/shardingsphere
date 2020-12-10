@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -193,7 +193,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         assertThat(props.getProperty("algorithm-expression"), is(expectedAlgorithmExpr));
     }
     
-    private void assertAuthentication(final Authentication actual) {
+    private void assertAuthentication(final MemoryAuthentication actual) {
         Optional<ShardingSphereUser> rootUser = actual.findUser("root");
         assertTrue(rootUser.isPresent());
         assertThat(rootUser.get().getPassword(), is("root"));

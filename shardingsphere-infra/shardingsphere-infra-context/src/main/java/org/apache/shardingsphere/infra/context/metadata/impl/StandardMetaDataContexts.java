@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.context.metadata.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -43,7 +43,7 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     
     private final ExecutorEngine executorEngine;
     
-    private final Authentication authentication;
+    private final MemoryAuthentication authentication;
     
     private final ConfigurationProperties props;
     
@@ -51,7 +51,7 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     
     public StandardMetaDataContexts() {
         // TODO MySQLDatabaseType is invalid because it can not update again
-        this(new HashMap<>(), null, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType());
+        this(new HashMap<>(), null, new MemoryAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType());
     }
     
     @Override

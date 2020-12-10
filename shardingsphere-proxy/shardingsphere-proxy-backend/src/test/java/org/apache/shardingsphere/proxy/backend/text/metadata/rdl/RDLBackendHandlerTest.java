@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.metadata.rdl;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateShardingRuleStatement;
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -62,7 +62,7 @@ public final class RDLBackendHandlerTest {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new MemoryAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     @Test

@@ -36,7 +36,7 @@ import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -105,7 +105,7 @@ public final class ConfigCenter {
      * @param props properties
      * @param isOverwrite is overwrite config center's configuration
      */
-    public void persistGlobalConfiguration(final Authentication authentication, final Properties props, final boolean isOverwrite) {
+    public void persistGlobalConfiguration(final MemoryAuthentication authentication, final Properties props, final boolean isOverwrite) {
         persistAuthentication(authentication, isOverwrite);
         persistProperties(props, isOverwrite);
     }
@@ -265,7 +265,7 @@ public final class ConfigCenter {
         return !config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategy() || !config.getAutoTables().isEmpty();
     }
     
-    private void persistAuthentication(final Authentication authentication, final boolean isOverwrite) {
+    private void persistAuthentication(final MemoryAuthentication authentication, final boolean isOverwrite) {
         if (null != authentication && (isOverwrite || !hasAuthentication())) {
             repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(new AuthenticationYamlSwapper().swapToYamlConfiguration(authentication)));
         }
@@ -327,10 +327,10 @@ public final class ConfigCenter {
      *
      * @return authentication
      */
-    public Authentication loadAuthentication() {
+    public MemoryAuthentication loadAuthentication() {
         return hasAuthentication()
                 ? new AuthenticationYamlSwapper().swapToObject(YamlEngine.unmarshal(repository.get(node.getAuthenticationPath()), YamlAuthenticationConfiguration.class))
-                : new Authentication();
+                : new MemoryAuthentication();
     }
     
     /**

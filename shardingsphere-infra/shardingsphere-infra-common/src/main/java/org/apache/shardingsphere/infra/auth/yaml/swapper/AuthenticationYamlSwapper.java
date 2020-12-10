@@ -18,27 +18,27 @@
 package org.apache.shardingsphere.infra.auth.yaml.swapper;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 /**
  * Authentication YAML swapper.
  */
-public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenticationConfiguration, Authentication> {
+public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenticationConfiguration, MemoryAuthentication> {
     
     private final ShardingSphereUserYamlSwapper userYamlSwapper = new ShardingSphereUserYamlSwapper();
     
     @Override
-    public YamlAuthenticationConfiguration swapToYamlConfiguration(final Authentication data) {
+    public YamlAuthenticationConfiguration swapToYamlConfiguration(final MemoryAuthentication data) {
         YamlAuthenticationConfiguration result = new YamlAuthenticationConfiguration();
         result.setUsers(Maps.transformValues(data.getUsers(), userYamlSwapper::swapToYamlConfiguration));
         return result;
     }
     
     @Override
-    public Authentication swapToObject(final YamlAuthenticationConfiguration yamlConfig) {
-        Authentication result = new Authentication();
+    public MemoryAuthentication swapToObject(final YamlAuthenticationConfiguration yamlConfig) {
+        MemoryAuthentication result = new MemoryAuthentication();
         if (null == yamlConfig) {
             return result;
         }

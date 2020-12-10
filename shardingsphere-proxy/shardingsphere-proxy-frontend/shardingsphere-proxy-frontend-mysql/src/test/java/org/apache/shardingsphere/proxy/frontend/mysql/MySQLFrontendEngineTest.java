@@ -25,7 +25,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -144,7 +144,7 @@ public final class MySQLFrontendEngineTest {
     }
     
     private void setAuthentication(final ShardingSphereUser user) {
-        Authentication authentication = new Authentication();
+        MemoryAuthentication authentication = new MemoryAuthentication();
         authentication.getUsers().put("root", user);
         initProxyContext(authentication);
     }
@@ -157,13 +157,13 @@ public final class MySQLFrontendEngineTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void initProxyContext(final Authentication authentication) {
+    private void initProxyContext(final MemoryAuthentication authentication) {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         field.setAccessible(true);
         field.set(ProxyContext.getInstance(), getMetaDataContexts(authentication));
     }
     
-    private MetaDataContexts getMetaDataContexts(final Authentication authentication) {
+    private MetaDataContexts getMetaDataContexts(final MemoryAuthentication authentication) {
         return new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), authentication, new ConfigurationProperties(new Properties()), new MySQLDatabaseType());
     }
     

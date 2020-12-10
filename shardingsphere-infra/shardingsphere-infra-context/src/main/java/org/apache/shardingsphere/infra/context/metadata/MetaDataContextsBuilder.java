@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.context.metadata;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -60,7 +60,7 @@ public final class MetaDataContextsBuilder {
     
     private final Map<String, Collection<RuleConfiguration>> ruleConfigs;
     
-    private final Authentication authentication;
+    private final MemoryAuthentication authentication;
     
     private final ConfigurationProperties props;
     
@@ -68,11 +68,11 @@ public final class MetaDataContextsBuilder {
     
     public MetaDataContextsBuilder(final DatabaseType databaseType, final Map<String, Map<String, DataSource>> dataSources,
                                    final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Properties props) {
-        this(databaseType, dataSources, ruleConfigs, new Authentication(), props);
+        this(databaseType, dataSources, ruleConfigs, new MemoryAuthentication(), props);
     }
     
     public MetaDataContextsBuilder(final DatabaseType databaseType, final Map<String, Map<String, DataSource>> dataSources,
-                                   final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Authentication authentication, final Properties props) {
+                                   final Map<String, Collection<RuleConfiguration>> ruleConfigs, final MemoryAuthentication authentication, final Properties props) {
         this.databaseType = databaseType;
         this.dataSources = dataSources;
         this.ruleConfigs = ruleConfigs;

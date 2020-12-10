@@ -27,7 +27,7 @@ import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
@@ -302,7 +302,7 @@ public final class ConfigCenterTest {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SHADOW_RULE_YAML), YamlRootRuleConfigurations.class).getRules());
     }
     
-    private Authentication createAuthentication() {
+    private MemoryAuthentication createAuthentication() {
         return new AuthenticationYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(AUTHENTICATION_YAML), YamlAuthenticationConfiguration.class));
     }
     
@@ -419,7 +419,7 @@ public final class ConfigCenterTest {
     public void assertLoadAuthentication() {
         when(configurationRepository.get("/authentication")).thenReturn(readYAML(AUTHENTICATION_YAML));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
-        Authentication actual = configCenter.loadAuthentication();
+        MemoryAuthentication actual = configCenter.loadAuthentication();
         Optional<ShardingSphereUser> user = actual.findUser("root1");
         assertTrue(user.isPresent());
         assertThat(user.get().getPassword(), is("root1"));

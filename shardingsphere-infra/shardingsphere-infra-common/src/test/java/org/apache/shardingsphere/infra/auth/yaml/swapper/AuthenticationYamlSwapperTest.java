@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.auth.yaml.swapper;
 
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlShardingSphereUserConfiguration;
@@ -36,7 +36,7 @@ public final class AuthenticationYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        Authentication authentication = new Authentication();
+        MemoryAuthentication authentication = new MemoryAuthentication();
         authentication.getUsers().put("user1", new ShardingSphereUser("pwd1", Collections.singleton("db1")));
         authentication.getUsers().put("user2", new ShardingSphereUser("pwd2", Collections.singleton("db2")));
         YamlAuthenticationConfiguration actual = new AuthenticationYamlSwapper().swapToYamlConfiguration(authentication);
@@ -60,7 +60,7 @@ public final class AuthenticationYamlSwapperTest {
         users.put("user2", user2);
         YamlAuthenticationConfiguration yamlConfig = new YamlAuthenticationConfiguration();
         yamlConfig.setUsers(users);
-        Authentication actual = new AuthenticationYamlSwapper().swapToObject(yamlConfig);
+        MemoryAuthentication actual = new AuthenticationYamlSwapper().swapToObject(yamlConfig);
         Optional<ShardingSphereUser> actualUser1 = actual.findUser("user1");
         assertTrue(actualUser1.isPresent());
         assertThat(actualUser1.get().getAuthorizedSchemas().size(), is(1));
@@ -71,7 +71,7 @@ public final class AuthenticationYamlSwapperTest {
     
     @Test
     public void assertSwapToObjectForNull() {
-        Authentication actual = new AuthenticationYamlSwapper().swapToObject(null);
+        MemoryAuthentication actual = new AuthenticationYamlSwapper().swapToObject(null);
         assertTrue(actual.getUsers().isEmpty());
     }
 }

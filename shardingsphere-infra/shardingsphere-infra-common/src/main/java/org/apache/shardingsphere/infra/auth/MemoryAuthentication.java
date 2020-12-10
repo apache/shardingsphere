@@ -17,18 +17,22 @@
 
 package org.apache.shardingsphere.infra.auth;
 
+import lombok.Getter;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
- * Authentication.
+ * Authentication for memory.
 */
-public interface Authentication {
+@Getter
+public final class MemoryAuthentication implements Authentication {
     
-    /**
-     * Find user.
-     * 
-     * @param username username
-     * @return found user
-     */
-    Optional<ShardingSphereUser> findUser(String username);
+    private final Map<String, ShardingSphereUser> users = new LinkedHashMap<>();
+    
+    @Override
+    public Optional<ShardingSphereUser> findUser(final String username) {
+        return Optional.ofNullable(users.get(username));
+    }
 }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.governance.context.transaction.GovernanceTransa
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.lock.GovernanceLockStrategy;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -90,7 +90,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
             entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private Authentication getAuthentication(final YamlAuthenticationConfiguration authConfig) {
+    private MemoryAuthentication getAuthentication(final YamlAuthenticationConfiguration authConfig) {
         return new AuthenticationYamlSwapper().swapToObject(authConfig);
     }
     
@@ -98,7 +98,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
         Collection<String> schemaNames = governanceFacade.getConfigCenter().getAllSchemaNames();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
         Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules(schemaNames);
-        Authentication authentication = governanceFacade.getConfigCenter().loadAuthentication();
+        MemoryAuthentication authentication = governanceFacade.getConfigCenter().loadAuthentication();
         Properties props = governanceFacade.getConfigCenter().loadProperties();
         return new ProxyConfiguration(schemaDataSources, schemaRules, authentication, props);
     }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.config.yaml.swapper;
 
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlShardingSphereUserConfiguration;
@@ -102,7 +102,7 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertAuthentication(final ProxyConfiguration proxyConfig) {
-        Authentication authentication = proxyConfig.getAuthentication();
+        MemoryAuthentication authentication = proxyConfig.getAuthentication();
         assertNotNull(authentication);
         Optional<ShardingSphereUser> user = authentication.findUser("user1");
         assertTrue(user.isPresent());
