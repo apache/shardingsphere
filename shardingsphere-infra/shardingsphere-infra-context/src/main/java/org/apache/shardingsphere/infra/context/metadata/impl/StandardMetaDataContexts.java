@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.context.metadata.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.memory.MemoryAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -43,7 +44,7 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     
     private final ExecutorEngine executorEngine;
     
-    private final MemoryAuthentication authentication;
+    private final Authentication authentication;
     
     private final ConfigurationProperties props;
     
