@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl;
 
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -73,9 +73,9 @@ public final class UseDatabaseBackendHandlerTest {
         return result;
     }
     
-    private Authentication getAuthentication() {
+    private DefaultAuthentication getAuthentication() {
         ShardingSphereUser user = new ShardingSphereUser("root", Arrays.asList(String.format(SCHEMA_PATTERN, 0), String.format(SCHEMA_PATTERN, 1)));
-        Authentication result = new Authentication();
+        DefaultAuthentication result = new DefaultAuthentication();
         result.getUsers().put("root", user);
         return result;
     }

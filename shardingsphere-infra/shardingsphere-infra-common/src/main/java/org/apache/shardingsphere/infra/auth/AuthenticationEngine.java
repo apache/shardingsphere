@@ -17,18 +17,30 @@
 
 package org.apache.shardingsphere.infra.auth;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+
+import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Authentication.
+ * Authentication engine.
 */
-public interface Authentication {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AuthenticationEngine {
+    
+    static {
+        ShardingSphereServiceLoader.register(Authentication.class);
+    }
     
     /**
-     * Find user.
+     * Find SPI authentication.
      * 
-     * @param username username
-     * @return found user
+     * @return authentication
      */
-    Optional<ShardingSphereUser> findUser(String username);
+    public static Optional<Authentication> findSPIAuthentication() {
+        Collection<Authentication> authentications = ShardingSphereServiceLoader.newServiceInstances(Authentication.class);
+        return authentications.isEmpty() ? Optional.empty() : Optional.of(authentications.iterator().next());
+    }
 }

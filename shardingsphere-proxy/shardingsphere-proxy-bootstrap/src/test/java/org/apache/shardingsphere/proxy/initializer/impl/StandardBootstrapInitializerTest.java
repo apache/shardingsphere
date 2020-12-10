@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlShardingSphereUserConfiguration;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -146,7 +146,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         assertThat(((FixtureRuleConfiguration) actual).getName(), is("testRule"));
     }
     
-    private void assertAuthentication(final Authentication actual) {
+    private void assertAuthentication(final DefaultAuthentication actual) {
         Optional<ShardingSphereUser> rootUser = actual.findUser("root");
         assertTrue(rootUser.isPresent());
         assertThat(rootUser.get().getPassword(), is("root"));
@@ -170,15 +170,15 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     }
     
     private YamlAuthenticationConfiguration createYamlAuthenticationConfiguration() {
-        Map<String, YamlShardingSphereUserConfiguration> users = new HashMap<>(1, 1);
+        Map<String, YamlUserConfiguration> users = new HashMap<>(1, 1);
         users.put("root", createYamlUserConfiguration());
         YamlAuthenticationConfiguration result = new YamlAuthenticationConfiguration();
         result.setUsers(users);
         return result;
     }
     
-    private YamlShardingSphereUserConfiguration createYamlUserConfiguration() {
-        YamlShardingSphereUserConfiguration result = new YamlShardingSphereUserConfiguration();
+    private YamlUserConfiguration createYamlUserConfiguration() {
+        YamlUserConfiguration result = new YamlUserConfiguration();
         result.setPassword("root");
         result.setAuthorizedSchemas("ds-1,ds-2");
         return result;

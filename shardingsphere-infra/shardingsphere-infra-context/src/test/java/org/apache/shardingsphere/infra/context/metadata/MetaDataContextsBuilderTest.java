@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.context.metadata;
 
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.context.fixture.FixtureRuleConfiguration;
@@ -44,7 +45,7 @@ public final class MetaDataContextsBuilderTest {
         MetaDataContexts actual = new MetaDataContextsBuilder(databaseType, Collections.emptyMap(), Collections.emptyMap(), null).build();
         assertThat(actual.getDatabaseType(), CoreMatchers.is(databaseType));
         assertTrue(actual.getMetaDataMap().isEmpty());
-        assertTrue(actual.getAuthentication().getUsers().isEmpty());
+        assertTrue(((DefaultAuthentication) actual.getAuthentication()).getUsers().isEmpty());
         assertTrue(actual.getProps().getProps().isEmpty());
     }
     
@@ -58,7 +59,7 @@ public final class MetaDataContextsBuilderTest {
         assertThat(actual.getDatabaseType(), CoreMatchers.is(databaseType));
         assertRules(actual);
         assertTrue(actual.getMetaDataMap().get("logic_db").getResource().getDataSources().isEmpty());
-        assertTrue(actual.getAuthentication().getUsers().isEmpty());
+        assertTrue(((DefaultAuthentication) actual.getAuthentication()).getUsers().isEmpty());
         assertThat(actual.getProps().getProps().size(), CoreMatchers.is(1));
         assertThat(actual.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), CoreMatchers.is(1));
     }
@@ -73,7 +74,7 @@ public final class MetaDataContextsBuilderTest {
         assertThat(actual.getDatabaseType(), CoreMatchers.is(databaseType));
         assertRules(actual);
         assertDataSources(actual);
-        assertTrue(actual.getAuthentication().getUsers().isEmpty());
+        assertTrue(((DefaultAuthentication) actual.getAuthentication()).getUsers().isEmpty());
         assertThat(actual.getProps().getProps().size(), CoreMatchers.is(1));
         assertThat(actual.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), CoreMatchers.is(1));
     }

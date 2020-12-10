@@ -22,9 +22,9 @@ import org.apache.shardingsphere.governance.context.transaction.GovernanceTransa
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.lock.GovernanceLockStrategy;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
-import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
@@ -90,7 +90,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
             entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private Authentication getAuthentication(final YamlAuthenticationConfiguration authConfig) {
+    private DefaultAuthentication getAuthentication(final YamlAuthenticationConfiguration authConfig) {
         return new AuthenticationYamlSwapper().swapToObject(authConfig);
     }
     
@@ -98,7 +98,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
         Collection<String> schemaNames = governanceFacade.getConfigCenter().getAllSchemaNames();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
         Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules(schemaNames);
-        Authentication authentication = governanceFacade.getConfigCenter().loadAuthentication();
+        DefaultAuthentication authentication = governanceFacade.getConfigCenter().loadAuthentication();
         Properties props = governanceFacade.getConfigCenter().loadProperties();
         return new ProxyConfiguration(schemaDataSources, schemaRules, authentication, props);
     }

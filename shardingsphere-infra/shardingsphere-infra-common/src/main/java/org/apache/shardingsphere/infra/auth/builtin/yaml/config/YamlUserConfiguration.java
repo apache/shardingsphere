@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth;
+package org.apache.shardingsphere.infra.auth.builtin.yaml.config;
 
-import java.util.Optional;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
 /**
- * Authentication.
-*/
-public interface Authentication {
+ * User for YAML.
+ */
+@Getter
+@Setter
+public final class YamlUserConfiguration implements YamlConfiguration {
     
-    /**
-     * Find user.
-     * 
-     * @param username username
-     * @return found user
-     */
-    Optional<ShardingSphereUser> findUser(String username);
+    private String password;
+    
+    private String authorizedSchemas;
 }

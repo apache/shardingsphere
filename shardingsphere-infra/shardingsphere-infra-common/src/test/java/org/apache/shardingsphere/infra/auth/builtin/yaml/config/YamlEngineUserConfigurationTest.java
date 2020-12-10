@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth.yaml.config;
+package org.apache.shardingsphere.infra.auth.builtin.yaml.config;
 
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
@@ -27,11 +27,11 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class YamlEngineShardingSphereUserConfigurationTest {
+public final class YamlEngineUserConfigurationTest {
     
     @Test
     public void assertUnmarshal() {
-        YamlShardingSphereUserConfiguration actual = YamlEngine.unmarshal("password: pwd\nauthorizedSchemas: db1", YamlShardingSphereUserConfiguration.class);
+        YamlUserConfiguration actual = YamlEngine.unmarshal("password: pwd\nauthorizedSchemas: db1", YamlUserConfiguration.class);
         assertThat(actual.getPassword(), is("pwd"));
         assertThat(actual.getAuthorizedSchemas(), is("db1"));
     }
@@ -53,7 +53,7 @@ public final class YamlEngineShardingSphereUserConfigurationTest {
     
     @Test
     public void assertMarshal() {
-        YamlShardingSphereUserConfiguration actual = new YamlShardingSphereUserConfiguration();
+        YamlUserConfiguration actual = new YamlUserConfiguration();
         actual.setPassword("pwd");
         actual.setAuthorizedSchemas("db1");
         assertThat(YamlEngine.marshal(actual), is("authorizedSchemas: db1\npassword: pwd\n"));

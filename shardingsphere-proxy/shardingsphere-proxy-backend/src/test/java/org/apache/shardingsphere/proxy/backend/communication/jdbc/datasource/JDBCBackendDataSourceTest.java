@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -74,7 +74,7 @@ public final class JDBCBackendDataSourceTest {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {

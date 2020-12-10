@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth.yaml.config;
+package org.apache.shardingsphere.infra.auth.builtin;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
- * Authentication configuration for YAML.
- */
+ * Default authentication.
+*/
 @Getter
-@Setter
-public final class YamlAuthenticationConfiguration implements YamlConfiguration {
+public final class DefaultAuthentication implements Authentication {
     
-    private Map<String, YamlShardingSphereUserConfiguration> users;
+    private final Map<String, ShardingSphereUser> users = new LinkedHashMap<>();
+    
+    @Override
+    public Optional<ShardingSphereUser> findUser(final String username) {
+        return Optional.ofNullable(users.get(username));
+    }
 }
