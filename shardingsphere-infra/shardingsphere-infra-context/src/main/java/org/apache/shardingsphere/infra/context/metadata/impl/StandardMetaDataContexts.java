@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.context.metadata.impl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.AuthenticationEngine;
 import org.apache.shardingsphere.infra.auth.memory.MemoryAuthentication;
@@ -37,7 +36,6 @@ import java.util.Properties;
 /**
  * Standard meta data contexts.
  */
-@RequiredArgsConstructor
 @Getter
 public final class StandardMetaDataContexts implements MetaDataContexts {
     
@@ -56,9 +54,13 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
         this(new HashMap<>(), null, new MemoryAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType());
     }
     
-    @Override
-    public Authentication getAuthentication() {
-        return AuthenticationEngine.findSPIAuthentication().orElse(authentication);
+    public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap, 
+                                    final ExecutorEngine executorEngine, final Authentication authentication, final ConfigurationProperties props, final DatabaseType databaseType) {
+        this.metaDataMap = metaDataMap;
+        this.executorEngine = executorEngine;
+        this.authentication = AuthenticationEngine.findSPIAuthentication().orElse(authentication);
+        this.props = props;
+        this.databaseType = databaseType;
     }
     
     @Override
