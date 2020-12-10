@@ -27,9 +27,9 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 import java.util.Collections;
 
 /**
- * ShardingSphere user YAML swapper.
+ * User YAML swapper.
  */
-public final class ShardingSphereUserYamlSwapper implements YamlSwapper<YamlShardingSphereUserConfiguration, ShardingSphereUser> {
+public final class UserYamlSwapper implements YamlSwapper<YamlShardingSphereUserConfiguration, ShardingSphereUser> {
     
     @Override
     public YamlShardingSphereUserConfiguration swapToYamlConfiguration(final ShardingSphereUser data) {

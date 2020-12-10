@@ -26,11 +26,11 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingSphereUserYamlSwapperTest {
+public final class UserYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        YamlShardingSphereUserConfiguration actual = new ShardingSphereUserYamlSwapper().swapToYamlConfiguration(new ShardingSphereUser("pwd", Collections.singleton("db1")));
+        YamlShardingSphereUserConfiguration actual = new UserYamlSwapper().swapToYamlConfiguration(new ShardingSphereUser("pwd", Collections.singleton("db1")));
         assertThat(actual.getAuthorizedSchemas(), is("db1"));
         assertThat(actual.getPassword(), is("pwd"));
     }
@@ -40,7 +40,7 @@ public final class ShardingSphereUserYamlSwapperTest {
         YamlShardingSphereUserConfiguration yamlUserConfig = new YamlShardingSphereUserConfiguration();
         yamlUserConfig.setAuthorizedSchemas("db1");
         yamlUserConfig.setPassword("pwd");
-        ShardingSphereUser actual = new ShardingSphereUserYamlSwapper().swapToObject(yamlUserConfig);
+        ShardingSphereUser actual = new UserYamlSwapper().swapToObject(yamlUserConfig);
         assertThat(actual.getAuthorizedSchemas().iterator().next(), is("db1"));
         assertThat(actual.getPassword(), is("pwd"));
     }
@@ -49,7 +49,7 @@ public final class ShardingSphereUserYamlSwapperTest {
     public void assertSwapToObjectWithoutAuthorizedSchemas() {
         YamlShardingSphereUserConfiguration yamlUserConfig = new YamlShardingSphereUserConfiguration();
         yamlUserConfig.setPassword("pwd");
-        ShardingSphereUser actual = new ShardingSphereUserYamlSwapper().swapToObject(yamlUserConfig);
+        ShardingSphereUser actual = new UserYamlSwapper().swapToObject(yamlUserConfig);
         assertThat(actual.getAuthorizedSchemas().size(), is(0));
     }
 }

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
  */
 public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenticationConfiguration, MemoryAuthentication> {
     
-    private final ShardingSphereUserYamlSwapper userYamlSwapper = new ShardingSphereUserYamlSwapper();
+    private final UserYamlSwapper userYamlSwapper = new UserYamlSwapper();
     
     @Override
     public YamlAuthenticationConfiguration swapToYamlConfiguration(final MemoryAuthentication data) {
