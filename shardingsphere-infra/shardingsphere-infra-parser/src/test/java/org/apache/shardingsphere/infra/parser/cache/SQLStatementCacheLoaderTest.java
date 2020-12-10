@@ -30,6 +30,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class SQLStatementCacheLoaderTest {
+
     private static final String SQL = "select * from user where id=1";
 
     @SneakyThrows
