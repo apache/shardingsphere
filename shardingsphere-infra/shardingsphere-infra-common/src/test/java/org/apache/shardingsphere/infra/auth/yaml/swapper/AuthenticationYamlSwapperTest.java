@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.auth.yaml.swapper;
 
 import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.auth.ProxyUser;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlProxyUserConfiguration;
+import org.apache.shardingsphere.infra.auth.yaml.config.YamlShardingSphereUserConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -37,8 +37,8 @@ public final class AuthenticationYamlSwapperTest {
     @Test
     public void assertSwapToYaml() {
         Authentication authentication = new Authentication();
-        authentication.getUsers().put("user1", new ProxyUser("pwd1", Collections.singleton("db1")));
-        authentication.getUsers().put("user2", new ProxyUser("pwd2", Collections.singleton("db2")));
+        authentication.getUsers().put("user1", new ShardingSphereUser("pwd1", Collections.singleton("db1")));
+        authentication.getUsers().put("user2", new ShardingSphereUser("pwd2", Collections.singleton("db2")));
         YamlAuthenticationConfiguration actual = new AuthenticationYamlSwapper().swapToYamlConfiguration(authentication);
         assertThat(actual.getUsers().size(), is(2));
         assertThat(actual.getUsers().get("user1").getPassword(), is("pwd1"));
@@ -49,22 +49,22 @@ public final class AuthenticationYamlSwapperTest {
     
     @Test
     public void assertSwapToObject() {
-        YamlProxyUserConfiguration user1 = new YamlProxyUserConfiguration();
+        YamlShardingSphereUserConfiguration user1 = new YamlShardingSphereUserConfiguration();
         user1.setPassword("pwd1");
         user1.setAuthorizedSchemas("db1");
-        YamlProxyUserConfiguration user2 = new YamlProxyUserConfiguration();
+        YamlShardingSphereUserConfiguration user2 = new YamlShardingSphereUserConfiguration();
         user2.setPassword("pwd2");
         user2.setAuthorizedSchemas("db2,db1");
-        Map<String, YamlProxyUserConfiguration> users = new HashMap<>(2, 1);
+        Map<String, YamlShardingSphereUserConfiguration> users = new HashMap<>(2, 1);
         users.put("user1", user1);
         users.put("user2", user2);
         YamlAuthenticationConfiguration yamlConfig = new YamlAuthenticationConfiguration();
         yamlConfig.setUsers(users);
         Authentication actual = new AuthenticationYamlSwapper().swapToObject(yamlConfig);
-        Optional<ProxyUser> actualUser1 = actual.findUser("user1");
+        Optional<ShardingSphereUser> actualUser1 = actual.findUser("user1");
         assertTrue(actualUser1.isPresent());
         assertThat(actualUser1.get().getAuthorizedSchemas().size(), is(1));
-        Optional<ProxyUser> actualUser2 = actual.findUser("user2");
+        Optional<ShardingSphereUser> actualUser2 = actual.findUser("user2");
         assertTrue(actualUser2.isPresent());
         assertThat(actualUser2.get().getAuthorizedSchemas().size(), is(2));
     }

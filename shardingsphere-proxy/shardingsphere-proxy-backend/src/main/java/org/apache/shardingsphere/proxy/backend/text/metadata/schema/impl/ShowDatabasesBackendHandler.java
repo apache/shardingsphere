@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.auth.ProxyUser;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -54,7 +54,7 @@ public final class ShowDatabasesBackendHandler implements SchemaBackendHandler {
     
     private Collection<Object> getSchemaNames() {
         Collection<Object> result = new LinkedList<>(ProxyContext.getInstance().getAllSchemaNames());
-        Optional<ProxyUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(backendConnection.getUsername());
+        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(backendConnection.getUsername());
         Collection<String> authorizedSchemas = user.isPresent() ? user.get().getAuthorizedSchemas() : Collections.emptyList();
         if (!authorizedSchemas.isEmpty()) {
             result.retainAll(authorizedSchemas);

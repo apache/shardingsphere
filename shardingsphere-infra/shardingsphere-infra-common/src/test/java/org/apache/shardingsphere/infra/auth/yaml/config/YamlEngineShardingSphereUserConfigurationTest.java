@@ -27,11 +27,11 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class YamlEngineProxyUserConfigurationTest {
+public final class YamlEngineShardingSphereUserConfigurationTest {
     
     @Test
     public void assertUnmarshal() {
-        YamlProxyUserConfiguration actual = YamlEngine.unmarshal("password: pwd\nauthorizedSchemas: db1", YamlProxyUserConfiguration.class);
+        YamlShardingSphereUserConfiguration actual = YamlEngine.unmarshal("password: pwd\nauthorizedSchemas: db1", YamlShardingSphereUserConfiguration.class);
         assertThat(actual.getPassword(), is("pwd"));
         assertThat(actual.getAuthorizedSchemas(), is("db1"));
     }
@@ -53,7 +53,7 @@ public final class YamlEngineProxyUserConfigurationTest {
     
     @Test
     public void assertMarshal() {
-        YamlProxyUserConfiguration actual = new YamlProxyUserConfiguration();
+        YamlShardingSphereUserConfiguration actual = new YamlShardingSphereUserConfiguration();
         actual.setPassword("pwd");
         actual.setAuthorizedSchemas("db1");
         assertThat(YamlEngine.marshal(actual), is("authorizedSchemas: db1\npassword: pwd\n"));

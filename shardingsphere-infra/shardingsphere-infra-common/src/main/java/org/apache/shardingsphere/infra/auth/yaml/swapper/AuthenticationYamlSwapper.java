@@ -27,12 +27,12 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
  */
 public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenticationConfiguration, Authentication> {
     
-    private final ProxyUserYamlSwapper proxyUserYamlSwapper = new ProxyUserYamlSwapper();
+    private final ShardingSphereUserYamlSwapper userYamlSwapper = new ShardingSphereUserYamlSwapper();
     
     @Override
     public YamlAuthenticationConfiguration swapToYamlConfiguration(final Authentication data) {
         YamlAuthenticationConfiguration result = new YamlAuthenticationConfiguration();
-        result.setUsers(Maps.transformValues(data.getUsers(), proxyUserYamlSwapper::swapToYamlConfiguration));
+        result.setUsers(Maps.transformValues(data.getUsers(), userYamlSwapper::swapToYamlConfiguration));
         return result;
     }
     
@@ -42,7 +42,7 @@ public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenti
         if (null == yamlConfig) {
             return result;
         }
-        result.getUsers().putAll(Maps.transformValues(yamlConfig.getUsers(), proxyUserYamlSwapper::swapToObject));
+        result.getUsers().putAll(Maps.transformValues(yamlConfig.getUsers(), userYamlSwapper::swapToObject));
         return result;
     }
 }

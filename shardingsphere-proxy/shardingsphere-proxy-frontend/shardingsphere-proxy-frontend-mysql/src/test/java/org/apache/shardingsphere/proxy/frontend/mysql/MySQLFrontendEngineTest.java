@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.auth.ProxyUser;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -101,8 +101,8 @@ public final class MySQLFrontendEngineTest {
     @Test
     public void assertAuthWhenLoginSuccess() {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
-        ProxyUser proxyUser = new ProxyUser("", Collections.singleton("db1"));
-        setAuthentication(proxyUser);
+        ShardingSphereUser user = new ShardingSphereUser("", Collections.singleton("db1"));
+        setAuthentication(user);
         when(payload.readStringNul()).thenReturn("root");
         AuthenticationResult actual = mysqlFrontendEngine.getAuthEngine().auth(context, payload);
         assertThat(actual.getUsername(), is("root"));
@@ -114,8 +114,8 @@ public final class MySQLFrontendEngineTest {
     @Test
     public void assertAuthWhenLoginFailure() {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
-        ProxyUser proxyUser = new ProxyUser("error", Collections.singleton("db1"));
-        setAuthentication(proxyUser);
+        ShardingSphereUser user = new ShardingSphereUser("error", Collections.singleton("db1"));
+        setAuthentication(user);
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
@@ -130,8 +130,8 @@ public final class MySQLFrontendEngineTest {
     @Test
     public void assertErrorMsgWhenLoginFailure() throws UnknownHostException {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
-        ProxyUser proxyUser = new ProxyUser("error", Collections.singleton("db1"));
-        setAuthentication(proxyUser);
+        ShardingSphereUser user = new ShardingSphereUser("error", Collections.singleton("db1"));
+        setAuthentication(user);
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(context.channel()).thenReturn(channel);
@@ -143,9 +143,9 @@ public final class MySQLFrontendEngineTest {
         verify(context).writeAndFlush(argThat((ArgumentMatcher<MySQLErrPacket>) argument -> "Access denied for user 'root'@'192.168.0.102' (using password: YES)".equals(argument.getErrorMessage())));
     }
     
-    private void setAuthentication(final ProxyUser proxyUser) {
+    private void setAuthentication(final ShardingSphereUser user) {
         Authentication authentication = new Authentication();
-        authentication.getUsers().put("root", proxyUser);
+        authentication.getUsers().put("root", user);
         initProxyContext(authentication);
     }
     
