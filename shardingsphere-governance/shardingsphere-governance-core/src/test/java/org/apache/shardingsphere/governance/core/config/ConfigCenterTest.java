@@ -28,6 +28,7 @@ import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -419,8 +420,9 @@ public final class ConfigCenterTest {
         when(configurationRepository.get("/authentication")).thenReturn(readYAML(AUTHENTICATION_YAML));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         Authentication actual = configCenter.loadAuthentication();
-        assertThat(actual.getUsers().size(), is(2));
-        assertThat(actual.getUsers().get("root1").getPassword(), is("root1"));
+        Optional<ProxyUser> user = actual.findUser("root1");
+        assertTrue(user.isPresent());
+        assertThat(user.get().getPassword(), is("root1"));
     }
     
     @Test

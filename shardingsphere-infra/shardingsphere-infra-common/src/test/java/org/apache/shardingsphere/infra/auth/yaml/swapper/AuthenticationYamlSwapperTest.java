@@ -26,6 +26,7 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -60,9 +61,12 @@ public final class AuthenticationYamlSwapperTest {
         YamlAuthenticationConfiguration yamlConfig = new YamlAuthenticationConfiguration();
         yamlConfig.setUsers(users);
         Authentication actual = new AuthenticationYamlSwapper().swapToObject(yamlConfig);
-        assertThat(actual.getUsers().size(), is(2));
-        assertThat(actual.getUsers().get("user1").getAuthorizedSchemas().size(), is(1));
-        assertThat(actual.getUsers().get("user2").getAuthorizedSchemas().size(), is(2));
+        Optional<ProxyUser> actualUser1 = actual.findUser("user1");
+        assertTrue(actualUser1.isPresent());
+        assertThat(actualUser1.get().getAuthorizedSchemas().size(), is(1));
+        Optional<ProxyUser> actualUser2 = actual.findUser("user2");
+        assertTrue(actualUser2.isPresent());
+        assertThat(actualUser2.get().getAuthorizedSchemas().size(), is(2));
     }
     
     @Test

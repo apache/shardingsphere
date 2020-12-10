@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Authentication.
@@ -31,4 +32,14 @@ import java.util.Map;
 public final class Authentication {
     
     private final Map<String, ProxyUser> users = new LinkedHashMap<>();
+    
+    /**
+     * Find user.
+     * 
+     * @param username username
+     * @return found user
+     */
+    public Optional<ProxyUser> findUser(final String username) {
+        return Optional.ofNullable(users.get(username));
+    }
 }
