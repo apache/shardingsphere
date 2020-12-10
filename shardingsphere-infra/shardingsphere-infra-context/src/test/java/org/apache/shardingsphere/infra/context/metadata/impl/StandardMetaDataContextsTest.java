@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.context.metadata.impl;
 
-import org.apache.shardingsphere.infra.auth.memory.MemoryAuthentication;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -47,7 +47,7 @@ public final class StandardMetaDataContextsTest {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(Collections.singletonMap("logic_db", metaData), 
-                executorEngine, new MemoryAuthentication(), new ConfigurationProperties(new Properties()), DatabaseTypeRegistry.getTrunkDatabaseType("SQL92"));
+                executorEngine, new DefaultAuthentication(), new ConfigurationProperties(new Properties()), DatabaseTypeRegistry.getTrunkDatabaseType("SQL92"));
         standardMetaDataContexts.close();
         verify(executorEngine).close();
     }

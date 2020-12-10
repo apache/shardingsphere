@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth.yaml.swapper;
+package org.apache.shardingsphere.infra.auth.builtin.yaml.swapper;
 
-import org.apache.shardingsphere.infra.auth.memory.MemoryAuthentication;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
-import org.apache.shardingsphere.infra.auth.memory.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.infra.auth.memory.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.auth.memory.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -37,7 +36,7 @@ public final class AuthenticationYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        MemoryAuthentication authentication = new MemoryAuthentication();
+        DefaultAuthentication authentication = new DefaultAuthentication();
         authentication.getUsers().put("user1", new ShardingSphereUser("pwd1", Collections.singleton("db1")));
         authentication.getUsers().put("user2", new ShardingSphereUser("pwd2", Collections.singleton("db2")));
         YamlAuthenticationConfiguration actual = new AuthenticationYamlSwapper().swapToYamlConfiguration(authentication);
@@ -61,7 +60,7 @@ public final class AuthenticationYamlSwapperTest {
         users.put("user2", user2);
         YamlAuthenticationConfiguration yamlConfig = new YamlAuthenticationConfiguration();
         yamlConfig.setUsers(users);
-        MemoryAuthentication actual = new AuthenticationYamlSwapper().swapToObject(yamlConfig);
+        DefaultAuthentication actual = new AuthenticationYamlSwapper().swapToObject(yamlConfig);
         Optional<ShardingSphereUser> actualUser1 = actual.findUser("user1");
         assertTrue(actualUser1.isPresent());
         assertThat(actualUser1.get().getAuthorizedSchemas().size(), is(1));
@@ -72,7 +71,7 @@ public final class AuthenticationYamlSwapperTest {
     
     @Test
     public void assertSwapToObjectForNull() {
-        MemoryAuthentication actual = new AuthenticationYamlSwapper().swapToObject(null);
+        DefaultAuthentication actual = new AuthenticationYamlSwapper().swapToObject(null);
         assertTrue(actual.getUsers().isEmpty());
     }
 }

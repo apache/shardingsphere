@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth.memory.yaml.swapper;
+package org.apache.shardingsphere.infra.auth.builtin.yaml.swapper;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.infra.auth.memory.MemoryAuthentication;
-import org.apache.shardingsphere.infra.auth.memory.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 /**
  * Authentication YAML swapper.
  */
-public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenticationConfiguration, MemoryAuthentication> {
+public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenticationConfiguration, DefaultAuthentication> {
     
     private final UserYamlSwapper userYamlSwapper = new UserYamlSwapper();
     
     @Override
-    public YamlAuthenticationConfiguration swapToYamlConfiguration(final MemoryAuthentication data) {
+    public YamlAuthenticationConfiguration swapToYamlConfiguration(final DefaultAuthentication data) {
         YamlAuthenticationConfiguration result = new YamlAuthenticationConfiguration();
         result.setUsers(Maps.transformValues(data.getUsers(), userYamlSwapper::swapToYamlConfiguration));
         return result;
     }
     
     @Override
-    public MemoryAuthentication swapToObject(final YamlAuthenticationConfiguration yamlConfig) {
-        MemoryAuthentication result = new MemoryAuthentication();
+    public DefaultAuthentication swapToObject(final YamlAuthenticationConfiguration yamlConfig) {
+        DefaultAuthentication result = new DefaultAuthentication();
         if (null == yamlConfig) {
             return result;
         }

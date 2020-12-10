@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
-import org.apache.shardingsphere.infra.auth.memory.MemoryAuthentication;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
-import org.apache.shardingsphere.infra.auth.memory.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.infra.auth.memory.yaml.config.YamlUserConfiguration;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -146,7 +146,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         assertThat(((FixtureRuleConfiguration) actual).getName(), is("testRule"));
     }
     
-    private void assertAuthentication(final MemoryAuthentication actual) {
+    private void assertAuthentication(final DefaultAuthentication actual) {
         Optional<ShardingSphereUser> rootUser = actual.findUser("root");
         assertTrue(rootUser.isPresent());
         assertThat(rootUser.get().getPassword(), is("root"));

@@ -36,9 +36,9 @@ import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
-import org.apache.shardingsphere.infra.auth.memory.MemoryAuthentication;
-import org.apache.shardingsphere.infra.auth.memory.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.infra.auth.memory.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -105,7 +105,7 @@ public final class ConfigCenter {
      * @param props properties
      * @param isOverwrite is overwrite config center's configuration
      */
-    public void persistGlobalConfiguration(final MemoryAuthentication authentication, final Properties props, final boolean isOverwrite) {
+    public void persistGlobalConfiguration(final DefaultAuthentication authentication, final Properties props, final boolean isOverwrite) {
         persistAuthentication(authentication, isOverwrite);
         persistProperties(props, isOverwrite);
     }
@@ -265,7 +265,7 @@ public final class ConfigCenter {
         return !config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategy() || !config.getAutoTables().isEmpty();
     }
     
-    private void persistAuthentication(final MemoryAuthentication authentication, final boolean isOverwrite) {
+    private void persistAuthentication(final DefaultAuthentication authentication, final boolean isOverwrite) {
         if (null != authentication && (isOverwrite || !hasAuthentication())) {
             repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(new AuthenticationYamlSwapper().swapToYamlConfiguration(authentication)));
         }
@@ -327,10 +327,10 @@ public final class ConfigCenter {
      *
      * @return authentication
      */
-    public MemoryAuthentication loadAuthentication() {
+    public DefaultAuthentication loadAuthentication() {
         return hasAuthentication()
                 ? new AuthenticationYamlSwapper().swapToObject(YamlEngine.unmarshal(repository.get(node.getAuthenticationPath()), YamlAuthenticationConfiguration.class))
-                : new MemoryAuthentication();
+                : new DefaultAuthentication();
     }
     
     /**

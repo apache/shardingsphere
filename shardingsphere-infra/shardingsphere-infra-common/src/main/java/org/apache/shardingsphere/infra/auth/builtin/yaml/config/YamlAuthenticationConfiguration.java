@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth.memory;
+package org.apache.shardingsphere.infra.auth.builtin.yaml.config;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
- * Authentication for memory.
-*/
+ * Authentication configuration for YAML.
+ */
 @Getter
-public final class MemoryAuthentication implements Authentication {
+@Setter
+public final class YamlAuthenticationConfiguration implements YamlConfiguration {
     
-    private final Map<String, ShardingSphereUser> users = new LinkedHashMap<>();
-    
-    @Override
-    public Optional<ShardingSphereUser> findUser(final String username) {
-        return Optional.ofNullable(users.get(username));
-    }
+    private Map<String, YamlUserConfiguration> users;
 }

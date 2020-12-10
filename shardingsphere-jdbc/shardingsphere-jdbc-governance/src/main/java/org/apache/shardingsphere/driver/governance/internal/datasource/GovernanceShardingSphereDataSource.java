@@ -25,7 +25,7 @@ import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataC
 import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.infra.auth.memory.MemoryAuthentication;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
@@ -85,13 +85,13 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         Collection<RuleConfiguration> ruleConfigurations = configCenter.loadRuleConfigurations(DefaultSchema.LOGIC_NAME);
         Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(dataSourceConfigs);
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(createDatabaseType(dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), new MemoryAuthentication(), configCenter.loadProperties());
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), new DefaultAuthentication(), configCenter.loadProperties());
         return metaDataContextsBuilder.build();
     }
     
     private MetaDataContexts createMetaDataContexts(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(createDatabaseType(dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap),
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigs), new MemoryAuthentication(), props);
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigs), new DefaultAuthentication(), props);
         return metaDataContextsBuilder.build();
     }
     

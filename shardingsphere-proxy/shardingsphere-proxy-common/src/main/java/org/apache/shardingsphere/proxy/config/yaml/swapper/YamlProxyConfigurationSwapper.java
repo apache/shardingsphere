@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.config.yaml.swapper;
 
-import org.apache.shardingsphere.infra.auth.memory.MemoryAuthentication;
-import org.apache.shardingsphere.infra.auth.memory.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
@@ -48,7 +48,7 @@ public final class YamlProxyConfigurationSwapper {
     public ProxyConfiguration swap(final YamlProxyConfiguration yamlConfig) {
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(yamlConfig.getRuleConfigurations());
         Map<String, Collection<RuleConfiguration>> schemaRules = getRuleConfigurations(yamlConfig.getRuleConfigurations());
-        MemoryAuthentication authentication = new AuthenticationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getAuthentication());
+        DefaultAuthentication authentication = new AuthenticationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getAuthentication());
         Properties props = yamlConfig.getServerConfiguration().getProps();
         return new ProxyConfiguration(schemaDataSources, schemaRules, authentication, props);
     }

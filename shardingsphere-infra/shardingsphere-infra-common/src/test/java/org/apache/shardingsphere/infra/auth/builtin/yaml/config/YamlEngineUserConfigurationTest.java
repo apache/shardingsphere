@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth.yaml.config;
+package org.apache.shardingsphere.infra.auth.builtin.yaml.config;
 
-import org.apache.shardingsphere.infra.auth.memory.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
 
