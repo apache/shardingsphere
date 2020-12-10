@@ -43,7 +43,7 @@ import java.util.Optional;
  */
 public final class ShardingInsertStatementValidator extends ShardingDMLStatementValidator<InsertStatement> {
 
-    private boolean needCheckShardingKey;
+    private boolean needCheckDatabaseInstance;
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext, 
@@ -67,7 +67,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
             throw new ShardingSphereException("The table inserted and the table selected must be the same or bind tables.");
         }
         if (insertSelectSegment.isPresent() && isNeedMergeShardingValues(sqlStatementContext, shardingRule)) {
-            needCheckShardingKey = checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
+            needCheckDatabaseInstance = checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
         }
     }
     
@@ -94,7 +94,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     
     @Override
     public void postValidate(final InsertStatement sqlStatement, final RouteContext routeContext) {
-        if (needCheckShardingKey) {
+        if (needCheckDatabaseInstance) {
             Preconditions.checkState(routeContext.getRouteUnits().size() > 0, "Sharding value must same with subquery.");
         }
     }
