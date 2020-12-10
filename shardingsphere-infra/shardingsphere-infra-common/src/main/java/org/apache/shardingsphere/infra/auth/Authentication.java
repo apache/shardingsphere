@@ -17,21 +17,12 @@
 
 package org.apache.shardingsphere.infra.auth;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**
  * Authentication.
 */
-@RequiredArgsConstructor
-@Getter
-public final class Authentication {
-    
-    private final Map<String, ShardingSphereUser> users = new LinkedHashMap<>();
+public interface Authentication {
     
     /**
      * Find user.
@@ -39,7 +30,5 @@ public final class Authentication {
      * @param username username
      * @return found user
      */
-    public Optional<ShardingSphereUser> findUser(final String username) {
-        return Optional.ofNullable(users.get(username));
-    }
+    Optional<ShardingSphereUser> findUser(String username);
 }
