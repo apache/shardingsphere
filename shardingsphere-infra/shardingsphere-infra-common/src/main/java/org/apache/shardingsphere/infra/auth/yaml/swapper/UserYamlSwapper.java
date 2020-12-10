@@ -21,7 +21,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlShardingSphereUserConfiguration;
+import org.apache.shardingsphere.infra.auth.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 import java.util.Collections;
@@ -29,11 +29,11 @@ import java.util.Collections;
 /**
  * User YAML swapper.
  */
-public final class UserYamlSwapper implements YamlSwapper<YamlShardingSphereUserConfiguration, ShardingSphereUser> {
+public final class UserYamlSwapper implements YamlSwapper<YamlUserConfiguration, ShardingSphereUser> {
     
     @Override
-    public YamlShardingSphereUserConfiguration swapToYamlConfiguration(final ShardingSphereUser data) {
-        YamlShardingSphereUserConfiguration result = new YamlShardingSphereUserConfiguration();
+    public YamlUserConfiguration swapToYamlConfiguration(final ShardingSphereUser data) {
+        YamlUserConfiguration result = new YamlUserConfiguration();
         result.setPassword(data.getPassword());
         String authorizedSchemas = null == data.getAuthorizedSchemas() ? "" : Joiner.on(',').join(data.getAuthorizedSchemas());
         result.setAuthorizedSchemas(authorizedSchemas);
@@ -41,7 +41,7 @@ public final class UserYamlSwapper implements YamlSwapper<YamlShardingSphereUser
     }
     
     @Override
-    public ShardingSphereUser swapToObject(final YamlShardingSphereUserConfiguration yamlConfig) {
+    public ShardingSphereUser swapToObject(final YamlUserConfiguration yamlConfig) {
         if (Strings.isNullOrEmpty(yamlConfig.getAuthorizedSchemas())) {
             return new ShardingSphereUser(yamlConfig.getPassword(), Collections.emptyList());
         }

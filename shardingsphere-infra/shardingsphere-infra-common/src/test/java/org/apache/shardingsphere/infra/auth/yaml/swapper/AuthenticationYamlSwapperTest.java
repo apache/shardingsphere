@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.auth.yaml.swapper;
 import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlShardingSphereUserConfiguration;
+import org.apache.shardingsphere.infra.auth.yaml.config.YamlUserConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -49,13 +49,13 @@ public final class AuthenticationYamlSwapperTest {
     
     @Test
     public void assertSwapToObject() {
-        YamlShardingSphereUserConfiguration user1 = new YamlShardingSphereUserConfiguration();
+        YamlUserConfiguration user1 = new YamlUserConfiguration();
         user1.setPassword("pwd1");
         user1.setAuthorizedSchemas("db1");
-        YamlShardingSphereUserConfiguration user2 = new YamlShardingSphereUserConfiguration();
+        YamlUserConfiguration user2 = new YamlUserConfiguration();
         user2.setPassword("pwd2");
         user2.setAuthorizedSchemas("db2,db1");
-        Map<String, YamlShardingSphereUserConfiguration> users = new HashMap<>(2, 1);
+        Map<String, YamlUserConfiguration> users = new HashMap<>(2, 1);
         users.put("user1", user1);
         users.put("user2", user2);
         YamlAuthenticationConfiguration yamlConfig = new YamlAuthenticationConfiguration();

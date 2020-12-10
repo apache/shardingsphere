@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlShardingSphereUserConfiguration;
+import org.apache.shardingsphere.infra.auth.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -170,15 +170,15 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     }
     
     private YamlAuthenticationConfiguration createYamlAuthenticationConfiguration() {
-        Map<String, YamlShardingSphereUserConfiguration> users = new HashMap<>(1, 1);
+        Map<String, YamlUserConfiguration> users = new HashMap<>(1, 1);
         users.put("root", createYamlUserConfiguration());
         YamlAuthenticationConfiguration result = new YamlAuthenticationConfiguration();
         result.setUsers(users);
         return result;
     }
     
-    private YamlShardingSphereUserConfiguration createYamlUserConfiguration() {
-        YamlShardingSphereUserConfiguration result = new YamlShardingSphereUserConfiguration();
+    private YamlUserConfiguration createYamlUserConfiguration() {
+        YamlUserConfiguration result = new YamlUserConfiguration();
         result.setPassword("root");
         result.setAuthorizedSchemas("ds-1,ds-2");
         return result;

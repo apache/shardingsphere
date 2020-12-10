@@ -22,11 +22,11 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
 /**
- * ShardingSphere user for YAML.
+ * User for YAML.
  */
 @Getter
 @Setter
-public final class YamlShardingSphereUserConfiguration implements YamlConfiguration {
+public final class YamlUserConfiguration implements YamlConfiguration {
     
     private String password;
     
