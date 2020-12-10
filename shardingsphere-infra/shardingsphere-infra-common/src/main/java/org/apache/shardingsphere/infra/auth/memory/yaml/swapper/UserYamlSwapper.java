@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth.yaml.swapper;
+package org.apache.shardingsphere.infra.auth.memory.yaml.swapper;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlUserConfiguration;
+import org.apache.shardingsphere.infra.auth.memory.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 import java.util.Collections;

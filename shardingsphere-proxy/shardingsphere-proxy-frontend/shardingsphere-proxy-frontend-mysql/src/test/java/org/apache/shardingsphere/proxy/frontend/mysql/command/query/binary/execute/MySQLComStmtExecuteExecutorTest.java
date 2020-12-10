@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.execute;
 
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
-import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
+import org.apache.shardingsphere.infra.auth.memory.MemoryAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;

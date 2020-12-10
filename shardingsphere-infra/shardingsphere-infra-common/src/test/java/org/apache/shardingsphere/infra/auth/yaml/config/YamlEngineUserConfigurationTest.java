@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.auth.yaml.config;
 
+import org.apache.shardingsphere.infra.auth.memory.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
 

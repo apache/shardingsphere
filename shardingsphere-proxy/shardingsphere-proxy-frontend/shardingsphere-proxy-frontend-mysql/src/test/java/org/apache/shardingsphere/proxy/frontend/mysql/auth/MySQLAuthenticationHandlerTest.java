@@ -21,7 +21,7 @@ import com.google.common.primitives.Bytes;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
-import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
+import org.apache.shardingsphere.infra.auth.memory.MemoryAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;

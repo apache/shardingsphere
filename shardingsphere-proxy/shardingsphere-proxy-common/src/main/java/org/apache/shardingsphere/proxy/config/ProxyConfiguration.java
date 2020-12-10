@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
+import org.apache.shardingsphere.infra.auth.memory.MemoryAuthentication;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 

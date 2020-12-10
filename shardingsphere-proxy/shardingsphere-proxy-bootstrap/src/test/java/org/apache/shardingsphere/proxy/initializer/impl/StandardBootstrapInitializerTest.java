@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
-import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
+import org.apache.shardingsphere.infra.auth.memory.MemoryAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlUserConfiguration;
+import org.apache.shardingsphere.infra.auth.memory.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.infra.auth.memory.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;

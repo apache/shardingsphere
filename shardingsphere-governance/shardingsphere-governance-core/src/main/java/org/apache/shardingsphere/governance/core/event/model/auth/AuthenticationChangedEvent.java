@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.event.model.auth;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
+import org.apache.shardingsphere.infra.auth.memory.MemoryAuthentication;
 
 /**
  * Authentication changed event.

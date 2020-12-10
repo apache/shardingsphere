@@ -22,9 +22,9 @@ import org.apache.shardingsphere.governance.context.transaction.GovernanceTransa
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.lock.GovernanceLockStrategy;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
-import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.infra.auth.memory.MemoryAuthentication;
+import org.apache.shardingsphere.infra.auth.memory.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.infra.auth.memory.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;

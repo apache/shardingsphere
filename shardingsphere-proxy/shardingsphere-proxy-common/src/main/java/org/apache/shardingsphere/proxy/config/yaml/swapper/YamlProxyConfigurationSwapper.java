@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.config.yaml.swapper;
 
-import org.apache.shardingsphere.infra.auth.MemoryAuthentication;
-import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.infra.auth.memory.MemoryAuthentication;
+import org.apache.shardingsphere.infra.auth.memory.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;

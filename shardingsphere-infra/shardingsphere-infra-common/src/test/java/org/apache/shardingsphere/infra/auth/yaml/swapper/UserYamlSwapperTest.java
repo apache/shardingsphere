@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.infra.auth.yaml.swapper;
 
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlUserConfiguration;
+import org.apache.shardingsphere.infra.auth.memory.yaml.config.YamlUserConfiguration;
+import org.apache.shardingsphere.infra.auth.memory.yaml.swapper.UserYamlSwapper;
 import org.junit.Test;
 
 import java.util.Collections;
