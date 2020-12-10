@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -146,13 +147,12 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     }
     
     private void assertAuthentication(final Authentication actual) {
-        assertThat(actual.getUsers().size(), is(1));
-        assertTrue(actual.getUsers().containsKey("root"));
-        ProxyUser proxyUser = actual.getUsers().get("root");
-        assertThat(proxyUser.getPassword(), is("root"));
-        assertThat(proxyUser.getAuthorizedSchemas().size(), is(2));
-        assertTrue(proxyUser.getAuthorizedSchemas().contains("ds-1"));
-        assertTrue(proxyUser.getAuthorizedSchemas().contains("ds-2"));
+        Optional<ProxyUser> rootUser = actual.findUser("root");
+        assertTrue(rootUser.isPresent());
+        assertThat(rootUser.get().getPassword(), is("root"));
+        assertThat(rootUser.get().getAuthorizedSchemas().size(), is(2));
+        assertTrue(rootUser.get().getAuthorizedSchemas().contains("ds-1"));
+        assertTrue(rootUser.get().getAuthorizedSchemas().contains("ds-2"));
     }
     
     private YamlProxyServerConfiguration createYamlProxyServerConfiguration() {

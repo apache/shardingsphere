@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -103,12 +104,10 @@ public final class YamlProxyConfigurationSwapperTest {
     private void assertAuthentication(final ProxyConfiguration proxyConfig) {
         Authentication authentication = proxyConfig.getAuthentication();
         assertNotNull(authentication);
-        Map<String, ProxyUser> proxyUserMap = authentication.getUsers();
-        assertThat(proxyUserMap.size(), is(1));
-        ProxyUser proxyUser = proxyUserMap.get("user1");
-        assertNotNull(proxyUser);
-        assertThat(proxyUser.getPassword(), is("pass"));
-        Collection<String> authorizedSchemas = proxyUser.getAuthorizedSchemas();
+        Optional<ProxyUser> user = authentication.findUser("user1");
+        assertTrue(user.isPresent());
+        assertThat(user.get().getPassword(), is("pass"));
+        Collection<String> authorizedSchemas = user.get().getAuthorizedSchemas();
         assertNotNull(authentication);
         assertThat(authorizedSchemas.size(), is(1));
         assertTrue(authorizedSchemas.contains("db1"));

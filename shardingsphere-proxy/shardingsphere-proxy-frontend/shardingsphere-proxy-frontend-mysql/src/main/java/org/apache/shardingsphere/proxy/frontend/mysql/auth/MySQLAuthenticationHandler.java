@@ -28,7 +28,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -50,21 +49,12 @@ public final class MySQLAuthenticationHandler {
      * @return login success or failure
      */
     public Optional<MySQLServerErrorCode> login(final String username, final byte[] authResponse, final String database) {
-        Optional<ProxyUser> user = getUser(username);
+        Optional<ProxyUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(username);
         if (!user.isPresent() || !isPasswordRight(user.get().getPassword(), authResponse)) {
             return Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR);
         }
         if (!isAuthorizedSchema(user.get().getAuthorizedSchemas(), database)) {
             return Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
-        }
-        return Optional.empty();
-    }
-    
-    private Optional<ProxyUser> getUser(final String username) {
-        for (Entry<String, ProxyUser> entry : PROXY_SCHEMA_CONTEXTS.getMetaDataContexts().getAuthentication().getUsers().entrySet()) {
-            if (entry.getKey().equals(username)) {
-                return Optional.of(entry.getValue());
-            }
         }
         return Optional.empty();
     }
