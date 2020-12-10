@@ -32,7 +32,7 @@ Apache ShardingSphere team has realized `ShardingSphere` automatic monitor agent
 Add startup arguments
 
 ```
--Dorg.apache.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
+-Dorg.apache.shardingsphere.tracing.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
 ```
 
 Call initialization method

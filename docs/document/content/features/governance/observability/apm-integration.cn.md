@@ -27,7 +27,7 @@ Apache ShardingSphere 并不负责如何采集、存储以及展示应用性能�
 启动时添加参数
 
 ```
--Dorg.apache.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
+-Dorg.apache.shardingsphere.tracing.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
 ```
 
 调用初始化方法
