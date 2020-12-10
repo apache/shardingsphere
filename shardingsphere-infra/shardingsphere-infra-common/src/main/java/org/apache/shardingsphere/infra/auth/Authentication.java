@@ -31,7 +31,7 @@ import java.util.Optional;
 @Getter
 public final class Authentication {
     
-    private final Map<String, ProxyUser> users = new LinkedHashMap<>();
+    private final Map<String, ShardingSphereUser> users = new LinkedHashMap<>();
     
     /**
      * Find user.
@@ -39,7 +39,7 @@ public final class Authentication {
      * @param username username
      * @return found user
      */
-    public Optional<ProxyUser> findUser(final String username) {
+    public Optional<ShardingSphereUser> findUser(final String username) {
         return Optional.ofNullable(users.get(username));
     }
 }

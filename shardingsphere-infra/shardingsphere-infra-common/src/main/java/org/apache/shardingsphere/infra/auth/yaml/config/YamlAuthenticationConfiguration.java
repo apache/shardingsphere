@@ -30,5 +30,5 @@ import java.util.Map;
 @Setter
 public final class YamlAuthenticationConfiguration implements YamlConfiguration {
     
-    private Map<String, YamlProxyUserConfiguration> users;
+    private Map<String, YamlShardingSphereUserConfiguration> users;
 }

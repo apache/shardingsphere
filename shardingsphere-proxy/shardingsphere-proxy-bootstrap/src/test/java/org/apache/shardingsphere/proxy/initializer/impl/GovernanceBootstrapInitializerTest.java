@@ -22,7 +22,7 @@ import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataC
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
 import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.auth.ProxyUser;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -194,11 +194,11 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     }
     
     private void assertAuthentication(final Authentication actual) {
-        Optional<ProxyUser> rootUser = actual.findUser("root");
+        Optional<ShardingSphereUser> rootUser = actual.findUser("root");
         assertTrue(rootUser.isPresent());
         assertThat(rootUser.get().getPassword(), is("root"));
         assertThat(rootUser.get().getAuthorizedSchemas().size(), is(0));
-        Optional<ProxyUser> shardingUser = actual.findUser("sharding");
+        Optional<ShardingSphereUser> shardingUser = actual.findUser("sharding");
         assertTrue(shardingUser.isPresent());
         assertThat(shardingUser.get().getPassword(), is("sharding"));
         assertThat(shardingUser.get().getAuthorizedSchemas().size(), is(1));
