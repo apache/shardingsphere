@@ -21,7 +21,9 @@ import com.arjuna.ats.arjuna.recovery.RecoveryManager;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
 import com.arjuna.ats.jta.common.jtaPropertyManager;
+import java.util.Objects;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
 
@@ -50,12 +52,16 @@ public final class NarayanaXATransactionManager implements XATransactionManager 
     
     @Override
     public void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-        xaRecoveryModule.addXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(xaDataSource));
+        if (Objects.nonNull(xaRecoveryModule)) {
+            xaRecoveryModule.addXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(xaDataSource));
+        }
     }
     
     @Override
     public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-        xaRecoveryModule.removeXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(xaDataSource));
+        if (Objects.nonNull(xaRecoveryModule)) {
+            xaRecoveryModule.removeXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(xaDataSource));
+        }
     }
     
     @SneakyThrows({SystemException.class, RollbackException.class})
@@ -77,6 +83,6 @@ public final class NarayanaXATransactionManager implements XATransactionManager 
     
     @Override
     public String getType() {
-        return "narayana";
+        return XATransactionManagerType.NARAYANA.getType();
     }
 }

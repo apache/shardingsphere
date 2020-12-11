@@ -54,7 +54,7 @@ public final class MySQLParameterizedTest {
                 + "\tid = ?;"});
         testUnits.add(new String[]{"select_with_subquery", "select id, name, age, count(*) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1", "SELECT id ,"
                 + " name , age , \n"
-                + "\tCOUNT ( * ) AS n, \n"
+                + "\tCOUNT(*) AS n, \n"
                 + "\t(\n"
                 + "\t\tSELECT id , name , age , \n"
                 + "\t\t\tsex \n"
@@ -90,14 +90,14 @@ public final class MySQLParameterizedTest {
                 + "`runoob_author` VARCHAR(40) NOT NULL,\n"
                 + "`runoob_test` NATIONAL CHAR(40),\n"
                 + "`submission_date` DATE,\n"
-                + "PRIMARY KEY ( `runoob_id` )\n"
+                + "PRIMARY KEY (`runoob_id`)\n"
                 + ")ENGINE=InnoDB DEFAULT CHARSET=utf8;", "CREATE TABLE IF NOT EXISTS `runoob_tbl` (\n"
                 + "\t`runoob_id` INT UNSIGNED AUTO_INCREMENT,\n"
                 + "\t`runoob_title` VARCHAR(100) NOT NULL,\n"
                 + "\t`runoob_author` VARCHAR(40) NOT NULL,\n"
                 + "\t`runoob_test` NATIONAL CHAR(40),\n"
                 + "\t`submission_date` DATE,\n"
-                + "\tPRIMARY KEY ( `runoob_id` )\n"
+                + "\tPRIMARY KEY (`runoob_id`)\n"
                 + ") ENGINE = InnoDB DEFAULT CHARSET = utf8"});
     }
 
