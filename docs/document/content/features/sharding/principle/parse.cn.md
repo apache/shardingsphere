@@ -103,3 +103,108 @@ SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "STATEMEN
 SQLStatement sqlStatement = sqlVisitorEngine.visit(tree);
 
 ```
+
+- SQL格式化
+
+```
+/**
+ * databaseType type:String 可能值 MySQL
+ * useCache type:boolean 是否使用缓存
+ * @return String
+ */
+ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache); 
+SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "FORMAT");
+String formatedSql = sqlVisitorEngine.visit(tree);
+
+//例子
+sql1 : select a+1 as b, name n from table1 join table2 where id=1 and name='lu';
+sql2 : select id, name, age, sex, ss, yy from table1 where id=1;
+sql3 : select id, name, age, count(*) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1;
+sql4 : select id, name, age, sex, ss, yy from table1 where id=1 and name=1 and a=1 and b=2 and c=4 and d=3;
+sql5 : ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, engine ss max_rows 10,min_rows 2, ADD column6 TIMESTAMP, ADD column7 TIME;
+sql6 : CREATE TABLE IF NOT EXISTS `runoob_tbl`(`runoob_id` INT UNSIGNED AUTO_INCREMENT,`runoob_title` VARCHAR(100) NOT NULL,`runoob_author` VARCHAR(40) NOT NULL,`runoob_test` NATIONAL CHAR(40),`submission_date` DATE,PRIMARY KEY (`runoob_id`))ENGINE=InnoDB DEFAULT CHARSET=utf8;
+sql7 : INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (1, 1, 'insert', '2017-08-08'), (2, 2, 'insert', '2017-08-08') ON DUPLICATE KEY UPDATE status = 'init';
+sql8 : INSERT INTO t_order SET order_id = 1, user_id = 1, status = convert(to_base64(aes_encrypt(1, 'key')) USING utf8) ON DUPLICATE KEY UPDATE status = VALUES(status)；
+sql9 : INSERT INTO t_order (order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = 1；
+
+//格式化后的结果
+//sql1 
+SELECT a + 1 AS b, name n
+FROM table1 JOIN table2
+WHERE 
+	id = 1
+	and name = 'lu';
+
+//sql2
+SELECT id , name , age , 
+	sex , ss , yy 
+FROM table1
+WHERE 
+	id = 1;
+
+//sql3
+SELECT id , name , age , 
+	COUNT(*) AS n, 
+	(
+		SELECT id , name , age , 
+			sex 
+		FROM table2
+		WHERE 
+			id = 2
+	) AS sid, yyyy 
+FROM table1
+WHERE 
+	id = 1;
+
+//sql4
+SELECT id , name , age , 
+	sex , ss , yy 
+FROM table1
+WHERE 
+	id = 1
+	and name = 1
+	and a = 1
+	and b = 2
+	and c = 4
+	and d = 3;
+
+//sql5
+ALTER TABLE t_order
+	ADD column4 DATE,
+	ADD column5 DATETIME,
+	ENGINE ss
+	MAX_ROWS 10,
+	MIN_ROWS 2,
+	ADD column6 TIMESTAMP,
+	ADD column7 TIME
+
+//sql6
+CREATE TABLE IF NOT EXISTS `runoob_tbl` (
+	`runoob_id` INT UNSIGNED AUTO_INCREMENT,
+	`runoob_title` VARCHAR(100) NOT NULL,
+	`runoob_author` VARCHAR(40) NOT NULL,
+	`runoob_test` NATIONAL CHAR(40),
+	`submission_date` DATE,
+	PRIMARY KEY (`runoob_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+
+//sql7
+INSERT  INTO t_order_item (order_id , user_id , status , creation_date)
+VALUES
+	(1, 1, 'insert', '2017-08-08'),
+	(2, 2, 'insert', '2017-08-08')
+ON DUPLICATE KEY UPDATE status = 'init';
+
+//sql8
+INSERT  INTO t_order SET order_id = 1,
+	user_id = 1,
+	status = CONVERT(to_base64(aes_encrypt(1 , 'key')) USING utf8)
+ON DUPLICATE KEY UPDATE status = VALUES(status);
+
+//sql9
+INSERT  INTO t_order (order_id , user_id , status) 
+SELECT order_id , user_id , status 
+FROM t_order
+WHERE 
+	order_id = 1;
+```
