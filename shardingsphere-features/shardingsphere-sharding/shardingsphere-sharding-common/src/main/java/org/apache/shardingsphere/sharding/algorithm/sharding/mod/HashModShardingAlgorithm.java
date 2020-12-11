@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAlgorithmType;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -78,7 +79,7 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
     
     @Override
     public String getType() {
-        return "HASH_MOD";
+        return ShardingAlgorithmType.AUTO_INTERVAL.name();
     }
     
     @Override

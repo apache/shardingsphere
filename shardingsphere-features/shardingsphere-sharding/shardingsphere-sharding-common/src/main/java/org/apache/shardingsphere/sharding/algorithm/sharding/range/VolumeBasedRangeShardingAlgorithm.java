@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Range;
 import com.google.common.math.LongMath;
+import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAlgorithmType;
 
 import java.math.RoundingMode;
 import java.util.Arrays;
@@ -60,7 +61,7 @@ public final class VolumeBasedRangeShardingAlgorithm extends AbstractRangeShardi
     
     @Override
     public String getType() {
-        return "VOLUME_RANGE";
+        return ShardingAlgorithmType.VOLUME_RANGE.name();
     }
     
     @Override

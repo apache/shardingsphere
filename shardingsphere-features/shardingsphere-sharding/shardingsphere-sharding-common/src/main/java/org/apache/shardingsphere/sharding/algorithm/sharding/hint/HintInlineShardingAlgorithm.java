@@ -22,6 +22,7 @@ import groovy.lang.Closure;
 import groovy.util.Expando;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAlgorithmType;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
@@ -73,6 +74,6 @@ public final class HintInlineShardingAlgorithm implements HintShardingAlgorithm<
     
     @Override
     public String getType() {
-        return "HINT_INLINE";
+        return ShardingAlgorithmType.HINT_INLINE.name();
     }
 }
