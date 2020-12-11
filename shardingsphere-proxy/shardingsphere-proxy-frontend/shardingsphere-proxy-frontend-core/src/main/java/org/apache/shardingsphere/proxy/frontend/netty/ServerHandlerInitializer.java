@@ -57,6 +57,7 @@ public final class ServerHandlerInitializer extends ChannelInitializer<SocketCha
         return ProxyContext.getInstance().getMetaDataContexts().getDatabaseType();
     }
     
+    // TODO check database type config error in ShardingSphereProxy class
     private Optional<DatabaseType> findConfiguredDatabaseType() {
         String configuredDatabaseType = ProxyContext.getInstance().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
         return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeRegistry.getTrunkDatabaseType(configuredDatabaseType));
