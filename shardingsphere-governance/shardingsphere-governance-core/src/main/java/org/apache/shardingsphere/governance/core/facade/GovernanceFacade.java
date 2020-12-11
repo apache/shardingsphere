@@ -52,7 +52,7 @@ public final class GovernanceFacade implements AutoCloseable {
     private GovernanceListenerManager listenerManager;
     
     @Getter
-    private LockCenter lockCenter;
+    private LockCenter lockCenter = LockCenter.getInstance();
     
     /**
      * Initialize governance facade.
@@ -65,7 +65,7 @@ public final class GovernanceFacade implements AutoCloseable {
         repositoryFacade = new GovernanceRepositoryFacade(config);
         registryCenter = new RegistryCenter(repositoryFacade.getRegistryRepository());
         configCenter = new ConfigCenter(repositoryFacade.getConfigurationRepository());
-        lockCenter = new LockCenter(repositoryFacade.getRegistryRepository(), registryCenter);
+        lockCenter.init(repositoryFacade.getRegistryRepository(), registryCenter);
         listenerManager = new GovernanceListenerManager(repositoryFacade.getRegistryRepository(),
                 repositoryFacade.getConfigurationRepository(), schemaNames.isEmpty() ? configCenter.getAllSchemaNames() : schemaNames);
         GovernedStateContext.startUp();

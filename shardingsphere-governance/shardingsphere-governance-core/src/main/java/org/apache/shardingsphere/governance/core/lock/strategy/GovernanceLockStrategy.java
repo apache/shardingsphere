@@ -15,50 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.governance.core.lock.strategy;
 
-import org.apache.shardingsphere.infra.state.StateContext;
-import org.apache.shardingsphere.infra.state.StateEvent;
-import org.apache.shardingsphere.infra.state.StateType;
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
+import org.apache.shardingsphere.governance.core.lock.LockCenter;
+import org.apache.shardingsphere.infra.lock.LockStrategy;
+import org.apache.shardingsphere.infra.lock.LockStrategyType;
 
 /**
- * Standard lock strategy.
+ * Governance lock strategy.
  */
-public final class StandardLockStrategy implements LockStrategy {
+public final class GovernanceLockStrategy implements LockStrategy {
     
-    private final ReentrantLock lock = new ReentrantLock();
+    private final LockCenter lockCenter = LockCenter.getInstance();
     
     @Override
     public boolean tryLock(final Long timeout) {
-        boolean result = false;
-        try {
-            result = lock.tryLock(timeout, TimeUnit.MILLISECONDS);
-            // CHECKSTYLE:OFF
-        } catch (final InterruptedException e) {
-            // CHECKSTYLE:ON
-        }
-        if (result) {
-            StateContext.switchState(new StateEvent(StateType.LOCK, true));
-        }
-        return result;
+        return lockCenter.tryGlobalLock(timeout);
     }
     
     @Override
     public void releaseLock() {
-        lock.unlock();
-        StateContext.switchState(new StateEvent(StateType.OK, true));
+        lockCenter.releaseGlobalLock();
     }
     
     @Override
     public boolean checkLock() {
-        return StateContext.getCurrentState() == StateType.LOCK;
+        return lockCenter.checkLock();
     }
     
     @Override
     public String getType() {
-        return LockStrategyType.STANDARD.name();
+        return LockStrategyType.GOVERNANCE.name();
     }
 }

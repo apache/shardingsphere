@@ -43,11 +43,11 @@ public final class LockCenterTest {
     @Mock
     private RegistryCenter registryCenter;
     
-    private LockCenter lockCenter;
+    private LockCenter lockCenter = LockCenter.getInstance();
     
     @Before
     public void setUp() {
-        lockCenter = new LockCenter(registryRepository, registryCenter);
+        lockCenter.init(registryRepository, registryCenter);
     }
     
     @Test
