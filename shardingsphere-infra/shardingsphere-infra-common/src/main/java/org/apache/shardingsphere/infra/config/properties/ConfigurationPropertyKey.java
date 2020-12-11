@@ -64,6 +64,11 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     QUERY_WITH_CIPHER_COLUMN("query-with-cipher-column", String.valueOf(Boolean.TRUE), boolean.class),
     
     /**
+     * Frontend database protocol type for ShardingSphere-Proxy.
+     */
+    PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE("proxy-frontend-database-protocol-type", null, String.class),
+    
+    /**
      * Flush threshold for every records from databases for ShardingSphere-Proxy.
      */
     PROXY_FRONTEND_FLUSH_THRESHOLD("proxy-frontend-flush-threshold", String.valueOf(128), int.class),
