@@ -30,7 +30,7 @@ import org.apache.shardingsphere.governance.core.lock.LockCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
@@ -75,7 +75,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class GovernanceMetaDataContextsTest {
     
-    private final Authentication authentication = new Authentication();
+    private final DefaultAuthentication authentication = new DefaultAuthentication();
     
     private final ConfigurationProperties props = new ConfigurationProperties(new Properties());
     
@@ -183,7 +183,7 @@ public final class GovernanceMetaDataContextsTest {
     
     @Test
     public void assertAuthenticationChanged() {
-        Authentication authentication = new Authentication();
+        DefaultAuthentication authentication = new DefaultAuthentication();
         AuthenticationChangedEvent event = new AuthenticationChangedEvent(authentication);
         governanceMetaDataContexts.renew(event);
         assertThat(governanceMetaDataContexts.getAuthentication(), is(authentication));

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.config.yaml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
 import java.util.Properties;

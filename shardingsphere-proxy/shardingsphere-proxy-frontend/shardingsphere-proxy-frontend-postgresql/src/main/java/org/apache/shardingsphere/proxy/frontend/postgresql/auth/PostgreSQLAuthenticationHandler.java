@@ -25,12 +25,12 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
-import org.apache.shardingsphere.infra.auth.ProxyUser;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.security.MessageDigest;
 import java.util.Collection;
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * Authentication handler for PostgreSQL.
@@ -48,22 +48,16 @@ public final class PostgreSQLAuthenticationHandler {
      * @return PostgreSQL login result
      */
     public static PostgreSQLLoginResult loginWithMd5Password(final String username, final String databaseName, final byte[] md5Salt, final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
-        ProxyUser proxyUser = null;
-        for (Map.Entry<String, ProxyUser> entry : ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getUsers().entrySet()) {
-            if (entry.getKey().equals(username)) {
-                proxyUser = entry.getValue();
-                break;
-            }
-        }
-        if (null == proxyUser) {
+        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(username);
+        if (!user.isPresent()) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, String.format("unknown username: %s", username));
         }
         String md5Digest = passwordMessagePacket.getMd5Digest();
-        String expectedMd5Digest = md5Encode(username, proxyUser.getPassword(), md5Salt);
+        String expectedMd5Digest = md5Encode(username, user.get().getPassword(), md5Salt);
         if (!expectedMd5Digest.equals(md5Digest)) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, String.format("password authentication failed for user \"%s\"", username));
         }
-        if (!isAuthorizedSchema(proxyUser.getAuthorizedSchemas(), databaseName)) {
+        if (!isAuthorizedSchema(user.get().getAuthorizedSchemas(), databaseName)) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.PRIVILEGE_NOT_GRANTED, String.format("Access denied for user '%s' to database '%s'", username, databaseName));
         }
         return new PostgreSQLLoginResult(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION, null);

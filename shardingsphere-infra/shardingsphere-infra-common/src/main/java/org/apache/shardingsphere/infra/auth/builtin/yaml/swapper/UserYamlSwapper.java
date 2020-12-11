@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth.yaml.swapper;
+package org.apache.shardingsphere.infra.auth.builtin.yaml.swapper;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.auth.ProxyUser;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlProxyUserConfiguration;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 import java.util.Collections;
 
 /**
- * Proxy user YAML swapper.
+ * User YAML swapper.
  */
-public final class ProxyUserYamlSwapper implements YamlSwapper<YamlProxyUserConfiguration, ProxyUser> {
+public final class UserYamlSwapper implements YamlSwapper<YamlUserConfiguration, ShardingSphereUser> {
     
     @Override
-    public YamlProxyUserConfiguration swapToYamlConfiguration(final ProxyUser data) {
-        YamlProxyUserConfiguration result = new YamlProxyUserConfiguration();
+    public YamlUserConfiguration swapToYamlConfiguration(final ShardingSphereUser data) {
+        YamlUserConfiguration result = new YamlUserConfiguration();
         result.setPassword(data.getPassword());
         String authorizedSchemas = null == data.getAuthorizedSchemas() ? "" : Joiner.on(',').join(data.getAuthorizedSchemas());
         result.setAuthorizedSchemas(authorizedSchemas);
@@ -41,10 +41,10 @@ public final class ProxyUserYamlSwapper implements YamlSwapper<YamlProxyUserConf
     }
     
     @Override
-    public ProxyUser swapToObject(final YamlProxyUserConfiguration yamlConfig) {
+    public ShardingSphereUser swapToObject(final YamlUserConfiguration yamlConfig) {
         if (Strings.isNullOrEmpty(yamlConfig.getAuthorizedSchemas())) {
-            return new ProxyUser(yamlConfig.getPassword(), Collections.emptyList());
+            return new ShardingSphereUser(yamlConfig.getPassword(), Collections.emptyList());
         }
-        return new ProxyUser(yamlConfig.getPassword(), Splitter.on(',').trimResults().splitToList(yamlConfig.getAuthorizedSchemas()));
+        return new ShardingSphereUser(yamlConfig.getPassword(), Splitter.on(',').trimResults().splitToList(yamlConfig.getAuthorizedSchemas()));
     }
 }

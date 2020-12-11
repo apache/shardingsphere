@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth.yaml.swapper;
+package org.apache.shardingsphere.infra.auth.builtin.yaml.swapper;
 
-import org.apache.shardingsphere.infra.auth.ProxyUser;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlProxyUserConfiguration;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -26,30 +26,30 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ProxyUserYamlSwapperTest {
+public final class UserYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        YamlProxyUserConfiguration actual = new ProxyUserYamlSwapper().swapToYamlConfiguration(new ProxyUser("pwd", Collections.singleton("db1")));
+        YamlUserConfiguration actual = new UserYamlSwapper().swapToYamlConfiguration(new ShardingSphereUser("pwd", Collections.singleton("db1")));
         assertThat(actual.getAuthorizedSchemas(), is("db1"));
         assertThat(actual.getPassword(), is("pwd"));
     }
     
     @Test
     public void assertSwapToObject() {
-        YamlProxyUserConfiguration yamlProxyUserConfig = new YamlProxyUserConfiguration();
-        yamlProxyUserConfig.setAuthorizedSchemas("db1");
-        yamlProxyUserConfig.setPassword("pwd");
-        ProxyUser actual = new ProxyUserYamlSwapper().swapToObject(yamlProxyUserConfig);
+        YamlUserConfiguration yamlUserConfig = new YamlUserConfiguration();
+        yamlUserConfig.setAuthorizedSchemas("db1");
+        yamlUserConfig.setPassword("pwd");
+        ShardingSphereUser actual = new UserYamlSwapper().swapToObject(yamlUserConfig);
         assertThat(actual.getAuthorizedSchemas().iterator().next(), is("db1"));
         assertThat(actual.getPassword(), is("pwd"));
     }
     
     @Test
     public void assertSwapToObjectWithoutAuthorizedSchemas() {
-        YamlProxyUserConfiguration yamlProxyUserConfig = new YamlProxyUserConfiguration();
-        yamlProxyUserConfig.setPassword("pwd");
-        ProxyUser actual = new ProxyUserYamlSwapper().swapToObject(yamlProxyUserConfig);
+        YamlUserConfiguration yamlUserConfig = new YamlUserConfiguration();
+        yamlUserConfig.setPassword("pwd");
+        ShardingSphereUser actual = new UserYamlSwapper().swapToObject(yamlUserConfig);
         assertThat(actual.getAuthorizedSchemas().size(), is(0));
     }
 }

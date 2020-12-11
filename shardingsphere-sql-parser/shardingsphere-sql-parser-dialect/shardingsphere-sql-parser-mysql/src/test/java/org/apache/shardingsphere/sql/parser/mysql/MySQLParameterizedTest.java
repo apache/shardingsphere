@@ -37,7 +37,7 @@ import java.util.LinkedList;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
-public final class MySQLFormartTest {
+public final class MySQLParameterizedTest {
 
     private static Collection<String[]> testUnits = new LinkedList();
 
@@ -46,7 +46,7 @@ public final class MySQLFormartTest {
                 + "FROM table1 JOIN table2\n"
                 + "WHERE \n"
                 + "\tid = ?\n"
-                + "\tandname = ?;"});
+                + "\tand name = ?;"});
         testUnits.add(new String[]{"select_item_nums", "select id, name, age, sex, ss, yy from table1 where id=1", "SELECT id , name , age , \n"
                 + "\tsex , ss , yy \n"
                 + "FROM table1\n"
@@ -70,11 +70,11 @@ public final class MySQLFormartTest {
                 + "FROM table1\n"
                 + "WHERE \n"
                 + "\tid = ?\n"
-                + "\tandname = ?\n"
-                + "\tanda = ?\n"
-                + "\tandb = ?\n"
-                + "\tandc = ?\n"
-                + "\tandd = ?;"});
+                + "\tand name = ?\n"
+                + "\tand a = ?\n"
+                + "\tand b = ?\n"
+                + "\tand c = ?\n"
+                + "\tand d = ?;"});
         testUnits.add(new String[]{"alter_table", "ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, engine ss max_rows 10,min_rows 2, ADD column6 TIMESTAMP, ADD column7 TIME;", ""
                 + "ALTER TABLE t_order\n"
                 + "\tADD column4 DATE,\n"
@@ -107,7 +107,7 @@ public final class MySQLFormartTest {
 
     private final String expectFormartedSql;
 
-    public MySQLFormartTest(final String caseId, final String inputSql, final String expectFormartedSql) {
+    public MySQLParameterizedTest(final String caseId, final String inputSql, final String expectFormartedSql) {
         this.caseId = caseId;
         this.inputSql = inputSql;
         this.expectFormartedSql = expectFormartedSql;

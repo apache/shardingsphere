@@ -17,19 +17,30 @@
 
 package org.apache.shardingsphere.infra.auth;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
- * Proxy user.
- */
-@RequiredArgsConstructor
-@Getter
-public final class ProxyUser {
+ * Authentication engine.
+*/
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AuthenticationEngine {
     
-    private final String password;
+    static {
+        ShardingSphereServiceLoader.register(Authentication.class);
+    }
     
-    private final Collection<String> authorizedSchemas;
+    /**
+     * Find SPI authentication.
+     * 
+     * @return authentication
+     */
+    public static Optional<Authentication> findSPIAuthentication() {
+        Collection<Authentication> authentications = ShardingSphereServiceLoader.newServiceInstances(Authentication.class);
+        return authentications.isEmpty() ? Optional.empty() : Optional.of(authentications.iterator().next());
+    }
 }

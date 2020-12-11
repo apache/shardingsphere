@@ -21,8 +21,8 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
-import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.auth.ProxyUser;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -44,6 +44,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -192,17 +193,16 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         assertThat(props.getProperty("algorithm-expression"), is(expectedAlgorithmExpr));
     }
     
-    private void assertAuthentication(final Authentication actual) {
-        assertThat(actual.getUsers().size(), is(2));
-        assertTrue(actual.getUsers().containsKey("root"));
-        ProxyUser rootProxyUser = actual.getUsers().get("root");
-        assertThat(rootProxyUser.getPassword(), is("root"));
-        assertThat(rootProxyUser.getAuthorizedSchemas().size(), is(0));
-        assertTrue(actual.getUsers().containsKey("sharding"));
-        ProxyUser shardingProxyUser = actual.getUsers().get("sharding");
-        assertThat(shardingProxyUser.getPassword(), is("sharding"));
-        assertThat(shardingProxyUser.getAuthorizedSchemas().size(), is(1));
-        assertTrue(shardingProxyUser.getAuthorizedSchemas().contains("sharding_db"));
+    private void assertAuthentication(final DefaultAuthentication actual) {
+        Optional<ShardingSphereUser> rootUser = actual.findUser("root");
+        assertTrue(rootUser.isPresent());
+        assertThat(rootUser.get().getPassword(), is("root"));
+        assertThat(rootUser.get().getAuthorizedSchemas().size(), is(0));
+        Optional<ShardingSphereUser> shardingUser = actual.findUser("sharding");
+        assertTrue(shardingUser.isPresent());
+        assertThat(shardingUser.get().getPassword(), is("sharding"));
+        assertThat(shardingUser.get().getAuthorizedSchemas().size(), is(1));
+        assertTrue(shardingUser.get().getAuthorizedSchemas().contains("sharding_db"));
     }
     
     @Test

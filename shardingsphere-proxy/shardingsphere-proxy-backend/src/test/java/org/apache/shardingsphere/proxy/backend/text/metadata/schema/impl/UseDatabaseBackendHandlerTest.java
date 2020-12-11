@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl;
 
-import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.auth.ProxyUser;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -73,10 +73,10 @@ public final class UseDatabaseBackendHandlerTest {
         return result;
     }
     
-    private Authentication getAuthentication() {
-        ProxyUser proxyUser = new ProxyUser("root", Arrays.asList(String.format(SCHEMA_PATTERN, 0), String.format(SCHEMA_PATTERN, 1)));
-        Authentication result = new Authentication();
-        result.getUsers().put("root", proxyUser);
+    private DefaultAuthentication getAuthentication() {
+        ShardingSphereUser user = new ShardingSphereUser("root", Arrays.asList(String.format(SCHEMA_PATTERN, 0), String.format(SCHEMA_PATTERN, 1)));
+        DefaultAuthentication result = new DefaultAuthentication();
+        result.getUsers().put("root", user);
         return result;
     }
     
