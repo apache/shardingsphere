@@ -31,10 +31,6 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Hint Inline sharding algorithm test.
- *
- * @author likly
- * @version 5.0.0
- * @since 5.0.0
  */
 public final class HintInlineShardingAlgorithmTest {
 
@@ -82,4 +78,5 @@ public final class HintInlineShardingAlgorithmTest {
         Collection<String> actual = hintInlineShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
         assertTrue(actual.containsAll(availableTargetNames));
     }
+
 }

@@ -33,10 +33,6 @@ import java.util.stream.Collectors;
 
 /**
  * Complex Inline sharding algorithm.
- *
- * @author likly
- * @version 5.0.0
- * @since 5.0.0
  */
 public class ComplexInlineShardingAlgorithm implements ComplexKeysShardingAlgorithm<Comparable<?>> {
 

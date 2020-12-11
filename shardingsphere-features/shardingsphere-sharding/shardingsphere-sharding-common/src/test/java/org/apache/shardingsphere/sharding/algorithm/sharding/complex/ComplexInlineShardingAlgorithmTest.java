@@ -34,10 +34,6 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Complex Inline sharding algorithm test.
- *
- * @author likly
- * @version 1.0.0
- * @since 1.0.0
  */
 public class ComplexInlineShardingAlgorithmTest {
 
@@ -100,4 +96,5 @@ public class ComplexInlineShardingAlgorithmTest {
         Collection<String> actual = complexInlineShardingAlgorithmAllowRangeQuery.doSharding(availableTargetNames, shardingValue);
         assertTrue(actual.containsAll(availableTargetNames));
     }
+
 }

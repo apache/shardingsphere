@@ -30,10 +30,6 @@ import java.util.stream.Collectors;
 
 /**
  * Hint Inline sharding algorithm.
- *
- * @author likly
- * @version 5.0.0
- * @since 5.0.0
  */
 public class HintInlineShardingAlgorithm implements HintShardingAlgorithm<Comparable<?>> {
 
