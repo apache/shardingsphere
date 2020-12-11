@@ -22,6 +22,7 @@ import com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAlgorithmType;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -130,7 +131,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     
     @Override
     public String getType() {
-        return "AUTO_INTERVAL";
+        return ShardingAlgorithmType.AUTO_INTERVAL.name();
     }
     
     @Override

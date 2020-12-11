@@ -22,6 +22,7 @@ import groovy.lang.Closure;
 import groovy.util.Expando;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAlgorithmType;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -79,6 +80,6 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     @Override
     public String getType() {
-        return "INLINE";
+        return ShardingAlgorithmType.INTERVAL.name();
     }
 }
