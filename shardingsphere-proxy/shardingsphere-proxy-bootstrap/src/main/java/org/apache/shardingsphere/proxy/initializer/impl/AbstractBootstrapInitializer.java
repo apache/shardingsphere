@@ -48,6 +48,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
+import org.apache.shardingsphere.transaction.core.XATransactionManagerTypeHolder;
 
 /**
  * Abstract bootstrap initializer.
@@ -100,6 +102,8 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     
     private TransactionContexts createTransactionContexts(final MetaDataContexts metaDataContexts) {
         Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(metaDataContexts.getMetaDataMap().size(), 1);
+        XATransactionManagerType transactionType = XATransactionManagerType.valueFrom(metaDataContexts.getProps().getValue(ConfigurationPropertyKey.PROXY_XA_TRANSACTION_MANAGER_TYPE));
+        XATransactionManagerTypeHolder.set(transactionType);
         for (Entry<String, ShardingSphereMetaData> entry : metaDataContexts.getMetaDataMap().entrySet()) {
             ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
             engine.init(metaDataContexts.getDatabaseType(), entry.getValue().getResource().getDataSources());

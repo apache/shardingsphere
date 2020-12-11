@@ -64,6 +64,11 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     QUERY_WITH_CIPHER_COLUMN("query-with-cipher-column", String.valueOf(Boolean.TRUE), boolean.class),
     
     /**
+     * Frontend database protocol type for ShardingSphere-Proxy.
+     */
+    PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE("proxy-frontend-database-protocol-type", "", String.class),
+    
+    /**
      * Flush threshold for every records from databases for ShardingSphere-Proxy.
      */
     PROXY_FRONTEND_FLUSH_THRESHOLD("proxy-frontend-flush-threshold", String.valueOf(128), int.class),
@@ -87,6 +92,26 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * </p>
      */
     PROXY_TRANSACTION_TYPE("proxy-transaction-type", "LOCAL", String.class),
+    
+    /**
+     * XA transaction manager type of proxy.
+     *
+     * <p>
+     * atomikos:
+     * ShardingSphere-Proxy will run with XA transaction with atomikos.
+     * </p>
+     *
+     * <p>
+     * narayana:
+     * ShardingSphere-Proxy will run with XA transaction with narayana.
+     * </p>
+     *
+     * <p>
+     * bitronix:
+     * ShardingSphere-Proxy will run with XA transaction with bitronix.
+     * </p>
+     */
+    PROXY_XA_TRANSACTION_MANAGER_TYPE("proxy-xa-transaction-manager-type", "atomikos", String.class),
     
     /**
      * Whether enable opentracing for ShardingSphere-Proxy.

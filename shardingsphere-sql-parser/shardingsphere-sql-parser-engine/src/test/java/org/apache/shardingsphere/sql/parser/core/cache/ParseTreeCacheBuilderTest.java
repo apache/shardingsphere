@@ -15,32 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.sql.parser.core.cache;
 
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import com.google.common.cache.LoadingCache;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.junit.Test;
 
-/**
- * Lock strategy.
- */
-public interface LockStrategy extends TypedSPI {
-    
-    /**
-     * Try to get lock.
-     * 
-     * @param timeout the maximum time in milliseconds to acquire lock
-     * @return true if get the lock, false if not
-     */
-    boolean tryLock(Long timeout);
-    
-    /**
-     * Release lock.
-     */
-    void releaseLock();
-    
-    /**
-     * Check lock state.
-     * 
-     * @return true if all instances were locked, else false
-     */
-    boolean checkLock();
+import static org.hamcrest.CoreMatchers.isA;
+import static org.junit.Assert.assertThat;
+
+public final class ParseTreeCacheBuilderTest {
+
+    @Test
+    public void assertParseTreeCacheBuild() {
+        LoadingCache<String, ParseTree> cache = ParseTreeCacheBuilder.build(new CacheOption(1, 10, 1), "MySQL");
+        assertThat(cache, isA(LoadingCache.class));
+    }
 }

@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.lock;
+package org.apache.shardingsphere.governance.core.lock.strategy;
 
-import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
+import org.apache.shardingsphere.governance.core.lock.LockCenter;
+import org.apache.shardingsphere.governance.core.registry.util.FieldUtil;
 import org.apache.shardingsphere.infra.lock.LockStrategy;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,13 +28,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class GovernanceLockStrategyTest {
-    
-    @Mock
-    private GovernanceFacade governanceFacade;
     
     @Mock
     private LockCenter lockCenter;
@@ -42,8 +39,8 @@ public final class GovernanceLockStrategyTest {
     
     @Before
     public void setUp() {
-        lockStrategy = new GovernanceLockStrategy(governanceFacade);
-        when(governanceFacade.getLockCenter()).thenReturn(lockCenter);
+        lockStrategy = new GovernanceLockStrategy();
+        FieldUtil.setField(lockStrategy, "lockCenter", lockCenter);
     }
     
     @Test

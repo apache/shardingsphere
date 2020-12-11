@@ -19,10 +19,11 @@ package org.apache.shardingsphere.transaction.xa.manager;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
+import org.apache.shardingsphere.transaction.core.XATransactionManagerTypeHolder;
 import org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManager;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
 
-import java.util.Iterator;
 import java.util.ServiceLoader;
 
 /**
@@ -41,15 +42,13 @@ public final class XATransactionManagerLoader {
     }
     
     private XATransactionManager load() {
-        Iterator<XATransactionManager> xaTransactionManagers = ServiceLoader.load(XATransactionManager.class).iterator();
-        if (!xaTransactionManagers.hasNext()) {
-            return new AtomikosTransactionManager();
+        XATransactionManagerType xaTransactionManagerType = XATransactionManagerTypeHolder.get();
+        for (XATransactionManager each : ServiceLoader.load(XATransactionManager.class)) {
+            if (null != xaTransactionManagerType && each.getType().equalsIgnoreCase(xaTransactionManagerType.getType())) {
+                return each;
+            }
         }
-        XATransactionManager result = xaTransactionManagers.next();
-        if (xaTransactionManagers.hasNext()) {
-            log.warn("There are more than one transaction mangers existing, chosen first one by default.");
-        }
-        return result;
+        return new AtomikosTransactionManager();
     }
     
     /**
