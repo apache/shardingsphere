@@ -15,32 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.infra.lock.fixture;
 
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import org.apache.shardingsphere.infra.lock.LockStrategy;
+import org.apache.shardingsphere.infra.lock.LockStrategyType;
 
-/**
- * Lock strategy.
- */
-public interface LockStrategy extends TypedSPI {
+public final class FixtureLockStrategy implements LockStrategy {
+    @Override
+    public boolean tryLock(final Long timeout) {
+        return false;
+    }
     
-    /**
-     * Try to get lock.
-     * 
-     * @param timeout the maximum time in milliseconds to acquire lock
-     * @return true if get the lock, false if not
-     */
-    boolean tryLock(Long timeout);
+    @Override
+    public void releaseLock() {
+        
+    }
     
-    /**
-     * Release lock.
-     */
-    void releaseLock();
+    @Override
+    public boolean checkLock() {
+        return false;
+    }
     
-    /**
-     * Check lock state.
-     * 
-     * @return true if all instances were locked, else false
-     */
-    boolean checkLock();
+    @Override
+    public String getType() {
+        return LockStrategyType.STANDARD.name();
+    }
 }
