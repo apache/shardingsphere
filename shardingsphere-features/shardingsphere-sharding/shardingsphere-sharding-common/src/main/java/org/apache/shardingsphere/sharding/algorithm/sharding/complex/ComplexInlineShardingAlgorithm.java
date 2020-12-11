@@ -26,9 +26,9 @@ import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpres
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -93,7 +93,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     }
     
     private static <K, V> Collection<Map<K, V>> combine(final Map<K, Collection<V>> map) {
-        Collection<Map<K, V>> result = new ArrayList<>();
+        Collection<Map<K, V>> result = new LinkedList<>();
         for (Entry<K, Collection<V>> entry : map.entrySet()) {
             if (result.isEmpty()) {
                 for (V value : entry.getValue()) {
@@ -102,7 +102,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
                     result.add(item);
                 }
             } else {
-                Collection<Map<K, V>> list = new ArrayList<>();
+                Collection<Map<K, V>> list = new LinkedList<>();
                 for (Map<K, V> loop : result) {
                     for (V value : entry.getValue()) {
                         Map<K, V> item = new HashMap<>();
