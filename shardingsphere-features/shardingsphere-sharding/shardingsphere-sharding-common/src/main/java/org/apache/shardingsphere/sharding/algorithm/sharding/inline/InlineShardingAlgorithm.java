@@ -22,6 +22,7 @@ import groovy.lang.Closure;
 import groovy.util.Expando;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAlgorithmType;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -33,22 +34,22 @@ import java.util.Properties;
  * Inline sharding algorithm.
  */
 public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
-    
+
     private static final String ALGORITHM_EXPRESSION_KEY = "algorithm-expression";
-    
+
     private static final String ALLOW_RANGE_QUERY_KEY = "allow-range-query-with-inline-sharding";
-    
+
     private boolean allowRangeQuery;
-    
+
     @Getter
     @Setter
     private Properties props = new Properties();
-    
+
     @Override
     public void init() {
         allowRangeQuery = isAllowRangeQuery();
     }
-    
+
     private Closure<?> createClosure() {
         String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
         Preconditions.checkNotNull(expression, "Inline sharding algorithm expression cannot be null.");
@@ -57,18 +58,18 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
         return result;
     }
-    
+
     private boolean isAllowRangeQuery() {
         return Boolean.parseBoolean(props.getOrDefault(ALLOW_RANGE_QUERY_KEY, Boolean.FALSE.toString()).toString());
     }
-    
+
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         Closure<?> closure = createClosure();
         closure.setProperty(shardingValue.getColumnName(), shardingValue.getValue());
         return closure.call().toString();
     }
-    
+
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         if (allowRangeQuery) {
@@ -76,9 +77,9 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
         }
         throw new UnsupportedOperationException("Since the property of `" + ALLOW_RANGE_QUERY_KEY + "` is false, inline sharding algorithm can not tackle with range query.");
     }
-    
+
     @Override
     public String getType() {
-        return "INLINE";
+        return ShardingAlgorithmType.INLINE.name();
     }
 }

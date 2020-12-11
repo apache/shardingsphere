@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Range;
 import com.google.common.math.LongMath;
+import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAlgorithmType;
 
 import java.math.RoundingMode;
 import java.util.Arrays;
@@ -32,13 +33,13 @@ import java.util.Properties;
  * Volume based range sharding algorithm.
  */
 public final class VolumeBasedRangeShardingAlgorithm extends AbstractRangeShardingAlgorithm {
-    
+
     private static final String RANGE_LOWER_KEY = "range-lower";
-    
+
     private static final String RANGE_UPPER_KEY = "range-upper";
-    
+
     private static final String SHARDING_VOLUME_KEY = "sharding-volume";
-    
+
     @Override
     public Map<Integer, Range<Long>> calculatePartitionRange(final Properties props) {
         Preconditions.checkState(props.containsKey(RANGE_LOWER_KEY), "Lower range cannot be null.");
@@ -57,12 +58,12 @@ public final class VolumeBasedRangeShardingAlgorithm extends AbstractRangeShardi
         result.put(partitionSize + 1, Range.atLeast(upper));
         return result;
     }
-    
+
     @Override
     public String getType() {
-        return "VOLUME_RANGE";
+        return ShardingAlgorithmType.VOLUME_RANGE.name();
     }
-    
+
     @Override
     public Collection<String> getAllPropertyKeys() {
         return Arrays.asList(RANGE_LOWER_KEY, RANGE_UPPER_KEY, SHARDING_VOLUME_KEY);

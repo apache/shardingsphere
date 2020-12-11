@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAlgorithmException;
+import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAlgorithmType;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -156,6 +157,6 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     
     @Override
     public String getType() {
-        return "INTERVAL";
+        return ShardingAlgorithmType.INTERVAL.name();
     }
 }

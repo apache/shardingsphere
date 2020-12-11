@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.complex;
 import com.google.common.base.Preconditions;
 import groovy.lang.Closure;
 import groovy.util.Expando;
+import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAlgorithmType;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
@@ -112,7 +113,7 @@ public class ComplexInlineShardingAlgorithm implements ComplexKeysShardingAlgori
 
     @Override
     public String getType() {
-        return "COMPLEX_INLINE";
+        return ShardingAlgorithmType.COMPLEX_INLINE.name();
     }
 
     @Override

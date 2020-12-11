@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.classbased;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAlgorithmType;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
@@ -104,6 +105,6 @@ public final class ClassBasedShardingAlgorithm implements StandardShardingAlgori
 
     @Override
     public String getType() {
-        return "CLASS_BASED";
+        return ShardingAlgorithmType.CLASS_BASED.name();
     }
 }
