@@ -92,11 +92,11 @@ public class ComplexInlineShardingAlgorithm implements ComplexKeysShardingAlgori
         String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
         Preconditions.checkNotNull(expression, "Inline sharding algorithm expression cannot be null.");
         algorithmExpression = InlineExpressionParser.handlePlaceHolder(expression.trim());
-        initShardingColumns(props.getProperty(SHARING_COLUMNS_KEY,""));
+        initShardingColumns(props.getProperty(SHARING_COLUMNS_KEY, ""));
         allowRangeQuery = Boolean.parseBoolean(props.getOrDefault(ALLOW_RANGE_QUERY_KEY, Boolean.FALSE.toString()).toString());
     }
 
-    private void initShardingColumns(String shardingColumns) {
+    private void initShardingColumns(final String shardingColumns) {
         if (shardingColumns.length() == 0) {
             this.shardingColumns = new String[0];
             return;
@@ -154,4 +154,5 @@ public class ComplexInlineShardingAlgorithm implements ComplexKeysShardingAlgori
         }
         return result;
     }
+
 }
