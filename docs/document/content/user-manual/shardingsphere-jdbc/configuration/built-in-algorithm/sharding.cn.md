@@ -95,11 +95,30 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 ## 复合分片算法
 
-Apache ShardingSphere 暂无内置复合分片算法。
+### 复合行表达式分片算法
+
+详情请参见[行表达式](/cn/features/sharding/concept/inline-expression/)。
+
+类型：COMPLEX_INLINE
+
+| *属性名称*                                 | *数据类型* | *说明*                                              | *默认值* |
+| ----------------------------------------- | --------- | --------------------------------------------------- | ------- |
+| sharding-columns (?)                      | String    | 分片列名称，多个列用逗号分隔。如不配置无法则不能校验       | -       |
+| algorithm-expression                      | String    | 分片算法的行表达式                                    | -       |
+| allow-range-query-with-inline-sharding (?)| boolean   | 是否允许范围查询。注意：范围查询会无视分片策略，进行全路由 | false   |
+
 
 ## Hint 分片算法
 
-Apache ShardingSphere 暂无内置 Hint 分片算法。
+### Hint 行表达式分片算法
+
+详情请参见[行表达式](/cn/features/sharding/concept/inline-expression/)。
+
+类型：HINT_INLINE
+
+| *属性名称*                                 | *数据类型* | *说明*                                              | *默认值* |
+| ----------------------------------------- | --------- | --------------------------------------------------- | ------- |
+| algorithm-expression (?)                  | String    | 分片算法的行表达式                                    | ${value}|
 
 ## 自定义类分片算法
 
