@@ -66,7 +66,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Frontend database protocol type for ShardingSphere-Proxy.
      */
-    PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE("proxy-frontend-database-protocol-type", null, String.class),
+    PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE("proxy-frontend-database-protocol-type", "", String.class),
     
     /**
      * Flush threshold for every records from databases for ShardingSphere-Proxy.

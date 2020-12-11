@@ -59,6 +59,6 @@ public final class ServerHandlerInitializer extends ChannelInitializer<SocketCha
     
     private Optional<DatabaseType> findConfiguredDatabaseType() {
         String configuredDatabaseType = ProxyContext.getInstance().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
-        return Optional.ofNullable(configuredDatabaseType).isPresent() ? Optional.of(DatabaseTypeRegistry.getTrunkDatabaseType(configuredDatabaseType)) : Optional.empty();
+        return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeRegistry.getTrunkDatabaseType(configuredDatabaseType));
     }
 }
