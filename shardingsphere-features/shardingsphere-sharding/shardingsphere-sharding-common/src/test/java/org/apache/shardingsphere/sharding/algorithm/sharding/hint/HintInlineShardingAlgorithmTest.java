@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 
@@ -43,7 +44,9 @@ public final class HintInlineShardingAlgorithmTest {
     
     private void initHintInlineShardingAlgorithm() {
         hintInlineShardingAlgorithm = new HintInlineShardingAlgorithm();
-        hintInlineShardingAlgorithm.getProps().setProperty("algorithm-expression", "t_order_$->{value % 4}");
+        Properties props = new Properties();
+        props.setProperty("algorithm-expression", "t_order_$->{value % 4}");
+        hintInlineShardingAlgorithm.setProperties(props);
         hintInlineShardingAlgorithm.init();
     }
     
