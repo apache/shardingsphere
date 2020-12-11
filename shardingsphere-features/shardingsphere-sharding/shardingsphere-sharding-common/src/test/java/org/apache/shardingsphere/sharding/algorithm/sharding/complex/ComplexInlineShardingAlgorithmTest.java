@@ -32,28 +32,25 @@ import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
-/**
- * Complex Inline sharding algorithm test.
- */
-public class ComplexInlineShardingAlgorithmTest {
-
+public final class ComplexInlineShardingAlgorithmTest {
+    
     private ComplexInlineShardingAlgorithm complexInlineShardingAlgorithm;
-
+    
     private ComplexInlineShardingAlgorithm complexInlineShardingAlgorithmAllowRangeQuery;
-
+    
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         initComplexInlineShardingAlgorithm();
         initComplexInlineShardingAlgorithmAllowRangeQuery();
     }
-
+    
     private void initComplexInlineShardingAlgorithm() {
         complexInlineShardingAlgorithm = new ComplexInlineShardingAlgorithm();
         complexInlineShardingAlgorithm.getProps().setProperty("algorithm-expression", "t_order_${type % 2}_${order_id % 2}");
         complexInlineShardingAlgorithm.getProps().setProperty("sharding-columns", "type,order_id");
         complexInlineShardingAlgorithm.init();
     }
-
+    
     private void initComplexInlineShardingAlgorithmAllowRangeQuery() {
         complexInlineShardingAlgorithmAllowRangeQuery = new ComplexInlineShardingAlgorithm();
         complexInlineShardingAlgorithmAllowRangeQuery.getProps().setProperty("algorithm-expression", "t_order_${type % 2}_${order_id % 2}");
@@ -61,7 +58,7 @@ public class ComplexInlineShardingAlgorithmTest {
         complexInlineShardingAlgorithmAllowRangeQuery.getProps().setProperty("allow-range-query-with-inline-sharding", "true");
         complexInlineShardingAlgorithmAllowRangeQuery.init();
     }
-
+    
     @Test
     public void assertDoSharding() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0_0", "t_order_0_1", "t_order_1_0", "t_order_1_1");
@@ -73,7 +70,7 @@ public class ComplexInlineShardingAlgorithmTest {
         Collection<String> actual = complexInlineShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
         assertTrue(actual.size() == 1 && actual.contains("t_order_0_0"));
     }
-
+    
     @Test
     public void assertDoShardingWithMultiValue() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0_0", "t_order_0_1", "t_order_1_0", "t_order_1_1");
@@ -85,7 +82,7 @@ public class ComplexInlineShardingAlgorithmTest {
         Collection<String> actual = complexInlineShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
         assertTrue(actual.containsAll(availableTargetNames));
     }
-
+    
     @Test
     public void assertDoShardingWithRangeValue() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0_0", "t_order_0_1", "t_order_1_0", "t_order_1_1");
@@ -96,5 +93,4 @@ public class ComplexInlineShardingAlgorithmTest {
         Collection<String> actual = complexInlineShardingAlgorithmAllowRangeQuery.doSharding(availableTargetNames, shardingValue);
         assertTrue(actual.containsAll(availableTargetNames));
     }
-
 }

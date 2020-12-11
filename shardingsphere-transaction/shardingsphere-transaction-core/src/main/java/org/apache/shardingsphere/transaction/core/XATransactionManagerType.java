@@ -15,32 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.transaction.core;
 
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import java.util.Arrays;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Lock strategy.
+ * XA transaction manager type.
  */
-public interface LockStrategy extends TypedSPI {
+@RequiredArgsConstructor
+@Getter
+public enum XATransactionManagerType {
+    
+    ATOMIKOS("atomikos"),
+    
+    NARAYANA("narayana"),
+    
+    BITRONIX("bitronix");
+
+    private final String type;
     
     /**
-     * Try to get lock.
-     * 
-     * @param timeout the maximum time in milliseconds to acquire lock
-     * @return true if get the lock, false if not
+     * Value from xa transaction manager type.
+     *
+     * @param type value to be xa transaction manager type
+     * @return value from xa transaction manager type
      */
-    boolean tryLock(Long timeout);
-    
-    /**
-     * Release lock.
-     */
-    void releaseLock();
-    
-    /**
-     * Check lock state.
-     * 
-     * @return true if all instances were locked, else false
-     */
-    boolean checkLock();
+    public static XATransactionManagerType valueFrom(final String type) {
+        return Arrays.stream(values()).filter(each -> each.type.equalsIgnoreCase(type)).findFirst().orElse(XATransactionManagerType.ATOMIKOS);
+    }
 }
