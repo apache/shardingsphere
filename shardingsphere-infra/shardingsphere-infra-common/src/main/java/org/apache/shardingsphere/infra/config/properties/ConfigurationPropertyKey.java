@@ -94,6 +94,26 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_TRANSACTION_TYPE("proxy-transaction-type", "LOCAL", String.class),
     
     /**
+     * XA transaction manager type of proxy.
+     *
+     * <p>
+     * atomikos:
+     * ShardingSphere-Proxy will run with XA transaction with atomikos.
+     * </p>
+     *
+     * <p>
+     * narayana:
+     * ShardingSphere-Proxy will run with XA transaction with narayana.
+     * </p>
+     *
+     * <p>
+     * bitronix:
+     * ShardingSphere-Proxy will run with XA transaction with bitronix.
+     * </p>
+     */
+    PROXY_XA_TRANSACTION_MANAGER_TYPE("proxy-xa-transaction-manager-type", "atomikos", String.class),
+    
+    /**
      * Whether enable opentracing for ShardingSphere-Proxy.
      */
     PROXY_OPENTRACING_ENABLED("proxy-opentracing-enabled", String.valueOf(Boolean.FALSE), boolean.class),
