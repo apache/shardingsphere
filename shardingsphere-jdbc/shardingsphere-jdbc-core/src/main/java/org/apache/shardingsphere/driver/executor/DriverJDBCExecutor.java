@@ -102,7 +102,7 @@ public final class DriverJDBCExecutor {
         Optional<SchemaRefresher> schemaRefresher = SchemaRefresherFactory.newInstance(sqlStatement);
         if (schemaRefresher.isPresent()) {
             Collection<String> routeDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
-            SchemaBuilderMaterials materials = new SchemaBuilderMaterials(metaDataContexts.getMetaDataMap().get(DefaultSchema.LOGIC_NAME).getResource().getDatabaseType(), 
+            SchemaBuilderMaterials materials = new SchemaBuilderMaterials(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), 
                     dataSourceMap, metaData.getRuleMetaData().getRules(), metaDataContexts.getProps());
             schemaRefresher.get().refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, materials);
             notifySchemaChanged(metaData.getSchema());
