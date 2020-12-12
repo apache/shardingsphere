@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -77,7 +78,8 @@ public abstract class AbstractBootstrapInitializerTest {
         doReturn(mock(ProxyConfiguration.class)).when(abstractBootstrapInitializer).getProxyConfiguration(any());
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
-        when(props.getValue(any())).thenReturn(Boolean.FALSE);
+        when(props.getValue(ConfigurationPropertyKey.PROXY_XA_TRANSACTION_MANAGER_TYPE)).thenReturn("atomikos");
+        when(props.getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)).thenReturn(Boolean.FALSE);
         when(metaDataContexts.getProps()).thenReturn(props);
         doReturn(metaDataContexts).when(abstractBootstrapInitializer).decorateMetaDataContexts(any());
         doReturn(mock(TransactionContexts.class)).when(abstractBootstrapInitializer).decorateTransactionContexts(any());
