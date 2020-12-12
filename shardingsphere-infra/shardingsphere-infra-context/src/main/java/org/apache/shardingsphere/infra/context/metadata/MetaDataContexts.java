@@ -24,12 +24,20 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.io.Closeable;
+import java.util.Collection;
 import java.util.Map;
 
 /**
  * Meta data contexts.
  */
 public interface MetaDataContexts extends Closeable {
+    
+    /**
+     * Get all schemas.
+     * 
+     * @return all schemas
+     */
+    Collection<String> getAllSchemas();
     
     /**
      * Get database types.

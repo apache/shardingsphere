@@ -97,6 +97,11 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     @Override
+    public Collection<String> getAllSchemas() {
+        return metaDataContexts.getAllSchemas();
+    }
+    
+    @Override
     public Map<String, DatabaseType> getDatabaseTypes() {
         return metaDataContexts.getDatabaseTypes();
     }

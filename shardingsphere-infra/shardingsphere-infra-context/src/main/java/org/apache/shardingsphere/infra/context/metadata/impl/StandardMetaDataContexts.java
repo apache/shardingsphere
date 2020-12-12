@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,6 +63,11 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
         this.authentication = AuthenticationEngine.findSPIAuthentication().orElse(authentication);
         this.props = props;
         this.databaseTypes = databaseTypes;
+    }
+    
+    @Override
+    public Collection<String> getAllSchemas() {
+        return metaDataMap.keySet();
     }
     
     @Override
