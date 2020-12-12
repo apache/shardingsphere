@@ -64,8 +64,8 @@ public final class MySQLComStmtExecuteExecutorTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap("logic_db", metaData);
-        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), 
-                new DefaultAuthentication(), new ConfigurationProperties(new Properties()), Collections.singletonMap("logic_db", new MySQLDatabaseType())));
+        metaDataContexts.set(ProxyContext.getInstance(), 
+                new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties())));
     }
     
     @Test

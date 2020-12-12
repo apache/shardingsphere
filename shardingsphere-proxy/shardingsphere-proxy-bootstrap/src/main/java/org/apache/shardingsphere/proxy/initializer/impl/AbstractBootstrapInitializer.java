@@ -23,13 +23,8 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.factory.JDBCRawBackendDataSourceFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -45,7 +40,6 @@ import org.apache.shardingsphere.transaction.core.XATransactionManagerTypeHolder
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -74,25 +68,9 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private MetaDataContexts createMetaDataContexts(final ProxyConfiguration proxyConfig) throws SQLException {
-        Map<String, DatabaseType> databaseTypes = containsDataSources(proxyConfig.getSchemaDataSources())
-                ? getDatabaseTypes(proxyConfig.getSchemaDataSources()) : Collections.singletonMap(DefaultSchema.LOGIC_NAME, new MySQLDatabaseType());
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(proxyConfig.getSchemaDataSources());
-        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(
-                databaseTypes, dataSourcesMap, proxyConfig.getSchemaRules(), proxyConfig.getAuthentication(), proxyConfig.getProps());
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap, proxyConfig.getSchemaRules(), proxyConfig.getAuthentication(), proxyConfig.getProps());
         return metaDataContextsBuilder.build();
-    }
-    
-    private boolean containsDataSources(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
-        return !schemaDataSources.isEmpty() && !schemaDataSources.values().iterator().next().isEmpty();
-    }
-    
-    private static Map<String, DatabaseType> getDatabaseTypes(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
-        Map<String, DatabaseType> result = new HashMap<>(schemaDataSources.size(), 1);
-        for (Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSources.entrySet()) {
-            String databaseTypeName = JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(entry.getValue().values().iterator().next().getUrl()).getDatabaseType();
-            result.put(entry.getKey(), DatabaseTypeRegistry.getActualDatabaseType(databaseTypeName));
-        }
-        return result;
     }
     
     private static Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {

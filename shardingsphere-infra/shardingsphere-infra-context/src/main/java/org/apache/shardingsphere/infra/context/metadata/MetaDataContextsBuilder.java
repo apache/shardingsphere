@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.context.metadata;
 
+import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
@@ -43,6 +45,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -55,8 +58,6 @@ import java.util.Properties;
 @Slf4j
 public final class MetaDataContextsBuilder {
     
-    private final Map<String, DatabaseType> databaseTypes;
-    
     private final Map<String, Map<String, DataSource>> dataSources;
     
     private final Map<String, Collection<RuleConfiguration>> ruleConfigs;
@@ -65,21 +66,46 @@ public final class MetaDataContextsBuilder {
     
     private final ConfigurationProperties props;
     
+    private final Map<String, DatabaseType> databaseTypes;
+    
     private final ExecutorEngine executorEngine;
     
-    public MetaDataContextsBuilder(final Map<String, DatabaseType> databaseTypes, final Map<String, Map<String, DataSource>> dataSources,
-                                   final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Properties props) {
-        this(databaseTypes, dataSources, ruleConfigs, new DefaultAuthentication(), props);
+    public MetaDataContextsBuilder(final Map<String, Map<String, DataSource>> dataSources, final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Properties props) throws SQLException {
+        this(dataSources, ruleConfigs, new DefaultAuthentication(), props);
     }
     
-    public MetaDataContextsBuilder(final Map<String, DatabaseType> databaseTypes, final Map<String, Map<String, DataSource>> dataSources,
-                                   final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Authentication authentication, final Properties props) {
-        this.databaseTypes = databaseTypes;
+    public MetaDataContextsBuilder(final Map<String, Map<String, DataSource>> dataSources,
+                                   final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Authentication authentication, final Properties props) throws SQLException {
         this.dataSources = dataSources;
         this.ruleConfigs = ruleConfigs;
         this.authentication = authentication;
         this.props = new ConfigurationProperties(null == props ? new Properties() : props);
+        databaseTypes = createDatabaseTypes();
         executorEngine = new ExecutorEngine(this.props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
+    }
+    
+    private Map<String, DatabaseType> createDatabaseTypes() throws SQLException {
+        Map<String, DatabaseType> result = new HashMap<>(dataSources.entrySet().size(), 1);
+        for (Entry<String, Map<String, DataSource>> entry : dataSources.entrySet()) {
+            result.put(entry.getKey(), createDatabaseType(entry.getValue()));
+        }
+        return result;
+    }
+    
+    private DatabaseType createDatabaseType(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        DatabaseType result = null;
+        for (DataSource each : dataSourceMap.values()) {
+            DatabaseType databaseType = createDatabaseType(each);
+            Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
+            result = databaseType;
+        }
+        return result;
+    }
+    
+    private DatabaseType createDatabaseType(final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
+        }
     }
     
     /**
@@ -93,7 +119,7 @@ public final class MetaDataContextsBuilder {
         for (String each : ruleConfigs.keySet()) {
             mataDataMap.put(each, buildMetaData(each));
         }
-        return new StandardMetaDataContexts(mataDataMap, executorEngine, authentication, props, databaseTypes);
+        return new StandardMetaDataContexts(mataDataMap, executorEngine, authentication, props);
     }
     
     private ShardingSphereMetaData buildMetaData(final String schemaName) throws SQLException {
