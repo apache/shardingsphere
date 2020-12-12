@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.context.metadata.impl;
 
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.junit.Test;
@@ -35,10 +36,10 @@ public final class StandardMetaDataContextsTest {
     
     @Test
     public void assertGetDefaultMetaData() {
-        StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts();
-        ShardingSphereMetaData expected = mock(ShardingSphereMetaData.class);
-        standardMetaDataContexts.getMetaDataMap().put("logic_db", expected);
-        assertThat(standardMetaDataContexts.getDefaultMetaData(), is(expected));
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), null, new DefaultAuthentication(), new ConfigurationProperties(new Properties()));
+        assertThat(standardMetaDataContexts.getDefaultMetaData(), is(metaData));
     }
     
     @Test

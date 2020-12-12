@@ -41,7 +41,7 @@ public final class MetaDataContextsBuilderTest {
     @Test
     public void assertBuildWithoutConfiguration() throws SQLException {
         MetaDataContexts actual = new MetaDataContextsBuilder(Collections.emptyMap(), Collections.emptyMap(), null).build();
-        assertTrue(actual.getAllSchemas().isEmpty());
+        assertTrue(actual.getAllSchemaNames().isEmpty());
         assertTrue(((DefaultAuthentication) actual.getAuthentication()).getUsers().isEmpty());
         assertTrue(actual.getProps().getProps().isEmpty());
     }

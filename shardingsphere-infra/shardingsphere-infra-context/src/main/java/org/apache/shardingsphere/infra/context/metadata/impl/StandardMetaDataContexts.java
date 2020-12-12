@@ -28,9 +28,9 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Standard meta data contexts.
@@ -47,20 +47,19 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     private final ConfigurationProperties props;
     
     public StandardMetaDataContexts() {
-        // TODO MySQLDatabaseType is invalid because it can not update again
-        this(new HashMap<>(), null, new DefaultAuthentication(), new ConfigurationProperties(new Properties()));
+        this(new ConcurrentHashMap<>(), null, new DefaultAuthentication(), new ConfigurationProperties(new Properties()));
     }
     
     public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap, 
                                     final ExecutorEngine executorEngine, final Authentication authentication, final ConfigurationProperties props) {
-        this.metaDataMap = metaDataMap;
+        this.metaDataMap = new ConcurrentHashMap<>(metaDataMap);
         this.executorEngine = executorEngine;
         this.authentication = AuthenticationEngine.findSPIAuthentication().orElse(authentication);
         this.props = props;
     }
     
     @Override
-    public Collection<String> getAllSchemas() {
+    public Collection<String> getAllSchemaNames() {
         return metaDataMap.keySet();
     }
     
@@ -71,7 +70,7 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     
     @Override
     public ShardingSphereMetaData getDefaultMetaData() {
-        return metaDataMap.get(DefaultSchema.LOGIC_NAME);
+        return getMetaData(DefaultSchema.LOGIC_NAME);
     }
     
     @Override

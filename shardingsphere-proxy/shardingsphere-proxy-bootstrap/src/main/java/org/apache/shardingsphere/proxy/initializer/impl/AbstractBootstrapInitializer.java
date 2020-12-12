@@ -86,10 +86,10 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private TransactionContexts createTransactionContexts(final MetaDataContexts metaDataContexts) {
-        Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(metaDataContexts.getAllSchemas().size(), 1);
+        Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(metaDataContexts.getAllSchemaNames().size(), 1);
         XATransactionManagerType transactionType = XATransactionManagerType.valueFrom(metaDataContexts.getProps().getValue(ConfigurationPropertyKey.PROXY_XA_TRANSACTION_MANAGER_TYPE));
         XATransactionManagerTypeHolder.set(transactionType);
-        for (String each : metaDataContexts.getAllSchemas()) {
+        for (String each : metaDataContexts.getAllSchemaNames()) {
             ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
             ShardingSphereResource resource = metaDataContexts.getMetaData(each).getResource();
             engine.init(resource.getDatabaseType(), resource.getDataSources());

@@ -93,13 +93,8 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     @Override
-    public Collection<String> getAllSchemas() {
-        return metaDataContexts.getAllSchemas();
-    }
-    
-    @Override
-    public Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        return metaDataContexts.getMetaDataMap();
+    public Collection<String> getAllSchemaNames() {
+        return metaDataContexts.getAllSchemaNames();
     }
     
     @Override

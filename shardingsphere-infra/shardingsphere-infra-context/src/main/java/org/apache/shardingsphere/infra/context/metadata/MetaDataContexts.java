@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.io.Closeable;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Meta data contexts.
@@ -32,18 +31,11 @@ import java.util.Map;
 public interface MetaDataContexts extends Closeable {
     
     /**
-     * Get all schemas.
+     * Get all schema names.
      * 
-     * @return all schemas
+     * @return all schema names
      */
-    Collection<String> getAllSchemas();
-    
-    /**
-     * Get mata data map.
-     *
-     * @return mata data map
-     */
-    Map<String, ShardingSphereMetaData> getMetaDataMap();
+    Collection<String> getAllSchemaNames();
     
     /**
      * Get mata data.
