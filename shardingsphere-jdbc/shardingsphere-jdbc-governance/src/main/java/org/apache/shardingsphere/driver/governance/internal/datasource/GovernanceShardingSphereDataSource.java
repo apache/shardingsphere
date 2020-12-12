@@ -62,14 +62,16 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     public GovernanceShardingSphereDataSource(final GovernanceConfiguration governanceConfig) throws SQLException {
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
         metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(governanceFacade), governanceFacade);
-        transactionContexts = createTransactionContexts(metaDataContexts.getDatabaseType(DefaultSchema.LOGIC_NAME), metaDataContexts.getDefaultMetaData().getResource().getDataSources());
+        transactionContexts = createTransactionContexts(
+                metaDataContexts.getMetaDataMap().get(DefaultSchema.LOGIC_NAME).getResource().getDatabaseType(), metaDataContexts.getDefaultMetaData().getResource().getDataSources());
     }
     
     public GovernanceShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, 
                                               final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
         metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(dataSourceMap, ruleConfigs, props), governanceFacade);
-        transactionContexts = createTransactionContexts(metaDataContexts.getDatabaseType(DefaultSchema.LOGIC_NAME), metaDataContexts.getDefaultMetaData().getResource().getDataSources());
+        transactionContexts = createTransactionContexts(
+                metaDataContexts.getMetaDataMap().get(DefaultSchema.LOGIC_NAME).getResource().getDatabaseType(), metaDataContexts.getDefaultMetaData().getResource().getDataSources());
         uploadLocalConfiguration(governanceFacade);
     }
     

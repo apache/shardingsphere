@@ -109,7 +109,9 @@ public final class BackendConnectionTest {
         Map<String, ShardingSphereMetaData> result = new HashMap<>(10);
         for (int i = 0; i < 10; i++) {
             String name = String.format(SCHEMA_PATTERN, i);
-            result.put(name, mock(ShardingSphereMetaData.class));
+            ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+            when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+            result.put(name, metaData);
         }
         return result;
     }

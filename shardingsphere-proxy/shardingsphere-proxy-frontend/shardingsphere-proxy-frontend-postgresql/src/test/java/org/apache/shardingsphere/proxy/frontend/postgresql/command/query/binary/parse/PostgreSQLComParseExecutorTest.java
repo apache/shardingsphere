@@ -40,6 +40,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -68,7 +69,9 @@ public final class PostgreSQLComParseExecutorTest {
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        return Collections.singletonMap("schema", mock(ShardingSphereMetaData.class));
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        return Collections.singletonMap("schema", metaData);
     }
     
     @Test

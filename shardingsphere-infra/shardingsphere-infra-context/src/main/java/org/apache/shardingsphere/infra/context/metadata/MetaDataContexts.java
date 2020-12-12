@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.context.metadata;
 
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
@@ -38,14 +37,6 @@ public interface MetaDataContexts extends Closeable {
      * @return all schemas
      */
     Collection<String> getAllSchemas();
-    
-    /**
-     * Get database type.
-     *
-     * @param schemaName  schema name
-     * @return database type
-     */
-    DatabaseType getDatabaseType(String schemaName);
     
     /**
      * Get mata data map.

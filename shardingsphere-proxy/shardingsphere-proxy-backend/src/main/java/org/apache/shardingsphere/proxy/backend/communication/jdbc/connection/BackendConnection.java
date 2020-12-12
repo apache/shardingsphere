@@ -180,7 +180,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
     }
     
     private void setFetchSize(final Statement statement) throws SQLException {
-        DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getDatabaseType(schemaName);
+        DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap().get(schemaName).getResource().getDatabaseType();
         TypedSPIRegistry.getRegisteredService(StatementMemoryStrictlyFetchSizeSetter.class, databaseType.getName(), new Properties()).setFetchSize(statement);
     }
     

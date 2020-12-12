@@ -123,11 +123,6 @@ public final class GovernanceMetaDataContextsTest {
     }
     
     @Test
-    public void assertGetDatabaseType() {
-        assertThat(governanceMetaDataContexts.getDatabaseType("schema").getName(), is("H2"));
-    }
-    
-    @Test
     public void assertGetMetaDataMap() {
         assertThat(governanceMetaDataContexts.getMetaDataMap().get("schema"), is(metaData));
     }

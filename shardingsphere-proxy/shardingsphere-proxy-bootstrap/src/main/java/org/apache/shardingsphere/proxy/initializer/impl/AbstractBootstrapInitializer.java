@@ -113,7 +113,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         XATransactionManagerTypeHolder.set(transactionType);
         for (Entry<String, ShardingSphereMetaData> entry : metaDataContexts.getMetaDataMap().entrySet()) {
             ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
-            engine.init(metaDataContexts.getDatabaseType(entry.getKey()), entry.getValue().getResource().getDataSources());
+            engine.init(metaDataContexts.getMetaDataMap().get(entry.getKey()).getResource().getDatabaseType(), entry.getValue().getResource().getDataSources());
             transactionManagerEngines.put(entry.getKey(), engine);
         }
         return new StandardTransactionContexts(transactionManagerEngines);

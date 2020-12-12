@@ -52,6 +52,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -94,12 +95,12 @@ public final class RDLBackendHandlerTest {
     public void assertExecuteMySQLDropDatabaseContext() throws SQLException {
         assertExecuteDropDatabaseContext(new MySQLDropDatabaseStatement());
     }
-
+    
     @Test
     public void assertExecutePostgreSQLDropDatabaseContext() throws SQLException {
         assertExecuteDropDatabaseContext(new PostgreSQLDropDatabaseStatement());
     }
-
+    
     private void assertExecuteDropDatabaseContext(final DropDatabaseStatement sqlStatement) throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
@@ -114,12 +115,12 @@ public final class RDLBackendHandlerTest {
         ResponseHeader response = executeEngine.execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
-
+    
     @Test
     public void assertExecuteMySQLCreateDatabaseContextWithException() throws SQLException {
         assertExecuteCreateDatabaseContextWithException(new MySQLCreateDatabaseStatement());
     }
-
+    
     @Test
     public void assertExecutePostgreSQLCreateDatabaseContextWithException() throws SQLException {
         assertExecuteCreateDatabaseContextWithException(new PostgreSQLCreateDatabaseStatement());
@@ -144,7 +145,9 @@ public final class RDLBackendHandlerTest {
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        return Collections.singletonMap("schema", null);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        return Collections.singletonMap("schema", metaData);
     }
     
     @Test
@@ -183,7 +186,9 @@ public final class RDLBackendHandlerTest {
         metaDataContexts.setAccessible(true);
         if (isGovernance) {
             MetaDataContexts mockedMetaDataContexts = mock(MetaDataContexts.class);
-            when(mockedMetaDataContexts.getMetaDataMap()).thenReturn(Collections.singletonMap("schema", mock(ShardingSphereMetaData.class)));
+            ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+            when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+            when(mockedMetaDataContexts.getMetaDataMap()).thenReturn(Collections.singletonMap("schema", metaData));
             metaDataContexts.set(ProxyContext.getInstance(), mockedMetaDataContexts);
         } else {
             metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts());

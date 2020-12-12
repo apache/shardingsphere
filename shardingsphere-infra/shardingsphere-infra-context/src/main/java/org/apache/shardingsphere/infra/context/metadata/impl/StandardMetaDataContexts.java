@@ -71,11 +71,6 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     }
     
     @Override
-    public DatabaseType getDatabaseType(final String schemaName) {
-        return databaseTypes.get(schemaName);
-    }
-    
-    @Override
     public ShardingSphereMetaData getDefaultMetaData() {
         return metaDataMap.get(DefaultSchema.LOGIC_NAME);
     }

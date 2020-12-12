@@ -80,7 +80,7 @@ public final class ShardingSphereConnectionTest {
     public void setUp() {
         metaDataContexts = mock(StandardMetaDataContexts.class, RETURNS_DEEP_STUBS);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaDataContexts.getDatabaseType(DefaultSchema.LOGIC_NAME)).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
+        when(metaDataContexts.getMetaDataMap().get(DefaultSchema.LOGIC_NAME).getResource().getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         when(metaDataContexts.getDefaultMetaData()).thenReturn(metaData);
         transactionContexts = mock(TransactionContexts.class);
         when(transactionContexts.getDefaultTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());

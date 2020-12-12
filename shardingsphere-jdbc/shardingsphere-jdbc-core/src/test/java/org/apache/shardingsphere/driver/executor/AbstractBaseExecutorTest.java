@@ -69,7 +69,7 @@ public abstract class AbstractBaseExecutorTest {
         MetaDataContexts metaDataContexts = mock(StandardMetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getExecutorEngine()).thenReturn(executorEngine);
         when(metaDataContexts.getProps()).thenReturn(createConfigurationProperties());
-        when(metaDataContexts.getDatabaseType(DefaultSchema.LOGIC_NAME)).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
+        when(metaDataContexts.getMetaDataMap().get(DefaultSchema.LOGIC_NAME).getResource().getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         ShardingRule shardingRule = mockShardingRule();
         when(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules()).thenReturn(Collections.singletonList(shardingRule));
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
