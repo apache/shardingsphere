@@ -107,7 +107,7 @@ public final class MetaDataContextsBuilder {
     private ShardingSphereResource buildResource(final String schemaName, final Map<String, DataSource> dataSourceMap) throws SQLException {
         DataSourcesMetaData dataSourceMetas = new DataSourcesMetaData(databaseTypes.get(schemaName), getDatabaseAccessConfigurationMap(dataSourceMap));
         CachedDatabaseMetaData cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap).orElse(null);
-        return new ShardingSphereResource(dataSourceMap, dataSourceMetas, cachedDatabaseMetaData);
+        return new ShardingSphereResource(dataSourceMap, dataSourceMetas, cachedDatabaseMetaData, databaseTypes.get(schemaName));
     }
     
     private Map<String, DatabaseAccessConfiguration> getDatabaseAccessConfigurationMap(final Map<String, DataSource> dataSourceMap) throws SQLException {
