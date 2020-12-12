@@ -38,11 +38,14 @@ import java.util.Collections;
 public final class PostgreSQLComParseExecutor implements CommandExecutor {
     
     private final PostgreSQLComParsePacket packet;
+
+    private final String schemaName;
     
     private final ConnectionScopeBinaryStatementRegistry binaryStatementRegistry;
     
     public PostgreSQLComParseExecutor(final PostgreSQLComParsePacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
+        schemaName = backendConnection.getSchemaName();
         binaryStatementRegistry = BinaryStatementRegistry.getInstance().get(backendConnection.getConnectionId());
     }
     
@@ -50,7 +53,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     public Collection<DatabasePacket<?>> execute() {
         if (!packet.getSql().isEmpty()) {
             ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(
-                    DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getMetaDataContexts().getDatabaseType()));
+                    DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getMetaDataContexts().getDatabaseType(schemaName)));
             SQLStatement sqlStatement = sqlStatementParserEngine.parse(packet.getSql(), true);
             binaryStatementRegistry.register(packet.getStatementId(), packet.getSql(), sqlStatement.getParameterCount(), packet.getBinaryStatementParameterTypes());
         }

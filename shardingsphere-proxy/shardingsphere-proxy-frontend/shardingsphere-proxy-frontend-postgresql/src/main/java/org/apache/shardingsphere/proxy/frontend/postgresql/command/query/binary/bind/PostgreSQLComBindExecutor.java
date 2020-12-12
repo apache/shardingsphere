@@ -70,7 +70,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
         this.packet = packet;
         if (null != packet.getSql()) {
             ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(
-                    DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getMetaDataContexts().getDatabaseType()));
+                    DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getMetaDataContexts().getDatabaseType(backendConnection.getSchemaName())));
             SQLStatement sqlStatement = sqlStatementParserEngine.parse(packet.getSql(), true);
             databaseCommunicationEngine =
                     DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatement, packet.getSql(), packet.getParameters(), backendConnection);

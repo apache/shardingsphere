@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
@@ -145,7 +146,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         this.sql = sql;
         statements = new ArrayList<>();
         parameterSets = new ArrayList<>();
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getDatabaseType()));
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getDatabaseType(DefaultSchema.LOGIC_NAME)));
         sqlStatement = sqlParserEngine.parse(sql, true);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
@@ -178,7 +179,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
         Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
         cacheStatements(executionGroups);
-        return driverJDBCExecutor.executeQuery(executionGroups, new PreparedStatementExecuteQueryCallback(metaDataContexts.getDatabaseType(), SQLExecutorExceptionHandler.isExceptionThrown()));
+        return driverJDBCExecutor.executeQuery(executionGroups, 
+                new PreparedStatementExecuteQueryCallback(metaDataContexts.getDatabaseType(DefaultSchema.LOGIC_NAME), SQLExecutorExceptionHandler.isExceptionThrown()));
     }
     
     @Override
@@ -209,7 +211,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private JDBCExecutorCallback<Integer> createExecuteUpdateCallback() {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        return new JDBCExecutorCallback<Integer>(metaDataContexts.getDatabaseType(), isExceptionThrown) {
+        return new JDBCExecutorCallback<Integer>(metaDataContexts.getDatabaseType(DefaultSchema.LOGIC_NAME), isExceptionThrown) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -252,7 +254,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private JDBCExecutorCallback<Boolean> createExecuteCallback() {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        return new JDBCExecutorCallback<Boolean>(metaDataContexts.getDatabaseType(), isExceptionThrown) {
+        return new JDBCExecutorCallback<Boolean>(metaDataContexts.getDatabaseType(DefaultSchema.LOGIC_NAME), isExceptionThrown) {
             
             @Override
             protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -316,7 +318,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
         ShardingSphereMetaData metaData = metaDataContexts.getDefaultMetaData();
-        MergeEngine mergeEngine = new MergeEngine(metaDataContexts.getDatabaseType(), metaData.getSchema(), metaDataContexts.getProps(), metaData.getRuleMetaData().getRules());
+        MergeEngine mergeEngine = new MergeEngine(
+                metaDataContexts.getDatabaseType(DefaultSchema.LOGIC_NAME), metaData.getSchema(), metaDataContexts.getProps(), metaData.getRuleMetaData().getRules());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }
     

@@ -47,7 +47,7 @@ public final class StandardMetaDataContextsTest {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(Collections.singletonMap("logic_db", metaData), 
-                executorEngine, new DefaultAuthentication(), new ConfigurationProperties(new Properties()), DatabaseTypeRegistry.getTrunkDatabaseType("SQL92"));
+                executorEngine, new DefaultAuthentication(), new ConfigurationProperties(new Properties()), Collections.singletonMap("logic_db", DatabaseTypeRegistry.getTrunkDatabaseType("SQL92")));
         standardMetaDataContexts.close();
         verify(executorEngine).close();
     }

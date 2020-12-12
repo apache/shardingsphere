@@ -43,10 +43,10 @@ public final class FrontDatabaseProtocolTypeFactory {
         if (configuredDatabaseType.isPresent()) {
             return configuredDatabaseType.get();
         }
-        if (ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap().isEmpty()) {
+        if (ProxyContext.getInstance().getMetaDataContexts().getDatabaseTypes().isEmpty()) {
             throw new ShardingSphereConfigurationException("Can not find any configured data sources and database frontend protocol type.");
         }
-        return ProxyContext.getInstance().getMetaDataContexts().getDatabaseType();
+        return ProxyContext.getInstance().getMetaDataContexts().getDatabaseTypes().values().iterator().next();
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType() {

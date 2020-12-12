@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.context.fixture.FixtureRuleConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.jdbc.test.MockedDataSource;
@@ -42,8 +43,8 @@ public final class MetaDataContextsBuilderTest {
     @Test
     public void assertBuildWithoutConfiguration() throws SQLException {
         DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("FixtureDB");
-        MetaDataContexts actual = new MetaDataContextsBuilder(databaseType, Collections.emptyMap(), Collections.emptyMap(), null).build();
-        assertThat(actual.getDatabaseType(), CoreMatchers.is(databaseType));
+        MetaDataContexts actual = new MetaDataContextsBuilder(Collections.singletonMap(DefaultSchema.LOGIC_NAME, databaseType), Collections.emptyMap(), Collections.emptyMap(), null).build();
+        assertThat(actual.getDatabaseType(DefaultSchema.LOGIC_NAME), CoreMatchers.is(databaseType));
         assertTrue(actual.getMetaDataMap().isEmpty());
         assertTrue(((DefaultAuthentication) actual.getAuthentication()).getUsers().isEmpty());
         assertTrue(actual.getProps().getProps().isEmpty());
@@ -54,9 +55,9 @@ public final class MetaDataContextsBuilderTest {
         DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("FixtureDB");
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "1");
-        MetaDataContexts actual = new MetaDataContextsBuilder(databaseType, Collections.singletonMap("logic_db", Collections.emptyMap()), 
+        MetaDataContexts actual = new MetaDataContextsBuilder(Collections.singletonMap(DefaultSchema.LOGIC_NAME, databaseType), Collections.singletonMap("logic_db", Collections.emptyMap()), 
                 Collections.singletonMap("logic_db", Collections.singleton(new FixtureRuleConfiguration())), props).build();
-        assertThat(actual.getDatabaseType(), CoreMatchers.is(databaseType));
+        assertThat(actual.getDatabaseType(DefaultSchema.LOGIC_NAME), CoreMatchers.is(databaseType));
         assertRules(actual);
         assertTrue(actual.getMetaDataMap().get("logic_db").getResource().getDataSources().isEmpty());
         assertTrue(((DefaultAuthentication) actual.getAuthentication()).getUsers().isEmpty());
@@ -69,9 +70,10 @@ public final class MetaDataContextsBuilderTest {
         DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("FixtureDB");
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "1");
-        MetaDataContexts actual = new MetaDataContextsBuilder(databaseType, Collections.singletonMap("logic_db", Collections.singletonMap("ds", new MockedDataSource())),
+        MetaDataContexts actual = new MetaDataContextsBuilder(
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, databaseType), Collections.singletonMap("logic_db", Collections.singletonMap("ds", new MockedDataSource())),
                 Collections.singletonMap("logic_db", Collections.singleton(new FixtureRuleConfiguration())), props).build();
-        assertThat(actual.getDatabaseType(), CoreMatchers.is(databaseType));
+        assertThat(actual.getDatabaseType(DefaultSchema.LOGIC_NAME), CoreMatchers.is(databaseType));
         assertRules(actual);
         assertDataSources(actual);
         assertTrue(((DefaultAuthentication) actual.getAuthentication()).getUsers().isEmpty());

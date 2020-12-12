@@ -55,7 +55,7 @@ import java.util.Properties;
 @Slf4j
 public final class MetaDataContextsBuilder {
     
-    private final DatabaseType databaseType;
+    private final Map<String, DatabaseType> databaseTypes;
     
     private final Map<String, Map<String, DataSource>> dataSources;
     
@@ -67,14 +67,14 @@ public final class MetaDataContextsBuilder {
     
     private final ExecutorEngine executorEngine;
     
-    public MetaDataContextsBuilder(final DatabaseType databaseType, final Map<String, Map<String, DataSource>> dataSources,
+    public MetaDataContextsBuilder(final Map<String, DatabaseType> databaseTypes, final Map<String, Map<String, DataSource>> dataSources,
                                    final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Properties props) {
-        this(databaseType, dataSources, ruleConfigs, new DefaultAuthentication(), props);
+        this(databaseTypes, dataSources, ruleConfigs, new DefaultAuthentication(), props);
     }
     
-    public MetaDataContextsBuilder(final DatabaseType databaseType, final Map<String, Map<String, DataSource>> dataSources,
+    public MetaDataContextsBuilder(final Map<String, DatabaseType> databaseTypes, final Map<String, Map<String, DataSource>> dataSources,
                                    final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Authentication authentication, final Properties props) {
-        this.databaseType = databaseType;
+        this.databaseTypes = databaseTypes;
         this.dataSources = dataSources;
         this.ruleConfigs = ruleConfigs;
         this.authentication = authentication;
@@ -93,19 +93,19 @@ public final class MetaDataContextsBuilder {
         for (String each : ruleConfigs.keySet()) {
             mataDataMap.put(each, buildMetaData(each));
         }
-        return new StandardMetaDataContexts(mataDataMap, executorEngine, authentication, props, databaseType);
+        return new StandardMetaDataContexts(mataDataMap, executorEngine, authentication, props, databaseTypes);
     }
     
     private ShardingSphereMetaData buildMetaData(final String schemaName) throws SQLException {
         Map<String, DataSource> dataSourceMap = dataSources.get(schemaName);
         Collection<RuleConfiguration> ruleConfigs = this.ruleConfigs.get(schemaName);
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(ruleConfigs, databaseType, dataSourceMap, schemaName);
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(ruleConfigs, databaseTypes.get(schemaName), dataSourceMap, schemaName);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
-        return new ShardingSphereMetaData(schemaName, buildResource(dataSourceMap), ruleMetaData, buildSchema(schemaName, dataSourceMap, rules));
+        return new ShardingSphereMetaData(schemaName, buildResource(schemaName, dataSourceMap), ruleMetaData, buildSchema(schemaName, dataSourceMap, rules));
     }
     
-    private ShardingSphereResource buildResource(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        DataSourcesMetaData dataSourceMetas = new DataSourcesMetaData(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
+    private ShardingSphereResource buildResource(final String schemaName, final Map<String, DataSource> dataSourceMap) throws SQLException {
+        DataSourcesMetaData dataSourceMetas = new DataSourcesMetaData(databaseTypes.get(schemaName), getDatabaseAccessConfigurationMap(dataSourceMap));
         CachedDatabaseMetaData cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap).orElse(null);
         return new ShardingSphereResource(dataSourceMap, dataSourceMetas, cachedDatabaseMetaData);
     }
@@ -133,7 +133,7 @@ public final class MetaDataContextsBuilder {
     
     private ShardingSphereSchema buildSchema(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
         long start = System.currentTimeMillis();
-        ShardingSphereSchema result = SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
+        ShardingSphereSchema result = SchemaBuilder.build(new SchemaBuilderMaterials(databaseTypes.get(schemaName), dataSourceMap, rules, props));
         log.info("Load meta data for schema {} finished, cost {} milliseconds.", schemaName, System.currentTimeMillis() - start);
         return result;
     }

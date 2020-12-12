@@ -141,7 +141,7 @@ public final class MySQLAuthenticationEngineTest {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         field.setAccessible(true);
         field.set(ProxyContext.getInstance(), new StandardMetaDataContexts(Collections.singletonMap("sharding_db", mock(ShardingSphereMetaData.class)),
-                mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties()), Collections.singletonMap("sharding_db", new MySQLDatabaseType())));
     }
     
     private MySQLPacketPayload getPayload(final String username, final String database, final byte[] authResponse) {

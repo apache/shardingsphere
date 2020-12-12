@@ -57,10 +57,11 @@ public final class PostgreSQLComParseExecutorTest {
         when(parsePacket.getSql()).thenReturn("SELECT 1");
         when(parsePacket.getStatementId()).thenReturn("2");
         when(backendConnection.getConnectionId()).thenReturn(1);
+        when(backendConnection.getSchemaName()).thenReturn("schema");
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), 
+                new DefaultAuthentication(), new ConfigurationProperties(new Properties()), Collections.singletonMap("schema", new MySQLDatabaseType())));
         BinaryStatementRegistry.getInstance().register(1);
         PostgreSQLComParseExecutor actual = new PostgreSQLComParseExecutor(parsePacket, backendConnection);
         assertThat(actual.execute().iterator().next(), instanceOf(PostgreSQLParseCompletePacket.class));

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl;
 
-import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -33,6 +33,7 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -59,8 +60,8 @@ public final class ShowTablesBackendHandlerTest {
         when(backendConnection.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), getAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), 
+                getAuthentication(), new ConfigurationProperties(new Properties()), Collections.singletonMap("schema", new MySQLDatabaseType())));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {

@@ -54,8 +54,8 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
         DatabaseType databaseType = createDatabaseType(dataSourceMap);
-        metaDataContexts = new MetaDataContextsBuilder(
-                databaseType, Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, configurations), props).build();
+        metaDataContexts = new MetaDataContextsBuilder(Collections.singletonMap(DefaultSchema.LOGIC_NAME, databaseType), 
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, configurations), props).build();
         transactionContexts = createTransactionContexts(databaseType, dataSourceMap);
     }
     
@@ -71,7 +71,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private DatabaseType createDatabaseType(final DataSource dataSource) throws SQLException {
         if (dataSource instanceof ShardingSphereDataSource) {
-            return ((ShardingSphereDataSource) dataSource).metaDataContexts.getDatabaseType();
+            return ((ShardingSphereDataSource) dataSource).metaDataContexts.getDatabaseType(DefaultSchema.LOGIC_NAME);
         }
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());

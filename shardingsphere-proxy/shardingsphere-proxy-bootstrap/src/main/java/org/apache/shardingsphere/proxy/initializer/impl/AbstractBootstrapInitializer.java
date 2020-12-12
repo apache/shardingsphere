@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -39,17 +40,18 @@ import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
+import org.apache.shardingsphere.transaction.core.XATransactionManagerTypeHolder;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
-import org.apache.shardingsphere.transaction.core.XATransactionManagerTypeHolder;
 
 /**
  * Abstract bootstrap initializer.
@@ -72,10 +74,11 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private MetaDataContexts createMetaDataContexts(final ProxyConfiguration proxyConfig) throws SQLException {
-        DatabaseType databaseType = containsDataSources(proxyConfig.getSchemaDataSources()) ? getDatabaseType(proxyConfig.getSchemaDataSources()) : new MySQLDatabaseType();
+        Map<String, DatabaseType> databaseTypes = containsDataSources(proxyConfig.getSchemaDataSources())
+                ? getDatabaseTypes(proxyConfig.getSchemaDataSources()) : Collections.singletonMap(DefaultSchema.LOGIC_NAME, new MySQLDatabaseType());
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(proxyConfig.getSchemaDataSources());
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(
-                databaseType, dataSourcesMap, proxyConfig.getSchemaRules(), proxyConfig.getAuthentication(), proxyConfig.getProps());
+                databaseTypes, dataSourcesMap, proxyConfig.getSchemaRules(), proxyConfig.getAuthentication(), proxyConfig.getProps());
         return metaDataContextsBuilder.build();
     }
     
@@ -83,9 +86,13 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         return !schemaDataSources.isEmpty() && !schemaDataSources.values().iterator().next().isEmpty();
     }
     
-    private static DatabaseType getDatabaseType(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
-        String databaseTypeName = JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(schemaDataSources.values().iterator().next().values().iterator().next().getUrl()).getDatabaseType();
-        return DatabaseTypeRegistry.getActualDatabaseType(databaseTypeName);
+    private static Map<String, DatabaseType> getDatabaseTypes(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
+        Map<String, DatabaseType> result = new HashMap<>(schemaDataSources.size(), 1);
+        for (Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSources.entrySet()) {
+            String databaseTypeName = JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(entry.getValue().values().iterator().next().getUrl()).getDatabaseType();
+            result.put(entry.getKey(), DatabaseTypeRegistry.getActualDatabaseType(databaseTypeName));
+        }
+        return result;
     }
     
     private static Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
@@ -106,7 +113,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         XATransactionManagerTypeHolder.set(transactionType);
         for (Entry<String, ShardingSphereMetaData> entry : metaDataContexts.getMetaDataMap().entrySet()) {
             ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
-            engine.init(metaDataContexts.getDatabaseType(), entry.getValue().getResource().getDataSources());
+            engine.init(metaDataContexts.getDatabaseType(entry.getKey()), entry.getValue().getResource().getDataSources());
             transactionManagerEngines.put(entry.getKey(), engine);
         }
         return new StandardTransactionContexts(transactionManagerEngines);

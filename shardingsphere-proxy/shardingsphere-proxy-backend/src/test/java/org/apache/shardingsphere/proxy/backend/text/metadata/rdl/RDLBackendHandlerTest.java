@@ -61,8 +61,8 @@ public final class RDLBackendHandlerTest {
     public void setUp() throws IllegalAccessException, NoSuchFieldException {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), 
+                new DefaultAuthentication(), new ConfigurationProperties(new Properties()), Collections.singletonMap("schema", new MySQLDatabaseType())));
     }
     
     @Test

@@ -109,7 +109,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     }
     
     private SQLStatementContext<?> getSQLStatementContext() {
-        DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getDatabaseType();
+        DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getDatabaseType(backendConnection.getSchemaName());
         if (sqlStatement instanceof CreateDataSourcesStatement) {
             return new CreateDataSourcesStatementContext((CreateDataSourcesStatement) sqlStatement, databaseType);
         }

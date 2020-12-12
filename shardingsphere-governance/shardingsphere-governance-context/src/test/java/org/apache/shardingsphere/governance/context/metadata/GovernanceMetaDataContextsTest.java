@@ -111,7 +111,7 @@ public final class GovernanceMetaDataContextsTest {
         when(governanceFacade.getLockCenter()).thenReturn(lockCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
         governanceMetaDataContexts = new GovernanceMetaDataContexts(
-                new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), authentication, props, databaseType), governanceFacade);
+                new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), authentication, props, Collections.singletonMap("schema", databaseType)), governanceFacade);
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
@@ -124,7 +124,7 @@ public final class GovernanceMetaDataContextsTest {
     
     @Test
     public void assertGetDatabaseType() {
-        assertThat(governanceMetaDataContexts.getDatabaseType().getName(), is("H2"));
+        assertThat(governanceMetaDataContexts.getDatabaseType("schema").getName(), is("H2"));
     }
     
     @Test

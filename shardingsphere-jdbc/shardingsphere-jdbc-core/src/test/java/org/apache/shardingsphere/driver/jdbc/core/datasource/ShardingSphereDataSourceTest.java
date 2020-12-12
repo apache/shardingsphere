@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.datasource;
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.fixture.XAShardingTransactionManagerFixture;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
@@ -99,7 +100,7 @@ public final class ShardingSphereDataSourceTest {
     
     private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {
         try {
-            assertThat(createShardingSphereDataSource(dataSourceMap).getMetaDataContexts().getDatabaseType(),
+            assertThat(createShardingSphereDataSource(dataSourceMap).getMetaDataContexts().getDatabaseType(DefaultSchema.LOGIC_NAME),
                     instanceOf(H2DatabaseType.class));
         } finally {
             for (Connection each : connections) {

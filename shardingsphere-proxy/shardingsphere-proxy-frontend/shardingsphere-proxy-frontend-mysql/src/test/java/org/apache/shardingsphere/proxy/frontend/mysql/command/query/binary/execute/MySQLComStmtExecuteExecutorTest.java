@@ -62,8 +62,8 @@ public final class MySQLComStmtExecuteExecutorTest {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap("logic_db", mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS));
-        metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), 
+                new DefaultAuthentication(), new ConfigurationProperties(new Properties()), Collections.singletonMap("logic_db", new MySQLDatabaseType())));
     }
     
     @Test

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -47,20 +48,25 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     
     private final ConfigurationProperties props;
     
-    private final DatabaseType databaseType;
+    private final Map<String, DatabaseType> databaseTypes;
     
     public StandardMetaDataContexts() {
         // TODO MySQLDatabaseType is invalid because it can not update again
-        this(new HashMap<>(), null, new DefaultAuthentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType());
+        this(new HashMap<>(), null, new DefaultAuthentication(), new ConfigurationProperties(new Properties()), Collections.singletonMap(DefaultSchema.LOGIC_NAME, new MySQLDatabaseType()));
     }
     
     public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap, 
-                                    final ExecutorEngine executorEngine, final Authentication authentication, final ConfigurationProperties props, final DatabaseType databaseType) {
+                                    final ExecutorEngine executorEngine, final Authentication authentication, final ConfigurationProperties props, final Map<String, DatabaseType> databaseTypes) {
         this.metaDataMap = metaDataMap;
         this.executorEngine = executorEngine;
         this.authentication = AuthenticationEngine.findSPIAuthentication().orElse(authentication);
         this.props = props;
-        this.databaseType = databaseType;
+        this.databaseTypes = databaseTypes;
+    }
+    
+    @Override
+    public DatabaseType getDatabaseType(final String schemaName) {
+        return databaseTypes.get(schemaName);
     }
     
     @Override

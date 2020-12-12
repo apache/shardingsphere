@@ -97,18 +97,27 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     @Override
-    public DatabaseType getDatabaseType() {
-        return metaDataContexts.getDatabaseType();
+    public Map<String, DatabaseType> getDatabaseTypes() {
+        return metaDataContexts.getDatabaseTypes();
     }
     
-    private DatabaseType getDatabaseType(final Map<String, Map<String, DataSource>> dataSourcesMap) throws SQLException {
+    private Map<String, DatabaseType> getDatabaseTypes(final Map<String, Map<String, DataSource>> dataSourcesMap) throws SQLException {
         if (dataSourcesMap.isEmpty() || dataSourcesMap.values().iterator().next().isEmpty()) {
-            return metaDataContexts.getDatabaseType();
+            return metaDataContexts.getDatabaseTypes();
         }
-        DataSource dataSource = dataSourcesMap.values().iterator().next().values().iterator().next();
-        try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
+        Map<String, DatabaseType> result = new HashMap<>(dataSourcesMap.size(), 1);
+        for (Entry<String, Map<String, DataSource>> entry : dataSourcesMap.entrySet()) {
+            DataSource dataSource = entry.getValue().values().iterator().next();
+            try (Connection connection = dataSource.getConnection()) {
+                result.put(entry.getKey(), DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL()));
+            }
         }
+        return result;
+    }
+    
+    @Override
+    public DatabaseType getDatabaseType(final String schemaName) {
+        return metaDataContexts.getDatabaseType(schemaName);
     }
     
     @Override
@@ -153,10 +162,10 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
         metaDataMap.put(event.getSchemaName(), createAddedMetaData(event));
         metaDataContexts = new StandardMetaDataContexts(
-                metaDataMap, metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), metaDataContexts.getProps(), metaDataContexts.getDatabaseType());
+                metaDataMap, metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), metaDataContexts.getProps(), metaDataContexts.getDatabaseTypes());
         governanceFacade.getConfigCenter().persistSchema(event.getSchemaName(), metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getSchema());
-        ShardingSphereEventBus.getInstance().post(
-                new DataSourceChangeCompletedEvent(event.getSchemaName(), metaDataContexts.getDatabaseType(), metaDataMap.get(event.getSchemaName()).getResource().getDataSources()));
+        ShardingSphereEventBus.getInstance().post(new DataSourceChangeCompletedEvent(
+                event.getSchemaName(), metaDataContexts.getDatabaseType(event.getSchemaName()), metaDataMap.get(event.getSchemaName()).getResource().getDataSources()));
     }
     
     /**
@@ -169,7 +178,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
         metaDataMap.remove(event.getSchemaName());
         metaDataContexts = new StandardMetaDataContexts(
-                metaDataMap, metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), metaDataContexts.getProps(), metaDataContexts.getDatabaseType());
+                metaDataMap, metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), metaDataContexts.getProps(), metaDataContexts.getDatabaseTypes());
         governanceFacade.getConfigCenter().deleteSchema(event.getSchemaName());
     }
     
@@ -181,7 +190,8 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     @Subscribe
     public synchronized void renew(final PropertiesChangedEvent event) {
         ConfigurationProperties props = new ConfigurationProperties(event.getProps());
-        metaDataContexts = new StandardMetaDataContexts(getChangedMataDataMap(), metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), props, metaDataContexts.getDatabaseType());
+        metaDataContexts = new StandardMetaDataContexts(
+                getChangedMataDataMap(), metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), props, metaDataContexts.getDatabaseTypes());
     }
     
     /**
@@ -192,7 +202,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     @Subscribe
     public synchronized void renew(final AuthenticationChangedEvent event) {
         metaDataContexts = new StandardMetaDataContexts(
-                metaDataContexts.getMetaDataMap(), metaDataContexts.getExecutorEngine(), event.getAuthentication(), metaDataContexts.getProps(), metaDataContexts.getDatabaseType());
+                metaDataContexts.getMetaDataMap(), metaDataContexts.getExecutorEngine(), event.getAuthentication(), metaDataContexts.getProps(), metaDataContexts.getDatabaseTypes());
     }
     
     /**
@@ -211,7 +221,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
                 newMetaDataMap.put(schemaName, newMetaData);
             }
             metaDataContexts = new StandardMetaDataContexts(
-                    newMetaDataMap, metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), metaDataContexts.getProps(), metaDataContexts.getDatabaseType());
+                    newMetaDataMap, metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), metaDataContexts.getProps(), metaDataContexts.getDatabaseTypes());
         } finally {
             governanceFacade.getLockCenter().unlock();
         }
@@ -230,7 +240,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         newMetaDataMap.remove(schemaName);
         newMetaDataMap.put(schemaName, getChangedMetaData(metaDataContexts.getMetaDataMap().get(schemaName), event.getRuleConfigurations()));
         metaDataContexts = new StandardMetaDataContexts(
-                newMetaDataMap, metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), metaDataContexts.getProps(), metaDataContexts.getDatabaseType());
+                newMetaDataMap, metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), metaDataContexts.getProps(), metaDataContexts.getDatabaseTypes());
         governanceFacade.getConfigCenter().persistSchema(schemaName, newMetaDataMap.get(schemaName).getSchema());
     }
     
@@ -247,9 +257,9 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         newMetaDataMap.remove(schemaName);
         newMetaDataMap.put(schemaName, getChangedMetaData(metaDataContexts.getMetaDataMap().get(schemaName), event.getDataSourceConfigurations()));
         metaDataContexts = new StandardMetaDataContexts(
-                newMetaDataMap, metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), metaDataContexts.getProps(), metaDataContexts.getDatabaseType());
-        ShardingSphereEventBus.getInstance().post(
-                new DataSourceChangeCompletedEvent(event.getSchemaName(), metaDataContexts.getDatabaseType(), newMetaDataMap.get(event.getSchemaName()).getResource().getDataSources()));
+                newMetaDataMap, metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), metaDataContexts.getProps(), metaDataContexts.getDatabaseTypes());
+        ShardingSphereEventBus.getInstance().post(new DataSourceChangeCompletedEvent(
+                event.getSchemaName(), metaDataContexts.getDatabaseType(event.getSchemaName()), newMetaDataMap.get(event.getSchemaName()).getResource().getDataSources()));
     }
     
     /**
@@ -272,8 +282,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         String schemaName = event.getSchemaName();
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, 
                 governanceFacade.getConfigCenter().loadDataSourceConfigurations(schemaName)));
-        DatabaseType databaseType = getDatabaseType(dataSourcesMap);
-        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(databaseType, dataSourcesMap, 
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(getDatabaseTypes(dataSourcesMap), dataSourcesMap, 
                 Collections.singletonMap(schemaName, governanceFacade.getConfigCenter().loadRuleConfigurations(schemaName)), 
                 metaDataContexts.getAuthentication(), metaDataContexts.getProps().getProps());
         return metaDataContextsBuilder.build().getMetaDataMap().get(schemaName);
@@ -293,7 +302,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     private ShardingSphereMetaData getChangedMetaData(final ShardingSphereMetaData oldMetaData, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
-        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(metaDataContexts.getDatabaseType(), Collections.singletonMap(oldMetaData.getName(), oldMetaData.getResource().getDataSources()),
+        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(metaDataContexts.getDatabaseTypes(), Collections.singletonMap(oldMetaData.getName(), oldMetaData.getResource().getDataSources()),
                 Collections.singletonMap(oldMetaData.getName(), ruleConfigs), metaDataContexts.getAuthentication(), metaDataContexts.getProps().getProps());
         return builder.build().getMetaDataMap().values().iterator().next();
     }
@@ -305,7 +314,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         oldMetaData.getResource().close(modifiedDataSources.keySet());
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(oldMetaData.getName(), 
                 getNewDataSources(oldMetaData.getResource().getDataSources(), getAddedDataSources(oldMetaData, newDataSourceConfigs), modifiedDataSources, deletedDataSources));
-        return new MetaDataContextsBuilder(metaDataContexts.getDatabaseType(), dataSourcesMap,
+        return new MetaDataContextsBuilder(metaDataContexts.getDatabaseTypes(), dataSourcesMap,
                 Collections.singletonMap(oldMetaData.getName(), oldMetaData.getRuleMetaData().getConfigurations()), metaDataContexts.getAuthentication(), 
                 metaDataContexts.getProps().getProps()).build().getMetaDataMap().get(oldMetaData.getName());
     }

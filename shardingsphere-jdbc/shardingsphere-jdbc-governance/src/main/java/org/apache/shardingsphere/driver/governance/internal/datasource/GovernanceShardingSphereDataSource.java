@@ -61,14 +61,14 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     public GovernanceShardingSphereDataSource(final GovernanceConfiguration governanceConfig) throws SQLException {
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
         metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(governanceFacade), governanceFacade);
-        transactionContexts = createTransactionContexts(metaDataContexts.getDatabaseType(), metaDataContexts.getDefaultMetaData().getResource().getDataSources());
+        transactionContexts = createTransactionContexts(metaDataContexts.getDatabaseType(DefaultSchema.LOGIC_NAME), metaDataContexts.getDefaultMetaData().getResource().getDataSources());
     }
     
     public GovernanceShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, 
                                               final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
         metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(dataSourceMap, ruleConfigs, props), governanceFacade);
-        transactionContexts = createTransactionContexts(metaDataContexts.getDatabaseType(), metaDataContexts.getDefaultMetaData().getResource().getDataSources());
+        transactionContexts = createTransactionContexts(metaDataContexts.getDatabaseType(DefaultSchema.LOGIC_NAME), metaDataContexts.getDefaultMetaData().getResource().getDataSources());
         uploadLocalConfiguration(governanceFacade);
     }
     
@@ -84,13 +84,15 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         Map<String, DataSourceConfiguration> dataSourceConfigs = configCenter.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
         Collection<RuleConfiguration> ruleConfigurations = configCenter.loadRuleConfigurations(DefaultSchema.LOGIC_NAME);
         Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(dataSourceConfigs);
-        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(createDatabaseType(dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, createDatabaseType(dataSourceMap)), Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
                 Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), new DefaultAuthentication(), configCenter.loadProperties());
         return metaDataContextsBuilder.build();
     }
     
     private MetaDataContexts createMetaDataContexts(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
-        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(createDatabaseType(dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap),
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(Collections.singletonMap(DefaultSchema.LOGIC_NAME, createDatabaseType(dataSourceMap)), 
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap),
                 Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigs), new DefaultAuthentication(), props);
         return metaDataContextsBuilder.build();
     }

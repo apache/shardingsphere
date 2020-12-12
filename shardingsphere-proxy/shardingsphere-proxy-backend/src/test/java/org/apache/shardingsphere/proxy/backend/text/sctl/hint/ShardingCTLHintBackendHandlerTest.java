@@ -166,8 +166,8 @@ public final class ShardingCTLHintBackendHandlerTest {
         metaDataContexts.setAccessible(true);
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey(), Boolean.TRUE.toString());
-        metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(props), new MySQLDatabaseType()));
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), 
+                new DefaultAuthentication(), new ConfigurationProperties(props), Collections.singletonMap("schema", new MySQLDatabaseType())));
         String sql = "sctl:hint show table status";
         ShardingCTLHintBackendHandler defaultHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         ResponseHeader responseHeader = defaultHintBackendHandler.execute();

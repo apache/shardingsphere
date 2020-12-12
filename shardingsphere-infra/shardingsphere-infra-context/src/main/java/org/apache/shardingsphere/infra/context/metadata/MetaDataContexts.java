@@ -32,11 +32,19 @@ import java.util.Map;
 public interface MetaDataContexts extends Closeable {
     
     /**
+     * Get database types.
+     *
+     * @return database types
+     */
+    Map<String, DatabaseType> getDatabaseTypes();
+    
+    /**
      * Get database type.
      *
+     * @param schemaName  schema name
      * @return database type
      */
-    DatabaseType getDatabaseType();
+    DatabaseType getDatabaseType(String schemaName);
     
     /**
      * Get mata data map.
