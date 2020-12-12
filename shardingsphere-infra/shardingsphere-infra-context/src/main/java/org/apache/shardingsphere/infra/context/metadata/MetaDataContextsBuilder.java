@@ -66,46 +66,19 @@ public final class MetaDataContextsBuilder {
     
     private final ConfigurationProperties props;
     
-    private final Map<String, DatabaseType> databaseTypes;
-    
     private final ExecutorEngine executorEngine;
     
-    public MetaDataContextsBuilder(final Map<String, Map<String, DataSource>> dataSources, final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Properties props) throws SQLException {
+    public MetaDataContextsBuilder(final Map<String, Map<String, DataSource>> dataSources, final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Properties props) {
         this(dataSources, ruleConfigs, new DefaultAuthentication(), props);
     }
     
     public MetaDataContextsBuilder(final Map<String, Map<String, DataSource>> dataSources,
-                                   final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Authentication authentication, final Properties props) throws SQLException {
+                                   final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Authentication authentication, final Properties props) {
         this.dataSources = dataSources;
         this.ruleConfigs = ruleConfigs;
         this.authentication = authentication;
         this.props = new ConfigurationProperties(null == props ? new Properties() : props);
-        databaseTypes = createDatabaseTypes();
         executorEngine = new ExecutorEngine(this.props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
-    }
-    
-    private Map<String, DatabaseType> createDatabaseTypes() throws SQLException {
-        Map<String, DatabaseType> result = new HashMap<>(dataSources.entrySet().size(), 1);
-        for (Entry<String, Map<String, DataSource>> entry : dataSources.entrySet()) {
-            result.put(entry.getKey(), createDatabaseType(entry.getValue()));
-        }
-        return result;
-    }
-    
-    private DatabaseType createDatabaseType(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        DatabaseType result = null;
-        for (DataSource each : dataSourceMap.values()) {
-            DatabaseType databaseType = createDatabaseType(each);
-            Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
-            result = databaseType;
-        }
-        return result;
-    }
-    
-    private DatabaseType createDatabaseType(final DataSource dataSource) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
-        }
     }
     
     /**
@@ -125,15 +98,32 @@ public final class MetaDataContextsBuilder {
     private ShardingSphereMetaData buildMetaData(final String schemaName) throws SQLException {
         Map<String, DataSource> dataSourceMap = dataSources.get(schemaName);
         Collection<RuleConfiguration> ruleConfigs = this.ruleConfigs.get(schemaName);
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(ruleConfigs, databaseTypes.get(schemaName), dataSourceMap, schemaName);
+        DatabaseType databaseType = getDatabaseType(dataSourceMap);
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(ruleConfigs, databaseType, dataSourceMap, schemaName);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
-        return new ShardingSphereMetaData(schemaName, buildResource(schemaName, dataSourceMap), ruleMetaData, buildSchema(schemaName, dataSourceMap, rules));
+        return new ShardingSphereMetaData(schemaName, buildResource(databaseType, dataSourceMap), ruleMetaData, buildSchema(schemaName, databaseType, dataSourceMap, rules));
     }
     
-    private ShardingSphereResource buildResource(final String schemaName, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        DataSourcesMetaData dataSourceMetas = new DataSourcesMetaData(databaseTypes.get(schemaName), getDatabaseAccessConfigurationMap(dataSourceMap));
+    private DatabaseType getDatabaseType(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        DatabaseType result = null;
+        for (DataSource each : dataSourceMap.values()) {
+            DatabaseType databaseType = getDatabaseType(each);
+            Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
+            result = databaseType;
+        }
+        return result;
+    }
+    
+    private DatabaseType getDatabaseType(final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
+        }
+    }
+    
+    private ShardingSphereResource buildResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) throws SQLException {
+        DataSourcesMetaData dataSourceMetas = new DataSourcesMetaData(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
         CachedDatabaseMetaData cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap).orElse(null);
-        return new ShardingSphereResource(dataSourceMap, dataSourceMetas, cachedDatabaseMetaData, databaseTypes.get(schemaName));
+        return new ShardingSphereResource(dataSourceMap, dataSourceMetas, cachedDatabaseMetaData, databaseType);
     }
     
     private Map<String, DatabaseAccessConfiguration> getDatabaseAccessConfigurationMap(final Map<String, DataSource> dataSourceMap) throws SQLException {
@@ -157,9 +147,10 @@ public final class MetaDataContextsBuilder {
         }
     }
     
-    private ShardingSphereSchema buildSchema(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
+    private ShardingSphereSchema buildSchema(final String schemaName, 
+                                             final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
         long start = System.currentTimeMillis();
-        ShardingSphereSchema result = SchemaBuilder.build(new SchemaBuilderMaterials(databaseTypes.get(schemaName), dataSourceMap, rules, props));
+        ShardingSphereSchema result = SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
         log.info("Load meta data for schema {} finished, cost {} milliseconds.", schemaName, System.currentTimeMillis() - start);
         return result;
     }
