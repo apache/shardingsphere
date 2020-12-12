@@ -186,9 +186,10 @@ public final class RDLBackendHandlerTest {
         metaDataContexts.setAccessible(true);
         if (isGovernance) {
             MetaDataContexts mockedMetaDataContexts = mock(MetaDataContexts.class);
+            when(mockedMetaDataContexts.getAllSchemas()).thenReturn(Collections.singletonList("schema"));
             ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
             when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-            when(mockedMetaDataContexts.getMetaDataMap()).thenReturn(Collections.singletonMap("schema", metaData));
+            when(mockedMetaDataContexts.getMetaData("schema")).thenReturn(metaData);
             metaDataContexts.set(ProxyContext.getInstance(), mockedMetaDataContexts);
         } else {
             metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts());

@@ -46,6 +46,14 @@ public interface MetaDataContexts extends Closeable {
     Map<String, ShardingSphereMetaData> getMetaDataMap();
     
     /**
+     * Get mata data.
+     *
+     * @param schemaName schema name
+     * @return mata data
+     */
+    ShardingSphereMetaData getMetaData(String schemaName);
+    
+    /**
      * Get default mata data.
      *
      * @return default mata data

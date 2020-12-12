@@ -212,7 +212,6 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         MetaDataContexts actualMetaDataContexts = getInitializer().decorateMetaDataContexts(metaDataContexts);
         assertNotNull(actualMetaDataContexts);
         assertThat(actualMetaDataContexts, instanceOf(GovernanceMetaDataContexts.class));
-        assertThat(actualMetaDataContexts.getMetaDataMap(), is(metaDataContexts.getMetaDataMap()));
         assertThat(actualMetaDataContexts.getDefaultMetaData(), is(metaDataContexts.getDefaultMetaData()));
         assertThat(actualMetaDataContexts.getAuthentication(), is(metaDataContexts.getAuthentication()));
         assertThat(actualMetaDataContexts.getProps(), is(metaDataContexts.getProps()));

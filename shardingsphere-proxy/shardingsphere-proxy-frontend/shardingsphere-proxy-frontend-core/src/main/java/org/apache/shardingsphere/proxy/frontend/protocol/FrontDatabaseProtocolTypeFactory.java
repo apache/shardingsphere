@@ -47,7 +47,7 @@ public final class FrontDatabaseProtocolTypeFactory {
             throw new ShardingSphereConfigurationException("Can not find any configured data sources and database frontend protocol type.");
         }
         String schemaName = ProxyContext.getInstance().getMetaDataContexts().getAllSchemas().iterator().next();
-        return ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap().get(schemaName).getResource().getDatabaseType();
+        return ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType();
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType() {

@@ -65,6 +65,11 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     }
     
     @Override
+    public ShardingSphereMetaData getMetaData(final String schemaName) {
+        return metaDataMap.get(schemaName);
+    }
+    
+    @Override
     public ShardingSphereMetaData getDefaultMetaData() {
         return metaDataMap.get(DefaultSchema.LOGIC_NAME);
     }

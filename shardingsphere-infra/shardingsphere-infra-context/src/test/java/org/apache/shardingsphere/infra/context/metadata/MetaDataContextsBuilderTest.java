@@ -41,7 +41,7 @@ public final class MetaDataContextsBuilderTest {
     @Test
     public void assertBuildWithoutConfiguration() throws SQLException {
         MetaDataContexts actual = new MetaDataContextsBuilder(Collections.emptyMap(), Collections.emptyMap(), null).build();
-        assertTrue(actual.getMetaDataMap().isEmpty());
+        assertTrue(actual.getAllSchemas().isEmpty());
         assertTrue(((DefaultAuthentication) actual.getAuthentication()).getUsers().isEmpty());
         assertTrue(actual.getProps().getProps().isEmpty());
     }
@@ -53,7 +53,7 @@ public final class MetaDataContextsBuilderTest {
         MetaDataContexts actual = new MetaDataContextsBuilder(
                 Collections.singletonMap("logic_db", Collections.emptyMap()), Collections.singletonMap("logic_db", Collections.singleton(new FixtureRuleConfiguration())), props).build();
         assertRules(actual);
-        assertTrue(actual.getMetaDataMap().get("logic_db").getResource().getDataSources().isEmpty());
+        assertTrue(actual.getMetaData("logic_db").getResource().getDataSources().isEmpty());
         assertTrue(((DefaultAuthentication) actual.getAuthentication()).getUsers().isEmpty());
         assertThat(actual.getProps().getProps().size(), is(1));
         assertThat(actual.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(1));
@@ -73,12 +73,12 @@ public final class MetaDataContextsBuilderTest {
     }
     
     private void assertRules(final MetaDataContexts actual) {
-        assertThat(actual.getMetaDataMap().get("logic_db").getRuleMetaData().getRules().size(), is(1));
-        assertThat(actual.getMetaDataMap().get("logic_db").getRuleMetaData().getRules().iterator().next(), CoreMatchers.instanceOf(FixtureRule.class));
+        assertThat(actual.getMetaData("logic_db").getRuleMetaData().getRules().size(), is(1));
+        assertThat(actual.getMetaData("logic_db").getRuleMetaData().getRules().iterator().next(), CoreMatchers.instanceOf(FixtureRule.class));
     }
     
     private void assertDataSources(final MetaDataContexts actual) {
-        assertThat(actual.getMetaDataMap().get("logic_db").getResource().getDataSources().size(), is(1));
-        assertThat(actual.getMetaDataMap().get("logic_db").getResource().getDataSources().get("ds"), CoreMatchers.instanceOf(MockedDataSource.class));
+        assertThat(actual.getMetaData("logic_db").getResource().getDataSources().size(), is(1));
+        assertThat(actual.getMetaData("logic_db").getResource().getDataSources().get("ds"), CoreMatchers.instanceOf(MockedDataSource.class));
     }
 }

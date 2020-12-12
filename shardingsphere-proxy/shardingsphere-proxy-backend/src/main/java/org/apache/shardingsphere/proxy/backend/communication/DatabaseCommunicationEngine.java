@@ -157,7 +157,7 @@ public final class DatabaseCommunicationEngine {
     }
     
     private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap().get(metaData.getName()).getResource().getDatabaseType(),
+        MergeEngine mergeEngine = new MergeEngine(ProxyContext.getInstance().getMetaDataContexts().getMetaData(metaData.getName()).getResource().getDatabaseType(),
                 metaData.getSchema(), ProxyContext.getInstance().getMetaDataContexts().getProps(), metaData.getRuleMetaData().getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
@@ -178,7 +178,7 @@ public final class DatabaseCommunicationEngine {
                 Collection<String> routeDataSourceNames = executionContext.getRouteContext().getRouteUnits().stream()
                         .map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
                 SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
-                        ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap().get(metaData.getName()).getResource().getDatabaseType(),
+                        ProxyContext.getInstance().getMetaDataContexts().getMetaData(metaData.getName()).getResource().getDatabaseType(),
                         metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), ProxyContext.getInstance().getMetaDataContexts().getProps());
                 schemaRefresher.get().refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, materials);
                 notifySchemaChanged(metaData.getName(), metaData.getSchema());

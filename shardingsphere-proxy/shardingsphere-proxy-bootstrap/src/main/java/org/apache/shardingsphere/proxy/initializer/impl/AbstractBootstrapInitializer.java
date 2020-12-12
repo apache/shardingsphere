@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.factory.JDBCRawBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
@@ -86,13 +86,14 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private TransactionContexts createTransactionContexts(final MetaDataContexts metaDataContexts) {
-        Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(metaDataContexts.getMetaDataMap().size(), 1);
+        Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(metaDataContexts.getAllSchemas().size(), 1);
         XATransactionManagerType transactionType = XATransactionManagerType.valueFrom(metaDataContexts.getProps().getValue(ConfigurationPropertyKey.PROXY_XA_TRANSACTION_MANAGER_TYPE));
         XATransactionManagerTypeHolder.set(transactionType);
-        for (Entry<String, ShardingSphereMetaData> entry : metaDataContexts.getMetaDataMap().entrySet()) {
+        for (String each : metaDataContexts.getAllSchemas()) {
             ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
-            engine.init(metaDataContexts.getMetaDataMap().get(entry.getKey()).getResource().getDatabaseType(), entry.getValue().getResource().getDataSources());
-            transactionManagerEngines.put(entry.getKey(), engine);
+            ShardingSphereResource resource = metaDataContexts.getMetaData(each).getResource();
+            engine.init(resource.getDatabaseType(), resource.getDataSources());
+            transactionManagerEngines.put(each, engine);
         }
         return new StandardTransactionContexts(transactionManagerEngines);
     }
