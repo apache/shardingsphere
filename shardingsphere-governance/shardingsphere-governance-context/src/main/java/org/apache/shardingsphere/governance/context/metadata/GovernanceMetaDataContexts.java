@@ -49,7 +49,6 @@ import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEve
 import org.apache.shardingsphere.infra.rule.type.StatusContainedRule;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -68,9 +67,9 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private final GovernanceFacade governanceFacade;
     
-    private volatile MetaDataContexts metaDataContexts;
+    private volatile StandardMetaDataContexts metaDataContexts;
     
-    public GovernanceMetaDataContexts(final MetaDataContexts metaDataContexts, final GovernanceFacade governanceFacade) {
+    public GovernanceMetaDataContexts(final StandardMetaDataContexts metaDataContexts, final GovernanceFacade governanceFacade) {
         this.governanceFacade = governanceFacade;
         this.metaDataContexts = metaDataContexts;
         ShardingSphereEventBus.getInstance().register(this);
@@ -101,14 +100,9 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         return metaDataContexts.getAllSchemas();
     }
     
-    @Override
-    public Map<String, DatabaseType> getDatabaseTypes() {
-        return metaDataContexts.getDatabaseTypes();
-    }
-    
     private Map<String, DatabaseType> getDatabaseTypes(final Map<String, Map<String, DataSource>> dataSourcesMap) throws SQLException {
         if (dataSourcesMap.isEmpty() || dataSourcesMap.values().iterator().next().isEmpty()) {
-            return metaDataContexts.getDatabaseTypes();
+            return Collections.emptyMap();
         }
         Map<String, DatabaseType> result = new HashMap<>(dataSourcesMap.size(), 1);
         for (Entry<String, Map<String, DataSource>> entry : dataSourcesMap.entrySet()) {
@@ -151,7 +145,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     @Override
-    public void close() throws IOException {
+    public void close() {
         metaDataContexts.close();
         governanceFacade.close();
     }

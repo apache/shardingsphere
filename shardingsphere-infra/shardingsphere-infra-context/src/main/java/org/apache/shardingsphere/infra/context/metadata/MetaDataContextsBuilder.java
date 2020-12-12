@@ -88,7 +88,7 @@ public final class MetaDataContextsBuilder {
      * @exception SQLException SQL exception
      * @return meta data contexts
      */
-    public MetaDataContexts build() throws SQLException {
+    public StandardMetaDataContexts build() throws SQLException {
         Map<String, ShardingSphereMetaData> mataDataMap = new LinkedHashMap<>(ruleConfigs.size(), 1);
         for (String each : ruleConfigs.keySet()) {
             mataDataMap.put(each, buildMetaData(each));

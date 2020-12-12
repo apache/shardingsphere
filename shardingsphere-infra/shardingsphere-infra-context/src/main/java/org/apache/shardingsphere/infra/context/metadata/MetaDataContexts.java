@@ -40,13 +40,6 @@ public interface MetaDataContexts extends Closeable {
     Collection<String> getAllSchemas();
     
     /**
-     * Get database types.
-     *
-     * @return database types
-     */
-    Map<String, DatabaseType> getDatabaseTypes();
-    
-    /**
      * Get database type.
      *
      * @param schemaName  schema name
