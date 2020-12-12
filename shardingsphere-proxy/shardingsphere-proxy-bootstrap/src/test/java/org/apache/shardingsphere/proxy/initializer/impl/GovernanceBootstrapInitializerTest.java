@@ -21,12 +21,13 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
-import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -207,12 +208,10 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     @Test
     public void assertDecorateMetaDataContexts() {
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
+        StandardMetaDataContexts metaDataContexts = mock(StandardMetaDataContexts.class);
         MetaDataContexts actualMetaDataContexts = getInitializer().decorateMetaDataContexts(metaDataContexts);
         assertNotNull(actualMetaDataContexts);
         assertThat(actualMetaDataContexts, instanceOf(GovernanceMetaDataContexts.class));
-        assertThat(actualMetaDataContexts.getDatabaseType(), is(metaDataContexts.getDatabaseType()));
-        assertThat(actualMetaDataContexts.getMetaDataMap(), is(metaDataContexts.getMetaDataMap()));
         assertThat(actualMetaDataContexts.getDefaultMetaData(), is(metaDataContexts.getDefaultMetaData()));
         assertThat(actualMetaDataContexts.getAuthentication(), is(metaDataContexts.getAuthentication()));
         assertThat(actualMetaDataContexts.getProps(), is(metaDataContexts.getProps()));

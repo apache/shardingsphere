@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.resource;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.resource.fixture.CloseableDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +49,7 @@ public final class ShardingSphereResourceTest {
     
     @Test
     public void assertClose() throws SQLException, IOException {
-        new ShardingSphereResource(createDataSources(), mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class)).close(Arrays.asList("ds_0", "ds_2"));
+        new ShardingSphereResource(createDataSources(), mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class), mock(DatabaseType.class)).close(Arrays.asList("ds_0", "ds_2"));
         verify(dataSource0).close();
         verify(dataSource1, times(0)).close();
     }

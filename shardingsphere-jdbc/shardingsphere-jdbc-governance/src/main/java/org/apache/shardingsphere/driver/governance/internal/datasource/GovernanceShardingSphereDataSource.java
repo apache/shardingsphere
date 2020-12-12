@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.governance.internal.datasource;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.governance.internal.state.DriverStateContext;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
@@ -31,9 +30,9 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
+import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
@@ -61,14 +60,14 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     public GovernanceShardingSphereDataSource(final GovernanceConfiguration governanceConfig) throws SQLException {
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
         metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(governanceFacade), governanceFacade);
-        transactionContexts = createTransactionContexts(metaDataContexts.getDatabaseType(), metaDataContexts.getDefaultMetaData().getResource().getDataSources());
+        transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), metaDataContexts.getDefaultMetaData().getResource().getDataSources());
     }
     
     public GovernanceShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, 
                                               final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
         metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(dataSourceMap, ruleConfigs, props), governanceFacade);
-        transactionContexts = createTransactionContexts(metaDataContexts.getDatabaseType(), metaDataContexts.getDefaultMetaData().getResource().getDataSources());
+        transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), metaDataContexts.getDefaultMetaData().getResource().getDataSources());
         uploadLocalConfiguration(governanceFacade);
     }
     
@@ -79,36 +78,21 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         return result;
     }
     
-    private MetaDataContexts createMetaDataContexts(final GovernanceFacade governanceFacade) throws SQLException {
+    private StandardMetaDataContexts createMetaDataContexts(final GovernanceFacade governanceFacade) throws SQLException {
         ConfigCenter configCenter = governanceFacade.getConfigCenter();
         Map<String, DataSourceConfiguration> dataSourceConfigs = configCenter.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
         Collection<RuleConfiguration> ruleConfigurations = configCenter.loadRuleConfigurations(DefaultSchema.LOGIC_NAME);
         Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(dataSourceConfigs);
-        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(createDatabaseType(dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
                 Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), new DefaultAuthentication(), configCenter.loadProperties());
         return metaDataContextsBuilder.build();
     }
     
-    private MetaDataContexts createMetaDataContexts(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
-        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(createDatabaseType(dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap),
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigs), new DefaultAuthentication(), props);
+    private StandardMetaDataContexts createMetaDataContexts(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigs), new DefaultAuthentication(), props);
         return metaDataContextsBuilder.build();
-    }
-    
-    private DatabaseType createDatabaseType(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        DatabaseType result = null;
-        for (DataSource each : dataSourceMap.values()) {
-            DatabaseType databaseType = createDatabaseType(each);
-            Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
-            result = databaseType;
-        }
-        return result;
-    }
-    
-    private DatabaseType createDatabaseType(final DataSource dataSource) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
-        }
     }
     
     private TransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
