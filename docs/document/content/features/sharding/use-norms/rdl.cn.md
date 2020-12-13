@@ -24,11 +24,11 @@ CREATE datasources (
 ds0=127.0.0.1:3306:demo_ds_0:root:pwd, 
 ds1=127.0.0.1:3306:demo_ds_1:root:pwd)
 ```
-- `CREATE SHARDINGRULE`，用于配置分片规则。
+- `CREATE SHARDING RULE`，用于配置分片规则。
 ```sql
 // SQL
 
-CREATE SHARDINGRULE (
+CREATE SHARDING RULE (
 sharding_table_name=sharding_algorithm(algorithm_property[, algothrim_property])
 [, sharding_table_name=sharding_algorithm_type(algorithm_property[, algothrim_property]), ...]
 )
@@ -38,7 +38,7 @@ mod_algorithm_properties: sharding_column,shards_amount
 mod_hash_algorithm_properties: sharding_column,shards_amount
 
 // Example
-CREATE shardingrules (
+CREATE SHARDING RULE (
 t_order=hash_mod(order_id, 4), 
 t_item=mod(item_id, 2)
 )
@@ -84,7 +84,7 @@ ds1=127.0.0.1:3306:demo_ds_3:root:pwd)
 3. 创建分片规则
 
 ```SQL
-CREATE shardingrule (
+CREATE SHARDING RULE (
 t_order=hash_mod(order_id, 4), 
 t_item=mod(item_id, 2)
 )
