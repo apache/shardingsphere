@@ -23,20 +23,48 @@ createDataSources
     : CREATE DATASOURCES LP dataSource (COMMA dataSource)* RP
     ;
 
+dataSource
+    : dataSourceName EQ dataSourceDefinition
+    ;
+
+dataSourceName
+    : IDENTIFIER
+    ;
+
+dataSourceDefinition
+    : hostName COLON port COLON dbName (COLON user (COLON password)?)?
+    ;
+
+hostName
+    : IDENTIFIER | ip
+    ;
+
+ip
+    : NUMBER+
+    ;
+
+port
+    : INT
+    ;
+
+dbName
+    : IDENTIFIER
+    ;
+
+user
+    : IDENTIFIER | NUMBER
+    ;
+
+password
+    : IDENTIFIER | NUMBER | STRING
+    ;
+
 createShardingRule
     : CREATE SHARDINGRULE LP tableRule (COMMA tableRule)* RP
     ;
 
 tableRule
     : tableName EQ tableRuleDefinition
-    ;
-
-dataSource
-    : dataSourceName EQ dataSourceDefinition
-    ;
-       
-dataSourceDefinition
-    : hostName COLON port COLON dbName (COLON user (COLON password)?)?
     ;
 
 tableRuleDefinition
@@ -54,13 +82,9 @@ strategyDefinition
 strategyProps
     : strategyProp (COMMA strategyProp)*
     ;
-    
+
 strategyProp
     : IDENTIFIER | NUMBER | INT
-    ;
-
-dataSourceName
-    : IDENTIFIER
     ;
 
 tableName
@@ -71,25 +95,10 @@ columName
     : IDENTIFIER
     ;
 
-hostName
-    : IDENTIFIER | ip
+showShardingRule
+    : SHOW SHARDINGRULE (FROM schemaName)?
     ;
 
-ip
-    : NUMBER+
-    ;
-port
-    : INT
-    ;
-    
-dbName
+schemaName
     : IDENTIFIER
-    ;
-
-user
-    : IDENTIFIER | NUMBER
-    ;
-
-password
-    : IDENTIFIER | NUMBER | STRING
     ;

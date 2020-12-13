@@ -15,13 +15,17 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.infra.binder.statement.rdl;
 
-import Symbol, RDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.ShowShardingRuleStatement;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 
-execute
-    : (createDataSources
-    | createShardingRule
-    | showShardingRule
-    ) SEMI?
-    ;
+/**
+ * Show sharding rule statement context.
+ */
+public final class ShowShardingRuleStatementContext extends CommonSQLStatementContext<ShowShardingRuleStatement> {
+    
+    public ShowShardingRuleStatementContext(final ShowShardingRuleStatement sqlStatement) {
+        super(sqlStatement);
+    }
+}
