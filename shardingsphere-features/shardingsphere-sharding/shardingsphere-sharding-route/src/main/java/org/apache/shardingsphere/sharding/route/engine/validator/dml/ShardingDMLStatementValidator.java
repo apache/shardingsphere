@@ -40,8 +40,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 
-import com.google.common.base.Preconditions;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -75,19 +73,20 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
         return allTableNames.isEmpty();
     }
     
-    protected void checkSubqueryShardingValues(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
+    protected boolean checkSubqueryShardingValues(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
         final List<Object> parameters, final ShardingSphereSchema schema) {
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent() && isRoutingByHint(shardingRule, tableRule.get())
                 && !HintManager.getDatabaseShardingValues(each).isEmpty() && !HintManager.getTableShardingValues(each).isEmpty()) {
-                return;
+                return false;
             }
         }
         ShardingConditions shardingConditions = createShardingConditions(sqlStatementContext, parameters, schema, shardingRule);
-        if (shardingConditions.getConditions().size() > 1) {
-            Preconditions.checkState(isSameShardingCondition(shardingRule, shardingConditions), "Sharding value must same with subquery.");
+        if (shardingConditions.getConditions().size() > 1 && !isSameShardingCondition(shardingRule, shardingConditions)) {
+            return true;
         }
+        return false;
     }
     
     private boolean isRoutingByHint(final ShardingRule shardingRule, final TableRule tableRule) {
