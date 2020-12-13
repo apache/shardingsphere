@@ -22,15 +22,20 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.C
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.StrategyPropContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.StrategyPropsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.TableRuleContext;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateDataSourcesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.DataSourceConnectionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.TableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateDataSourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.ShowShardingRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -91,10 +96,20 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitStrategyProps(final StrategyPropsContext ctx) {
-        CollectionValue<String> result = new CollectionValue();
+        CollectionValue<String> result = new CollectionValue<>();
         for (StrategyPropContext each : ctx.strategyProp()) {
             result.getValue().add(each.getText());
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitShowShardingRule(final ShowShardingRuleContext ctx) {
+        return null == ctx.schemaName() ? new ShowShardingRuleStatement(null) : new ShowShardingRuleStatement((SchemaSegment) visit(ctx.schemaName()));
+    }
+
+    @Override
+    public ASTNode visitSchemaName(final SchemaNameContext ctx) {
+        return new SchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
     }
 }

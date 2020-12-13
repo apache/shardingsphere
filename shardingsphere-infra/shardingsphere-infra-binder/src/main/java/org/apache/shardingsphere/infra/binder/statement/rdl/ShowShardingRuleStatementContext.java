@@ -15,30 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.fixture;
+package org.apache.shardingsphere.infra.binder.statement.rdl;
 
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.ShowShardingRuleStatement;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 
-import java.util.Collection;
-import java.util.Collections;
-
-import static org.mockito.Mockito.mock;
-
-public final class FixtureDatabaseType implements DatabaseType {
+/**
+ * Show sharding rule statement context.
+ */
+public final class ShowShardingRuleStatementContext extends CommonSQLStatementContext<ShowShardingRuleStatement> {
     
-    @Override
-    public String getName() {
-        return "FixtureDB";
-    }
-    
-    @Override
-    public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton("jdbc:fixture");
-    }
-    
-    @Override
-    public DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return mock(DataSourceMetaData.class);
+    public ShowShardingRuleStatementContext(final ShowShardingRuleStatement sqlStatement) {
+        super(sqlStatement);
     }
 }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Database backend handler with unicast schema.
@@ -63,11 +61,11 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     }
     
     private String getFirstSchemaName() {
-        Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap();
-        if (metaDataMap.isEmpty()) {
+        Collection<String> schemaNames = ProxyContext.getInstance().getAllSchemaNames();
+        if (schemaNames.isEmpty()) {
             throw new NoDatabaseSelectedException();
         }
-        return metaDataMap.keySet().iterator().next();
+        return schemaNames.iterator().next();
     }
     
     @Override
