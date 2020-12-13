@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.DataSourceConnectionSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRDLStatement;
+
+import java.util.Collection;
 
 /**
- * Show sharding rule statement.
+ * Create dataSource statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowShardingRuleStatement extends RDLStatement {
+public final class CreateDataSourcesStatement extends CreateRDLStatement {
     
-    private final SchemaSegment schemaName;
+    private final Collection<DataSourceConnectionSegment> connectionInfos;
 }

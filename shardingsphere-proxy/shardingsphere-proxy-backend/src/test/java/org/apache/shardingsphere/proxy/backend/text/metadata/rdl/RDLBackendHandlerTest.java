@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.metadata.rdl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateDataSourcesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDataSourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;

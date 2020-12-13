@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.statement.rdl;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDataSourcesStatement;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.show.ShowRDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Create dataSource statement context.
+ * Show sharding rule statement.
  */
+@RequiredArgsConstructor
 @Getter
-public final class CreateDataSourcesStatementContext extends CommonSQLStatementContext<CreateDataSourcesStatement> {
+public final class ShowShardingRuleStatement extends ShowRDLStatement {
     
-    private final DatabaseType databaseType;
-    
-    public CreateDataSourcesStatementContext(final CreateDataSourcesStatement sqlStatement, final DatabaseType databaseType) {
-        super(sqlStatement);
-        this.databaseType = databaseType;
-    }
+    private final SchemaSegment schemaName;
 }

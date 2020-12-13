@@ -15,23 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.statement.rdl;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.show;
 
-import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDataSourcesStatement;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 
 /**
- * Create dataSource statement context.
+ * Show RDL statement.
  */
-@Getter
-public final class CreateDataSourcesStatementContext extends CommonSQLStatementContext<CreateDataSourcesStatement> {
-    
-    private final DatabaseType databaseType;
-    
-    public CreateDataSourcesStatementContext(final CreateDataSourcesStatement sqlStatement, final DatabaseType databaseType) {
-        super(sqlStatement);
-        this.databaseType = databaseType;
-    }
+public abstract class ShowRDLStatement extends RDLStatement {
 }
