@@ -19,6 +19,7 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
  * Show sharding rule statement.
@@ -27,5 +28,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class ShowShardingRuleStatement extends RDLStatement {
     
-    private final String schemaName;
+    private final SchemaSegment schemaName;
 }
