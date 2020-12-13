@@ -95,7 +95,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     @Override
     public void postValidate(final InsertStatement sqlStatement, final RouteContext routeContext) {
         if (needCheckDatabaseInstance) {
-            Preconditions.checkState(routeContext.getRouteUnits().size() > 0, "Sharding value must same with subquery.");
+            Preconditions.checkState(routeContext.isSingleRouting(), "Sharding value must same with subquery.");
         }
     }
 }
