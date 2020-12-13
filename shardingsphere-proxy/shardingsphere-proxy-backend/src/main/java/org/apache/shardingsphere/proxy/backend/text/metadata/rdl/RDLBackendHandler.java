@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.text.metadata.rdl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateDataSourcesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateShardingRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.ShowShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDataSourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.show.ShowRDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowShardingRuleStatement;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePersistEvent;
@@ -173,7 +174,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     }
     
     private boolean isQuery() {
-        return sqlStatement instanceof ShowShardingRuleStatement;
+        return sqlStatement instanceof ShowRDLStatement;
     }
     
     @Override
