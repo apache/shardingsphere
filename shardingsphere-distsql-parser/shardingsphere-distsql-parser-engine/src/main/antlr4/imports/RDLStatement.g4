@@ -60,7 +60,7 @@ password
     ;
 
 createShardingRule
-    : CREATE SHARDINGRULE LP tableRule (COMMA tableRule)* RP
+    : CREATE SHARDING RULE LP tableRule (COMMA tableRule)* RP
     ;
 
 tableRule
@@ -96,7 +96,7 @@ columName
     ;
 
 showShardingRule
-    : SHOW SHARDINGRULE (FROM schemaName)?
+    : SHOW SHARDING RULE (FROM schemaName)?
     ;
 
 schemaName

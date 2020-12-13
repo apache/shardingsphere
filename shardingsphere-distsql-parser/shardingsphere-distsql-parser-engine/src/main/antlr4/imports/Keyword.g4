@@ -30,9 +30,9 @@ CREATE
 DATASOURCES
     : D A T A S O U R C E S
     ;
-    
-SHARDINGRULE
-    : S H A R D I N G R U L E
+
+RULE
+    :  R U L E
     ;
 
 SHOW
@@ -41,4 +41,8 @@ SHOW
 
 FROM
     : F R O M
+    ;
+
+SHARDING
+    : S H A R D I N G
     ;
