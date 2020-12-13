@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.infra.parser;
 
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.shardingsphere.distsql.parser.api.DistSQLStatementParserEngine;
+import org.apache.shardingsphere.infra.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
-import org.apache.shardingsphere.infra.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
@@ -72,7 +73,7 @@ public final class ShardingSphereSQLParserEngine {
     private SQLStatement parse0(final String sql, final boolean useCache) {
         try {
             return sqlStatementParserEngine.parse(sql, useCache);
-        } catch (final SQLParsingException originalEx) {
+        } catch (final SQLParsingException | ParseCancellationException originalEx) {
             try {
                 return distSQLStatementParserEngine.parse(sql);
             } catch (final SQLParsingException ignored) {
