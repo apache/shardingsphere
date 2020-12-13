@@ -82,7 +82,7 @@ strategyDefinition
 strategyProps
     : strategyProp (COMMA strategyProp)*
     ;
-    
+
 strategyProp
     : IDENTIFIER | NUMBER | INT
     ;
@@ -92,5 +92,13 @@ tableName
     ;
 
 columName
+    : IDENTIFIER
+    ;
+
+showShardingRule
+    : SHOW SHARDINGRULE (FROM schemaName)?
+    ;
+
+schemaName
     : IDENTIFIER
     ;
