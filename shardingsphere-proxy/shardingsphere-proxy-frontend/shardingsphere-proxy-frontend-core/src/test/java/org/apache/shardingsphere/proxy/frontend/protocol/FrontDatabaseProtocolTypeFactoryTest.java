@@ -101,7 +101,6 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
         when(shardingSphereResource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
-        when(shardingSphereMetaData.getName()).thenReturn("MySQL");
         Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap("mysql", shardingSphereMetaData);
         return metaDataMap;
     }
