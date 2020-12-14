@@ -15,14 +15,19 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl;
 
-import Symbol, RDLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.show.ShowRDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
-execute
-    : (createDataSources
-    | createShardingRule
-    | showDataSources
-    | showRule
-    ) SEMI?
-    ;
+/**
+ * Show data sources statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ShowDataSourcesStatement extends ShowRDLStatement {
+    
+    private final SchemaSegment schemaName;
+}

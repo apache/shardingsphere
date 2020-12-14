@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.metadata.rdl;
+package org.apache.shardingsphere.proxy.backend.text.metadata.rdl.update;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDataSourcesStatement;
@@ -60,17 +60,16 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class RDLUpdateBackendHandler implements TextProtocolBackendHandler {
     
-    private final BackendConnection backendConnection;
-    
     private final SQLStatement sqlStatement;
+    
+    private final BackendConnection backendConnection;
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        SQLStatementContext<?> context = getSQLStatementContext();
         if (!isRegistryCenterExisted()) {
-            throw new SQLException(String.format("No Registry center to execute `%s` SQL", context.getClass().getSimpleName()));
+            throw new SQLException(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName()));
         }
-        return getResponseHeader(context);
+        return getResponseHeader(getSQLStatementContext());
     }
     
     private ResponseHeader execute(final CreateDatabaseStatementContext context) {
@@ -108,6 +107,10 @@ public final class RDLUpdateBackendHandler implements TextProtocolBackendHandler
         return new UpdateResponseHeader(context.getSqlStatement());
     }
     
+    private boolean isRegistryCenterExisted() {
+        return !(ProxyContext.getInstance().getMetaDataContexts() instanceof StandardMetaDataContexts);
+    }
+    
     private SQLStatementContext<?> getSQLStatementContext() {
         DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
         if (sqlStatement instanceof CreateDataSourcesStatement) {
@@ -139,9 +142,5 @@ public final class RDLUpdateBackendHandler implements TextProtocolBackendHandler
             return execute((CreateShardingRuleStatementContext) context);
         }
         throw new UnsupportedOperationException(context.getClass().getName());
-    }
-    
-    private boolean isRegistryCenterExisted() {
-        return !(ProxyContext.getInstance().getMetaDataContexts() instanceof StandardMetaDataContexts);
     }
 }

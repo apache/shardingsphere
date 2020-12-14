@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.metadata.rdl;
+package org.apache.shardingsphere.proxy.backend.text.metadata.rdl.query;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowRuleStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.rdl.ShowRuleStatementContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.Types;
 import java.util.Collection;
@@ -44,28 +42,27 @@ import java.util.Iterator;
 import java.util.Optional;
 
 /**
- * Backend handler for RDL query.
+ * Backend handler for RDL rule query.
  */
 @RequiredArgsConstructor
-public final class RDLQueryBackendHandler implements TextProtocolBackendHandler {
+public final class RDLRuleQueryBackendHandler implements TextProtocolBackendHandler {
+    
+    private final ShowRuleStatement sqlStatement;
     
     private final BackendConnection backendConnection;
     
-    private final SQLStatement sqlStatement;
-    
-    private Iterator<RuleConfiguration> ruleConfigData;
+    private Iterator<RuleConfiguration> data;
     
     @Override
     public ResponseHeader execute() {
-        SQLStatementContext<?> context = getSQLStatementContext();
-        return getResponseHeader(context);
+        return execute(new ShowRuleStatementContext(sqlStatement));
     }
     
     private ResponseHeader execute(final ShowRuleStatementContext context) {
         String schemaName = null == context.getSqlStatement().getSchemaName() ? backendConnection.getSchemaName() : context.getSqlStatement().getSchemaName().getIdentifier().getValue();
         String ruleType = context.getSqlStatement().getRuleType();
         QueryHeader queryHeader = new QueryHeader(schemaName, "", ruleType, ruleType, Types.CHAR, "CHAR", 255, 0, false, false, false, false);
-        ruleConfigData = loadRuleConfiguration(schemaName, ruleType);
+        data = loadRuleConfiguration(schemaName, ruleType);
         return new QueryResponseHeader(Collections.singletonList(queryHeader));
     }
     
@@ -91,28 +88,14 @@ public final class RDLQueryBackendHandler implements TextProtocolBackendHandler 
         }
     }
     
-    private SQLStatementContext<?> getSQLStatementContext() {
-        if (sqlStatement instanceof ShowRuleStatement) {
-            return new ShowRuleStatementContext((ShowRuleStatement) sqlStatement);
-        }
-        throw new UnsupportedOperationException(sqlStatement.getClass().getName());
-    }
-    
-    private ResponseHeader getResponseHeader(final SQLStatementContext<?> context) {
-        if (context instanceof ShowRuleStatementContext) {
-            return execute((ShowRuleStatementContext) context);
-        }
-        throw new UnsupportedOperationException(context.getClass().getName());
-    }
-    
     @Override
     public boolean next() {
-        return ruleConfigData.hasNext();
+        return data.hasNext();
     }
     
     @Override
     public Collection<Object> getRowData() {
-        RuleConfiguration ruleConfig = ruleConfigData.next();
+        RuleConfiguration ruleConfig = data.next();
         YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(Collections.singleton(ruleConfig)).iterator().next();
         return Collections.singleton(YamlEngine.marshal(yamlRuleConfig));
     }

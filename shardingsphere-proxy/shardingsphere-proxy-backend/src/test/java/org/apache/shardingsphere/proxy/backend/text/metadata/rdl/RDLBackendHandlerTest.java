@@ -32,6 +32,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.text.metadata.rdl.update.RDLUpdateBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateDatabaseStatement;
@@ -80,11 +81,11 @@ public final class RDLBackendHandlerTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         sqlStatement.setDatabaseName("new_db");
-        RDLUpdateBackendHandler executeEngine = new RDLUpdateBackendHandler(connection, sqlStatement);
+        RDLUpdateBackendHandler executeEngine = new RDLUpdateBackendHandler(sqlStatement, connection);
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("No Registry center to execute `CreateDatabaseStatementContext` SQL"));
+            assertThat(ex.getMessage(), is(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName())));
         }
         setGovernanceMetaDataContexts(true);
         ResponseHeader response = executeEngine.execute();
@@ -105,11 +106,11 @@ public final class RDLBackendHandlerTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         sqlStatement.setDatabaseName("schema");
-        RDLUpdateBackendHandler executeEngine = new RDLUpdateBackendHandler(connection, sqlStatement);
+        RDLUpdateBackendHandler executeEngine = new RDLUpdateBackendHandler(sqlStatement, connection);
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("No Registry center to execute `DropDatabaseStatementContext` SQL"));
+            assertThat(ex.getMessage(), is(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName())));
         }
         setGovernanceMetaDataContexts(true);
         ResponseHeader response = executeEngine.execute();
@@ -130,11 +131,11 @@ public final class RDLBackendHandlerTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         sqlStatement.setDatabaseName("schema");
-        RDLUpdateBackendHandler executeEngine = new RDLUpdateBackendHandler(connection, sqlStatement);
+        RDLUpdateBackendHandler executeEngine = new RDLUpdateBackendHandler(sqlStatement, connection);
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("No Registry center to execute `CreateDatabaseStatementContext` SQL"));
+            assertThat(ex.getMessage(), is(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName())));
         }
         setGovernanceMetaDataContexts(true);
         try {
@@ -154,11 +155,11 @@ public final class RDLBackendHandlerTest {
     public void assertExecuteDataSourcesContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
-        RDLUpdateBackendHandler executeEngine = new RDLUpdateBackendHandler(connection, mock(CreateDataSourcesStatement.class));
+        RDLUpdateBackendHandler executeEngine = new RDLUpdateBackendHandler(mock(CreateDataSourcesStatement.class), connection);
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("No Registry center to execute `CreateDataSourcesStatementContext` SQL"));
+            assertThat(ex.getMessage(), is("No Registry center to execute `CreateDataSourcesStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
         ResponseHeader response = executeEngine.execute();
@@ -169,11 +170,11 @@ public final class RDLBackendHandlerTest {
     public void assertExecuteShardingRuleContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
-        RDLUpdateBackendHandler executeEngine = new RDLUpdateBackendHandler(connection, mock(CreateShardingRuleStatement.class));
+        RDLUpdateBackendHandler executeEngine = new RDLUpdateBackendHandler(mock(CreateShardingRuleStatement.class), connection);
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("No Registry center to execute `CreateShardingRuleStatementContext` SQL"));
+            assertThat(ex.getMessage(), is("No Registry center to execute `CreateShardingRuleStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
         ResponseHeader response = executeEngine.execute();

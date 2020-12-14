@@ -95,6 +95,10 @@ columName
     : IDENTIFIER
     ;
 
+showDataSources
+    : SHOW DATASOURCES (FROM schemaName)?
+    ;
+
 showRule
     : SHOW ruleType RULE (FROM schemaName)?
     ;
