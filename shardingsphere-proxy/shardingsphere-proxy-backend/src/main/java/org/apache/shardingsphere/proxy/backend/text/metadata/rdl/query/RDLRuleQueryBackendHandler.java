@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.metadata.rdl;
+package org.apache.shardingsphere.proxy.backend.text.metadata.rdl.query;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowRuleStatement;
@@ -44,10 +44,10 @@ import java.util.Iterator;
 import java.util.Optional;
 
 /**
- * Backend handler for RDL query.
+ * Backend handler for RDL rule query.
  */
 @RequiredArgsConstructor
-public final class RDLQueryBackendHandler implements TextProtocolBackendHandler {
+public final class RDLRuleQueryBackendHandler implements TextProtocolBackendHandler {
     
     private final BackendConnection backendConnection;
     
