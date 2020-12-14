@@ -57,8 +57,7 @@ public final class RDLQueryBackendHandler implements TextProtocolBackendHandler 
     
     @Override
     public ResponseHeader execute() {
-        SQLStatementContext<?> context = getSQLStatementContext();
-        return getResponseHeader(context);
+        return getResponseHeader(getSQLStatementContext());
     }
     
     private ResponseHeader execute(final ShowRuleStatementContext context) {
