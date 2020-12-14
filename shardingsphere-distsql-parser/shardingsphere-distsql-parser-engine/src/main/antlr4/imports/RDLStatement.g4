@@ -60,31 +60,35 @@ password
     ;
 
 createShardingRule
-    : CREATE SHARDING RULE LP tableRule (COMMA tableRule)* RP
+    : CREATE SHARDING RULE LP shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)* RP
     ;
 
-tableRule
-    : tableName EQ tableRuleDefinition
+shardingTableRuleDefinition
+    : tableName columName shardingAlgorithmDefinition
     ;
 
-tableRuleDefinition
-    : strategyType LP strategyDefinition RP
+shardingAlgorithmDefinition
+    : shardingAlgorithmType LP shardingAlgorithmProperties RP
     ;
 
-strategyType
+shardingAlgorithmType
     : IDENTIFIER
     ;
 
-strategyDefinition
-    : columName COMMA strategyProps
+shardingAlgorithmProperties
+    : shardingAlgorithmProperty (COMMA shardingAlgorithmProperty)*
     ;
 
-strategyProps
-    : strategyProp (COMMA strategyProp)*
+shardingAlgorithmProperty
+    : shardingAlgorithmPropertyKey EQ shardingAlgorithmPropertyValue
     ;
 
-strategyProp
-    : IDENTIFIER | NUMBER | INT
+shardingAlgorithmPropertyKey
+    : IDENTIFIER
+    ;
+
+shardingAlgorithmPropertyValue
+    : NUMBER | INT | STRING
     ;
 
 tableName

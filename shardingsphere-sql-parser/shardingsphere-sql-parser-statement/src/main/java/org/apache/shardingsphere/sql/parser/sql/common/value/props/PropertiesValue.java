@@ -15,29 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.segment.rdl;
+package org.apache.shardingsphere.sql.parser.sql.common.value.props;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.common.value.ValueASTNode;
 
-import java.util.Collection;
 import java.util.Properties;
 
 /**
- * Table rule segment.
+ * Properties value.
  */
 @Getter
-@Setter
-public final class TableRuleSegment implements ASTNode {
+public final class PropertiesValue implements ValueASTNode<Properties> {
     
-    private String logicTable;
-    
-    private Collection<String> dataSources;
-    
-    private String shardingColumn;
-    
-    private String algorithmType;
-    
-    private Properties algorithmProps;
+    private final Properties value = new Properties();
 }
