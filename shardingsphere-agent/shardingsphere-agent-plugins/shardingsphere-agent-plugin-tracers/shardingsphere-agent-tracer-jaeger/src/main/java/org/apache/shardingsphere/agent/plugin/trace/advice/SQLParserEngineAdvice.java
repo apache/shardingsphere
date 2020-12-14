@@ -18,7 +18,7 @@ public class SQLParserEngineAdvice implements MethodAroundAdvice {
     private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/parseSQL/";
     
     @Override
-    public void beforeMethod(TargetObject target, Method method, Object[] args, MethodInvocationResult result) {
+    public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
                 .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
@@ -28,12 +28,12 @@ public class SQLParserEngineAdvice implements MethodAroundAdvice {
     }
     
     @Override
-    public void afterMethod(TargetObject target, Method method, Object[] args, MethodInvocationResult result) {
+    public void afterMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         ((Scope) target.getAttachment()).close();
     }
     
     @Override
-    public void onThrowing(TargetObject target, Method method, Object[] args, Throwable throwable) {
+    public void onThrowing(final TargetObject target, final Method method, final Object[] args, final Throwable throwable) {
         ShardingErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
     }
 }

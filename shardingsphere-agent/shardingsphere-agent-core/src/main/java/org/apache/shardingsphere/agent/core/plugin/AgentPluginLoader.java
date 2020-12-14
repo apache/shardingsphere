@@ -200,15 +200,15 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
                 pluginDefinition.getAllServices().forEach(klass -> {
                     try {
                         services.add(klass.newInstance());
-                        // CHECKSTYLE: OFF
+                        // CHECKSTYLE:OFF
                     } catch (final Throwable ex) {
-                        // CHECKSTYLE: ON
+                        // CHECKSTYLE:ON
                         log.error("Failed to create service instance, {}.", klass, ex);
                     }
                 });
-                // CHECKSTYLE: OFF
+                // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
-                // CHECKSTYLE: ON
+                // CHECKSTYLE:ON
                 log.error("Failed to load plugin definition, {}.", entrypoint, ex);
             }
         }
