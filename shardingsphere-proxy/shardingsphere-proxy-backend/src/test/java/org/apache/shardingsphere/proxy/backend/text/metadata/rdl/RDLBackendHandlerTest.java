@@ -85,7 +85,7 @@ public final class RDLBackendHandlerTest {
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("No Registry center to execute `CreateDatabaseStatementContext` SQL"));
+            assertThat(ex.getMessage(), is(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName())));
         }
         setGovernanceMetaDataContexts(true);
         ResponseHeader response = executeEngine.execute();
@@ -110,7 +110,7 @@ public final class RDLBackendHandlerTest {
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("No Registry center to execute `DropDatabaseStatementContext` SQL"));
+            assertThat(ex.getMessage(), is(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName())));
         }
         setGovernanceMetaDataContexts(true);
         ResponseHeader response = executeEngine.execute();
@@ -135,7 +135,7 @@ public final class RDLBackendHandlerTest {
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("No Registry center to execute `CreateDatabaseStatementContext` SQL"));
+            assertThat(ex.getMessage(), is(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName())));
         }
         setGovernanceMetaDataContexts(true);
         try {
@@ -159,7 +159,7 @@ public final class RDLBackendHandlerTest {
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("No Registry center to execute `CreateDataSourcesStatementContext` SQL"));
+            assertThat(ex.getMessage(), is("No Registry center to execute `CreateDataSourcesStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
         ResponseHeader response = executeEngine.execute();
@@ -174,7 +174,7 @@ public final class RDLBackendHandlerTest {
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("No Registry center to execute `CreateShardingRuleStatementContext` SQL"));
+            assertThat(ex.getMessage(), is("No Registry center to execute `CreateShardingRuleStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
         ResponseHeader response = executeEngine.execute();

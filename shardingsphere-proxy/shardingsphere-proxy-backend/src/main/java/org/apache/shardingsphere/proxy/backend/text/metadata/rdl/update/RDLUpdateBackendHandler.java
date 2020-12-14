@@ -107,6 +107,10 @@ public final class RDLUpdateBackendHandler implements TextProtocolBackendHandler
         return new UpdateResponseHeader(context.getSqlStatement());
     }
     
+    private boolean isRegistryCenterExisted() {
+        return !(ProxyContext.getInstance().getMetaDataContexts() instanceof StandardMetaDataContexts);
+    }
+    
     private SQLStatementContext<?> getSQLStatementContext() {
         DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
         if (sqlStatement instanceof CreateDataSourcesStatement) {
@@ -138,9 +142,5 @@ public final class RDLUpdateBackendHandler implements TextProtocolBackendHandler
             return execute((CreateShardingRuleStatementContext) context);
         }
         throw new UnsupportedOperationException(context.getClass().getName());
-    }
-    
-    private boolean isRegistryCenterExisted() {
-        return !(ProxyContext.getInstance().getMetaDataContexts() instanceof StandardMetaDataContexts);
     }
 }
