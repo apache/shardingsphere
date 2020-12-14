@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.infra.binder.statement.rdl;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowRuleStatement;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 
 /**
- * Show sharding rule statement context.
+ * Show rule statement context.
  */
-public final class ShowShardingRuleStatementContext extends CommonSQLStatementContext<ShowShardingRuleStatement> {
+public final class ShowRuleStatementContext extends CommonSQLStatementContext<ShowRuleStatement> {
     
-    public ShowShardingRuleStatementContext(final ShowShardingRuleStatement sqlStatement) {
+    public ShowRuleStatementContext(final ShowRuleStatement sqlStatement) {
         super(sqlStatement);
     }
 }

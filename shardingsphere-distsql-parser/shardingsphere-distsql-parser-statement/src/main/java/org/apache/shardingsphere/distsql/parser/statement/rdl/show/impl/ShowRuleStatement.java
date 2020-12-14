@@ -23,11 +23,13 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.show.ShowRDLStatem
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Show sharding rule statement.
+ * Show rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowShardingRuleStatement extends ShowRDLStatement {
+public final class ShowRuleStatement extends ShowRDLStatement {
+    
+    private final String ruleType;
     
     private final SchemaSegment schemaName;
 }

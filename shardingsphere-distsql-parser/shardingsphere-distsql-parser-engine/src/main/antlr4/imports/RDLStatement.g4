@@ -95,8 +95,12 @@ columName
     : IDENTIFIER
     ;
 
-showShardingRule
-    : SHOW SHARDING RULE (FROM schemaName)?
+showRule
+    : SHOW ruleType RULE (FROM schemaName)?
+    ;
+
+ruleType
+    : SHARDING | REPLICA_QUERY | ENCRYPT | SHADOW
     ;
 
 schemaName
