@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.text.metadata.rdl.query;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowRuleStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.rdl.ShowRuleStatementContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
@@ -56,7 +55,7 @@ public final class RDLRuleQueryBackendHandler implements TextProtocolBackendHand
     
     @Override
     public ResponseHeader execute() {
-        return getResponseHeader(new ShowRuleStatementContext(sqlStatement));
+        return execute(new ShowRuleStatementContext(sqlStatement));
     }
     
     private ResponseHeader execute(final ShowRuleStatementContext context) {
@@ -87,13 +86,6 @@ public final class RDLRuleQueryBackendHandler implements TextProtocolBackendHand
             default:
                 throw new UnsupportedOperationException(ruleType);
         }
-    }
-    
-    private ResponseHeader getResponseHeader(final SQLStatementContext<?> context) {
-        if (context instanceof ShowRuleStatementContext) {
-            return execute((ShowRuleStatementContext) context);
-        }
-        throw new UnsupportedOperationException(context.getClass().getName());
     }
     
     @Override
