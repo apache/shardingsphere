@@ -84,9 +84,9 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     }
     
     private void startJob(final ChannelHandlerContext context, final String requestBody) {
-        Optional<ScalingJob> shardingScalingJob = SCALING_JOB_SERVICE.start(GSON.fromJson(requestBody, ScalingConfiguration.class));
-        Preconditions.checkState(shardingScalingJob.isPresent());
-        response(ResponseContentUtil.build(shardingScalingJob.get()), context, HttpResponseStatus.OK);
+        Optional<ScalingJob> scalingJob = SCALING_JOB_SERVICE.start(GSON.fromJson(requestBody, ScalingConfiguration.class));
+        Preconditions.checkState(scalingJob.isPresent());
+        response(ResponseContentUtil.build(scalingJob.get()), context, HttpResponseStatus.OK);
     }
     
     private void listJobs(final ChannelHandlerContext context) {

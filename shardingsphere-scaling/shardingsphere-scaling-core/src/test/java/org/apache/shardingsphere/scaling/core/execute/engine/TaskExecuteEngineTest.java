@@ -34,7 +34,7 @@ public final class TaskExecuteEngineTest {
         TaskExecuteEngine executeEngine = TaskExecuteEngine.newFixedThreadInstance(2);
         try {
             for (int i = 0; i < 5; i++) {
-                Future<?> submit = executeEngine.submit(mockShardingScalingExecutor());
+                Future<?> submit = executeEngine.submit(mockScalingExecutor());
                 assertFalse(submit.isCancelled());
             }
         } catch (final RejectedExecutionException ex) {
@@ -47,7 +47,7 @@ public final class TaskExecuteEngineTest {
         TaskExecuteEngine executeEngine = TaskExecuteEngine.newFixedThreadInstance(2);
         try {
             for (int i = 0; i < 5; i++) {
-                Future<?> submit = executeEngine.submitAll(Collections.singletonList(mockShardingScalingExecutor()), mockExecuteCallback());
+                Future<?> submit = executeEngine.submitAll(Collections.singletonList(mockScalingExecutor()), mockExecuteCallback());
                 assertFalse(submit.isCancelled());
             }
         } catch (final RejectedExecutionException ex) {
@@ -69,7 +69,7 @@ public final class TaskExecuteEngineTest {
         };
     }
     
-    private ScalingExecutor mockShardingScalingExecutor() {
+    private ScalingExecutor mockScalingExecutor() {
         return new ScalingExecutor() {
             @Override
             public void run() {
