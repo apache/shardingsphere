@@ -39,8 +39,8 @@ public final class AbstractDataConsistencyCheckerTest {
     
     @Test
     public void assertCountCheck() {
-        ScalingJob scalingJob = mockShardingScalingJob();
-        DataConsistencyChecker dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance("H2", scalingJob);
+        ScalingJob scalingJob = mockScalingJob();
+        DataConsistencyChecker dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance(scalingJob);
         initTableData(scalingJob.getTaskConfigs().get(0).getDumperConfig().getDataSourceConfig());
         initTableData(scalingJob.getTaskConfigs().get(0).getImporterConfig().getDataSourceConfig());
         Map<String, DataConsistencyCheckResult> resultMap = dataConsistencyChecker.countCheck();
@@ -60,7 +60,7 @@ public final class AbstractDataConsistencyCheckerTest {
     }
     
     @SneakyThrows(IOException.class)
-    private ScalingJob mockShardingScalingJob() {
+    private ScalingJob mockScalingJob() {
         return ScalingConfigurationUtil.initJob("/config.json");
     }
 }

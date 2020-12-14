@@ -42,7 +42,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -73,19 +72,17 @@ public final class DistributedScalingJobServiceTest {
     
     @Test
     public void assertStartWithScalingConfig() {
-        Optional<ScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
-        assertTrue(shardingScalingJob.isPresent());
-        assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(shardingScalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":true"));
+        Optional<ScalingJob> scalingJob = scalingJobService.start(mockScalingConfiguration());
+        assertTrue(scalingJob.isPresent());
+        assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(scalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":true"));
     }
     
     @Test
     public void assertStartWithCallbackImmediately() {
         ScalingConfiguration scalingConfig = mockScalingConfiguration();
         ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfiguration().getSource().unwrap();
-        AtomicBoolean successCallback = new AtomicBoolean();
-        Optional<ScalingJob> scalingJob = scalingJobService.start(source.getDataSource(), source.getRule(), source.getDataSource(), source.getRule(), mockScalingCallback(successCallback));
+        Optional<ScalingJob> scalingJob = scalingJobService.start(source.getDataSource(), source.getRule(), source.getDataSource(), source.getRule(), mockScalingCallback());
         assertFalse(scalingJob.isPresent());
-        assertTrue(successCallback.get());
     }
     
     @Test
@@ -99,10 +96,10 @@ public final class DistributedScalingJobServiceTest {
     
     @Test
     public void assertStop() {
-        Optional<ScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
-        assertTrue(shardingScalingJob.isPresent());
-        scalingJobService.stop(shardingScalingJob.get().getJobId());
-        assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(shardingScalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":false"));
+        Optional<ScalingJob> scalingJob = scalingJobService.start(mockScalingConfiguration());
+        assertTrue(scalingJob.isPresent());
+        scalingJobService.stop(scalingJob.get().getJobId());
+        assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(scalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":false"));
     }
     
     @Test
@@ -157,20 +154,6 @@ public final class DistributedScalingJobServiceTest {
             
             @Override
             public void onSuccess() {
-            }
-            
-            @Override
-            public void onFailure() {
-            }
-        };
-    }
-    
-    private ScalingCallback mockScalingCallback(final AtomicBoolean successCallback) {
-        return new ScalingCallback() {
-            
-            @Override
-            public void onSuccess() {
-                successCallback.set(true);
             }
             
             @Override

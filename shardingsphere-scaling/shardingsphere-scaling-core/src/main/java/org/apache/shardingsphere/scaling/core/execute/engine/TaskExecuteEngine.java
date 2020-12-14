@@ -64,7 +64,7 @@ public final class TaskExecuteEngine {
     }
     
     /**
-     * Submit a {@code ShardingScalingExecutor} without callback to execute.
+     * Submit a {@code ScalingExecutor} without callback to execute.
      *
      * @param scalingExecutor scaling executor
      * @return execute future
@@ -74,7 +74,7 @@ public final class TaskExecuteEngine {
     }
     
     /**
-     * Submit a {@code ShardingScalingExecutor} with callback {@code ExecuteCallback} to execute.
+     * Submit a {@code ScalingExecutor} with callback {@code ExecuteCallback} to execute.
      *
      * @param scalingExecutor scaling executor
      * @param executeCallback execute callback
@@ -87,15 +87,15 @@ public final class TaskExecuteEngine {
     }
     
     /**
-     * Submit a collection of {@code ShardingScalingExecutor} with callback {@code ExecuteCallback} to execute.
+     * Submit a collection of {@code ScalingExecutor} with callback {@code ExecuteCallback} to execute.
      *
-     * @param shardingScalingExecutors scaling executor
+     * @param scalingExecutors scaling executor
      * @param executeCallback execute callback
      * @return execute future of all
      */
-    public Future<?> submitAll(final Collection<? extends ScalingExecutor> shardingScalingExecutors, final ExecuteCallback executeCallback) {
-        Collection<ListenableFuture<?>> listenableFutures = new ArrayList<>(shardingScalingExecutors.size());
-        for (ScalingExecutor each : shardingScalingExecutors) {
+    public Future<?> submitAll(final Collection<? extends ScalingExecutor> scalingExecutors, final ExecuteCallback executeCallback) {
+        Collection<ListenableFuture<?>> listenableFutures = new ArrayList<>(scalingExecutors.size());
+        for (ScalingExecutor each : scalingExecutors) {
             ListenableFuture<?> listenableFuture = executorService.submit(each);
             listenableFutures.add(listenableFuture);
         }
