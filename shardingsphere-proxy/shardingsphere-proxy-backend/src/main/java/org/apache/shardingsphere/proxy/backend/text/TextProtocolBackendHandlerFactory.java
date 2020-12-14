@@ -21,11 +21,13 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.show.ShowRDLStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.metadata.rdl.RDLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.metadata.rdl.RDLQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.metadata.rdl.RDLUpdateBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.metadata.schema.SchemaBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.metadata.schema.SchemaBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLBackendHandlerFactory;
@@ -70,8 +72,11 @@ public final class TextProtocolBackendHandlerFactory {
         if (schemaBackendHandler.isPresent()) {
             return schemaBackendHandler.get();
         }
+        if (sqlStatement instanceof ShowRDLStatement) {
+            return new RDLQueryBackendHandler(backendConnection, sqlStatement);
+        }
         if (sqlStatement instanceof RDLStatement || sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
-            return new RDLBackendHandler(backendConnection, sqlStatement);
+            return new RDLUpdateBackendHandler(backendConnection, sqlStatement);
         }
         return DatabaseBackendHandlerFactory.newInstance(sqlStatement, sql, backendConnection);
     }
