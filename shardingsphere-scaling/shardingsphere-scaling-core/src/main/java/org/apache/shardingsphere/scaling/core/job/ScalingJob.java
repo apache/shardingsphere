@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
 import org.apache.shardingsphere.scaling.core.utils.TaskConfigurationUtil;
@@ -44,6 +43,8 @@ public final class ScalingJob {
     
     private int shardingItem;
     
+    private String databaseType;
+    
     private final transient List<TaskConfiguration> taskConfigs = new LinkedList<>();
     
     private final transient List<ScalingTask> inventoryTasks = new LinkedList<>();
@@ -51,8 +52,6 @@ public final class ScalingJob {
     private final transient List<ScalingTask> incrementalTasks = new LinkedList<>();
     
     private transient ScalingConfiguration scalingConfig;
-    
-    private transient DataConsistencyChecker dataConsistencyChecker;
     
     private String status = JobStatus.RUNNING.name();
     
@@ -69,6 +68,7 @@ public final class ScalingJob {
         this.scalingConfig = scalingConfig;
         shardingItem = scalingConfig.getJobConfiguration().getShardingItem();
         taskConfigs.addAll(TaskConfigurationUtil.toTaskConfigs(scalingConfig));
+        databaseType = taskConfigs.get(0).getDumperConfig().getDataSourceConfig().getDatabaseType().getName();
     }
     
     private static SnowflakeKeyGenerateAlgorithm initIdAutoIncreaseGenerator() {
