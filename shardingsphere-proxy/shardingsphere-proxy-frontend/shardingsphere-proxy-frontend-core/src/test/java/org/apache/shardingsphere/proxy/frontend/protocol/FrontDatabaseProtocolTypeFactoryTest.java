@@ -30,8 +30,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -46,7 +44,6 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class FrontDatabaseProtocolTypeFactoryTest {
 
     @Test(expected = ShardingSphereConfigurationException.class)
@@ -60,7 +57,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
 
     @Test
     public void assertGetDatabaseTypeInstanceOfMySQLDatabaseTypeFromMetaDataContextsSchemaName() {
-        StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(getShardingSphereMetaData(), mock(ExecutorEngine.class), mock(Authentication.class),
+        StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), mock(Authentication.class),
                 new ConfigurationProperties(new Properties()));
         setMetaDataContexts(standardMetaDataContexts);
         assertTrue(!standardMetaDataContexts.getMetaDataMap().isEmpty());
@@ -76,7 +73,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
     public void assertGetDatabaseTypeOfPostgreSQLDatabaseTypeFromMetaDataContextsProps() {
         Properties properties = new Properties();
         properties.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "PostgreSQL");
-        StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(getShardingSphereMetaData(), mock(ExecutorEngine.class), mock(Authentication.class),
+        StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), mock(Authentication.class),
                 new ConfigurationProperties(properties));
         setMetaDataContexts(standardMetaDataContexts);
         assertTrue(!standardMetaDataContexts.getMetaDataMap().isEmpty());
@@ -89,14 +86,14 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
         assertThat(standardMetaDataContexts.getMetaData("mysql").getResource().getDatabaseType(), instanceOf(MySQLDatabaseType.class));
     }
 
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setMetaDataContexts(final StandardMetaDataContexts standardMetaDataContexts) {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         field.setAccessible(true);
         field.set(ProxyContext.getInstance(), standardMetaDataContexts);
     }
 
-    private Map<String, ShardingSphereMetaData> getShardingSphereMetaData() {
+    private Map<String, ShardingSphereMetaData> getMetaDataMap() {
         ShardingSphereResource shardingSphereResource = mock(ShardingSphereResource.class);
         when(shardingSphereResource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
