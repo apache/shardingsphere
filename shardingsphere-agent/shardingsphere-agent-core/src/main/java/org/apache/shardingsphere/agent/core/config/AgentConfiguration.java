@@ -20,6 +20,7 @@ package org.apache.shardingsphere.agent.core.config;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Agent configuration.
@@ -30,6 +31,8 @@ public class AgentConfiguration {
     private String applicationName;
     
     private MetricsConfiguration metrics;
+    
+    private TracingConfiguration tracing;
     
     private List<String> activatedPlugins;
     
@@ -43,5 +46,16 @@ public class AgentConfiguration {
         private int port = 9090;
         
         private boolean jvmInformationCollectorEnabled;
+    }
+    
+    @Data
+    public static class TracingConfiguration {
+        
+        private String agentHost = "localhost";
+        
+        private int agentPort = 5775;
+        
+        private Map<String, String> extra;
+        
     }
 }

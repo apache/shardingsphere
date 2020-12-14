@@ -75,6 +75,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     private Map<String, PluginAdviceDefinition> pluginDefineMap;
     
     private AgentPluginLoader() {
+        super(AgentPluginLoader.class.getClassLoader());
     }
     
     @Override
@@ -172,6 +173,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
             outputStream.reset();
             JarFile jar = new JarFile(jarFile, true);
             jars.add(new UberJar(jar, jarFile));
+            log.info("Loaded jar {}.", jarFile.getName());
             Attributes attributes = jar.getManifest().getMainAttributes();
             String entrypoint = attributes.getValue("Entrypoint");
             if (Strings.isNullOrEmpty(entrypoint)) {
@@ -184,13 +186,6 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
                 if (!activatedPlugins.isEmpty() && !activatedPlugins.contains(pluginDefinition.getPluginName())) {
                     continue;
                 }
-                pluginDefinition.getAllServices().forEach(klass -> {
-                    try {
-                        services.add(klass.newInstance());
-                    } catch (InstantiationException | IllegalAccessException ex) {
-                        log.error("Failed to create service instance, {}.", klass.getTypeName(), ex);
-                    }
-                });
                 pluginDefinition.build().forEach(plugin -> {
                     String target = plugin.getClassNameOfTarget();
                     if (pluginAdviceDefinitionMap.containsKey(target)) {
@@ -202,7 +197,18 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
                         pluginAdviceDefinitionMap.put(target, plugin);
                     }
                 });
-            } catch (final InstantiationException | IllegalAccessException ex) {
+                pluginDefinition.getAllServices().forEach(klass -> {
+                    try {
+                        services.add(klass.newInstance());
+                        // CHECKSTYLE:OFF
+                    } catch (final Throwable ex) {
+                        // CHECKSTYLE:ON
+                        log.error("Failed to create service instance, {}.", klass, ex);
+                    }
+                });
+                // CHECKSTYLE:OFF
+            } catch (final Throwable ex) {
+                // CHECKSTYLE:ON
                 log.error("Failed to load plugin definition, {}.", entrypoint, ex);
             }
         }
@@ -292,7 +298,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
             try {
                 service.setup();
                 // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
+            } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
                 log.error("Failed to initial service.", ex);
             }
@@ -307,7 +313,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
             try {
                 service.start();
                 // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
+            } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
                 log.error("Failed to start service.", ex);
             }
@@ -322,7 +328,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
             try {
                 service.cleanup();
                 // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
+            } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
                 log.error("Failed to shutdown service.", ex);
             }

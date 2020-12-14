@@ -16,31 +16,45 @@
  *
  */
 
-package org.apache.shardingsphere.agent.plugin.trace;
+package org.apache.shardingsphere.agent.plugin.trace.advice;
 
+import io.opentracing.Scope;
+import io.opentracing.tag.Tags;
+import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.plugin.advice.TargetObject;
+import org.apache.shardingsphere.agent.plugin.trace.ShardingErrorSpan;
+import org.apache.shardingsphere.agent.plugin.trace.constant.ShardingTags;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 
 import java.lang.reflect.Method;
 
 /**
- * Advice sample.
+ * Command executor task advice.
  */
-public class SampleAdvice implements MethodAroundAdvice {
-
+public class CommandExecutorTaskAdvice implements MethodAroundAdvice {
+    
+    private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
+    
+    private static final String ROOT_SPAN = "_root_span_";
+    
     @Override
     public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-
+        Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
+                .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
+                .startActive(true);
+        ExecutorDataMap.getValue().put(ROOT_SPAN, scope.span());
     }
-
+    
     @Override
     public void afterMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-
+        GlobalTracer.get().scopeManager().active().close();
+        ExecutorDataMap.getValue().remove(ROOT_SPAN);
     }
-
+    
     @Override
     public void onThrowing(final TargetObject target, final Method method, final Object[] args, final Throwable throwable) {
-
+        ShardingErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
     }
 }

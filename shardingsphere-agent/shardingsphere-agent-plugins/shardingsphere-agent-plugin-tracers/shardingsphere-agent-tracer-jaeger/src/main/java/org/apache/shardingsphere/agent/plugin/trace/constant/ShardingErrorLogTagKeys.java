@@ -13,30 +13,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.plugin.trace;
+package org.apache.shardingsphere.agent.plugin.trace.constant;
 
-import org.apache.shardingsphere.agent.core.plugin.Service;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Tracer Sample.
+ * Sharding error log tag keys.
  */
-public class SampleTracer implements Service {
-
-    @Override
-    public void setup() {
-
-    }
-
-    @Override
-    public void start() {
-
-    }
-
-    @Override
-    public void cleanup() {
-
-    }
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingErrorLogTagKeys {
+    
+    public static final String EVENT = "event";
+    
+    public static final String EVENT_ERROR_TYPE = "error";
+    
+    public static final String ERROR_KIND = "error.kind";
+    
+    public static final String MESSAGE = "message";
 }
