@@ -47,7 +47,7 @@ public final class YamlGovernanceShardingWithReplicaQueryIntegrateTest extends A
     private final boolean hasDataSource;
     
     @Parameters(name = "{index}:{0}-{1}")
-    public static Collection init() {
+    public static Collection<?> init() {
         return Arrays.asList(new Object[][]{
                 {"/yaml/integrate/sharding_replica_query/configWithDataSourceWithoutProps.yaml", true},
                 {"/yaml/integrate/sharding_replica_query/configWithoutDataSourceWithoutProps.yaml", false},
@@ -64,7 +64,7 @@ public final class YamlGovernanceShardingWithReplicaQueryIntegrateTest extends A
             dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
             Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("primary_ds_0", "replica_ds_0", "primary_ds_1", "replica_ds_1"), AbstractYamlDataSourceTest::createDataSource);
-            Map<String, DataSource> result = new HashMap<>();
+            Map<String, DataSource> result = new HashMap<>(dataSourceMap.size(), 1);
             for (Entry<String, DataSource> each : dataSourceMap.entrySet()) {
                 result.put(each.getKey(), each.getValue());
             }
