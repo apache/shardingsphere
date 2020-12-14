@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.text.metadata.rdl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowRuleStatement;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.rdl.ShowShardingRuleStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.rdl.ShowRuleStatementContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -31,6 +32,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -58,32 +61,53 @@ public final class RDLQueryBackendHandler implements TextProtocolBackendHandler 
         return getResponseHeader(context);
     }
     
-    private ResponseHeader execute(final ShowShardingRuleStatementContext context) {
+    private ResponseHeader execute(final ShowRuleStatementContext context) {
         String schemaName = null == context.getSqlStatement().getSchemaName() ? backendConnection.getSchemaName() : context.getSqlStatement().getSchemaName().getIdentifier().getValue();
-        QueryHeader queryHeader = new QueryHeader(schemaName, "", "ShardingRule", "ShardingRule", Types.CHAR, "CHAR", 255, 0, false, false, false, false);
-        Optional<RuleConfiguration> ruleConfig = 
-                ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream().filter(each -> each instanceof ShardingRuleConfiguration).findAny();
-        ruleConfig.ifPresent(shardingSphereRule -> ruleConfigData = Collections.singleton(shardingSphereRule).iterator());
+        String ruleType = context.getSqlStatement().getRuleType();
+        QueryHeader queryHeader = new QueryHeader(schemaName, "", ruleType, ruleType, Types.CHAR, "CHAR", 255, 0, false, false, false, false);
+        ruleConfigData = loadRuleConfiguration(schemaName, ruleType);
         return new QueryResponseHeader(Collections.singletonList(queryHeader));
     }
     
+    private Iterator<RuleConfiguration> loadRuleConfiguration(final String schemaName, final String ruleType) {
+        Class<? extends RuleConfiguration> ruleConfigurationClass = getRuleConfigurationClass(ruleType);
+        Optional<RuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
+                .stream().filter(each -> ruleConfigurationClass.isAssignableFrom(each.getClass())).findAny();
+        return ruleConfig.map(optional -> Collections.singleton(optional).iterator()).orElse(Collections.emptyIterator());
+    }
+    
+    private Class<? extends RuleConfiguration> getRuleConfigurationClass(final String ruleType) {
+        switch (ruleType.toUpperCase()) {
+            case "SHARDING":
+                return ShardingRuleConfiguration.class;
+            case "REPLICA_QUERY":
+                return ReplicaQueryRuleConfiguration.class;
+            case "ENCRYPT":
+                return EncryptRuleConfiguration.class;
+            case "SHADOW":
+                return ShadowRuleConfiguration.class;
+            default:
+                throw new UnsupportedOperationException(ruleType);
+        }
+    }
+    
     private SQLStatementContext<?> getSQLStatementContext() {
-        if (sqlStatement instanceof ShowShardingRuleStatement) {
-            return new ShowShardingRuleStatementContext((ShowShardingRuleStatement) sqlStatement);
+        if (sqlStatement instanceof ShowRuleStatement) {
+            return new ShowRuleStatementContext((ShowRuleStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getName());
     }
     
     private ResponseHeader getResponseHeader(final SQLStatementContext<?> context) {
-        if (context instanceof ShowShardingRuleStatementContext) {
-            return execute((ShowShardingRuleStatementContext) context);
+        if (context instanceof ShowRuleStatementContext) {
+            return execute((ShowRuleStatementContext) context);
         }
         throw new UnsupportedOperationException(context.getClass().getName());
     }
     
     @Override
     public boolean next() {
-        return null != ruleConfigData && ruleConfigData.hasNext();
+        return ruleConfigData.hasNext();
     }
     
     @Override

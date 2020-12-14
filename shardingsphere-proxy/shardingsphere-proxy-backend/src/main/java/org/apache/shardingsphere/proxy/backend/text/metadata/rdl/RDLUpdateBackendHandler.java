@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.text.metadata.rdl;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowShardingRuleStatement;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePersistEvent;
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.CreateDatabaseStatem
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropDatabaseStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.rdl.CreateDataSourcesStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.rdl.CreateShardingRuleStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.rdl.ShowShardingRuleStatementContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -123,9 +121,6 @@ public final class RDLUpdateBackendHandler implements TextProtocolBackendHandler
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
             return new DropDatabaseStatementContext((DropDatabaseStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof ShowShardingRuleStatement) {
-            return new ShowShardingRuleStatementContext((ShowShardingRuleStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getName());
     }
