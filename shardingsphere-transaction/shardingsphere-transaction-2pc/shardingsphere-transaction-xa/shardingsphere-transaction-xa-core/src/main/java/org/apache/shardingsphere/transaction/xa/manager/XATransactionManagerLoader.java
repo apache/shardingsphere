@@ -55,9 +55,9 @@ public final class XATransactionManagerLoader {
         if (!xaTransactionManagers.hasNext()) {
             return new AtomikosTransactionManager();
         }
-        while (xaTransactionManagers.hasNext()){
+        while (xaTransactionManagers.hasNext()) {
             XATransactionManager result = xaTransactionManagers.next();
-            if(result.getType().equalsIgnoreCase(type)) {
+            if (result.getType().equalsIgnoreCase(type)) {
                 return result;
             }
         }
