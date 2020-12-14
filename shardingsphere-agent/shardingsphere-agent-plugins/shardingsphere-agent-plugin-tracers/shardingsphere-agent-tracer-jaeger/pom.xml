@@ -28,10 +28,38 @@
     </parent>
 
     <packaging>jar</packaging>
-    <artifactId>shardingsphere-agent-tracer-sample</artifactId>
+    <artifactId>shardingsphere-agent-tracer-jaeger</artifactId>
 
     <properties>
-        <entrypoint.class>org.apache.shardingsphere.agent.plugin.trace.SamplePluginDefinition</entrypoint.class>
+        <entrypoint.class>org.apache.shardingsphere.agent.plugin.trace.JaegerPluginDefinition</entrypoint.class>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>io.jaegertracing</groupId>
+            <artifactId>jaeger-client</artifactId>
+            <version>0.31.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentracing</groupId>
+            <artifactId>opentracing-api</artifactId>
+            <version>0.31.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentracing</groupId>
+            <artifactId>opentracing-util</artifactId>
+            <version>0.31.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentracing</groupId>
+            <artifactId>opentracing-noop</artifactId>
+            <version>0.31.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-proxy-frontend-core</artifactId>
+            <version>5.0.0-RC1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>

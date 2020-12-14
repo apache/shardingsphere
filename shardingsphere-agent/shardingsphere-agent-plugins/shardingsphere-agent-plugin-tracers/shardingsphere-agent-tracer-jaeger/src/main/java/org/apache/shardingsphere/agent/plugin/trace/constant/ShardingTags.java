@@ -13,30 +13,32 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.plugin.trace;
+package org.apache.shardingsphere.agent.plugin.trace.constant;
 
-import org.apache.shardingsphere.agent.core.plugin.Service;
+import io.opentracing.tag.StringTag;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Tracer Sample.
+ * Sharding tags.
  */
-public class SampleTracer implements Service {
-
-    @Override
-    public void setup() {
-
-    }
-
-    @Override
-    public void start() {
-
-    }
-
-    @Override
-    public void cleanup() {
-
-    }
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingTags {
+    
+    /**
+     * Component name of ShardingSphere's open tracing tag.
+     */
+    public static final String COMPONENT_NAME = "ShardingSphere";
+    
+    /**
+     * The tag to record the bind variables of SQL.
+     */
+    public static final StringTag DB_BIND_VARIABLES = new StringTag("db.bind_vars");
+    
+    /**
+     * The tag to record the connection count.
+     */
+    public static final StringTag CONNECTION_COUNT = new StringTag("connection.count");
 }

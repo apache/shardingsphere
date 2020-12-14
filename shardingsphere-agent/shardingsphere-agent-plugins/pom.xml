@@ -29,7 +29,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>shardingsphere-agent-plugin-metrics</module>
         <module>shardingsphere-agent-plugin-tracers</module>
     </modules>
 
