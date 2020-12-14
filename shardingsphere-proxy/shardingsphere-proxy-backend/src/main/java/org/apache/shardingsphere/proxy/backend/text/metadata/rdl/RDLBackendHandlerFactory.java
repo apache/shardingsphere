@@ -51,7 +51,7 @@ public final class RDLBackendHandlerFactory {
             return Optional.of(new RDLRuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof ShowDataSourcesStatement) {
-            return Optional.of(new RDLDataSourcesQueryBackendHandler(sqlStatement, backendConnection));
+            return Optional.of(new RDLDataSourcesQueryBackendHandler((ShowDataSourcesStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof RDLStatement || sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
             return Optional.of(new RDLUpdateBackendHandler(sqlStatement, backendConnection));

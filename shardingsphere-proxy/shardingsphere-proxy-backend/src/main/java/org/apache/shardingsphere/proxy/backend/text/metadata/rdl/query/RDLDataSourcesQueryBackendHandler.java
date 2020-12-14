@@ -18,30 +18,25 @@
 package org.apache.shardingsphere.proxy.backend.text.metadata.rdl.query;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowRuleStatement;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowDataSourcesStatement;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.rdl.ShowRuleStatementContext;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.binder.statement.rdl.ShowDataSourcesStatementContext;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.Optional;
+import java.util.Map;
 
 /**
  * Backend handler for RDL data sources query.
@@ -49,70 +44,44 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class RDLDataSourcesQueryBackendHandler implements TextProtocolBackendHandler {
     
+    private final ShowDataSourcesStatement sqlStatement;
+    
     private final BackendConnection backendConnection;
     
-    private final SQLStatement sqlStatement;
+    private Map<String, DataSourceParameter> dataSourceParameterMap;
     
-    private Iterator<RuleConfiguration> ruleConfigData;
+    private Iterator<String> dataSourceNames;
     
     @Override
     public ResponseHeader execute() {
-        return getResponseHeader(getSQLStatementContext());
+        return getResponseHeader(new ShowDataSourcesStatementContext(sqlStatement));
     }
     
-    private ResponseHeader execute(final ShowRuleStatementContext context) {
+    private ResponseHeader execute(final ShowDataSourcesStatementContext context) {
         String schemaName = null == context.getSqlStatement().getSchemaName() ? backendConnection.getSchemaName() : context.getSqlStatement().getSchemaName().getIdentifier().getValue();
-        String ruleType = context.getSqlStatement().getRuleType();
-        QueryHeader queryHeader = new QueryHeader(schemaName, "", ruleType, ruleType, Types.CHAR, "CHAR", 255, 0, false, false, false, false);
-        ruleConfigData = loadRuleConfiguration(schemaName, ruleType);
-        return new QueryResponseHeader(Collections.singletonList(queryHeader));
-    }
-    
-    private Iterator<RuleConfiguration> loadRuleConfiguration(final String schemaName, final String ruleType) {
-        Class<? extends RuleConfiguration> ruleConfigurationClass = getRuleConfigurationClass(ruleType);
-        Optional<RuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
-                .stream().filter(each -> ruleConfigurationClass.isAssignableFrom(each.getClass())).findAny();
-        return ruleConfig.map(optional -> Collections.singleton(optional).iterator()).orElse(Collections.emptyIterator());
-    }
-    
-    private Class<? extends RuleConfiguration> getRuleConfigurationClass(final String ruleType) {
-        switch (ruleType.toUpperCase()) {
-            case "SHARDING":
-                return ShardingRuleConfiguration.class;
-            case "REPLICA_QUERY":
-                return ReplicaQueryRuleConfiguration.class;
-            case "ENCRYPT":
-                return EncryptRuleConfiguration.class;
-            case "SHADOW":
-                return ShadowRuleConfiguration.class;
-            default:
-                throw new UnsupportedOperationException(ruleType);
-        }
-    }
-    
-    private SQLStatementContext<?> getSQLStatementContext() {
-        if (sqlStatement instanceof ShowRuleStatement) {
-            return new ShowRuleStatementContext((ShowRuleStatement) sqlStatement);
-        }
-        throw new UnsupportedOperationException(sqlStatement.getClass().getName());
+        QueryHeader nameQueryHeader = new QueryHeader(schemaName, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false);
+        QueryHeader contentQueryHeader = new QueryHeader(schemaName, "", "data source", "data source", Types.CHAR, "CHAR", 255, 0, false, false, false, false);
+        dataSourceParameterMap = DataSourceParameterConverter.getDataSourceParameterMap(
+                DataSourceConverter.getDataSourceConfigurationMap(ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources()));
+        dataSourceNames = dataSourceParameterMap.keySet().iterator();
+        return new QueryResponseHeader(Arrays.asList(nameQueryHeader, contentQueryHeader));
     }
     
     private ResponseHeader getResponseHeader(final SQLStatementContext<?> context) {
-        if (context instanceof ShowRuleStatementContext) {
-            return execute((ShowRuleStatementContext) context);
+        if (context instanceof ShowDataSourcesStatementContext) {
+            return execute((ShowDataSourcesStatementContext) context);
         }
         throw new UnsupportedOperationException(context.getClass().getName());
     }
     
     @Override
     public boolean next() {
-        return ruleConfigData.hasNext();
+        return dataSourceNames.hasNext();
     }
     
     @Override
     public Collection<Object> getRowData() {
-        RuleConfiguration ruleConfig = ruleConfigData.next();
-        YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(Collections.singleton(ruleConfig)).iterator().next();
-        return Collections.singleton(YamlEngine.marshal(yamlRuleConfig));
+        String dataSourceName = dataSourceNames.next();
+        return Arrays.asList(dataSourceName, YamlEngine.marshal(dataSourceParameterMap.get(dataSourceName)));
     }
 }
