@@ -80,6 +80,6 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     @Override
     public String getType() {
-        return ShardingAlgorithmType.INTERVAL.name();
+        return ShardingAlgorithmType.INLINE.name();
     }
 }
