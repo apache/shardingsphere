@@ -48,13 +48,13 @@ public final class RDLBackendHandlerFactory {
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
         if (sqlStatement instanceof ShowRuleStatement) {
-            return Optional.of(new RDLRuleQueryBackendHandler(backendConnection, sqlStatement));
+            return Optional.of(new RDLRuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof ShowDataSourcesStatement) {
-            return Optional.of(new RDLDataSourcesQueryBackendHandler(backendConnection, sqlStatement));
+            return Optional.of(new RDLDataSourcesQueryBackendHandler(sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof RDLStatement || sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
-            return Optional.of(new RDLUpdateBackendHandler(backendConnection, sqlStatement));
+            return Optional.of(new RDLUpdateBackendHandler(sqlStatement, backendConnection));
         }
         return Optional.empty();
     }

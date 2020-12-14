@@ -60,9 +60,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class RDLUpdateBackendHandler implements TextProtocolBackendHandler {
     
-    private final BackendConnection backendConnection;
-    
     private final SQLStatement sqlStatement;
+    
+    private final BackendConnection backendConnection;
     
     @Override
     public ResponseHeader execute() throws SQLException {
