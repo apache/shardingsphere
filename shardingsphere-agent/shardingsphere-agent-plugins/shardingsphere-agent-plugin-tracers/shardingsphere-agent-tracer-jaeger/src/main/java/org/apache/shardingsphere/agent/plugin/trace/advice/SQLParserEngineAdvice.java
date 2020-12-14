@@ -15,7 +15,8 @@ import java.lang.reflect.Method;
  * SQL parser engine advice.
  */
 public class SQLParserEngineAdvice implements MethodAroundAdvice {
-    private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/parseSQL/";
+    
+    private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
     
     @Override
     public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {

@@ -39,7 +39,7 @@ import java.util.Map;
  */
 public class JDBCExecutorCallbackAdvice implements MethodAroundAdvice {
     
-    private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/executeSQL/";
+    private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     
     @Override
     public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {

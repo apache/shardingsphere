@@ -34,7 +34,8 @@ import java.lang.reflect.Method;
  * Command executor task advice.
  */
 public class CommandExecutorTaskAdvice implements MethodAroundAdvice {
-    private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/rootInvoke/";
+    
+    private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
     
     private static final String ROOT_SPAN = "_root_span_";
     

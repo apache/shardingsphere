@@ -157,7 +157,6 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
      * @throws IOException the IO exception
      */
     public void loadAllPlugins() throws IOException {
-        log.info("load all plugins....");
         File[] jarFiles = AgentPathBuilder.getPluginPath().listFiles(file -> file.getName().endsWith(".jar"));
         if (null == jarFiles) {
             return;
@@ -174,6 +173,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
             outputStream.reset();
             JarFile jar = new JarFile(jarFile, true);
             jars.add(new UberJar(jar, jarFile));
+            log.info("Loaded jar {}.", jarFile.getName());
             Attributes attributes = jar.getManifest().getMainAttributes();
             String entrypoint = attributes.getValue("Entrypoint");
             if (Strings.isNullOrEmpty(entrypoint)) {
@@ -268,7 +268,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
      * To get or create instance of the advice class. Create new one and caching when it is not exist.
      *
      * @param classNameOfAdvice class name of advice
-     * @param <T>               advice type
+     * @param <T> advice type
      * @return instance of advice
      */
     @SneakyThrows({ClassNotFoundException.class, IllegalAccessException.class, InstantiationException.class})
