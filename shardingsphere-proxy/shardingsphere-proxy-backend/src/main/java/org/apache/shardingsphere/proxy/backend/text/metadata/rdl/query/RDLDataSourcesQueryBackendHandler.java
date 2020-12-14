@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.text.metadata.rdl.query;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowDataSourcesStatement;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.rdl.ShowDataSourcesStatementContext;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
@@ -54,7 +53,7 @@ public final class RDLDataSourcesQueryBackendHandler implements TextProtocolBack
     
     @Override
     public ResponseHeader execute() {
-        return getResponseHeader(new ShowDataSourcesStatementContext(sqlStatement));
+        return execute(new ShowDataSourcesStatementContext(sqlStatement));
     }
     
     private ResponseHeader execute(final ShowDataSourcesStatementContext context) {
@@ -65,13 +64,6 @@ public final class RDLDataSourcesQueryBackendHandler implements TextProtocolBack
                 DataSourceConverter.getDataSourceConfigurationMap(ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources()));
         dataSourceNames = dataSourceParameterMap.keySet().iterator();
         return new QueryResponseHeader(Arrays.asList(nameQueryHeader, contentQueryHeader));
-    }
-    
-    private ResponseHeader getResponseHeader(final SQLStatementContext<?> context) {
-        if (context instanceof ShowDataSourcesStatementContext) {
-            return execute((ShowDataSourcesStatementContext) context);
-        }
-        throw new UnsupportedOperationException(context.getClass().getName());
     }
     
     @Override
