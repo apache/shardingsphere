@@ -134,7 +134,7 @@
             <artifactId>shardingsphere-tracing-opentracing</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
