@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.impl;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -23,7 +23,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.SchemaBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 
 import java.sql.SQLException;
@@ -35,7 +35,7 @@ import java.util.Collections;
  * Show current database backend handler.
  */
 @RequiredArgsConstructor
-public final class ShowCurrentDatabaseBackendHandler implements SchemaBackendHandler {
+public final class ShowCurrentDatabaseBackendHandler implements DatabaseAdminBackendHandler {
     
     public static final String FUNCTION_NAME = "DATABASE()";
     
