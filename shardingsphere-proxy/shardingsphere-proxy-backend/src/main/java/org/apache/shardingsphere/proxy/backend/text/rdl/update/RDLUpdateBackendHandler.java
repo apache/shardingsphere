@@ -126,7 +126,7 @@ public final class RDLUpdateBackendHandler implements TextProtocolBackendHandler
         String schemaName = getSchemaName(context);
         String ruleType = context.getSqlStatement().getRuleType();
         Class<? extends RuleConfiguration> ruleConfigurationClass = getRuleConfigurationClass(ruleType);
-        switch (ruleType) {
+        switch (ruleType.toUpperCase()) {
             case "SHARDING":
                 checkShardingTables(schemaName);
                 break;
