@@ -34,12 +34,20 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Properties;
 
 /**
  * DAL Statement SQL visitor for PostgreSQL.
  */
 public final class PostgreSQLDALStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements DALSQLVisitor, SQLStatementVisitor {
-    
+
+    public PostgreSQLDALStatementSQLVisitor() {
+    }
+
+    public PostgreSQLDALStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @Override
     public ASTNode visitShow(final ShowContext ctx) {
         return new PostgreSQLShowStatement();

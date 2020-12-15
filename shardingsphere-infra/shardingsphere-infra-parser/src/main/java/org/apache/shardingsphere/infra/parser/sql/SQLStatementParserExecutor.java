@@ -32,7 +32,7 @@ public final class SQLStatementParserExecutor {
     
     public SQLStatementParserExecutor(final String databaseType) {
         parserEngine = new SQLParserEngine(databaseType);
-        visitorEngine = new SQLVisitorEngine(databaseType, "STATEMENT");
+        visitorEngine = new SQLVisitorEngine(databaseType, "STATEMENT", null);
     }
     
     /**

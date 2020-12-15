@@ -50,12 +50,20 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 /**
  * DCL Statement SQL visitor for SQLServer.
  */
 public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQLVisitor implements DCLSQLVisitor, SQLStatementVisitor {
-    
+
+    public SQLServerDCLStatementSQLVisitor() {
+    }
+
+    public SQLServerDCLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         SQLServerGrantStatement result = new SQLServerGrantStatement();

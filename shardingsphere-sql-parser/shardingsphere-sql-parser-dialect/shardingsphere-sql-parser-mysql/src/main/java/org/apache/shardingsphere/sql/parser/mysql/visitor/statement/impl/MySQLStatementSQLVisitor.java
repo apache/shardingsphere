@@ -184,6 +184,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * MySQL Statement SQL visitor.
@@ -192,6 +193,14 @@ import java.util.List;
 public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
+
+    MySQLStatementSQLVisitor() {
+
+    }
+
+    MySQLStatementSQLVisitor(final Properties config) {
+        this();
+    }
 
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {

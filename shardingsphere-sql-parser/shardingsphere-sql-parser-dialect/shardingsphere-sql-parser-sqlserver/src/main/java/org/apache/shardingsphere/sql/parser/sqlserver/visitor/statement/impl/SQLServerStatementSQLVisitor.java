@@ -98,6 +98,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Statement SQL SQLServer visitor.
@@ -106,7 +107,14 @@ import java.util.List;
 public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
-    
+
+    public SQLServerStatementSQLVisitor() {
+    }
+
+    public SQLServerStatementSQLVisitor(final Properties config) {
+        this();
+    }
+
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
         return new ParameterMarkerValue(currentParameterIndex++);

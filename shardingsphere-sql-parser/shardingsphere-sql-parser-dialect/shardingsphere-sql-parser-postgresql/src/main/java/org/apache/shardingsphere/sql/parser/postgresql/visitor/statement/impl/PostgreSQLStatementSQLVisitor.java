@@ -93,6 +93,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * PostgreSQL Statement SQL visitor.
@@ -101,7 +102,14 @@ import java.util.List;
 public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
-    
+
+    public PostgreSQLStatementSQLVisitor() {
+    }
+
+    public PostgreSQLStatementSQLVisitor(final Properties config) {
+        this();
+    }
+
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
         return new ParameterMarkerValue(currentParameterIndex++);

@@ -137,12 +137,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * DDL Statement SQL visitor for MySQL.
  */
 public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor implements DDLSQLVisitor, SQLStatementVisitor {
-    
+
+    public MySQLDDLStatementSQLVisitor() {
+    }
+
+    public MySQLDDLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         MySQLCreateViewStatement result = new MySQLCreateViewStatement();

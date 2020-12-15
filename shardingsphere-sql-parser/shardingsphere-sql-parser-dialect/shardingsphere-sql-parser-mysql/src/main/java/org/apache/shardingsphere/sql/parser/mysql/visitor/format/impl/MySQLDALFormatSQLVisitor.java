@@ -20,8 +20,18 @@ package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLFormatVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 
+import java.util.Properties;
+
 /**
  * DAL Format SQL visitor for MySQL.
  */
 public final class MySQLDALFormatSQLVisitor extends MySQLFormatSQLVisitor implements DALSQLVisitor, SQLFormatVisitor {
+
+    public MySQLDALFormatSQLVisitor(final Properties config) {
+        super(config);
+    }
+
+    public MySQLDALFormatSQLVisitor() {
+        super();
+    }
 }

@@ -89,12 +89,20 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Properties;
 
 /**
  * DDL Statement SQL visitor for PostgreSQL.
  */
 public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements DDLSQLVisitor, SQLStatementVisitor {
-    
+
+    public PostgreSQLDDLStatementSQLVisitor() {
+    }
+
+    public PostgreSQLDDLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {

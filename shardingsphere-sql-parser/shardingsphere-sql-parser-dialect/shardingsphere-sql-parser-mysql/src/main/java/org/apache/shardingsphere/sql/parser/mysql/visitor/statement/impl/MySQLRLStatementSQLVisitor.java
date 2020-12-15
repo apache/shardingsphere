@@ -27,11 +27,20 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQL
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLStartSlaveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLStopSlaveStatement;
 
+import java.util.Properties;
+
 /**
  * RL Statement SQL visitor for MySQL.
  */
 public final class MySQLRLStatementSQLVisitor extends MySQLStatementSQLVisitor implements RLSQLVisitor, SQLStatementVisitor {
-    
+
+    public MySQLRLStatementSQLVisitor() {
+    }
+
+    public MySQLRLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @Override public ASTNode visitChangeMasterTo(final ChangeMasterToContext ctx) {
         return new MySQLChangeMasterStatement();
     }

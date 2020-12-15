@@ -114,12 +114,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * DML Statement SQL visitor for PostgreSQL.
  */
 public final class PostgreSQLDMLStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
-    
+
+    public PostgreSQLDMLStatementSQLVisitor() {
+    }
+
+    public PostgreSQLDMLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.

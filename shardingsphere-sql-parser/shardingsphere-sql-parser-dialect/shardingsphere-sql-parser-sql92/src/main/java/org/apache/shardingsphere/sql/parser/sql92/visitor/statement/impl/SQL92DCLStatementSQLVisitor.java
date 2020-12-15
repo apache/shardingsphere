@@ -29,12 +29,20 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dcl.SQL9
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 /**
  * DCL Statement SQL visitor for SQL92.
  */
 public final class SQL92DCLStatementSQLVisitor extends SQL92StatementSQLVisitor implements DCLSQLVisitor, SQLStatementVisitor {
-    
+
+    public SQL92DCLStatementSQLVisitor() {
+    }
+
+    public SQL92DCLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         SQL92GrantStatement result = new SQL92GrantStatement();

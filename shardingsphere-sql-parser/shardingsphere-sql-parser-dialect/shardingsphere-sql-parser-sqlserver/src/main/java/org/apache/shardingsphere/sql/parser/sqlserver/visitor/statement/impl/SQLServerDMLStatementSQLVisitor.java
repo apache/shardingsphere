@@ -119,12 +119,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * DML Statement SQL visitor for SQLServer.
  */
 public final class SQLServerDMLStatementSQLVisitor extends SQLServerStatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
-    
+
+    public SQLServerDMLStatementSQLVisitor() {
+    }
+
+    public SQLServerDMLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         SQLServerInsertStatement result;

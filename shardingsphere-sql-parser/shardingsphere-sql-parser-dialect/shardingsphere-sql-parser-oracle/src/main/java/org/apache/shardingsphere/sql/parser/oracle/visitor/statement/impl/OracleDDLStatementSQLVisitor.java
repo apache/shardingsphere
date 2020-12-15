@@ -63,12 +63,20 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Properties;
 
 /**
  * DDL Statement SQL visitor for Oracle.
  */
 public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisitor implements DDLSQLVisitor, SQLStatementVisitor {
-    
+
+    public OracleDDLStatementSQLVisitor() {
+    }
+
+    public OracleDDLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {

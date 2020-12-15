@@ -102,12 +102,20 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Properties;
 
 /**
  * DAL Statement SQL visitor for MySQL.
  */
 public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor implements DALSQLVisitor, SQLStatementVisitor {
-    
+
+    public MySQLDALStatementSQLVisitor() {
+    }
+
+    public MySQLDALStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @Override
     public ASTNode visitUninstallPlugin(final UninstallPluginContext ctx) {
         return new MySQLUninstallPluginStatement();

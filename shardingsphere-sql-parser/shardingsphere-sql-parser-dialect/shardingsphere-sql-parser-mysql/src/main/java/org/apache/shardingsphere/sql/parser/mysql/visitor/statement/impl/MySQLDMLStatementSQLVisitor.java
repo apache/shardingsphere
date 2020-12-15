@@ -28,11 +28,19 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * DML Statement SQL visitor for MySQL.
  */
 public final class MySQLDMLStatementSQLVisitor extends MySQLStatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
+
+    public MySQLDMLStatementSQLVisitor() {
+    }
+
+    public MySQLDMLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
 
     @Override
     public ASTNode visitCall(final CallContext ctx) {

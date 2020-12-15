@@ -27,11 +27,20 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.tcl.SQL9
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.tcl.SQL92RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.tcl.SQL92SetTransactionStatement;
 
+import java.util.Properties;
+
 /**
  * TCL Statement SQL visitor for SQL92.
  */
 public final class SQL92TCLStatementSQLVisitor extends SQL92StatementSQLVisitor implements TCLSQLVisitor, SQLStatementVisitor {
-    
+
+    public SQL92TCLStatementSQLVisitor() {
+    }
+
+    public SQL92TCLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
         return new SQL92SetTransactionStatement();

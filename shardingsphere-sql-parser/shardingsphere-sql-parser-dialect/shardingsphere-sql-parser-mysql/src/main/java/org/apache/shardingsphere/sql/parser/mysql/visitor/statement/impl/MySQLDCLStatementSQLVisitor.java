@@ -47,12 +47,20 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLSetRoleStatement;
 
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * DCL Statement SQL visitor for MySQL.
  */
 public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor implements DCLSQLVisitor, SQLStatementVisitor {
-    
+
+    public MySQLDCLStatementSQLVisitor() {
+    }
+
+    public MySQLDCLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         MySQLGrantStatement result = new MySQLGrantStatement();

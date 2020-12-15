@@ -33,11 +33,20 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl.SQLServerSetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl.SQLServerSetTransactionStatement;
 
+import java.util.Properties;
+
 /**
  * TCL Statement SQL visitor for SQLServer.
  */
 public final class SQLServerTCLStatementSQLVisitor extends SQLServerStatementSQLVisitor implements TCLSQLVisitor, SQLStatementVisitor {
-    
+
+    public SQLServerTCLStatementSQLVisitor() {
+    }
+
+    public SQLServerTCLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
         return new SQLServerSetTransactionStatement();

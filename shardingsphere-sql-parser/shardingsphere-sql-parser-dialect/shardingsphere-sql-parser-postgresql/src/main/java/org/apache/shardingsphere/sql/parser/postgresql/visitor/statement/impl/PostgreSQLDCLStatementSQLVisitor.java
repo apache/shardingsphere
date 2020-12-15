@@ -42,12 +42,20 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * DCL Statement SQL visitor for PostgreSQL.
  */
 public final class PostgreSQLDCLStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements DCLSQLVisitor, SQLStatementVisitor {
-    
+
+    public PostgreSQLDCLStatementSQLVisitor() {
+    }
+
+    public PostgreSQLDCLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         PostgreSQLGrantStatement result = new PostgreSQLGrantStatement();

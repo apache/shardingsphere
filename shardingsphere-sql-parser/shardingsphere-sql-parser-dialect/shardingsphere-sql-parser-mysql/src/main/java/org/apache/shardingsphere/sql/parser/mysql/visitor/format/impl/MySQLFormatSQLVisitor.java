@@ -68,6 +68,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TypeDat
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WithClauseContext;
 
+import java.util.Properties;
+
 /**
  * MySQL Format SQL visitor for MySQL.
  */
@@ -77,7 +79,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
 
     private StringBuilder result = new StringBuilder();
 
-    private boolean uperCase = true;
+    private boolean upperCase = true;
 
     private boolean parameterized = true;
 
@@ -85,7 +87,25 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
 
     private int lines;
 
-    private final int projectionsCountOfLine = 3;
+    private int projectionsCountOfLine = 3;
+
+    MySQLFormatSQLVisitor() {
+    }
+
+    MySQLFormatSQLVisitor(final Properties config) {
+        this();
+        if (null != config) {
+            if (config.containsKey("upperCase")) {
+                setUpperCase(Boolean.valueOf(config.getProperty("upperCase")));
+            }
+            if (config.containsKey("parameterized")) {
+                setParameterized(Boolean.valueOf(config.getProperty("parameterized")));
+            }
+            if (config.containsKey("projectionsCountOfLine")) {
+                setProjectionsCountOfLine(Integer.valueOf(config.getProperty("projectionsCountOfLine")));
+            }
+        }
+    }
 
     @Override
     public String visitSelect(final SelectContext ctx) {
@@ -677,7 +697,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
 
     @Override
     public String visitTerminal(final TerminalNode node) {
-        if (isUperCase()) {
+        if (isUpperCase()) {
             formatPrint(node.getText().toUpperCase());
         } else {
             formatPrint(node.getText().toLowerCase());

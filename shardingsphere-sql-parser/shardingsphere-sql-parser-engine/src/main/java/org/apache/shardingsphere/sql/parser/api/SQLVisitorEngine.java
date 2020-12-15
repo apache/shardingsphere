@@ -23,6 +23,8 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorFactory;
 import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorRule;
 
+import java.util.Properties;
+
 /**
  * SQL visitor engine.
  */
@@ -32,6 +34,8 @@ public final class SQLVisitorEngine {
     private final String databaseType;
     
     private final String visitorType;
+
+    private final Properties config;
     
     /**
      * Visit parse tree.
@@ -41,7 +45,7 @@ public final class SQLVisitorEngine {
      * @return SQL visitor result
      */
     public <T> T visit(final ParseTree parseTree) {
-        ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseTree.getClass()));
+        ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseTree.getClass()), config);
         return parseTree.accept(visitor);
     }
 }

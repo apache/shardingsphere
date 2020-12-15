@@ -20,8 +20,17 @@ package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLFormatVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 
+import java.util.Properties;
+
 /**
  * DML Format SQL visitor for MySQL.
  */
 public final class MySQLDMLFormatSQLVisitor extends MySQLFormatSQLVisitor implements DMLSQLVisitor, SQLFormatVisitor {
+
+    public MySQLDMLFormatSQLVisitor(final Properties config) {
+        super(config);
+    }
+
+    public MySQLDMLFormatSQLVisitor() {
+    }
 }

@@ -39,11 +39,20 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLXAStatement;
 
+import java.util.Properties;
+
 /**
  * TCL Statement SQL visitor for MySQL.
  */
 public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor implements TCLSQLVisitor, SQLStatementVisitor {
-    
+
+    public MySQLTCLStatementSQLVisitor() {
+    }
+
+    public MySQLTCLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
         MySQLSetTransactionStatement result = new MySQLSetTransactionStatement();

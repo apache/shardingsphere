@@ -101,6 +101,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Oracle Statement SQL visitor.
@@ -109,7 +110,14 @@ import java.util.List;
 public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
-    
+
+    public OracleStatementSQLVisitor() {
+    }
+
+    public OracleStatementSQLVisitor(final Properties config) {
+        this();
+    }
+
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
         return new ParameterMarkerValue(currentParameterIndex++);

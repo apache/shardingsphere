@@ -49,12 +49,20 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL9
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92DropTableStatement;
 
 import java.util.Collections;
+import java.util.Properties;
 
 /**
  * DDL Statement SQL visitor for SQL92.
  */
 public final class SQL92DDLStatementSQLVisitor extends SQL92StatementSQLVisitor implements DDLSQLVisitor, SQLStatementVisitor {
-    
+
+    public SQL92DDLStatementSQLVisitor() {
+    }
+
+    public SQL92DDLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {

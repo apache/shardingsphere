@@ -92,12 +92,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * DML Statement SQL visitor for SQL92.
  */
 public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
-    
+
+    public SQL92DMLStatementSQLVisitor() {
+    }
+
+    public SQL92DMLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         SQL92InsertStatement result = (SQL92InsertStatement) visit(ctx.insertValuesClause());

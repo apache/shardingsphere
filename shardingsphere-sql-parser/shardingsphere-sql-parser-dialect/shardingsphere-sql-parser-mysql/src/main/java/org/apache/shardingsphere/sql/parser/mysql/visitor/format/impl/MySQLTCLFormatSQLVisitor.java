@@ -20,8 +20,17 @@ package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLFormatVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
 
+import java.util.Properties;
+
 /**
  * TCL Format SQL visitor for MySQL.
  */
 public final class MySQLTCLFormatSQLVisitor extends MySQLFormatSQLVisitor implements TCLSQLVisitor, SQLFormatVisitor {
+
+    public MySQLTCLFormatSQLVisitor(final Properties config) {
+        super(config);
+    }
+
+    public MySQLTCLFormatSQLVisitor() {
+    }
 }

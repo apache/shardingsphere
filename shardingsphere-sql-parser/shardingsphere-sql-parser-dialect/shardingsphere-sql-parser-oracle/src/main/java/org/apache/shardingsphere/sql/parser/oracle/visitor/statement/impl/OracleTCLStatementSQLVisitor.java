@@ -29,11 +29,20 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleSetTransactionStatement;
 
+import java.util.Properties;
+
 /**
  * TCL Statement SQL visitor for Oracle.
  */
 public final class OracleTCLStatementSQLVisitor extends OracleStatementSQLVisitor implements TCLSQLVisitor, SQLStatementVisitor {
-    
+
+    public OracleTCLStatementSQLVisitor() {
+    }
+
+    public OracleTCLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
         return new OracleSetTransactionStatement();

@@ -41,12 +41,20 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.Ora
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 /**
  * DCL Statement SQL visitor for Oracle.
  */
 public final class OracleDCLStatementSQLVisitor extends OracleStatementSQLVisitor implements DCLSQLVisitor, SQLStatementVisitor {
-    
+
+    public OracleDCLStatementSQLVisitor() {
+    }
+
+    public OracleDCLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         OracleGrantStatement result = new OracleGrantStatement();

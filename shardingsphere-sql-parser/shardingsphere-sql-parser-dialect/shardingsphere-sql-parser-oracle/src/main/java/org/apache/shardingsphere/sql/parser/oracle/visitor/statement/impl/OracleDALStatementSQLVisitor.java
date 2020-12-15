@@ -20,8 +20,17 @@ package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 
+import java.util.Properties;
+
 /**
  * DAL Statement SQL visitor for Oracle.
  */
 public final class OracleDALStatementSQLVisitor extends OracleStatementSQLVisitor implements DALSQLVisitor, SQLStatementVisitor {
+
+    public OracleDALStatementSQLVisitor() {
+    }
+
+    public OracleDALStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
 }

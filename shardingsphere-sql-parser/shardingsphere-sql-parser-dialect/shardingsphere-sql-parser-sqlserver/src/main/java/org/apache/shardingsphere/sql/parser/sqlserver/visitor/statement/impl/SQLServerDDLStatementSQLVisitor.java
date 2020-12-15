@@ -62,12 +62,20 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Properties;
 
 /**
  * DDL Statement SQL visitor for SQLServer.
  */
 public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQLVisitor implements DDLSQLVisitor, SQLStatementVisitor {
-    
+
+    public SQLServerDDLStatementSQLVisitor() {
+    }
+
+    public SQLServerDDLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {

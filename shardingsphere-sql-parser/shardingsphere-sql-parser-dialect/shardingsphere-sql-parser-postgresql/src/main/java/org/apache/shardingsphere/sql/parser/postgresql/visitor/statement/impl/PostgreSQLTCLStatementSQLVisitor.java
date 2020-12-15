@@ -31,11 +31,20 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLSetTransactionStatement;
 
+import java.util.Properties;
+
 /**
  * TCL Statement SQL visitor for PostgreSQL.
  */
 public final class PostgreSQLTCLStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements TCLSQLVisitor, SQLStatementVisitor {
-    
+
+    public PostgreSQLTCLStatementSQLVisitor() {
+    }
+
+    public PostgreSQLTCLStatementSQLVisitor(final Properties config) {
+        super(config);
+    }
+
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
         return new PostgreSQLSetTransactionStatement();
