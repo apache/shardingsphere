@@ -15,29 +15,29 @@ Default XA transaction manager of ShardingSphere is Atomikos. Users can customiz
 
 ```xml
 <propeties>
-        <narayana.version>5.9.1.Final</narayana.version>
-        <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
-        <jboss-logging.version>3.2.1.Final</jboss-logging.version>
+    <narayana.version>5.9.1.Final</narayana.version>
+    <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
+    <jboss-logging.version>3.2.1.Final</jboss-logging.version>
 </propeties>
 <dependency>
-      <groupId>org.jboss.narayana.jta</groupId>
-      <artifactId>jta</artifactId>
-      <version>${narayana.version}</version>
+    <groupId>org.jboss.narayana.jta</groupId>
+    <artifactId>jta</artifactId>
+    <version>${narayana.version}</version>
 </dependency>
 <dependency>
-       <groupId>org.jboss.narayana.jts</groupId>
-       <artifactId>narayana-jts-integration</artifactId>
-       <version>${narayana.version}</version>
+    <groupId>org.jboss.narayana.jts</groupId>
+    <artifactId>narayana-jts-integration</artifactId>
+    <version>${narayana.version}</version>
 </dependency>
 <dependency>
-       <groupId>org.jboss</groupId>
-       <artifactId>jboss-transaction-spi</artifactId>
-       <version>${jboss-transaction-spi.version}</version>
+    <groupId>org.jboss</groupId>
+    <artifactId>jboss-transaction-spi</artifactId>
+    <version>${jboss-transaction-spi.version}</version>
 </dependency>
 <dependency>
-       <groupId>org.jboss.logging</groupId>
-       <artifactId>jboss-logging</artifactId>
-       <version>${jboss-logging.version}</version>
+    <groupId>org.jboss.logging</groupId>
+    <artifactId>jboss-logging</artifactId>
+    <version>${jboss-logging.version}</version>
 </dependency>
 ```
 
