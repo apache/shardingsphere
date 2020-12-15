@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.metadata.schema;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema;
 
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.ShowCurrentDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.ShowDatabasesBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.ShowTablesBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.UseDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.impl.ShowCurrentDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.impl.ShowDatabasesBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.impl.ShowTablesBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.impl.UseDatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;

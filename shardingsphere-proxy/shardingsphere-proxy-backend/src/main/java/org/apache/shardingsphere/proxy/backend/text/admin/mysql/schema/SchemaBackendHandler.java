@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.metadata.schema;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema;
 
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
 
