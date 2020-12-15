@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.error;
+package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+
 /**
- * Common error code.
+ * Tables in used exception.
  */
 @RequiredArgsConstructor
 @Getter
-public enum CommonErrorCode implements SQLErrorCode {
+public final class TablesInUsedException extends BackendException {
     
-    CIRCUIT_BREAK_MODE(10000, "C10000", "Circuit break mode is ON."),
+    private static final long serialVersionUID = -6958306664517015097L;
     
-    TABLES_IN_USED(11000, "C11000", "Can not drop rule, tables %s in the rule are still in used."),
-    
-    UNSUPPORTED_COMMAND(19998, "C19998", "Unsupported command: [%s]"),
-    
-    UNKNOWN_EXCEPTION(19999, "C19999", "Unknown exception: [%s]");
-    
-    private final int errorCode;
-    
-    private final String sqlState;
-    
-    private final String errorMessage;
+    private final Collection<String> tableNames;
 }

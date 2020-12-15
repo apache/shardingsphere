@@ -37,11 +37,13 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.proxy.backend.exception.TablesInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -53,6 +55,7 @@ import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfigu
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.converter.CreateShardingRuleStatementContextConverter;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
@@ -61,7 +64,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabas
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -123,7 +128,7 @@ public final class RDLUpdateBackendHandler implements TextProtocolBackendHandler
         Class<? extends RuleConfiguration> ruleConfigurationClass = getRuleConfigurationClass(ruleType);
         switch (ruleType) {
             case "SHARDING":
-                checkShardingTables();
+                checkShardingTables(schemaName);
                 break;
             case "REPLICA_QUERY":
                 // TODO
@@ -143,8 +148,25 @@ public final class RDLUpdateBackendHandler implements TextProtocolBackendHandler
         return new UpdateResponseHeader(context.getSqlStatement());
     }
     
-    private void checkShardingTables() {
-        // TODO check whether table engage
+    private void checkShardingTables(final String schemaName) {
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(schemaName);
+        Optional<ShardingRule> shardingRule = metaData.getRuleMetaData()
+                .getRules().stream().filter(each -> each instanceof ShardingRule).map(each -> (ShardingRule) each).findFirst();
+        if (!shardingRule.isPresent()) {
+            return;
+        }
+        Collection<String> inUsedTableNames = new LinkedList<>();
+        Collection<String> shardingTables = new LinkedList<>(shardingRule.get().getTables());
+        shardingTables.addAll(shardingRule.get().getBroadcastTables());
+        shardingTables.addAll(shardingRule.get().getSingleTableRules().keySet());
+        for (String each : shardingTables) {
+            if (metaData.getSchema().containsTable(each)) {
+                inUsedTableNames.add(each);
+            }
+        }
+        if (!inUsedTableNames.isEmpty()) {
+            throw new TablesInUsedException(inUsedTableNames);
+        }
     }
     
     private Class<? extends RuleConfiguration> getRuleConfigurationClass(final String ruleType) {
