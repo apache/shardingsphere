@@ -32,16 +32,23 @@ public final class CommonErrorCodeTest {
     }
     
     @Test
+    public void assertTableInUsed() {
+        assertThat(CommonErrorCode.TABLES_IN_USED.getErrorCode(), is(11000));
+        assertThat(CommonErrorCode.TABLES_IN_USED.getSqlState(), is("C11000"));
+        assertThat(CommonErrorCode.TABLES_IN_USED.getErrorMessage(), is("Can not drop rule, tables %s in the rule are still in used."));
+    }
+    
+    @Test
     public void assertUnsupportedCommand() {
-        assertThat(CommonErrorCode.UNSUPPORTED_COMMAND.getErrorCode(), is(10001));
-        assertThat(CommonErrorCode.UNSUPPORTED_COMMAND.getSqlState(), is("C10001"));
+        assertThat(CommonErrorCode.UNSUPPORTED_COMMAND.getErrorCode(), is(19998));
+        assertThat(CommonErrorCode.UNSUPPORTED_COMMAND.getSqlState(), is("C19998"));
         assertThat(CommonErrorCode.UNSUPPORTED_COMMAND.getErrorMessage(), is("Unsupported command: [%s]"));
     }
     
     @Test
     public void assertUnknownException() {
-        assertThat(CommonErrorCode.UNKNOWN_EXCEPTION.getErrorCode(), is(10002));
-        assertThat(CommonErrorCode.UNKNOWN_EXCEPTION.getSqlState(), is("C10002"));
+        assertThat(CommonErrorCode.UNKNOWN_EXCEPTION.getErrorCode(), is(19999));
+        assertThat(CommonErrorCode.UNKNOWN_EXCEPTION.getSqlState(), is("C19999"));
         assertThat(CommonErrorCode.UNKNOWN_EXCEPTION.getErrorMessage(), is("Unknown exception: [%s]"));
     }
 }

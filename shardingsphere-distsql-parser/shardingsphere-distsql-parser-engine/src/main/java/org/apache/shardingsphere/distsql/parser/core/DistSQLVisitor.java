@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.C
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingAlgorithmPropertiesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingAlgorithmPropertyContext;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.distsql.parser.segment.rdl.DataSourceConnection
 import org.apache.shardingsphere.distsql.parser.segment.rdl.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowDataSourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
@@ -103,6 +105,11 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
             result.getValue().setProperty(each.shardingAlgorithmPropertyKey().getText(), each.shardingAlgorithmPropertyValue().getText());
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitDropRule(final DropRuleContext ctx) {
+        return new DropRuleStatement(ctx.ruleType().getText(), null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
     }
     
     @Override

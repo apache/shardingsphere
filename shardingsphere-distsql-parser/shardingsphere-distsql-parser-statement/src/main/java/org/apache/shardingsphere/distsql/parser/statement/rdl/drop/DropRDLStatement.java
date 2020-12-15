@@ -15,50 +15,12 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.drop;
 
-import Alphabet;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 
-WS
-    : [ \t\r\n] + ->skip
-    ;
-
-CREATE
-    : C R E A T E
-    ;
-
-DROP
-    : D R O P
-    ;
-
-SHOW
-    : S H O W
-    ;
-
-DATASOURCES
-    : D A T A S O U R C E S
-    ;
-
-RULE
-    :  R U L E
-    ;
-
-FROM
-    : F R O M
-    ;
-
-SHARDING
-    : S H A R D I N G
-    ;
-   
-REPLICA_QUERY
-    : R E P L I C A UL_ Q U E R Y
-    ;
-
-ENCRYPT
-    : E N C R Y P T
-    ;
-
-SHADOW
-    : S H A D O W
-    ;
+/**
+ * Drop RDL statement.
+ */
+public abstract class DropRDLStatement extends RDLStatement {
+}
