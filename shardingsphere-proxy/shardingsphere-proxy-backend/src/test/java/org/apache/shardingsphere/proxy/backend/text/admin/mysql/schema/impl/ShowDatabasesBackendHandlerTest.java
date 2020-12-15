@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.impl;
 
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
@@ -25,39 +25,37 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class UseDatabaseBackendHandlerTest {
+public final class ShowDatabasesBackendHandlerTest {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     
-    private BackendConnection backendConnection;
+    private ShowDatabasesBackendHandler showDatabasesBackendHandler;
     
     @Before
-    public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        backendConnection = mock(BackendConnection.class);
+    public void setUp() throws IllegalAccessException, NoSuchFieldException {
+        BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getUsername()).thenReturn("root");
+        showDatabasesBackendHandler = new ShowDatabasesBackendHandler(backendConnection);
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), 
@@ -65,7 +63,7 @@ public final class UseDatabaseBackendHandlerTest {
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(10, 1);
+        Map<String, ShardingSphereMetaData> result = new HashMap<>(10);
         for (int i = 0; i < 10; i++) {
             result.put(String.format(SCHEMA_PATTERN, i), mock(ShardingSphereMetaData.class));
         }
@@ -80,20 +78,17 @@ public final class UseDatabaseBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteUseStatementBackendHandler() {
-        MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
-        when(useStatement.getSchema()).thenReturn(String.format(SCHEMA_PATTERN, 0));
-        UseDatabaseBackendHandler useSchemaBackendHandler = new UseDatabaseBackendHandler(useStatement, backendConnection);
-        ResponseHeader actual = useSchemaBackendHandler.execute();
-        verify(backendConnection).setCurrentSchema(anyString());
-        assertThat(actual, instanceOf(UpdateResponseHeader.class));
+    public void assertExecuteShowDatabaseBackendHandler() {
+        QueryResponseHeader actual = (QueryResponseHeader) showDatabasesBackendHandler.execute();
+        assertThat(actual, instanceOf(QueryResponseHeader.class));
+        assertThat(actual.getQueryHeaders().size(), is(1));
     }
     
-    @Test(expected = UnknownDatabaseException.class)
-    public void assertExecuteUseStatementNotExist() {
-        MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
-        when(useStatement.getSchema()).thenReturn("not_exist");
-        UseDatabaseBackendHandler useSchemaBackendHandler = new UseDatabaseBackendHandler(useStatement, backendConnection);
-        useSchemaBackendHandler.execute();
+    @Test
+    public void assertShowDatabaseUsingStream() throws SQLException {
+        showDatabasesBackendHandler.execute();
+        while (showDatabasesBackendHandler.next()) {
+            assertThat(showDatabasesBackendHandler.getRowData().size(), is(1));
+        }
     }
 }

@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.metadata.schema;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.ShowCurrentDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.ShowDatabasesBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.ShowTablesBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.UseDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.impl.ShowCurrentDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.impl.ShowDatabasesBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.impl.ShowTablesBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.impl.UseDatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -47,7 +48,7 @@ public final class SchemaBackendHandlerFactory {
      * @param backendConnection backend connection
      * @return schema backend handler
      */
-    public static Optional<SchemaBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
+    public static Optional<DatabaseAdminBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
         if (sqlStatement instanceof MySQLUseStatement) {
             return Optional.of(new UseDatabaseBackendHandler((MySQLUseStatement) sqlStatement, backendConnection));
         }

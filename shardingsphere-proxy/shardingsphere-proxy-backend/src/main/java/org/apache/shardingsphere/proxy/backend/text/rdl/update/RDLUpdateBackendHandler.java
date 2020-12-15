@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.metadata.rdl.update;
+package org.apache.shardingsphere.proxy.backend.text.rdl.update;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDataSourcesStatement;

@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.metadata.schema;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema;
 
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.ShowCurrentDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.ShowDatabasesBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.ShowTablesBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl.UseDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.impl.ShowCurrentDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.impl.ShowDatabasesBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.impl.ShowTablesBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.impl.UseDatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
@@ -42,14 +43,14 @@ public final class SchemaBackendHandlerFactoryTest {
     
     @Test
     public void assertUseDatabase() {
-        Optional<SchemaBackendHandler> actual = SchemaBackendHandlerFactory.newInstance(mock(MySQLUseStatement.class), mock(BackendConnection.class));
+        Optional<DatabaseAdminBackendHandler> actual = SchemaBackendHandlerFactory.newInstance(mock(MySQLUseStatement.class), mock(BackendConnection.class));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(UseDatabaseBackendHandler.class));
     }
     
     @Test
     public void assertShowDatabases() {
-        Optional<SchemaBackendHandler> actual = SchemaBackendHandlerFactory.newInstance(mock(MySQLShowDatabasesStatement.class), mock(BackendConnection.class));
+        Optional<DatabaseAdminBackendHandler> actual = SchemaBackendHandlerFactory.newInstance(mock(MySQLShowDatabasesStatement.class), mock(BackendConnection.class));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowDatabasesBackendHandler.class));
     }
@@ -58,14 +59,14 @@ public final class SchemaBackendHandlerFactoryTest {
     public void assertShowCurrentDatabase() {
         SelectStatement sqlStatement = mock(SelectStatement.class, RETURNS_DEEP_STUBS);
         when(sqlStatement.getProjections().getProjections().iterator().next()).thenReturn(new ExpressionProjectionSegment(0, 0, ShowCurrentDatabaseBackendHandler.FUNCTION_NAME));
-        Optional<SchemaBackendHandler> actual = SchemaBackendHandlerFactory.newInstance(sqlStatement, mock(BackendConnection.class));
+        Optional<DatabaseAdminBackendHandler> actual = SchemaBackendHandlerFactory.newInstance(sqlStatement, mock(BackendConnection.class));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowCurrentDatabaseBackendHandler.class));
     }
     
     @Test
     public void assertShowTables() {
-        Optional<SchemaBackendHandler> actual = SchemaBackendHandlerFactory.newInstance(mock(MySQLShowTablesStatement.class), mock(BackendConnection.class));
+        Optional<DatabaseAdminBackendHandler> actual = SchemaBackendHandlerFactory.newInstance(mock(MySQLShowTablesStatement.class), mock(BackendConnection.class));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowTablesBackendHandler.class));
     }
