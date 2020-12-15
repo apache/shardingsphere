@@ -52,37 +52,36 @@ weight = 5
 </dependency>
 ```
 
-## 修改配置
+## 定制化配置项
 
 可以通过在项目的 classpath 中添加 `jbossts-properties.xml` 来定制化 Narayana 配置项。
 
 详情请参见[Narayana官方文档](https://narayana.io/documentation/index.html)。
 
-## 设置XA事务管理类型
-
-在Apache ShardingSphere 配置系统级配置中设置XA事务管理器类型。
+## 设置 XA 事务管理类型
 
 Yaml:
+
 ```yaml
 props:
   transaction-manager-type: narayana
 ```
 
-Spring-Boot:
+SpringBoot:
 
 ```yaml
 spring:
   shardingsphere:
     props:
-        transaction-manager-type: narayana
+      transaction-manager-type: narayana
 ```
 
-Spring-Namespace:
+Spring Namespace:
 
 ```xml
 <shardingsphere:data-source id="xxx" data-source-names="xxx" rule-refs="xxx">
-        <props>
-            <prop key="transaction-manager-type">narayana</prop>
-        </props>
+    <props>
+        <prop key="transaction-manager-type">narayana</prop>
+    </props>
 </shardingsphere:data-source>
 ```

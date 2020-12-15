@@ -11,9 +11,7 @@ Default XA transaction manager of ShardingSphere is Atomikos. Users can customiz
 
 * Use Narayana XA Transaction Manager。
 
-First：
-
-Copy the Jar package required by Narayana to '/lib'.The reference package is as follows ：
+1. Copy the jar file required by Narayana to `conf/lib`. The reference package is as follows:
 
 ```xml
 <propeties>
@@ -41,23 +39,18 @@ Copy the Jar package required by Narayana to '/lib'.The reference package is as 
        <artifactId>jboss-logging</artifactId>
        <version>${jboss-logging.version}</version>
 </dependency>
-``` 
- 
-Second：
+```
 
-config `transaction-manager-type` in `conf/server.yaml`：
+2. Configure `transaction-manager-type` in `conf/server.yaml`：
 
 ```yaml
 props:
-   transaction-manager-type: narayana
+  transaction-manager-type: narayana
 ```
 
-Third：  
-
-Developer can add `jbossts-properties.xml`  of the application to customize Narayana configuration. 
-This is the point where the search path is applied - user.dir (pwd), user.home, java.home, classpath.
+3. Add `jbossts-properties.xml` to customize Narayana configuration.
+The order of path loading is` user.dir (pwd)` > `user.home` > `java.home` > `classpath`.
 Please refer to [Narayana official documentation](https://narayana.io/documentation/index.html) for more details.
-
 
 ## BASE Transaction
 

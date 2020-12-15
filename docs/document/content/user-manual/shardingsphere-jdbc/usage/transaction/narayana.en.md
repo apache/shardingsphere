@@ -18,7 +18,7 @@ weight = 5
     <version>${shardingsphere.version}</version>
 </dependency>
 
-<!-- import if using XA transaction -->
+<!-- Import if using XA transaction -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere-transaction-xa-core</artifactId>
@@ -52,38 +52,36 @@ weight = 5
 </dependency>
 ```
 
-## Update Configuration
+## Customize Configuration Items
 
-Developer can add `jbossts-properties.xml` in classpath of the application to customize Narayana configuration. 
-For detailed configuration rules.
+Add `jbossts-properties.xml` in classpath of the application to customize Narayana configuration.
 
 Please refer to [Narayana official documentation](https://narayana.io/documentation/index.html) for more details.
 
-## Config Transaction Manager Type
-
-Set the XA transaction manager type in the Apache ShardingSphere configuration system-level configuration.
+## Configure Transaction Manager Type
 
 Yaml:
+
 ```yaml
 props:
   transaction-manager-type: narayana
 ```
 
-Spring-Boot:
+SpringBoot:
 
 ```yaml
 spring:
   shardingsphere:
     props:
-        transaction-manager-type: narayana
+      transaction-manager-type: narayana
 ```
 
-Spring-Namespace:
+Spring Namespace:
 
 ```xml
 <shardingsphere:data-source id="xxx" data-source-names="xxx" rule-refs="xxx">
-        <props>
-            <prop key="transaction-manager-type">narayana</prop>
-        </props>
+    <props>
+        <prop key="transaction-manager-type">narayana</prop>
+    </props>
 </shardingsphere:data-source>
 ```
