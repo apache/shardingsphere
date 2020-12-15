@@ -44,10 +44,10 @@ import java.util.Iterator;
 import java.util.Optional;
 
 /**
- * Backend handler for RDL rule query.
+ * Backend handler for rule query.
  */
 @RequiredArgsConstructor
-public final class RDLRuleQueryBackendHandler implements TextProtocolBackendHandler {
+public final class RuleQueryBackendHandler implements TextProtocolBackendHandler {
     
     private final ShowRuleStatement sqlStatement;
     

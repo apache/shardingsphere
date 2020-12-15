@@ -40,10 +40,10 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Backend handler for RDL data sources query.
+ * Backend handler for data sources query.
  */
 @RequiredArgsConstructor
-public final class RDLDataSourcesQueryBackendHandler implements TextProtocolBackendHandler {
+public final class DataSourcesQueryBackendHandler implements TextProtocolBackendHandler {
     
     private final ShowDataSourcesStatement sqlStatement;
     
