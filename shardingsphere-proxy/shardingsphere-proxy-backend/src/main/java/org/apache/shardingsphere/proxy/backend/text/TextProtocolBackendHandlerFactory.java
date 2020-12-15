@@ -23,6 +23,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.metadata.rdl.RDLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.metadata.schema.SchemaBackendHandler;
@@ -62,6 +64,10 @@ public final class TextProtocolBackendHandlerFactory {
         SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(databaseType.getName()).parse(sql, false);
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((TCLStatement) sqlStatement, sql, backendConnection);
+        }
+        Optional<DatabaseAdminBackendHandler> adminBackendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType);
+        if (adminBackendHandler.isPresent()) {
+            return adminBackendHandler.get();
         }
         Optional<SchemaBackendHandler> schemaBackendHandler = SchemaBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
         if (schemaBackendHandler.isPresent()) {
