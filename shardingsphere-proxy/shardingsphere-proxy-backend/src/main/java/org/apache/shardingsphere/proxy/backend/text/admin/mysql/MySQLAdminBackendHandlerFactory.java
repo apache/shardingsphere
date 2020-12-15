@@ -26,9 +26,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.util.Optional;
 
 /**
- * Database admin backend handler factory for MySQL.
+ * MySQL admin backend handler factory.
  */
-public final class MySQLDatabaseAdminBackendHandlerFactory implements DatabaseAdminBackendHandlerFactory {
+public final class MySQLAdminBackendHandlerFactory implements DatabaseAdminBackendHandlerFactory {
     
     @Override
     public Optional<DatabaseAdminBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
