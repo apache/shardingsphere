@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.metadata.rdl;
+package org.apache.shardingsphere.proxy.backend.text.rdl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -24,9 +24,9 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowData
 import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowRuleStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.rdl.query.RDLDataSourcesQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.rdl.query.RDLRuleQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.rdl.update.RDLUpdateBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.rdl.query.RDLDataSourcesQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.rdl.query.RDLRuleQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.rdl.update.RDLUpdateBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
