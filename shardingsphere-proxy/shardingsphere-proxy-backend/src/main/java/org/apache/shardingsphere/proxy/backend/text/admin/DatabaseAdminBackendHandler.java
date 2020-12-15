@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 /**
  * Database admin backend handler.
  */
-public interface DatabaseAdminBackendHandler extends TextProtocolBackendHandler, TypedSPI {
+public interface DatabaseAdminBackendHandler extends TextProtocolBackendHandler {
 }

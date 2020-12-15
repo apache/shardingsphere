@@ -27,22 +27,22 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Database admin backend handler factory.
+ * Database admin backend handler engine factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseAdminBackendHandlerFactory {
+public final class DatabaseAdminBackendHandlerEngineFactory {
     
     static {
-        ShardingSphereServiceLoader.register(DatabaseAdminBackendHandler.class);
+        ShardingSphereServiceLoader.register(DatabaseAdminBackendHandlerEngine.class);
     }
     
     /**
-     * Create new instance of database admin backend handler.
+     * Create new instance of database admin backend handler engine.
      *
      * @param databaseType database type
-     * @return database admin backend handler
+     * @return new instance of database admin backend handler engine
      */
-    public static Optional<DatabaseAdminBackendHandler> newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(DatabaseAdminBackendHandler.class, databaseType.getName(), new Properties());
+    public static Optional<DatabaseAdminBackendHandlerEngine> newInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.findRegisteredService(DatabaseAdminBackendHandlerEngine.class, databaseType.getName(), new Properties());
     }
 }

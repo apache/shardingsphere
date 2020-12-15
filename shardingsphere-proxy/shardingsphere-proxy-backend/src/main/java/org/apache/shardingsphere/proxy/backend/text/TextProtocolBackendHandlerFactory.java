@@ -24,11 +24,10 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandlerEngine;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandlerEngineFactory;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.metadata.rdl.RDLBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.SchemaBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.SchemaBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.sctl.utils.SCTLUtils;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
@@ -65,13 +64,12 @@ public final class TextProtocolBackendHandlerFactory {
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((TCLStatement) sqlStatement, sql, backendConnection);
         }
-        Optional<DatabaseAdminBackendHandler> adminBackendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType);
-        if (adminBackendHandler.isPresent()) {
-            return adminBackendHandler.get();
-        }
-        Optional<SchemaBackendHandler> schemaBackendHandler = SchemaBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
-        if (schemaBackendHandler.isPresent()) {
-            return schemaBackendHandler.get();
+        Optional<DatabaseAdminBackendHandlerEngine> adminBackendHandlerEngine = DatabaseAdminBackendHandlerEngineFactory.newInstance(databaseType);
+        if (adminBackendHandlerEngine.isPresent()) {
+            Optional<DatabaseAdminBackendHandler> databaseAdminBackendHandler = adminBackendHandlerEngine.get().newInstance(sqlStatement, backendConnection);
+            if (databaseAdminBackendHandler.isPresent()) {
+                return databaseAdminBackendHandler.get();
+            }
         }
         Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
         if (rdlBackendHandler.isPresent()) {

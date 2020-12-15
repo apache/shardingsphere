@@ -15,12 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.metadata.schema;
+package org.apache.shardingsphere.proxy.backend.text.admin;
 
-import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
+import java.util.Optional;
 
 /**
- * Schema backend handler.
+ * Database admin backend handler engine.
  */
-public interface SchemaBackendHandler extends DatabaseAdminBackendHandler {
+public interface DatabaseAdminBackendHandlerEngine extends TypedSPI {
+    
+    /**
+     * Create new instance of database admin backend handler. 
+     * 
+     * @param sqlStatement SQL statement
+     * @param backendConnection backend connection
+     * @return new instance of database admin backend handler
+     */
+    Optional<DatabaseAdminBackendHandler> newInstance(SQLStatement sqlStatement, BackendConnection backendConnection);
 }
