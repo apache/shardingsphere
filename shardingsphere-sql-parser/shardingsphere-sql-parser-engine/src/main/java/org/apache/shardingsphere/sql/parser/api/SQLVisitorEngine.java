@@ -35,7 +35,7 @@ public final class SQLVisitorEngine {
     
     private final String visitorType;
 
-    private final Properties config;
+    private final Properties props;
     
     /**
      * Visit parse tree.
@@ -45,7 +45,7 @@ public final class SQLVisitorEngine {
      * @return SQL visitor result
      */
     public <T> T visit(final ParseTree parseTree) {
-        ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseTree.getClass()), config);
+        ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseTree.getClass()), props);
         return parseTree.accept(visitor);
     }
 }

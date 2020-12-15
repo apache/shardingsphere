@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
@@ -101,13 +102,11 @@ import java.util.Properties;
 /**
  * DML Statement SQL visitor for Oracle.
  */
+@NoArgsConstructor
 public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
 
-    public OracleDMLStatementSQLVisitor() {
-    }
-
-    public OracleDMLStatementSQLVisitor(final Properties config) {
-        super(config);
+    public OracleDMLStatementSQLVisitor(final Properties props) {
+        super(props);
     }
 
     @Override

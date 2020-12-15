@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
@@ -189,16 +190,13 @@ import java.util.Properties;
 /**
  * MySQL Statement SQL visitor.
  */
+@NoArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
 
-    MySQLStatementSQLVisitor() {
-
-    }
-
-    MySQLStatementSQLVisitor(final Properties config) {
+    MySQLStatementSQLVisitor(final Properties props) {
         this();
     }
 

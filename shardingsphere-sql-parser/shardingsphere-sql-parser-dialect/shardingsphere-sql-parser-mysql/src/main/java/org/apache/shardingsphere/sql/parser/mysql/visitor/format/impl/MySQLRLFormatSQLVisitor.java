@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLFormatVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
 
@@ -25,12 +26,10 @@ import java.util.Properties;
 /**
  * RL Format SQL visitor for MySQL.
  */
+@NoArgsConstructor
 public final class MySQLRLFormatSQLVisitor extends MySQLFormatSQLVisitor implements RLSQLVisitor, SQLFormatVisitor {
 
-    public MySQLRLFormatSQLVisitor(final Properties config) {
-        super(config);
-    }
-
-    public MySQLRLFormatSQLVisitor() {
+    public MySQLRLFormatSQLVisitor(final Properties props) {
+        super(props);
     }
 }

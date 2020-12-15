@@ -39,31 +39,31 @@ public final class SQLVisitorFactory {
      * @param databaseType database type
      * @param visitorType SQL visitor type
      * @param visitorRule SQL visitor rule
-     * @param config SQL visitor config
+     * @param props SQL visitor config
      * @param <T> type of visitor result
      * @return parse tree visitor
      */
-    public static <T> ParseTreeVisitor<T> newInstance(final String databaseType, final String visitorType, final SQLVisitorRule visitorRule, final Properties config) {
+    public static <T> ParseTreeVisitor<T> newInstance(final String databaseType, final String visitorType, final SQLVisitorRule visitorRule, final Properties props) {
         SQLVisitorFacade facade = SQLVisitorFacadeRegistry.getInstance().getSQLVisitorFacade(databaseType, visitorType);
-        return createParseTreeVisitor(facade, visitorRule.getType(), config);
+        return createParseTreeVisitor(facade, visitorRule.getType(), props);
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private static <T> ParseTreeVisitor<T> createParseTreeVisitor(final SQLVisitorFacade visitorFacade, final SQLStatementType type, final Properties config) {
+    private static <T> ParseTreeVisitor<T> createParseTreeVisitor(final SQLVisitorFacade visitorFacade, final SQLStatementType type, final Properties props) {
         switch (type) {
             case DML:
-                return (ParseTreeVisitor) visitorFacade.getDMLVisitorClass().getConstructor(Properties.class).newInstance(config);
+                return (ParseTreeVisitor) visitorFacade.getDMLVisitorClass().getConstructor(Properties.class).newInstance(props);
             case DDL:
-                return (ParseTreeVisitor) visitorFacade.getDDLVisitorClass().getConstructor(Properties.class).newInstance(config);
+                return (ParseTreeVisitor) visitorFacade.getDDLVisitorClass().getConstructor(Properties.class).newInstance(props);
             case TCL:
-                return (ParseTreeVisitor) visitorFacade.getTCLVisitorClass().getConstructor(Properties.class).newInstance(config);
+                return (ParseTreeVisitor) visitorFacade.getTCLVisitorClass().getConstructor(Properties.class).newInstance(props);
             case DCL:
-                return (ParseTreeVisitor) visitorFacade.getDCLVisitorClass().getConstructor(Properties.class).newInstance(config);
+                return (ParseTreeVisitor) visitorFacade.getDCLVisitorClass().getConstructor(Properties.class).newInstance(props);
             case DAL:
-                return (ParseTreeVisitor) visitorFacade.getDALVisitorClass().getConstructor(Properties.class).newInstance(config);
+                return (ParseTreeVisitor) visitorFacade.getDALVisitorClass().getConstructor(Properties.class).newInstance(props);
             case RL:
-                return (ParseTreeVisitor) visitorFacade.getRLVisitorClass().getConstructor(Properties.class).newInstance(config);
+                return (ParseTreeVisitor) visitorFacade.getRLVisitorClass().getConstructor(Properties.class).newInstance(props);
             default:
                 throw new SQLParsingException("Can not support SQL statement type: `%s`", type);
         }

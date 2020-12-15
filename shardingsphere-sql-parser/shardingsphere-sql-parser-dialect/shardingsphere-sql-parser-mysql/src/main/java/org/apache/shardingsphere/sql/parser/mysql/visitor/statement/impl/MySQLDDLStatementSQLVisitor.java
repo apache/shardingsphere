@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl;
 
 import com.google.common.base.Preconditions;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
@@ -142,13 +143,11 @@ import java.util.Properties;
 /**
  * DDL Statement SQL visitor for MySQL.
  */
+@NoArgsConstructor
 public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor implements DDLSQLVisitor, SQLStatementVisitor {
 
-    public MySQLDDLStatementSQLVisitor() {
-    }
-
-    public MySQLDDLStatementSQLVisitor(final Properties config) {
-        super(config);
+    public MySQLDDLStatementSQLVisitor(final Properties props) {
+        super(props);
     }
 
     @Override

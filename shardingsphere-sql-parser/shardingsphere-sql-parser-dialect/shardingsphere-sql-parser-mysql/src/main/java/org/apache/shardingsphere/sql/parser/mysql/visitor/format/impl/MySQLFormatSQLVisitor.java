@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
@@ -73,6 +74,7 @@ import java.util.Properties;
 /**
  * MySQL Format SQL visitor for MySQL.
  */
+@NoArgsConstructor
 @Getter
 @Setter
 public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<String> {
@@ -89,20 +91,17 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
 
     private int projectionsCountOfLine = 3;
 
-    MySQLFormatSQLVisitor() {
-    }
-
-    MySQLFormatSQLVisitor(final Properties config) {
+    MySQLFormatSQLVisitor(final Properties props) {
         this();
-        if (null != config) {
-            if (config.containsKey("upperCase")) {
-                setUpperCase(Boolean.valueOf(config.getProperty("upperCase")));
+        if (null != props) {
+            if (props.containsKey("upperCase")) {
+                setUpperCase(Boolean.valueOf(props.getProperty("upperCase")));
             }
-            if (config.containsKey("parameterized")) {
-                setParameterized(Boolean.valueOf(config.getProperty("parameterized")));
+            if (props.containsKey("parameterized")) {
+                setParameterized(Boolean.valueOf(props.getProperty("parameterized")));
             }
-            if (config.containsKey("projectionsCountOfLine")) {
-                setProjectionsCountOfLine(Integer.valueOf(config.getProperty("projectionsCountOfLine")));
+            if (props.containsKey("projectionsCountOfLine")) {
+                setProjectionsCountOfLine(Integer.valueOf(props.getProperty("projectionsCountOfLine")));
             }
         }
     }

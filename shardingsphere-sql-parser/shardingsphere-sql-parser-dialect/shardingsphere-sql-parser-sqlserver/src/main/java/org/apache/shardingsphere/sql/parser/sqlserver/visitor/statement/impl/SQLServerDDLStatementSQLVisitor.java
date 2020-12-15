@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
@@ -67,13 +68,11 @@ import java.util.Properties;
 /**
  * DDL Statement SQL visitor for SQLServer.
  */
+@NoArgsConstructor
 public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQLVisitor implements DDLSQLVisitor, SQLStatementVisitor {
 
-    public SQLServerDDLStatementSQLVisitor() {
-    }
-
-    public SQLServerDDLStatementSQLVisitor(final Properties config) {
-        super(config);
+    public SQLServerDDLStatementSQLVisitor(final Properties props) {
+        super(props);
     }
 
     @SuppressWarnings("unchecked")

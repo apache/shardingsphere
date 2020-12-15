@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
@@ -47,13 +48,11 @@ import java.util.Properties;
 /**
  * DCL Statement SQL visitor for PostgreSQL.
  */
+@NoArgsConstructor
 public final class PostgreSQLDCLStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements DCLSQLVisitor, SQLStatementVisitor {
 
-    public PostgreSQLDCLStatementSQLVisitor() {
-    }
-
-    public PostgreSQLDCLStatementSQLVisitor(final Properties config) {
-        super(config);
+    public PostgreSQLDCLStatementSQLVisitor(final Properties props) {
+        super(props);
     }
 
     @Override

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
@@ -36,13 +37,11 @@ import java.util.Properties;
 /**
  * TCL Statement SQL visitor for PostgreSQL.
  */
+@NoArgsConstructor
 public final class PostgreSQLTCLStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements TCLSQLVisitor, SQLStatementVisitor {
 
-    public PostgreSQLTCLStatementSQLVisitor() {
-    }
-
-    public PostgreSQLTCLStatementSQLVisitor(final Properties config) {
-        super(config);
+    public PostgreSQLTCLStatementSQLVisitor(final Properties props) {
+        super(props);
     }
 
     @Override

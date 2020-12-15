@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
@@ -34,13 +35,11 @@ import java.util.Properties;
 /**
  * DCL Statement SQL visitor for SQL92.
  */
+@NoArgsConstructor
 public final class SQL92DCLStatementSQLVisitor extends SQL92StatementSQLVisitor implements DCLSQLVisitor, SQLStatementVisitor {
 
-    public SQL92DCLStatementSQLVisitor() {
-    }
-
-    public SQL92DCLStatementSQLVisitor(final Properties config) {
-        super(config);
+    public SQL92DCLStatementSQLVisitor(final Properties props) {
+        super(props);
     }
 
     @Override

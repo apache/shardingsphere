@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
@@ -98,15 +99,13 @@ import java.util.Properties;
 /**
  * PostgreSQL Statement SQL visitor.
  */
+@NoArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
 
-    public PostgreSQLStatementSQLVisitor() {
-    }
-
-    public PostgreSQLStatementSQLVisitor(final Properties config) {
+    public PostgreSQLStatementSQLVisitor(final Properties props) {
         this();
     }
 

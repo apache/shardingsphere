@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -106,15 +107,13 @@ import java.util.Properties;
 /**
  * Oracle Statement SQL visitor.
  */
+@NoArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
 
-    public OracleStatementSQLVisitor() {
-    }
-
-    public OracleStatementSQLVisitor(final Properties config) {
+    public OracleStatementSQLVisitor(final Properties props) {
         this();
     }
 

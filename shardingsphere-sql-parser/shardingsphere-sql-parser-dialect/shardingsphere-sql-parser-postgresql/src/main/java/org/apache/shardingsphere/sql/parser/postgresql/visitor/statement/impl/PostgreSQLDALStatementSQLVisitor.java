@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
@@ -39,13 +40,11 @@ import java.util.Properties;
 /**
  * DAL Statement SQL visitor for PostgreSQL.
  */
+@NoArgsConstructor
 public final class PostgreSQLDALStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements DALSQLVisitor, SQLStatementVisitor {
 
-    public PostgreSQLDALStatementSQLVisitor() {
-    }
-
-    public PostgreSQLDALStatementSQLVisitor(final Properties config) {
-        super(config);
+    public PostgreSQLDALStatementSQLVisitor(final Properties props) {
+        super(props);
     }
 
     @Override

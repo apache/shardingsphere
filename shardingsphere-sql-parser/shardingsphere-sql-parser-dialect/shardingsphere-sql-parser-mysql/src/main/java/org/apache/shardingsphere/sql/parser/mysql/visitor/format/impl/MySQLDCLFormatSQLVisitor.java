@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLFormatVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
 
@@ -25,12 +26,10 @@ import java.util.Properties;
 /**
  * DCL Format SQL visitor for MySQL.
  */
+@NoArgsConstructor
 public final class MySQLDCLFormatSQLVisitor extends MySQLFormatSQLVisitor implements DCLSQLVisitor, SQLFormatVisitor {
 
-    public MySQLDCLFormatSQLVisitor(final Properties config) {
-        super(config);
-    }
-
-    public MySQLDCLFormatSQLVisitor() {
+    public MySQLDCLFormatSQLVisitor(final Properties props) {
+        super(props);
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -103,15 +104,13 @@ import java.util.Properties;
 /**
  * Statement SQL SQLServer visitor.
  */
+@NoArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
 
-    public SQLServerStatementSQLVisitor() {
-    }
-
-    public SQLServerStatementSQLVisitor(final Properties config) {
+    public SQLServerStatementSQLVisitor(final Properties props) {
         this();
     }
 
