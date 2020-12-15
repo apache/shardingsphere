@@ -38,17 +38,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-transaction-xa-bitronix</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions</artifactId>
         </dependency>
