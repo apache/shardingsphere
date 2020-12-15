@@ -27,16 +27,20 @@ CREATE
     : C R E A T E
     ;
 
+DROP
+    : D R O P
+    ;
+
+SHOW
+    : S H O W
+    ;
+
 DATASOURCES
     : D A T A S O U R C E S
     ;
 
 RULE
     :  R U L E
-    ;
-
-SHOW
-    : S H O W
     ;
 
 FROM
