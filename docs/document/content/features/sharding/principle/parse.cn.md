@@ -103,3 +103,30 @@ SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "STATEMEN
 SQLStatement sqlStatement = sqlVisitorEngine.visit(tree);
 
 ```
+
+- SQL格式化
+
+```
+/**
+ * databaseType type:String 可能值 MySQL
+ * useCache type:boolean 是否使用缓存
+ * @return String
+ */
+ParseTree tree = new SQLParserEngine(databaseType).parse(sql, useCache); 
+SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "FORMAT");
+String formatedSql = sqlVisitorEngine.visit(tree);
+```
+
+例子：
+
+| sql      | formatedSql |
+|----------|-------------|
+|select a+1 as b, name n from table1 join table2 where id=1 and name='lu';    |SELECT a + 1 AS b, name n<br>FROM table1 JOIN table2<br>WHERE<br>&emsp;&emsp;&emsp;&emsp;id = 1<br>&emsp;&emsp;&emsp;&emsp;and name = 'lu';|
+|select id, name, age, sex, ss, yy from table1 where id=1;|SELECT id , name , age , <br>&emsp;&emsp;&emsp;&emsp;sex , ss , yy <br>FROM table1<br>WHERE <br>&emsp;&emsp;&emsp;&emsp;id = 1;|
+|select id, name, age, count(*) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1;|SELECT id , name , age , <br>&emsp;&emsp;&emsp;&emsp;COUNT(*) AS n, <br>&emsp;&emsp;&emsp;&emsp;(<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;SELECT id , name , age , <br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;sex <br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;FROM table2<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;WHERE <br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;id = 2<br>&emsp;&emsp;&emsp;&emsp;) AS sid, yyyy <br>FROM table1<br>WHERE <br>&emsp;&emsp;&emsp;&emsp;id = 1;|
+|select id, name, age, sex, ss, yy from table1 where id=1 and name=1 and a=1 and b=2 and c=4 and d=3;|SELECT id , name , age , <br>&emsp;&emsp;&emsp;&emsp;sex , ss , yy <br>FROM table1<br>WHERE <br>&emsp;&emsp;&emsp;&emsp;id = 1<br>&emsp;&emsp;&emsp;&emsp;and name = 1<br>&emsp;&emsp;&emsp;&emsp;and a = 1<br>&emsp;&emsp;&emsp;&emsp;and b = 2<br>&emsp;&emsp;&emsp;&emsp;and c = 4<br>&emsp;&emsp;&emsp;&emsp;and d = 3;|
+|ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, engine ss max_rows 10,min_rows 2, <br>ADD column6 TIMESTAMP, ADD column7 TIME;|ALTER TABLE t_order<br>&emsp;&emsp;&emsp;&emsp;ADD column4 DATE,<br>&emsp;&emsp;&emsp;&emsp;ADD column5 DATETIME,<br>&emsp;&emsp;&emsp;&emsp;ENGINE ss<br>&emsp;&emsp;&emsp;&emsp;MAX_ROWS 10,<br>&emsp;&emsp;&emsp;&emsp;MIN_ROWS 2,<br>&emsp;&emsp;&emsp;&emsp;ADD column6 TIMESTAMP,<br>&emsp;&emsp;&emsp;&emsp;ADD column7 TIME|
+|CREATE TABLE IF NOT EXISTS <br>`runoob_tbl`(`runoob_id` INT UNSIGNED AUTO_INCREMENT,`runoob_title` VARCHAR(100) NOT NULL,<br>`runoob_author` VARCHAR(40) NOT NULL,`runoob_test` NATIONAL CHAR(40),<br>`submission_date` DATE,PRIMARY KEY (`runoob_id`))ENGINE=InnoDB DEFAULT CHARSET=utf8;|CREATE TABLE IF NOT EXISTS `runoob_tbl` (<br>&emsp;&emsp;&emsp;&emsp;`runoob_id` INT UNSIGNED AUTO_INCREMENT,<br>&emsp;&emsp;&emsp;&emsp;`runoob_title` VARCHAR(100) NOT NULL,<br>&emsp;&emsp;&emsp;&emsp;`runoob_author` VARCHAR(40) NOT NULL,<br>&emsp;&emsp;&emsp;&emsp;`runoob_test` NATIONAL CHAR(40),<br>&emsp;&emsp;&emsp;&emsp;`submission_date` DATE,<br>&emsp;&emsp;&emsp;&emsp;PRIMARY KEY (`runoob_id`)<br>) ENGINE = InnoDB DEFAULT CHARSET = utf8;|
+|INSERT INTO t_order_item(order_id, user_id, status, creation_date) <br>values (1, 1, 'insert', '2017-08-08'), (2, 2, 'insert', '2017-08-08') ON DUPLICATE KEY UPDATE status = 'init';|INSERT  INTO t_order_item (order_id , user_id , status , creation_date)<br>VALUES<br>&emsp;&emsp;&emsp;&emsp;(1, 1, 'insert', '2017-08-08'),<br>&emsp;&emsp;&emsp;&emsp;(2, 2, 'insert', '2017-08-08')<br>ON DUPLICATE KEY UPDATE status = 'init';|
+|INSERT INTO t_order SET order_id = 1, user_id = 1, status = convert(to_base64(aes_encrypt(1, 'key')) USING utf8)<br> ON DUPLICATE KEY UPDATE status = VALUES(status);|INSERT  INTO t_order SET order_id = 1,<br>&emsp;&emsp;&emsp;&emsp;user_id = 1,<br>&emsp;&emsp;&emsp;&emsp;status = CONVERT(to_base64(aes_encrypt(1 , 'key')) USING utf8)<br>ON DUPLICATE KEY UPDATE status = VALUES(status);|
+|INSERT INTO t_order (order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = 1；|INSERT  INTO t_order (order_id , user_id , status) <br>SELECT order_id , user_id , status <br>FROM t_order<br>WHERE <br>&emsp;&emsp;&emsp;&emsp;order_id = 1;|
