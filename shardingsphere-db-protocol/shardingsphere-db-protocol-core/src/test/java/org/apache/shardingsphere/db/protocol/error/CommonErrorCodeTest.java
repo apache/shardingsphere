@@ -35,7 +35,7 @@ public final class CommonErrorCodeTest {
     public void assertTableInUsed() {
         assertThat(CommonErrorCode.TABLES_IN_USED.getErrorCode(), is(11000));
         assertThat(CommonErrorCode.TABLES_IN_USED.getSqlState(), is("C11000"));
-        assertThat(CommonErrorCode.TABLES_IN_USED.getErrorMessage(), is("Can not drop rule, tables [%s] in the rule are still in used."));
+        assertThat(CommonErrorCode.TABLES_IN_USED.getErrorMessage(), is("Can not drop rule, tables %s in the rule are still in used."));
     }
     
     @Test
