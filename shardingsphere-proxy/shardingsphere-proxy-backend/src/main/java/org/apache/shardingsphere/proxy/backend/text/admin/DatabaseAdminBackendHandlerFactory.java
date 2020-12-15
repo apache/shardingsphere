@@ -24,9 +24,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.util.Optional;
 
 /**
- * Database admin backend handler engine.
+ * Database admin backend handler factory.
  */
-public interface DatabaseAdminBackendHandlerEngine extends TypedSPI {
+public interface DatabaseAdminBackendHandlerFactory extends TypedSPI {
     
     /**
      * Create new instance of database admin backend handler. 

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.text.admin.mysql.MySQLDatabaseAdminBackendHandlerEngine
+org.apache.shardingsphere.proxy.backend.text.admin.mysql.MySQLDatabaseAdminBackendHandlerFactory

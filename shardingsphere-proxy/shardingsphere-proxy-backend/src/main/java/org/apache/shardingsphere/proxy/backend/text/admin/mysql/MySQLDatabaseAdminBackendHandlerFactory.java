@@ -19,16 +19,16 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandlerEngine;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.metadata.schema.SchemaBackendHandlerFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Optional;
 
 /**
- * Database admin backend handler engine for MySQL.
+ * Database admin backend handler factory for MySQL.
  */
-public final class MySQLDatabaseAdminBackendHandlerEngine implements DatabaseAdminBackendHandlerEngine {
+public final class MySQLDatabaseAdminBackendHandlerFactory implements DatabaseAdminBackendHandlerFactory {
     
     @Override
     public Optional<DatabaseAdminBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
