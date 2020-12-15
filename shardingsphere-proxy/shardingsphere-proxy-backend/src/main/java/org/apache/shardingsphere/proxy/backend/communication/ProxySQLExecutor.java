@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.rule.type.RawExecutionRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.ProxyJDBCExecutor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
-import org.apache.shardingsphere.proxy.backend.communication.raw.ProxyRawExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
@@ -59,7 +59,7 @@ public final class ProxySQLExecutor {
     
     private final ProxyJDBCExecutor jdbcExecutor;
     
-    private final ProxyRawExecutor rawExecutor;
+    private final RawExecutor rawExecutor;
     
     public ProxySQLExecutor(final String type, final BackendConnection backendConnection) {
         this.type = type;
@@ -67,7 +67,7 @@ public final class ProxySQLExecutor {
         ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
         boolean isSerialExecute = backendConnection.isSerialExecute();
         jdbcExecutor = new ProxyJDBCExecutor(type, backendConnection, new JDBCExecutor(executorEngine, isSerialExecute));
-        rawExecutor = new ProxyRawExecutor(executorEngine, isSerialExecute);
+        rawExecutor = new RawExecutor(executorEngine, isSerialExecute);
     }
     
     /**
@@ -94,7 +94,7 @@ public final class ProxySQLExecutor {
      * @throws SQLException SQL exception
      */
     public Collection<ExecuteResult> execute(final ExecutionContext executionContext) throws SQLException {
-        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap().get(backendConnection.getSchemaName()).getRuleMetaData().getRules();
+        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getRuleMetaData().getRules();
         int maxConnectionsSizePerQuery = ProxyContext.getInstance().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         boolean isReturnGeneratedKeys = executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement;
         return rules.stream().anyMatch(each -> each instanceof RawExecutionRule) 

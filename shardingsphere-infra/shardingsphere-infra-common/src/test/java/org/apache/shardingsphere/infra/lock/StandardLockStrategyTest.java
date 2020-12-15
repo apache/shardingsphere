@@ -31,14 +31,14 @@ public final class StandardLockStrategyTest {
     
     @Test
     public void assertTryLock() {
-        assertTrue(lockStrategy.tryLock());
+        assertTrue(lockStrategy.tryLock(50L));
         assertThat(StateContext.getCurrentState(), is(StateType.LOCK));
         lockStrategy.releaseLock();
     }
     
     @Test
     public void assertReleaseLock() {
-        assertTrue(lockStrategy.tryLock());
+        assertTrue(lockStrategy.tryLock(50L));
         assertThat(StateContext.getCurrentState(), is(StateType.LOCK));
         lockStrategy.releaseLock();
         assertThat(StateContext.getCurrentState(), is(StateType.OK));

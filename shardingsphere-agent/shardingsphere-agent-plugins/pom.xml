@@ -44,7 +44,6 @@
         </dependencies>
     </dependencyManagement>
 
-
     <build>
         <finalName>${project.artifactId}-${project.version}.jar</finalName>
         <plugins>
@@ -72,6 +71,12 @@
                                     <exclude>org.apache.commons:logging:*</exclude>
                                 </excludes>
                             </artifactSet>
+                            <relocations>
+                                <relocation>
+                                    <pattern>net.bytebuddy</pattern>
+                                    <shadedPattern>${shade.package}.net.bytebuddy</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>

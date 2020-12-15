@@ -19,7 +19,10 @@ package org.apache.shardingsphere.infra.lock;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
@@ -38,15 +41,17 @@ public final class LockContext {
     
     private static final Condition CONDITION = LOCK.newCondition();
     
-    private static final long TIME_OUT_SECONDS = 50L;
+    static {
+        ShardingSphereServiceLoader.register(LockStrategy.class);
+    }
     
     /**
      * Init lock strategy.
-     * 
-     * @param lockStrategy lock strategy
+     *
+     * @param lockStrategyType lock strategy type
      */
-    public static void init(final LockStrategy lockStrategy) {
-        LOCK_STRATEGY.set(lockStrategy);
+    public static void init(final LockStrategyType lockStrategyType) {
+        LOCK_STRATEGY.set(TypedSPIRegistry.getRegisteredService(LockStrategy.class, lockStrategyType.name(), new Properties()));
     }
     
     /**
@@ -61,12 +66,13 @@ public final class LockContext {
     /**
      * Waiting for unlock.
      * 
+     * @param timeout the maximum time in milliseconds to wait
      * @return false if wait timeout exceeded, else true
      */
-    public static boolean await() {
+    public static boolean await(final Long timeout) {
         LOCK.lock();
         try {
-            return CONDITION.await(TIME_OUT_SECONDS, TimeUnit.SECONDS);
+            return CONDITION.await(timeout, TimeUnit.MILLISECONDS);
             // CHECKSTYLE:OFF
         } catch (InterruptedException e) {
             // CHECKSTYLE:ON

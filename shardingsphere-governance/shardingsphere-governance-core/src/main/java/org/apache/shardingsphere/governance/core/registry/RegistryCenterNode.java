@@ -104,4 +104,13 @@ public final class RegistryCenterNode {
         }
         return result;
     }
+    
+    /**
+     * Get proxy nodes path.
+     *
+     * @return proxy nodes path
+     */
+    public String getProxyNodesPath() {
+        return Joiner.on("/").join("", ROOT, PROXY_NODES_NAME);
+    }
 }

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.infra.state.StateType;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -31,8 +32,14 @@ public final class StandardLockStrategy implements LockStrategy {
     private final ReentrantLock lock = new ReentrantLock();
     
     @Override
-    public boolean tryLock() {
-        boolean result = lock.tryLock();
+    public boolean tryLock(final Long timeout) {
+        boolean result = false;
+        try {
+            result = lock.tryLock(timeout, TimeUnit.MILLISECONDS);
+            // CHECKSTYLE:OFF
+        } catch (final InterruptedException e) {
+            // CHECKSTYLE:ON
+        }
         if (result) {
             StateContext.switchState(new StateEvent(StateType.LOCK, true));
         }
@@ -43,5 +50,15 @@ public final class StandardLockStrategy implements LockStrategy {
     public void releaseLock() {
         lock.unlock();
         StateContext.switchState(new StateEvent(StateType.OK, true));
+    }
+    
+    @Override
+    public boolean checkLock() {
+        return StateContext.getCurrentState() == StateType.LOCK;
+    }
+    
+    @Override
+    public String getType() {
+        return LockStrategyType.STANDARD.name();
     }
 }

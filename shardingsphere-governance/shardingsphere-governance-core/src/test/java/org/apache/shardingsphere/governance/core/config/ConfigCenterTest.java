@@ -27,9 +27,10 @@ import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
-import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -301,7 +302,7 @@ public final class ConfigCenterTest {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SHADOW_RULE_YAML), YamlRootRuleConfigurations.class).getRules());
     }
     
-    private Authentication createAuthentication() {
+    private DefaultAuthentication createAuthentication() {
         return new AuthenticationYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(AUTHENTICATION_YAML), YamlAuthenticationConfiguration.class));
     }
     
@@ -418,9 +419,10 @@ public final class ConfigCenterTest {
     public void assertLoadAuthentication() {
         when(configurationRepository.get("/authentication")).thenReturn(readYAML(AUTHENTICATION_YAML));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
-        Authentication actual = configCenter.loadAuthentication();
-        assertThat(actual.getUsers().size(), is(2));
-        assertThat(actual.getUsers().get("root1").getPassword(), is("root1"));
+        DefaultAuthentication actual = configCenter.loadAuthentication();
+        Optional<ShardingSphereUser> user = actual.findUser("root1");
+        assertTrue(user.isPresent());
+        assertThat(user.get().getPassword(), is("root1"));
     }
     
     @Test

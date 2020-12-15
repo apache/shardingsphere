@@ -65,6 +65,16 @@ public final class MetricsReporter {
     }
     
     /**
+     * Register counter.
+     *
+     * @param name name
+     * @param document document for counter
+     */
+    public static void registerCounter(final String name, final String document) {
+        METRICS_REGISTER.registerCounter(name, null, document);
+    }
+    
+    /**
      * Register gauge.
      *
      * @param name name
@@ -76,7 +86,17 @@ public final class MetricsReporter {
     }
     
     /**
-     * Register histogram.
+     * Register gauge.
+     *
+     * @param name name
+     * @param document document for gauge
+     */
+    public static void registerGauge(final String name, final String document) {
+        METRICS_REGISTER.registerGauge(name, null, document);
+    }
+    
+    /**
+     * Register histogram by label names.
      *
      * @param name name
      * @param labelNames label names
@@ -87,6 +107,16 @@ public final class MetricsReporter {
     }
     
     /**
+     * Register histogram.
+     *
+     * @param name name
+     * @param document document for histogram
+     */
+    public static void registerHistogram(final String name, final String document) {
+        METRICS_REGISTER.registerHistogram(name, null, document);
+    }
+    
+    /**
      * Counter increment.
      *
      * @param name name
@@ -94,6 +124,15 @@ public final class MetricsReporter {
      */
     public static void counterIncrement(final String name, final String[] labelValues) {
         METRICS_REGISTER.counterIncrement(name, labelValues);
+    }
+    
+    /**
+     * Counter increment.
+     *
+     * @param name name
+     */
+    public static void counterIncrement(final String name) {
+        counterIncrement(name, null);
     }
     
     /**
@@ -118,6 +157,15 @@ public final class MetricsReporter {
     }
     
     /**
+     * Gauge increment.
+     *
+     * @param name name
+     */
+    public static void gaugeIncrement(final String name) {
+        gaugeIncrement(name, null);
+    }
+    
+    /**
      * Gauge decrement.
      *
      * @param name name
@@ -125,6 +173,15 @@ public final class MetricsReporter {
      */
     public static void gaugeDecrement(final String name, final String[] labelValues) {
         METRICS_REGISTER.gaugeDecrement(name, labelValues);
+    }
+    
+    /**
+     * Gauge decrement.
+     *
+     * @param name name
+     */
+    public static void gaugeDecrement(final String name) {
+        gaugeDecrement(name, null);
     }
     
     /**
@@ -136,6 +193,16 @@ public final class MetricsReporter {
      */
     public static void recordTime(final String name, final String[] labelValues, final long duration) {
         METRICS_REGISTER.recordTime(name, labelValues, duration);
+    }
+    
+    /**
+     * Record time by duration.
+     *
+     * @param name name
+     * @param duration duration
+     */
+    public static void recordTime(final String name, final long duration) {
+        recordTime(name, null, duration);
     }
     
     private static String[] getLabelNames(final List<String> labels) {

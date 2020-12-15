@@ -23,52 +23,16 @@ createDataSources
     : CREATE DATASOURCES LP dataSource (COMMA dataSource)* RP
     ;
 
-createShardingRule
-    : CREATE SHARDINGRULE LP tableRule (COMMA tableRule)* RP
-    ;
-
-tableRule
-    : tableName EQ tableRuleDefinition
-    ;
-
 dataSource
     : dataSourceName EQ dataSourceDefinition
-    ;
-       
-dataSourceDefinition
-    : hostName COLON port COLON dbName (COLON user (COLON password)?)?
-    ;
-
-tableRuleDefinition
-    : strategyType LP strategyDefinition RP
-    ;
-
-strategyType
-    : IDENTIFIER
-    ;
-
-strategyDefinition
-    : columName COMMA strategyProps
-    ;
-
-strategyProps
-    : strategyProp (COMMA strategyProp)*
-    ;
-    
-strategyProp
-    : IDENTIFIER | NUMBER | INT
     ;
 
 dataSourceName
     : IDENTIFIER
     ;
 
-tableName
-    : IDENTIFIER
-    ;
-
-columName
-    : IDENTIFIER
+dataSourceDefinition
+    : hostName COLON port COLON dbName (COLON user (COLON password)?)?
     ;
 
 hostName
@@ -78,10 +42,11 @@ hostName
 ip
     : NUMBER+
     ;
+
 port
     : INT
     ;
-    
+
 dbName
     : IDENTIFIER
     ;
@@ -92,4 +57,60 @@ user
 
 password
     : IDENTIFIER | NUMBER | STRING
+    ;
+
+createShardingRule
+    : CREATE SHARDING RULE LP shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)* RP
+    ;
+
+shardingTableRuleDefinition
+    : tableName columName shardingAlgorithmDefinition
+    ;
+
+shardingAlgorithmDefinition
+    : shardingAlgorithmType LP shardingAlgorithmProperties RP
+    ;
+
+shardingAlgorithmType
+    : IDENTIFIER
+    ;
+
+shardingAlgorithmProperties
+    : shardingAlgorithmProperty (COMMA shardingAlgorithmProperty)*
+    ;
+
+shardingAlgorithmProperty
+    : shardingAlgorithmPropertyKey EQ shardingAlgorithmPropertyValue
+    ;
+
+shardingAlgorithmPropertyKey
+    : IDENTIFIER
+    ;
+
+shardingAlgorithmPropertyValue
+    : NUMBER | INT | STRING
+    ;
+
+tableName
+    : IDENTIFIER
+    ;
+
+columName
+    : IDENTIFIER
+    ;
+
+showDataSources
+    : SHOW DATASOURCES (FROM schemaName)?
+    ;
+
+showRule
+    : SHOW ruleType RULE (FROM schemaName)?
+    ;
+
+ruleType
+    : SHARDING | REPLICA_QUERY | ENCRYPT | SHADOW
+    ;
+
+schemaName
+    : IDENTIFIER
     ;

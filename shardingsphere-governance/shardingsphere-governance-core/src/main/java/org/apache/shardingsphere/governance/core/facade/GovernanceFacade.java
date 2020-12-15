@@ -25,7 +25,7 @@ import org.apache.shardingsphere.governance.core.lock.LockCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.state.GovernedStateContext;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 
@@ -52,7 +52,7 @@ public final class GovernanceFacade implements AutoCloseable {
     private GovernanceListenerManager listenerManager;
     
     @Getter
-    private LockCenter lockCenter;
+    private LockCenter lockCenter = LockCenter.getInstance();
     
     /**
      * Initialize governance facade.
@@ -65,7 +65,7 @@ public final class GovernanceFacade implements AutoCloseable {
         repositoryFacade = new GovernanceRepositoryFacade(config);
         registryCenter = new RegistryCenter(repositoryFacade.getRegistryRepository());
         configCenter = new ConfigCenter(repositoryFacade.getConfigurationRepository());
-        lockCenter = new LockCenter(repositoryFacade.getRegistryRepository(), registryCenter);
+        lockCenter.init(repositoryFacade.getRegistryRepository(), registryCenter);
         listenerManager = new GovernanceListenerManager(repositoryFacade.getRegistryRepository(),
                 repositoryFacade.getConfigurationRepository(), schemaNames.isEmpty() ? configCenter.getAllSchemaNames() : schemaNames);
         GovernedStateContext.startUp();
@@ -80,7 +80,7 @@ public final class GovernanceFacade implements AutoCloseable {
      * @param props properties
      */
     public void onlineInstance(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigMap,
-                               final Map<String, Collection<RuleConfiguration>> schemaRuleMap, final Authentication authentication, final Properties props) {
+                               final Map<String, Collection<RuleConfiguration>> schemaRuleMap, final DefaultAuthentication authentication, final Properties props) {
         configCenter.persistGlobalConfiguration(authentication, props, isOverwrite);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigMap.entrySet()) {
             configCenter.persistConfigurations(entry.getKey(), dataSourceConfigMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), isOverwrite);

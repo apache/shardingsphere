@@ -36,6 +36,7 @@ Total: 153 companies.
     <li><a href="https://www.ktjr.com/" rel="nofollow">KTJR</a></li>
     <li><a href="https://www.tansun.com/" rel="nofollow">TANSUN</a></li>
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360jinrong</a></li>
+    <li><a href="https://www.ccbft.com/" rel="nofollow">CCB Fintech</a></li>
 </ul>
 
 ### E-commerce
@@ -77,7 +78,8 @@ Total: 153 companies.
     <li><a href="http://www.dtchuxing.com/" rel="nofollow">Bus Cloud</a></li>
     <li><a href="http://www.ushareit.com/" rel="nofollow">Shareit</a></li>
     <li><a href="https://www.xforceplus.com/" rel="nofollow">Xforceplus</a></li>
-    <li><a href="https://aifanfan.baidu.com/ " rel="nofollow">Baidu aifanfan</a></li>
+    <li><a href="https://aifanfan.baidu.com/" rel="nofollow">Baidu aifanfan</a></li>
+    <li><a href="http://www.meicloud.com/" rel="nofollow">Midea Cloud</a></li>
 </ul>
 
 ### Transportation

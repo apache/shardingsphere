@@ -1,7 +1,7 @@
 +++
-pre = "<b>5.9. </b>"
+pre = "<b>5.10. </b>"
 title = "弹性伸缩"
-weight = 9
+weight = 10
 chapter = true
 +++
 

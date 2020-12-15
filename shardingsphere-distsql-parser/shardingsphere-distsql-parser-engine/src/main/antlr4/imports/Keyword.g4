@@ -22,7 +22,7 @@ import Alphabet;
 WS
     : [ \t\r\n] + ->skip
     ;
-    
+
 CREATE
     : C R E A T E
     ;
@@ -30,7 +30,31 @@ CREATE
 DATASOURCES
     : D A T A S O U R C E S
     ;
-    
-SHARDINGRULE
-    : S H A R D I N G R U L E
+
+RULE
+    :  R U L E
+    ;
+
+SHOW
+    : S H O W
+    ;
+
+FROM
+    : F R O M
+    ;
+
+SHARDING
+    : S H A R D I N G
+    ;
+   
+REPLICA_QUERY
+    : R E P L I C A UL_ Q U E R Y
+    ;
+
+ENCRYPT
+    : E N C R Y P T
+    ;
+
+SHADOW
+    : S H A D O W
     ;

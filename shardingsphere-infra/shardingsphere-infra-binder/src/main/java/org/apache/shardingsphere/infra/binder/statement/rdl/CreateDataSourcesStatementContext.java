@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.binder.statement.rdl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.CreateDataSourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 

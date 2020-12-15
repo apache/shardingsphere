@@ -42,13 +42,13 @@ partitionClause
     ;
 
 partitionTypeDef
-    : LINEAR? KEY partitionKeyAlgorithm? columnNames
+    : LINEAR? KEY partitionKeyAlgorithm? LP_ columnNames? RP_
     | LINEAR? HASH LP_ bitExpr RP_
-    | (RANGE | LIST) (LP_ bitExpr RP_ | COLUMNS columnNames )
+    | (RANGE | LIST) (LP_ bitExpr RP_ | COLUMNS LP_ columnNames RP_ )
     ;
 
 subPartitions
-    : SUBPARTITION BY LINEAR? ( HASH LP_ bitExpr RP_ | KEY partitionKeyAlgorithm? columnNames ) (SUBPARTITIONS NUMBER_)?
+    : SUBPARTITION BY LINEAR? ( HASH LP_ bitExpr RP_ | KEY partitionKeyAlgorithm? LP_ columnNames RP_ ) (SUBPARTITIONS NUMBER_)?
     ;
 
 partitionKeyAlgorithm
@@ -221,7 +221,7 @@ alterDatabase
     ;
 
 createDatabaseSpecification_
-    : defaultCollation
+    : defaultCharset
     | defaultCollation
     | defaultEncryption
     ;
@@ -240,9 +240,9 @@ alterInstance
     ;
 
 instanceAction
-    : (ENABLE | DISABLE) INNODB_ REDO_LOG_ 
-    | ROTATE INNODB_ MASTER KEY 
-    | ROTATE BINLOG MASTER KEY 
+    : (ENABLE | DISABLE) INNODB REDO_LOG
+    | ROTATE INNODB MASTER KEY
+    | ROTATE BINLOG MASTER KEY
     | RELOAD TLS (FOR CHANNEL channel)? (NO ROLLBACK ON ERROR)?
     ;
 
@@ -255,7 +255,7 @@ createEvent
       ON SCHEDULE scheduleExpression
       (ON COMPLETION NOT? PRESERVE)? 
       (ENABLE | DISABLE | DISABLE ON SLAVE)?
-      (COMMENT STRING_)?
+      (COMMENT string_)?
       DO routineBody
     ;
 
@@ -264,7 +264,7 @@ alterEvent
       (ON SCHEDULE scheduleExpression)?
       (ON COMPLETION NOT? PRESERVE)?
       (RENAME TO eventName)? (ENABLE | DISABLE | DISABLE ON SLAVE)?
-      (COMMENT STRING_)?
+      (COMMENT string_)?
       (DO routineBody)?
     ;
 
@@ -343,15 +343,15 @@ dropView
 
 createTablespaceInnodb
     : CREATE (UNDO)? TABLESPACE identifier
-      ADD DATAFILE STRING_
+      ADD DATAFILE string_
       (FILE_BLOCK_SIZE EQ_ fileSizeLiteral)?
-      (ENCRYPTION EQ_ y_or_n=STRING_)?
-      (ENGINE EQ_? STRING_)?
+      (ENCRYPTION EQ_ y_or_n=string_)?
+      (ENGINE EQ_? string_)?
     ;
 
 createTablespaceNdb
     : CREATE ( UNDO )? TABLESPACE identifier
-      ADD DATAFILE STRING_
+      ADD DATAFILE string_
       USE LOGFILE GROUP identifier
       (EXTENT_SIZE EQ_? fileSizeLiteral)?
       (INITIAL_SIZE EQ_? fileSizeLiteral)?
@@ -359,13 +359,13 @@ createTablespaceNdb
       (MAX_SIZE EQ_? fileSizeLiteral)?
       (NODEGROUP EQ_? identifier)?
       WAIT?
-      (COMMENT EQ_? STRING_)?
+      (COMMENT EQ_? string_)?
       (ENGINE EQ_? identifier)?
     ;
 
 alterTablespaceNdb
     : ALTER UNDO? TABLESPACE identifier
-      (ADD | DROP) DATAFILE STRING_
+      (ADD | DROP) DATAFILE string_
       (INITIAL_SIZE EQ_ fileSizeLiteral)?
       WAIT? (RENAME TO identifier)?
       (ENGINE EQ_? identifier)?
@@ -373,7 +373,7 @@ alterTablespaceNdb
 
 alterTablespaceInnodb
     : ALTER UNDO? TABLESPACE identifier
-      (SET (ACTIVE | INACTIVE))? (ENCRYPTION EQ_? y_or_n=STRING_)
+      (SET (ACTIVE | INACTIVE))? (ENCRYPTION EQ_? y_or_n=string_)
       (RENAME TO identifier)?
       (ENGINE EQ_? identifier)?
     ;
@@ -384,19 +384,19 @@ dropTablespace
 
 createLogfileGroup
     : CREATE LOGFILE GROUP identifier
-      ADD UNDOFILE STRING_
+      ADD UNDOFILE string_
       (INITIAL_SIZE EQ_? fileSizeLiteral)?
       (UNDO_BUFFER_SIZE EQ_? fileSizeLiteral)?
       (REDO_BUFFER_SIZE EQ_? fileSizeLiteral)?
       (NODEGROUP EQ_? identifier)?
       WAIT?
-      (COMMENT EQ_? STRING_)?
+      (COMMENT EQ_? string_)?
       (ENGINE EQ_? identifier)?
     ;
 
 alterLogfileGroup
     : ALTER LOGFILE GROUP identifier
-      ADD UNDOFILE STRING_
+      ADD UNDOFILE string_
       (INITIAL_SIZE EQ_? fileSizeLiteral)?
       WAIT? 
       (ENGINE EQ_? identifier)?
@@ -439,7 +439,7 @@ columnAttribute
     | value = SERIAL DEFAULT VALUE
     | PRIMARY? value = KEY
     | value = UNIQUE KEY?
-    | value = COMMENT STRING_
+    | value = COMMENT string_
     | collateClause
     | value = COLUMN_FORMAT columnFormat
     | value = STORAGE storageMedia
@@ -529,12 +529,12 @@ createTableOptions
 
 createTableOption
     : option = ENGINE EQ_? engineRef
-    | option = SECONDARY_ENGINE EQ_? (NULL | STRING_ | identifier)
+    | option = SECONDARY_ENGINE EQ_? (NULL | string_ | identifier)
     | option = MAX_ROWS EQ_? NUMBER_
     | option = MIN_ROWS EQ_? NUMBER_
     | option = AVG_ROW_LENGTH EQ_? NUMBER_
-    | option = PASSWORD EQ_? STRING_
-    | option = COMMENT EQ_? STRING_
+    | option = PASSWORD EQ_? string_
+    | option = COMMENT EQ_? string_
     | option = COMPRESSION EQ_? textString
     | option = ENCRYPTION EQ_? textString
     | option = AUTO_INCREMENT EQ_? NUMBER_
@@ -553,8 +553,8 @@ createTableOption
     | option = STORAGE (DISK | MEMORY)
     | option = CONNECTION EQ_? textString
     | option = KEY_BLOCK_SIZE EQ_? NUMBER_
-    | option = ENGINE_ATTRIBUTE EQ_? jsonAttribute = STRING_
-    | option = SECONDARY_ENGINE_ATTRIBUTE EQ_ jsonAttribute = STRING_
+    | option = ENGINE_ATTRIBUTE EQ_? jsonAttribute = string_
+    | option = SECONDARY_ENGINE_ATTRIBUTE EQ_ jsonAttribute = string_
     ;
 
 createSRSStatement
@@ -567,10 +567,10 @@ dropSRSStatement
     ;
 
 srsAttribute
-    : NAME STRING_
-    | DEFINITION STRING_
-    | ORGANIZATION STRING_ IDENTIFIED BY NUMBER_
-    | DESCRIPTION STRING_
+    : NAME string_
+    | DEFINITION string_
+    | ORGANIZATION string_ IDENTIFIED BY NUMBER_
+    | DESCRIPTION string_
     ;
 
 place
@@ -598,9 +598,9 @@ partitionValueList
 
 partitionDefinitionOption
     : STORAGE? ENGINE EQ_? identifier
-    | COMMENT EQ_? STRING_
-    | DATA DIRECTORY EQ_? STRING_
-    | INDEX DIRECTORY EQ_? STRING_
+    | COMMENT EQ_? string_
+    | DATA DIRECTORY EQ_? string_
+    | INDEX DIRECTORY EQ_? string_
     | MAX_ROWS EQ_? NUMBER_
     | MIN_ROWS EQ_? NUMBER_
     | TABLESPACE EQ_? identifier
@@ -630,17 +630,17 @@ routineBody
     ;
 
 serverOption
-    : HOST STRING_
-    | DATABASE STRING_
-    | USER STRING_
-    | PASSWORD STRING_
-    | SOCKET STRING_
-    | OWNER STRING_
+    : HOST string_
+    | DATABASE string_
+    | USER string_
+    | PASSWORD string_
+    | SOCKET string_
+    | OWNER string_
     | PORT numberLiterals 
     ;
 
 routineOption
-    : COMMENT STRING_                                       
+    : COMMENT string_
     | LANGUAGE SQL                                              
     | NOT? DETERMINISTIC                                          
     | (CONTAINS SQL | NO SQL | READS SQL DATA | MODIFIES SQL DATA)

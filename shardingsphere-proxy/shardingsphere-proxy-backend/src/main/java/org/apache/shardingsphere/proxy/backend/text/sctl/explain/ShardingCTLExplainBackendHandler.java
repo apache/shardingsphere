@@ -36,6 +36,7 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,7 +63,7 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
     private Iterator<ExecutionUnit> executionUnits;
     
     @Override
-    public ResponseHeader execute() {
+    public ResponseHeader execute() throws SQLException {
         Optional<ShardingCTLExplainStatement> explainStatement = new ShardingCTLExplainParser(sql).doParse();
         if (!explainStatement.isPresent()) {
             throw new InvalidShardingCTLFormatException(sql);
@@ -81,7 +82,7 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
     
     private LogicSQL createLogicSQL(final ShardingSphereMetaData metaData, final ShardingCTLExplainStatement explainStatement) {
         ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(
-                DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getMetaDataContexts().getDatabaseType()));
+                DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getMetaDataContexts().getMetaData(metaData.getName()).getResource().getDatabaseType()));
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(explainStatement.getSql(), false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchema(), Collections.emptyList(), sqlStatement);
         return new LogicSQL(sqlStatementContext, explainStatement.getSql(), Collections.emptyList());

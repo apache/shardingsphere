@@ -30,6 +30,7 @@
     <packaging>pom</packaging>
 
     <properties>
+        <maven-shade-plugin.version>3.1.1</maven-shade-plugin.version>
         <shade.package>org.apache.shardingsphere.dependencies</shade.package>
     </properties>
 
@@ -39,4 +40,29 @@
         <module>shardingsphere-agent-plugins</module>
         <module>shardingsphere-agent-distribution</module>
     </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>${bytebuddy.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy-agent</artifactId>
+            <version>${bytebuddy.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>${maven-shade-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>

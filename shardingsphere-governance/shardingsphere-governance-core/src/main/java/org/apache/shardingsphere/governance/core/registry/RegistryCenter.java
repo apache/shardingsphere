@@ -59,6 +59,7 @@ public final class RegistryCenter {
     
     /**
      * Persist instance data.
+     * 
      * @param instanceData instance data
      */
     public void persistInstanceData(final String instanceData) {
@@ -67,10 +68,30 @@ public final class RegistryCenter {
     
     /**
      * Load instance data.
+     * 
      * @return instance data
      */
     public String loadInstanceData() {
         return repository.get(node.getProxyNodePath(instance.getInstanceId()));
+    }
+    
+    /**
+     * Load instance data.
+     * 
+     * @param instanceId instance id
+     * @return instance data
+     */
+    public String loadInstanceData(final String instanceId) {
+        return repository.get(node.getProxyNodePath(instanceId));
+    }
+    
+    /**
+     * Load all instances.
+     * 
+     * @return collection of all instances
+     */
+    public Collection<String> loadAllInstances() {
+        return repository.getChildrenKeys(node.getProxyNodesPath());
     }
     
     /**

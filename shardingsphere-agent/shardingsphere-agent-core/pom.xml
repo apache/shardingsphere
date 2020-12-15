@@ -33,17 +33,6 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy</artifactId>
-            <version>${bytebuddy.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy-agent</artifactId>
-            <version>${bytebuddy.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -59,6 +48,7 @@
                         <configuration>
                             <artifactSet>
                                 <excludes>
+                                    <exclude>org.slf4j:*</exclude>
                                     <exclude>com.google.errorprone:error_prone_annotations:jar:</exclude>
                                     <exclude>com.google.code.findbugs:jsr305:jar:</exclude>
                                     <exclude>org.checkerframework:checker-qual:jar:</exclude>
@@ -74,10 +64,6 @@
                                 <relocation>
                                     <pattern>com.google</pattern>
                                     <shadedPattern>${shade.package}.com.google</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.slf4j</pattern>
-                                    <shadedPattern>${shade.package}.org.slf4j</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.apache.commons</pattern>

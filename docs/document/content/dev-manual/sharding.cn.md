@@ -20,6 +20,7 @@ chapter = true
 | MutableIntervalShardingAlgorithm    | 基于可变时间范围的分片算法  |
 | VolumeBasedRangeShardingAlgorithm   | 基于分片容量的范围分片算法  |
 | BoundaryBasedRangeShardingAlgorithm | 基于分片边界的范围分片算法  |
+| ClassBasedShardingAlgorithm         | 基于自定义类的分片算法      |
 
 ## KeyGenerateAlgorithm
 

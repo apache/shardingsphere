@@ -71,7 +71,7 @@ public final class MySQLCommandExecutorFactory {
             case COM_PING:
                 return new MySQLComPingExecutor();
             case COM_STMT_PREPARE:
-                return new MySQLComStmtPrepareExecutor((MySQLComStmtPreparePacket) commandPacket);
+                return new MySQLComStmtPrepareExecutor((MySQLComStmtPreparePacket) commandPacket, backendConnection);
             case COM_STMT_EXECUTE:
                 return new MySQLComStmtExecuteExecutor((MySQLComStmtExecutePacket) commandPacket, backendConnection);
             case COM_STMT_RESET:

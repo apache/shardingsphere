@@ -35,7 +35,7 @@ public final class ProxyStatementExecutorCallback extends ProxyJDBCExecutorCallb
     }
     
     @Override
-    protected boolean execute(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+    protected boolean execute(final String sql, final Statement statement, final boolean isReturnGeneratedKeys) throws SQLException {
         return statement.execute(sql, isReturnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
     }
 }

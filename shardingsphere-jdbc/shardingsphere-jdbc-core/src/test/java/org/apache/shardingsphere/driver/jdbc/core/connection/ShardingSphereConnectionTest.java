@@ -20,9 +20,9 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 import org.apache.shardingsphere.driver.jdbc.core.fixture.BASEShardingTransactionManagerFixture;
 import org.apache.shardingsphere.driver.jdbc.core.fixture.XAShardingTransactionManagerFixture;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
@@ -79,7 +79,7 @@ public final class ShardingSphereConnectionTest {
     public void setUp() {
         metaDataContexts = mock(StandardMetaDataContexts.class, RETURNS_DEEP_STUBS);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaDataContexts.getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
+        when(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         when(metaDataContexts.getDefaultMetaData()).thenReturn(metaData);
         transactionContexts = mock(TransactionContexts.class);
         when(transactionContexts.getDefaultTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());

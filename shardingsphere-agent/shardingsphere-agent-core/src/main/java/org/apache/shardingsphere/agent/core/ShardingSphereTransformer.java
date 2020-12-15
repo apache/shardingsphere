@@ -27,8 +27,8 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.utility.JavaModule;
+import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
 import org.apache.shardingsphere.agent.core.plugin.PluginAdviceDefinition;
-import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
 import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorMethodInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodAroundInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundInterceptor;
@@ -37,54 +37,54 @@ import org.apache.shardingsphere.agent.core.plugin.point.ClassStaticMethodPoint;
 import org.apache.shardingsphere.agent.core.plugin.point.ConstructorPoint;
 import org.apache.shardingsphere.agent.core.plugin.point.InstanceMethodPoint;
 
-import java.util.Map;
-
 /**
- *  Shardingsphere transformer.
+ * Shardingsphere transformer.
  */
 @Slf4j
 public class ShardingSphereTransformer implements AgentBuilder.Transformer {
     
-    private final PluginLoader pluginLoader;
+    private static final String SS_EXTRA_DATA = "_$EXTRA_DATA$_";
     
-    public ShardingSphereTransformer(final PluginLoader pluginLoader) {
-        this.pluginLoader = pluginLoader;
+    private final AgentPluginLoader agentPluginLoader;
+    
+    public ShardingSphereTransformer(final AgentPluginLoader agentPluginLoader) {
+        this.agentPluginLoader = agentPluginLoader;
     }
     
     @Override
     public DynamicType.Builder<?> transform(final DynamicType.Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module) {
-        if (pluginLoader.containsType(typeDescription)) {
-            DynamicType.Builder<?> newBuilder = builder.defineField("_SSExtraData_", Map.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
+        if (agentPluginLoader.containsType(typeDescription)) {
+            DynamicType.Builder<?> newBuilder = builder;
+            newBuilder = newBuilder.defineField(SS_EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
                     .implement(TargetObject.class)
-                    .intercept(FieldAccessor.ofField("_SSExtraData_"));
-            final PluginAdviceDefinition define = pluginLoader.loadPluginAdviceDefine(typeDescription);
+                    .intercept(FieldAccessor.ofField(SS_EXTRA_DATA));
+            final PluginAdviceDefinition define = agentPluginLoader.loadPluginAdviceDefine(typeDescription);
             for (ConstructorPoint point : define.getConstructorPoints()) {
                 try {
-                    final ConstructorMethodInterceptor interceptor = new ConstructorMethodInterceptor(pluginLoader.getOrCreateInstance(point.getAdvice()));
-                    newBuilder = newBuilder.constructor(point.getConstructorMatcher())
-                            .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(interceptor)));
+                    final ConstructorMethodInterceptor interceptor = new ConstructorMethodInterceptor(agentPluginLoader.getOrCreateInstance(point.getAdvice()));
+                    newBuilder = newBuilder.constructor(point.getConstructorMatcher()).intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(interceptor)));
                     // CHECKSTYLE:OFF
-                } catch (Exception e) {
+                } catch (final Throwable e) {
                     // CHECKSTYLE:ON
                     log.error("Failed to load advice class: {}", point.getAdvice(), e);
                 }
             }
             for (ClassStaticMethodPoint point : define.getClassStaticMethodPoints()) {
                 try {
-                    final StaticMethodAroundInterceptor interceptor = new StaticMethodAroundInterceptor(pluginLoader.getOrCreateInstance(point.getAdvice()));
+                    final StaticMethodAroundInterceptor interceptor = new StaticMethodAroundInterceptor(agentPluginLoader.getOrCreateInstance(point.getAdvice()));
                     newBuilder = newBuilder.method(point.getMethodsMatcher()).intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
                     // CHECKSTYLE:OFF
-                } catch (Exception e) {
+                } catch (final Throwable e) {
                     // CHECKSTYLE:ON
                     log.error("Failed to load advice class: {}", point.getAdvice(), e);
                 }
             }
             for (InstanceMethodPoint point : define.getInstanceMethodPoints()) {
                 try {
-                    final MethodAroundInterceptor interceptor = new MethodAroundInterceptor(pluginLoader.getOrCreateInstance(point.getAdvice()));
+                    final MethodAroundInterceptor interceptor = new MethodAroundInterceptor(agentPluginLoader.getOrCreateInstance(point.getAdvice()));
                     newBuilder = newBuilder.method(point.getMethodMatcher()).intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
                     // CHECKSTYLE:OFF
-                } catch (Exception e) {
+                } catch (final Throwable e) {
                     // CHECKSTYLE:ON
                     log.error("Failed to load advice class: {}", point.getAdvice(), e);
                 }

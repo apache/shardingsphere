@@ -46,7 +46,7 @@ public class ConstructorMethodInterceptor {
         try {
             advice.onConstructor(target, args);
             // CHECKSTYLE:OFF
-        } catch (Throwable throwable) {
+        } catch (final Throwable throwable) {
             // CHECKSTYLE:ON
             log.error("Constructor advice execution error. class: {}", target.getClass().getTypeName(), throwable);
         }

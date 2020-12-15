@@ -29,7 +29,8 @@
     <artifactId>shardingsphere-agent-metrics-bootstrap</artifactId>
 
     <properties>
-        <entrypoint.class>org.apache.shardingsphere.agent.metrics.bootstrap.MetricsPluginDefinition</entrypoint.class>
+        <entrypoint.class>org.apache.shardingsphere.agent.metrics.bootstrap.definition.MetricsPluginDefinition</entrypoint.class>
+        <shardingsphere.version>5.0.0-RC1-SNAPSHOT</shardingsphere.version>
     </properties>
 
     <dependencies>
@@ -37,6 +38,12 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-agent-metrics-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-route</artifactId>
+            <version>${shardingsphere.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.metadata.schema.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
@@ -28,6 +29,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Use database backend handler.
@@ -50,7 +53,8 @@ public final class UseDatabaseBackendHandler implements SchemaBackendHandler {
     }
     
     private boolean isAuthorizedSchema(final String schema) {
-        Collection<String> authorizedSchemas = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getUsers().get(backendConnection.getUsername()).getAuthorizedSchemas();
+        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(backendConnection.getUsername());
+        Collection<String> authorizedSchemas = user.isPresent() ? user.get().getAuthorizedSchemas() : Collections.emptyList();
         return authorizedSchemas.isEmpty() || authorizedSchemas.contains(schema);
     }
 }

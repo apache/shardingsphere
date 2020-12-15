@@ -22,3 +22,6 @@ org.apache.shardingsphere.sharding.algorithm.sharding.range.VolumeBasedRangeShar
 org.apache.shardingsphere.sharding.algorithm.sharding.range.BoundaryBasedRangeShardingAlgorithm
 org.apache.shardingsphere.sharding.algorithm.sharding.datetime.AutoIntervalShardingAlgorithm
 org.apache.shardingsphere.sharding.algorithm.sharding.datetime.IntervalShardingAlgorithm
+org.apache.shardingsphere.sharding.algorithm.sharding.classbased.ClassBasedShardingAlgorithm
+org.apache.shardingsphere.sharding.algorithm.sharding.complex.ComplexInlineShardingAlgorithm
+org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm

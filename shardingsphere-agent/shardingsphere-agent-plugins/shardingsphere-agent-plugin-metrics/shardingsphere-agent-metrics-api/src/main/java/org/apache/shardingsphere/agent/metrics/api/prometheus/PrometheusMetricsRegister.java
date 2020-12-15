@@ -46,9 +46,12 @@ public final class PrometheusMetricsRegister implements MetricsRegister {
     
     private final AgentConfiguration.MetricsConfiguration metricsConfiguration = SingletonHolder.INSTANCE.get(AgentConfiguration.class).getMetrics();
     
+    private HTTPServer httpServer;
+    
     private PrometheusMetricsRegister() {
         registerJvm();
         startServer();
+        registerClose();
     }
     
     /**
@@ -153,10 +156,10 @@ public final class PrometheusMetricsRegister implements MetricsRegister {
             inetSocketAddress = new InetSocketAddress(host, port);
         }
         try {
-            new HTTPServer(inetSocketAddress, CollectorRegistry.defaultRegistry, true);
-            log.info(String.format("you start prometheus metrics http server host is: %s , port is: %s", inetSocketAddress.getPort(), inetSocketAddress.getPort()));
-        } catch (IOException e) {
-            log.error("you start prometheus metrics http server is error", e);
+            httpServer = new HTTPServer(inetSocketAddress, CollectorRegistry.defaultRegistry, true);
+            log.info(String.format("you start prometheus metrics http server host is: %s , port is: %s", inetSocketAddress.getHostString(), inetSocketAddress.getPort()));
+        } catch (final IOException exception) {
+            log.error("you start prometheus metrics http server is error", exception);
         }
     }
     
@@ -168,8 +171,16 @@ public final class PrometheusMetricsRegister implements MetricsRegister {
         }
     }
     
-    private static class PrometheusMetricsRegisterHolder {
+    private void registerClose() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (null != httpServer) {
+                httpServer.stop();
+            }
+        }));
+    }
     
+    private static class PrometheusMetricsRegisterHolder {
+        
         private static final PrometheusMetricsRegister INSTANCE = new PrometheusMetricsRegister();
     }
 }

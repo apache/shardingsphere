@@ -22,29 +22,23 @@ import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class LockContextTest {
     
-    private final LockStrategy lockStrategy = new StandardLockStrategy();
-    
     @Before
     public void init() {
-        LockContext.init(lockStrategy);
+        LockContext.init(LockStrategyType.STANDARD);
     }
     
     @Test
     public void assertGetLockStrategy() {
         assertNotNull(LockContext.getLockStrategy());
-        assertThat(LockContext.getLockStrategy(), is(lockStrategy));
     }
     
     @Test
     public void assetAwait() {
-        long startTime = System.currentTimeMillis();
         new Thread(() -> {
             try {
                 TimeUnit.MILLISECONDS.sleep(200L);
@@ -54,8 +48,7 @@ public final class LockContextTest {
             }
             LockContext.signalAll();
         }).start();
-        boolean result = LockContext.await();
+        boolean result = LockContext.await(400L);
         assertTrue(result);
-        assertTrue(System.currentTimeMillis() - startTime >= 200L);
     }
 }

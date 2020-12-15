@@ -24,12 +24,12 @@ use
     ;
 
 help
-    : HELP STRING_
+    : HELP string_
     ;
 
 explain
     : (DESC | DESCRIBE | EXPLAIN)
-    (tableName (columnName | pattern)?
+    (tableName (columnRef | textString)?
     | explainType? (explainableStatement | FOR CONNECTION connectionId)
     | ANALYZE select)
     ;
@@ -163,7 +163,7 @@ showFunctionStatus
     ;
 
 showGrant
-    : SHOW GRANTS (FOR userOrRole (USING roleName (COMMA_ roleName)+)?)?
+    : SHOW GRANTS (FOR userOrRole (USING userName (COMMA_ userName)+)?)?
     ;
 
 showMasterStatus
@@ -244,7 +244,7 @@ clone
 
 cloneAction
     : LOCAL DATA DIRECTORY EQ_? cloneDir
-    | INSTANCE FROM cloneInstance IDENTIFIED BY STRING_ (DATA DIRECTORY EQ_? cloneDir)? (REQUIRE NO? SSL)?
+    | INSTANCE FROM cloneInstance IDENTIFIED BY string_ (DATA DIRECTORY EQ_? cloneDir)? (REQUIRE NO? SSL)?
     ;
 
 createUdf
@@ -330,7 +330,7 @@ binlog
     ;
 
 cacheIndex
-    : CACHE INDEX (tableIndexList (COMMA_ tableIndexList)* | tableName PARTITION LP_ partitionList RP_) IN IDENTIFIER_
+    : CACHE INDEX (tableIndexList (COMMA_ tableIndexList)* | tableName PARTITION LP_ partitionList RP_) IN (identifier | DEFAULT)
     ;
 
 tableIndexList
@@ -374,7 +374,7 @@ resetOption
     ;
 
 resetPersist
-    : RESET PERSIST (existClause? IDENTIFIER_)
+    : RESET PERSIST (existClause? identifier)?
     ;
 
 restart
