@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -47,7 +48,9 @@ public final class CreateShardingRuleStatementContextConverterTest {
         segment.setDataSources(Arrays.asList("ds0", "ds1"));
         segment.setShardingColumn("order_id");
         segment.setAlgorithmType("MOD");
-        segment.setProperties(Collections.singleton("2"));
+        Properties props = new Properties();
+        props.setProperty("sharding_count", "2");
+        segment.setAlgorithmProps(props);
         context = new CreateShardingRuleStatementContext(new CreateShardingRuleStatement(Collections.singleton(segment)));
     }
     

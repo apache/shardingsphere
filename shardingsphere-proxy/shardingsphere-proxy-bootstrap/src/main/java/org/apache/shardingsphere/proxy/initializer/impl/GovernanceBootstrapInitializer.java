@@ -121,8 +121,8 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     @Override
-    protected TransactionContexts decorateTransactionContexts(final TransactionContexts transactionContexts) {
-        return new GovernanceTransactionContexts(transactionContexts);
+    protected TransactionContexts decorateTransactionContexts(final TransactionContexts transactionContexts, final String transactionManagerType) {
+        return new GovernanceTransactionContexts(transactionContexts, transactionManagerType);
     }
     
     @Override

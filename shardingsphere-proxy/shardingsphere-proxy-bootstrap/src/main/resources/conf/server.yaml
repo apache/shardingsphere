@@ -50,6 +50,7 @@
 #    # XA: Proxy will run with XA transaction.
 #    # BASE: Proxy will run with B.A.S.E transaction.
 #  proxy-transaction-type: LOCAL
+#  transaction-manager-type: atomikos
 #  proxy-opentracing-enabled: false
 #  proxy-hint-enabled: false
 #  query-with-cipher-column: true

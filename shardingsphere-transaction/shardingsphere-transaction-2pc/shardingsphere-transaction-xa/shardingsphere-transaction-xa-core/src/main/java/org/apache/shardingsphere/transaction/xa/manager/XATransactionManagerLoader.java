@@ -17,46 +17,50 @@
 
 package org.apache.shardingsphere.transaction.xa.manager;
 
-import lombok.Getter;
+import java.util.Iterator;
+import java.util.ServiceLoader;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
-import org.apache.shardingsphere.transaction.core.XATransactionManagerTypeHolder;
 import org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManager;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
-
-import java.util.ServiceLoader;
 
 /**
  * XA transaction manager loader.
  */
-@Getter
 @Slf4j
 public final class XATransactionManagerLoader {
     
     private static final XATransactionManagerLoader INSTANCE = new XATransactionManagerLoader();
     
-    private final XATransactionManager transactionManager;
-    
     private XATransactionManagerLoader() {
-        transactionManager = load();
     }
     
-    private XATransactionManager load() {
-        XATransactionManagerType xaTransactionManagerType = XATransactionManagerTypeHolder.get();
-        for (XATransactionManager each : ServiceLoader.load(XATransactionManager.class)) {
-            if (null != xaTransactionManagerType && each.getType().equalsIgnoreCase(xaTransactionManagerType.getType())) {
-                return each;
-            }
-        }
-        return new AtomikosTransactionManager();
-    }
     
     /**
      * Get instance of XA transaction manager SPI loader.
-     * 
+     *
      * @return instance of XA transaction manager SPI loader
      */
     public static XATransactionManagerLoader getInstance() {
         return INSTANCE;
+    }
+    
+    /**
+     * Get xa transaction manager.
+     *
+     * @param type type
+     * @return xa transaction manager
+     */
+    public XATransactionManager getXATransactionManager(final String type) {
+        Iterator<XATransactionManager> xaTransactionManagers = ServiceLoader.load(XATransactionManager.class).iterator();
+        if (!xaTransactionManagers.hasNext()) {
+            return new AtomikosTransactionManager();
+        }
+        while (xaTransactionManagers.hasNext()) {
+            XATransactionManager result = xaTransactionManagers.next();
+            if (result.getType().equalsIgnoreCase(type)) {
+                return result;
+            }
+        }
+        return new AtomikosTransactionManager();
     }
 }

@@ -19,25 +19,6 @@ package org.apache.shardingsphere.transaction.xa;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.transaction.core.ResourceDataSource;
-import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
-import org.apache.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
-import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerLoader;
-import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import javax.sql.XADataSource;
-import javax.transaction.Transaction;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -46,31 +27,36 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.transaction.Transaction;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.transaction.core.ResourceDataSource;
+import org.apache.shardingsphere.transaction.core.TransactionManagerType;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class XAShardingTransactionManagerTest {
     
     private final XAShardingTransactionManager xaShardingTransactionManager = new XAShardingTransactionManager();
     
-    @Spy
-    private final XATransactionManager xaTransactionManager = XATransactionManagerLoader.getInstance().getTransactionManager();
-    
     @Before
     public void setUp() {
-        ReflectiveUtil.setProperty(xaShardingTransactionManager, "xaTransactionManager", xaTransactionManager);
         Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(DatabaseTypeRegistry.getActualDatabaseType("H2"));
-        xaShardingTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("H2"), resourceDataSources);
-        verify(xaTransactionManager).init();
+        xaShardingTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("H2"), resourceDataSources, TransactionManagerType.ATOMIKOS.getType());
     }
     
     @After
@@ -134,7 +120,6 @@ public final class XAShardingTransactionManagerTest {
     public void assertClose() throws Exception {
         xaShardingTransactionManager.close();
         Map<String, XATransactionDataSource> cachedSingleXADataSourceMap = getCachedDataSources();
-        verify(xaTransactionManager, times(2)).removeRecoveryResource(anyString(), any(XADataSource.class));
         assertThat(cachedSingleXADataSourceMap.size(), is(0));
     }
     
