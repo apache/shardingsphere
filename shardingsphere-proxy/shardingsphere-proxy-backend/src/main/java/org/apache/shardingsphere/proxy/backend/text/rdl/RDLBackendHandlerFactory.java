@@ -24,8 +24,8 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowData
 import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowRuleStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.rdl.query.RDLDataSourcesQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.rdl.query.RDLRuleQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.rdl.query.DataSourcesQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.rdl.query.RuleQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.rdl.update.RDLUpdateBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
@@ -48,10 +48,10 @@ public final class RDLBackendHandlerFactory {
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
         if (sqlStatement instanceof ShowRuleStatement) {
-            return Optional.of(new RDLRuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
+            return Optional.of(new RuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof ShowDataSourcesStatement) {
-            return Optional.of(new RDLDataSourcesQueryBackendHandler((ShowDataSourcesStatement) sqlStatement, backendConnection));
+            return Optional.of(new DataSourcesQueryBackendHandler((ShowDataSourcesStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof RDLStatement || sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
             return Optional.of(new RDLUpdateBackendHandler(sqlStatement, backendConnection));
