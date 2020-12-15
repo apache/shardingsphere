@@ -7,9 +7,52 @@ ShardingSphere-Proxy 接入的分布式事务 API 同 ShardingSphere-JDBC 保持
 
 ## XA 事务
 
-ShardingSphere-Proxy 原生支持 XA 事务，默认的事务管理器为 Atomikos。
+* ShardingSphere-Proxy 原生支持 XA 事务，默认的事务管理器为 Atomikos。
 可以通过在 ShardingSphere-Proxy 的 conf 目录中添加 `jta.properties` 来定制化 Atomikos 配置项。
 具体的配置规则请参考 Atomikos 的[官方文档](https://www.atomikos.com/Documentation/JtaProperties)。
+
+* 使用 Narayana事务管理器，需要参考以下步骤。
+
+步骤一：将 Narayana所需要的Jar包拷贝到 `/lib`。参考包如下：
+
+```xml
+<propeties>
+        <narayana.version>5.9.1.Final</narayana.version>
+        <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
+        <jboss-logging.version>3.2.1.Final</jboss-logging.version>
+</propeties>
+<dependency>
+      <groupId>org.jboss.narayana.jta</groupId>
+      <artifactId>jta</artifactId>
+      <version>${narayana.version}</version>
+</dependency>
+<dependency>
+       <groupId>org.jboss.narayana.jts</groupId>
+       <artifactId>narayana-jts-integration</artifactId>
+       <version>${narayana.version}</version>
+</dependency>
+<dependency>
+       <groupId>org.jboss</groupId>
+       <artifactId>jboss-transaction-spi</artifactId>
+       <version>${jboss-transaction-spi.version}</version>
+</dependency>
+<dependency>
+       <groupId>org.jboss.logging</groupId>
+       <artifactId>jboss-logging</artifactId>
+       <version>${jboss-logging.version}</version>
+</dependency>
+``` 
+ 
+步骤二： 在`conf/server.yaml` 的属性配置中加入如下：
+
+```yaml
+props:
+   transaction-manager-type: narayana
+```
+
+步骤三：  新增 `jbossts-properties.xml`文件来定制化 Narayana 配置项，它的加载路径顺序：`user.dir (pwd)` > `user.home` > `java.home` > `classpath`。
+详情请参见[Narayana官方文档](https://narayana.io/documentation/index.html)。
+
 
 ## BASE事务
 
