@@ -28,7 +28,7 @@ import java.util.Collection;
 public final class OtherShardingTransactionManagerFixture implements ShardingTransactionManager {
     
     @Override
-    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
+    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final String transactionMangerType) {
     }
     
     @Override

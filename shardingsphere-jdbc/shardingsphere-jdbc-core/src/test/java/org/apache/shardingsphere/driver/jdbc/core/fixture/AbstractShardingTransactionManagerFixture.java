@@ -46,7 +46,7 @@ public abstract class AbstractShardingTransactionManagerFixture implements Shard
     }
     
     @Override
-    public final void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
+    public final void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final String transactionMangerType) {
         for (ResourceDataSource each : resourceDataSources) {
             dataSourceMap.put(each.getOriginalName(), each.getDataSource());
         }

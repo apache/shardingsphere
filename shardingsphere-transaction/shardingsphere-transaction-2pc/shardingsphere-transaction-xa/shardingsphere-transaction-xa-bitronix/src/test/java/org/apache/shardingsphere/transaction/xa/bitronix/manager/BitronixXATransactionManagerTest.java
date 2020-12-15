@@ -27,13 +27,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
-import javax.transaction.xa.XAResource;
-import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -55,12 +52,8 @@ public final class BitronixXATransactionManagerTest {
     private XADataSource xaDataSource;
     
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() {
         ReflectiveUtil.setProperty(bitronixXATransactionManager, "bitronixTransactionManager", bitronixTransactionManager);
-        XAConnection xaConnection = mock(XAConnection.class);
-        XAResource xaResource = mock(XAResource.class);
-        when(xaConnection.getXAResource()).thenReturn(xaResource);
-        when(xaDataSource.getXAConnection()).thenReturn(xaConnection);
     }
     
     @Test

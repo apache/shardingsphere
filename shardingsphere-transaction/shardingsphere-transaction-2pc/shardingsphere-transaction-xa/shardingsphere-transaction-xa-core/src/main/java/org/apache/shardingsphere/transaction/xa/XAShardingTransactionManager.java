@@ -45,14 +45,15 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
     
     private final Map<String, XATransactionDataSource> cachedDataSources = new HashMap<>();
     
-    private final XATransactionManager xaTransactionManager = XATransactionManagerLoader.getInstance().getTransactionManager();
+    private XATransactionManager xaTransactionManager;
     
     @Override
-    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
+    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final String transactionMangerType) {
+        xaTransactionManager = XATransactionManagerLoader.getInstance().getXATransactionManager(transactionMangerType);
+        xaTransactionManager.init();
         for (ResourceDataSource each : resourceDataSources) {
             cachedDataSources.put(each.getOriginalName(), new XATransactionDataSource(databaseType, each.getUniqueResourceName(), each.getDataSource(), xaTransactionManager));
         }
-        xaTransactionManager.init();
     }
     
     @Override

@@ -23,7 +23,7 @@ import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
 import com.arjuna.ats.jta.common.jtaPropertyManager;
 import java.util.Objects;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
+import org.apache.shardingsphere.transaction.core.TransactionManagerType;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
 
@@ -37,14 +37,17 @@ import javax.transaction.TransactionManager;
  */
 public final class NarayanaXATransactionManager implements XATransactionManager {
     
-    private final TransactionManager transactionManager = jtaPropertyManager.getJTAEnvironmentBean().getTransactionManager();
+    private TransactionManager transactionManager;
     
-    private final XARecoveryModule xaRecoveryModule = XARecoveryModule.getRegisteredXARecoveryModule();
+    private XARecoveryModule xaRecoveryModule;
     
-    private final RecoveryManagerService recoveryManagerService = new RecoveryManagerService();
+    private RecoveryManagerService recoveryManagerService;
     
     @Override
     public void init() {
+        transactionManager = jtaPropertyManager.getJTAEnvironmentBean().getTransactionManager();
+        xaRecoveryModule = XARecoveryModule.getRegisteredXARecoveryModule();
+        recoveryManagerService = new RecoveryManagerService();
         RecoveryManager.delayRecoveryManagerThread();
         recoveryManagerService.create();
         recoveryManagerService.start();
@@ -83,6 +86,6 @@ public final class NarayanaXATransactionManager implements XATransactionManager 
     
     @Override
     public String getType() {
-        return XATransactionManagerType.NARAYANA.getType();
+        return TransactionManagerType.NARAYANA.getType();
     }
 }
