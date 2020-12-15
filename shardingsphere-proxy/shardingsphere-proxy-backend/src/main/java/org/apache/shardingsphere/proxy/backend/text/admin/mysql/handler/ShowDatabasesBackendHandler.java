@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.impl;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
@@ -25,7 +25,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.SchemaBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 
 import java.sql.SQLException;
@@ -39,7 +39,7 @@ import java.util.Optional;
  * Show databases backend handler.
  */
 @RequiredArgsConstructor
-public final class ShowDatabasesBackendHandler implements SchemaBackendHandler {
+public final class ShowDatabasesBackendHandler implements DatabaseAdminBackendHandler {
     
     private final BackendConnection backendConnection;
     

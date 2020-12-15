@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.impl;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
@@ -24,7 +24,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.SchemaBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 
@@ -36,7 +36,7 @@ import java.util.Optional;
  * Use database backend handler.
  */
 @RequiredArgsConstructor
-public final class UseDatabaseBackendHandler implements SchemaBackendHandler {
+public final class UseDatabaseBackendHandler implements DatabaseAdminBackendHandler {
     
     private final MySQLUseStatement useStatement;
     
