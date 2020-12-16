@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.governance.core.lock;
 
-import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockAddedEvent;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,19 +48,6 @@ public final class LockCenterTest {
     }
     
     @Test
-    public void assertLock() {
-        lockCenter.lock(new GlobalLockAddedEvent());
-        verify(registryCenter).persistInstanceData(RegistryCenterNodeStatus.LOCKED.toString());
-    }
-    
-    @Test
-    public void assertUnlock() {
-        lockCenter.lock(new GlobalLockAddedEvent());
-        lockCenter.unlock();
-        verify(registryCenter).persistInstanceData(RegistryCenterNodeStatus.OK.toString());
-    }
-    
-    @Test
     public void assertTryGlobalLock() {
         lockCenter.tryGlobalLock(50L);
         verify(registryRepository).tryLock(eq(50L), eq(TimeUnit.MILLISECONDS));
@@ -74,10 +58,5 @@ public final class LockCenterTest {
         lockCenter.releaseGlobalLock();
         verify(registryRepository).releaseLock();
         verify(registryRepository).delete(eq(new LockNode().getGlobalLockNodePath()));
-    }
-    
-    @After
-    public void tearDown() {
-        lockCenter.unlock();
     }
 }
