@@ -19,3 +19,4 @@ Apache ShardingSphere 提供属性配置的方式配置系统级配置。
 | check-table-metadata-enabled (?)   | boolean     | 是否在程序启动和更新时检查分片元数据的结构一致性。                                                                                                                                            | false    |
 | query-with-cipher-column (?)       | boolean     | 是否使用加密列进行查询。在有原文列的情况下，可以使用原文列进行查询。                                                                                                                            | true     |
 | transaction-manager-type (?)       | String      | 事务管理器类型。列如：Atomikos，Narayana                                                                                                                                                   | atomikos |
+
