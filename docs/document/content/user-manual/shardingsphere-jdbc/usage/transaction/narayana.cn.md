@@ -7,9 +7,9 @@ weight = 5
 
 ```xml
 <propeties>
-        <narayana.version>5.9.1.Final</narayana.version>
-        <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
-        <jboss-logging.version>3.2.1.Final</jboss-logging.version>
+    <narayana.version>5.9.1.Final</narayana.version>
+    <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
+    <jboss-logging.version>3.2.1.Final</jboss-logging.version>
 </propeties>
 
 <dependency>
