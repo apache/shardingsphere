@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rdl;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.available;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+
+import java.util.Optional;
 
 /**
- * RDL backend detail handler.
- * 
- * @param <T> type of SQL statement context
+ * From schema available.
  */
-public interface RDLBackendDetailHandler<T extends SQLStatementContext<?>> {
+public interface FromSchemaAvailable {
     
     /**
-     * Execute detail.
+     * Get schema.
      * 
-     * @param backendConnection backend connection
-     * @param sqlStatementContext SQL statement context
-     * @return response header
+     * @return schema segment
      */
-    ResponseHeader execute(BackendConnection backendConnection, T sqlStatementContext);
+    Optional<SchemaSegment> getSchema();
 }

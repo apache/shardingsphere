@@ -23,10 +23,8 @@ import org.apache.shardingsphere.infra.binder.statement.rdl.DropShardingRuleStat
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.TablesInUsedException;
-import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -41,17 +39,11 @@ import java.util.stream.Collectors;
 /**
  * Drop sharding rule backend handler.
  */
-public final class DropShardingRuleBackendHandler implements RDLBackendDetailHandler {
+public final class DropShardingRuleBackendHandler extends SchemaRequiredBackendHandler<DropShardingRuleStatementContext> {
     
     @Override
-    public ResponseHeader execute(final String schemaName, final DropShardingRuleStatementContext context) {
-        if (null == schemaName) {
-            throw new NoDatabaseSelectedException();
-        }
-        if (!ProxyContext.getInstance().schemaExists(schemaName)) {
-            throw new UnknownDatabaseException(schemaName);
-        }
-        Collection<String> tableNames = context.getSqlStatement().getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
+    public ResponseHeader execute(final String schemaName, final DropShardingRuleStatementContext sqlStatementContext) {
+        Collection<String> tableNames = sqlStatementContext.getSqlStatement().getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
         Optional<ShardingRuleConfiguration> ruleConfig = findShardingRuleConfiguration(schemaName);
         if (!ruleConfig.isPresent()) {
             throw new ShardingTableRuleNotExistedException(tableNames);
@@ -61,7 +53,7 @@ public final class DropShardingRuleBackendHandler implements RDLBackendDetailHan
         // TODO should use RuleConfigurationsChangeEvent
         ShardingSphereEventBus.getInstance().post(new RuleConfigurationsPersistEvent(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
         // TODO Need to get the executed feedback from registry center for returning.
-        return new UpdateResponseHeader(context.getSqlStatement());
+        return new UpdateResponseHeader(sqlStatementContext.getSqlStatement());
     }
     
     private Optional<ShardingRuleConfiguration> findShardingRuleConfiguration(final String schemaName) {
