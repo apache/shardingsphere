@@ -61,18 +61,18 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     public GovernanceShardingSphereDataSource(final GovernanceConfiguration governanceConfig) throws SQLException {
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
         metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(governanceFacade), governanceFacade);
-        String transactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.TRANSACTION_MANAGER_TYPE);
+        String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
-                metaDataContexts.getDefaultMetaData().getResource().getDataSources(), transactionMangerType);
+                metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
     }
     
     public GovernanceShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, 
                                               final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
         metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(dataSourceMap, ruleConfigs, props), governanceFacade);
-        String transactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.TRANSACTION_MANAGER_TYPE);
+        String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
-                metaDataContexts.getDefaultMetaData().getResource().getDataSources(), transactionMangerType);
+                metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
         uploadLocalConfiguration(governanceFacade);
     }
     
@@ -100,9 +100,9 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         return metaDataContextsBuilder.build();
     }
     
-    private TransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String transactionMangerType) {
+    private TransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String xaTransactionMangerType) {
         ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
-        engine.init(databaseType, dataSourceMap, transactionMangerType);
+        engine.init(databaseType, dataSourceMap, xaTransactionMangerType);
         return new StandardTransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, engine));
     }
     

@@ -64,7 +64,7 @@ Yaml:
 
 ```yaml
 props:
-  transaction-manager-type: Narayana
+  xa-transaction-manager-type: Narayana
 ```
 
 SpringBoot:
@@ -73,7 +73,7 @@ SpringBoot:
 spring:
   shardingsphere:
     props:
-      transaction-manager-type: Narayana
+      xa-transaction-manager-type: Narayana
 ```
 
 Spring Namespace:
@@ -81,7 +81,7 @@ Spring Namespace:
 ```xml
 <shardingsphere:data-source id="xxx" data-source-names="xxx" rule-refs="xxx">
     <props>
-        <prop key="transaction-manager-type">Narayana</prop>
+        <prop key="xa-transaction-manager-type">Narayana</prop>
     </props>
 </shardingsphere:data-source>
 ```

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.context.transaction;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
-import org.apache.shardingsphere.transaction.core.TransactionManagerType;
+import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -55,14 +55,14 @@ public final class GovernanceTransactionContextsTest {
     public void assertNewInstance() {
         when(transactionContexts.getDefaultTransactionManagerEngine()).thenReturn(engine);
         when(transactionContexts.getEngines()).thenReturn(Collections.singletonMap("name", engine));
-        GovernanceTransactionContexts actual = new GovernanceTransactionContexts(transactionContexts, TransactionManagerType.ATOMIKOS.getType());
+        GovernanceTransactionContexts actual = new GovernanceTransactionContexts(transactionContexts, XATransactionManagerType.ATOMIKOS.getType());
         assertThat(actual.getEngines(), is(Collections.singletonMap("name", engine)));
         assertThat(actual.getDefaultTransactionManagerEngine(), is(engine));
     }
     
     @Test
     public void assertClose() throws Exception {
-        GovernanceTransactionContexts actual = new GovernanceTransactionContexts(transactionContexts, TransactionManagerType.ATOMIKOS.getType());
+        GovernanceTransactionContexts actual = new GovernanceTransactionContexts(transactionContexts, XATransactionManagerType.ATOMIKOS.getType());
         actual.close();
         verify(transactionContexts).close();
     }
@@ -72,7 +72,7 @@ public final class GovernanceTransactionContextsTest {
         when(event.getSchemaName()).thenReturn("name");
         when(transactionContexts.getEngines()).thenReturn(engineMap);
         when(engineMap.remove(eq("name"))).thenReturn(engine);
-        GovernanceTransactionContexts actual = new GovernanceTransactionContexts(transactionContexts, TransactionManagerType.ATOMIKOS.getType());
+        GovernanceTransactionContexts actual = new GovernanceTransactionContexts(transactionContexts, XATransactionManagerType.ATOMIKOS.getType());
         actual.renew(event);
         verify(engine).close();
         verify(engineMap).put(eq("name"), any(ShardingTransactionManagerEngine.class));

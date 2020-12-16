@@ -78,7 +78,7 @@ public abstract class AbstractBootstrapInitializerTest {
         doReturn(mock(ProxyConfiguration.class)).when(abstractBootstrapInitializer).getProxyConfiguration(any());
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
-        when(props.getValue(ConfigurationPropertyKey.TRANSACTION_MANAGER_TYPE)).thenReturn("atomikos");
+        when(props.getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE)).thenReturn("Atomikos");
         when(props.getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)).thenReturn(Boolean.FALSE);
         when(metaDataContexts.getProps()).thenReturn(props);
         doReturn(metaDataContexts).when(abstractBootstrapInitializer).decorateMetaDataContexts(any());

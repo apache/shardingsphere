@@ -23,11 +23,11 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 
 /**
- * Transaction manager type.
+ * XA transaction manager type.
  */
 @RequiredArgsConstructor
 @Getter
-public enum TransactionManagerType {
+public enum XATransactionManagerType {
     
     ATOMIKOS("Atomikos"),
     
@@ -45,7 +45,7 @@ public enum TransactionManagerType {
      * @param type value to be transaction manager type
      * @return value from transaction manager type
      */
-    public static TransactionManagerType valueFrom(final String type) {
-        return Arrays.stream(values()).filter(each -> each.type.equalsIgnoreCase(type)).findFirst().orElse(TransactionManagerType.ATOMIKOS);
+    public static XATransactionManagerType valueFrom(final String type) {
+        return Arrays.stream(values()).filter(each -> each.type.equalsIgnoreCase(type)).findFirst().orElse(XATransactionManagerType.ATOMIKOS);
     }
 }
