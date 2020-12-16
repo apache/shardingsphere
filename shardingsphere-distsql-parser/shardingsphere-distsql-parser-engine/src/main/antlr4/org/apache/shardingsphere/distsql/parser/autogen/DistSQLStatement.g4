@@ -22,7 +22,7 @@ import Symbol, RDLStatement;
 execute
     : (createDataSources
     | createShardingRule
-    | dropRule
+    | dropShardingRule
     | showDataSources
     | showRule
     ) SEMI?

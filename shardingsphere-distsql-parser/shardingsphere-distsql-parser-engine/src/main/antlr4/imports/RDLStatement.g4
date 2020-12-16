@@ -99,8 +99,8 @@ columName
     : IDENTIFIER
     ;
 
-dropRule
-    : DROP ruleType RULE (FROM schemaName)?
+dropShardingRule
+    : DROP SHARDING RULE LP tableName (COMMA tableName)* RP
     ;
 
 showDataSources

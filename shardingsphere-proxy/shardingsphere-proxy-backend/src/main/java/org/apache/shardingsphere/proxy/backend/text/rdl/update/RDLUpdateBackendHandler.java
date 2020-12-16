@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.text.rdl.update;
 
+import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropRuleStatement;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
-import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePersistEvent;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -31,7 +30,7 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.CreateDatabaseStatem
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropDatabaseStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.rdl.CreateDataSourcesStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.rdl.CreateShardingRuleStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.rdl.DropRuleStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.rdl.DropShardingRuleStatementContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -43,6 +42,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.TablesInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -51,8 +51,6 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.converter.CreateDataSourcesStatementContextConverter;
-import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.converter.CreateShardingRuleStatementContextConverter;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -62,6 +60,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatab
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -122,77 +121,78 @@ public final class RDLUpdateBackendHandler implements TextProtocolBackendHandler
         return new UpdateResponseHeader(context.getSqlStatement());
     }
     
-    private ResponseHeader execute(final DropRuleStatementContext context) {
-        String schemaName = getSchemaName(context);
-        String ruleType = context.getSqlStatement().getRuleType();
-        Class<? extends RuleConfiguration> ruleConfigurationClass = getRuleConfigurationClass(ruleType);
-        switch (ruleType.toUpperCase()) {
-            case "SHARDING":
-                checkShardingTables(schemaName);
-                break;
-            case "REPLICA_QUERY":
-                // TODO
-            case "ENCRYPT":
-                // TODO
-                break;
-            case "SHADOW":
-                // TODO
-                break;
-            default:
-                throw new UnsupportedOperationException(ruleType);
+    private ResponseHeader execute(final DropShardingRuleStatementContext context) {
+        String schemaName = backendConnection.getSchemaName();
+        if (null == schemaName) {
+            throw new NoDatabaseSelectedException();
         }
-        Collection<RuleConfiguration> configs = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations();
-        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsChangedEvent(schemaName, 
-                configs.stream().filter(each -> !ruleConfigurationClass.isAssignableFrom(each.getClass())).collect(Collectors.toList())));
+        if (!ProxyContext.getInstance().schemaExists(schemaName)) {
+            throw new UnknownDatabaseException(schemaName);
+        }
+        Collection<String> tableNames = context.getSqlStatement().getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
+        Optional<ShardingRuleConfiguration> ruleConfig = findShardingRuleConfiguration(schemaName);
+        if (!ruleConfig.isPresent()) {
+            throw new ShardingTableRuleNotExistedException(tableNames);
+        }
+        checkShardingTables(schemaName, tableNames);
+        removeShardingTableRules(tableNames, ruleConfig.get());
+        // TODO should use RuleConfigurationsChangeEvent
+        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsPersistEvent(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
         // TODO Need to get the executed feedback from registry center for returning.
         return new UpdateResponseHeader(context.getSqlStatement());
     }
+
+    private Optional<ShardingRuleConfiguration> findShardingRuleConfiguration(final String schemaName) {
+        return ProxyContext.getInstance().getMetaData(schemaName)
+                .getRuleMetaData().getConfigurations().stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
+    }
     
-    private void checkShardingTables(final String schemaName) {
+    private void checkShardingTables(final String schemaName, final Collection<String> tableNames) {
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(schemaName);
-        Optional<ShardingRule> shardingRule = metaData.getRuleMetaData()
-                .getRules().stream().filter(each -> each instanceof ShardingRule).map(each -> (ShardingRule) each).findFirst();
+        Optional<ShardingRule> shardingRule = metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof ShardingRule).map(each -> (ShardingRule) each).findFirst();
         if (!shardingRule.isPresent()) {
             return;
         }
-        Collection<String> inUsedTableNames = new LinkedList<>();
-        Collection<String> shardingTables = new LinkedList<>(shardingRule.get().getTables());
-        shardingTables.addAll(shardingRule.get().getBroadcastTables());
-        shardingTables.addAll(shardingRule.get().getSingleTableRules().keySet());
-        for (String each : shardingTables) {
-            if (metaData.getSchema().containsTable(each)) {
-                inUsedTableNames.add(each);
-            }
+        Collection<String> shardingTableNames = getShardingTableNames(shardingRule.get());
+        Collection<String> notExistedTableNames = tableNames.stream().filter(each -> !shardingTableNames.contains(each)).collect(Collectors.toList());
+        if (!notExistedTableNames.isEmpty()) {
+            throw new ShardingTableRuleNotExistedException(notExistedTableNames);
         }
+        Collection<String> inUsedTableNames = tableNames.stream().filter(each -> ProxyContext.getInstance().getMetaData(schemaName).getSchema().containsTable(each)).collect(Collectors.toList());
         if (!inUsedTableNames.isEmpty()) {
             throw new TablesInUsedException(inUsedTableNames);
         }
     }
     
-    private Class<? extends RuleConfiguration> getRuleConfigurationClass(final String ruleType) {
-        switch (ruleType.toUpperCase()) {
-            case "SHARDING":
-                return ShardingRuleConfiguration.class;
-            case "REPLICA_QUERY":
-                return ReplicaQueryRuleConfiguration.class;
-            case "ENCRYPT":
-                return EncryptRuleConfiguration.class;
-            case "SHADOW":
-                return ShadowRuleConfiguration.class;
-            default:
-                throw new UnsupportedOperationException(ruleType);
+    private Collection<String> getShardingTableNames(final ShardingRule shardingRule) {
+        Collection<String> result = new LinkedList<>(shardingRule.getTables());
+        result.addAll(shardingRule.getBroadcastTables());
+        return result;
+    }
+    
+    private void removeShardingTableRules(final Collection<String> tableNames, final ShardingRuleConfiguration ruleConfig) {
+        // TODO add global lock
+        for (String each : tableNames) {
+            removeShardingTableRule(each, ruleConfig);
         }
     }
     
-    private String getSchemaName(final DropRuleStatementContext context) {
-        String result = null == context.getSqlStatement().getSchemaName() ? backendConnection.getSchemaName() : context.getSqlStatement().getSchemaName().getIdentifier().getValue();
-        if (null == result) {
-            throw new NoDatabaseSelectedException();
+    private void removeShardingTableRule(final String tableName, final ShardingRuleConfiguration ruleConfig) {
+        Collection<String> bindingTableGroups = ruleConfig.getBindingTableGroups().stream().filter(each -> Arrays.asList(each.split(",")).contains(tableName)).collect(Collectors.toList());
+        ruleConfig.getBindingTableGroups().removeAll(bindingTableGroups);
+        Collection<String> newBindingTableGroups = new LinkedList<>();
+        for (String each : bindingTableGroups) {
+            Collection<String> sss = new LinkedList<>();
+            for (String str : each.split(",")) {
+                if (!str.trim().equalsIgnoreCase(tableName)) {
+                    sss.add(str);
+                }
+            }
+            newBindingTableGroups.add(Joiner.on(",").join(sss));
         }
-        if (!ProxyContext.getInstance().schemaExists(result)) {
-            throw new UnknownDatabaseException(result);
-        }
-        return result;
+        ruleConfig.getBindingTableGroups().addAll(newBindingTableGroups);
+        ruleConfig.getTables().removeAll(ruleConfig.getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()));
+        ruleConfig.getBroadcastTables().removeAll(ruleConfig.getBroadcastTables().stream().filter(tableName::equalsIgnoreCase).collect(Collectors.toList()));
     }
     
     private boolean isRegistryCenterExisted() {
@@ -213,8 +213,8 @@ public final class RDLUpdateBackendHandler implements TextProtocolBackendHandler
         if (sqlStatement instanceof DropDatabaseStatement) {
             return new DropDatabaseStatementContext((DropDatabaseStatement) sqlStatement);
         }
-        if (sqlStatement instanceof DropRuleStatement) {
-            return new DropRuleStatementContext((DropRuleStatement) sqlStatement);
+        if (sqlStatement instanceof DropShardingRuleStatement) {
+            return new DropShardingRuleStatementContext((DropShardingRuleStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getName());
     }
@@ -232,8 +232,8 @@ public final class RDLUpdateBackendHandler implements TextProtocolBackendHandler
         if (context instanceof DropDatabaseStatementContext) {
             return execute((DropDatabaseStatementContext) context);
         }
-        if (context instanceof DropRuleStatementContext) {
-            return execute((DropRuleStatementContext) context);
+        if (context instanceof DropShardingRuleStatementContext) {
+            return execute((DropShardingRuleStatementContext) context);
         }
         throw new UnsupportedOperationException(context.getClass().getName());
     }
