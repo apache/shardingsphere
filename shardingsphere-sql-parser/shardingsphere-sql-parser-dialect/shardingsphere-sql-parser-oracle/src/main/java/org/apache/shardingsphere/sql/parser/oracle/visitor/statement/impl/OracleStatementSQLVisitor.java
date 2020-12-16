@@ -114,7 +114,6 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     private int currentParameterIndex;
 
     public OracleStatementSQLVisitor(final Properties props) {
-        this();
     }
 
     @Override
