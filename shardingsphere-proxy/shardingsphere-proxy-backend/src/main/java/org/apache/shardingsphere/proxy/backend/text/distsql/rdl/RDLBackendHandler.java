@@ -113,11 +113,11 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     }
     
     private ResponseHeader getResponseHeader(final SQLStatementContext<?> context) {
-        if (context instanceof CreateDatabaseStatementContext) {
-            return new CreateDatabaseBackendHandler().execute(backendConnection, (CreateDatabaseStatementContext) context);
-        }
         if (context instanceof AddResourceStatementContext) {
             return new AddResourceBackendHandler().execute(backendConnection, (AddResourceStatementContext) context);
+        }
+        if (context instanceof CreateDatabaseStatementContext) {
+            return new CreateDatabaseBackendHandler().execute(backendConnection, (CreateDatabaseStatementContext) context);
         }
         if (context instanceof CreateShardingRuleStatementContext) {
             return execute((CreateShardingRuleStatementContext) context);
