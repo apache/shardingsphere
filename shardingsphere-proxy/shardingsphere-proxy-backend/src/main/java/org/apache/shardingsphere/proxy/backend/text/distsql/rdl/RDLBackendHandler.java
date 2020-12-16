@@ -94,7 +94,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
             return new CreateDatabaseBackendHandler().execute(backendConnection, (CreateDatabaseStatementContext) context);
         }
         if (context instanceof CreateShardingRuleStatementContext) {
-            new CreateShardingRuleBackendHandler().execute(backendConnection, (CreateShardingRuleStatementContext) context);
+            return new CreateShardingRuleBackendHandler().execute(backendConnection, (CreateShardingRuleStatementContext) context);
         }
         if (context instanceof DropDatabaseStatementContext) {
             return new DropDatabaseBackendHandler().execute(backendConnection, (DropDatabaseStatementContext) context);

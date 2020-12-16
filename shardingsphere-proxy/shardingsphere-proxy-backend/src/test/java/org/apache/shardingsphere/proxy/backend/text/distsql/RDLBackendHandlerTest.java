@@ -159,7 +159,7 @@ public final class RDLBackendHandlerTest {
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("No Registry center to execute `AddResourcesStatement` SQL"));
+            assertThat(ex.getMessage(), is("No Registry center to execute `AddResourceStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
         ResponseHeader response = executeEngine.execute();
