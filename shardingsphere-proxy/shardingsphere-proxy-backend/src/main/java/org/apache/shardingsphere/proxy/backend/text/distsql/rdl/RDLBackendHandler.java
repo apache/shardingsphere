@@ -40,6 +40,7 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail.AddResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail.CreateDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail.CreateShardingRuleBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail.DropDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail.DropShardingRuleBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
@@ -109,7 +110,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
             new CreateShardingRuleBackendHandler().execute(backendConnection, (CreateShardingRuleStatementContext) context);
         }
         if (context instanceof DropDatabaseStatementContext) {
-            return execute((DropDatabaseStatementContext) context);
+            return new DropDatabaseBackendHandler().execute(backendConnection, (DropDatabaseStatementContext) context);
         }
         if (context instanceof DropShardingRuleStatementContext) {
             new DropShardingRuleBackendHandler().execute(backendConnection, (DropShardingRuleStatementContext) context);
