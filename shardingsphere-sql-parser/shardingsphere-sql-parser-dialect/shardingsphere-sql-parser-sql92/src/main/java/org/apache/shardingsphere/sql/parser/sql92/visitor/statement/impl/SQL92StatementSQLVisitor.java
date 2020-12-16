@@ -111,7 +111,6 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
     private int currentParameterIndex;
 
     public SQL92StatementSQLVisitor(final Properties props) {
-        this();
     }
 
     @Override

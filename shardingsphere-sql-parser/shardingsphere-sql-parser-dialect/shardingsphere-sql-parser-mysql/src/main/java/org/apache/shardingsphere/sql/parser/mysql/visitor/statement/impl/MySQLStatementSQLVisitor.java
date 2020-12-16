@@ -197,7 +197,6 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     private int currentParameterIndex;
 
     MySQLStatementSQLVisitor(final Properties props) {
-        this();
     }
 
     @Override

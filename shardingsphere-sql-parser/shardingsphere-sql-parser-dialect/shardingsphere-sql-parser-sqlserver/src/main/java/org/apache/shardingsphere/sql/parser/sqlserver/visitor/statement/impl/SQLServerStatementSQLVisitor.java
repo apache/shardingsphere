@@ -111,7 +111,6 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     private int currentParameterIndex;
 
     public SQLServerStatementSQLVisitor(final Properties props) {
-        this();
     }
 
     @Override

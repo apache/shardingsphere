@@ -106,7 +106,6 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
     private int currentParameterIndex;
 
     public PostgreSQLStatementSQLVisitor(final Properties props) {
-        this();
     }
 
     @Override
