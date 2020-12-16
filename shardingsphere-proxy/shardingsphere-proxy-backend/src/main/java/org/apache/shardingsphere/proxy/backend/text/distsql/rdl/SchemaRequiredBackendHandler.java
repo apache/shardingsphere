@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
@@ -37,13 +38,13 @@ import java.util.Optional;
 public abstract class SchemaRequiredBackendHandler<T extends SQLStatementContext<?>> implements RDLBackendDetailHandler<T> {
     
     @Override
-    public final ResponseHeader execute(final BackendConnection backendConnection, final T sqlStatementContext) {
+    public final ResponseHeader execute(final DatabaseType databaseType, final BackendConnection backendConnection, final T sqlStatementContext) {
         String schemaName = getSchemaName(backendConnection, sqlStatementContext);
         checkSchema(schemaName);
-        return execute(schemaName, sqlStatementContext);
+        return execute(databaseType, schemaName, sqlStatementContext);
     }
     
-    protected abstract ResponseHeader execute(String schemaName, T sqlStatementContext);
+    protected abstract ResponseHeader execute(DatabaseType databaseType, String schemaName, T sqlStatementContext);
     
     private String getSchemaName(final BackendConnection backendConnection, final T sqlStatementContext) {
         Optional<SchemaSegment> schemaFromSQL = sqlStatementContext.getSqlStatement() instanceof FromSchemaAvailable

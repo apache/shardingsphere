@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
 import org.apache.shardingsphere.infra.binder.statement.rdl.CreateShardingRuleStatementContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -37,7 +38,7 @@ import java.util.Collections;
 public final class CreateShardingRuleBackendHandler extends SchemaRequiredBackendHandler<CreateShardingRuleStatementContext> {
     
     @Override
-    public ResponseHeader execute(final String schemaName, final CreateShardingRuleStatementContext sqlStatementContext) {
+    public ResponseHeader execute(final DatabaseType databaseType, final String schemaName, final CreateShardingRuleStatementContext sqlStatementContext) {
         YamlShardingRuleConfiguration config = CreateShardingRuleStatementContextConverter.convert(sqlStatementContext);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(config));
         post(schemaName, rules);

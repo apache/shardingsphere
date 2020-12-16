@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
 import org.apache.shardingsphere.infra.binder.statement.rdl.DropShardingRuleStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -43,7 +44,7 @@ import java.util.stream.Collectors;
 public final class DropShardingRuleBackendHandler extends SchemaRequiredBackendHandler<DropShardingRuleStatementContext> {
     
     @Override
-    public ResponseHeader execute(final String schemaName, final DropShardingRuleStatementContext sqlStatementContext) {
+    public ResponseHeader execute(final DatabaseType databaseType, final String schemaName, final DropShardingRuleStatementContext sqlStatementContext) {
         Collection<String> tableNames = sqlStatementContext.getSqlStatement().getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
         check(schemaName, tableNames);
         drop(schemaName, tableNames);

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail;
 
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePersistEvent;
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropDatabaseStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -32,7 +33,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 public final class DropDatabaseBackendHandler implements RDLBackendDetailHandler<DropDatabaseStatementContext> {
     
     @Override
-    public ResponseHeader execute(final BackendConnection backendConnection, final DropDatabaseStatementContext sqlStatementContext) {
+    public ResponseHeader execute(final DatabaseType databaseType, final BackendConnection backendConnection, final DropDatabaseStatementContext sqlStatementContext) {
         check(sqlStatementContext);
         post(sqlStatementContext);
         return new UpdateResponseHeader(sqlStatementContext.getSqlStatement());

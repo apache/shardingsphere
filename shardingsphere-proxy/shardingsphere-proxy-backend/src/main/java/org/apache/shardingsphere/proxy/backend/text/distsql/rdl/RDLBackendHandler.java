@@ -87,20 +87,21 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     }
     
     private ResponseHeader getResponseHeader(final SQLStatementContext<?> context) {
+        DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
         if (context instanceof AddResourceStatementContext) {
-            return new AddResourceBackendHandler().execute(backendConnection, (AddResourceStatementContext) context);
+            return new AddResourceBackendHandler().execute(databaseType, backendConnection, (AddResourceStatementContext) context);
         }
         if (context instanceof CreateDatabaseStatementContext) {
-            return new CreateDatabaseBackendHandler().execute(backendConnection, (CreateDatabaseStatementContext) context);
+            return new CreateDatabaseBackendHandler().execute(databaseType, backendConnection, (CreateDatabaseStatementContext) context);
         }
         if (context instanceof CreateShardingRuleStatementContext) {
-            return new CreateShardingRuleBackendHandler().execute(backendConnection, (CreateShardingRuleStatementContext) context);
+            return new CreateShardingRuleBackendHandler().execute(databaseType, backendConnection, (CreateShardingRuleStatementContext) context);
         }
         if (context instanceof DropDatabaseStatementContext) {
-            return new DropDatabaseBackendHandler().execute(backendConnection, (DropDatabaseStatementContext) context);
+            return new DropDatabaseBackendHandler().execute(databaseType, backendConnection, (DropDatabaseStatementContext) context);
         }
         if (context instanceof DropShardingRuleStatementContext) {
-            new DropShardingRuleBackendHandler().execute(backendConnection, (DropShardingRuleStatementContext) context);
+            new DropShardingRuleBackendHandler().execute(databaseType, backendConnection, (DropShardingRuleStatementContext) context);
         }
         throw new UnsupportedOperationException(context.getClass().getName());
     }
