@@ -42,6 +42,8 @@ import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail.CreateDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail.DropShardingRuleBackendHandler;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.converter.CreateDataSourcesStatementContextConverter;
@@ -71,16 +73,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         if (!isRegistryCenterExisted()) {
             throw new SQLException(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName()));
         }
-        return getResponseHeader(backendConnection.getSchemaName(), getSQLStatementContext());
-    }
-    
-    private ResponseHeader execute(final CreateDatabaseStatementContext context) {
-        if (ProxyContext.getInstance().getAllSchemaNames().contains(context.getSqlStatement().getDatabaseName())) {
-            throw new DBCreateExistsException(context.getSqlStatement().getDatabaseName());
-        }
-        // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new SchemaNamePersistEvent(context.getSqlStatement().getDatabaseName(), false));
-        return new UpdateResponseHeader(context.getSqlStatement());
+        return getResponseHeader(getSQLStatementContext());
     }
     
     private ResponseHeader execute(final AddResourcesStatementContext context) {
@@ -133,9 +126,9 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         throw new UnsupportedOperationException(sqlStatement.getClass().getName());
     }
     
-    private ResponseHeader getResponseHeader(final String schemaName, final SQLStatementContext<?> context) {
+    private ResponseHeader getResponseHeader(final SQLStatementContext<?> context) {
         if (context instanceof CreateDatabaseStatementContext) {
-            return execute((CreateDatabaseStatementContext) context);
+            return new CreateDatabaseBackendHandler().execute(backendConnection, (CreateDatabaseStatementContext) context);
         }
         if (context instanceof AddResourcesStatementContext) {
             return execute((AddResourcesStatementContext) context);
@@ -147,7 +140,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
             return execute((DropDatabaseStatementContext) context);
         }
         if (context instanceof DropShardingRuleStatementContext) {
-            new DropShardingRuleBackendHandler().execute(schemaName, (DropShardingRuleStatementContext) context);
+            new DropShardingRuleBackendHandler().execute(backendConnection, (DropShardingRuleStatementContext) context);
         }
         throw new UnsupportedOperationException(context.getClass().getName());
     }

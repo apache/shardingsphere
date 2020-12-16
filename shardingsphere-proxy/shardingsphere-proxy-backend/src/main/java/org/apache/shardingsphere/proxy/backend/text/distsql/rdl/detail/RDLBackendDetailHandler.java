@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rdl;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
