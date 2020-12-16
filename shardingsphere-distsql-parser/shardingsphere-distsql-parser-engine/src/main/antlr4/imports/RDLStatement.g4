@@ -99,6 +99,10 @@ columName
     : IDENTIFIER
     ;
 
+dropRule
+    : DROP ruleType RULE (FROM schemaName)?
+    ;
+
 showDataSources
     : SHOW DATASOURCES (FROM schemaName)?
     ;

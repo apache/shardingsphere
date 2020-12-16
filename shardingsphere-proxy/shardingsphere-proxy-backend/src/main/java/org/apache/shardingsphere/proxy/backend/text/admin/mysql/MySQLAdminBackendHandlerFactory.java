@@ -20,8 +20,17 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema.SchemaBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowCurrentDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowDatabasesBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowTablesBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.UseDatabaseBackendHandler;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 
 import java.util.Optional;
 
@@ -32,7 +41,23 @@ public final class MySQLAdminBackendHandlerFactory implements DatabaseAdminBacke
     
     @Override
     public Optional<DatabaseAdminBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
-        return SchemaBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
+        if (sqlStatement instanceof MySQLUseStatement) {
+            return Optional.of(new UseDatabaseBackendHandler((MySQLUseStatement) sqlStatement, backendConnection));
+        }
+        if (sqlStatement instanceof MySQLShowDatabasesStatement) {
+            return Optional.of(new ShowDatabasesBackendHandler(backendConnection));
+        }
+        if (sqlStatement instanceof MySQLShowTablesStatement) {
+            return Optional.of(new ShowTablesBackendHandler(backendConnection));
+        }
+        if (sqlStatement instanceof SelectStatement) {
+            ProjectionSegment firstProjection = ((SelectStatement) sqlStatement).getProjections().getProjections().iterator().next();
+            if (firstProjection instanceof ExpressionProjectionSegment
+                    && ShowCurrentDatabaseBackendHandler.FUNCTION_NAME.equalsIgnoreCase(((ExpressionProjectionSegment) firstProjection).getText())) {
+                return Optional.of(new ShowCurrentDatabaseBackendHandler(backendConnection));
+            }
+        }
+        return Optional.empty();
     }
     
     @Override

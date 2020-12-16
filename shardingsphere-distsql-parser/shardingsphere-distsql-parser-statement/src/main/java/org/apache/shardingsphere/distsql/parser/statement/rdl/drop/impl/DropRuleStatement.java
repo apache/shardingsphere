@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
 
-import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Schema backend handler.
+ * Drop rule statement.
  */
-public interface SchemaBackendHandler extends DatabaseAdminBackendHandler {
+@RequiredArgsConstructor
+@Getter
+public final class DropRuleStatement extends DropRDLStatement {
+    
+    private final String ruleType;
+    
+    private final SchemaSegment schemaName;
 }

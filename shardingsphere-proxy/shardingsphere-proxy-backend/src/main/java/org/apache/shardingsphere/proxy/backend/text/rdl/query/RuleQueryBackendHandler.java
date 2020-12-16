@@ -27,6 +27,8 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
@@ -42,10 +44,10 @@ import java.util.Iterator;
 import java.util.Optional;
 
 /**
- * Backend handler for RDL rule query.
+ * Backend handler for rule query.
  */
 @RequiredArgsConstructor
-public final class RDLRuleQueryBackendHandler implements TextProtocolBackendHandler {
+public final class RuleQueryBackendHandler implements TextProtocolBackendHandler {
     
     private final ShowRuleStatement sqlStatement;
     
@@ -59,11 +61,22 @@ public final class RDLRuleQueryBackendHandler implements TextProtocolBackendHand
     }
     
     private ResponseHeader execute(final ShowRuleStatementContext context) {
-        String schemaName = null == context.getSqlStatement().getSchemaName() ? backendConnection.getSchemaName() : context.getSqlStatement().getSchemaName().getIdentifier().getValue();
+        String schemaName = getSchemaName(context);
         String ruleType = context.getSqlStatement().getRuleType();
         QueryHeader queryHeader = new QueryHeader(schemaName, "", ruleType, ruleType, Types.CHAR, "CHAR", 255, 0, false, false, false, false);
         data = loadRuleConfiguration(schemaName, ruleType);
         return new QueryResponseHeader(Collections.singletonList(queryHeader));
+    }
+    
+    private String getSchemaName(final ShowRuleStatementContext context) {
+        String result = null == context.getSqlStatement().getSchemaName() ? backendConnection.getSchemaName() : context.getSqlStatement().getSchemaName().getIdentifier().getValue();
+        if (null == result) {
+            throw new NoDatabaseSelectedException();
+        }
+        if (!ProxyContext.getInstance().schemaExists(result)) {
+            throw new UnknownDatabaseException(result);
+        }
+        return result;
     }
     
     private Iterator<RuleConfiguration> loadRuleConfiguration(final String schemaName, final String ruleType) {

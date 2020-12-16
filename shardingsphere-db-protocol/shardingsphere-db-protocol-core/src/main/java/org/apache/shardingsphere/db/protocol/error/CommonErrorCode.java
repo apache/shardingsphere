@@ -29,9 +29,11 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     CIRCUIT_BREAK_MODE(10000, "C10000", "Circuit break mode is ON."),
     
-    UNSUPPORTED_COMMAND(10001, "C10001", "Unsupported command: [%s]"),
+    TABLES_IN_USED(11000, "C11000", "Can not drop rule, tables %s in the rule are still in used."),
     
-    UNKNOWN_EXCEPTION(10002, "C10002", "Unknown exception: [%s]");
+    UNSUPPORTED_COMMAND(19998, "C19998", "Unsupported command: [%s]"),
+    
+    UNKNOWN_EXCEPTION(19999, "C19999", "Unknown exception: [%s]");
     
     private final int errorCode;
     
