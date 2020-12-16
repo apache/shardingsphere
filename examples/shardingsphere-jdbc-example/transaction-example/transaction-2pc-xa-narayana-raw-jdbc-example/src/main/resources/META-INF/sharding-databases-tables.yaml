@@ -67,4 +67,4 @@ rules:
 
 props:
   sql-show: false
-  transaction-manager-type: narayana
+  transaction-manager-type: Narayana

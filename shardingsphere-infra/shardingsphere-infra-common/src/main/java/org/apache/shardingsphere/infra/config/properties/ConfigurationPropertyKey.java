@@ -97,21 +97,21 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * XA transaction manager type of proxy.
      *
      * <p>
-     * atomikos:
-     * ShardingSphere-Proxy will run with XA transaction with atomikos.
+     * Atomikos:
+     * ShardingSphere-Proxy will run with XA transaction with Atomikos.
      * </p>
      *
      * <p>
-     * narayana:
-     * ShardingSphere-Proxy will run with XA transaction with narayana.
+     * Narayana:
+     * ShardingSphere-Proxy will run with XA transaction with Narayana.
      * </p>
      *
      * <p>
-     * bitronix:
-     * ShardingSphere-Proxy will run with XA transaction with bitronix.
+     * Bitronix:
+     * ShardingSphere-Proxy will run with XA transaction with Bitronix.
      * </p>
      */
-    TRANSACTION_MANAGER_TYPE("transaction-manager-type", "atomikos", String.class),
+    TRANSACTION_MANAGER_TYPE("transaction-manager-type", "Atomikos", String.class),
     
     /**
      * Whether enable opentracing for ShardingSphere-Proxy.

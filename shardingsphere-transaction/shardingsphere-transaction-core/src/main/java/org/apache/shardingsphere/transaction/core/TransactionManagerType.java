@@ -28,13 +28,13 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum TransactionManagerType {
     
-    ATOMIKOS("atomikos"),
+    ATOMIKOS("Atomikos"),
     
-    NARAYANA("narayana"),
+    NARAYANA("Narayana"),
     
-    BITRONIX("bitronix"),
+    BITRONIX("Bitronix"),
     
-    SEATA("seata");
+    SEATA("Seata");
     
     private final String type;
     
