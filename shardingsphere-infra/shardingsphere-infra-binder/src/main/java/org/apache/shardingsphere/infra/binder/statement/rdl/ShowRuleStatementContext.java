@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.statement.rdl;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleStatement;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 
 /**

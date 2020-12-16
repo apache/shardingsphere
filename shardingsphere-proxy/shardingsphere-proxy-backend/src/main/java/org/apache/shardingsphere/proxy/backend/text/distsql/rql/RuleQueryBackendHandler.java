@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.rdl.query;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.binder.statement.rdl.ShowRuleStatementContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;

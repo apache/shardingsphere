@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.rdl.update;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rdl;
 
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
@@ -69,10 +69,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Backend handler for RDL update.
+ * RDL backend handler.
  */
 @RequiredArgsConstructor
-public final class RDLUpdateBackendHandler implements TextProtocolBackendHandler {
+public final class RDLBackendHandler implements TextProtocolBackendHandler {
     
     private final SQLStatement sqlStatement;
     
