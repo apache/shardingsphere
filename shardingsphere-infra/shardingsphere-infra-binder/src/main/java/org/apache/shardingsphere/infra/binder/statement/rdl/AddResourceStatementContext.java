@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rdl;
+package org.apache.shardingsphere.infra.binder.statement.rdl;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import lombok.Getter;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 /**
- * RDL backend detail handler.
- * 
- * @param <T> type of SQL statement context
+ * Add resource statement context.
  */
-public interface RDLBackendDetailHandler<T extends SQLStatementContext<?>> {
+@Getter
+public final class AddResourceStatementContext extends CommonSQLStatementContext<AddResourceStatement> {
     
-    /**
-     * Execute detail.
-     * 
-     * @param backendConnection backend connection
-     * @param sqlStatementContext SQL statement context
-     * @return response header
-     */
-    ResponseHeader execute(BackendConnection backendConnection, T sqlStatementContext);
+    private final DatabaseType databaseType;
+    
+    public AddResourceStatementContext(final AddResourceStatement sqlStatement, final DatabaseType databaseType) {
+        super(sqlStatement);
+        this.databaseType = databaseType;
+    }
 }

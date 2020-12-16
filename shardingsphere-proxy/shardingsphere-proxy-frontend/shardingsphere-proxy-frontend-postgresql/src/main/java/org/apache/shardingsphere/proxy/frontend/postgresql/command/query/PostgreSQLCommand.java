@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
@@ -50,7 +50,7 @@ public final class PostgreSQLCommand {
         if (sqlStatement instanceof UpdateStatement) {
             return "UPDATE";
         }
-        if (sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof AddResourcesStatement || sqlStatement instanceof CreateShardingRuleStatement) {
+        if (sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof AddResourceStatement || sqlStatement instanceof CreateShardingRuleStatement) {
             return "CREATE";
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
