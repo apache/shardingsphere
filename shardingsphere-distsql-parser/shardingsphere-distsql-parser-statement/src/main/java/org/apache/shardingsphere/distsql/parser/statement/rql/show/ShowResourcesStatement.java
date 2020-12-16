@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * State node status.
+ * Show resources statement.
  */
-public enum RegistryCenterNodeStatus {
+@RequiredArgsConstructor
+@Getter
+public final class ShowResourcesStatement extends RQLStatement {
     
-    /**
-     * Disabled state.
-     */
-    DISABLED,
-    
-    /**
-     * Locked state.
-     */
-    LOCKED
+    private final SchemaSegment schemaName;
 }

@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.infra.binder.statement.rdl;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDataSourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 
 /**
- * Show data sources statement context.
+ * Show resources statement context.
  */
-public final class ShowDataSourcesStatementContext extends CommonSQLStatementContext<ShowDataSourcesStatement> {
+public final class ShowResourcesStatementContext extends CommonSQLStatementContext<ShowResourcesStatement> {
     
-    public ShowDataSourcesStatementContext(final ShowDataSourcesStatement sqlStatement) {
+    public ShowResourcesStatementContext(final ShowResourcesStatement sqlStatement) {
         super(sqlStatement);
     }
 }

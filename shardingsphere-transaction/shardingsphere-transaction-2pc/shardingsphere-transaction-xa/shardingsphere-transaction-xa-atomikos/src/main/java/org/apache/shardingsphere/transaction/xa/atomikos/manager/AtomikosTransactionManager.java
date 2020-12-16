@@ -21,7 +21,7 @@ import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.config.UserTransactionServiceImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.transaction.core.TransactionManagerType;
+import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
 
@@ -74,6 +74,6 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     
     @Override
     public String getType() {
-        return TransactionManagerType.ATOMIKOS.getType();
+        return XATransactionManagerType.ATOMIKOS.getType();
     }
 }

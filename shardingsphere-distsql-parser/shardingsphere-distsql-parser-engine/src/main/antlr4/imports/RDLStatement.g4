@@ -19,8 +19,8 @@ grammar RDLStatement;
 
 import Keyword, Literals, Symbol;
 
-createDataSources
-    : CREATE DATASOURCES LP dataSource (COMMA dataSource)* RP
+addResource
+    : ADD RESOURCE LP dataSource (COMMA dataSource)* RP
     ;
 
 dataSource

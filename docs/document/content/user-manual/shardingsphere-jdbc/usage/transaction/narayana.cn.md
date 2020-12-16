@@ -7,9 +7,9 @@ weight = 5
 
 ```xml
 <propeties>
-        <narayana.version>5.9.1.Final</narayana.version>
-        <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
-        <jboss-logging.version>3.2.1.Final</jboss-logging.version>
+    <narayana.version>5.9.1.Final</narayana.version>
+    <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
+    <jboss-logging.version>3.2.1.Final</jboss-logging.version>
 </propeties>
 
 <dependency>
@@ -64,7 +64,7 @@ Yaml:
 
 ```yaml
 props:
-  transaction-manager-type: Narayana
+  xa-transaction-manager-type: Narayana
 ```
 
 SpringBoot:
@@ -73,7 +73,7 @@ SpringBoot:
 spring:
   shardingsphere:
     props:
-      transaction-manager-type: Narayana
+      xa-transaction-manager-type: Narayana
 ```
 
 Spring Namespace:
@@ -81,7 +81,7 @@ Spring Namespace:
 ```xml
 <shardingsphere:data-source id="xxx" data-source-names="xxx" rule-refs="xxx">
     <props>
-        <prop key="transaction-manager-type">Narayana</prop>
+        <prop key="xa-transaction-manager-type">Narayana</prop>
     </props>
 </shardingsphere:data-source>
 ```

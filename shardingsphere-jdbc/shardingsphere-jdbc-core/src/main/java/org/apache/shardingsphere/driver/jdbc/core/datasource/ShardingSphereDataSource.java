@@ -53,13 +53,13 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
         metaDataContexts = new MetaDataContextsBuilder(
                 Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, configurations), props).build();
-        String transactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.TRANSACTION_MANAGER_TYPE);
-        transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), dataSourceMap, transactionMangerType);
+        String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
+        transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), dataSourceMap, xaTransactionMangerType);
     }
     
-    private TransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String transactionMangerType) {
+    private TransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String xaTransactionMangerType) {
         ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
-        engine.init(databaseType, dataSourceMap, transactionMangerType);
+        engine.init(databaseType, dataSourceMap, xaTransactionMangerType);
         return new StandardTransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, engine));
     }
     

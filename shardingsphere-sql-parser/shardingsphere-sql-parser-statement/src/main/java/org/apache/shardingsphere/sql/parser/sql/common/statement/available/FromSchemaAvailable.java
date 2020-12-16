@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.available;
+
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+
+import java.util.Optional;
 
 /**
- * State node status.
+ * From schema available.
  */
-public enum RegistryCenterNodeStatus {
+public interface FromSchemaAvailable {
     
     /**
-     * Disabled state.
+     * Get schema.
+     * 
+     * @return schema segment
      */
-    DISABLED,
-    
-    /**
-     * Locked state.
-     */
-    LOCKED
+    Optional<SchemaSegment> getSchema();
 }

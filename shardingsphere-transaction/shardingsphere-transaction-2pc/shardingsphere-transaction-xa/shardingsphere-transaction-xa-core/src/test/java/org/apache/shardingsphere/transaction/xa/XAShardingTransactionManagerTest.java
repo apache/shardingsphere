@@ -32,7 +32,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
-import org.apache.shardingsphere.transaction.core.TransactionManagerType;
+import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
@@ -56,7 +56,7 @@ public final class XAShardingTransactionManagerTest {
     @Before
     public void setUp() {
         Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(DatabaseTypeRegistry.getActualDatabaseType("H2"));
-        xaShardingTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("H2"), resourceDataSources, TransactionManagerType.ATOMIKOS.getType());
+        xaShardingTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("H2"), resourceDataSources, XATransactionManagerType.ATOMIKOS.getType());
     }
     
     @After

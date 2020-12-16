@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rql.show;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 
 /**
- * Show data sources statement.
+ * RDL backend detail handler.
+ * 
+ * @param <T> type of SQL statement context
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShowDataSourcesStatement extends RQLStatement {
+public interface RDLBackendDetailHandler<T extends SQLStatementContext<?>> {
     
-    private final SchemaSegment schemaName;
+    /**
+     * Execute detail.
+     * 
+     * @param backendConnection backend connection
+     * @param sqlStatementContext SQL statement context
+     * @return response header
+     */
+    ResponseHeader execute(BackendConnection backendConnection, T sqlStatementContext);
 }

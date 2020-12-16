@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl;
+package org.apache.shardingsphere.distsql.parser.segment;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.DataSourceConnectionSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRDLStatement;
-
-import java.util.Collection;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
- * Create dataSource statement.
+ * Data source segment.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CreateDataSourcesStatement extends CreateRDLStatement {
+@Setter
+public final class DataSourceSegment implements ASTNode {
     
-    private final Collection<DataSourceConnectionSegment> connectionInfos;
+    private String name;
+    
+    private String hostName;
+    
+    private String port;
+    
+    private String db;
+    
+    private String user;
+    
+    private String password;
 }

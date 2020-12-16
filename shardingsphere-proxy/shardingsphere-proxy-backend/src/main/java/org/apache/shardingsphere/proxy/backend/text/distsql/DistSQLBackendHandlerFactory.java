@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDataSourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
@@ -50,8 +50,8 @@ public final class DistSQLBackendHandlerFactory {
         if (sqlStatement instanceof ShowRuleStatement) {
             return Optional.of(new RuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
         }
-        if (sqlStatement instanceof ShowDataSourcesStatement) {
-            return Optional.of(new DataSourcesQueryBackendHandler((ShowDataSourcesStatement) sqlStatement, backendConnection));
+        if (sqlStatement instanceof ShowResourcesStatement) {
+            return Optional.of(new DataSourcesQueryBackendHandler((ShowResourcesStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof RDLStatement || sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
             return Optional.of(new RDLBackendHandler(sqlStatement, backendConnection));

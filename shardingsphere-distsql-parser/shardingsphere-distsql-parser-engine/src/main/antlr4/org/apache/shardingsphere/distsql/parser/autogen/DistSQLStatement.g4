@@ -20,10 +20,10 @@ grammar DistSQLStatement;
 import Symbol, RDLStatement, RQLStatement;
 
 execute
-    : (createDataSources
+    : (addResource
     | createShardingRule
     | dropShardingRule
-    | showDataSources
+    | showResources
     | showRule
     ) SEMI?
     ;
