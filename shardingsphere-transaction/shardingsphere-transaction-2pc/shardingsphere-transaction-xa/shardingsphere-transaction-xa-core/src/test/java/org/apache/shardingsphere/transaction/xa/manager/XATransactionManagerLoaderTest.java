@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.xa.manager;
 
-import org.apache.shardingsphere.transaction.core.TransactionManagerType;
+import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +31,6 @@ public final class XATransactionManagerLoaderTest {
     
     @Test
     public void assertGetTransactionManager() {
-        assertThat(XATransactionManagerLoader.getInstance().getXATransactionManager(TransactionManagerType.ATOMIKOS.getType()), instanceOf(AtomikosTransactionManager.class));
+        assertThat(XATransactionManagerLoader.getInstance().getXATransactionManager(XATransactionManagerType.ATOMIKOS.getType()), instanceOf(AtomikosTransactionManager.class));
     }
 }

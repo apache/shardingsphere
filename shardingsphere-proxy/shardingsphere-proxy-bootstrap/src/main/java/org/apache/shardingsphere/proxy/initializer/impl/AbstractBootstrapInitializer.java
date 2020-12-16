@@ -57,8 +57,8 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     public final void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = getProxyConfiguration(yamlConfig);
         MetaDataContexts metaDataContexts = decorateMetaDataContexts(createMetaDataContexts(proxyConfig));
-        String transactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.TRANSACTION_MANAGER_TYPE);
-        TransactionContexts transactionContexts = decorateTransactionContexts(createTransactionContexts(metaDataContexts), transactionMangerType);
+        String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
+        TransactionContexts transactionContexts = decorateTransactionContexts(createTransactionContexts(metaDataContexts), xaTransactionMangerType);
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         initOpenTracing();
         setDatabaseServerInfo();
@@ -86,11 +86,11 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     
     private TransactionContexts createTransactionContexts(final MetaDataContexts metaDataContexts) {
         Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(metaDataContexts.getAllSchemaNames().size(), 1);
-        String transactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.TRANSACTION_MANAGER_TYPE);
+        String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         for (String each : metaDataContexts.getAllSchemaNames()) {
             ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
             ShardingSphereResource resource = metaDataContexts.getMetaData(each).getResource();
-            engine.init(resource.getDatabaseType(), resource.getDataSources(), transactionMangerType);
+            engine.init(resource.getDatabaseType(), resource.getDataSources(), xaTransactionMangerType);
             transactionManagerEngines.put(each, engine);
         }
         return new StandardTransactionContexts(transactionManagerEngines);
@@ -115,7 +115,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     
     protected abstract MetaDataContexts decorateMetaDataContexts(MetaDataContexts metaDataContexts);
     
-    protected abstract TransactionContexts decorateTransactionContexts(TransactionContexts transactionContexts, String transactionManagerType);
+    protected abstract TransactionContexts decorateTransactionContexts(TransactionContexts transactionContexts, String xaTransactionMangerType);
     
     protected abstract void initLockContext();
 }

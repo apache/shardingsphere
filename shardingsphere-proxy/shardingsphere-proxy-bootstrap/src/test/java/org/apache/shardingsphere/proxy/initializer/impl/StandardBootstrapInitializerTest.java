@@ -35,7 +35,7 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.proxy.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.proxy.fixture.FixtureYamlRuleConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
-import org.apache.shardingsphere.transaction.core.TransactionManagerType;
+import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -194,7 +194,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     @Test
     public void assertDecorateTransactionContexts() {
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
-        assertThat(getInitializer().decorateTransactionContexts(transactionContexts, TransactionManagerType.ATOMIKOS.getType()), is(transactionContexts));
+        assertThat(getInitializer().decorateTransactionContexts(transactionContexts, XATransactionManagerType.ATOMIKOS.getType()), is(transactionContexts));
     }
     
     protected void doEnvironmentPrepare() {

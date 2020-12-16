@@ -41,7 +41,7 @@ public final class StandardBootstrapInitializer extends AbstractBootstrapInitial
     }
     
     @Override
-    protected TransactionContexts decorateTransactionContexts(final TransactionContexts transactionContexts, final String transactionManagerType) {
+    protected TransactionContexts decorateTransactionContexts(final TransactionContexts transactionContexts, final String xaTransactionMangerType) {
         return transactionContexts;
     }
     
