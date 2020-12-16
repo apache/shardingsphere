@@ -27,6 +27,7 @@ import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckerFactory;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 
 import java.util.Map;
@@ -46,7 +47,6 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
     public Optional<ScalingJob> start(final String sourceDataSource, final String sourceRule, final String targetDataSource, final String targetRule, final ScalingCallback scalingCallback) {
         Optional<ScalingJob> result = start(sourceDataSource, sourceRule, targetDataSource, targetRule);
         if (!result.isPresent()) {
-            scalingCallback.onSuccess();
             return result;
         }
         FINISH_CHECK_EXECUTOR.scheduleWithFixedDelay(new JobFinishChecker(result.get(), scalingCallback), 3, 1, TimeUnit.MINUTES);
@@ -73,7 +73,7 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
      * @return data consistency check result
      */
     protected Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final ScalingJob scalingJob) {
-        DataConsistencyChecker dataConsistencyChecker = scalingJob.getDataConsistencyChecker();
+        DataConsistencyChecker dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance(scalingJob);
         Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.countCheck();
         if (result.values().stream().allMatch(DataConsistencyCheckResult::isCountValid)) {
             Map<String, Boolean> dataCheckResult = dataConsistencyChecker.dataCheck();

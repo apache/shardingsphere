@@ -24,6 +24,8 @@ import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDML
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
+import com.google.common.base.Preconditions;
+
 import java.util.List;
 
 /**
@@ -31,15 +33,20 @@ import java.util.List;
  */
 public final class ShardingSelectStatementValidator extends ShardingDMLStatementValidator<SelectStatement> {
     
+    private boolean needCheckDatabaseInstance;
+    
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<SelectStatement> sqlStatementContext, 
                             final List<Object> parameters, final ShardingSphereSchema schema) {
         if (isNeedMergeShardingValues(sqlStatementContext, shardingRule)) {
-            checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
+            needCheckDatabaseInstance = checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
         }
     }
     
     @Override
     public void postValidate(final SelectStatement sqlStatement, final RouteContext routeContext) {
+        if (needCheckDatabaseInstance) {
+            Preconditions.checkState(routeContext.isSingleRouting(), "Sharding value must same with subquery.");
+        }
     }
 }

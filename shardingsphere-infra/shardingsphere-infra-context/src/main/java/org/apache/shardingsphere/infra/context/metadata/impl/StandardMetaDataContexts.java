@@ -18,24 +18,23 @@
 package org.apache.shardingsphere.infra.context.metadata.impl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.AuthenticationEngine;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Standard meta data contexts.
  */
-@RequiredArgsConstructor
 @Getter
 public final class StandardMetaDataContexts implements MetaDataContexts {
     
@@ -47,16 +46,31 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     
     private final ConfigurationProperties props;
     
-    private final DatabaseType databaseType;
-    
     public StandardMetaDataContexts() {
-        // TODO MySQLDatabaseType is invalid because it can not update again
-        this(new HashMap<>(), null, new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType());
+        this(new ConcurrentHashMap<>(), null, new DefaultAuthentication(), new ConfigurationProperties(new Properties()));
+    }
+    
+    public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap, 
+                                    final ExecutorEngine executorEngine, final Authentication authentication, final ConfigurationProperties props) {
+        this.metaDataMap = new ConcurrentHashMap<>(metaDataMap);
+        this.executorEngine = executorEngine;
+        this.authentication = AuthenticationEngine.findSPIAuthentication().orElse(authentication);
+        this.props = props;
+    }
+    
+    @Override
+    public Collection<String> getAllSchemaNames() {
+        return metaDataMap.keySet();
+    }
+    
+    @Override
+    public ShardingSphereMetaData getMetaData(final String schemaName) {
+        return metaDataMap.get(schemaName);
     }
     
     @Override
     public ShardingSphereMetaData getDefaultMetaData() {
-        return metaDataMap.get(DefaultSchema.LOGIC_NAME);
+        return getMetaData(DefaultSchema.LOGIC_NAME);
     }
     
     @Override

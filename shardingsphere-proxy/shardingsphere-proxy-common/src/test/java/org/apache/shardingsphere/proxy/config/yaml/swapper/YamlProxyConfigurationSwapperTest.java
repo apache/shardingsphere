@@ -19,10 +19,10 @@ package org.apache.shardingsphere.proxy.config.yaml.swapper;
 
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
-import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.auth.ProxyUser;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlProxyUserConfiguration;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -101,14 +102,12 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertAuthentication(final ProxyConfiguration proxyConfig) {
-        Authentication authentication = proxyConfig.getAuthentication();
+        DefaultAuthentication authentication = proxyConfig.getAuthentication();
         assertNotNull(authentication);
-        Map<String, ProxyUser> proxyUserMap = authentication.getUsers();
-        assertThat(proxyUserMap.size(), is(1));
-        ProxyUser proxyUser = proxyUserMap.get("user1");
-        assertNotNull(proxyUser);
-        assertThat(proxyUser.getPassword(), is("pass"));
-        Collection<String> authorizedSchemas = proxyUser.getAuthorizedSchemas();
+        Optional<ShardingSphereUser> user = authentication.findUser("user1");
+        assertTrue(user.isPresent());
+        assertThat(user.get().getPassword(), is("pass"));
+        Collection<String> authorizedSchemas = user.get().getAuthorizedSchemas();
         assertNotNull(authentication);
         assertThat(authorizedSchemas.size(), is(1));
         assertTrue(authorizedSchemas.contains("db1"));
@@ -214,13 +213,13 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void prepareAuthentication(final YamlProxyServerConfiguration yamlProxyServerConfig) {
-        Map<String, YamlProxyUserConfiguration> yamlProxyUserConfigurationMap = new HashMap<>(1, 1);
-        YamlProxyUserConfiguration yamlProxyUserConfig = mock(YamlProxyUserConfiguration.class);
-        when(yamlProxyUserConfig.getPassword()).thenReturn("pass");
-        when(yamlProxyUserConfig.getAuthorizedSchemas()).thenReturn("db1");
-        yamlProxyUserConfigurationMap.put("user1", yamlProxyUserConfig);
+        Map<String, YamlUserConfiguration> yamlUserConfigurationMap = new HashMap<>(1, 1);
+        YamlUserConfiguration yamlUserConfig = mock(YamlUserConfiguration.class);
+        when(yamlUserConfig.getPassword()).thenReturn("pass");
+        when(yamlUserConfig.getAuthorizedSchemas()).thenReturn("db1");
+        yamlUserConfigurationMap.put("user1", yamlUserConfig);
         YamlAuthenticationConfiguration yamlAuthenticationConfig = mock(YamlAuthenticationConfiguration.class);
-        when(yamlAuthenticationConfig.getUsers()).thenReturn(yamlProxyUserConfigurationMap);
+        when(yamlAuthenticationConfig.getUsers()).thenReturn(yamlUserConfigurationMap);
         when(yamlProxyServerConfig.getAuthentication()).thenReturn(yamlAuthenticationConfig);
     }
     

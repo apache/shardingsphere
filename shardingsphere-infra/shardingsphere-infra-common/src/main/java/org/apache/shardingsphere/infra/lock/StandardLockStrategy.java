@@ -56,4 +56,9 @@ public final class StandardLockStrategy implements LockStrategy {
     public boolean checkLock() {
         return StateContext.getCurrentState() == StateType.LOCK;
     }
+    
+    @Override
+    public String getType() {
+        return LockStrategyType.STANDARD.name();
+    }
 }

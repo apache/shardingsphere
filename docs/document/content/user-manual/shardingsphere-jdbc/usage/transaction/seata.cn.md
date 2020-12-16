@@ -1,6 +1,6 @@
 +++
 title = "Seata 事务"
-weight = 5
+weight = 6
 +++
 
 ## 启动 Seata 服务

@@ -48,7 +48,7 @@ public final class ScalingPositionResumerTest {
     @Before
     public void setUp() {
         ScalingContext.getInstance().init(new ServerConfiguration());
-        scalingJob = mockShardingScalingJob();
+        scalingJob = mockScalingJob();
         scalingPositionResumer = new ScalingPositionResumer();
     }
     
@@ -71,7 +71,7 @@ public final class ScalingPositionResumerTest {
     }
     
     @SneakyThrows(IOException.class)
-    private ScalingJob mockShardingScalingJob() {
+    private ScalingJob mockScalingJob() {
         return ScalingConfigurationUtil.initJob("/config.json");
     }
 }

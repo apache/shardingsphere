@@ -30,13 +30,12 @@ public final class DataConsistencyCheckerFactory {
     /**
      * create data consistency checker instance.
      *
-     * @param databaseType database type
      * @param scalingJob scaling job
      * @return data consistency checker
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static DataConsistencyChecker newInstance(final String databaseType, final ScalingJob scalingJob) {
-        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
+    public static DataConsistencyChecker newInstance(final ScalingJob scalingJob) {
+        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(scalingJob.getDatabaseType());
         return scalingEntry.getDataConsistencyCheckerClass().getConstructor(ScalingJob.class).newInstance(scalingJob);
     }
 }

@@ -36,9 +36,7 @@ public class LoggingListener implements AgentBuilder.Listener {
     
     @Override
     public void onTransformation(final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module, final boolean loaded, final DynamicType dynamicType) {
-        if (log.isDebugEnabled()) {
-            log.debug("On transformation class {}.", typeDescription.getTypeName());
-        }
+        log.info("On transformation class {}.", typeDescription.getTypeName());
     }
     
     @Override

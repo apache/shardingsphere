@@ -80,7 +80,7 @@ public final class ProxyContext {
      * @return schema exists or not
      */
     public boolean schemaExists(final String schemaName) {
-        return metaDataContexts.getMetaDataMap().containsKey(schemaName);
+        return metaDataContexts.getAllSchemaNames().contains(schemaName);
     }
     
     /**
@@ -90,10 +90,10 @@ public final class ProxyContext {
      * @return ShardingSphere meta data
      */
     public ShardingSphereMetaData getMetaData(final String schemaName) {
-        if (Strings.isNullOrEmpty(schemaName) || !metaDataContexts.getMetaDataMap().containsKey(schemaName)) {
+        if (Strings.isNullOrEmpty(schemaName) || !metaDataContexts.getAllSchemaNames().contains(schemaName)) {
             throw new NoDatabaseSelectedException();
         }
-        return metaDataContexts.getMetaDataMap().get(schemaName);
+        return metaDataContexts.getMetaData(schemaName);
     }
     
     /**
@@ -102,7 +102,7 @@ public final class ProxyContext {
      * @return all schema names
      */
     public List<String> getAllSchemaNames() {
-        return new ArrayList<>(metaDataContexts.getMetaDataMap().keySet());
+        return new ArrayList<>(metaDataContexts.getAllSchemaNames());
     }
     
     /**
