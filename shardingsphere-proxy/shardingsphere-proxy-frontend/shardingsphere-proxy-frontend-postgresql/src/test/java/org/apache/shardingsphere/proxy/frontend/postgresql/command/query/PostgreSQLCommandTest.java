@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDataSourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
@@ -65,7 +65,7 @@ public final class PostgreSQLCommandTest {
     
     @Test
     public void assertPostgreSQLCommandWhenSQLStatementInstanceOfCreateDataSourcesStatement() {
-        assertThat(new PostgreSQLCommand(mock(CreateDataSourcesStatement.class)).getSQLCommand(), is("CREATE"));
+        assertThat(new PostgreSQLCommand(mock(AddResourcesStatement.class)).getSQLCommand(), is("CREATE"));
     }
     
     @Test

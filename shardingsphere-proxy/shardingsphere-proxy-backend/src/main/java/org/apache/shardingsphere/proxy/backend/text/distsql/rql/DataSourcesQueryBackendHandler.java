@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDataSourcesStatement;
-import org.apache.shardingsphere.infra.binder.statement.rdl.ShowDataSourcesStatementContext;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
+import org.apache.shardingsphere.infra.binder.statement.rdl.ShowResourcesStatementContext;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -45,7 +45,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class DataSourcesQueryBackendHandler implements TextProtocolBackendHandler {
     
-    private final ShowDataSourcesStatement sqlStatement;
+    private final ShowResourcesStatement sqlStatement;
     
     private final BackendConnection backendConnection;
     
@@ -55,10 +55,10 @@ public final class DataSourcesQueryBackendHandler implements TextProtocolBackend
     
     @Override
     public ResponseHeader execute() {
-        return execute(new ShowDataSourcesStatementContext(sqlStatement));
+        return execute(new ShowResourcesStatementContext(sqlStatement));
     }
     
-    private ResponseHeader execute(final ShowDataSourcesStatementContext context) {
+    private ResponseHeader execute(final ShowResourcesStatementContext context) {
         String schemaName = getSchemaName(context);
         QueryHeader nameQueryHeader = new QueryHeader(schemaName, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false);
         QueryHeader contentQueryHeader = new QueryHeader(schemaName, "", "data source", "data source", Types.CHAR, "CHAR", 255, 0, false, false, false, false);
@@ -68,7 +68,7 @@ public final class DataSourcesQueryBackendHandler implements TextProtocolBackend
         return new QueryResponseHeader(Arrays.asList(nameQueryHeader, contentQueryHeader));
     }
     
-    private String getSchemaName(final ShowDataSourcesStatementContext context) {
+    private String getSchemaName(final ShowResourcesStatementContext context) {
         String result = null == context.getSqlStatement().getSchemaName() ? backendConnection.getSchemaName() : context.getSqlStatement().getSchemaName().getIdentifier().getValue();
         if (null == result) {
             throw new NoDatabaseSelectedException();

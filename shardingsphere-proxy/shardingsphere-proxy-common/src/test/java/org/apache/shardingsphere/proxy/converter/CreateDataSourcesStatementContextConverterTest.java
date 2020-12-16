@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.converter;
 
-import org.apache.shardingsphere.distsql.parser.segment.DataSourceConnectionSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDataSourcesStatement;
-import org.apache.shardingsphere.infra.binder.statement.rdl.CreateDataSourcesStatementContext;
+import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourcesStatement;
+import org.apache.shardingsphere.infra.binder.statement.rdl.AddResourcesStatementContext;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.junit.Before;
@@ -36,17 +36,17 @@ import static org.junit.Assert.assertTrue;
 
 public final class CreateDataSourcesStatementContextConverterTest {
     
-    private CreateDataSourcesStatementContext sqlStatement;
+    private AddResourcesStatementContext sqlStatement;
     
     @Before
     public void setUp() {
-        sqlStatement = new CreateDataSourcesStatementContext(new CreateDataSourcesStatement(createDataSourceConnectionSegments()), new MySQLDatabaseType());
+        sqlStatement = new AddResourcesStatementContext(new AddResourcesStatement(createDataSourceConnectionSegments()), new MySQLDatabaseType());
     }
     
-    private Collection<DataSourceConnectionSegment> createDataSourceConnectionSegments() {
-        Collection<DataSourceConnectionSegment> result = new LinkedList<>();
+    private Collection<DataSourceSegment> createDataSourceConnectionSegments() {
+        Collection<DataSourceSegment> result = new LinkedList<>();
         for (int i = 0; i < 2; i++) {
-            DataSourceConnectionSegment segment = new DataSourceConnectionSegment();
+            DataSourceSegment segment = new DataSourceSegment();
             segment.setName(String.format("ds%s", i));
             segment.setHostName("127.0.0.1");
             segment.setPassword("3306");

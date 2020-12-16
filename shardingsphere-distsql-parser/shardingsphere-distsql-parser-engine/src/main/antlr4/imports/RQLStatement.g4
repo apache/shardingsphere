@@ -19,8 +19,8 @@ grammar RQLStatement;
 
 import Keyword, Literals, Symbol;
 
-showDataSources
-    : SHOW DATASOURCES (FROM schemaName)?
+showResources
+    : SHOW RESOURCES (FROM schemaName)?
     ;
 
 showRule
