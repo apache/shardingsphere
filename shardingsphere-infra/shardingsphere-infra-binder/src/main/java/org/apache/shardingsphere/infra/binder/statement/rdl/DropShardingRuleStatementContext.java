@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
+package org.apache.shardingsphere.infra.binder.statement.rdl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 
 /**
- * Drop rule statement.
+ * Drop sharding rule statement context.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropRuleStatement extends DropRDLStatement {
+public final class DropShardingRuleStatementContext extends CommonSQLStatementContext<DropShardingRuleStatement> {
     
-    private final String ruleType;
-    
-    private final SchemaSegment schemaName;
+    public DropShardingRuleStatementContext(final DropShardingRuleStatement sqlStatement) {
+        super(sqlStatement);
+    }
 }

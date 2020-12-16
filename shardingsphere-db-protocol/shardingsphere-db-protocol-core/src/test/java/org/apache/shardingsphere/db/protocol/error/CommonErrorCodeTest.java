@@ -32,9 +32,16 @@ public final class CommonErrorCodeTest {
     }
     
     @Test
+    public void assertSharingTableRulesNotExisted() {
+        assertThat(CommonErrorCode.SHARDING_TABLE_RULES_NOT_EXISTED.getErrorCode(), is(11001));
+        assertThat(CommonErrorCode.SHARDING_TABLE_RULES_NOT_EXISTED.getSqlState(), is("C11001"));
+        assertThat(CommonErrorCode.SHARDING_TABLE_RULES_NOT_EXISTED.getErrorMessage(), is("Sharding table rule %s is not exist."));
+    }
+    
+    @Test
     public void assertTableInUsed() {
-        assertThat(CommonErrorCode.TABLES_IN_USED.getErrorCode(), is(11000));
-        assertThat(CommonErrorCode.TABLES_IN_USED.getSqlState(), is("C11000"));
+        assertThat(CommonErrorCode.TABLES_IN_USED.getErrorCode(), is(11002));
+        assertThat(CommonErrorCode.TABLES_IN_USED.getSqlState(), is("C11002"));
         assertThat(CommonErrorCode.TABLES_IN_USED.getErrorMessage(), is("Can not drop rule, tables %s in the rule are still in used."));
     }
     
