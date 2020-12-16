@@ -21,7 +21,7 @@ import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.infra.binder.statement.rdl.CreateShardingRuleStatementContext;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
@@ -29,20 +29,20 @@ import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShar
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration;
 
 /**
- * Create sharding rule statement context converter.
+ * Create sharding rule statement converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CreateShardingRuleStatementContextConverter {
+public final class CreateShardingRuleStatementConverter {
     
     /**
      * Convert create sharding rule statement context to YAML sharding rule configuration.
      *
-     * @param sqlStatementContext create sharding rule statement context
+     * @param sqlStatement create sharding rule statement
      * @return YAML sharding rule configuration
      */
-    public static YamlShardingRuleConfiguration convert(final CreateShardingRuleStatementContext sqlStatementContext) {
+    public static YamlShardingRuleConfiguration convert(final CreateShardingRuleStatement sqlStatement) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
-        for (TableRuleSegment each : sqlStatementContext.getSqlStatement().getTables()) {
+        for (TableRuleSegment each : sqlStatement.getTables()) {
             result.getShardingAlgorithms().put(getAlgorithmName(each.getLogicTable(), each.getAlgorithmType()), createAlgorithmConfiguration(each));
             result.getAutoTables().put(each.getLogicTable(), createAutoTableRuleConfiguration(each));
         }
