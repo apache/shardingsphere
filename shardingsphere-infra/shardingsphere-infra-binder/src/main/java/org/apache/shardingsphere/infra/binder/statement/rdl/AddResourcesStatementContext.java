@@ -17,15 +17,21 @@
 
 package org.apache.shardingsphere.infra.binder.statement.rdl;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDataSourcesStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourcesStatement;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 /**
- * Show data sources statement context.
+ * Add resource statement context.
  */
-public final class ShowDataSourcesStatementContext extends CommonSQLStatementContext<ShowDataSourcesStatement> {
+@Getter
+public final class AddResourcesStatementContext extends CommonSQLStatementContext<AddResourcesStatement> {
     
-    public ShowDataSourcesStatementContext(final ShowDataSourcesStatement sqlStatement) {
+    private final DatabaseType databaseType;
+    
+    public AddResourcesStatementContext(final AddResourcesStatement sqlStatement, final DatabaseType databaseType) {
         super(sqlStatement);
+        this.databaseType = databaseType;
     }
 }

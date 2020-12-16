@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl;
 
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDataSourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePe
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateDatabaseStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropDatabaseStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.rdl.CreateDataSourcesStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.rdl.AddResourcesStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.rdl.CreateShardingRuleStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.rdl.DropShardingRuleStatementContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -95,7 +95,7 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         return new UpdateResponseHeader(context.getSqlStatement());
     }
     
-    private ResponseHeader execute(final CreateDataSourcesStatementContext context) {
+    private ResponseHeader execute(final AddResourcesStatementContext context) {
         Map<String, YamlDataSourceParameter> parameters = CreateDataSourcesStatementContextConverter.convert(context);
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(parameters));
@@ -201,8 +201,8 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     
     private SQLStatementContext<?> getSQLStatementContext() {
         DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
-        if (sqlStatement instanceof CreateDataSourcesStatement) {
-            return new CreateDataSourcesStatementContext((CreateDataSourcesStatement) sqlStatement, databaseType);
+        if (sqlStatement instanceof AddResourcesStatement) {
+            return new AddResourcesStatementContext((AddResourcesStatement) sqlStatement, databaseType);
         }
         if (sqlStatement instanceof CreateShardingRuleStatement) {
             return new CreateShardingRuleStatementContext((CreateShardingRuleStatement) sqlStatement);
@@ -223,8 +223,8 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         if (context instanceof CreateDatabaseStatementContext) {
             return execute((CreateDatabaseStatementContext) context);
         }
-        if (context instanceof CreateDataSourcesStatementContext) {
-            return execute((CreateDataSourcesStatementContext) context);
+        if (context instanceof AddResourcesStatementContext) {
+            return execute((AddResourcesStatementContext) context);
         }
         if (context instanceof CreateShardingRuleStatementContext) {
             return execute((CreateShardingRuleStatementContext) context);

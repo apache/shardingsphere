@@ -22,11 +22,11 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
- * Data source connection segment.
+ * Data source segment.
  */
 @Getter
 @Setter
-public final class DataSourceConnectionSegment implements ASTNode {
+public final class DataSourceSegment implements ASTNode {
     
     private String name;
     

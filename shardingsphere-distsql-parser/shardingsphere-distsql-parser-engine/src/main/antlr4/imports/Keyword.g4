@@ -23,6 +23,10 @@ WS
     : [ \t\r\n] + ->skip
     ;
 
+ADD
+    : A D D
+    ;
+
 CREATE
     : C R E A T E
     ;
@@ -35,8 +39,12 @@ SHOW
     : S H O W
     ;
 
-DATASOURCES
-    : D A T A S O U R C E S
+RESOURCE
+    : R E S O U R C E
+    ;
+
+RESOURCES
+    : R E S O U R C E S
     ;
 
 RULE

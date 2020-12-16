@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.DataSourceConnectionSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRDLStatement;
-
-import java.util.Collection;
+import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Create dataSource statement.
+ * Show resources statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateDataSourcesStatement extends CreateRDLStatement {
+public final class ShowResourcesStatement extends RQLStatement {
     
-    private final Collection<DataSourceConnectionSegment> connectionInfos;
+    private final SchemaSegment schemaName;
 }

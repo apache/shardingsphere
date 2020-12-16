@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.parser.core;
 
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementBaseVisitor;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateDataSourcesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AddResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceDefinitionContext;
@@ -27,15 +27,15 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.S
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingAlgorithmPropertiesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingAlgorithmPropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingTableRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowDataSourcesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.TableNameContext;
-import org.apache.shardingsphere.distsql.parser.segment.DataSourceConnectionSegment;
+import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDataSourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDataSourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
@@ -52,24 +52,24 @@ import java.util.LinkedList;
 public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
-    public ASTNode visitCreateDataSources(final CreateDataSourcesContext ctx) {
-        Collection<DataSourceConnectionSegment> connectionInfos = new LinkedList<>();
+    public ASTNode visitAddResource(final AddResourceContext ctx) {
+        Collection<DataSourceSegment> connectionInfos = new LinkedList<>();
         for (DataSourceContext each : ctx.dataSource()) {
-            connectionInfos.add((DataSourceConnectionSegment) visit(each));
+            connectionInfos.add((DataSourceSegment) visit(each));
         }
-        return new CreateDataSourcesStatement(connectionInfos);
+        return new AddResourcesStatement(connectionInfos);
     }
     
     @Override
     public ASTNode visitDataSource(final DataSourceContext ctx) {
-        DataSourceConnectionSegment result = (DataSourceConnectionSegment) visit(ctx.dataSourceDefinition());
+        DataSourceSegment result = (DataSourceSegment) visit(ctx.dataSourceDefinition());
         result.setName(ctx.dataSourceName().getText());
         return result;
     }
     
     @Override
     public ASTNode visitDataSourceDefinition(final DataSourceDefinitionContext ctx) {
-        DataSourceConnectionSegment result = new DataSourceConnectionSegment();
+        DataSourceSegment result = new DataSourceSegment();
         result.setHostName(ctx.hostName().getText());
         result.setPort(ctx.port().getText());
         result.setDb(ctx.dbName().getText());
@@ -124,8 +124,8 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     }
     
     @Override
-    public ASTNode visitShowDataSources(final ShowDataSourcesContext ctx) {
-        return new ShowDataSourcesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+    public ASTNode visitShowResources(final ShowResourcesContext ctx) {
+        return new ShowResourcesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
     }
     
     @Override
