@@ -18,9 +18,13 @@
 package org.apache.shardingsphere.governance.core.state;
 
 import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockAddedEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.infra.state.StateContext;
+import org.apache.shardingsphere.infra.state.StateEvent;
+import org.apache.shardingsphere.infra.state.StateType;
+
+import java.util.Optional;
 
 /**
  * Governed state machine.
@@ -42,5 +46,24 @@ public final class GovernedStateContext {
     @Subscribe
     public void switchState(final StateEvent event) {
         StateContext.switchState(event);
+    }
+    
+    /**
+     * Lock instance after global lock added.
+     *
+     * @param event global lock added event
+     */
+    @Subscribe
+    public void lock(final GlobalLockAddedEvent event) {
+        if (Optional.of(event).isPresent()) {
+            StateContext.switchState(new StateEvent(StateType.LOCK, true));
+        }
+    }
+    
+    /**
+     * Unlock instance.
+     */
+    public static void unlock() {
+        StateContext.switchState(new StateEvent(StateType.LOCK, false));
     }
 }
