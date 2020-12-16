@@ -102,19 +102,3 @@ columName
 dropShardingRule
     : DROP SHARDING RULE LP tableName (COMMA tableName)* RP
     ;
-
-showDataSources
-    : SHOW DATASOURCES (FROM schemaName)?
-    ;
-
-showRule
-    : SHOW ruleType RULE (FROM schemaName)?
-    ;
-
-ruleType
-    : SHARDING | REPLICA_QUERY | ENCRYPT | SHADOW
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;

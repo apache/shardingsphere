@@ -28,7 +28,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.rdl.RDLBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.distsql.DistSQLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.sctl.utils.SCTLUtils;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
@@ -78,9 +78,9 @@ public final class TextProtocolBackendHandlerFactory {
                 return databaseAdminBackendHandler.get();
             }
         }
-        Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
-        if (rdlBackendHandler.isPresent()) {
-            return rdlBackendHandler.get();
+        Optional<TextProtocolBackendHandler> distSQLBackendHandler = DistSQLBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
+        if (distSQLBackendHandler.isPresent()) {
+            return distSQLBackendHandler.get();
         }
         return DatabaseBackendHandlerFactory.newInstance(sqlStatement, sql, backendConnection);
     }

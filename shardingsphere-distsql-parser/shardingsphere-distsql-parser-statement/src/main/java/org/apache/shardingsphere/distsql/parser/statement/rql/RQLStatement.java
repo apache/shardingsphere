@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.show;
+package org.apache.shardingsphere.distsql.parser.statement.rql;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Show RDL statement.
+ * RQL statement.
  */
-public abstract class ShowRDLStatement extends RDLStatement {
+public abstract class RQLStatement extends AbstractSQLStatement {
 }

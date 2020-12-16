@@ -15,28 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.segment.rdl;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Data source connection segment.
+ * Show data sources statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class DataSourceConnectionSegment implements ASTNode {
+public final class ShowDataSourcesStatement extends RQLStatement {
     
-    private String name;
-    
-    private String hostName;
-    
-    private String port;
-    
-    private String db;
-    
-    private String user;
-    
-    private String password;
+    private final SchemaSegment schemaName;
 }

@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl;
+grammar RQLStatement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.show.ShowRDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import Keyword, Literals, Symbol;
 
-/**
- * Show data sources statement.
- */
-@RequiredArgsConstructor
-@Getter
-public final class ShowDataSourcesStatement extends ShowRDLStatement {
-    
-    private final SchemaSegment schemaName;
-}
+showDataSources
+    : SHOW DATASOURCES (FROM schemaName)?
+    ;
+
+showRule
+    : SHOW ruleType RULE (FROM schemaName)?
+    ;
+
+ruleType
+    : SHARDING | REPLICA_QUERY | ENCRYPT | SHADOW
+    ;
+
+schemaName
+    : IDENTIFIER
+    ;
