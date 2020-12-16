@@ -22,22 +22,24 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.C
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingAlgorithmPropertiesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingAlgorithmPropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingTableRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowDataSourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.DataSourceConnectionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDataSourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowDataSourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.props.PropertiesValue;
 
@@ -108,8 +110,17 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     }
     
     @Override
-    public ASTNode visitDropRule(final DropRuleContext ctx) {
-        return new DropRuleStatement(ctx.ruleType().getText(), null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+    public ASTNode visitDropShardingRule(final DropShardingRuleContext ctx) {
+        DropShardingRuleStatement result = new DropShardingRuleStatement();
+        for (TableNameContext each : ctx.tableName()) {
+            result.getTableNames().add((TableNameSegment) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitTableName(final TableNameContext ctx) {
+        return new TableNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
     }
     
     @Override
