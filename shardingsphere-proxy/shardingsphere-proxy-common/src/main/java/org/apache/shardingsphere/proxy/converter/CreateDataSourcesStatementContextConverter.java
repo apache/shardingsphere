@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.converter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.infra.binder.statement.rdl.AddResourcesStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.rdl.AddResourceStatementContext;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
@@ -40,7 +40,7 @@ public final class CreateDataSourcesStatementContextConverter {
      * @param sqlStatementContext create data source statement context
      * @return YAML data source parameter map
      */
-    public static Map<String, YamlDataSourceParameter> convert(final AddResourcesStatementContext sqlStatementContext) {
+    public static Map<String, YamlDataSourceParameter> convert(final AddResourceStatementContext sqlStatementContext) {
         Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>(sqlStatementContext.getSqlStatement().getDataSources().size(), 1);
         for (DataSourceSegment each : sqlStatementContext.getSqlStatement().getDataSources()) {
             DataSourceParameter parameter = new DataSourceParameter();

@@ -29,7 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AddResourcesStatement extends CreateRDLStatement {
+public final class AddResourceStatement extends CreateRDLStatement {
     
     private final Collection<DataSourceSegment> dataSources;
 }

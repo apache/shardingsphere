@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.converter;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourcesStatement;
-import org.apache.shardingsphere.infra.binder.statement.rdl.AddResourcesStatementContext;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
+import org.apache.shardingsphere.infra.binder.statement.rdl.AddResourceStatementContext;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.junit.Before;
@@ -36,11 +36,11 @@ import static org.junit.Assert.assertTrue;
 
 public final class CreateDataSourcesStatementContextConverterTest {
     
-    private AddResourcesStatementContext sqlStatement;
+    private AddResourceStatementContext sqlStatement;
     
     @Before
     public void setUp() {
-        sqlStatement = new AddResourcesStatementContext(new AddResourcesStatement(createDataSourceConnectionSegments()), new MySQLDatabaseType());
+        sqlStatement = new AddResourceStatementContext(new AddResourceStatement(createDataSourceConnectionSegments()), new MySQLDatabaseType());
     }
     
     private Collection<DataSourceSegment> createDataSourceConnectionSegments() {

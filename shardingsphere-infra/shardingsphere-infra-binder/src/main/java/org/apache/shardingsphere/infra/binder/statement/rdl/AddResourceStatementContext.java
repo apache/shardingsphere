@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.binder.statement.rdl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
@@ -26,11 +26,11 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
  * Add resource statement context.
  */
 @Getter
-public final class AddResourcesStatementContext extends CommonSQLStatementContext<AddResourcesStatement> {
+public final class AddResourceStatementContext extends CommonSQLStatementContext<AddResourceStatement> {
     
     private final DatabaseType databaseType;
     
-    public AddResourcesStatementContext(final AddResourcesStatement sqlStatement, final DatabaseType databaseType) {
+    public AddResourceStatementContext(final AddResourceStatement sqlStatement, final DatabaseType databaseType) {
         super(sqlStatement);
         this.databaseType = databaseType;
     }
