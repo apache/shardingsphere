@@ -15,12 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.show;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Show RDL statement.
+ * Show data sources statement.
  */
-public abstract class ShowRDLStatement extends RDLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class ShowDataSourcesStatement extends RQLStatement {
+    
+    private final SchemaSegment schemaName;
 }

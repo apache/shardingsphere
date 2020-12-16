@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.statement.rdl;
+package org.apache.shardingsphere.distsql.parser.statement.rql;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropRuleStatement;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Drop rule statement context.
+ * RQL statement.
  */
-public final class DropRuleStatementContext extends CommonSQLStatementContext<DropRuleStatement> {
-    
-    public DropRuleStatementContext(final DropRuleStatement sqlStatement) {
-        super(sqlStatement);
-    }
+public abstract class RQLStatement extends AbstractSQLStatement {
 }

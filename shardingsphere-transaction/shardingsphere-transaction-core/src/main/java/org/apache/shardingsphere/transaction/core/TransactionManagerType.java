@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.transaction.core;
 
-import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
 
 /**
  * Transaction manager type.
@@ -28,13 +29,13 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum TransactionManagerType {
     
-    ATOMIKOS("atomikos"),
+    ATOMIKOS("Atomikos"),
     
-    NARAYANA("narayana"),
+    NARAYANA("Narayana"),
     
-    BITRONIX("bitronix"),
+    BITRONIX("Bitronix"),
     
-    SEATA("seata");
+    SEATA("Seata");
     
     private final String type;
     

@@ -15,28 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.segment.rdl;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Data source connection segment.
+ * Drop sharding rule statement.
  */
 @Getter
-@Setter
-public final class DataSourceConnectionSegment implements ASTNode {
+public final class DropShardingRuleStatement extends DropRDLStatement {
     
-    private String name;
-    
-    private String hostName;
-    
-    private String port;
-    
-    private String db;
-    
-    private String user;
-    
-    private String password;
+    private final Collection<TableNameSegment> tableNames = new LinkedList<>();
 }

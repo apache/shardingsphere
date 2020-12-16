@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
+grammar RQLStatement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import Keyword, Literals, Symbol;
 
-/**
- * Drop rule statement.
- */
-@RequiredArgsConstructor
-@Getter
-public final class DropRuleStatement extends DropRDLStatement {
-    
-    private final String ruleType;
-    
-    private final SchemaSegment schemaName;
-}
+showDataSources
+    : SHOW DATASOURCES (FROM schemaName)?
+    ;
+
+showRule
+    : SHOW ruleType RULE (FROM schemaName)?
+    ;
+
+ruleType
+    : SHARDING | REPLICA_QUERY | ENCRYPT | SHADOW
+    ;
+
+schemaName
+    : IDENTIFIER
+    ;

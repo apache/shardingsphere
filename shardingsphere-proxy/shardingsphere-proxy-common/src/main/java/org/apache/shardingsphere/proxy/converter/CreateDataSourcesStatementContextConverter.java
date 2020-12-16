@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.DataSourceConnectionSegment;
+import org.apache.shardingsphere.distsql.parser.segment.DataSourceConnectionSegment;
 import org.apache.shardingsphere.infra.binder.statement.rdl.CreateDataSourcesStatementContext;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;

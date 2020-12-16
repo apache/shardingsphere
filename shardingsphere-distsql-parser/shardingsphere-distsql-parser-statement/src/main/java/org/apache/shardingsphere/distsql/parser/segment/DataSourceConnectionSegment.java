@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl;
+package org.apache.shardingsphere.distsql.parser.segment;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.show.ShowRDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
- * Show rule statement.
+ * Data source connection segment.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ShowRuleStatement extends ShowRDLStatement {
+@Setter
+public final class DataSourceConnectionSegment implements ASTNode {
     
-    private final String ruleType;
+    private String name;
     
-    private final SchemaSegment schemaName;
+    private String hostName;
+    
+    private String port;
+    
+    private String db;
+    
+    private String user;
+    
+    private String password;
 }

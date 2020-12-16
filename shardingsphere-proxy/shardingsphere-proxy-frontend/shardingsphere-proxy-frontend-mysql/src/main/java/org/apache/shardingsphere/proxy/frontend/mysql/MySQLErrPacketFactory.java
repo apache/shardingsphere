@@ -29,6 +29,7 @@ import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.LockWaitTimeoutException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.exception.TablesInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
@@ -87,6 +88,9 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof CircuitBreakException) {
             return new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE);
+        }
+        if (cause instanceof ShardingTableRuleNotExistedException) {
+            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_TABLE_RULES_NOT_EXISTED, ((ShardingTableRuleNotExistedException) cause).getTableNames());
         }
         if (cause instanceof TablesInUsedException) {
             return new MySQLErrPacket(1, CommonErrorCode.TABLES_IN_USED, ((TablesInUsedException) cause).getTableNames());

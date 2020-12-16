@@ -15,31 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.error;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Common error code.
+ * Show rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public enum CommonErrorCode implements SQLErrorCode {
+public final class ShowRuleStatement extends RQLStatement {
     
-    CIRCUIT_BREAK_MODE(10000, "C10000", "Circuit break mode is ON."),
+    private final String ruleType;
     
-    SHARDING_TABLE_RULES_NOT_EXISTED(11001, "C11001", "Sharding table rule %s is not exist."),
-    
-    TABLES_IN_USED(11002, "C11002", "Can not drop rule, tables %s in the rule are still in used."),
-    
-    UNSUPPORTED_COMMAND(19998, "C19998", "Unsupported command: [%s]"),
-    
-    UNKNOWN_EXCEPTION(19999, "C19999", "Unknown exception: [%s]");
-    
-    private final int errorCode;
-    
-    private final String sqlState;
-    
-    private final String errorMessage;
+    private final SchemaSegment schemaName;
 }

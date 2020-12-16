@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.rdl;
+package org.apache.shardingsphere.proxy.backend.text.distsql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowDataSourcesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDataSourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.rdl.query.DataSourcesQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.rdl.query.RuleQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.rdl.update.RDLUpdateBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.DataSourcesQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RuleQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.RDLBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
@@ -34,13 +34,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabas
 import java.util.Optional;
 
 /**
- * RDL backend handler factory.
+ * DistSQL backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RDLBackendHandlerFactory {
+public final class DistSQLBackendHandlerFactory {
     
     /**
-     * Create new instance of RDL backend handler.
+     * Create new instance of DistSQL backend handler.
      *
      * @param sqlStatement SQL statement
      * @param backendConnection backend connection
@@ -54,7 +54,7 @@ public final class RDLBackendHandlerFactory {
             return Optional.of(new DataSourcesQueryBackendHandler((ShowDataSourcesStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof RDLStatement || sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
-            return Optional.of(new RDLUpdateBackendHandler(sqlStatement, backendConnection));
+            return Optional.of(new RDLBackendHandler(sqlStatement, backendConnection));
         }
         return Optional.empty();
     }

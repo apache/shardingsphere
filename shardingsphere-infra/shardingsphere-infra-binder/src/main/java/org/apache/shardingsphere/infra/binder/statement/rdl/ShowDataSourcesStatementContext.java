@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.statement.rdl;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.show.impl.ShowDataSourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDataSourcesStatement;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 
 /**

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.rdl;
+package org.apache.shardingsphere.proxy.backend.text.distsql;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDataSourcesStatement;
@@ -32,7 +32,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.rdl.update.RDLUpdateBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.RDLBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateDatabaseStatement;
@@ -81,7 +81,7 @@ public final class RDLBackendHandlerTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         sqlStatement.setDatabaseName("new_db");
-        RDLUpdateBackendHandler executeEngine = new RDLUpdateBackendHandler(sqlStatement, connection);
+        RDLBackendHandler executeEngine = new RDLBackendHandler(sqlStatement, connection);
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {
@@ -106,7 +106,7 @@ public final class RDLBackendHandlerTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         sqlStatement.setDatabaseName("schema");
-        RDLUpdateBackendHandler executeEngine = new RDLUpdateBackendHandler(sqlStatement, connection);
+        RDLBackendHandler executeEngine = new RDLBackendHandler(sqlStatement, connection);
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {
@@ -131,7 +131,7 @@ public final class RDLBackendHandlerTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         sqlStatement.setDatabaseName("schema");
-        RDLUpdateBackendHandler executeEngine = new RDLUpdateBackendHandler(sqlStatement, connection);
+        RDLBackendHandler executeEngine = new RDLBackendHandler(sqlStatement, connection);
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {
@@ -155,7 +155,7 @@ public final class RDLBackendHandlerTest {
     public void assertExecuteDataSourcesContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
-        RDLUpdateBackendHandler executeEngine = new RDLUpdateBackendHandler(mock(CreateDataSourcesStatement.class), connection);
+        RDLBackendHandler executeEngine = new RDLBackendHandler(mock(CreateDataSourcesStatement.class), connection);
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {
@@ -170,7 +170,7 @@ public final class RDLBackendHandlerTest {
     public void assertExecuteShardingRuleContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
-        RDLUpdateBackendHandler executeEngine = new RDLUpdateBackendHandler(mock(CreateShardingRuleStatement.class), connection);
+        RDLBackendHandler executeEngine = new RDLBackendHandler(mock(CreateShardingRuleStatement.class), connection);
         try {
             executeEngine.execute();
         } catch (final SQLException ex) {
