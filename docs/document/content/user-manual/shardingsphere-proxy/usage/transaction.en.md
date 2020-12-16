@@ -52,6 +52,37 @@ props:
 The order of path loading is` user.dir (pwd)` > `user.home` > `java.home` > `classpath`.
 Please refer to [Narayana official documentation](https://narayana.io/documentation/index.html) for more details.
 
+* Use Bitronix XA Transaction Manager。
+
+1. Copy the jar file required by Bitronix to `conf/lib`. The reference package is as follows:
+
+```xml
+<propeties>
+    <btm.version>2.1.3</btm.version>
+</propeties>
+
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-transaction-xa-bitronix</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+
+<dependency>
+    <groupId>org.codehaus.btm</groupId>
+    <artifactId>btm</artifactId>
+    <version>${btm.version}</version>
+</dependency>
+``` 
+
+2. Configure `xa-transaction-manager-type` in `conf/server.yaml`：
+
+```yaml
+props:
+  xa-transaction-manager-type: Bitronix
+```
+
+3. Please refer to [Bitronix official documentation](https://github.com/bitronix/btm/wiki) for more details.
+
 ## BASE Transaction
 
 Since we have not packed the BASE implementation jar into ShardingSphere-Proxy, you should copy relevant jar which implement `ShardingTransactionManager` SPI to `conf/lib`, then switch the transaction type to `BASE`.
