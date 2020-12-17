@@ -32,7 +32,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.RDLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.RDLBackendHandlerFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateDatabaseStatement;
@@ -57,7 +57,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class RDLBackendHandlerTest {
+public final class RDLBackendHandlerFactoryTest {
     
     @Before
     public void setUp() throws IllegalAccessException, NoSuchFieldException {
@@ -81,14 +81,14 @@ public final class RDLBackendHandlerTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         sqlStatement.setDatabaseName("new_db");
-        RDLBackendHandler executeEngine = new RDLBackendHandler(sqlStatement, connection);
+        RDLBackendHandlerFactory rdlBackendHandlerFactory = new RDLBackendHandlerFactory(sqlStatement, connection);
         try {
-            executeEngine.execute();
+            rdlBackendHandlerFactory.newInstance();
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName())));
         }
         setGovernanceMetaDataContexts(true);
-        ResponseHeader response = executeEngine.execute();
+        ResponseHeader response = rdlBackendHandlerFactory.newInstance().execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
@@ -106,14 +106,14 @@ public final class RDLBackendHandlerTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         sqlStatement.setDatabaseName("schema");
-        RDLBackendHandler executeEngine = new RDLBackendHandler(sqlStatement, connection);
+        RDLBackendHandlerFactory rdlBackendHandlerFactory = new RDLBackendHandlerFactory(sqlStatement, connection);
         try {
-            executeEngine.execute();
+            rdlBackendHandlerFactory.newInstance();
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName())));
         }
         setGovernanceMetaDataContexts(true);
-        ResponseHeader response = executeEngine.execute();
+        ResponseHeader response = rdlBackendHandlerFactory.newInstance().execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
@@ -131,15 +131,15 @@ public final class RDLBackendHandlerTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         sqlStatement.setDatabaseName("schema");
-        RDLBackendHandler executeEngine = new RDLBackendHandler(sqlStatement, connection);
+        RDLBackendHandlerFactory rdlBackendHandlerFactory = new RDLBackendHandlerFactory(sqlStatement, connection);
         try {
-            executeEngine.execute();
+            rdlBackendHandlerFactory.newInstance();
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName())));
         }
         setGovernanceMetaDataContexts(true);
         try {
-            executeEngine.execute();
+            rdlBackendHandlerFactory.newInstance();
         } catch (final DBCreateExistsException ex) {
             assertNull(ex.getMessage());
         }
@@ -155,14 +155,14 @@ public final class RDLBackendHandlerTest {
     public void assertExecuteDataSourcesContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
-        RDLBackendHandler executeEngine = new RDLBackendHandler(mock(AddResourceStatement.class), connection);
+        RDLBackendHandlerFactory rdlBackendHandlerFactory = new RDLBackendHandlerFactory(mock(AddResourceStatement.class), connection);
         try {
-            executeEngine.execute();
+            rdlBackendHandlerFactory.newInstance();
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("No Registry center to execute `AddResourceStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
-        ResponseHeader response = executeEngine.execute();
+        ResponseHeader response = rdlBackendHandlerFactory.newInstance().execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
@@ -170,14 +170,14 @@ public final class RDLBackendHandlerTest {
     public void assertExecuteShardingRuleContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
-        RDLBackendHandler executeEngine = new RDLBackendHandler(mock(CreateShardingRuleStatement.class), connection);
+        RDLBackendHandlerFactory rdlBackendHandlerFactory = new RDLBackendHandlerFactory(mock(CreateShardingRuleStatement.class), connection);
         try {
-            executeEngine.execute();
+            rdlBackendHandlerFactory.newInstance();
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("No Registry center to execute `CreateShardingRuleStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
-        ResponseHeader response = executeEngine.execute();
+        ResponseHeader response = rdlBackendHandlerFactory.newInstance().execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     

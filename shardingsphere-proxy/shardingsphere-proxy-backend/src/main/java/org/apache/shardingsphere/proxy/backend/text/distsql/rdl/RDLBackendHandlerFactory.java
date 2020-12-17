@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataCon
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail.AddResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail.CreateDatabaseBackendHandler;
@@ -39,19 +38,24 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabas
 import java.sql.SQLException;
 
 /**
- * RDL backend handler.
+ * RDL backend handler factory.
  */
 @RequiredArgsConstructor
-public final class RDLBackendHandler implements TextProtocolBackendHandler {
+public final class RDLBackendHandlerFactory {
     
     private final SQLStatement sqlStatement;
     
     private final BackendConnection backendConnection;
     
-    @Override
-    public ResponseHeader execute() throws SQLException {
+    /**
+     * Create new instance of RDL backend handler.
+     * 
+     * @return RDL backend handler
+     * @throws SQLException SQL exception
+     */
+    public TextProtocolBackendHandler newInstance() throws SQLException {
         checkRegistryCenterExisted();
-        return getResponseHeader(sqlStatement);
+        return createRDLBackendHandler(sqlStatement);
     }
     
     private void checkRegistryCenterExisted() throws SQLException {
@@ -60,22 +64,22 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         }
     }
     
-    private ResponseHeader getResponseHeader(final SQLStatement sqlStatement) {
+    private TextProtocolBackendHandler createRDLBackendHandler(final SQLStatement sqlStatement) {
         DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
         if (sqlStatement instanceof AddResourceStatement) {
-            return new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, backendConnection).execute();
+            return new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof CreateDatabaseStatement) {
-            return new CreateDatabaseBackendHandler((CreateDatabaseStatement) sqlStatement).execute();
+            return new CreateDatabaseBackendHandler((CreateDatabaseStatement) sqlStatement);
         }
         if (sqlStatement instanceof CreateShardingRuleStatement) {
-            return new CreateShardingRuleBackendHandler((CreateShardingRuleStatement) sqlStatement, backendConnection).execute();
+            return new CreateShardingRuleBackendHandler((CreateShardingRuleStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
-            return new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement).execute();
+            return new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement);
         }
         if (sqlStatement instanceof DropShardingRuleStatement) {
-            new DropShardingRuleBackendHandler((DropShardingRuleStatement) sqlStatement, backendConnection).execute();
+            return new DropShardingRuleBackendHandler((DropShardingRuleStatement) sqlStatement, backendConnection);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getName());
     }
