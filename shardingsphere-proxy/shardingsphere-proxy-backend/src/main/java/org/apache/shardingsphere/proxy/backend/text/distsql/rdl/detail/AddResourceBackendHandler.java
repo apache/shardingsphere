@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.converter.AddResourcesStatementConverter;
 
@@ -35,7 +36,7 @@ import java.util.Map;
  * Add resource backend handler.
  */
 @RequiredArgsConstructor
-public final class AddResourceBackendHandler implements RDLBackendDetailHandler<AddResourceStatement> {
+public final class AddResourceBackendHandler implements TextProtocolBackendHandler {
     
     private final DatabaseType databaseType;
     

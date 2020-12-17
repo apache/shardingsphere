@@ -24,13 +24,14 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 
 /**
  * Create database backend handler.
  */
 @RequiredArgsConstructor
-public final class CreateDatabaseBackendHandler implements RDLBackendDetailHandler<CreateDatabaseStatement> {
+public final class CreateDatabaseBackendHandler implements TextProtocolBackendHandler {
     
     private final CreateDatabaseStatement sqlStatement;
     
