@@ -29,25 +29,40 @@ dataSources:
     password:
 
 ## sharding 规则
-shardingRule:
+rules:
+- !SHARDING
   tables:
     t_account:
       actualDataNodes: db.t_account_${0..1}
       tableStrategy: 
-        inline:
+        standard:
           shardingColumn: account_id
-          algorithmExpression: t_account_${account_id % 2}
+          shardingAlgorithmName: account_table_inline
       keyGenerateStrategy:
-        type: TEST
         column: account_id
+        keyGeneratorName: snowflake
     t_account_detail:
       actualDataNodes: db.t_account_detail_${0..1}
       tableStrategy: 
-        inline:
+        standard:
           shardingColumn: order_id
-          algorithmExpression: t_account_detail_${account_id % 2}
+          shardingAlgorithmName: account_detail_table_inline
   bindingTables:
     - t_account, t_account_detail
+  shardingAlgorithms:
+    account_table_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_account_${account_id % 2}
+    account_detail_table_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_account_detail_${account_id % 2}
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+      props:
+        worker-id: 123
 ```
 
 验证数据存放在 `test\resources` 路径中测试类型下对应的 xml 文件中。验证数据中， `yaml-rule` 指定了环境以及 rule 的配置文件，`input` 指定了待测试的 SQL 以及参数，`output` 指定了期待的 SQL 以及参数。
