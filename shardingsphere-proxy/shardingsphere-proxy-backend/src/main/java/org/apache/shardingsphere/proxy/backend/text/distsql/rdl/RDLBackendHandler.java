@@ -63,19 +63,19 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     private ResponseHeader getResponseHeader(final SQLStatement sqlStatement) {
         DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
         if (sqlStatement instanceof AddResourceStatement) {
-            return new AddResourceBackendHandler().execute(databaseType, backendConnection, (AddResourceStatement) sqlStatement);
+            return new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, backendConnection).execute();
         }
         if (sqlStatement instanceof CreateDatabaseStatement) {
-            return new CreateDatabaseBackendHandler().execute(databaseType, backendConnection, (CreateDatabaseStatement) sqlStatement);
+            return new CreateDatabaseBackendHandler((CreateDatabaseStatement) sqlStatement).execute();
         }
         if (sqlStatement instanceof CreateShardingRuleStatement) {
-            return new CreateShardingRuleBackendHandler().execute(databaseType, backendConnection, (CreateShardingRuleStatement) sqlStatement);
+            return new CreateShardingRuleBackendHandler((CreateShardingRuleStatement) sqlStatement, backendConnection).execute();
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
-            return new DropDatabaseBackendHandler().execute(databaseType, backendConnection, (DropDatabaseStatement) sqlStatement);
+            return new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement).execute();
         }
         if (sqlStatement instanceof DropShardingRuleStatement) {
-            new DropShardingRuleBackendHandler().execute(databaseType, backendConnection, (DropShardingRuleStatement) sqlStatement);
+            new DropShardingRuleBackendHandler((DropShardingRuleStatement) sqlStatement, backendConnection).execute();
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getName());
     }

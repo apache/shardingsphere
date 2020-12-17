@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -33,10 +34,17 @@ import java.util.Map;
 /**
  * Add resource backend handler.
  */
+@RequiredArgsConstructor
 public final class AddResourceBackendHandler implements RDLBackendDetailHandler<AddResourceStatement> {
     
+    private final DatabaseType databaseType;
+    
+    private final AddResourceStatement sqlStatement;
+    
+    private final BackendConnection backendConnection;
+    
     @Override
-    public ResponseHeader execute(final DatabaseType databaseType, final BackendConnection backendConnection, final AddResourceStatement sqlStatement) {
+    public ResponseHeader execute() {
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
         post(backendConnection, dataSources);
