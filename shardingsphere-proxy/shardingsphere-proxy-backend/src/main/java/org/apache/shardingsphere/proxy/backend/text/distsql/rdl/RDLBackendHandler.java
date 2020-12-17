@@ -50,14 +50,14 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        if (!isRegistryCenterExisted()) {
-            throw new SQLException(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName()));
-        }
+        checkRegistryCenterExisted();
         return getResponseHeader(sqlStatement);
     }
     
-    private boolean isRegistryCenterExisted() {
-        return !(ProxyContext.getInstance().getMetaDataContexts() instanceof StandardMetaDataContexts);
+    private void checkRegistryCenterExisted() throws SQLException {
+        if (ProxyContext.getInstance().getMetaDataContexts() instanceof StandardMetaDataContexts) {
+            throw new SQLException(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName()));
+        }
     }
     
     private ResponseHeader getResponseHeader(final SQLStatement sqlStatement) {
