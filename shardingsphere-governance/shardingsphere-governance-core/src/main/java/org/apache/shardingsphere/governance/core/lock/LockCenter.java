@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.governance.core.lock;
 
+import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.governance.core.event.model.lock.LockNoticeEvent;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
@@ -26,6 +28,7 @@ import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -122,5 +125,17 @@ public final class LockCenter {
             }
         }
         return true;
+    }
+    
+    /**
+     * Notifies the locking state of the current instance.
+     *
+     * @param event lock notice event
+     */
+    @Subscribe
+    public synchronized void lockNotice(final LockNoticeEvent event) {
+        if (Optional.of(event).isPresent()) {
+            registryCenter.persistInstanceData(event.isLocked() ? RegistryCenterNodeStatus.LOCKED.toString() : "");
+        }
     }
 }

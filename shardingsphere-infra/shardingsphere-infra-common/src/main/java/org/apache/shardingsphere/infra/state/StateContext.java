@@ -43,7 +43,9 @@ public final class StateContext {
         if (event.isOn()) {
             CURRENT_STATE.push(event.getType());
         } else {
-            recoverState();
+            if (getCurrentState() == event.getType()) {
+                recoverState();
+            }
         }
         signalAll();
     }
