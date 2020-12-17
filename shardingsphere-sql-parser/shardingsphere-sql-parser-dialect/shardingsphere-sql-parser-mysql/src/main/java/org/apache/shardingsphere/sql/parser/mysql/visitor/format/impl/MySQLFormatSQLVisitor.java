@@ -91,7 +91,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
 
     private int projectionsCountOfLine = 3;
 
-    MySQLFormatSQLVisitor(final Properties props) {
+    public MySQLFormatSQLVisitor(final Properties props) {
         if (null != props) {
             if (props.containsKey("upperCase")) {
                 setUpperCase(Boolean.valueOf(props.getProperty("upperCase")));
