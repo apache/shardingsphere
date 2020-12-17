@@ -33,7 +33,7 @@ import java.util.Optional;
 /**
  * Schema required backend handler.
  * 
- * @param <T> type of SQL statement context
+ * @param <T> type of SQL statement
  */
 @RequiredArgsConstructor
 public abstract class SchemaRequiredBackendHandler<T extends SQLStatement> implements TextProtocolBackendHandler {
