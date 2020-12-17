@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
-import org.apache.shardingsphere.infra.binder.statement.rdl.ShowResourcesStatementContext;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -55,11 +54,7 @@ public final class DataSourcesQueryBackendHandler implements TextProtocolBackend
     
     @Override
     public ResponseHeader execute() {
-        return execute(new ShowResourcesStatementContext(sqlStatement));
-    }
-    
-    private ResponseHeader execute(final ShowResourcesStatementContext context) {
-        String schemaName = getSchemaName(context);
+        String schemaName = getSchemaName(sqlStatement);
         QueryHeader nameQueryHeader = new QueryHeader(schemaName, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false);
         QueryHeader contentQueryHeader = new QueryHeader(schemaName, "", "data source", "data source", Types.CHAR, "CHAR", 255, 0, false, false, false, false);
         dataSourceParameterMap = DataSourceParameterConverter.getDataSourceParameterMap(
@@ -68,8 +63,8 @@ public final class DataSourcesQueryBackendHandler implements TextProtocolBackend
         return new QueryResponseHeader(Arrays.asList(nameQueryHeader, contentQueryHeader));
     }
     
-    private String getSchemaName(final ShowResourcesStatementContext context) {
-        String result = null == context.getSqlStatement().getSchemaName() ? backendConnection.getSchemaName() : context.getSqlStatement().getSchemaName().getIdentifier().getValue();
+    private String getSchemaName(final ShowResourcesStatement sqlStatement) {
+        String result = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : backendConnection.getSchemaName();
         if (null == result) {
             throw new NoDatabaseSelectedException();
         }

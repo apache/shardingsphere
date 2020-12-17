@@ -21,15 +21,23 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
+
+import java.util.Optional;
 
 /**
  * Show rule statement.
  */
 @RequiredArgsConstructor
-@Getter
-public final class ShowRuleStatement extends RQLStatement {
+public final class ShowRuleStatement extends RQLStatement implements FromSchemaAvailable {
     
+    @Getter
     private final String ruleType;
     
-    private final SchemaSegment schemaName;
+    private final SchemaSegment schema;
+    
+    @Override
+    public Optional<SchemaSegment> getSchema() {
+        return Optional.ofNullable(schema);
+    }
 }

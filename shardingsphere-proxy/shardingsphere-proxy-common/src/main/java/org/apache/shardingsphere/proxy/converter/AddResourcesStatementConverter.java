@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.converter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.infra.binder.statement.rdl.AddResourceStatementContext;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
@@ -29,23 +29,24 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Create data source statement context converter.
+ * Add resource statement converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CreateDataSourcesStatementContextConverter {
+public final class AddResourcesStatementConverter {
     
     /**
-     * Convert create data source statement context to YAML data source parameter map.
+     * Convert add resource statement to YAML data source parameter map.
      *
-     * @param sqlStatementContext create data source statement context
+     * @param databaseType database type
+     * @param sqlStatement add resource statement
      * @return YAML data source parameter map
      */
-    public static Map<String, YamlDataSourceParameter> convert(final AddResourceStatementContext sqlStatementContext) {
-        Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>(sqlStatementContext.getSqlStatement().getDataSources().size(), 1);
-        for (DataSourceSegment each : sqlStatementContext.getSqlStatement().getDataSources()) {
+    public static Map<String, YamlDataSourceParameter> convert(final DatabaseType databaseType, final AddResourceStatement sqlStatement) {
+        Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>(sqlStatement.getDataSources().size(), 1);
+        for (DataSourceSegment each : sqlStatement.getDataSources()) {
             DataSourceParameter parameter = new DataSourceParameter();
             YamlDataSourceParameter dataSource = new YamlDataSourceParameter();
-            dataSource.setUrl(getURL(sqlStatementContext.getDatabaseType(), each));
+            dataSource.setUrl(getURL(databaseType, each));
             dataSource.setUsername(each.getUser());
             dataSource.setPassword(each.getPassword());
             dataSource.setMinPoolSize(parameter.getMinPoolSize());
@@ -58,7 +59,7 @@ public final class CreateDataSourcesStatementContextConverter {
         return result;
     }
     
-    private static String getURL(final DatabaseType databaseType, final DataSourceSegment connectionSegment) {
-        return String.format("%s//%s:%s/%s", databaseType.getJdbcUrlPrefixes().iterator().next(), connectionSegment.getHostName(), connectionSegment.getPort(), connectionSegment.getDb());
+    private static String getURL(final DatabaseType databaseType, final DataSourceSegment dataSourceSegment) {
+        return String.format("%s//%s:%s/%s", databaseType.getJdbcUrlPrefixes().iterator().next(), dataSourceSegment.getHostName(), dataSourceSegment.getPort(), dataSourceSegment.getDb());
     }
 }

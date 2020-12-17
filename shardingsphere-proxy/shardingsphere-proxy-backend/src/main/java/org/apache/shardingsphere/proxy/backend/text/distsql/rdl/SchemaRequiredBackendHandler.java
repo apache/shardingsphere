@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
@@ -25,6 +25,7 @@ import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseExceptio
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail.RDLBackendDetailHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
 
 import java.util.Optional;
@@ -34,20 +35,19 @@ import java.util.Optional;
  * 
  * @param <T> type of SQL statement context
  */
-public abstract class SchemaRequiredBackendHandler<T extends SQLStatementContext<?>> implements RDLBackendDetailHandler<T> {
+public abstract class SchemaRequiredBackendHandler<T extends SQLStatement> implements RDLBackendDetailHandler<T> {
     
     @Override
-    public final ResponseHeader execute(final BackendConnection backendConnection, final T sqlStatementContext) {
-        String schemaName = getSchemaName(backendConnection, sqlStatementContext);
+    public final ResponseHeader execute(final DatabaseType databaseType, final BackendConnection backendConnection, final T sqlStatement) {
+        String schemaName = getSchemaName(backendConnection, sqlStatement);
         checkSchema(schemaName);
-        return execute(schemaName, sqlStatementContext);
+        return execute(databaseType, schemaName, sqlStatement);
     }
     
-    protected abstract ResponseHeader execute(String schemaName, T sqlStatementContext);
+    protected abstract ResponseHeader execute(DatabaseType databaseType, String schemaName, T sqlStatement);
     
-    private String getSchemaName(final BackendConnection backendConnection, final T sqlStatementContext) {
-        Optional<SchemaSegment> schemaFromSQL = sqlStatementContext.getSqlStatement() instanceof FromSchemaAvailable
-                ? ((FromSchemaAvailable) sqlStatementContext.getSqlStatement()).getSchema() : Optional.empty();
+    private String getSchemaName(final BackendConnection backendConnection, final T sqlStatement) {
+        Optional<SchemaSegment> schemaFromSQL = sqlStatement instanceof FromSchemaAvailable ? ((FromSchemaAvailable) sqlStatement).getSchema() : Optional.empty();
         return schemaFromSQL.isPresent() ? schemaFromSQL.get().getIdentifier().getValue() : backendConnection.getSchemaName();
     }
     
