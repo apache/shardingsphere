@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
-import org.apache.shardingsphere.infra.binder.statement.rdl.DropShardingRuleStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -40,15 +41,15 @@ import java.util.stream.Collectors;
 /**
  * Drop sharding rule backend handler.
  */
-public final class DropShardingRuleBackendHandler extends SchemaRequiredBackendHandler<DropShardingRuleStatementContext> {
+public final class DropShardingRuleBackendHandler extends SchemaRequiredBackendHandler<DropShardingRuleStatement> {
     
     @Override
-    public ResponseHeader execute(final String schemaName, final DropShardingRuleStatementContext sqlStatementContext) {
-        Collection<String> tableNames = sqlStatementContext.getSqlStatement().getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
+    public ResponseHeader execute(final DatabaseType databaseType, final String schemaName, final DropShardingRuleStatement sqlStatement) {
+        Collection<String> tableNames = sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
         check(schemaName, tableNames);
         drop(schemaName, tableNames);
         post(schemaName);
-        return new UpdateResponseHeader(sqlStatementContext.getSqlStatement());
+        return new UpdateResponseHeader(sqlStatement);
     }
     
     private void check(final String schemaName, final Collection<String> tableNames) {

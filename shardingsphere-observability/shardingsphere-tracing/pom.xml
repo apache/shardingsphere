@@ -30,5 +30,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>shardingsphere-tracing-opentracing</module>
     </modules>
 </project>

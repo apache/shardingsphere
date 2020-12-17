@@ -21,12 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CreateDatabaseStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.DropDatabaseStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.rdl.AddResourceStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.rdl.CreateShardingRuleStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.rdl.DropShardingRuleStatementContext;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -59,49 +53,30 @@ public final class RDLBackendHandler implements TextProtocolBackendHandler {
         if (!isRegistryCenterExisted()) {
             throw new SQLException(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName()));
         }
-        return getResponseHeader(getSQLStatementContext());
+        return getResponseHeader(sqlStatement);
     }
     
     private boolean isRegistryCenterExisted() {
         return !(ProxyContext.getInstance().getMetaDataContexts() instanceof StandardMetaDataContexts);
     }
     
-    private SQLStatementContext<?> getSQLStatementContext() {
+    private ResponseHeader getResponseHeader(final SQLStatement sqlStatement) {
         DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
         if (sqlStatement instanceof AddResourceStatement) {
-            return new AddResourceStatementContext((AddResourceStatement) sqlStatement, databaseType);
-        }
-        if (sqlStatement instanceof CreateShardingRuleStatement) {
-            return new CreateShardingRuleStatementContext((CreateShardingRuleStatement) sqlStatement);
+            return new AddResourceBackendHandler().execute(databaseType, backendConnection, (AddResourceStatement) sqlStatement);
         }
         if (sqlStatement instanceof CreateDatabaseStatement) {
-            return new CreateDatabaseStatementContext((CreateDatabaseStatement) sqlStatement);
+            return new CreateDatabaseBackendHandler().execute(databaseType, backendConnection, (CreateDatabaseStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof CreateShardingRuleStatement) {
+            return new CreateShardingRuleBackendHandler().execute(databaseType, backendConnection, (CreateShardingRuleStatement) sqlStatement);
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
-            return new DropDatabaseStatementContext((DropDatabaseStatement) sqlStatement);
+            return new DropDatabaseBackendHandler().execute(databaseType, backendConnection, (DropDatabaseStatement) sqlStatement);
         }
         if (sqlStatement instanceof DropShardingRuleStatement) {
-            return new DropShardingRuleStatementContext((DropShardingRuleStatement) sqlStatement);
+            new DropShardingRuleBackendHandler().execute(databaseType, backendConnection, (DropShardingRuleStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getName());
-    }
-    
-    private ResponseHeader getResponseHeader(final SQLStatementContext<?> context) {
-        if (context instanceof AddResourceStatementContext) {
-            return new AddResourceBackendHandler().execute(backendConnection, (AddResourceStatementContext) context);
-        }
-        if (context instanceof CreateDatabaseStatementContext) {
-            return new CreateDatabaseBackendHandler().execute(backendConnection, (CreateDatabaseStatementContext) context);
-        }
-        if (context instanceof CreateShardingRuleStatementContext) {
-            return new CreateShardingRuleBackendHandler().execute(backendConnection, (CreateShardingRuleStatementContext) context);
-        }
-        if (context instanceof DropDatabaseStatementContext) {
-            return new DropDatabaseBackendHandler().execute(backendConnection, (DropDatabaseStatementContext) context);
-        }
-        if (context instanceof DropShardingRuleStatementContext) {
-            new DropShardingRuleBackendHandler().execute(backendConnection, (DropShardingRuleStatementContext) context);
-        }
-        throw new UnsupportedOperationException(context.getClass().getName());
     }
 }

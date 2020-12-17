@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail;
 
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
-import org.apache.shardingsphere.infra.binder.statement.rdl.CreateShardingRuleStatementContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.SchemaRequiredBackendHandler;
-import org.apache.shardingsphere.sharding.converter.CreateShardingRuleStatementContextConverter;
+import org.apache.shardingsphere.sharding.converter.CreateShardingRuleStatementConverter;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
 import java.util.Collection;
@@ -34,14 +35,14 @@ import java.util.Collections;
 /**
  * Create sharding rule backend handler.
  */
-public final class CreateShardingRuleBackendHandler extends SchemaRequiredBackendHandler<CreateShardingRuleStatementContext> {
+public final class CreateShardingRuleBackendHandler extends SchemaRequiredBackendHandler<CreateShardingRuleStatement> {
     
     @Override
-    public ResponseHeader execute(final String schemaName, final CreateShardingRuleStatementContext sqlStatementContext) {
-        YamlShardingRuleConfiguration config = CreateShardingRuleStatementContextConverter.convert(sqlStatementContext);
+    public ResponseHeader execute(final DatabaseType databaseType, final String schemaName, final CreateShardingRuleStatement sqlStatement) {
+        YamlShardingRuleConfiguration config = CreateShardingRuleStatementConverter.convert(sqlStatement);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(config));
         post(schemaName, rules);
-        return new UpdateResponseHeader(sqlStatementContext.getSqlStatement());
+        return new UpdateResponseHeader(sqlStatement);
     }
     
     private void post(final String schemaName, final Collection<RuleConfiguration> rules) {

@@ -17,23 +17,25 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * RDL backend detail handler.
  * 
- * @param <T> type of SQL statement context
+ * @param <T> type of SQL statement
  */
-public interface RDLBackendDetailHandler<T extends SQLStatementContext<?>> {
+public interface RDLBackendDetailHandler<T extends SQLStatement> {
     
     /**
      * Execute detail.
      * 
+     * @param databaseType database type
      * @param backendConnection backend connection
-     * @param sqlStatementContext SQL statement context
+     * @param sqlStatement SQL statement
      * @return response header
      */
-    ResponseHeader execute(BackendConnection backendConnection, T sqlStatementContext);
+    ResponseHeader execute(DatabaseType databaseType, BackendConnection backendConnection, T sqlStatement);
 }
