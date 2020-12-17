@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.RDLBackendHandlerFactory;
@@ -37,16 +38,17 @@ public final class DistSQLBackendHandlerFactory {
     /**
      * Create new instance of DistSQL backend handler.
      *
+     * @param databaseType database type
      * @param sqlStatement SQL statement
      * @param backendConnection backend connection
      * @return text protocol backend handler
      * @throws SQLException SQL exception
      */
-    public static Optional<TextProtocolBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+    public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
         Optional<TextProtocolBackendHandler> rqlBackendHandler = RQLBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
         if (rqlBackendHandler.isPresent()) {
             return rqlBackendHandler;
         }
-        return RDLBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
+        return RDLBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection);
     }
 }
