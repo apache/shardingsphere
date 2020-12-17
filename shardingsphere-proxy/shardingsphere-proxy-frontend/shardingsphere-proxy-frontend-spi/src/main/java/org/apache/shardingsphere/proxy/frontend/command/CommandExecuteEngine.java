@@ -60,8 +60,9 @@ public interface CommandExecuteEngine {
      * @param packet command packet
      * @param backendConnection backend connection
      * @return command executor
+     * @throws SQLException SQL exception
      */
-    CommandExecutor getCommandExecutor(CommandPacketType type, CommandPacket packet, BackendConnection backendConnection);
+    CommandExecutor getCommandExecutor(CommandPacketType type, CommandPacket packet, BackendConnection backendConnection) throws SQLException;
     
     /**
      * Get error packet.
