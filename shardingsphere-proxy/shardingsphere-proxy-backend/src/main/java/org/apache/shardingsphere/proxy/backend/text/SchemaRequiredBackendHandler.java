@@ -36,9 +36,9 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 public abstract class SchemaRequiredBackendHandler<T extends SQLStatement> implements TextProtocolBackendHandler {
-
+    
     private final T sqlStatement;
-
+    
     private final BackendConnection backendConnection;
     
     @Override
