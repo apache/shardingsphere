@@ -29,11 +29,13 @@ import org.apache.calcite.plan.volcano.VolcanoPlanner;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
+import org.apache.calcite.sql.parser.SqlParser;
+import org.apache.calcite.sql.parser.SqlParser.Config;
+import org.apache.calcite.sql.parser.impl.SqlParserImpl;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.optimize.schema.CalciteSchemaFactory;
 
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
 
@@ -43,7 +45,9 @@ import java.util.Properties;
  */
 public final class CalciteContextFactory {
     
-    private final CalciteConnectionConfig config;
+    private final CalciteConnectionConfig connectionConfig;
+    
+    private final Config parserConfig;
     
     private final RelDataTypeFactory typeFactory;
     
@@ -51,8 +55,13 @@ public final class CalciteContextFactory {
     
     private final RelOptCluster cluster;
     
-    public CalciteContextFactory(final Map<String, ShardingSphereMetaData> metaDataMap) throws SQLException {
-        config = new CalciteConnectionConfigImpl(createProperties());
+    public CalciteContextFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
+        connectionConfig = new CalciteConnectionConfigImpl(createProperties());
+        parserConfig = SqlParser.config()
+                .withLex(connectionConfig.lex())
+                .withIdentifierMaxLength(SqlParser.DEFAULT_IDENTIFIER_MAX_LENGTH)
+                .withConformance(connectionConfig.conformance())
+                .withParserFactory(SqlParserImpl.FACTORY);
         typeFactory = new JavaTypeFactoryImpl();
         factory = new CalciteSchemaFactory(metaDataMap);
         cluster = newCluster();
@@ -89,6 +98,6 @@ public final class CalciteContextFactory {
      * @return calcite context
      */
     public CalciteContext create(final String schema) {
-        return new CalciteContext(config, typeFactory, cluster, factory.create(schema));
+        return new CalciteContext(connectionConfig, parserConfig, typeFactory, cluster, factory.create(schema));
     }
 }
