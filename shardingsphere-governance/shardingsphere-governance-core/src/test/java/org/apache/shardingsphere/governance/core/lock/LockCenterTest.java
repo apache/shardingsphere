@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.governance.core.lock;
 
+import org.apache.shardingsphere.governance.core.event.model.lock.LockNoticeEvent;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,5 +60,17 @@ public final class LockCenterTest {
         lockCenter.releaseGlobalLock();
         verify(registryRepository).releaseLock();
         verify(registryRepository).delete(eq(new LockNode().getGlobalLockNodePath()));
+    }
+    
+    @Test
+    public void assertLockedLockNotice() {
+        lockCenter.lockNotice(new LockNoticeEvent(true));
+        verify(registryCenter).persistInstanceData(RegistryCenterNodeStatus.LOCKED.toString());
+    }
+    
+    @Test
+    public void assertUnLockedLockNotice() {
+        lockCenter.lockNotice(new LockNoticeEvent(false));
+        verify(registryCenter).persistInstanceData("");
     }
 }
