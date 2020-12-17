@@ -41,9 +41,13 @@ public final class CalciteSchemaFactory {
     
     private final Map<String, Schema> schemas = new LinkedMap<>();
     
-    public CalciteSchemaFactory(final Map<String, ShardingSphereMetaData> metaDataMap) throws SQLException {
+    public CalciteSchemaFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
         for (Entry<String, ShardingSphereMetaData> each : metaDataMap.entrySet()) {
-            schemas.put(each.getKey(), createCalciteSchema(each.getValue()));
+            try {
+                schemas.put(each.getKey(), createCalciteSchema(each.getValue()));
+            } catch (final SQLException ex) {
+                throw new ShardingSphereException(ex);
+            }
         }
     }
     

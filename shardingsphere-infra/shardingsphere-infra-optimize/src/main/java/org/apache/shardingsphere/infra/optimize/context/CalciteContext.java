@@ -26,6 +26,7 @@ import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
@@ -45,14 +46,18 @@ public final class CalciteContext {
     
     private final CalciteCatalogReader catalogReader;
     
+    private final SqlParser.Config parserConfig;
+    
     private final SqlValidator validator;
     
     private final SqlToRelConverter relConverter;
     
-    public CalciteContext(final CalciteConnectionConfig config, final RelDataTypeFactory typeFactory, final RelOptCluster cluster, final Schema calciteSchema) {
+    public CalciteContext(final CalciteConnectionConfig config,
+                          final SqlParser.Config parserConfig, final RelDataTypeFactory typeFactory, final RelOptCluster cluster, final Schema calciteSchema) {
         rootSchema = CalciteSchema.createRootSchema(true);
         rootSchema.add(((CalciteSchema) calciteSchema).name, calciteSchema);
         catalogReader = new CalciteCatalogReader(rootSchema, Collections.singletonList(config.schema()), typeFactory, config);
+        this.parserConfig = parserConfig;
         validator = SqlValidatorUtil.newValidator(SqlStdOperatorTable.instance(), catalogReader, typeFactory, SqlValidator.Config.DEFAULT
                 .withLenientOperatorLookup(config.lenientOperatorLookup())
                 .withSqlConformance(config.conformance())
