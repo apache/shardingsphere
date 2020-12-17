@@ -48,14 +48,18 @@ public final class RDLBackendHandlerFactory {
     /**
      * Create new instance of RDL backend handler.
      * 
+     * @param databaseType database type
      * @param sqlStatement SQL statement
      * @param backendConnection backend connection
      * @return RDL backend handler
      * @throws SQLException SQL exception
      */
-    public static Optional<TextProtocolBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
-        checkRegistryCenterExisted(sqlStatement);
-        return createRDLBackendHandler(sqlStatement, backendConnection);
+    public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+        Optional<TextProtocolBackendHandler> result = createRDLBackendHandler(databaseType, sqlStatement, backendConnection);
+        if (result.isPresent()) {
+            checkRegistryCenterExisted(sqlStatement);
+        }
+        return result;
     }
     
     private static void checkRegistryCenterExisted(final SQLStatement sqlStatement) throws SQLException {
@@ -64,8 +68,7 @@ public final class RDLBackendHandlerFactory {
         }
     }
     
-    private static Optional<TextProtocolBackendHandler> createRDLBackendHandler(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
-        DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
+    private static Optional<TextProtocolBackendHandler> createRDLBackendHandler(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) {
         if (sqlStatement instanceof AddResourceStatement) {
             return Optional.of(new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, backendConnection));
         }

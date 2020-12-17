@@ -15,40 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.RDLBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DataSourcesQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.RuleQueryBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * DistSQL backend handler factory.
+ * RQL backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DistSQLBackendHandlerFactory {
+public final class RQLBackendHandlerFactory {
     
     /**
-     * Create new instance of DistSQL backend handler.
-     *
-     * @param databaseType database type
+     * Create new instance of RDL backend handler.
+     * 
      * @param sqlStatement SQL statement
      * @param backendConnection backend connection
-     * @return text protocol backend handler
-     * @throws SQLException SQL exception
+     * @return RDL backend handler
      */
-    public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
-        Optional<TextProtocolBackendHandler> rqlBackendHandler = RQLBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
-        if (rqlBackendHandler.isPresent()) {
-            return rqlBackendHandler;
+    public static Optional<TextProtocolBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
+        if (sqlStatement instanceof ShowRuleStatement) {
+            return Optional.of(new RuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
         }
-        return RDLBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection);
+        if (sqlStatement instanceof ShowResourcesStatement) {
+            return Optional.of(new DataSourcesQueryBackendHandler((ShowResourcesStatement) sqlStatement, backendConnection));
+        }
+        return Optional.empty();
     }
 }
