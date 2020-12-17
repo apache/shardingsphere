@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rdl;
+package org.apache.shardingsphere.proxy.backend.text;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -23,7 +23,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
@@ -33,13 +32,13 @@ import java.util.Optional;
 /**
  * Schema required backend handler.
  * 
- * @param <T> type of SQL statement context
+ * @param <T> type of SQL statement
  */
 @RequiredArgsConstructor
 public abstract class SchemaRequiredBackendHandler<T extends SQLStatement> implements TextProtocolBackendHandler {
-
+    
     private final T sqlStatement;
-
+    
     private final BackendConnection backendConnection;
     
     @Override
