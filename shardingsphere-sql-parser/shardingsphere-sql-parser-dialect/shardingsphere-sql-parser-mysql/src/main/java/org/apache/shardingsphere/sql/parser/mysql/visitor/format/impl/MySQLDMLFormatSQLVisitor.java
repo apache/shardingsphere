@@ -17,11 +17,19 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLFormatVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
+
+import java.util.Properties;
 
 /**
  * DML Format SQL visitor for MySQL.
  */
+@NoArgsConstructor
 public final class MySQLDMLFormatSQLVisitor extends MySQLFormatSQLVisitor implements DMLSQLVisitor, SQLFormatVisitor {
+
+    public MySQLDMLFormatSQLVisitor(final Properties props) {
+        super(props);
+    }
 }

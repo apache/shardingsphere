@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
@@ -27,11 +28,18 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQL
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLStartSlaveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLStopSlaveStatement;
 
+import java.util.Properties;
+
 /**
  * RL Statement SQL visitor for MySQL.
  */
+@NoArgsConstructor
 public final class MySQLRLStatementSQLVisitor extends MySQLStatementSQLVisitor implements RLSQLVisitor, SQLStatementVisitor {
-    
+
+    public MySQLRLStatementSQLVisitor(final Properties props) {
+        super(props);
+    }
+
     @Override public ASTNode visitChangeMasterTo(final ChangeMasterToContext ctx) {
         return new MySQLChangeMasterStatement();
     }
