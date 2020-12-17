@@ -84,8 +84,10 @@ public final class CuratorZookeeperRepositoryTest {
     @Test
     @SneakyThrows
     public void assertWatchUpdatedChangedType() {
+        SettableFuture<DataChangedEvent> actualAddDataChangedEvent = SettableFuture.create();
         REPOSITORY.persist("/test/children_updated/1", "value1");
-        REPOSITORY.watch("/test/children_updated/1", SettableFuture.create()::set);
+        REPOSITORY.watch("/test/children_updated/1", actualAddDataChangedEvent::set);
+        actualAddDataChangedEvent.get();
         REPOSITORY.persist("/test/children_updated/1", "value2");
         SettableFuture<DataChangedEvent> actualDataChangedEvent = SettableFuture.create();
         REPOSITORY.watch("/test/children_updated/1", actualDataChangedEvent::set);
