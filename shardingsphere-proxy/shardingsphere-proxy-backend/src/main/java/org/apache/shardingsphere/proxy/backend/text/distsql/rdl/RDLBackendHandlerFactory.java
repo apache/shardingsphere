@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
@@ -40,31 +41,29 @@ import java.sql.SQLException;
 /**
  * RDL backend handler factory.
  */
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RDLBackendHandlerFactory {
-    
-    private final SQLStatement sqlStatement;
-    
-    private final BackendConnection backendConnection;
     
     /**
      * Create new instance of RDL backend handler.
      * 
+     * @param sqlStatement SQL statement
+     * @param backendConnection backend connection
      * @return RDL backend handler
      * @throws SQLException SQL exception
      */
-    public TextProtocolBackendHandler newInstance() throws SQLException {
-        checkRegistryCenterExisted();
-        return createRDLBackendHandler(sqlStatement);
+    public static TextProtocolBackendHandler newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+        checkRegistryCenterExisted(sqlStatement);
+        return createRDLBackendHandler(sqlStatement, backendConnection);
     }
     
-    private void checkRegistryCenterExisted() throws SQLException {
+    private static void checkRegistryCenterExisted(final SQLStatement sqlStatement) throws SQLException {
         if (ProxyContext.getInstance().getMetaDataContexts() instanceof StandardMetaDataContexts) {
             throw new SQLException(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName()));
         }
     }
     
-    private TextProtocolBackendHandler createRDLBackendHandler(final SQLStatement sqlStatement) {
+    private static TextProtocolBackendHandler createRDLBackendHandler(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
         DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
         if (sqlStatement instanceof AddResourceStatement) {
             return new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, backendConnection);
