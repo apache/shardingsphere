@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatab
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * RDL backend handler factory.
@@ -52,7 +53,7 @@ public final class RDLBackendHandlerFactory {
      * @return RDL backend handler
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+    public static Optional<TextProtocolBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
         checkRegistryCenterExisted(sqlStatement);
         return createRDLBackendHandler(sqlStatement, backendConnection);
     }
@@ -63,23 +64,23 @@ public final class RDLBackendHandlerFactory {
         }
     }
     
-    private static TextProtocolBackendHandler createRDLBackendHandler(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
+    private static Optional<TextProtocolBackendHandler> createRDLBackendHandler(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
         DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
         if (sqlStatement instanceof AddResourceStatement) {
-            return new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, backendConnection);
+            return Optional.of(new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof CreateDatabaseStatement) {
-            return new CreateDatabaseBackendHandler((CreateDatabaseStatement) sqlStatement);
+            return Optional.of(new CreateDatabaseBackendHandler((CreateDatabaseStatement) sqlStatement));
         }
         if (sqlStatement instanceof CreateShardingRuleStatement) {
-            return new CreateShardingRuleBackendHandler((CreateShardingRuleStatement) sqlStatement, backendConnection);
+            return Optional.of(new CreateShardingRuleBackendHandler((CreateShardingRuleStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
-            return new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement);
+            return Optional.of(new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement));
         }
         if (sqlStatement instanceof DropShardingRuleStatement) {
-            return new DropShardingRuleBackendHandler((DropShardingRuleStatement) sqlStatement, backendConnection);
+            return Optional.of(new DropShardingRuleBackendHandler((DropShardingRuleStatement) sqlStatement, backendConnection));
         }
-        throw new UnsupportedOperationException(sqlStatement.getClass().getName());
+        return Optional.empty();
     }
 }
