@@ -54,7 +54,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     @Getter
     private volatile ResponseType responseType;
     
-    public PostgreSQLComQueryExecutor(final PostgreSQLComQueryPacket comQueryPacket, final BackendConnection backendConnection) {
+    public PostgreSQLComQueryExecutor(final PostgreSQLComQueryPacket comQueryPacket, final BackendConnection backendConnection) throws SQLException {
         textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), comQueryPacket.getSql(), backendConnection);
     }
     

@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.sharding.converter;
 
-import org.apache.shardingsphere.infra.binder.statement.rdl.CreateShardingRuleStatementContext;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -34,11 +33,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class CreateShardingRuleStatementContextConverterTest {
+public final class CreateShardingRuleStatementConverterTest {
     
     private TableRuleSegment segment;
     
-    private CreateShardingRuleStatementContext context;
+    private CreateShardingRuleStatement sqlStatement;
     
     @Before
     public void setUp() {
@@ -51,12 +50,12 @@ public final class CreateShardingRuleStatementContextConverterTest {
         Properties props = new Properties();
         props.setProperty("sharding_count", "2");
         segment.setAlgorithmProps(props);
-        context = new CreateShardingRuleStatementContext(new CreateShardingRuleStatement(Collections.singleton(segment)));
+        sqlStatement = new CreateShardingRuleStatement(Collections.singleton(segment));
     }
     
     @Test
     public void assertConvert() {
-        YamlShardingRuleConfiguration config = CreateShardingRuleStatementContextConverter.convert(context);
+        YamlShardingRuleConfiguration config = CreateShardingRuleStatementConverter.convert(sqlStatement);
         assertTrue(config.getTables().isEmpty());
         assertThat(config.getAutoTables().size(), is(1));
         assertThat(config.getAutoTables().get(segment.getLogicTable()).getActualDataSources(), is("ds0,ds1"));

@@ -36,6 +36,8 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.sync.PostgreSQLComSyncExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.text.PostgreSQLComQueryExecutor;
 
+import java.sql.SQLException;
+
 /**
  * Command executor factory for PostgreSQL.
  */
@@ -50,8 +52,10 @@ public final class PostgreSQLCommandExecutorFactory {
      * @param commandPacket command packet for PostgreSQL
      * @param backendConnection backend connection
      * @return command executor
+     * @throws SQLException SQL exception
      */
-    public static CommandExecutor newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket, final BackendConnection backendConnection) {
+    public static CommandExecutor newInstance(final PostgreSQLCommandPacketType commandPacketType, 
+                                              final PostgreSQLCommandPacket commandPacket, final BackendConnection backendConnection) throws SQLException {
         log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
         switch (commandPacketType) {
             case QUERY:

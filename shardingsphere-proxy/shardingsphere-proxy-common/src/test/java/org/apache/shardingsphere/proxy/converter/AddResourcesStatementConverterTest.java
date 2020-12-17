@@ -19,10 +19,8 @@ package org.apache.shardingsphere.proxy.converter;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
-import org.apache.shardingsphere.infra.binder.statement.rdl.AddResourceStatementContext;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -34,16 +32,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class CreateDataSourcesStatementContextConverterTest {
+public final class AddResourcesStatementConverterTest {
     
-    private AddResourceStatementContext sqlStatement;
-    
-    @Before
-    public void setUp() {
-        sqlStatement = new AddResourceStatementContext(new AddResourceStatement(createDataSourceConnectionSegments()), new MySQLDatabaseType());
+    @Test
+    public void assertConvert() {
+        Map<String, YamlDataSourceParameter> actual = AddResourcesStatementConverter.convert(new MySQLDatabaseType(), new AddResourceStatement(createDataSourceSegments()));
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.keySet().containsAll(Arrays.asList("ds0", "ds1")));
+        assertThat(actual.values().iterator().next().getUsername(), is("root0"));
     }
     
-    private Collection<DataSourceSegment> createDataSourceConnectionSegments() {
+    private Collection<DataSourceSegment> createDataSourceSegments() {
         Collection<DataSourceSegment> result = new LinkedList<>();
         for (int i = 0; i < 2; i++) {
             DataSourceSegment segment = new DataSourceSegment();
@@ -56,13 +55,5 @@ public final class CreateDataSourcesStatementContextConverterTest {
             result.add(segment);
         }
         return result;
-    }
-    
-    @Test
-    public void assertConvert() {
-        Map<String, YamlDataSourceParameter> result = CreateDataSourcesStatementContextConverter.convert(sqlStatement);
-        assertThat(result.size(), is(2));
-        assertTrue(result.keySet().containsAll(Arrays.asList("ds0", "ds1")));
-        assertThat(result.values().iterator().next().getUsername(), is("root0"));
     }
 }

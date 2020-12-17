@@ -15,31 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.detail;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
-import org.apache.shardingsphere.infra.binder.statement.rdl.AddResourceStatementContext;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
-import org.apache.shardingsphere.proxy.converter.CreateDataSourcesStatementContextConverter;
+import org.apache.shardingsphere.proxy.converter.AddResourcesStatementConverter;
 
 import java.util.Map;
 
 /**
  * Add resource backend handler.
  */
-public final class AddResourceBackendHandler implements RDLBackendDetailHandler<AddResourceStatementContext> {
+@RequiredArgsConstructor
+public final class AddResourceBackendHandler implements TextProtocolBackendHandler {
+    
+    private final DatabaseType databaseType;
+    
+    private final AddResourceStatement sqlStatement;
+    
+    private final BackendConnection backendConnection;
     
     @Override
-    public ResponseHeader execute(final BackendConnection backendConnection, final AddResourceStatementContext sqlStatementContext) {
+    public ResponseHeader execute() {
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
-                DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(CreateDataSourcesStatementContextConverter.convert(sqlStatementContext)));
+                DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
         post(backendConnection, dataSources);
-        return new UpdateResponseHeader(sqlStatementContext.getSqlStatement());
+        return new UpdateResponseHeader(sqlStatement);
     }
     
     private void post(final BackendConnection backendConnection, final Map<String, DataSourceConfiguration> dataSources) {

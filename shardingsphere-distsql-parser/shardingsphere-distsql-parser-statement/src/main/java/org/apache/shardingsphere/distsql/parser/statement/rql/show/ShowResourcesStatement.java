@@ -17,17 +17,23 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
+
+import java.util.Optional;
 
 /**
  * Show resources statement.
  */
 @RequiredArgsConstructor
-@Getter
-public final class ShowResourcesStatement extends RQLStatement {
+public final class ShowResourcesStatement extends RQLStatement implements FromSchemaAvailable {
     
-    private final SchemaSegment schemaName;
+    private final SchemaSegment schema;
+    
+    @Override
+    public Optional<SchemaSegment> getSchema() {
+        return Optional.ofNullable(schema);
+    }
 }

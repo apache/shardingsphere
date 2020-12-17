@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.infra.binder.statement.rdl.ShowRuleStatementContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -57,19 +56,15 @@ public final class RuleQueryBackendHandler implements TextProtocolBackendHandler
     
     @Override
     public ResponseHeader execute() {
-        return execute(new ShowRuleStatementContext(sqlStatement));
-    }
-    
-    private ResponseHeader execute(final ShowRuleStatementContext context) {
-        String schemaName = getSchemaName(context);
-        String ruleType = context.getSqlStatement().getRuleType();
+        String schemaName = getSchemaName(sqlStatement);
+        String ruleType = sqlStatement.getRuleType();
         QueryHeader queryHeader = new QueryHeader(schemaName, "", ruleType, ruleType, Types.CHAR, "CHAR", 255, 0, false, false, false, false);
         data = loadRuleConfiguration(schemaName, ruleType);
         return new QueryResponseHeader(Collections.singletonList(queryHeader));
     }
     
-    private String getSchemaName(final ShowRuleStatementContext context) {
-        String result = null == context.getSqlStatement().getSchemaName() ? backendConnection.getSchemaName() : context.getSqlStatement().getSchemaName().getIdentifier().getValue();
+    private String getSchemaName(final ShowRuleStatement sqlStatement) {
+        String result = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : backendConnection.getSchemaName();
         if (null == result) {
             throw new NoDatabaseSelectedException();
         }
