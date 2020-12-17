@@ -99,15 +99,17 @@ public final class CuratorZookeeperRepositoryTest {
     
     @Test
     public void assertWatchDeletedChangedType() throws Exception {
-        REPOSITORY.watch("/test/children_deleted/5", SettableFuture.create()::set);
+        SettableFuture<DataChangedEvent> actualAddDataChangedEvent = SettableFuture.create();
+        REPOSITORY.watch("/test/children_deleted", actualAddDataChangedEvent::set);
         REPOSITORY.persist("/test/children_deleted/5", "value5");
+        actualAddDataChangedEvent.get();
         Field field = CuratorZookeeperRepository.class.getDeclaredField("client");
         field.setAccessible(true);
         CuratorFramework client = (CuratorFramework) field.get(REPOSITORY);
         client.delete().deletingChildrenIfNeeded().forPath("/test/children_deleted/5");
         SettableFuture<DataChangedEvent> actualDataChangedEvent = SettableFuture.create();
-        REPOSITORY.watch("/test/children_deleted/5", actualDataChangedEvent::set);
-        DataChangedEvent dataChangedEvent = actualDataChangedEvent.get();
+        REPOSITORY.watch("/test/children_deleted", actualDataChangedEvent::set);
+        DataChangedEvent dataChangedEvent = actualDataChangedEvent.get(1, TimeUnit.SECONDS);
         assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getType(), is(Type.DELETED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_deleted/5"));
