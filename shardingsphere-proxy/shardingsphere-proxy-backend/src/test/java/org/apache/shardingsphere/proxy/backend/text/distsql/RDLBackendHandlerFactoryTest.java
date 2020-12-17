@@ -32,6 +32,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.RDLBackendHandlerFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
@@ -47,12 +48,14 @@ import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -87,7 +90,9 @@ public final class RDLBackendHandlerFactoryTest {
             assertThat(ex.getMessage(), is(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName())));
         }
         setGovernanceMetaDataContexts(true);
-        ResponseHeader response = RDLBackendHandlerFactory.newInstance(sqlStatement, connection).execute();
+        Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(sqlStatement, connection);
+        assertTrue(rdlBackendHandler.isPresent());
+        ResponseHeader response = rdlBackendHandler.get().execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
@@ -111,7 +116,9 @@ public final class RDLBackendHandlerFactoryTest {
             assertThat(ex.getMessage(), is(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName())));
         }
         setGovernanceMetaDataContexts(true);
-        ResponseHeader response = RDLBackendHandlerFactory.newInstance(sqlStatement, connection).execute();
+        Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(sqlStatement, connection);
+        assertTrue(rdlBackendHandler.isPresent());
+        ResponseHeader response = rdlBackendHandler.get().execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
@@ -158,7 +165,9 @@ public final class RDLBackendHandlerFactoryTest {
             assertThat(ex.getMessage(), is("No Registry center to execute `AddResourceStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
-        ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(AddResourceStatement.class), connection).execute();
+        Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(mock(AddResourceStatement.class), connection);
+        assertTrue(rdlBackendHandler.isPresent());
+        ResponseHeader response = rdlBackendHandler.get().execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
@@ -172,7 +181,9 @@ public final class RDLBackendHandlerFactoryTest {
             assertThat(ex.getMessage(), is("No Registry center to execute `CreateShardingRuleStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
-        ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(CreateShardingRuleStatement.class), connection).execute();
+        Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(mock(CreateShardingRuleStatement.class), connection);
+        assertTrue(rdlBackendHandler.isPresent());
+        ResponseHeader response = rdlBackendHandler.get().execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     

@@ -56,7 +56,7 @@ public final class DistSQLBackendHandlerFactory {
             return Optional.of(new DataSourcesQueryBackendHandler((ShowResourcesStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof RDLStatement || sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
-            return Optional.of(RDLBackendHandlerFactory.newInstance(sqlStatement, backendConnection));
+            return RDLBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
         }
         return Optional.empty();
     }
