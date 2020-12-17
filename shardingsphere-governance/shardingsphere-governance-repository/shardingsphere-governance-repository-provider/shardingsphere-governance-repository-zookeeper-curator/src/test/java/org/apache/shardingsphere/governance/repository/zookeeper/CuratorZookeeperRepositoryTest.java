@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.governance.repository.zookeeper;
 
+import com.google.common.util.concurrent.SettableFuture;
 import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
@@ -31,7 +32,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -82,13 +82,14 @@ public final class CuratorZookeeperRepositoryTest {
     }
     
     @Test
-    public void assertWatchUpdatedChangedType() throws InterruptedException {
+    @SneakyThrows
+    public void assertWatchUpdatedChangedType() {
         REPOSITORY.persist("/test/children_updated/1", "value1");
-        AtomicReference<DataChangedEvent> dataChangedEventActual = new AtomicReference<>();
-        REPOSITORY.watch("/test/children_updated/1", dataChangedEventActual::set);
+        REPOSITORY.watch("/test/children_updated/1", SettableFuture.create()::set);
         REPOSITORY.persist("/test/children_updated/1", "value2");
-        Thread.sleep(50L);
-        DataChangedEvent dataChangedEvent = dataChangedEventActual.get();
+        SettableFuture<DataChangedEvent> actualDataChangedEvent = SettableFuture.create();
+        REPOSITORY.watch("/test/children_updated/1", actualDataChangedEvent::set);
+        DataChangedEvent dataChangedEvent = actualDataChangedEvent.get();
         assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getType(), is(Type.UPDATED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_updated/1"));
@@ -98,15 +99,15 @@ public final class CuratorZookeeperRepositoryTest {
     
     @Test
     public void assertWatchDeletedChangedType() throws Exception {
-        AtomicReference<DataChangedEvent> dataChangedEventActual = new AtomicReference<>();
-        REPOSITORY.watch("/test/children_deleted", dataChangedEventActual::set);
+        REPOSITORY.watch("/test/children_deleted/5", SettableFuture.create()::set);
         REPOSITORY.persist("/test/children_deleted/5", "value5");
         Field field = CuratorZookeeperRepository.class.getDeclaredField("client");
         field.setAccessible(true);
         CuratorFramework client = (CuratorFramework) field.get(REPOSITORY);
         client.delete().deletingChildrenIfNeeded().forPath("/test/children_deleted/5");
-        Thread.sleep(50L);
-        DataChangedEvent dataChangedEvent = dataChangedEventActual.get();
+        SettableFuture<DataChangedEvent> actualDataChangedEvent = SettableFuture.create();
+        REPOSITORY.watch("/test/children_deleted/5", actualDataChangedEvent::set);
+        DataChangedEvent dataChangedEvent = actualDataChangedEvent.get();
         assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getType(), is(Type.DELETED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_deleted/5"));
@@ -114,11 +115,11 @@ public final class CuratorZookeeperRepositoryTest {
     }
     
     @Test
-    public void assertWatchAddedChangedType() throws InterruptedException {
+    @SneakyThrows
+    public void assertWatchAddedChangedType() {
         REPOSITORY.persist("/test/children_added/4", "value4");
-        AtomicReference<DataChangedEvent> actualDataChangedEvent = new AtomicReference<>();
-        REPOSITORY.watch("/test/children_added", actualDataChangedEvent::set);
-        Thread.sleep(50L);
+        SettableFuture<DataChangedEvent> actualDataChangedEvent = SettableFuture.create();
+        REPOSITORY.watch("/test/children_added/4", actualDataChangedEvent::set);
         DataChangedEvent event = actualDataChangedEvent.get();
         assertNotNull(event);
         assertThat(event.getType(), is(Type.ADDED));
