@@ -39,8 +39,6 @@ import org.apache.shardingsphere.infra.optimize.schema.CalciteSchemaFactory;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.apache.calcite.sql.parser.SqlParser.DEFAULT_IDENTIFIER_MAX_LENGTH;
-
 /**
  * Calcite context.
  *
@@ -61,7 +59,7 @@ public final class CalciteContextFactory {
         connectionConfig = new CalciteConnectionConfigImpl(createProperties());
         parserConfig = SqlParser.config()
                 .withLex(connectionConfig.lex())
-                .withIdentifierMaxLength(DEFAULT_IDENTIFIER_MAX_LENGTH)
+                .withIdentifierMaxLength(SqlParser.DEFAULT_IDENTIFIER_MAX_LENGTH)
                 .withConformance(connectionConfig.conformance())
                 .withParserFactory(SqlParserImpl.FACTORY);
         typeFactory = new JavaTypeFactoryImpl();
