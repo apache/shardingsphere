@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
@@ -42,12 +43,18 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * DCL Statement SQL visitor for PostgreSQL.
  */
+@NoArgsConstructor
 public final class PostgreSQLDCLStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements DCLSQLVisitor, SQLStatementVisitor {
-    
+
+    public PostgreSQLDCLStatementSQLVisitor(final Properties props) {
+        super(props);
+    }
+
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         PostgreSQLGrantStatement result = new PostgreSQLGrantStatement();
