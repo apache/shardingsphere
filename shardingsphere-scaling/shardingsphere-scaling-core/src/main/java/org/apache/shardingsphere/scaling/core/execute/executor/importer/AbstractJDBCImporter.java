@@ -122,12 +122,12 @@ public abstract class AbstractJDBCImporter extends AbstractScalingExecutor imple
     }
     
     private boolean tryFlush(final DataSource dataSource, final List<DataRecord> buffer) {
-        for (int i = 0; isRunning() && i < importerConfig.getRetryTimes(); i++) {
+        for (int i = 0; isRunning() && i <= importerConfig.getRetryTimes(); i++) {
             try {
                 doFlush(dataSource, buffer);
                 return true;
             } catch (final SQLException ex) {
-                log.error("flush failed {}/{} times.", i + 1, importerConfig.getRetryTimes(), ex);
+                log.error("flush failed {}/{} times.", i, importerConfig.getRetryTimes(), ex);
                 ThreadUtil.sleep(Math.min(5 * 60 * 1000L, 1000 << i));
             }
         }
