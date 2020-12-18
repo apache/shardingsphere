@@ -58,7 +58,7 @@ public enum MySQLServerErrorCode implements SQLErrorCode {
             "Please do not modify the %s table with an XA transaction. This is an internal system table used to store GTIDs for committed transactions. " 
                     + "Although modifying it can lead to an inconsistent GTID state, if neccessary you can modify it with a non-XA transaction."),
     
-    ER_LOCKING_SERVICE_TIMEOUT(3133, "HY000", "Message: Service lock wait timeout exceeded");
+    ER_LOCKING_SERVICE_TIMEOUT(3133, "HY000", "Message: Service lock wait timeout of %s ms exceeded");
     
     private final int errorCode;
     
