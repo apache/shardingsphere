@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.service.impl;
 
-import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -27,29 +26,41 @@ import org.apache.shardingsphere.scaling.core.execute.engine.TaskExecuteEngine;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.position.resume.FakeResumeBreakPointManager;
 import org.apache.shardingsphere.scaling.core.job.position.resume.IncrementalPositionResumeBreakPointManager;
 import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManagerFactory;
 import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
+import org.apache.shardingsphere.scaling.core.schedule.ScalingTaskScheduler;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class StandaloneScalingJobServiceTest {
     
     private final ScalingJobService scalingJobService = new StandaloneScalingJobService();
+    
+    @Mock
+    private ScalingJob scalingJob;
+    
+    @Mock
+    private ScalingTaskScheduler scalingTaskScheduler;
     
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
@@ -60,23 +71,27 @@ public final class StandaloneScalingJobServiceTest {
     
     @Test
     public void assertStartJob() {
-        Optional<ScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
-        assertTrue(shardingScalingJob.isPresent());
-        long jobId = shardingScalingJob.get().getJobId();
+        Optional<ScalingJob> scalingJob = scalingJobService.start(mockScalingConfiguration());
+        assertTrue(scalingJob.isPresent());
+        long jobId = scalingJob.get().getJobId();
         JobProgress progress = scalingJobService.getProgress(jobId);
         assertThat(progress.getIncrementalTaskProgress().size(), is(1));
         assertThat(progress.getInventoryTaskProgress().size(), is(1));
     }
     
     @Test
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
     public void assertStopExistJob() {
-        Optional<ScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
-        assertTrue(shardingScalingJob.isPresent());
-        long jobId = shardingScalingJob.get().getJobId();
+        Map<Long, ScalingJob> scalingJobMap = ReflectionUtil.getFieldValue(scalingJobService, "scalingJobMap", Map.class);
+        Map<Long, ScalingTaskScheduler> scalingTaskSchedulerMap = ReflectionUtil.getFieldValue(scalingJobService, "scalingTaskSchedulerMap", Map.class);
+        assertNotNull(scalingJobMap);
+        assertNotNull(scalingTaskSchedulerMap);
+        long jobId = 1L;
+        scalingJobMap.put(jobId, scalingJob);
+        scalingTaskSchedulerMap.put(jobId, scalingTaskScheduler);
         scalingJobService.stop(jobId);
-        JobProgress progress = scalingJobService.getProgress(jobId);
-        assertThat(progress.getStatus(), is(JobStatus.STOPPED.name()));
-        scalingJobService.remove(jobId);
+        verify(scalingJob).setStatus(JobStatus.STOPPED.name());
     }
     
     @Test(expected = ScalingJobNotFoundException.class)
@@ -94,9 +109,9 @@ public final class StandaloneScalingJobServiceTest {
     @Test
     public void assertIncrementalTasksOnly() throws NoSuchFieldException, IllegalAccessException {
         ReflectionUtil.setStaticFieldValue(ResumeBreakPointManagerFactory.class, "clazz", IncrementalPositionResumeBreakPointManager.class);
-        Optional<ScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
-        assertTrue(shardingScalingJob.isPresent());
-        long jobId = shardingScalingJob.get().getJobId();
+        Optional<ScalingJob> scalingJob = scalingJobService.start(mockScalingConfiguration());
+        assertTrue(scalingJob.isPresent());
+        long jobId = scalingJob.get().getJobId();
         JobProgress progress = scalingJobService.getProgress(jobId);
         assertThat(progress.getIncrementalTaskProgress().size(), is(1));
         assertThat(progress.getInventoryTaskProgress().size(), is(1));
@@ -105,26 +120,13 @@ public final class StandaloneScalingJobServiceTest {
     
     @Test
     public void assertCheckExistJob() {
-        Optional<ScalingJob> shardingScalingJob = scalingJobService.start(mockScalingConfiguration());
-        assertTrue(shardingScalingJob.isPresent());
-        shardingScalingJob.get().setDataConsistencyChecker(new DataConsistencyChecker() {
-            @Override
-            public Map<String, DataConsistencyCheckResult> countCheck() {
-                Map<String, DataConsistencyCheckResult> result = Maps.newHashMapWithExpectedSize(1);
-                result.put("t1", new DataConsistencyCheckResult(1, 1));
-                return result;
-            }
-            
-            @Override
-            public Map<String, Boolean> dataCheck() {
-                Map<String, Boolean> result = Maps.newHashMapWithExpectedSize(1);
-                result.put("t1", true);
-                return result;
-            }
-        });
-        Map<String, DataConsistencyCheckResult> checkResult = scalingJobService.check(shardingScalingJob.get().getJobId());
-        assertTrue(checkResult.get("t1").isCountValid());
-        assertTrue(checkResult.get("t1").isDataValid());
+        Optional<ScalingJob> scalingJobOptional = scalingJobService.start(mockScalingConfiguration());
+        assertTrue(scalingJobOptional.isPresent());
+        ScalingJob scalingJob = scalingJobOptional.get();
+        scalingJob.setDatabaseType("H2");
+        scalingJob.getTaskConfigs().clear();
+        Map<String, DataConsistencyCheckResult> checkResult = scalingJobService.check(scalingJob.getJobId());
+        assertTrue(checkResult.isEmpty());
     }
     
     @Test(expected = ScalingJobNotFoundException.class)

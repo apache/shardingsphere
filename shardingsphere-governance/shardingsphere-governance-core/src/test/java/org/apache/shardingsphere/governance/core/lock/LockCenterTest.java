@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.governance.core.lock;
 
-import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockAddedEvent;
+import org.apache.shardingsphere.governance.core.event.model.lock.LockNoticeEvent;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,24 +42,11 @@ public final class LockCenterTest {
     @Mock
     private RegistryCenter registryCenter;
     
-    private LockCenter lockCenter;
+    private LockCenter lockCenter = LockCenter.getInstance();
     
     @Before
     public void setUp() {
-        lockCenter = new LockCenter(registryRepository, registryCenter);
-    }
-    
-    @Test
-    public void assertLock() {
-        lockCenter.lock(new GlobalLockAddedEvent());
-        verify(registryCenter).persistInstanceData(RegistryCenterNodeStatus.LOCKED.toString());
-    }
-    
-    @Test
-    public void assertUnlock() {
-        lockCenter.lock(new GlobalLockAddedEvent());
-        lockCenter.unlock();
-        verify(registryCenter).persistInstanceData(RegistryCenterNodeStatus.OK.toString());
+        lockCenter.init(registryRepository, registryCenter);
     }
     
     @Test
@@ -76,8 +62,15 @@ public final class LockCenterTest {
         verify(registryRepository).delete(eq(new LockNode().getGlobalLockNodePath()));
     }
     
-    @After
-    public void tearDown() {
-        lockCenter.unlock();
+    @Test
+    public void assertLockedLockNotice() {
+        lockCenter.lockNotice(new LockNoticeEvent(true));
+        verify(registryCenter).persistInstanceData(RegistryCenterNodeStatus.LOCKED.toString());
+    }
+    
+    @Test
+    public void assertUnLockedLockNotice() {
+        lockCenter.lockNotice(new LockNoticeEvent(false));
+        verify(registryCenter).persistInstanceData("");
     }
 }

@@ -32,7 +32,7 @@ import java.util.Optional;
 public interface ScalingJobService {
     
     /**
-     * Get {@code ShardingScalingJob} list.
+     * Get {@code ScalingJob} list.
      *
      * @return scaling job service list
      */
@@ -66,10 +66,10 @@ public interface ScalingJobService {
     void stop(long jobId);
     
     /**
-     * Get {@code ShardingScalingJob} by id.
+     * Get {@code ScalingJob} by id.
      *
      * @param jobId job id
-     * @return {@code ShardingScalingJob} instance
+     * @return {@code ScalingJob} instance
      */
     ScalingJob getJob(long jobId);
     

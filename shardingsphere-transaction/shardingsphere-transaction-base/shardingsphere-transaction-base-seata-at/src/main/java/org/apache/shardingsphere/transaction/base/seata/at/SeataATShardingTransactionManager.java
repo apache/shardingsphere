@@ -62,7 +62,7 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     }
     
     @Override
-    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
+    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final String transactionMangerType) {
         if (enableSeataAT) {
             initSeataRPCClient();
             for (ResourceDataSource each : resourceDataSources) {

@@ -53,7 +53,7 @@ public final class ScalingConfigurationUtil {
      * Init job from config file.
      *
      * @param configFile config file
-     * @return ShardingScalingJob
+     * @return scaling job
      * @throws IOException IO exception
      */
     public static ScalingJob initJob(final String configFile) throws IOException {

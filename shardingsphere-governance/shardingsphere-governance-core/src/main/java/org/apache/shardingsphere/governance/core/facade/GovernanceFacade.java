@@ -52,7 +52,7 @@ public final class GovernanceFacade implements AutoCloseable {
     private GovernanceListenerManager listenerManager;
     
     @Getter
-    private LockCenter lockCenter;
+    private LockCenter lockCenter = LockCenter.getInstance();
     
     /**
      * Initialize governance facade.
@@ -65,7 +65,7 @@ public final class GovernanceFacade implements AutoCloseable {
         repositoryFacade = new GovernanceRepositoryFacade(config);
         registryCenter = new RegistryCenter(repositoryFacade.getRegistryRepository());
         configCenter = new ConfigCenter(repositoryFacade.getConfigurationRepository());
-        lockCenter = new LockCenter(repositoryFacade.getRegistryRepository(), registryCenter);
+        lockCenter.init(repositoryFacade.getRegistryRepository(), registryCenter);
         listenerManager = new GovernanceListenerManager(repositoryFacade.getRegistryRepository(),
                 repositoryFacade.getConfigurationRepository(), schemaNames.isEmpty() ? configCenter.getAllSchemaNames() : schemaNames);
         GovernedStateContext.startUp();
@@ -95,18 +95,6 @@ public final class GovernanceFacade implements AutoCloseable {
         registryCenter.persistInstanceOnline();
         registryCenter.persistDataNodes();
         listenerManager.init();
-    }
-    
-    /**
-     * Update configurations.
-     *
-     * @param dataSourceConfigMap schema data source configuration map
-     * @param schemaRuleMap schema rule map
-     */
-    public void updateConfigurations(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigMap, final Map<String, Collection<RuleConfiguration>> schemaRuleMap) {
-        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigMap.entrySet()) {
-            configCenter.persistConfigurations(entry.getKey(), dataSourceConfigMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), true);
-        }
     }
     
     @Override

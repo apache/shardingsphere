@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
@@ -41,12 +42,18 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.Ora
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 /**
  * DCL Statement SQL visitor for Oracle.
  */
+@NoArgsConstructor
 public final class OracleDCLStatementSQLVisitor extends OracleStatementSQLVisitor implements DCLSQLVisitor, SQLStatementVisitor {
-    
+
+    public OracleDCLStatementSQLVisitor(final Properties props) {
+        super(props);
+    }
+
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         OracleGrantStatement result = new OracleGrantStatement();

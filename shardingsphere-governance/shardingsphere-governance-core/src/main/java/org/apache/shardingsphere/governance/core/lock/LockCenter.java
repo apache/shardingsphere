@@ -18,58 +18,57 @@
 package org.apache.shardingsphere.governance.core.lock;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockAddedEvent;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.governance.core.event.model.lock.LockNoticeEvent;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
-import org.apache.shardingsphere.governance.core.state.GovernedState;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Lock center.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LockCenter {
     
-    private final RegistryRepository registryRepository;
+    private static final int CHECK_RETRY_MAXIMUM = 5;
     
-    private final RegistryCenter registryCenter;
+    private static final int CHECK_RETRY_INTERVAL_SECONDS = 3;
     
-    private final LockNode lockNode;
+    private static final LockCenter INSTANCE = new LockCenter();
     
-    private final GovernedState governedState;
+    private RegistryRepository registryRepository;
     
-    public LockCenter(final RegistryRepository registryRepository, final RegistryCenter registryCenter) {
+    private RegistryCenter registryCenter;
+    
+    private final LockNode lockNode = new LockNode();
+    
+    /**
+     * Get lock center instance.
+     * 
+     * @return lock center instance
+     */
+    public static LockCenter getInstance() {
+        return INSTANCE;
+    }
+    
+    /**
+     * Initialize lock center.
+     * 
+     * @param registryRepository registry repository
+     * @param registryCenter registry center
+     */
+    public void init(final RegistryRepository registryRepository, final RegistryCenter registryCenter) {
         this.registryRepository = registryRepository;
         this.registryCenter = registryCenter;
-        this.lockNode = new LockNode();
-        this.governedState = new GovernedState();
         this.registryRepository.initLock(lockNode.getGlobalLockNodePath());
         ShardingSphereEventBus.getInstance().register(this);
-    }
-    
-    /**
-     * Lock instance after global lock added.
-     *
-     * @param event global lock added event
-     */
-    @Subscribe
-    public synchronized void lock(final GlobalLockAddedEvent event) {
-        if (Optional.of(event).isPresent()) {
-            registryCenter.persistInstanceData(governedState.addState(RegistryCenterNodeStatus.LOCKED).toString());
-        }
-    }
-    
-    /**
-     * Unlock instance.
-     */
-    public void unlock() {
-        if (governedState.getState().toString().equalsIgnoreCase(RegistryCenterNodeStatus.LOCKED.toString())) {
-            registryCenter.persistInstanceData(governedState.recoverState().toString());    
-        }
     }
     
     /**
@@ -88,5 +87,55 @@ public final class LockCenter {
     public void releaseGlobalLock() {
         registryRepository.releaseLock();
         registryRepository.delete(lockNode.getGlobalLockNodePath());
+    }
+    
+    /**
+     * Check lock state.
+     * 
+     * @return true if all instances were locked, else false
+     */
+    public boolean checkLock() {
+        Collection<String> instanceIds = registryCenter.loadAllInstances();
+        if (instanceIds.isEmpty()) {
+            return true;
+        }
+        return checkOrRetry(instanceIds);
+    }
+    
+    private boolean checkOrRetry(final Collection<String> instanceIds) {
+        for (int i = 0; i < CHECK_RETRY_MAXIMUM; i++) {
+            if (check(instanceIds)) {
+                return true;
+            }
+            try {
+                Thread.sleep(CHECK_RETRY_INTERVAL_SECONDS * 1000L);
+                // CHECKSTYLE:OFF
+            } catch (final InterruptedException ex) {
+                // CHECKSTYLE:ON
+            }
+        }
+        return false;
+    }
+    
+    private boolean check(final Collection<String> instanceIds) {
+        for (String instanceId : instanceIds) {
+            if (!RegistryCenterNodeStatus.LOCKED.toString()
+                    .equalsIgnoreCase(registryCenter.loadInstanceData(instanceId))) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Notifies the locking state of the current instance.
+     *
+     * @param event lock notice event
+     */
+    @Subscribe
+    public synchronized void lockNotice(final LockNoticeEvent event) {
+        if (Optional.of(event).isPresent()) {
+            registryCenter.persistInstanceData(event.isLocked() ? RegistryCenterNodeStatus.LOCKED.toString() : "");
+        }
     }
 }

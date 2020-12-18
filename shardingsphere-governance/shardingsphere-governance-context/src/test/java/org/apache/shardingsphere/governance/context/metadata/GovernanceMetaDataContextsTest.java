@@ -26,16 +26,15 @@ import org.apache.shardingsphere.governance.core.event.model.props.PropertiesCha
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
-import org.apache.shardingsphere.governance.core.lock.LockCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
+import org.apache.shardingsphere.governance.core.state.GovernedStateContext;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -91,9 +90,6 @@ public final class GovernanceMetaDataContextsTest {
     @Mock
     private ConfigCenter configCenter;
     
-    @Mock
-    private LockCenter lockCenter;
-    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData metaData;
     
@@ -104,14 +100,11 @@ public final class GovernanceMetaDataContextsTest {
     
     @Before
     public void setUp() {
-        when(databaseType.getName()).thenReturn("H2");
-        when(databaseType.getDataSourceMetaData(any(), any())).thenReturn(mock(DataSourceMetaData.class));
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
         when(governanceFacade.getConfigCenter()).thenReturn(configCenter);
-        when(governanceFacade.getLockCenter()).thenReturn(lockCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
-        governanceMetaDataContexts = new GovernanceMetaDataContexts(
-                new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), authentication, props, databaseType), governanceFacade);
+        governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), authentication, props), governanceFacade);
+        GovernedStateContext.startUp();
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
@@ -123,13 +116,8 @@ public final class GovernanceMetaDataContextsTest {
     }
     
     @Test
-    public void assertGetDatabaseType() {
-        assertThat(governanceMetaDataContexts.getDatabaseType().getName(), is("H2"));
-    }
-    
-    @Test
-    public void assertGetMetaDataMap() {
-        assertThat(governanceMetaDataContexts.getMetaDataMap().get("schema"), is(metaData));
+    public void assertGetMetaData() {
+        assertThat(governanceMetaDataContexts.getMetaData("schema"), is(metaData));
     }
     
     @Test
@@ -152,8 +140,8 @@ public final class GovernanceMetaDataContextsTest {
         MetaDataAddedEvent event = new MetaDataAddedEvent("schema_add", new HashMap<>(), new LinkedList<>());
         when(configCenter.loadDataSourceConfigurations("schema_add")).thenReturn(getDataSourceConfigurations());
         governanceMetaDataContexts.renew(event);
-        assertNotNull(governanceMetaDataContexts.getMetaDataMap().get("schema_add"));
-        assertNotNull(governanceMetaDataContexts.getMetaDataMap().get("schema_add").getResource().getDataSources());
+        assertNotNull(governanceMetaDataContexts.getMetaData("schema_add"));
+        assertNotNull(governanceMetaDataContexts.getMetaData("schema_add").getResource().getDataSources());
     }
     
     private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
@@ -169,7 +157,7 @@ public final class GovernanceMetaDataContextsTest {
     public void assertSchemaDelete() {
         MetaDataDeletedEvent event = new MetaDataDeletedEvent("schema");
         governanceMetaDataContexts.renew(event);
-        assertNull(governanceMetaDataContexts.getMetaDataMap().get("schema"));
+        assertNull(governanceMetaDataContexts.getMetaData("schema"));
     }
     
     @Test
@@ -193,23 +181,23 @@ public final class GovernanceMetaDataContextsTest {
     public void assertSchemaChanged() {
         SchemaChangedEvent event = new SchemaChangedEvent("schema_changed", mock(ShardingSphereSchema.class));
         governanceMetaDataContexts.renew(event);
-        assertTrue(governanceMetaDataContexts.getMetaDataMap().containsKey("schema"));
-        assertFalse(governanceMetaDataContexts.getMetaDataMap().containsKey("schema_changed"));
+        assertTrue(governanceMetaDataContexts.getAllSchemaNames().contains("schema"));
+        assertFalse(governanceMetaDataContexts.getAllSchemaNames().contains("schema_changed"));
     }
     
     @Test
     public void assertSchemaChangedWithExistSchema() {
         SchemaChangedEvent event = new SchemaChangedEvent("schema", mock(ShardingSphereSchema.class));
         governanceMetaDataContexts.renew(event);
-        assertThat(governanceMetaDataContexts.getMetaDataMap().get("schema"), not(metaData));
+        assertThat(governanceMetaDataContexts.getMetaData("schema"), not(metaData));
     }
     
     @Test
     public void assertRuleConfigurationsChanged() throws SQLException {
-        assertThat(governanceMetaDataContexts.getMetaDataMap().get("schema"), is(metaData));
+        assertThat(governanceMetaDataContexts.getMetaData("schema"), is(metaData));
         RuleConfigurationsChangedEvent event = new RuleConfigurationsChangedEvent("schema", new LinkedList<>());
         governanceMetaDataContexts.renew(event);
-        assertThat(governanceMetaDataContexts.getMetaDataMap().get("schema"), not(metaData));
+        assertThat(governanceMetaDataContexts.getMetaData("schema"), not(metaData));
     }
     
     @Test
@@ -223,7 +211,7 @@ public final class GovernanceMetaDataContextsTest {
     public void assertDataSourceChanged() throws SQLException {
         DataSourceChangedEvent event = new DataSourceChangedEvent("schema", getChangedDataSourceConfigurations());
         governanceMetaDataContexts.renew(event);
-        assertTrue(governanceMetaDataContexts.getMetaDataMap().get("schema").getResource().getDataSources().containsKey("ds_2"));
+        assertTrue(governanceMetaDataContexts.getMetaData("schema").getResource().getDataSources().containsKey("ds_2"));
     }
     
     private Map<String, DataSourceConfiguration> getChangedDataSourceConfigurations() {

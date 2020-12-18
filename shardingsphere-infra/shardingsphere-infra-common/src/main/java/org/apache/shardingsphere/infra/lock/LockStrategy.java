@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.infra.lock;
 
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+
 /**
  * Lock strategy.
  */
-public interface LockStrategy {
+public interface LockStrategy extends TypedSPI {
     
     /**
      * Try to get lock.

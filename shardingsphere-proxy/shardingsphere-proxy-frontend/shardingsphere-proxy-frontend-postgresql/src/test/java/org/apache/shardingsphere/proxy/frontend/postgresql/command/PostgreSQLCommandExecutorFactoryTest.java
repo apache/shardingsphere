@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
-import java.util.Arrays;
-import java.util.Collection;
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -37,6 +35,10 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.text.PostgreSQLComQueryExecutor;
 import org.junit.Test;
 
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -45,7 +47,7 @@ import static org.mockito.Mockito.when;
 public final class PostgreSQLCommandExecutorFactoryTest {
     
     @Test
-    public void assertNewInstance() {
+    public void assertNewInstance() throws SQLException {
         BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getSchemaName()).thenReturn("schema");
         Collection<InputOutput> inputOutputs = Arrays.asList(

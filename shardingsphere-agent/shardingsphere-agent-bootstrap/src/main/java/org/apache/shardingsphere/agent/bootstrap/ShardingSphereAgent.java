@@ -54,12 +54,12 @@ public class ShardingSphereAgent {
             .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."));
         AgentPluginLoader agentPluginLoader = AgentPluginLoader.getInstance();
         agentPluginLoader.loadAllPlugins();
-        agentPluginLoader.initialAllServices();
         builder.type(agentPluginLoader.typeMatcher())
                .transform(new ShardingSphereTransformer(agentPluginLoader))
                .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                .with(new LoggingListener())
                .installOn(instrumentation);
+        agentPluginLoader.initialAllServices();
         agentPluginLoader.startAllServices();
         Runtime.getRuntime().addShutdownHook(new Thread(agentPluginLoader::shutdownAllServices));
     }

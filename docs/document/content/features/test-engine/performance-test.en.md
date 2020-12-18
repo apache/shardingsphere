@@ -90,23 +90,38 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-shardingRule:
-    tables:
-      tbl:
-        actualDataNodes: ds_${0..3}.tbl${0..1023}
-        tableStrategy:
-          inline:
-            shardingColumn: k
-            algorithmExpression: tbl${k % 1024}
-        keyGenerateStrategy:
-            type: SNOWFLAKE
-            column: id
-    defaultDatabaseStrategy:
-      inline:
-        shardingColumn: id
-        algorithmExpression: ds_${id % 4}
-    defaultTableStrategy:
-      none:
+rules:
+- !SHARDING
+  tables:
+    tbl:
+      actualDataNodes: ds_${0..3}.tbl${0..1023}
+      tableStrategy:
+        standard:
+          shardingColumn: k
+          shardingAlgorithmName: tbl_table_inline
+      keyGenerateStrategy:
+          column: id
+          keyGeneratorName: snowflake
+  defaultDatabaseStrategy:
+    inline:
+      shardingColumn: id
+      shardingAlgorithmName: default_db_inline
+  defaultTableStrategy:
+    none:
+  shardingAlgorithms:
+    tbl_table_inline:
+      type: INLINE
+      props:
+        algorithm-expression: tbl${k % 1024}
+    default_db_inline:
+      type: INLINE
+      props:
+        algorithm-expression: ds_${id % 4}
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+      props:
+        worker-id: 123
 ```
 
 #### Replica Query Configuration
@@ -131,11 +146,14 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-replicaQueryRule:
-  name: pr_ds
-  primaryDataSourceName: primary_ds
-  replicaDataSourceNames:
-    - replica_ds_0
+rules:
+- !REPLICA_QUERY
+  dataSources:
+    pr_ds:
+      name: pr_ds
+      primaryDataSourceName: primary_ds
+      replicaDataSourceNames:
+        - replica_ds_0
 ```
 
 #### Replica Query & Encrypt & Sharding Configuration
@@ -208,48 +226,67 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-shardingRule:
+rules:
+- !SHARDING
   tables:
     tbl:
       actualDataNodes: pr_ds_${0..3}.tbl${0..1023}
       databaseStrategy:
-        inline:
+        standard:
           shardingColumn: id
-          algorithmExpression: pr_ds_${id % 4}
+          shardingAlgorithmName: tbl_database_inline
       tableStrategy:
-        inline:
+        standard:
           shardingColumn: k
-          algorithmExpression: tbl${k % 1024}
+          shardingAlgorithmName: tbl_table_inline
       keyGenerateStrategy:
-        type: SNOWFLAKE
         column: id
+        keyGeneratorName: snowflake
   bindingTables:
     - tbl
   defaultDataSourceName: primary_ds_1
   defaultTableStrategy:
     none:
-  replicaQueryRules:
+  shardingAlgorithms:
+    tbl_database_inline:
+      type: INLINE
+      props:
+        algorithm-expression: pr_ds_${id % 4}
+    tbl_table_inline:
+      type: INLINE
+      props:
+        algorithm-expression: tbl${k % 1024}
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+      props:
+          worker-id: 123
+- !REPLICA_QUERY
+  dataSources:
     pr_ds_0:
       primaryDataSourceName: primary_ds_0
       replicaDataSourceNames:
         - replica_ds_0
-      loadBalanceAlgorithmType: ROUND_ROBIN
+      loadBalancerName: round_robin
     pr_ds_1:
       primaryDataSourceName: primary_ds_1
       replicaDataSourceNames:
         - replica_ds_1
-      loadBalanceAlgorithmType: ROUND_ROBIN
+      loadBalancerName: round_robin
     pr_ds_2:
       primaryDataSourceName: primary_ds_2
       replicaDataSourceNames:
         - replica_ds_2
-      loadBalanceAlgorithmType: ROUND_ROBIN
+      loadBalancerName: round_robin
     pr_ds_3:
       primaryDataSourceName: primary_ds_3
       replicaDataSourceNames:
         - replica_ds_3
-      loadBalanceAlgorithmType: ROUND_ROBIN
-encryptRule:
+      loadBalancerName: round_robin
+  loadBalancers:
+    round_robin:
+      type: ROUND_ROBIN
+- !ENCRYPT:
   encryptors:
     aes_encryptor:
       type: AES
@@ -266,7 +303,9 @@ encryptRule:
           encryptorName: aes_encryptor
         pad:
           cipherColumn: pad_cipher
-          encryptorName: md5_encryptor    
+          encryptorName: md5_encryptor
+props:
+  query-with-cipher-column: true    
 ```
 
 #### Full Route Configuration
@@ -307,23 +346,38 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-shardingRule:
+rules:
+- !SHARDING
   tables:
     tbl:
       actualDataNodes: ds_${0..3}.tbl1
       tableStrategy:
-        inline:
+        standard:
           shardingColumn: k
-          algorithmExpression: tbl1
+          shardingAlgorithmName: tbl_table_inline
       keyGenerateStrategy:
-          type: SNOWFLAKE
-          column: id
+        column: id
+        keyGeneratorName: snowflake
   defaultDatabaseStrategy:
-    inline:
+    standard:
       shardingColumn: id
-      algorithmExpression: ds_${id % 4}
+      shardingAlgorithmName: default_database_inline
   defaultTableStrategy:
     none:  
+  shardingAlgorithms:
+    default_database_inline:
+      type: INLINE
+      props:
+        algorithm-expression: ds_${id % 4}
+    tbl_table_inline:
+      type: INLINE
+      props:
+        algorithm-expression: tbl1    
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+      props:
+        worker-id: 123  
 ```
 
 ## Test Result Verification

@@ -32,6 +32,25 @@ import java.util.Properties;
 public final class TypedSPIRegistry {
     
     /**
+     * Find registered service.
+     *
+     * @param typedSPIClass typed SPI class
+     * @param type type
+     * @param props properties
+     * @param <T> type
+     * @return registered service
+     */
+    public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> typedSPIClass, final String type, final Properties props) {
+        Optional<T> serviceInstance = ShardingSphereServiceLoader.newServiceInstances(typedSPIClass).stream().filter(each -> each.getType().equalsIgnoreCase(type)).findFirst();
+        if (serviceInstance.isPresent()) {
+            T result = serviceInstance.get();
+            convertPropertiesValueType(props, result);
+            return Optional.of(result);
+        }
+        return Optional.empty();
+    }
+    
+    /**
      * Get registered service.
      * 
      * @param typedSPIClass typed SPI class
@@ -41,11 +60,9 @@ public final class TypedSPIRegistry {
      * @return registered service
      */
     public static <T extends TypedSPI> T getRegisteredService(final Class<T> typedSPIClass, final String type, final Properties props) {
-        Optional<T> serviceInstance = ShardingSphereServiceLoader.newServiceInstances(typedSPIClass).stream().filter(each -> each.getType().equalsIgnoreCase(type)).findFirst();
-        if (serviceInstance.isPresent()) {
-            T result = serviceInstance.get();
-            convertPropertiesValueType(props, result);
-            return result;
+        Optional<T> result = findRegisteredService(typedSPIClass, type, props);
+        if (result.isPresent()) {
+            return result.get();
         }
         throw new ServiceProviderNotFoundException(typedSPIClass, type);
     }

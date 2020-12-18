@@ -22,15 +22,51 @@ import Alphabet;
 WS
     : [ \t\r\n] + ->skip
     ;
-    
+
+ADD
+    : A D D
+    ;
+
 CREATE
     : C R E A T E
     ;
 
-DATASOURCES
-    : D A T A S O U R C E S
+DROP
+    : D R O P
     ;
-    
-SHARDINGRULE
-    : S H A R D I N G R U L E
+
+SHOW
+    : S H O W
+    ;
+
+RESOURCE
+    : R E S O U R C E
+    ;
+
+RESOURCES
+    : R E S O U R C E S
+    ;
+
+RULE
+    :  R U L E
+    ;
+
+FROM
+    : F R O M
+    ;
+
+SHARDING
+    : S H A R D I N G
+    ;
+   
+REPLICA_QUERY
+    : R E P L I C A UL_ Q U E R Y
+    ;
+
+ENCRYPT
+    : E N C R Y P T
+    ;
+
+SHADOW
+    : S H A D O W
     ;

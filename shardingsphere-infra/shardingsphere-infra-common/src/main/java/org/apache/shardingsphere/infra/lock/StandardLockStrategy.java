@@ -49,11 +49,16 @@ public final class StandardLockStrategy implements LockStrategy {
     @Override
     public void releaseLock() {
         lock.unlock();
-        StateContext.switchState(new StateEvent(StateType.OK, true));
+        StateContext.switchState(new StateEvent(StateType.LOCK, false));
     }
     
     @Override
     public boolean checkLock() {
         return StateContext.getCurrentState() == StateType.LOCK;
+    }
+    
+    @Override
+    public String getType() {
+        return LockStrategyType.STANDARD.name();
     }
 }

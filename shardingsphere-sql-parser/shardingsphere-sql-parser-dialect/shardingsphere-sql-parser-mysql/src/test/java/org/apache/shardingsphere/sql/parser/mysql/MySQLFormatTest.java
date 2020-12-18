@@ -54,7 +54,7 @@ public final class MySQLFormatTest {
                 + "\tid = 1;"});
         testUnits.add(new String[]{"select_with_subquery", "select id, name, age, count(*) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1", "SELECT id ,"
                 + " name , age , \n"
-                + "\tCOUNT ( * ) AS n, \n"
+                + "\tCOUNT(*) AS n, \n"
                 + "\t(\n"
                 + "\t\tSELECT id , name , age , \n"
                 + "\t\t\tsex \n"
@@ -90,15 +90,33 @@ public final class MySQLFormatTest {
                 + "`runoob_author` VARCHAR(40) NOT NULL,\n"
                 + "`runoob_test` NATIONAL CHAR(40),\n"
                 + "`submission_date` DATE,\n"
-                + "PRIMARY KEY ( `runoob_id` )\n"
+                + "PRIMARY KEY (`runoob_id`)\n"
                 + ")ENGINE=InnoDB DEFAULT CHARSET=utf8;", "CREATE TABLE IF NOT EXISTS `runoob_tbl` (\n"
                 + "\t`runoob_id` INT UNSIGNED AUTO_INCREMENT,\n"
                 + "\t`runoob_title` VARCHAR(100) NOT NULL,\n"
                 + "\t`runoob_author` VARCHAR(40) NOT NULL,\n"
                 + "\t`runoob_test` NATIONAL CHAR(40),\n"
                 + "\t`submission_date` DATE,\n"
-                + "\tPRIMARY KEY ( `runoob_id` )\n"
+                + "\tPRIMARY KEY (`runoob_id`)\n"
                 + ") ENGINE = InnoDB DEFAULT CHARSET = utf8"});
+        testUnits.add(new String[]{"insert_with_muti_value", "INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (1, 1, 'insert', '2017-08-08'), (2, 2, 'insert', '2017-08-08') "
+                + "ON DUPLICATE KEY UPDATE status = 'init'", "INSERT  INTO t_order_item (order_id , user_id , status , creation_date)\n"
+                + "VALUES\n"
+                + "\t(1, 1, 'insert', '2017-08-08'),\n"
+                + "\t(2, 2, 'insert', '2017-08-08')\n"
+                + "ON DUPLICATE KEY UPDATE status = 'init'"});
+        testUnits.add(new String[]{"insert_with_muti_set", "INSERT INTO t_order SET order_id = 1, user_id = 1, status = convert(to_base64(aes_encrypt(1, 'key')) USING utf8) "
+                + "ON DUPLICATE KEY UPDATE status = VALUES(status)", "INSERT  INTO t_order "
+                + "SET order_id = 1,\n"
+                + "\tuser_id = 1,\n"
+                + "\tstatus = CONVERT(to_base64(aes_encrypt(1 , 'key')) USING utf8)\n"
+                + "ON DUPLICATE KEY UPDATE status = VALUES(status)"});
+        testUnits.add(new String[]{"insert_with_select", "INSERT INTO t_order (order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = 1", "INSERT  INTO t_order "
+                + "(order_id , user_id , status) \n"
+                + "SELECT order_id , user_id , status \n"
+                + "FROM t_order\n"
+                + "WHERE \n"
+                + "\torder_id = 1;"});
     }
 
     private final String caseId;
