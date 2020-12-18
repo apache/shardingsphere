@@ -111,7 +111,7 @@ public final class CuratorZookeeperRepositoryTest {
         client.delete().deletingChildrenIfNeeded().forPath("/test/children_deleted/5");
         SettableFuture<DataChangedEvent> actualDataChangedEvent = SettableFuture.create();
         REPOSITORY.watch("/test/children_deleted", actualDataChangedEvent::set);
-        DataChangedEvent dataChangedEvent = actualDataChangedEvent.get(1, TimeUnit.SECONDS);
+        DataChangedEvent dataChangedEvent = actualDataChangedEvent.get(5, TimeUnit.SECONDS);
         assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getType(), is(Type.DELETED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_deleted/5"));
