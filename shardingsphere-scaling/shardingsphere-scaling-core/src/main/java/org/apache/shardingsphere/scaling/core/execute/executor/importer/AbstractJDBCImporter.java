@@ -33,6 +33,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.GroupedDat
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
 import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.utils.ThreadUtil;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -121,15 +122,15 @@ public abstract class AbstractJDBCImporter extends AbstractScalingExecutor imple
     }
     
     private boolean tryFlush(final DataSource dataSource, final List<DataRecord> buffer) {
-        int retryTimes = importerConfig.getRetryTimes();
-        do {
+        for (int i = 0; isRunning() && i <= importerConfig.getRetryTimes(); i++) {
             try {
                 doFlush(dataSource, buffer);
                 return true;
             } catch (final SQLException ex) {
-                log.error("flush failed: ", ex);
+                log.error("flush failed {}/{} times.", i, importerConfig.getRetryTimes(), ex);
+                ThreadUtil.sleep(Math.min(5 * 60 * 1000L, 1000 << i));
             }
-        } while (isRunning() && retryTimes-- > 0);
+        }
         return false;
     }
     
