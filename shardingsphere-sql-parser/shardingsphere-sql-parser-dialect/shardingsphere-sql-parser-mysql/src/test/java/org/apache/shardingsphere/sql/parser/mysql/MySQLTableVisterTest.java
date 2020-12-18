@@ -33,8 +33,8 @@ import java.nio.CharBuffer;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
 
 @RunWith(Parameterized.class)
 public final class MySQLTableVisterTest {
@@ -84,7 +84,7 @@ public final class MySQLTableVisterTest {
         ParseTree tree = ((ParseASTNode) parser.parse()).getRootNode();
         MySQLSQLStatVisitor visitor = new MySQLSQLStatVisitor();
         visitor.visit(tree);
-        assertThat("table assert error", visitor.getTables().keySet().size(), is(tableNum));
-        assertThat("column assert error", visitor.getColumns().keySet().size(), is(columnNum));
+        Assert.assertThat("table assert error", visitor.getTables().keySet().size(), Matchers.is(tableNum));
+        Assert.assertThat("column assert error", visitor.getColumns().keySet().size(), Matchers.is(columnNum));
     }
 }

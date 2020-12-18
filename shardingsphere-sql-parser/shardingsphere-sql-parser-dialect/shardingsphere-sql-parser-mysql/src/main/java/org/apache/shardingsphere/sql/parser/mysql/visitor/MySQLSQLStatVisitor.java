@@ -91,7 +91,7 @@ public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<Boolean
         return true;
     }
 
-    private ColumnSegment getColumn(ColumnRefContext ctx) {
+    private ColumnSegment getColumn(final ColumnRefContext ctx) {
         IdentifierValue name;
         OwnerSegment owner = null;
         if (2 == ctx.identifier().size()) {
@@ -108,7 +108,7 @@ public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<Boolean
         return column;
     }
 
-    private ColumnSegment getColumn(IdentifierContext ctx) {
+    private ColumnSegment getColumn(final IdentifierContext ctx) {
         ColumnSegment column = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.getText()));
         return column;
     }
@@ -142,7 +142,7 @@ public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<Boolean
         return true;
     }
 
-    private int hashCode(ColumnSegment column) {
+    private int hashCode(final ColumnSegment column) {
         StringBuilder columString = new StringBuilder();
         if (column.getOwner().isPresent()) {
             columString.append(column.getOwner().get().getIdentifier().getValue());
