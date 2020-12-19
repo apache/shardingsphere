@@ -63,7 +63,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     
     private CuratorFramework client;
     
-    private InterProcessLock interProcessLock;
+    private InterProcessLock lock;
     
     @Getter
     @Setter
@@ -219,17 +219,17 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     
     @Override
     public void initLock(final String key) {
-        interProcessLock = new InterProcessMutex(client, key);
+        lock = new InterProcessMutex(client, key);
     }
     
     @Override
     public boolean tryLock(final long time, final TimeUnit unit) {
         try {
-            return interProcessLock.acquire(time, unit);
+            return lock.acquire(time, unit);
             // CHECKSTYLE:OFF
-        } catch (final Exception e) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(e);
+            CuratorZookeeperExceptionHandler.handleException(ex);
             return false;
         }
     }
@@ -237,7 +237,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     @Override
     public void releaseLock() {
         try {
-            interProcessLock.release();
+            lock.release();
             // CHECKSTYLE:OFF
         } catch (final Exception e) {
             // CHECKSTYLE:ON
