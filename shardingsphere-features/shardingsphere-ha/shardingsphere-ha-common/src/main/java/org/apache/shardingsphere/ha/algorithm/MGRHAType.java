@@ -133,11 +133,11 @@ public final class MGRHAType implements HAType {
     
     private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
         String result = "";
-        String address = findAddress(dataSourceMap);
+        String primaryDataSourceURL = findPrimaryDataSourceURL(dataSourceMap);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             DataSource dataSource = entry.getValue();
             try (Connection connection = dataSource.getConnection()) {
-                if (connection.getMetaData().getURL().contains(address)) {
+                if (connection.getMetaData().getURL().contains(primaryDataSourceURL)) {
                     result = entry.getKey();
                     break;
                 }
@@ -149,7 +149,7 @@ public final class MGRHAType implements HAType {
         return result;
     }
     
-    private String findAddress(final Map<String, DataSource> dataSourceMap) {
+    private String findPrimaryDataSourceURL(final Map<String, DataSource> dataSourceMap) {
         String result = "";
         String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
                 + "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
