@@ -149,7 +149,7 @@ public final class MGRHAType implements HAType {
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
             }
-            if (null != address && !"".equals(address)) {
+            if (!"".equals(address)) {
                 break;
             }
         }
