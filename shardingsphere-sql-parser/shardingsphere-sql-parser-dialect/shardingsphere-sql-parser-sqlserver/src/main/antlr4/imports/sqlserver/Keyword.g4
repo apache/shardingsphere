@@ -596,10 +596,6 @@ MERGE
     : M E R G E
     ;
 
-CONCAT
-    : C O N C A T
-    ;
-
 LOOP
     : L O O P
     ;
