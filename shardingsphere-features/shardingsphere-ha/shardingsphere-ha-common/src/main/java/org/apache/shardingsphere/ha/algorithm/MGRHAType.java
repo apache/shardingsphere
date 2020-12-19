@@ -133,26 +133,7 @@ public final class MGRHAType implements HAType {
     
     private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
         String result = "";
-        String address = "";
-        String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
-                + "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
-        for (DataSource each : dataSourceMap.values()) {
-            try (Connection connection = each.getConnection();
-                 Statement statement = connection.createStatement();
-                 ResultSet resultSet = statement.executeQuery(sql)) {
-                while (resultSet.next()) {
-                    address = resultSet.getString("MEMBER_HOST");
-                    address += ":";
-                    address += resultSet.getString("MEMBER_PORT");
-                }
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-            }
-            if (!"".equals(address)) {
-                break;
-            }
-        }
+        String address = findAddress(dataSourceMap);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             DataSource dataSource = entry.getValue();
             try (Connection connection = dataSource.getConnection()) {
@@ -163,6 +144,28 @@ public final class MGRHAType implements HAType {
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
+            }
+        }
+        return result;
+    }
+    
+    private String findAddress(final Map<String, DataSource> dataSourceMap) {
+        String result = "";
+        String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
+                + "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
+        for (DataSource each : dataSourceMap.values()) {
+            try (Connection connection = each.getConnection();
+                 Statement statement = connection.createStatement();
+                 ResultSet resultSet = statement.executeQuery(sql)) {
+                while (resultSet.next()) {
+                    result = String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT"));
+                }
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+            }
+            if (!"".equals(result)) {
+                break;
             }
         }
         return result;
