@@ -54,9 +54,9 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
     @Getter
     @Setter
     private Properties props = new Properties();
-
+    
     private EtcdProperties etcdProperties;
-
+    
     @Override
     public void init(final String name, final GovernanceCenterConfiguration config) {
         etcdProperties = new EtcdProperties(props);
