@@ -103,11 +103,11 @@
         <mssql.version>6.1.7.jre8-preview</mssql.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
         <bytebuddy.version>1.10.16</bytebuddy.version>
-
+        
         <elasticjob.version>3.0.0-beta</elasticjob.version>
-
+        
         <calcite.version>1.26.0</calcite.version>
-
+        
         <!-- Plugin versions -->
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
@@ -332,7 +332,7 @@
                 <version>${spring-boot.version}</version>
                 <scope>provided</scope>
             </dependency>
-
+            
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
