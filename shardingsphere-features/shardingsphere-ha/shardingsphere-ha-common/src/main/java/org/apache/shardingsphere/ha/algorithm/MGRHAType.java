@@ -164,7 +164,7 @@ public final class MGRHAType implements HAType {
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
             }
-            if (!"".equals(result)) {
+            if (!result.isEmpty()) {
                 break;
             }
         }
