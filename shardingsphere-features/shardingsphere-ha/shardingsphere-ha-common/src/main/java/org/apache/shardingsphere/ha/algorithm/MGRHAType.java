@@ -132,23 +132,10 @@ public final class MGRHAType implements HAType {
     }
     
     private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
-        String result = "";
         String primaryDataSourceURL = findPrimaryDataSourceURL(dataSourceMap);
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            DataSource dataSource = entry.getValue();
-            try (Connection connection = dataSource.getConnection()) {
-                if (connection.getMetaData().getURL().contains(primaryDataSourceURL)) {
-                    result = entry.getKey();
-                    break;
-                }
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-            }
-        }
-        return result;
+        return findPrimaryDataSourceName(primaryDataSourceURL, dataSourceMap);
     }
-    
+
     private String findPrimaryDataSourceURL(final Map<String, DataSource> dataSourceMap) {
         String result = "";
         String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
@@ -159,6 +146,22 @@ public final class MGRHAType implements HAType {
                  ResultSet resultSet = statement.executeQuery(sql)) {
                 if (resultSet.next()) {
                     return String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT"));
+                }
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+            }
+        }
+        return result;
+    }
+    
+    private String findPrimaryDataSourceName(final String primaryDataSourceURL, final Map<String, DataSource> dataSourceMap) {
+        String result = "";
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            DataSource dataSource = entry.getValue();
+            try (Connection connection = dataSource.getConnection()) {
+                if (connection.getMetaData().getURL().contains(primaryDataSourceURL)) {
+                    return entry.getKey();
                 }
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
