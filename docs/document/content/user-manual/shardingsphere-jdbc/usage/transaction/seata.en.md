@@ -1,6 +1,6 @@
 +++
 title = "Seata Transaction"
-weight = 6
+weight = 7
 +++
 
 ## Startup Seata Server

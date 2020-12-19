@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
@@ -47,12 +48,18 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLSetRoleStatement;
 
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * DCL Statement SQL visitor for MySQL.
  */
+@NoArgsConstructor
 public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor implements DCLSQLVisitor, SQLStatementVisitor {
-    
+
+    public MySQLDCLStatementSQLVisitor(final Properties props) {
+        super(props);
+    }
+
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         MySQLGrantStatement result = new MySQLGrantStatement();

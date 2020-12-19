@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
-import org.apache.shardingsphere.infra.binder.statement.rdl.ShowResourcesStatementContext;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 
 import java.sql.Types;
@@ -40,43 +36,26 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Backend handler for data sources query.
+ * Backend handler for show resources.
  */
-@RequiredArgsConstructor
-public final class DataSourcesQueryBackendHandler implements TextProtocolBackendHandler {
-    
-    private final ShowResourcesStatement sqlStatement;
-    
-    private final BackendConnection backendConnection;
+public final class DataSourcesQueryBackendHandler extends SchemaRequiredBackendHandler<ShowResourcesStatement> {
     
     private Map<String, DataSourceParameter> dataSourceParameterMap;
     
     private Iterator<String> dataSourceNames;
     
-    @Override
-    public ResponseHeader execute() {
-        return execute(new ShowResourcesStatementContext(sqlStatement));
+    public DataSourcesQueryBackendHandler(final ShowResourcesStatement sqlStatement, final BackendConnection backendConnection) {
+        super(sqlStatement, backendConnection);
     }
     
-    private ResponseHeader execute(final ShowResourcesStatementContext context) {
-        String schemaName = getSchemaName(context);
+    @Override
+    public ResponseHeader execute(final String schemaName, final ShowResourcesStatement sqlStatement) {
         QueryHeader nameQueryHeader = new QueryHeader(schemaName, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false);
         QueryHeader contentQueryHeader = new QueryHeader(schemaName, "", "data source", "data source", Types.CHAR, "CHAR", 255, 0, false, false, false, false);
         dataSourceParameterMap = DataSourceParameterConverter.getDataSourceParameterMap(
                 DataSourceConverter.getDataSourceConfigurationMap(ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources()));
         dataSourceNames = dataSourceParameterMap.keySet().iterator();
         return new QueryResponseHeader(Arrays.asList(nameQueryHeader, contentQueryHeader));
-    }
-    
-    private String getSchemaName(final ShowResourcesStatementContext context) {
-        String result = null == context.getSqlStatement().getSchemaName() ? backendConnection.getSchemaName() : context.getSqlStatement().getSchemaName().getIdentifier().getValue();
-        if (null == result) {
-            throw new NoDatabaseSelectedException();
-        }
-        if (!ProxyContext.getInstance().schemaExists(result)) {
-            throw new UnknownDatabaseException(result);
-        }
-        return result;
     }
     
     @Override

@@ -51,6 +51,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -79,59 +80,59 @@ public final class MySQLCommandExecutorFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithComQuit() {
+    public void assertNewInstanceWithComQuit() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_QUIT, mock(CommandPacket.class), backendConnection), instanceOf(MySQLComQuitExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComInitDb() {
+    public void assertNewInstanceWithComInitDb() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_INIT_DB, mock(MySQLComInitDbPacket.class), backendConnection), instanceOf(MySQLComInitDbExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComFieldList() {
+    public void assertNewInstanceWithComFieldList() throws SQLException {
         MySQLComFieldListPacket packet = mock(MySQLComFieldListPacket.class);
         when(packet.getTable()).thenReturn("test");
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_FIELD_LIST, packet, backendConnection), instanceOf(MySQLComFieldListPacketExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComQuery() {
+    public void assertNewInstanceWithComQuery() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_QUERY, mock(MySQLComQueryPacket.class), backendConnection), instanceOf(MySQLComQueryPacketExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComPing() {
+    public void assertNewInstanceWithComPing() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_PING, mock(CommandPacket.class), backendConnection), instanceOf(MySQLComPingExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStmtPrepare() {
+    public void assertNewInstanceWithComStmtPrepare() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(
                 MySQLCommandPacketType.COM_STMT_PREPARE, mock(MySQLComStmtPreparePacket.class), backendConnection), instanceOf(MySQLComStmtPrepareExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStmtExecute() {
+    public void assertNewInstanceWithComStmtExecute() throws SQLException {
         MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
         when(packet.getSql()).thenReturn("SELECT 1");
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_STMT_EXECUTE, packet, backendConnection), instanceOf(MySQLComStmtExecuteExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStmtReset() {
+    public void assertNewInstanceWithComStmtReset() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_STMT_RESET,
                 mock(MySQLComStmtResetPacket.class), backendConnection), instanceOf(MySQLComStmtResetExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStmtClose() {
+    public void assertNewInstanceWithComStmtClose() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_STMT_CLOSE,
                 mock(MySQLComStmtClosePacket.class), backendConnection), instanceOf(MySQLComStmtCloseExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithUnsupportedCommand() {
+    public void assertNewInstanceWithUnsupportedCommand() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_REFRESH,
                 mock(CommandPacket.class), backendConnection), instanceOf(MySQLUnsupportedCommandExecutor.class));
     }

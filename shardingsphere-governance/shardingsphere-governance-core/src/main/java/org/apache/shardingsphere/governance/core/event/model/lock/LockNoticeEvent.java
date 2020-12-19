@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.statement.rdl;
+package org.apache.shardingsphere.governance.core.event.model.lock;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 
 /**
- * Drop sharding rule statement context.
+ * Lock notice event.
  */
-public final class DropShardingRuleStatementContext extends CommonSQLStatementContext<DropShardingRuleStatement> {
+@RequiredArgsConstructor
+@Getter
+public final class LockNoticeEvent implements GovernanceEvent {
     
-    public DropShardingRuleStatementContext(final DropShardingRuleStatement sqlStatement) {
-        super(sqlStatement);
-    }
+    private final boolean locked;
 }

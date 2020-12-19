@@ -44,6 +44,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -80,49 +81,49 @@ public final class TextProtocolBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithSCTL() {
+    public void assertNewInstanceWithSCTL() throws SQLException {
         String sql = "sctl:set transaction_type=XA";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(ShardingCTLSetBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceSCTLWithComment() {
+    public void assertNewInstanceSCTLWithComment() throws SQLException {
         String sql = "/*ApplicationName=DataGrip 2018.1.4*/ sctl:show cached_connections;";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(ShardingCTLShowBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceWithBegin() {
+    public void assertNewInstanceWithBegin() throws SQLException {
         String sql = "BEGIN";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceWithStartTransaction() {
+    public void assertNewInstanceWithStartTransaction() throws SQLException {
         String sql = "START TRANSACTION";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceWithSetAutoCommitToOff() {
+    public void assertNewInstanceWithSetAutoCommitToOff() throws SQLException {
         String sql = "SET AUTOCOMMIT=0";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceWithScopeSetAutoCommitToOff() {
+    public void assertNewInstanceWithScopeSetAutoCommitToOff() throws SQLException {
         String sql = "SET @@SESSION.AUTOCOMMIT = OFF";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceWithSetAutoCommitToOnForInTransaction() {
+    public void assertNewInstanceWithSetAutoCommitToOnForInTransaction() throws SQLException {
         when(backendConnection.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "SET AUTOCOMMIT=1";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
@@ -130,7 +131,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithScopeSetAutoCommitToOnForInTransaction() {
+    public void assertNewInstanceWithScopeSetAutoCommitToOnForInTransaction() throws SQLException {
         when(backendConnection.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "SET @@SESSION.AUTOCOMMIT = ON";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
@@ -138,7 +139,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithSetAutoCommitToOnForNotInTransaction() {
+    public void assertNewInstanceWithSetAutoCommitToOnForNotInTransaction() throws SQLException {
         String sql = "SET AUTOCOMMIT=1";
         when(backendConnection.getTransactionStatus().isInTransaction()).thenReturn(false);
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
@@ -146,28 +147,28 @@ public final class TextProtocolBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithUse() {
+    public void assertNewInstanceWithUse() throws SQLException {
         String sql = "use sharding_db";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(UseDatabaseBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceWithShowDatabase() {
+    public void assertNewInstanceWithShowDatabase() throws SQLException {
         String sql = "show databases";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(ShowDatabasesBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceWithSet() {
+    public void assertNewInstanceWithSet() throws SQLException {
         String sql = "set @num=1";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(BroadcastDatabaseBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceWithShow() {
+    public void assertNewInstanceWithShow() throws SQLException {
         String sql = "SHOW VARIABLES LIKE '%x%'";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
@@ -183,14 +184,14 @@ public final class TextProtocolBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithQuery() {
+    public void assertNewInstanceWithQuery() throws SQLException {
         String sql = "select * from t_order limit 1";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(SchemaAssignedDatabaseBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceWithEmptyString() {
+    public void assertNewInstanceWithEmptyString() throws SQLException {
         String sql = "";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(SkipBackendHandler.class));

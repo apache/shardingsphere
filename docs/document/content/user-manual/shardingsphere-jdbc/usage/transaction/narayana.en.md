@@ -7,9 +7,9 @@ weight = 5
 
 ```xml
 <propeties>
-        <narayana.version>5.9.1.Final</narayana.version>
-        <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
-        <jboss-logging.version>3.2.1.Final</jboss-logging.version>
+    <narayana.version>5.9.1.Final</narayana.version>
+    <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
+    <jboss-logging.version>3.2.1.Final</jboss-logging.version>
 </propeties>
 
 <dependency>
@@ -26,29 +26,29 @@ weight = 5
 </dependency>
 
 <dependency>
-      <groupId>org.apache.shardingsphere</groupId>
-      <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
-      <version>${shardingsphere.version}</version>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+    <version>${shardingsphere.version}</version>
 </dependency>
 <dependency>
-      <groupId>org.jboss.narayana.jta</groupId>
-      <artifactId>jta</artifactId>
-      <version>${narayana.version}</version>
+    <groupId>org.jboss.narayana.jta</groupId>
+    <artifactId>jta</artifactId>
+    <version>${narayana.version}</version>
 </dependency>
 <dependency>
-       <groupId>org.jboss.narayana.jts</groupId>
-       <artifactId>narayana-jts-integration</artifactId>
-       <version>${narayana.version}</version>
+    <groupId>org.jboss.narayana.jts</groupId>
+    <artifactId>narayana-jts-integration</artifactId>
+    <version>${narayana.version}</version>
 </dependency>
 <dependency>
-       <groupId>org.jboss</groupId>
-       <artifactId>jboss-transaction-spi</artifactId>
-       <version>${jboss-transaction-spi.version}</version>
+    <groupId>org.jboss</groupId>
+    <artifactId>jboss-transaction-spi</artifactId>
+    <version>${jboss-transaction-spi.version}</version>
 </dependency>
 <dependency>
-       <groupId>org.jboss.logging</groupId>
-       <artifactId>jboss-logging</artifactId>
-       <version>${jboss-logging.version}</version>
+    <groupId>org.jboss.logging</groupId>
+    <artifactId>jboss-logging</artifactId>
+    <version>${jboss-logging.version}</version>
 </dependency>
 ```
 
@@ -58,7 +58,7 @@ Add `jbossts-properties.xml` in classpath of the application to customize Naraya
 
 Please refer to [Narayana official documentation](https://narayana.io/documentation/index.html) for more details.
 
-## Configure Transaction Manager Type
+## Configure XA Transaction Manager Type
 
 Yaml:
 

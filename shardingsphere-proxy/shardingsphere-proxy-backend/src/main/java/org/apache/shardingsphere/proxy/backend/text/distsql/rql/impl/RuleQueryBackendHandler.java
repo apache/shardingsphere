@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.infra.binder.statement.rdl.ShowRuleStatementContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -44,39 +40,22 @@ import java.util.Iterator;
 import java.util.Optional;
 
 /**
- * Backend handler for rule query.
+ * Backend handler for show rules.
  */
-@RequiredArgsConstructor
-public final class RuleQueryBackendHandler implements TextProtocolBackendHandler {
-    
-    private final ShowRuleStatement sqlStatement;
-    
-    private final BackendConnection backendConnection;
+public final class RuleQueryBackendHandler extends SchemaRequiredBackendHandler<ShowRuleStatement> {
     
     private Iterator<RuleConfiguration> data;
     
-    @Override
-    public ResponseHeader execute() {
-        return execute(new ShowRuleStatementContext(sqlStatement));
+    public RuleQueryBackendHandler(final ShowRuleStatement sqlStatement, final BackendConnection backendConnection) {
+        super(sqlStatement, backendConnection);
     }
     
-    private ResponseHeader execute(final ShowRuleStatementContext context) {
-        String schemaName = getSchemaName(context);
-        String ruleType = context.getSqlStatement().getRuleType();
+    @Override
+    protected ResponseHeader execute(final String schemaName, final ShowRuleStatement sqlStatement) {
+        String ruleType = sqlStatement.getRuleType();
         QueryHeader queryHeader = new QueryHeader(schemaName, "", ruleType, ruleType, Types.CHAR, "CHAR", 255, 0, false, false, false, false);
         data = loadRuleConfiguration(schemaName, ruleType);
         return new QueryResponseHeader(Collections.singletonList(queryHeader));
-    }
-    
-    private String getSchemaName(final ShowRuleStatementContext context) {
-        String result = null == context.getSqlStatement().getSchemaName() ? backendConnection.getSchemaName() : context.getSqlStatement().getSchemaName().getIdentifier().getValue();
-        if (null == result) {
-            throw new NoDatabaseSelectedException();
-        }
-        if (!ProxyContext.getInstance().schemaExists(result)) {
-            throw new UnknownDatabaseException(result);
-        }
-        return result;
     }
     
     private Iterator<RuleConfiguration> loadRuleConfiguration(final String schemaName, final String ruleType) {

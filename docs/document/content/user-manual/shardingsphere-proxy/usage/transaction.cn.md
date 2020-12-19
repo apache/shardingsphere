@@ -53,6 +53,37 @@ props:
 3. 新增 `jbossts-properties.xml` 文件来定制化 Narayana 配置项，它的加载路径顺序：`user.dir (pwd)` > `user.home` > `java.home` > `classpath`。
 详情请参见[Narayana官方文档](https://narayana.io/documentation/index.html)。
 
+* 使用 Bitronix事务管理器，需要参考以下步骤。
+
+1. 将 Bitronix 所需 jar 拷贝至 `/lib` 目录。参考如下：
+
+```xml
+<propeties>
+    <btm.version>2.1.3</btm.version>
+</propeties>
+
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-transaction-xa-bitronix</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+
+<dependency>
+    <groupId>org.codehaus.btm</groupId>
+    <artifactId>btm</artifactId>
+    <version>${btm.version}</version>
+</dependency>
+``` 
+ 
+2. 在 `conf/server.yaml` 中加入如下配置：
+
+```yaml
+props:
+   xa-transaction-manager-type: Bitronix
+```
+
+3. Bitronix 配置详情请参见[Bitronix官方文档](https://github.com/bitronix/btm/wiki)。
+
 
 ## BASE 事务
 

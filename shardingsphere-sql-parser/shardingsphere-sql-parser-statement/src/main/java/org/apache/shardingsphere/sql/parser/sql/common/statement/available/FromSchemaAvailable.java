@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.statement.rdl;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.available;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+
+import java.util.Optional;
 
 /**
- * Show resources statement context.
+ * From schema available.
  */
-public final class ShowResourcesStatementContext extends CommonSQLStatementContext<ShowResourcesStatement> {
+public interface FromSchemaAvailable {
     
-    public ShowResourcesStatementContext(final ShowResourcesStatement sqlStatement) {
-        super(sqlStatement);
-    }
+    /**
+     * Get schema.
+     * 
+     * @return schema segment
+     */
+    Optional<SchemaSegment> getSchema();
 }
