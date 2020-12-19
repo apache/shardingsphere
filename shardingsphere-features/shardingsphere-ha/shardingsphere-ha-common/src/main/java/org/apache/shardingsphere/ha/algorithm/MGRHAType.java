@@ -157,15 +157,12 @@ public final class MGRHAType implements HAType {
             try (Connection connection = each.getConnection();
                  Statement statement = connection.createStatement();
                  ResultSet resultSet = statement.executeQuery(sql)) {
-                while (resultSet.next()) {
-                    result = String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT"));
+                if (resultSet.next()) {
+                    return String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT"));
                 }
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-            }
-            if (!result.isEmpty()) {
-                break;
             }
         }
         return result;
