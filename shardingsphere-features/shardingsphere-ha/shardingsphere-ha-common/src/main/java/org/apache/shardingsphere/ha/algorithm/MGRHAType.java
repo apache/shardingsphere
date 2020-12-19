@@ -121,14 +121,12 @@ public final class MGRHAType implements HAType {
         if (null == oldPrimaryDataSource && null == primaryDataSource) {
             oldPrimaryDataSource = newPrimaryDataSource;
             primaryDataSource = newPrimaryDataSource;
-            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, primaryDataSource, oldPrimaryDataSource));
-            return;
-        }
-        if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
+        } else if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
             oldPrimaryDataSource = primaryDataSource;
             primaryDataSource = newPrimaryDataSource;
             ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, primaryDataSource, oldPrimaryDataSource));
         }
+        ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, primaryDataSource, oldPrimaryDataSource));
     }
     
     private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
