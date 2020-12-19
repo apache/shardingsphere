@@ -30,6 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -133,7 +134,7 @@ public final class MGRHAType implements HAType {
     private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
         String result = "";
         String address = "";
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             DataSource dataSource = entry.getValue();
             String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
                     + "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
@@ -153,7 +154,7 @@ public final class MGRHAType implements HAType {
                 break;
             }
         }
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             DataSource dataSource = entry.getValue();
             try (Connection connection = dataSource.getConnection()) {
                 if (connection.getMetaData().getURL().contains(address)) {
