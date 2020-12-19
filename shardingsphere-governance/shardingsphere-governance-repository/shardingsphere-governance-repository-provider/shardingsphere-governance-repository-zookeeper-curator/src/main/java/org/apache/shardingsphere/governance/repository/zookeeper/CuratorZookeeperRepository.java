@@ -218,34 +218,6 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     }
     
     @Override
-    public void initLock(final String key) {
-        lock = new InterProcessMutex(client, key);
-    }
-    
-    @Override
-    public boolean tryLock(final long time, final TimeUnit unit) {
-        try {
-            return lock.acquire(time, unit);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-            return false;
-        }
-    }
-    
-    @Override
-    public void releaseLock() {
-        try {
-            lock.release();
-            // CHECKSTYLE:OFF
-        } catch (final Exception e) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(e);
-        }
-    }
-    
-    @Override
     public void delete(final String key) {
         try {
             if (isExisted(key)) {
@@ -297,6 +269,34 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
                 return Type.DELETED;
             default:
                 return Type.IGNORED;
+        }
+    }
+    
+    @Override
+    public void initLock(final String key) {
+        lock = new InterProcessMutex(client, key);
+    }
+    
+    @Override
+    public boolean tryLock(final long time, final TimeUnit unit) {
+        try {
+            return lock.acquire(time, unit);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            CuratorZookeeperExceptionHandler.handleException(ex);
+            return false;
+        }
+    }
+    
+    @Override
+    public void releaseLock() {
+        try {
+            lock.release();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            CuratorZookeeperExceptionHandler.handleException(ex);
         }
     }
     
