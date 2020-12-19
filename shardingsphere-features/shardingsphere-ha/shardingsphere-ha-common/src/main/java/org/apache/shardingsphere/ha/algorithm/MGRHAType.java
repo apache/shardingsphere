@@ -20,8 +20,8 @@ package org.apache.shardingsphere.ha.algorithm;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.ha.spi.HAType;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceUpdateEvent;
 
 import javax.sql.DataSource;
@@ -62,44 +62,59 @@ public final class MGRHAType implements HAType {
     public void checkHAConfig(final Map<String, DataSource> dataSourceMap, final String schemaName) throws SQLException {
         try (Connection connection = dataSourceMap.get(primaryDataSource).getConnection();
              Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(PLUGIN_STATUS);
+            checkPluginIsActive(statement);
+            checkReplicaMemberCount(statement);
+            checkServerGroupName(statement);
+            checkIsSinglePrimaryMode(statement);
+        }
+    }
+    
+    private void checkPluginIsActive(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(PLUGIN_STATUS)) {
             while (resultSet.next()) {
                 if (!"ACTIVE".equals(resultSet.getString("PLUGIN_STATUS"))) {
-                    throw new ShardingSphereException("MGR plugin is not active.");
+                    throw new ShardingSphereConfigurationException("MGR plugin is not active.");
                 }
             }
-            resultSet.close();
-            resultSet = statement.executeQuery(MEMBER_COUNT);
+        }
+    }
+    
+    private void checkReplicaMemberCount(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(MEMBER_COUNT)) {
             while (resultSet.next()) {
                 if (Integer.parseInt(resultSet.getString(1)) < 1) {
-                    throw new ShardingSphereException("MGR member count < 1");
+                    throw new ShardingSphereConfigurationException("MGR member count < 1");
                 }
             }
-            resultSet.close();
-            resultSet = statement.executeQuery(GROUP_NAME);
+        }
+    }
+    
+    private void checkServerGroupName(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(GROUP_NAME)) {
             while (resultSet.next()) {
                 String serverGroupName = resultSet.getString("VARIABLE_VALUE");
                 String ruleGroupName = props.getProperty("groupName");
                 if (!serverGroupName.equals(ruleGroupName)) {
-                    throw new ShardingSphereException("MGR group name is not consistent\n" + "serverGroupName: " + serverGroupName
-                            + "\nruleGroupName: " + ruleGroupName);
+                    throw new ShardingSphereConfigurationException("MGR group name is not consistent\n" + "serverGroupName: %s\nruleGroupName: %s", serverGroupName, ruleGroupName);
                 }
             }
-            resultSet.close();
-            resultSet = statement.executeQuery(SINGLE_PRIMARY);
+        }
+    }
+    
+    private void checkIsSinglePrimaryMode(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(SINGLE_PRIMARY)) {
             while (resultSet.next()) {
                 if (!"ON".equals(resultSet.getString("VARIABLE_VALUE"))) {
-                    throw new ShardingSphereException("MGR is not in single primary mode");
+                    throw new ShardingSphereConfigurationException("MGR is not in single primary mode");
                 }
             }
-            resultSet.close();
         }
     }
     
     @Override
     public void updatePrimaryDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName) {
         String primary = determinePrimaryDataSource(dataSourceMap);
-        if ("".equals(primary)) {
+        if (null != primary && primary.isEmpty()) {
             return;
         }
         if (null == oldPrimaryDataSource && null == primaryDataSource) {
