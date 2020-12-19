@@ -20,8 +20,8 @@ package org.apache.shardingsphere.ha.algorithm;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.ha.spi.HAType;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceUpdateEvent;
 
 import javax.sql.DataSource;
@@ -30,6 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -62,88 +63,103 @@ public final class MGRHAType implements HAType {
     public void checkHAConfig(final Map<String, DataSource> dataSourceMap, final String schemaName) throws SQLException {
         try (Connection connection = dataSourceMap.get(primaryDataSource).getConnection();
              Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(PLUGIN_STATUS);
+            checkPluginIsActive(statement);
+            checkReplicaMemberCount(statement);
+            checkServerGroupName(statement);
+            checkIsSinglePrimaryMode(statement);
+        }
+    }
+    
+    private void checkPluginIsActive(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(PLUGIN_STATUS)) {
             while (resultSet.next()) {
                 if (!"ACTIVE".equals(resultSet.getString("PLUGIN_STATUS"))) {
-                    throw new ShardingSphereException("MGR plugin is not active.");
+                    throw new ShardingSphereConfigurationException("MGR plugin is not active.");
                 }
             }
-            resultSet.close();
-            resultSet = statement.executeQuery(MEMBER_COUNT);
+        }
+    }
+    
+    private void checkReplicaMemberCount(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(MEMBER_COUNT)) {
             while (resultSet.next()) {
                 if (Integer.parseInt(resultSet.getString(1)) < 1) {
-                    throw new ShardingSphereException("MGR member count < 1");
+                    throw new ShardingSphereConfigurationException("MGR member count < 1");
                 }
             }
-            resultSet.close();
-            resultSet = statement.executeQuery(GROUP_NAME);
+        }
+    }
+    
+    private void checkServerGroupName(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(GROUP_NAME)) {
             while (resultSet.next()) {
                 String serverGroupName = resultSet.getString("VARIABLE_VALUE");
                 String ruleGroupName = props.getProperty("groupName");
                 if (!serverGroupName.equals(ruleGroupName)) {
-                    throw new ShardingSphereException("MGR group name is not consistent\n" + "serverGroupName: " + serverGroupName
-                            + "\nruleGroupName: " + ruleGroupName);
+                    throw new ShardingSphereConfigurationException("MGR group name is not consistent\n" + "serverGroupName: %s\nruleGroupName: %s", serverGroupName, ruleGroupName);
                 }
             }
-            resultSet.close();
-            resultSet = statement.executeQuery(SINGLE_PRIMARY);
+        }
+    }
+    
+    private void checkIsSinglePrimaryMode(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(SINGLE_PRIMARY)) {
             while (resultSet.next()) {
                 if (!"ON".equals(resultSet.getString("VARIABLE_VALUE"))) {
-                    throw new ShardingSphereException("MGR is not in single primary mode");
+                    throw new ShardingSphereConfigurationException("MGR is not in single primary mode");
                 }
             }
-            resultSet.close();
         }
     }
     
     @Override
     public void updatePrimaryDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName) {
-        String primary = determinePrimaryDataSource(dataSourceMap);
-        if ("".equals(primary)) {
+        String newPrimaryDataSource = determinePrimaryDataSource(dataSourceMap);
+        if (newPrimaryDataSource.isEmpty()) {
             return;
         }
         if (null == oldPrimaryDataSource && null == primaryDataSource) {
-            oldPrimaryDataSource = primary;
-            primaryDataSource = primary;
+            oldPrimaryDataSource = newPrimaryDataSource;
+            primaryDataSource = newPrimaryDataSource;
             ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, primaryDataSource, oldPrimaryDataSource));
-            return;
-        }
-        if (!primary.equals(oldPrimaryDataSource)) {
+        } else if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
             oldPrimaryDataSource = primaryDataSource;
-            primaryDataSource = primary;
+            primaryDataSource = newPrimaryDataSource;
             ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, primaryDataSource, oldPrimaryDataSource));
         }
     }
     
     private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
+        String primaryDataSourceURL = findPrimaryDataSourceURL(dataSourceMap);
+        return findPrimaryDataSourceName(primaryDataSourceURL, dataSourceMap);
+    }
+
+    private String findPrimaryDataSourceURL(final Map<String, DataSource> dataSourceMap) {
         String result = "";
-        String address = "";
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            DataSource dataSource = entry.getValue();
-            String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
-                    + "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
-            try (Connection connection = dataSource.getConnection();
+        String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
+                + "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
+        for (DataSource each : dataSourceMap.values()) {
+            try (Connection connection = each.getConnection();
                  Statement statement = connection.createStatement();
                  ResultSet resultSet = statement.executeQuery(sql)) {
-                while (resultSet.next()) {
-                    address = resultSet.getString("MEMBER_HOST");
-                    address += ":";
-                    address += resultSet.getString("MEMBER_PORT");
+                if (resultSet.next()) {
+                    return String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT"));
                 }
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
             }
-            if (null != address && !"".equals(address)) {
-                break;
-            }
         }
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+        return result;
+    }
+    
+    private String findPrimaryDataSourceName(final String primaryDataSourceURL, final Map<String, DataSource> dataSourceMap) {
+        String result = "";
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             DataSource dataSource = entry.getValue();
             try (Connection connection = dataSource.getConnection()) {
-                if (connection.getMetaData().getURL().contains(address)) {
-                    result = entry.getKey();
-                    break;
+                if (connection.getMetaData().getURL().contains(primaryDataSourceURL)) {
+                    return entry.getKey();
                 }
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
