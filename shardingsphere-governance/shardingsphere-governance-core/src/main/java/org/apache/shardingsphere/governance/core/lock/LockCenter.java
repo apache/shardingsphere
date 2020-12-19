@@ -118,8 +118,7 @@ public final class LockCenter {
     
     private boolean check(final Collection<String> instanceIds) {
         for (String instanceId : instanceIds) {
-            if (!RegistryCenterNodeStatus.LOCKED.toString()
-                    .equalsIgnoreCase(registryCenter.loadInstanceData(instanceId))) {
+            if (!RegistryCenterNodeStatus.LOCKED.toString().equalsIgnoreCase(registryCenter.loadInstanceData(instanceId))) {
                 return false;
             }
         }
