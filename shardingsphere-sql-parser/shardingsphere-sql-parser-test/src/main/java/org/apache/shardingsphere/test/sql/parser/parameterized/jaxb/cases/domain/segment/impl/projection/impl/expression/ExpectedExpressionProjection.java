@@ -32,6 +32,9 @@ public final class ExpectedExpressionProjection extends AbstractExpectedSQLSegme
     @XmlAttribute(name = "text")
     private String text;
 
+    @XmlAttribute(name = "literal-text")
+    private String literalText;
+
     @XmlAttribute(name = "alias")
     private String alias;
 }

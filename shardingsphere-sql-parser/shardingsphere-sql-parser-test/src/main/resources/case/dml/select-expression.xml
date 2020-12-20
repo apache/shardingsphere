@@ -37,6 +37,7 @@
             <simple-table name="t_order" alias="o" start-index="38" stop-index="49"/>
         </from>
         <projections start-index="7" stop-index="31">
+            <!-- 'text' is different from other database -->
             <expression-projection text="o.order_id+1*2" alias="exp" start-index="7" stop-index="31"/>
         </projections>
         <order-by>
@@ -48,15 +49,13 @@
 
     <select sql-case-id="select_with_date_function">
         <from>
-            <simple-table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`"
-                          start-index="51" stop-index="69"/>
+            <simple-table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="69"/>
         </from>
         <projections start-index="7" stop-index="44">
             <expression-projection text="DATE(i.creation_date)" alias="creation_date" start-index="7" stop-index="44"/>
         </projections>
         <order-by>
-            <expression-item expression="DATE(i.creation_date)" order-direction="DESC"
-                             start-index="80" stop-index="100"/>
+            <expression-item expression="DATE(i.creation_date)" order-direction="DESC" start-index="80" stop-index="100"/>
         </order-by>
     </select>
 
@@ -69,11 +68,9 @@
         </projections>
         <where start-index="29" stop-index="75" literal-stop-index="80">
             <expr>
-                <binary-operation-expression start-index="35" stop-index="75"
-                                             literal-stop-index="80">
+                <binary-operation-expression start-index="35" stop-index="75" literal-stop-index="80">
                     <left>
-                        <binary-operation-expression start-index="35" stop-index="51"
-                                                     literal-stop-index="56">
+                        <binary-operation-expression start-index="35" stop-index="51" literal-stop-index="56">
                             <left>
                                 <column name="status" start-index="35" stop-index="42">
                                     <owner name="t" start-index="35" stop-index="35"/>
@@ -82,37 +79,28 @@
                             <operator>REGEXP</operator>
                             <right>
                                 <literal-expression value="init" start-index="51" stop-index="56"/>
-                                <parameter-marker-expression value="0" start-index="51"
-                                                             stop-index="51"/>
+                                <parameter-marker-expression value="0" start-index="51" stop-index="51"/>
                             </right>
                         </binary-operation-expression>
                     </left>
                     <operator>AND</operator>
                     <right>
-                        <in-expression start-index="57" stop-index="75" literal-start-index="62"
-                                       literal-stop-index="80">
+                        <in-expression start-index="57" stop-index="75" literal-start-index="62" literal-stop-index="80">
                             <not>false</not>
                             <left>
-                                <column name="item_id" start-index="57" stop-index="65"
-                                        literal-start-index="62" literal-stop-index="70">
-                                    <owner name="t" start-index="57" stop-index="57"
-                                           literal-start-index="62" literal-stop-index="62"/>
+                                <column name="item_id" start-index="57" stop-index="65" literal-start-index="62" literal-stop-index="70">
+                                    <owner name="t" start-index="57" stop-index="57" literal-start-index="62" literal-stop-index="62"/>
                                 </column>
                             </left>
                             <right>
-                                <list-expression start-index="70" stop-index="75"
-                                                 literal-start-index="75" literal-stop-index="80">
+                                <list-expression start-index="70" stop-index="75" literal-start-index="75" literal-stop-index="80">
                                     <items>
-                                        <literal-expression value="1" start-index="76"
-                                                            stop-index="76"/>
-                                        <parameter-marker-expression value="1" start-index="71"
-                                                                     stop-index="71"/>
+                                        <literal-expression value="1" start-index="76" stop-index="76"/>
+                                        <parameter-marker-expression value="1" start-index="71" stop-index="71"/>
                                     </items>
                                     <items>
-                                        <literal-expression value="2" start-index="79"
-                                                            stop-index="79"/>
-                                        <parameter-marker-expression value="2" start-index="74"
-                                                                     stop-index="74"/>
+                                        <literal-expression value="2" start-index="79" stop-index="79"/>
+                                        <parameter-marker-expression value="2" start-index="74" stop-index="74"/>
                                     </items>
                                 </list-expression>
                             </right>
@@ -213,6 +201,40 @@
                                 </column>
                             </right>
                         </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_with_expr_with_or_sign" parameters="1, 2">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="71">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="71">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="52">
+                            <left>
+                                <column name="order_id" start-index="28" stop-index="43">
+                                    <owner name="t_order" start-index="28" stop-index="34" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <common-expression text="? || ?" literal-text="1 || 2" start-index="47" stop-index="52" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <column name="order_id" start-index="56" stop-index="71">
+                            <owner name="t_order" start-index="56" stop-index="62" />
+                        </column>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1357,22 +1379,22 @@
         </where>
     </select>
 
-    <select sql-case-id="select_where_with_simple_expr_with_row">
+    <select sql-case-id="select_where_with_simple_expr_with_row" parameters="'abc'">
         <from start-index="14" stop-index="20">
-            <simple-table name="t_order" start-index="14" stop-index="20"/>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
         </from>
-        <projections distinct-row="false" start-index="7" stop-index="7">
-            <shorthand-projection start-index="7" stop-index="7"/>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where start-index="22" stop-index="65">
+        <where start-index="22" stop-index="61" literal-stop-index="65">
             <expr>
-                <binary-operation-expression start-index="28" stop-index="65">
+                <binary-operation-expression start-index="28" stop-index="61" literal-stop-index="65">
                     <left>
-                        <common-expression text="ROW('abc', now())" start-index="28" stop-index="44"/>
+                        <common-expression text="ROW(?, now())" literal-text="ROW('abc', now())" start-index="28" stop-index="40" literal-stop-index="44"/>
                     </left>
                     <operator>=</operator>
                     <right>
-                        <common-expression text="(order_id, status)" start-index="48" stop-index="65"/>
+                        <common-expression text="(order_id, status)" start-index="44" stop-index="61" literal-start-index="48" literal-stop-index="65"/>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1456,16 +1478,16 @@
         </where>
     </select>
 
-    <select sql-case-id="select_where_with_simple_expr_with_odbc_escape_syntax">
+    <select sql-case-id="select_where_with_simple_expr_with_odbc_escape_syntax" parameters="'1994-02-04 12:23:00'">
         <from start-index="14" stop-index="20">
-            <simple-table name="t_order" start-index="14" stop-index="20"/>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
         </from>
-        <projections distinct-row="false" start-index="7" stop-index="7">
-            <shorthand-projection start-index="7" stop-index="7"/>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where start-index="22" stop-index="53">
+        <where start-index="22" stop-index="33" literal-stop-index="53">
             <expr>
-                <common-expression text="{ts '1994-02-04 12:23:00'}" start-index="28" stop-index="53"/>
+                <common-expression text="{ts ?}" literal-text="{ts '1994-02-04 12:23:00'}" start-index="28" stop-index="33" literal-stop-index="53"/>
             </expr>
         </where>
     </select>
@@ -1498,30 +1520,34 @@
         </where>
     </select>
 
-    <select sql-case-id="select_where_with_simple_expr_with_match">
+    <select sql-case-id="select_where_with_simple_expr_with_match" parameters="'keyword'">
         <from start-index="14" stop-index="20">
-            <simple-table name="t_order" start-index="14" stop-index="20"/>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
         </from>
-        <projections distinct-row="false" start-index="7" stop-index="7">
-            <shorthand-projection start-index="7" stop-index="7"/>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where start-index="22" stop-index="88">
+        <where start-index="22" stop-index="80" literal-stop-index="88">
             <expr>
-                <common-expression text="MATCH (order_id) AGAINST ('keyword' IN NATURAL LANGUAGE MODE)" start-index="28" stop-index="88"/>
+                <common-expression text="MATCH (order_id) AGAINST (? IN NATURAL LANGUAGE MODE)"
+                                   literal-text="MATCH (order_id) AGAINST ('keyword' IN NATURAL LANGUAGE MODE)"
+                                   start-index="28" stop-index="80" literal-stop-index="88"/>
             </expr>
         </where>
     </select>
 
-    <select sql-case-id="select_where_with_simple_expr_with_case">
+    <select sql-case-id="select_where_with_simple_expr_with_case" parameters="1,'true','false'">
         <from start-index="14" stop-index="20">
-            <simple-table name="t_order" start-index="14" stop-index="20"/>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
         </from>
-        <projections distinct-row="false" start-index="7" stop-index="7">
-            <shorthand-projection start-index="7" stop-index="7"/>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where start-index="22" stop-index="78">
+        <where start-index="22" stop-index="67" literal-stop-index="78">
             <expr>
-                <common-expression text="CASE WHEN order_id &gt; 2 THEN 'true' ELSE 'false' END" start-index="28" stop-index="78"/>
+                <common-expression text="CASE WHEN order_id &gt; ? THEN ? ELSE ? END"
+                                   literal-text="CASE WHEN order_id > 1 THEN 'true' ELSE 'false' END"
+                                   start-index="28" stop-index="67" literal-stop-index="78" />
             </expr>
         </where>
     </select>

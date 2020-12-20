@@ -24,6 +24,7 @@
     <sql-case id="select_with_case_expression" value="select t.*,o.item_id as item_id,(case when t.status = 'init' then '已启用' when t.status = 'failed' then '已停用' end) as stateName
     from t_order t left join t_order_item as o on o.order_id =t.order_id where t.order_id=1000 limit 1" db-types="MySQL,H2" />
     <sql-case id="select_where_with_expr_with_or" value="SELECT * FROM t_order WHERE t_order.order_id = ? OR ? = t_order.order_id" db-types="MySQL"/>
+    <sql-case id="select_where_with_expr_with_or_sign" value="SELECT * FROM t_order WHERE t_order.order_id = ? || ? = t_order.order_id" db-types="MySQL"/>
     <sql-case id="select_where_with_expr_with_xor" value="SELECT * FROM t_order WHERE t_order.order_id = ? XOR ? = t_order.order_id" db-types="MySQL"/>
     <sql-case id="select_where_with_expr_with_and" value="SELECT * FROM t_order WHERE t_order.order_id = ? AND ? = t_order.order_id" db-types="MySQL"/>
     <sql-case id="select_where_with_expr_with_and_sign" value="SELECT * FROM t_order WHERE t_order.order_id = ? &amp;&amp; ? = t_order.order_id" db-types="MySQL"/>
@@ -66,12 +67,12 @@
     <sql-case id="select_where_with_simple_expr_with_tilde" value="SELECT * FROM t_order WHERE ~t_order.order_id" db-types="MySQL"/>
     <sql-case id="select_where_with_simple_expr_with_not" value="SELECT * FROM t_order WHERE !t_order.order_id" db-types="MySQL"/>
     <sql-case id="select_where_with_simple_expr_with_binary" value="SELECT * FROM t_order WHERE BINARY t_order.order_id" db-types="MySQL"/>
-    <sql-case id="select_where_with_simple_expr_with_row" value="SELECT * FROM t_order WHERE ROW('abc', now()) = (order_id, status)" db-types="MySQL"/>
+    <sql-case id="select_where_with_simple_expr_with_row" value="SELECT * FROM t_order WHERE ROW(?, now()) = (order_id, status)" db-types="MySQL"/>
     <sql-case id="select_where_with_simple_expr_with_subquery" value="SELECT * FROM t_order WHERE (SELECT order_id FROM t_order_item WHERE status &gt; ?)" db-types="MySQL"/>
     <sql-case id="select_where_with_simple_expr_with_exists_subquery" value="SELECT * FROM t_order WHERE EXISTS (SELECT order_id FROM t_order_item WHERE status &gt; ? )" db-types="MySQL"/>
-    <sql-case id="select_where_with_simple_expr_with_odbc_escape_syntax" value="SELECT * FROM t_order WHERE {ts '1994-02-04 12:23:00'}" db-types="MySQL"/>
+    <sql-case id="select_where_with_simple_expr_with_odbc_escape_syntax" value="SELECT * FROM t_order WHERE {ts ?}" db-types="MySQL"/>
     <sql-case id="select_where_with_simple_expr_with_json_extract_sign" value="SELECT * FROM t_order WHERE order_id -&gt;&quot;$[1]&quot;" db-types="MySQL"/>
     <sql-case id="select_where_with_simple_expr_with_json_unquote_extract_sign" value="SELECT * FROM t_order WHERE order_id -&gt;&gt; &quot;$[1]&quot;" db-types="MySQL"/>
-    <sql-case id="select_where_with_simple_expr_with_match" value="SELECT * FROM t_order WHERE MATCH (order_id) AGAINST ('keyword' IN NATURAL LANGUAGE MODE)" db-types="MySQL"/>
-    <sql-case id="select_where_with_simple_expr_with_case" value="SELECT * FROM t_order WHERE CASE WHEN order_id &gt; 2 THEN 'true' ELSE 'false' END" db-types="MySQL"/>
+    <sql-case id="select_where_with_simple_expr_with_match" value="SELECT * FROM t_order WHERE MATCH (order_id) AGAINST (? IN NATURAL LANGUAGE MODE)" db-types="MySQL"/>
+    <sql-case id="select_where_with_simple_expr_with_case" value="SELECT * FROM t_order WHERE CASE WHEN order_id &gt; ? THEN ? ELSE ? END" db-types="MySQL"/>
 </sql-cases>

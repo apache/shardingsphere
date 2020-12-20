@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Shorthan
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.top.TopProjectionSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.SQLCaseType;
 
 import java.util.List;
 
@@ -139,8 +140,10 @@ public final class ProjectionAssert {
     private static void assertExpressionProjection(final SQLCaseAssertContext assertContext, final ExpressionProjectionSegment actual, final ExpectedExpressionProjection expected) {
         assertThat(assertContext.getText("Expression projection alias assertion error: "),
                 actual.getAlias().orElse(null), is(expected.getAlias()));
+        String expectedText = SQLCaseType.Literal == assertContext.getSqlCaseType() && null != expected.getLiteralText()
+                ? expected.getLiteralText() : expected.getText();
         assertThat(assertContext.getText("Expression projection text assertion error: "),
-                actual.getText(), is(expected.getText()));
+                actual.getText(), is(expectedText));
     }
     
     private static void assertTopProjection(final SQLCaseAssertContext assertContext, final TopProjectionSegment actual, final ExpectedTopProjection expected) {

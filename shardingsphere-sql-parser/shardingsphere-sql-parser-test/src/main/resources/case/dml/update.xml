@@ -531,7 +531,7 @@
                                         <parameter-marker-expression value="1" start-index="58" stop-index="58" />
                                     </right>
                                 </binary-operation-expression>
-                                <common-expression text="order_id - ?" start-index="47" stop-index="58" />
+                                <common-expression text="order_id - ?" literal-text="order_id - 2" start-index="47" stop-index="58" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -545,51 +545,6 @@
                             <right>
                                 <literal-expression value="3" start-index="74" stop-index="74" />
                                 <parameter-marker-expression value="2" start-index="74" stop-index="74" />
-                            </right>
-                        </binary-operation-expression>
-                    </right>
-                </binary-operation-expression>
-            </expr>
-        </where>
-    </update>
-
-    <update sql-case-id="update_with_where_calculation_for_postgresql" parameters="1, 2">
-        <table start-index="7" stop-index="13">
-            <simple-table name="t_order" start-index="7" stop-index="13"/>
-        </table>
-        <set start-index="15" stop-index="28" literal-stop-index="28">
-            <assignment start-index="19" stop-index="28" literal-stop-index="28">
-                <column name="status" start-index="19" stop-index="24" />
-                <assignment-value>
-                    <parameter-marker-expression value="0" start-index="28" stop-index="28" />
-                    <literal-expression value="1" start-index="28" stop-index="28" />
-                </assignment-value>
-            </assignment>
-        </set>
-        <where start-index="30" stop-index="74">
-            <expr>
-                <binary-operation-expression start-index="36" stop-index="74">
-                    <left>
-                        <binary-operation-expression start-index="36" stop-index="58">
-                            <left>
-                                <column name="order_id" start-index="36" stop-index="43" />
-                            </left>
-                            <operator>=</operator>
-                            <right>
-                                <common-expression text="order_id - 2" start-index="47" stop-index="58" />
-                            </right>
-                        </binary-operation-expression>
-                    </left>
-                    <operator>AND</operator>
-                    <right>
-                        <binary-operation-expression start-index="64" stop-index="74">
-                            <left>
-                                <column name="user_id" start-index="64" stop-index="70" />
-                            </left>
-                            <operator>=</operator>
-                            <right>
-                                <literal-expression value="2" start-index="74" stop-index="74" />
-                                <parameter-marker-expression value="1" start-index="74" stop-index="74" />
                             </right>
                         </binary-operation-expression>
                     </right>

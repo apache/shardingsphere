@@ -56,6 +56,7 @@ import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -73,9 +74,13 @@ public final class ExpressionAssert {
      */
     public static void assertParameterMarkerExpression(final SQLCaseAssertContext assertContext,
                                                         final ParameterMarkerExpressionSegment actual, final ExpectedParameterMarkerExpression expected) {
-        assertNotNull(assertContext.getText("Expected parameter marker expression should exist."), expected);
-        assertThat(assertContext.getText("Parameter marker index assertion error: "), actual.getParameterMarkerIndex(), is(expected.getValue()));
-        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual parameter marker expression should not exist."), actual);
+        } else {
+            assertNotNull(assertContext.getText("Actual parameter marker expression should exist."), actual);
+            assertThat(assertContext.getText("Parameter marker index assertion error: "), actual.getParameterMarkerIndex(), is(expected.getValue()));
+            SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        }
     }
     
     /**
@@ -87,9 +92,13 @@ public final class ExpressionAssert {
      */
     public static void assertLiteralExpression(final SQLCaseAssertContext assertContext,
                                                 final LiteralExpressionSegment actual, final ExpectedLiteralExpression expected) {
-        assertNotNull(assertContext.getText("Expected literal expression should exist."), expected);
-        assertThat(assertContext.getText("Literal assertion error: "), actual.getLiterals().toString(), is(expected.getValue()));
-        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual literal expression should not exist."), actual);
+        } else {
+            assertNotNull(assertContext.getText("Actual literal expression should exist."), actual);
+            assertThat(assertContext.getText("Literal assertion error: "), actual.getLiterals().toString(), is(expected.getValue()));
+            SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        }
     }
     
     /**
@@ -101,10 +110,14 @@ public final class ExpressionAssert {
      */
     public static void assertCommonExpression(final SQLCaseAssertContext assertContext,
                                                final ComplexExpressionSegment actual, final ExpectedCommonExpression expected) {
-        assertNotNull(assertContext.getText("Expected common expression should exist."), expected);
-        String expectedText = SQLCaseType.Literal == assertContext.getSqlCaseType() && null != expected.getLiteralText() ? expected.getLiteralText() : expected.getText();
-        assertThat(assertContext.getText("Common expression text assertion error: "), actual.getText(), is(expectedText));
-        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual common expression should not exist."), actual);
+        } else {
+            assertNotNull(assertContext.getText("Actual common expression should exist."), actual);
+            String expectedText = SQLCaseType.Literal == assertContext.getSqlCaseType() && null != expected.getLiteralText() ? expected.getLiteralText() : expected.getText();
+            assertThat(assertContext.getText("Common expression text assertion error: "), actual.getText(), is(expectedText));
+            SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        }
     }
     
     /**
@@ -115,8 +128,12 @@ public final class ExpressionAssert {
      * @param expected expected subquery expression
      */
     public static void assertSubqueryExpression(final SQLCaseAssertContext assertContext, final SubqueryExpressionSegment actual, final ExpectedSubquery expected) {
-        assertNotNull(assertContext.getText("Expected subquery expression should exist."), expected);
-        assertSubquery(assertContext, actual.getSubquery(), expected);
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual subquery expression should not exist."), actual);
+        } else {
+            assertNotNull(assertContext.getText("Actual subquery expression should exist."), actual);
+            assertSubquery(assertContext, actual.getSubquery(), expected);
+        }
     }
 
     /**
@@ -128,9 +145,13 @@ public final class ExpressionAssert {
      */
     public static void assertSubquery(final SQLCaseAssertContext assertContext,
                                       final SubquerySegment actual, final ExpectedSubquery expected) {
-        assertNotNull(assertContext.getText("Expected subquery should exist."), expected);
-        SelectStatementAssert.assertIs(assertContext, actual.getSelect(), expected.getSelectTestCases());
-        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual subquery should not exist."), actual);
+        } else {
+            assertNotNull(assertContext.getText("Actual subquery should exist."), actual);
+            SelectStatementAssert.assertIs(assertContext, actual.getSelect(), expected.getSelectTestCases());
+            SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        }
     }
 
     /**
@@ -142,11 +163,15 @@ public final class ExpressionAssert {
      */
     public static void assertExistsSubqueryExpression(final SQLCaseAssertContext assertContext,
                                                       final ExistsSubqueryExpression actual, final ExpectedExistsSubquery expected) {
-        assertNotNull(assertContext.getText("Expected exists subquery expression should exist."), expected);
-        assertSubquery(assertContext, actual.getSubquery(), expected.getSubquery());
-        assertThat(assertContext.getText("Exists subquery expression not value assert error."),
-                actual.isNot(), is(expected.isNot()));
-        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual exists subquery should not exist."), actual);
+        } else {
+            assertNotNull(assertContext.getText("Actual exists subquery should exist."), actual);
+            assertSubquery(assertContext, actual.getSubquery(), expected.getSubquery());
+            assertThat(assertContext.getText("Exists subquery expression not value assert error."),
+                    actual.isNot(), is(expected.isNot()));
+            SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        }
     }
 
     /**
@@ -158,12 +183,16 @@ public final class ExpressionAssert {
     public static void assertBinaryOperationExpression(final SQLCaseAssertContext assertContext,
                                                        final BinaryOperationExpression actual,
                                                        final ExpectedBinaryOperationExpression expected) {
-        assertNotNull(assertContext.getText("Expected binary operation expression should exist."), expected);
-        assertExpression(assertContext, actual.getLeft(), expected.getLeft());
-        assertThat(assertContext.getText("Binary operation expression operator assert error."),
-                actual.getOperator(), is(expected.getOperator()));
-        assertExpression(assertContext, actual.getRight(), expected.getRight());
-        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual binary operation expression should not exist."), actual);
+        } else {
+            assertNotNull(assertContext.getText("Actual binary operation expression should exist."), actual);
+            assertExpression(assertContext, actual.getLeft(), expected.getLeft());
+            assertThat(assertContext.getText("Binary operation expression operator assert error."),
+                    actual.getOperator(), is(expected.getOperator()));
+            assertExpression(assertContext, actual.getRight(), expected.getRight());
+            SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        }
     }
 
     /**
@@ -174,12 +203,16 @@ public final class ExpressionAssert {
      */
     public static void assertInExpression(final SQLCaseAssertContext assertContext,
                                           final InExpression actual, final ExpectedInExpression expected) {
-        assertNotNull(assertContext.getText("Expected in expression should exist."), expected);
-        assertExpression(assertContext, actual.getLeft(), expected.getLeft());
-        assertThat(assertContext.getText("In expression not value assert error."),
-                actual.isNot(), is(expected.isNot()));
-        assertExpression(assertContext, actual.getRight(), expected.getRight());
-        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual in expression should not exist."), actual);
+        } else {
+            assertNotNull(assertContext.getText("Actual in expression should exist."), actual);
+            assertExpression(assertContext, actual.getLeft(), expected.getLeft());
+            assertThat(assertContext.getText("In expression not value assert error."),
+                    actual.isNot(), is(expected.isNot()));
+            assertExpression(assertContext, actual.getRight(), expected.getRight());
+            SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        }
     }
 
     /**
@@ -190,8 +223,13 @@ public final class ExpressionAssert {
      */
     public static void assertNotExpression(final SQLCaseAssertContext assertContext,
                                            final NotExpression actual, final ExpectedNotExpression expected) {
-        assertExpression(assertContext, actual.getExpression(), expected.getExpr());
-        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual not expression should not exist."), actual);
+        } else {
+            assertNotNull(assertContext.getText("Actual not expression should exist."), actual);
+            assertExpression(assertContext, actual.getExpression(), expected.getExpr());
+            SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        }
     }
 
     /**
@@ -202,16 +240,20 @@ public final class ExpressionAssert {
      */
     public static void assertListExpression(final SQLCaseAssertContext assertContext,
                                            final ListExpression actual, final ExpectedListExpression expected) {
-        assertNotNull(assertContext.getText("Expected list expression should exist."), expected);
-        assertThat(assertContext.getText("List expression item size assert error."),
-                actual.getItems().size(), is(expected.getItems().size()));
-        Iterator<ExpressionSegment> actualItems = actual.getItems().iterator();
-        Iterator<ExpectedExpression> expectedItems = expected.getItems().iterator();
-        while (actualItems.hasNext()) {
-            assertExpression(assertContext, actualItems.next(), expectedItems.next());
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual list expression should not exist."), actual);
+        } else {
+            assertNotNull(assertContext.getText("Actual list expression should exist."), actual);
+            assertThat(assertContext.getText("List expression item size assert error."),
+                    actual.getItems().size(), is(expected.getItems().size()));
+            Iterator<ExpressionSegment> actualItems = actual.getItems().iterator();
+            Iterator<ExpectedExpression> expectedItems = expected.getItems().iterator();
+            while (actualItems.hasNext()) {
+                assertExpression(assertContext, actualItems.next(), expectedItems.next());
+            }
+            //TODO PostgreSQL list expression start index was incorrect.
+//            SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
-        //TODO PostgreSQL list expression start index was incorrect.
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 
     /**
@@ -222,13 +264,17 @@ public final class ExpressionAssert {
      */
     public static void assertBetweenExpression(final SQLCaseAssertContext assertContext,
                                            final BetweenExpression actual, final ExpectedBetweenExpression expected) {
-        assertNotNull(assertContext.getText("Expected between expression should exist."), expected);
-        assertExpression(assertContext, actual.getLeft(), expected.getLeft());
-        assertExpression(assertContext, actual.getBetweenExpr(), expected.getBetweenExpr());
-        assertExpression(assertContext, actual.getAndExpr(), expected.getAndExpr());
-        assertThat(assertContext.getText("Between expression not value assert error."),
-                actual.isNot(), is(expected.isNot()));
-        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual between expression should not exist."), actual);
+        } else {
+            assertNotNull(assertContext.getText("Actual between expression should exist."), actual);
+            assertExpression(assertContext, actual.getLeft(), expected.getLeft());
+            assertExpression(assertContext, actual.getBetweenExpr(), expected.getBetweenExpr());
+            assertExpression(assertContext, actual.getAndExpr(), expected.getAndExpr());
+            assertThat(assertContext.getText("Between expression not value assert error."),
+                    actual.isNot(), is(expected.isNot()));
+            SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        }
     }
 
     /**

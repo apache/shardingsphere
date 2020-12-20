@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -17,8 +16,7 @@
   -->
 
 <sql-parser-test-cases>
-    <select sql-case-id="select_pagination_with_group_by_and_order_by"
-            parameters="1, 2, 9, 10, 5, 3">
+    <select sql-case-id="select_pagination_with_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
         <from>
             <join-table>
                 <left>
@@ -56,8 +54,7 @@
         </projections>
         <where start-index="105" stop-index="160" literal-stop-index="161">
             <expr>
-                <binary-operation-expression start-index="111" stop-index="160"
-                                             literal-stop-index="161">
+                <binary-operation-expression start-index="111" stop-index="160" literal-stop-index="161">
                     <left>
                         <in-expression start-index="111" stop-index="129">
                             <not>false</not>
@@ -69,16 +66,12 @@
                             <right>
                                 <list-expression start-index="124" stop-index="129">
                                     <items>
-                                        <literal-expression value="1" start-index="125"
-                                                            stop-index="125"/>
-                                        <parameter-marker-expression value="0" start-index="125"
-                                                                     stop-index="125"/>
+                                        <literal-expression value="1" start-index="125" stop-index="125"/>
+                                        <parameter-marker-expression value="0" start-index="125" stop-index="125"/>
                                     </items>
                                     <items>
-                                        <literal-expression value="2" start-index="128"
-                                                            stop-index="128"/>
-                                        <parameter-marker-expression value="1" start-index="128"
-                                                                     stop-index="128"/>
+                                        <literal-expression value="2" start-index="128" stop-index="128"/>
+                                        <parameter-marker-expression value="1" start-index="128" stop-index="128"/>
                                     </items>
                                 </list-expression>
                             </right>
@@ -86,8 +79,7 @@
                     </left>
                     <operator>AND</operator>
                     <right>
-                        <between-expression start-index="135" stop-index="160"
-                                            literal-stop-index="161">
+                        <between-expression start-index="135" stop-index="160" literal-stop-index="161">
                             <not>false</not>
                             <left>
                                 <column name="order_id" start-index="135" stop-index="144">
@@ -96,13 +88,11 @@
                             </left>
                             <between-expr>
                                 <literal-expression value="9" start-index="154" stop-index="154"/>
-                                <parameter-marker-expression value="2" start-index="154"
-                                                             stop-index="154"/>
+                                <parameter-marker-expression value="2" start-index="154" stop-index="154"/>
                             </between-expr>
                             <and-expr>
                                 <literal-expression value="10" start-index="160" stop-index="161"/>
-                                <parameter-marker-expression value="3" start-index="160"
-                                                             stop-index="160"/>
+                                <parameter-marker-expression value="3" start-index="160" stop-index="160"/>
                             </and-expr>
                         </between-expression>
                     </right>
@@ -110,30 +100,22 @@
             </expr>
         </where>
         <group-by>
-            <column-item name="item_id" start-index="171" stop-index="179" literal-start-index="172"
-                         literal-stop-index="180">
-                <owner name="i" start-index="171" stop-index="171" literal-start-index="172"
-                       literal-stop-index="172"/>
+            <column-item name="item_id" start-index="171" stop-index="179" literal-start-index="172" literal-stop-index="180">
+                <owner name="i" start-index="171" stop-index="171" literal-start-index="172" literal-stop-index="172"/>
             </column-item>
         </group-by>
         <order-by>
-            <column-item name="item_id" order-direction="DESC" start-index="190" stop-index="198"
-                         literal-start-index="191" literal-stop-index="199">
-                <owner name="i" start-index="190" stop-index="190" literal-start-index="191"
-                       literal-stop-index="191"/>
+            <column-item name="item_id" order-direction="DESC" start-index="190" stop-index="198" literal-start-index="191" literal-stop-index="199">
+                <owner name="i" start-index="190" stop-index="190" literal-start-index="191" literal-stop-index="191"/>
             </column-item>
         </order-by>
-        <limit start-index="205" stop-index="214" literal-start-index="206"
-               literal-stop-index="215">
-            <offset value="5" parameter-index="4" start-index="211" stop-index="211"
-                    literal-start-index="212" literal-stop-index="212"/>
-            <row-count value="3" parameter-index="5" start-index="214" stop-index="214"
-                       literal-start-index="215" literal-stop-index="215"/>
+        <limit start-index="205" stop-index="214" literal-start-index="206" literal-stop-index="215">
+            <offset value="5" parameter-index="4" start-index="211" stop-index="211" literal-start-index="212" literal-stop-index="212"/>
+            <row-count value="3" parameter-index="5" start-index="214" stop-index="214" literal-start-index="215" literal-stop-index="215"/>
         </limit>
     </select>
 
-    <select sql-case-id="select_pagination_with_diff_group_by_and_order_by"
-            parameters="1, 2, 9, 10, 5, 3">
+    <select sql-case-id="select_pagination_with_diff_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
         <from>
             <join-table>
                 <left>
@@ -171,8 +153,7 @@
         </projections>
         <where start-index="105" stop-index="160" literal-stop-index="161">
             <expr>
-                <binary-operation-expression start-index="111" stop-index="160"
-                                             literal-stop-index="161">
+                <binary-operation-expression start-index="111" stop-index="160" literal-stop-index="161">
                     <left>
                         <in-expression start-index="111" stop-index="129">
                             <not>false</not>
@@ -184,16 +165,12 @@
                             <right>
                                 <list-expression start-index="124" stop-index="129">
                                     <items>
-                                        <literal-expression value="1" start-index="125"
-                                                            stop-index="125"/>
-                                        <parameter-marker-expression value="0" start-index="125"
-                                                                     stop-index="125"/>
+                                        <literal-expression value="1" start-index="125" stop-index="125"/>
+                                        <parameter-marker-expression value="0" start-index="125" stop-index="125"/>
                                     </items>
                                     <items>
-                                        <literal-expression value="2" start-index="128"
-                                                            stop-index="128"/>
-                                        <parameter-marker-expression value="1" start-index="128"
-                                                                     stop-index="128"/>
+                                        <literal-expression value="2" start-index="128" stop-index="128"/>
+                                        <parameter-marker-expression value="1" start-index="128" stop-index="128"/>
                                     </items>
                                 </list-expression>
                             </right>
@@ -201,8 +178,7 @@
                     </left>
                     <operator>AND</operator>
                     <right>
-                        <between-expression start-index="135" stop-index="160"
-                                            literal-stop-index="161">
+                        <between-expression start-index="135" stop-index="160" literal-stop-index="161">
                             <not>false</not>
                             <left>
                                 <column name="order_id" start-index="135" stop-index="144">
@@ -211,13 +187,11 @@
                             </left>
                             <between-expr>
                                 <literal-expression value="9" start-index="154" stop-index="154"/>
-                                <parameter-marker-expression value="2" start-index="154"
-                                                             stop-index="154"/>
+                                <parameter-marker-expression value="2" start-index="154" stop-index="154"/>
                             </between-expr>
                             <and-expr>
                                 <literal-expression value="10" start-index="160" stop-index="161"/>
-                                <parameter-marker-expression value="3" start-index="160"
-                                                             stop-index="160"/>
+                                <parameter-marker-expression value="3" start-index="160" stop-index="160"/>
                             </and-expr>
                         </between-expression>
                     </right>
@@ -225,30 +199,22 @@
             </expr>
         </where>
         <group-by>
-            <column-item name="user_id" start-index="171" stop-index="179" literal-start-index="172"
-                         literal-stop-index="180">
-                <owner name="i" start-index="171" stop-index="171" literal-start-index="172"
-                       literal-stop-index="172"/>
+            <column-item name="user_id" start-index="171" stop-index="179" literal-start-index="172" literal-stop-index="180">
+                <owner name="i" start-index="171" stop-index="171" literal-start-index="172" literal-stop-index="172"/>
             </column-item>
         </group-by>
         <order-by>
-            <column-item name="item_id" order-direction="DESC" start-index="190" stop-index="198"
-                         literal-start-index="191" literal-stop-index="199">
-                <owner name="i" start-index="190" stop-index="190" literal-start-index="191"
-                       literal-stop-index="191"/>
+            <column-item name="item_id" order-direction="DESC" start-index="190" stop-index="198" literal-start-index="191" literal-stop-index="199">
+                <owner name="i" start-index="190" stop-index="190" literal-start-index="191" literal-stop-index="191"/>
             </column-item>
         </order-by>
-        <limit start-index="205" stop-index="214" literal-start-index="206"
-               literal-stop-index="215">
-            <offset value="5" parameter-index="4" start-index="211" stop-index="211"
-                    literal-start-index="212" literal-stop-index="212"/>
-            <row-count value="3" parameter-index="5" start-index="214" stop-index="214"
-                       literal-start-index="215" literal-stop-index="215"/>
+        <limit start-index="205" stop-index="214" literal-start-index="206" literal-stop-index="215">
+            <offset value="5" parameter-index="4" start-index="211" stop-index="211" literal-start-index="212" literal-stop-index="212"/>
+            <row-count value="3" parameter-index="5" start-index="214" stop-index="214" literal-start-index="215" literal-stop-index="215"/>
         </limit>
     </select>
 
-    <select sql-case-id="select_pagination_with_top_and_group_by_and_order_by"
-            parameters="3, 1, 2, 9, 10, 6">
+    <select sql-case-id="select_pagination_with_top_and_group_by_and_order_by" parameters="3, 1, 2, 9, 10, 6">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7"/>
         </projections>
@@ -258,54 +224,44 @@
                     <select>
                         <projections start-index="22" stop-index="158">
                             <top-projection alias="rownum_" start-index="22" stop-index="70">
-                                <top-value value="3" parameter-index="0" start-index="26"
-                                           stop-index="26"/>
+                                <top-value value="3" parameter-index="0" start-index="26" stop-index="26"/>
                             </top-projection>
                             <column-projection name="item_id" start-index="84" stop-index="92">
                                 <owner name="i" start-index="84" stop-index="84"/>
                             </column-projection>
-                            <column-projection name="order_id" alias="order_id" start-index="95"
-                                               stop-index="104">
+                            <column-projection name="order_id" alias="order_id" start-index="95" stop-index="104">
                                 <owner name="o" start-index="95" stop-index="95"/>
                             </column-projection>
-                            <column-projection name="status" alias="status" start-index="119"
-                                               stop-index="126">
+                            <column-projection name="status" alias="status" start-index="119" stop-index="126">
                                 <owner name="o" start-index="119" stop-index="119"/>
                             </column-projection>
-                            <column-projection name="user_id" alias="user_id" start-index="139"
-                                               stop-index="147">
+                            <column-projection name="user_id" alias="user_id" start-index="139" stop-index="147">
                                 <owner name="o" start-index="139" stop-index="139"/>
                             </column-projection>
                         </projections>
                         <from>
                             <join-table>
                                 <left>
-                                    <simple-table start-index="165" stop-index="173" name="t_order"
-                                                  alias="o"/>
+                                    <simple-table start-index="165" stop-index="173" name="t_order" alias="o"/>
                                 </left>
                                 <right>
-                                    <simple-table start-index="180" stop-index="193"
-                                                  name="t_order_item" alias="i"/>
+                                    <simple-table start-index="180" stop-index="193" name="t_order_item" alias="i"/>
                                 </right>
                                 <joinSpecification>
                                     <and-predicate>
                                         <predicate start-index="198" stop-index="218">
-                                            <column-left-value name="user_id" start-index="198"
-                                                               stop-index="206">
+                                            <column-left-value name="user_id" start-index="198" stop-index="206">
                                                 <owner name="o" start-index="198" stop-index="198"/>
                                             </column-left-value>
-                                            <column-right-value name="user_id" start-index="210"
-                                                                stop-index="218">
+                                            <column-right-value name="user_id" start-index="210" stop-index="218">
                                                 <owner name="i" start-index="210" stop-index="210"/>
                                             </column-right-value>
                                         </predicate>
                                         <predicate start-index="224" stop-index="246">
-                                            <column-left-value name="order_id" start-index="224"
-                                                               stop-index="233">
+                                            <column-left-value name="order_id" start-index="224" stop-index="233">
                                                 <owner name="o" start-index="224" stop-index="224"/>
                                             </column-left-value>
-                                            <column-right-value name="order_id" start-index="237"
-                                                                stop-index="246">
+                                            <column-right-value name="order_id" start-index="237" stop-index="246">
                                                 <owner name="i" start-index="237" stop-index="237"/>
                                             </column-right-value>
                                         </predicate>
@@ -361,10 +317,8 @@
                             </expr>
                         </where>
                         <group-by>
-                            <column-item name="item_id" start-index="314" stop-index="322"
-                                         literal-start-index="315" literal-stop-index="323">
-                                <owner name="i" start-index="314" stop-index="314"
-                                       literal-start-index="315" literal-stop-index="315"/>
+                            <column-item name="item_id" start-index="314" stop-index="322" literal-start-index="315" literal-stop-index="323">
+                                <owner name="i" start-index="314" stop-index="314" literal-start-index="315" literal-stop-index="315"/>
                             </column-item>
                         </group-by>
                     </select>
@@ -389,8 +343,7 @@
         </where>
     </select>
 
-    <select sql-case-id="select_pagination_with_top_percent_with_ties_and_group_by_and_order_by"
-            parameters="3, 1, 2, 9, 10, 6">
+    <select sql-case-id="select_pagination_with_top_percent_with_ties_and_group_by_and_order_by" parameters="3, 1, 2, 9, 10, 6">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7"/>
         </projections>
@@ -400,54 +353,44 @@
                     <select>
                         <projections start-index="22" stop-index="176">
                             <top-projection alias="rownum_" start-index="22" stop-index="88">
-                                <top-value value="3" parameter-index="0" start-index="26"
-                                           stop-index="26"/>
+                                <top-value value="3" parameter-index="0" start-index="26" stop-index="26"/>
                             </top-projection>
                             <column-projection name="item_id" start-index="102" stop-index="110">
                                 <owner name="i" start-index="102" stop-index="102"/>
                             </column-projection>
-                            <column-projection name="order_id" alias="order_id" start-index="113"
-                                               stop-index="122">
+                            <column-projection name="order_id" alias="order_id" start-index="113" stop-index="122">
                                 <owner name="o" start-index="113" stop-index="113"/>
                             </column-projection>
-                            <column-projection name="status" alias="status" start-index="137"
-                                               stop-index="144">
+                            <column-projection name="status" alias="status" start-index="137" stop-index="144">
                                 <owner name="o" start-index="137" stop-index="137"/>
                             </column-projection>
-                            <column-projection name="user_id" alias="user_id" start-index="157"
-                                               stop-index="165">
+                            <column-projection name="user_id" alias="user_id" start-index="157" stop-index="165">
                                 <owner name="o" start-index="157" stop-index="157"/>
                             </column-projection>
                         </projections>
                         <from>
                             <join-table>
                                 <left>
-                                    <simple-table start-index="183" stop-index="191" name="t_order"
-                                                  alias="o"/>
+                                    <simple-table start-index="183" stop-index="191" name="t_order" alias="o"/>
                                 </left>
                                 <right>
-                                    <simple-table start-index="198" stop-index="211"
-                                                  name="t_order_item" alias="i"/>
+                                    <simple-table start-index="198" stop-index="211" name="t_order_item" alias="i"/>
                                 </right>
                                 <joinSpecification>
                                     <and-predicate>
                                         <predicate start-index="216" stop-index="236">
-                                            <column-left-value name="user_id" start-index="216"
-                                                               stop-index="224">
+                                            <column-left-value name="user_id" start-index="216" stop-index="224">
                                                 <owner name="o" start-index="216" stop-index="216"/>
                                             </column-left-value>
-                                            <column-right-value name="user_id" start-index="228"
-                                                                stop-index="236">
+                                            <column-right-value name="user_id" start-index="228" stop-index="236">
                                                 <owner name="i" start-index="228" stop-index="228"/>
                                             </column-right-value>
                                         </predicate>
                                         <predicate start-index="242" stop-index="264">
-                                            <column-left-value name="order_id" start-index="242"
-                                                               stop-index="251">
+                                            <column-left-value name="order_id" start-index="242" stop-index="251">
                                                 <owner name="o" start-index="242" stop-index="242"/>
                                             </column-left-value>
-                                            <column-right-value name="order_id" start-index="255"
-                                                                stop-index="264">
+                                            <column-right-value name="order_id" start-index="255" stop-index="264">
                                                 <owner name="i" start-index="255" stop-index="255"/>
                                             </column-right-value>
                                         </predicate>
@@ -503,10 +446,8 @@
                             </expr>
                         </where>
                         <group-by>
-                            <column-item name="item_id" start-index="332" stop-index="340"
-                                         literal-start-index="333" literal-stop-index="341">
-                                <owner name="i" start-index="332" stop-index="332"
-                                       literal-start-index="333" literal-stop-index="333"/>
+                            <column-item name="item_id" start-index="332" stop-index="340" literal-start-index="333" literal-stop-index="341">
+                                <owner name="i" start-index="332" stop-index="332" literal-start-index="333" literal-stop-index="333"/>
                             </column-item>
                         </group-by>
                     </select>
@@ -531,8 +472,7 @@
         </where>
     </select>
 
-    <select sql-case-id="select_pagination_with_top_and_group_by_and_order_by_and_parentheses"
-            parameters="3, 1, 2, 9, 10, 6">
+    <select sql-case-id="select_pagination_with_top_and_group_by_and_order_by_and_parentheses" parameters="3, 1, 2, 9, 10, 6">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7"/>
         </projections>
@@ -542,54 +482,44 @@
                     <select>
                         <projections start-index="22" stop-index="160">
                             <top-projection alias="rownum_" start-index="22" stop-index="72">
-                                <top-value value="3" parameter-index="0" start-index="27"
-                                           stop-index="27"/>
+                                <top-value value="3" parameter-index="0" start-index="27" stop-index="27"/>
                             </top-projection>
                             <column-projection name="item_id" start-index="86" stop-index="94">
                                 <owner name="i" start-index="86" stop-index="86"/>
                             </column-projection>
-                            <column-projection name="order_id" alias="order_id" start-index="97"
-                                               stop-index="106">
+                            <column-projection name="order_id" alias="order_id" start-index="97" stop-index="106">
                                 <owner name="o" start-index="97" stop-index="97"/>
                             </column-projection>
-                            <column-projection name="status" alias="status" start-index="121"
-                                               stop-index="128">
+                            <column-projection name="status" alias="status" start-index="121" stop-index="128">
                                 <owner name="o" start-index="121" stop-index="121"/>
                             </column-projection>
-                            <column-projection name="user_id" alias="user_id" start-index="141"
-                                               stop-index="149">
+                            <column-projection name="user_id" alias="user_id" start-index="141" stop-index="149">
                                 <owner name="o" start-index="141" stop-index="141"/>
                             </column-projection>
                         </projections>
                         <from>
                             <join-table>
                                 <left>
-                                    <simple-table start-index="167" stop-index="175" name="t_order"
-                                                  alias="o"/>
+                                    <simple-table start-index="167" stop-index="175" name="t_order" alias="o"/>
                                 </left>
                                 <right>
-                                    <simple-table start-index="182" stop-index="195"
-                                                  name="t_order_item" alias="i"/>
+                                    <simple-table start-index="182" stop-index="195" name="t_order_item" alias="i"/>
                                 </right>
                                 <joinSpecification>
                                     <and-predicate>
                                         <predicate start-index="200" stop-index="220">
-                                            <column-left-value name="user_id" start-index="200"
-                                                               stop-index="208">
+                                            <column-left-value name="user_id" start-index="200" stop-index="208">
                                                 <owner name="o" start-index="200" stop-index="200"/>
                                             </column-left-value>
-                                            <column-right-value name="user_id" start-index="212"
-                                                                stop-index="220">
+                                            <column-right-value name="user_id" start-index="212" stop-index="220">
                                                 <owner name="i" start-index="212" stop-index="212"/>
                                             </column-right-value>
                                         </predicate>
                                         <predicate start-index="226" stop-index="248">
-                                            <column-left-value name="order_id" start-index="226"
-                                                               stop-index="235">
+                                            <column-left-value name="order_id" start-index="226" stop-index="235">
                                                 <owner name="o" start-index="226" stop-index="226"/>
                                             </column-left-value>
-                                            <column-right-value name="order_id" start-index="239"
-                                                                stop-index="248">
+                                            <column-right-value name="order_id" start-index="239" stop-index="248">
                                                 <owner name="i" start-index="239" stop-index="239"/>
                                             </column-right-value>
                                         </predicate>
@@ -645,10 +575,8 @@
                             </expr>
                         </where>
                         <group-by>
-                            <column-item name="item_id" start-index="316" stop-index="324"
-                                         literal-start-index="317" literal-stop-index="325">
-                                <owner name="i" start-index="316" stop-index="316"
-                                       literal-start-index="317" literal-stop-index="317"/>
+                            <column-item name="item_id" start-index="316" stop-index="324" literal-start-index="317" literal-stop-index="325">
+                                <owner name="i" start-index="316" stop-index="316" literal-start-index="317" literal-stop-index="317"/>
                             </column-item>
                         </group-by>
                     </select>
@@ -673,8 +601,7 @@
         </where>
     </select>
 
-    <select sql-case-id="select_pagination_with_top_percent_with_ties_and_group_by_and_order_by_and_parentheses"
-            parameters="3, 1, 2, 9, 10, 6">
+    <select sql-case-id="select_pagination_with_top_percent_with_ties_and_group_by_and_order_by_and_parentheses" parameters="3, 1, 2, 9, 10, 6">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7"/>
         </projections>
@@ -684,54 +611,44 @@
                     <select>
                         <projections start-index="22" stop-index="178">
                             <top-projection alias="rownum_" start-index="22" stop-index="90">
-                                <top-value value="3" parameter-index="0" start-index="27"
-                                           stop-index="27"/>
+                                <top-value value="3" parameter-index="0" start-index="27" stop-index="27"/>
                             </top-projection>
                             <column-projection name="item_id" start-index="104" stop-index="112">
                                 <owner name="i" start-index="104" stop-index="104"/>
                             </column-projection>
-                            <column-projection name="order_id" alias="order_id" start-index="115"
-                                               stop-index="124">
+                            <column-projection name="order_id" alias="order_id" start-index="115" stop-index="124">
                                 <owner name="o" start-index="115" stop-index="115"/>
                             </column-projection>
-                            <column-projection name="status" alias="status" start-index="139"
-                                               stop-index="146">
+                            <column-projection name="status" alias="status" start-index="139" stop-index="146">
                                 <owner name="o" start-index="139" stop-index="139"/>
                             </column-projection>
-                            <column-projection name="user_id" alias="user_id" start-index="159"
-                                               stop-index="167">
+                            <column-projection name="user_id" alias="user_id" start-index="159" stop-index="167">
                                 <owner name="o" start-index="159" stop-index="159"/>
                             </column-projection>
                         </projections>
                         <from>
                             <join-table>
                                 <left>
-                                    <simple-table start-index="185" stop-index="193" name="t_order"
-                                                  alias="o"/>
+                                    <simple-table start-index="185" stop-index="193" name="t_order" alias="o"/>
                                 </left>
                                 <right>
-                                    <simple-table start-index="200" stop-index="213"
-                                                  name="t_order_item" alias="i"/>
+                                    <simple-table start-index="200" stop-index="213" name="t_order_item" alias="i"/>
                                 </right>
                                 <joinSpecification>
                                     <and-predicate>
                                         <predicate start-index="218" stop-index="238">
-                                            <column-left-value name="user_id" start-index="218"
-                                                               stop-index="226">
+                                            <column-left-value name="user_id" start-index="218" stop-index="226">
                                                 <owner name="o" start-index="218" stop-index="218"/>
                                             </column-left-value>
-                                            <column-right-value name="user_id" start-index="230"
-                                                                stop-index="238">
+                                            <column-right-value name="user_id" start-index="230" stop-index="238">
                                                 <owner name="i" start-index="230" stop-index="230"/>
                                             </column-right-value>
                                         </predicate>
                                         <predicate start-index="244" stop-index="266">
-                                            <column-left-value name="order_id" start-index="244"
-                                                               stop-index="253">
+                                            <column-left-value name="order_id" start-index="244" stop-index="253">
                                                 <owner name="o" start-index="244" stop-index="244"/>
                                             </column-left-value>
-                                            <column-right-value name="order_id" start-index="257"
-                                                                stop-index="266">
+                                            <column-right-value name="order_id" start-index="257" stop-index="266">
                                                 <owner name="i" start-index="257" stop-index="257"/>
                                             </column-right-value>
                                         </predicate>
@@ -787,10 +704,8 @@
                             </expr>
                         </where>
                         <group-by>
-                            <column-item name="item_id" start-index="334" stop-index="342"
-                                         literal-start-index="335" literal-stop-index="343">
-                                <owner name="i" start-index="334" stop-index="334"
-                                       literal-start-index="335" literal-stop-index="335"/>
+                            <column-item name="item_id" start-index="334" stop-index="342" literal-start-index="335" literal-stop-index="343">
+                                <owner name="i" start-index="334" stop-index="334" literal-start-index="335" literal-stop-index="335"/>
                             </column-item>
                         </group-by>
                     </select>
@@ -815,8 +730,7 @@
         </where>
     </select>
 
-    <select sql-case-id="select_pagination_with_top_and_diff_group_by_and_order_by"
-            parameters="3, 1, 2, 9, 10, 6">
+    <select sql-case-id="select_pagination_with_top_and_diff_group_by_and_order_by" parameters="3, 1, 2, 9, 10, 6">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7"/>
         </projections>
@@ -826,54 +740,44 @@
                     <select>
                         <projections start-index="22" stop-index="158">
                             <top-projection alias="rownum_" start-index="22" stop-index="70">
-                                <top-value value="3" parameter-index="0" start-index="26"
-                                           stop-index="26"/>
+                                <top-value value="3" parameter-index="0" start-index="26" stop-index="26"/>
                             </top-projection>
                             <column-projection name="item_id" start-index="84" stop-index="92">
                                 <owner name="i" start-index="84" stop-index="84"/>
                             </column-projection>
-                            <column-projection name="order_id" alias="order_id" start-index="95"
-                                               stop-index="104">
+                            <column-projection name="order_id" alias="order_id" start-index="95" stop-index="104">
                                 <owner name="o" start-index="95" stop-index="95"/>
                             </column-projection>
-                            <column-projection name="status" alias="status" start-index="119"
-                                               stop-index="126">
+                            <column-projection name="status" alias="status" start-index="119" stop-index="126">
                                 <owner name="o" start-index="119" stop-index="119"/>
                             </column-projection>
-                            <column-projection name="user_id" alias="user_id" start-index="139"
-                                               stop-index="147">
+                            <column-projection name="user_id" alias="user_id" start-index="139" stop-index="147">
                                 <owner name="o" start-index="139" stop-index="139"/>
                             </column-projection>
                         </projections>
                         <from>
                             <join-table>
                                 <left>
-                                    <simple-table start-index="165" stop-index="173" name="t_order"
-                                                  alias="o"/>
+                                    <simple-table start-index="165" stop-index="173" name="t_order" alias="o"/>
                                 </left>
                                 <right>
-                                    <simple-table start-index="180" stop-index="193"
-                                                  name="t_order_item" alias="i"/>
+                                    <simple-table start-index="180" stop-index="193" name="t_order_item" alias="i"/>
                                 </right>
                                 <joinSpecification>
                                     <and-predicate>
                                         <predicate start-index="198" stop-index="218">
-                                            <column-left-value name="user_id" start-index="198"
-                                                               stop-index="206">
+                                            <column-left-value name="user_id" start-index="198" stop-index="206">
                                                 <owner name="o" start-index="198" stop-index="198"/>
                                             </column-left-value>
-                                            <column-right-value name="user_id" start-index="210"
-                                                                stop-index="218">
+                                            <column-right-value name="user_id" start-index="210" stop-index="218">
                                                 <owner name="i" start-index="210" stop-index="210"/>
                                             </column-right-value>
                                         </predicate>
                                         <predicate start-index="224" stop-index="246">
-                                            <column-left-value name="order_id" start-index="224"
-                                                               stop-index="233">
+                                            <column-left-value name="order_id" start-index="224" stop-index="233">
                                                 <owner name="o" start-index="224" stop-index="224"/>
                                             </column-left-value>
-                                            <column-right-value name="order_id" start-index="237"
-                                                                stop-index="246">
+                                            <column-right-value name="order_id" start-index="237" stop-index="246">
                                                 <owner name="i" start-index="237" stop-index="237"/>
                                             </column-right-value>
                                         </predicate>
@@ -929,10 +833,8 @@
                             </expr>
                         </where>
                         <group-by>
-                            <column-item name="user_id" start-index="314" stop-index="322"
-                                         literal-start-index="315" literal-stop-index="323">
-                                <owner name="i" start-index="314" stop-index="314"
-                                       literal-start-index="315" literal-stop-index="315"/>
+                            <column-item name="user_id" start-index="314" stop-index="322" literal-start-index="315" literal-stop-index="323">
+                                <owner name="i" start-index="314" stop-index="314" literal-start-index="315" literal-stop-index="315"/>
                             </column-item>
                         </group-by>
                     </select>
@@ -957,8 +859,7 @@
         </where>
     </select>
 
-    <select sql-case-id="select_pagination_with_top_percent_with_ties_and_diff_group_by_and_order_by"
-            parameters="3, 1, 2, 9, 10, 6">
+    <select sql-case-id="select_pagination_with_top_percent_with_ties_and_diff_group_by_and_order_by" parameters="3, 1, 2, 9, 10, 6">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7"/>
         </projections>
@@ -968,54 +869,44 @@
                     <select>
                         <projections start-index="22" stop-index="176">
                             <top-projection alias="rownum_" start-index="22" stop-index="88">
-                                <top-value value="3" parameter-index="0" start-index="26"
-                                           stop-index="26"/>
+                                <top-value value="3" parameter-index="0" start-index="26" stop-index="26"/>
                             </top-projection>
                             <column-projection name="item_id" start-index="102" stop-index="110">
                                 <owner name="i" start-index="102" stop-index="102"/>
                             </column-projection>
-                            <column-projection name="order_id" alias="order_id" start-index="113"
-                                               stop-index="122">
+                            <column-projection name="order_id" alias="order_id" start-index="113" stop-index="122">
                                 <owner name="o" start-index="113" stop-index="113"/>
                             </column-projection>
-                            <column-projection name="status" alias="status" start-index="137"
-                                               stop-index="144">
+                            <column-projection name="status" alias="status" start-index="137" stop-index="144">
                                 <owner name="o" start-index="137" stop-index="137"/>
                             </column-projection>
-                            <column-projection name="user_id" alias="user_id" start-index="157"
-                                               stop-index="165">
+                            <column-projection name="user_id" alias="user_id" start-index="157" stop-index="165">
                                 <owner name="o" start-index="157" stop-index="157"/>
                             </column-projection>
                         </projections>
                         <from>
                             <join-table>
                                 <left>
-                                    <simple-table start-index="183" stop-index="191" name="t_order"
-                                                  alias="o"/>
+                                    <simple-table start-index="183" stop-index="191" name="t_order" alias="o"/>
                                 </left>
                                 <right>
-                                    <simple-table start-index="198" stop-index="211"
-                                                  name="t_order_item" alias="i"/>
+                                    <simple-table start-index="198" stop-index="211" name="t_order_item" alias="i"/>
                                 </right>
                                 <joinSpecification>
                                     <and-predicate>
                                         <predicate start-index="216" stop-index="236">
-                                            <column-left-value name="user_id" start-index="216"
-                                                               stop-index="224">
+                                            <column-left-value name="user_id" start-index="216" stop-index="224">
                                                 <owner name="o" start-index="216" stop-index="216"/>
                                             </column-left-value>
-                                            <column-right-value name="user_id" start-index="228"
-                                                                stop-index="236">
+                                            <column-right-value name="user_id" start-index="228" stop-index="236">
                                                 <owner name="i" start-index="228" stop-index="228"/>
                                             </column-right-value>
                                         </predicate>
                                         <predicate start-index="242" stop-index="264">
-                                            <column-left-value name="order_id" start-index="242"
-                                                               stop-index="251">
+                                            <column-left-value name="order_id" start-index="242" stop-index="251">
                                                 <owner name="o" start-index="242" stop-index="242"/>
                                             </column-left-value>
-                                            <column-right-value name="order_id" start-index="255"
-                                                                stop-index="264">
+                                            <column-right-value name="order_id" start-index="255" stop-index="264">
                                                 <owner name="i" start-index="255" stop-index="255"/>
                                             </column-right-value>
                                         </predicate>
@@ -1071,10 +962,8 @@
                             </expr>
                         </where>
                         <group-by>
-                            <column-item name="user_id" start-index="332" stop-index="340"
-                                         literal-start-index="333" literal-stop-index="341">
-                                <owner name="i" start-index="332" stop-index="332"
-                                       literal-start-index="333" literal-stop-index="333"/>
+                            <column-item name="user_id" start-index="332" stop-index="340" literal-start-index="333" literal-stop-index="341">
+                                <owner name="i" start-index="332" stop-index="332" literal-start-index="333" literal-stop-index="333"/>
                             </column-item>
                         </group-by>
                     </select>
@@ -1099,8 +988,7 @@
         </where>
     </select>
 
-    <select sql-case-id="select_pagination_with_top_and_diff_group_by_and_order_by_and_parentheses"
-            parameters="3, 1, 2, 9, 10, 6">
+    <select sql-case-id="select_pagination_with_top_and_diff_group_by_and_order_by_and_parentheses" parameters="3, 1, 2, 9, 10, 6">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7"/>
         </projections>
@@ -1110,54 +998,44 @@
                     <select>
                         <projections start-index="22" stop-index="160">
                             <top-projection alias="rownum_" start-index="22" stop-index="72">
-                                <top-value value="3" parameter-index="0" start-index="27"
-                                           stop-index="27"/>
+                                <top-value value="3" parameter-index="0" start-index="27" stop-index="27"/>
                             </top-projection>
                             <column-projection name="item_id" start-index="86" stop-index="94">
                                 <owner name="i" start-index="86" stop-index="86"/>
                             </column-projection>
-                            <column-projection name="order_id" alias="order_id" start-index="97"
-                                               stop-index="106">
+                            <column-projection name="order_id" alias="order_id" start-index="97" stop-index="106">
                                 <owner name="o" start-index="97" stop-index="97"/>
                             </column-projection>
-                            <column-projection name="status" alias="status" start-index="121"
-                                               stop-index="128">
+                            <column-projection name="status" alias="status" start-index="121" stop-index="128">
                                 <owner name="o" start-index="121" stop-index="121"/>
                             </column-projection>
-                            <column-projection name="user_id" alias="user_id" start-index="141"
-                                               stop-index="149">
+                            <column-projection name="user_id" alias="user_id" start-index="141" stop-index="149">
                                 <owner name="o" start-index="141" stop-index="141"/>
                             </column-projection>
                         </projections>
                         <from>
                             <join-table>
                                 <left>
-                                    <simple-table start-index="167" stop-index="175" name="t_order"
-                                                  alias="o"/>
+                                    <simple-table start-index="167" stop-index="175" name="t_order" alias="o"/>
                                 </left>
                                 <right>
-                                    <simple-table start-index="182" stop-index="195"
-                                                  name="t_order_item" alias="i"/>
+                                    <simple-table start-index="182" stop-index="195" name="t_order_item" alias="i"/>
                                 </right>
                                 <joinSpecification>
                                     <and-predicate>
                                         <predicate start-index="200" stop-index="220">
-                                            <column-left-value name="user_id" start-index="200"
-                                                               stop-index="208">
+                                            <column-left-value name="user_id" start-index="200" stop-index="208">
                                                 <owner name="o" start-index="200" stop-index="200"/>
                                             </column-left-value>
-                                            <column-right-value name="user_id" start-index="212"
-                                                                stop-index="220">
+                                            <column-right-value name="user_id" start-index="212" stop-index="220">
                                                 <owner name="i" start-index="212" stop-index="212"/>
                                             </column-right-value>
                                         </predicate>
                                         <predicate start-index="226" stop-index="248">
-                                            <column-left-value name="order_id" start-index="226"
-                                                               stop-index="235">
+                                            <column-left-value name="order_id" start-index="226" stop-index="235">
                                                 <owner name="o" start-index="226" stop-index="226"/>
                                             </column-left-value>
-                                            <column-right-value name="order_id" start-index="239"
-                                                                stop-index="248">
+                                            <column-right-value name="order_id" start-index="239" stop-index="248">
                                                 <owner name="i" start-index="239" stop-index="239"/>
                                             </column-right-value>
                                         </predicate>
@@ -1213,10 +1091,8 @@
                             </expr>
                         </where>
                         <group-by>
-                            <column-item name="user_id" start-index="316" stop-index="324"
-                                         literal-start-index="317" literal-stop-index="325">
-                                <owner name="i" start-index="316" stop-index="316"
-                                       literal-start-index="317" literal-stop-index="317"/>
+                            <column-item name="user_id" start-index="316" stop-index="324" literal-start-index="317" literal-stop-index="325">
+                                <owner name="i" start-index="316" stop-index="316" literal-start-index="317" literal-stop-index="317"/>
                             </column-item>
                         </group-by>
                     </select>
@@ -1241,8 +1117,7 @@
         </where>
     </select>
 
-    <select sql-case-id="select_pagination_with_top_percent_with_ties_and_diff_group_by_and_order_by_and_parentheses"
-            parameters="3, 1, 2, 9, 10, 6">
+    <select sql-case-id="select_pagination_with_top_percent_with_ties_and_diff_group_by_and_order_by_and_parentheses" parameters="3, 1, 2, 9, 10, 6">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7"/>
         </projections>
@@ -1252,54 +1127,44 @@
                     <select>
                         <projections start-index="22" stop-index="178">
                             <top-projection alias="rownum_" start-index="22" stop-index="90">
-                                <top-value value="3" parameter-index="0" start-index="27"
-                                           stop-index="27"/>
+                                <top-value value="3" parameter-index="0" start-index="27" stop-index="27"/>
                             </top-projection>
                             <column-projection name="item_id" start-index="104" stop-index="112">
                                 <owner name="i" start-index="104" stop-index="104"/>
                             </column-projection>
-                            <column-projection name="order_id" alias="order_id" start-index="115"
-                                               stop-index="124">
+                            <column-projection name="order_id" alias="order_id" start-index="115" stop-index="124">
                                 <owner name="o" start-index="115" stop-index="115"/>
                             </column-projection>
-                            <column-projection name="status" alias="status" start-index="139"
-                                               stop-index="146">
+                            <column-projection name="status" alias="status" start-index="139" stop-index="146">
                                 <owner name="o" start-index="139" stop-index="139"/>
                             </column-projection>
-                            <column-projection name="user_id" alias="user_id" start-index="159"
-                                               stop-index="167">
+                            <column-projection name="user_id" alias="user_id" start-index="159" stop-index="167">
                                 <owner name="o" start-index="159" stop-index="159"/>
                             </column-projection>
                         </projections>
                         <from>
                             <join-table>
                                 <left>
-                                    <simple-table start-index="185" stop-index="193" name="t_order"
-                                                  alias="o"/>
+                                    <simple-table start-index="185" stop-index="193" name="t_order" alias="o"/>
                                 </left>
                                 <right>
-                                    <simple-table start-index="200" stop-index="213"
-                                                  name="t_order_item" alias="i"/>
+                                    <simple-table start-index="200" stop-index="213" name="t_order_item" alias="i"/>
                                 </right>
                                 <joinSpecification>
                                     <and-predicate>
                                         <predicate start-index="218" stop-index="238">
-                                            <column-left-value name="user_id" start-index="218"
-                                                               stop-index="226">
+                                            <column-left-value name="user_id" start-index="218" stop-index="226">
                                                 <owner name="o" start-index="218" stop-index="218"/>
                                             </column-left-value>
-                                            <column-right-value name="user_id" start-index="230"
-                                                                stop-index="238">
+                                            <column-right-value name="user_id" start-index="230" stop-index="238">
                                                 <owner name="i" start-index="230" stop-index="230"/>
                                             </column-right-value>
                                         </predicate>
                                         <predicate start-index="244" stop-index="266">
-                                            <column-left-value name="order_id" start-index="244"
-                                                               stop-index="253">
+                                            <column-left-value name="order_id" start-index="244" stop-index="253">
                                                 <owner name="o" start-index="244" stop-index="244"/>
                                             </column-left-value>
-                                            <column-right-value name="order_id" start-index="257"
-                                                                stop-index="266">
+                                            <column-right-value name="order_id" start-index="257" stop-index="266">
                                                 <owner name="i" start-index="257" stop-index="257"/>
                                             </column-right-value>
                                         </predicate>
@@ -1355,10 +1220,8 @@
                             </expr>
                         </where>
                         <group-by>
-                            <column-item name="user_id" start-index="334" stop-index="342"
-                                         literal-start-index="335" literal-stop-index="343">
-                                <owner name="i" start-index="334" stop-index="334"
-                                       literal-start-index="335" literal-stop-index="335"/>
+                            <column-item name="user_id" start-index="334" stop-index="342" literal-start-index="335" literal-stop-index="343">
+                                <owner name="i" start-index="334" stop-index="334" literal-start-index="335" literal-stop-index="335"/>
                             </column-item>
                         </group-by>
                     </select>
@@ -1383,8 +1246,7 @@
         </where>
     </select>
 
-    <select sql-case-id="select_pagination_with_row_number_and_group_by_and_order_by"
-            parameters="1, 2, 9, 7, 5, 3">
+    <select sql-case-id="select_pagination_with_row_number_and_group_by_and_order_by" parameters="1, 2, 9, 7, 5, 3">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7"/>
         </projections>
@@ -1396,72 +1258,47 @@
                             <shorthand-projection start-index="22" stop-index="27">
                                 <owner start-index="22" stop-index="25" name="row_"/>
                             </shorthand-projection>
-                            <column-projection start-index="30" stop-index="35" name="rownum"
-                                               alias="rownum_"/>
+                            <column-projection start-index="30" stop-index="35" name="rownum" alias="rownum_"/>
                         </projections>
                         <from>
                             <subquery-table alias="row_">
                                 <subquery>
                                     <select>
                                         <projections start-index="58" stop-index="139">
-                                            <column-projection start-index="58" stop-index="73"
-                                                               name="order_id" alias="order_id">
-                                                <owner start-index="58" stop-index="64"
-                                                       name="order0_"/>
+                                            <column-projection start-index="58" stop-index="73" name="order_id" alias="order_id">
+                                                <owner start-index="58" stop-index="64" name="order0_"/>
                                             </column-projection>
-                                            <column-projection start-index="88" stop-index="101"
-                                                               name="status" alias="status">
-                                                <owner start-index="88" stop-index="94"
-                                                       name="order0_"/>
+                                            <column-projection start-index="88" stop-index="101" name="status" alias="status">
+                                                <owner start-index="88" stop-index="94" name="order0_"/>
                                             </column-projection>
-                                            <column-projection start-index="114" stop-index="128"
-                                                               name="user_id" alias="user_id">
-                                                <owner start-index="114" stop-index="120"
-                                                       name="order0_"/>
+                                            <column-projection start-index="114" stop-index="128" name="user_id" alias="user_id">
+                                                <owner start-index="114" stop-index="120" name="order0_"/>
                                             </column-projection>
                                         </projections>
                                         <from>
                                             <join-table>
                                                 <left>
-                                                    <simple-table start-index="146" stop-index="160"
-                                                                  name="t_order" alias="order0_"/>
+                                                    <simple-table start-index="146" stop-index="160" name="t_order" alias="order0_"/>
                                                 </left>
                                                 <right>
-                                                    <simple-table start-index="167" stop-index="180"
-                                                                  name="t_order_item" alias="i"/>
+                                                    <simple-table start-index="167" stop-index="180" name="t_order_item" alias="i"/>
                                                 </right>
                                                 <joinSpecification>
                                                     <and-predicate>
-                                                        <predicate start-index="185"
-                                                                   stop-index="211">
-                                                            <column-left-value start-index="185"
-                                                                               stop-index="199"
-                                                                               name="user_id">
-                                                                <owner start-index="185"
-                                                                       stop-index="191"
-                                                                       name="order0_"/>
+                                                        <predicate start-index="185" stop-index="211">
+                                                            <column-left-value start-index="185" stop-index="199" name="user_id">
+                                                                <owner start-index="185" stop-index="191" name="order0_"/>
                                                             </column-left-value>
-                                                            <column-right-value start-index="203"
-                                                                                stop-index="211"
-                                                                                name="user_id">
-                                                                <owner start-index="203"
-                                                                       stop-index="203" name="i"/>
+                                                            <column-right-value start-index="203" stop-index="211" name="user_id">
+                                                                <owner start-index="203" stop-index="203" name="i"/>
                                                             </column-right-value>
                                                         </predicate>
-                                                        <predicate start-index="217"
-                                                                   stop-index="245">
-                                                            <column-left-value start-index="217"
-                                                                               stop-index="232"
-                                                                               name="order_id">
-                                                                <owner start-index="217"
-                                                                       stop-index="223"
-                                                                       name="order0_"/>
+                                                        <predicate start-index="217" stop-index="245">
+                                                            <column-left-value start-index="217" stop-index="232" name="order_id">
+                                                                <owner start-index="217" stop-index="223" name="order0_"/>
                                                             </column-left-value>
-                                                            <column-right-value start-index="236"
-                                                                                stop-index="245"
-                                                                                name="order_id">
-                                                                <owner start-index="236"
-                                                                       stop-index="236" name="i"/>
+                                                            <column-right-value start-index="236" stop-index="245" name="order_id">
+                                                                <owner start-index="236" stop-index="236" name="i"/>
                                                             </column-right-value>
                                                         </predicate>
                                                     </and-predicate>
@@ -1516,14 +1353,12 @@
                                             </expr>
                                         </where>
                                         <group-by>
-                                            <column-item start-index="325" stop-index="333"
-                                                         name="item_id">
+                                            <column-item start-index="325" stop-index="333" name="item_id">
                                                 <owner start-index="325" stop-index="325" name="i"/>
                                             </column-item>
                                         </group-by>
                                         <order-by>
-                                            <column-item start-index="344" stop-index="352"
-                                                         name="item_id" order-direction="DESC">
+                                            <column-item start-index="344" stop-index="352" name="item_id" order-direction="DESC">
                                                 <owner start-index="344" stop-index="344" name="i"/>
                                             </column-item>
                                         </order-by>
@@ -1567,8 +1402,7 @@
         </where>
     </select>
 
-    <select sql-case-id="select_pagination_with_row_number_and_diff_group_by_and_order_by"
-            parameters="1, 2, 9, 7, 5, 3">
+    <select sql-case-id="select_pagination_with_row_number_and_diff_group_by_and_order_by" parameters="1, 2, 9, 7, 5, 3">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7"/>
         </projections>
@@ -1580,72 +1414,47 @@
                             <shorthand-projection start-index="22" stop-index="27">
                                 <owner start-index="22" stop-index="25" name="row_"/>
                             </shorthand-projection>
-                            <column-projection start-index="30" stop-index="35" name="rownum"
-                                               alias="rownum_"/>
+                            <column-projection start-index="30" stop-index="35" name="rownum" alias="rownum_"/>
                         </projections>
                         <from>
                             <subquery-table alias="row_">
                                 <subquery>
                                     <select>
                                         <projections start-index="58" stop-index="139">
-                                            <column-projection start-index="58" stop-index="73"
-                                                               name="order_id" alias="order_id">
-                                                <owner start-index="58" stop-index="64"
-                                                       name="order0_"/>
+                                            <column-projection start-index="58" stop-index="73" name="order_id" alias="order_id">
+                                                <owner start-index="58" stop-index="64" name="order0_"/>
                                             </column-projection>
-                                            <column-projection start-index="88" stop-index="101"
-                                                               name="status" alias="status">
-                                                <owner start-index="88" stop-index="94"
-                                                       name="order0_"/>
+                                            <column-projection start-index="88" stop-index="101" name="status" alias="status">
+                                                <owner start-index="88" stop-index="94" name="order0_"/>
                                             </column-projection>
-                                            <column-projection start-index="114" stop-index="128"
-                                                               name="user_id" alias="user_id">
-                                                <owner start-index="114" stop-index="120"
-                                                       name="order0_"/>
+                                            <column-projection start-index="114" stop-index="128" name="user_id" alias="user_id">
+                                                <owner start-index="114" stop-index="120" name="order0_"/>
                                             </column-projection>
                                         </projections>
                                         <from>
                                             <join-table>
                                                 <left>
-                                                    <simple-table start-index="146" stop-index="160"
-                                                                  name="t_order" alias="order0_"/>
+                                                    <simple-table start-index="146" stop-index="160" name="t_order" alias="order0_"/>
                                                 </left>
                                                 <right>
-                                                    <simple-table start-index="167" stop-index="180"
-                                                                  name="t_order_item" alias="i"/>
+                                                    <simple-table start-index="167" stop-index="180" name="t_order_item" alias="i"/>
                                                 </right>
                                                 <joinSpecification>
                                                     <and-predicate>
-                                                        <predicate start-index="185"
-                                                                   stop-index="211">
-                                                            <column-left-value start-index="185"
-                                                                               stop-index="199"
-                                                                               name="user_id">
-                                                                <owner start-index="185"
-                                                                       stop-index="191"
-                                                                       name="order0_"/>
+                                                        <predicate start-index="185" stop-index="211">
+                                                            <column-left-value start-index="185" stop-index="199" name="user_id">
+                                                                <owner start-index="185" stop-index="191" name="order0_"/>
                                                             </column-left-value>
-                                                            <column-right-value start-index="203"
-                                                                                stop-index="211"
-                                                                                name="user_id">
-                                                                <owner start-index="203"
-                                                                       stop-index="203" name="i"/>
+                                                            <column-right-value start-index="203" stop-index="211" name="user_id">
+                                                                <owner start-index="203" stop-index="203" name="i"/>
                                                             </column-right-value>
                                                         </predicate>
-                                                        <predicate start-index="217"
-                                                                   stop-index="245">
-                                                            <column-left-value start-index="217"
-                                                                               stop-index="232"
-                                                                               name="order_id">
-                                                                <owner start-index="217"
-                                                                       stop-index="223"
-                                                                       name="order0_"/>
+                                                        <predicate start-index="217" stop-index="245">
+                                                            <column-left-value start-index="217" stop-index="232" name="order_id">
+                                                                <owner start-index="217" stop-index="223" name="order0_"/>
                                                             </column-left-value>
-                                                            <column-right-value start-index="236"
-                                                                                stop-index="245"
-                                                                                name="order_id">
-                                                                <owner start-index="236"
-                                                                       stop-index="236" name="i"/>
+                                                            <column-right-value start-index="236" stop-index="245" name="order_id">
+                                                                <owner start-index="236" stop-index="236" name="i"/>
                                                             </column-right-value>
                                                         </predicate>
                                                     </and-predicate>
@@ -1700,14 +1509,12 @@
                                             </expr>
                                         </where>
                                         <group-by>
-                                            <column-item start-index="325" stop-index="333"
-                                                         name="user_id">
+                                            <column-item start-index="325" stop-index="333" name="user_id">
                                                 <owner start-index="325" stop-index="325" name="i"/>
                                             </column-item>
                                         </group-by>
                                         <order-by>
-                                            <column-item start-index="344" stop-index="352"
-                                                         name="item_id" order-direction="DESC">
+                                            <column-item start-index="344" stop-index="352" name="item_id" order-direction="DESC">
                                                 <owner start-index="344" stop-index="344" name="i"/>
                                             </column-item>
                                         </order-by>
