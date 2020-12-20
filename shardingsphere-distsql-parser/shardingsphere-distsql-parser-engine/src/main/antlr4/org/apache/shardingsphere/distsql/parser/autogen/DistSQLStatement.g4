@@ -17,12 +17,13 @@
 
 grammar DistSQLStatement;
 
-import Symbol, RDLStatement;
+import Symbol, RDLStatement, RQLStatement;
 
 execute
-    : (createDataSources
+    : (addResource
     | createShardingRule
-    | showDataSources
+    | dropShardingRule
+    | showResources
     | showRule
     ) SEMI?
     ;

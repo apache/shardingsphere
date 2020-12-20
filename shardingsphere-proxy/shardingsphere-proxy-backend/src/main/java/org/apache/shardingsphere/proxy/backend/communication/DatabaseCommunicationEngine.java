@@ -108,7 +108,7 @@ public final class DatabaseCommunicationEngine {
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
-        lockForDDL(executionContext);
+        lockForDDL(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
         Collection<ExecuteResult> executeResults = proxySQLExecutor.execute(executionContext);
         ExecuteResult executeResultSample = executeResults.iterator().next();
@@ -117,12 +117,12 @@ public final class DatabaseCommunicationEngine {
                 : processExecuteUpdate(executionContext, executeResults.stream().map(each -> (UpdateResult) each).collect(Collectors.toList()));
     }
     
-    private void lockForDDL(final ExecutionContext executionContext) {
+    private void lockForDDL(final ExecutionContext executionContext, final Long lockTimeoutMilliseconds) {
         if (needLock(executionContext)) {
-            if (!LockContext.getLockStrategy().tryLock(ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS))) {
-                throw new LockWaitTimeoutException();
+            if (!LockContext.getLockStrategy().tryLock(lockTimeoutMilliseconds)) {
+                throw new LockWaitTimeoutException(lockTimeoutMilliseconds);
             }
-            checkLock();
+            checkLock(lockTimeoutMilliseconds);
         }
     }
     
@@ -130,9 +130,9 @@ public final class DatabaseCommunicationEngine {
         return SchemaRefresherFactory.newInstance(executionContext.getSqlStatementContext().getSqlStatement()).isPresent();
     }
     
-    private void checkLock() {
+    private void checkLock(final Long lockTimeoutMilliseconds) {
         if (!LockContext.getLockStrategy().checkLock()) {
-            throw new LockWaitTimeoutException();
+            throw new LockWaitTimeoutException(lockTimeoutMilliseconds);
         }
     }
     

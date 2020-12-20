@@ -19,8 +19,8 @@ grammar RDLStatement;
 
 import Keyword, Literals, Symbol;
 
-createDataSources
-    : CREATE DATASOURCES LP dataSource (COMMA dataSource)* RP
+addResource
+    : ADD RESOURCE LP dataSource (COMMA dataSource)* RP
     ;
 
 dataSource
@@ -99,18 +99,6 @@ columName
     : IDENTIFIER
     ;
 
-showDataSources
-    : SHOW DATASOURCES (FROM schemaName)?
-    ;
-
-showRule
-    : SHOW ruleType RULE (FROM schemaName)?
-    ;
-
-ruleType
-    : SHARDING | REPLICA_QUERY | ENCRYPT | SHADOW
-    ;
-
-schemaName
-    : IDENTIFIER
+dropShardingRule
+    : DROP SHARDING RULE LP tableName (COMMA tableName)* RP
     ;

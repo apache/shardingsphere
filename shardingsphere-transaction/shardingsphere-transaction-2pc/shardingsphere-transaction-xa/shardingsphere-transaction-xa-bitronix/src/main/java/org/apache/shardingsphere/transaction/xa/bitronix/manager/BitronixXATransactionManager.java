@@ -36,10 +36,11 @@ import javax.transaction.TransactionManager;
  */
 public final class BitronixXATransactionManager implements XATransactionManager {
     
-    private final BitronixTransactionManager bitronixTransactionManager = TransactionManagerServices.getTransactionManager();
+    private BitronixTransactionManager bitronixTransactionManager;
     
     @Override
     public void init() {
+        bitronixTransactionManager = TransactionManagerServices.getTransactionManager();
     }
     
     @SneakyThrows(RecoveryException.class)

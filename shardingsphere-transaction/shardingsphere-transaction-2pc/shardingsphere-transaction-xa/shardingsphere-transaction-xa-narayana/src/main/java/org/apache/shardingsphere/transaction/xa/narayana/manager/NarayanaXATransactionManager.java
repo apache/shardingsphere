@@ -37,14 +37,17 @@ import javax.transaction.TransactionManager;
  */
 public final class NarayanaXATransactionManager implements XATransactionManager {
     
-    private final TransactionManager transactionManager = jtaPropertyManager.getJTAEnvironmentBean().getTransactionManager();
+    private TransactionManager transactionManager;
     
-    private final XARecoveryModule xaRecoveryModule = XARecoveryModule.getRegisteredXARecoveryModule();
+    private XARecoveryModule xaRecoveryModule;
     
-    private final RecoveryManagerService recoveryManagerService = new RecoveryManagerService();
+    private RecoveryManagerService recoveryManagerService;
     
     @Override
     public void init() {
+        transactionManager = jtaPropertyManager.getJTAEnvironmentBean().getTransactionManager();
+        xaRecoveryModule = XARecoveryModule.getRegisteredXARecoveryModule();
+        recoveryManagerService = new RecoveryManagerService();
         RecoveryManager.delayRecoveryManagerThread();
         recoveryManagerService.create();
         recoveryManagerService.start();

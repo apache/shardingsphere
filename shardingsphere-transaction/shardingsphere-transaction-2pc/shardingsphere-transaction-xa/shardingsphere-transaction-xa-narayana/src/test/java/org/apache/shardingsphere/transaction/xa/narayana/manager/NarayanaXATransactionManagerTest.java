@@ -65,13 +65,6 @@ public final class NarayanaXATransactionManagerTest {
     }
     
     @Test
-    public void assertInit() {
-        narayanaXATransactionManager.init();
-        verify(recoveryManagerService).create();
-        verify(recoveryManagerService).start();
-    }
-    
-    @Test
     public void assertRegisterRecoveryResource() {
         narayanaXATransactionManager.registerRecoveryResource("ds1", xaDataSource);
         verify(xaRecoveryModule).addXAResourceRecoveryHelper(any(DataSourceXAResourceRecoveryHelper.class));

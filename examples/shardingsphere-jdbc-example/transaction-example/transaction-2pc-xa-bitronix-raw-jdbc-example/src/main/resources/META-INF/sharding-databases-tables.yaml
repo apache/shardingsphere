@@ -67,3 +67,4 @@ rules:
 
 props:
   sql-show: false
+  xa-transaction-manager-type: Bitronix

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
@@ -28,11 +29,17 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * DML Statement SQL visitor for MySQL.
  */
+@NoArgsConstructor
 public final class MySQLDMLStatementSQLVisitor extends MySQLStatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
+
+    public MySQLDMLStatementSQLVisitor(final Properties props) {
+        super(props);
+    }
 
     @Override
     public ASTNode visitCall(final CallContext ctx) {

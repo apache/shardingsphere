@@ -97,21 +97,21 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * XA transaction manager type of proxy.
      *
      * <p>
-     * atomikos:
-     * ShardingSphere-Proxy will run with XA transaction with atomikos.
+     * Atomikos:
+     * ShardingSphere-Proxy will run with XA transaction with Atomikos.
      * </p>
      *
      * <p>
-     * narayana:
-     * ShardingSphere-Proxy will run with XA transaction with narayana.
+     * Narayana:
+     * ShardingSphere-Proxy will run with XA transaction with Narayana.
      * </p>
      *
      * <p>
-     * bitronix:
-     * ShardingSphere-Proxy will run with XA transaction with bitronix.
+     * Bitronix:
+     * ShardingSphere-Proxy will run with XA transaction with Bitronix.
      * </p>
      */
-    PROXY_XA_TRANSACTION_MANAGER_TYPE("proxy-xa-transaction-manager-type", "atomikos", String.class),
+    XA_TRANSACTION_MANAGER_TYPE("xa-transaction-manager-type", "Atomikos", String.class),
     
     /**
      * Whether enable opentracing for ShardingSphere-Proxy.
@@ -126,7 +126,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * The length of time in milliseconds an SQL waits for a global lock before giving up.
      */
-    LOCK_WAIT_TIMEOUT_MILLISECONDS("lock-wait-timeout-milliseconds", String.valueOf(5000L), long.class);
+    LOCK_WAIT_TIMEOUT_MILLISECONDS("lock-wait-timeout-milliseconds", String.valueOf(50000L), long.class);
     
     private final String key;
     

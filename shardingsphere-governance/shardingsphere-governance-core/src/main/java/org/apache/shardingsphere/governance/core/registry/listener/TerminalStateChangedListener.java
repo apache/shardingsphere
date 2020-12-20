@@ -40,11 +40,6 @@ public final class TerminalStateChangedListener extends PostGovernanceRepository
     
     @Override
     protected Optional<StateEvent> createEvent(final DataChangedEvent event) {
-        if (RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue())) {
-            return Optional.of(new StateEvent(StateType.CIRCUIT_BREAK, true));
-        } else if (RegistryCenterNodeStatus.LOCKED.toString().equalsIgnoreCase(event.getValue())) {
-            return Optional.of(new StateEvent(StateType.LOCK, true));
-        }
-        return Optional.of(new StateEvent(StateType.OK, true));
+        return Optional.of(new StateEvent(StateType.CIRCUIT_BREAK, RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue())));
     }
 }

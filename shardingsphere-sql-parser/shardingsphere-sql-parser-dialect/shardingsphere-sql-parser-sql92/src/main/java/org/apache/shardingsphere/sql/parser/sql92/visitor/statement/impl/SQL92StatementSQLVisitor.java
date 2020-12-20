@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -98,15 +99,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * SQL92 Statement SQL visitor.
  */
+@NoArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
-    
+
+    public SQL92StatementSQLVisitor(final Properties props) {
+    }
+
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
         return new ParameterMarkerValue(currentParameterIndex++);
