@@ -27,13 +27,11 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -122,7 +120,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         return availableTargetNames.stream()
-                .filter(each -> each.endsWith(parseDateTime(shardingValue.getValue().toString()).format(tableSuffixPattern)))
+                .filter(each -> each.endsWith(parseDateTime(shardingValue.getValue()).format(tableSuffixPattern)))
                 .findFirst().orElseThrow(() -> new ShardingAlgorithmException(String.format("failed to shard value %s, and availableTables %s", shardingValue, availableTargetNames)));
     }
     
@@ -133,8 +131,8 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         if (!hasStartTime && !hasEndTime) {
             return availableTargetNames;
         }
-        LocalDateTime startTime = hasStartTime ? parseDateTime(shardingValue.getValueRange().lowerEndpoint().toString()) : dateTimeLower;
-        LocalDateTime endTime = hasEndTime ? parseDateTime(shardingValue.getValueRange().upperEndpoint().toString()) : dateTimeUpper;
+        LocalDateTime startTime = hasStartTime ? parseDateTime(shardingValue.getValueRange().lowerEndpoint()) : dateTimeLower;
+        LocalDateTime endTime = hasEndTime ? parseDateTime(shardingValue.getValueRange().upperEndpoint()) : dateTimeUpper;
         LocalDateTime calculateTime = startTime;
         Set<String> result = new HashSet<>();
         while (!calculateTime.isAfter(endTime)) {
@@ -145,8 +143,16 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         return result;
     }
     
-    private LocalDateTime parseDateTime(final String value) {
-        return LocalDateTime.parse(value.substring(0, dateTimePatternLength), dateTimeFormatter);
+    private LocalDateTime parseDateTime(final Object value) {
+        if (value instanceof LocalDateTime) {
+            return (LocalDateTime) value;
+        } else if (value instanceof Date) {
+            return ((Date) value).toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime();
+        } else {
+            return LocalDateTime.parse(value.toString().substring(0, dateTimePatternLength), dateTimeFormatter);
+        }
     }
     
     private Collection<String> getMatchedTables(final LocalDateTime dateTime, final Collection<String> availableTargetNames) {
