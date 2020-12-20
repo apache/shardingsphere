@@ -30,12 +30,10 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Auto interval sharding algorithm.
@@ -124,7 +122,16 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     }
     
     private long parseDate(final Comparable<?> shardingValue) {
-        LocalDateTime dateValue = LocalDateTime.parse(shardingValue.toString(), DATE_TIME_FORMAT);
+        LocalDateTime dateValue;
+        if (shardingValue instanceof LocalDateTime) {
+            dateValue = (LocalDateTime) shardingValue;
+        } else if (shardingValue instanceof Date) {
+            dateValue = ((Date) shardingValue).toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime();
+        } else {
+            dateValue = LocalDateTime.parse(shardingValue.toString(), DATE_TIME_FORMAT);
+        }
         return Duration.between(dateTimeLower, dateValue).toMillis() / 1000;
     }
     
