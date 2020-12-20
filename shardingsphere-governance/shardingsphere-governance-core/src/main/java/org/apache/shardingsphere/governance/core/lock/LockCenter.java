@@ -28,7 +28,6 @@ import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -118,9 +117,8 @@ public final class LockCenter {
     }
     
     private boolean check(final Collection<String> instanceIds) {
-        for (String instanceId : instanceIds) {
-            if (!RegistryCenterNodeStatus.LOCKED.toString()
-                    .equalsIgnoreCase(registryCenter.loadInstanceData(instanceId))) {
+        for (String each : instanceIds) {
+            if (!RegistryCenterNodeStatus.LOCKED.toString().equalsIgnoreCase(registryCenter.loadInstanceData(each))) {
                 return false;
             }
         }
@@ -134,8 +132,6 @@ public final class LockCenter {
      */
     @Subscribe
     public synchronized void lockNotice(final LockNoticeEvent event) {
-        if (Optional.of(event).isPresent()) {
-            registryCenter.persistInstanceData(event.isLocked() ? RegistryCenterNodeStatus.LOCKED.toString() : "");
-        }
+        registryCenter.persistInstanceData(event.isLocked() ? RegistryCenterNodeStatus.LOCKED.toString() : "");
     }
 }
