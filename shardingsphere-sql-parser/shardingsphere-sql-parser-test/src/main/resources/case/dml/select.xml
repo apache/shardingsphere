@@ -665,10 +665,7 @@
                     <left>
                         <binary-operation-expression start-index="53" stop-index="111" literal-stop-index="116">
                             <left>
-                                <common-expression text="o.status LIKE CONCAT('%%', ?, '%%')"
-                                                   literal-text="o.status LIKE CONCAT('%%', 'init', '%%')"
-                                                   start-index="53" stop-index="87" literal-stop-index="92"/>
-
+                                <common-expression text="o.status LIKE CONCAT('%%', ?, '%%')" literal-text="o.status LIKE CONCAT('%%', 'init', '%%')" start-index="53" stop-index="87" literal-stop-index="92"/>
                                 <binary-operation-expression start-index="53" stop-index="87" literal-stop-index="92">
                                     <left>
                                         <column name="status" start-index="53" stop-index="60">
@@ -679,9 +676,7 @@
                                     <right>
                                         <list-expression start-index="67" stop-index="87">
                                             <items>
-                                                <expression-projection text="CONCAT('%%', ?, '%%')"
-                                                                       literal-text="CONCAT('%%', 'init', '%%')"
-                                                                       start-index="67" stop-index="87" literal-stop-index="92" />
+                                                <expression-projection text="CONCAT('%%', ?, '%%')" literal-text="CONCAT('%%', 'init', '%%')" start-index="67" stop-index="87" literal-stop-index="92" />
                                             </items>
                                         </list-expression>
                                     </right>
@@ -749,10 +744,7 @@
                     <left>
                         <binary-operation-expression start-index="53" stop-index="111" literal-stop-index="116">
                             <left>
-                                <common-expression text="o.status LIKE CONCAT('%%', ?, '%%')"
-                                                   literal-text="o.status LIKE CONCAT('%%', 'init', '%%')"
-                                                   start-index="53" stop-index="87" literal-stop-index="92"/>
-
+                                <common-expression text="o.status LIKE CONCAT('%%', ?, '%%')" literal-text="o.status LIKE CONCAT('%%', 'init', '%%')" start-index="53" stop-index="87" literal-stop-index="92"/>
                                 <binary-operation-expression start-index="53" stop-index="87" literal-stop-index="92">
                                     <left>
                                         <column name="status" start-index="53" stop-index="60">
@@ -764,9 +756,7 @@
                                         <list-expression start-index="67" stop-index="87">
                                             <items>
                                                 <!-- 'text' is different from other database -->
-                                                <expression-projection text="CONCAT('%%',?,'%%')"
-                                                                       literal-text="CONCAT('%%','init','%%')"
-                                                                       start-index="67" stop-index="87" literal-stop-index="92" />
+                                                <expression-projection text="CONCAT('%%',?,'%%')" literal-text="CONCAT('%%','init','%%')" start-index="67" stop-index="87" literal-stop-index="92" />
                                             </items>
                                         </list-expression>
                                     </right>
@@ -860,9 +850,7 @@
                     <left>
                         <binary-operation-expression start-index="53" stop-index="109" literal-stop-index="114">
                             <left>
-                                <common-expression text="o.status ~~ CONCAT('%%', ?, '%%')"
-                                                   literal-text="o.status ~~ CONCAT('%%', 'init', '%%')"
-                                                   start-index="53" stop-index="85" literal-stop-index="90"/>
+                                <common-expression text="o.status ~~ CONCAT('%%', ?, '%%')" literal-text="o.status ~~ CONCAT('%%', 'init', '%%')" start-index="53" stop-index="85" literal-stop-index="90"/>
                             </left>
                             <operator>AND</operator>
                             <right>
@@ -1665,9 +1653,7 @@
                                             </left>
                                             <operator>=</operator>
                                             <right>
-                                                <common-expression text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')"
-                                                                   literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')"
-                                                                   start-index="60" stop-index="115" literal-start-index="78" literal-stop-index="137" />
+                                                <common-expression text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="60" stop-index="115" literal-start-index="78" literal-stop-index="137" />
                                             </right>
                                         </binary-operation-expression>
                                     </right>
@@ -1748,9 +1734,7 @@
                                             </left>
                                             <operator>=</operator>
                                             <right>
-                                                <common-expression text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')"
-                                                                   literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')"
-                                                                   start-index="73" stop-index="128" literal-start-index="109" literal-stop-index="168" />
+                                                <common-expression text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="73" stop-index="128" literal-start-index="109" literal-stop-index="168" />
                                             </right>
                                         </binary-operation-expression>
                                     </right>
@@ -1833,9 +1817,7 @@
                                     </left>
                                     <operator>=</operator>
                                     <right>
-                                        <common-expression text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')"
-                                                           literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')"
-                                                           start-index="79" stop-index="134" literal-start-index="115" literal-stop-index="174" />
+                                        <common-expression text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="79" stop-index="134" literal-start-index="115" literal-stop-index="174" />
                                     </right>
                                 </binary-operation-expression>
                             </right>
@@ -2583,9 +2565,7 @@
             <expr>
                 <binary-operation-expression start-index="33" stop-index="116" literal-stop-index="123">
                     <left>
-                        <common-expression text="MATCH(t_order_item.description) AGAINST (? IN NATURAL LANGUAGE MODE)"
-                                           literal-text="MATCH(t_order_item.description) AGAINST ('hello' IN NATURAL LANGUAGE MODE)"
-                                           start-index="33" stop-index="100" literal-stop-index="106"/>
+                        <common-expression text="MATCH(t_order_item.description) AGAINST (? IN NATURAL LANGUAGE MODE)" literal-text="MATCH(t_order_item.description) AGAINST ('hello' IN NATURAL LANGUAGE MODE)" start-index="33" stop-index="100" literal-stop-index="106"/>
                     </left>
                     <operator>AND</operator>
                     <right>

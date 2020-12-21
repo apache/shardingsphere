@@ -73,7 +73,7 @@ public final class ExpressionAssert {
      * @param expected expected parameter marker expression
      */
     public static void assertParameterMarkerExpression(final SQLCaseAssertContext assertContext,
-                                                        final ParameterMarkerExpressionSegment actual, final ExpectedParameterMarkerExpression expected) {
+                                                       final ParameterMarkerExpressionSegment actual, final ExpectedParameterMarkerExpression expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual parameter marker expression should not exist."), actual);
         } else {
@@ -91,7 +91,7 @@ public final class ExpressionAssert {
      * @param expected expected literal expression
      */
     public static void assertLiteralExpression(final SQLCaseAssertContext assertContext,
-                                                final LiteralExpressionSegment actual, final ExpectedLiteralExpression expected) {
+                                               final LiteralExpressionSegment actual, final ExpectedLiteralExpression expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual literal expression should not exist."), actual);
         } else {
@@ -109,7 +109,7 @@ public final class ExpressionAssert {
      * @param expected expected common expression
      */
     public static void assertCommonExpression(final SQLCaseAssertContext assertContext,
-                                               final ComplexExpressionSegment actual, final ExpectedCommonExpression expected) {
+                                              final ComplexExpressionSegment actual, final ExpectedCommonExpression expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual common expression should not exist."), actual);
         } else {
@@ -127,7 +127,8 @@ public final class ExpressionAssert {
      * @param actual actual subquery expression segment
      * @param expected expected subquery expression
      */
-    public static void assertSubqueryExpression(final SQLCaseAssertContext assertContext, final SubqueryExpressionSegment actual, final ExpectedSubquery expected) {
+    public static void assertSubqueryExpression(final SQLCaseAssertContext assertContext,
+                                                final SubqueryExpressionSegment actual, final ExpectedSubquery expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual subquery expression should not exist."), actual);
         } else {
@@ -181,8 +182,7 @@ public final class ExpressionAssert {
      * @param expected expected binary operation expression
      */
     public static void assertBinaryOperationExpression(final SQLCaseAssertContext assertContext,
-                                                       final BinaryOperationExpression actual,
-                                                       final ExpectedBinaryOperationExpression expected) {
+                                                       final BinaryOperationExpression actual, final ExpectedBinaryOperationExpression expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual binary operation expression should not exist."), actual);
         } else {
@@ -239,7 +239,7 @@ public final class ExpressionAssert {
      * @param expected expected list operation expression
      */
     public static void assertListExpression(final SQLCaseAssertContext assertContext,
-                                           final ListExpression actual, final ExpectedListExpression expected) {
+                                            final ListExpression actual, final ExpectedListExpression expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual list expression should not exist."), actual);
         } else {
@@ -263,7 +263,7 @@ public final class ExpressionAssert {
      * @param expected expected between operation expression
      */
     public static void assertBetweenExpression(final SQLCaseAssertContext assertContext,
-                                           final BetweenExpression actual, final ExpectedBetweenExpression expected) {
+                                               final BetweenExpression actual, final ExpectedBetweenExpression expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual between expression should not exist."), actual);
         } else {

@@ -1529,9 +1529,7 @@
         </projections>
         <where start-index="22" stop-index="80" literal-stop-index="88">
             <expr>
-                <common-expression text="MATCH (order_id) AGAINST (? IN NATURAL LANGUAGE MODE)"
-                                   literal-text="MATCH (order_id) AGAINST ('keyword' IN NATURAL LANGUAGE MODE)"
-                                   start-index="28" stop-index="80" literal-stop-index="88"/>
+                <common-expression text="MATCH (order_id) AGAINST (? IN NATURAL LANGUAGE MODE)" literal-text="MATCH (order_id) AGAINST ('keyword' IN NATURAL LANGUAGE MODE)" start-index="28" stop-index="80" literal-stop-index="88"/>
             </expr>
         </where>
     </select>
@@ -1545,9 +1543,7 @@
         </projections>
         <where start-index="22" stop-index="67" literal-stop-index="78">
             <expr>
-                <common-expression text="CASE WHEN order_id &gt; ? THEN ? ELSE ? END"
-                                   literal-text="CASE WHEN order_id > 1 THEN 'true' ELSE 'false' END"
-                                   start-index="28" stop-index="67" literal-stop-index="78" />
+                <common-expression text="CASE WHEN order_id &gt; ? THEN ? ELSE ? END" literal-text="CASE WHEN order_id > 1 THEN 'true' ELSE 'false' END" start-index="28" stop-index="67" literal-stop-index="78" />
             </expr>
         </where>
     </select>
