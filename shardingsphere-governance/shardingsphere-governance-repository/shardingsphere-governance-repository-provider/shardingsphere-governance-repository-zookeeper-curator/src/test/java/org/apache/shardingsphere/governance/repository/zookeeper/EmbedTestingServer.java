@@ -56,7 +56,7 @@ public final class EmbedTestingServer {
             }));
         }
     }
-
+    
     /**
      * Get testingServer connection string.
      *

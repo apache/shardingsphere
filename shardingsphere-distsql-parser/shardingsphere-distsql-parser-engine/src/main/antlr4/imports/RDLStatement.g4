@@ -19,8 +19,8 @@ grammar RDLStatement;
 
 import Keyword, Literals, Symbol;
 
-createDataSources
-    : CREATE DATASOURCES LP dataSource (COMMA dataSource)* RP
+addResource
+    : ADD RESOURCE LP dataSource (COMMA dataSource)* RP
     ;
 
 dataSource
@@ -60,7 +60,7 @@ password
     ;
 
 createShardingRule
-    : CREATE SHARDING RULE LP tableRule (COMMA tableRule)* RP
+    : CREATE SHARDING RULE LP shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)* RP
     ;
 
 createReplicaQueryRule
@@ -68,31 +68,35 @@ createReplicaQueryRule
     ;
 
 replicaQueryRule
-    : logic_ds=schemaName LP PRIMARY EQ primary_ds=schemaName COMMA REPLICA EQ schemaNames RP load_balancer=IDENTIFIER LP  strategyProps RP
+    : logic_ds=schemaName LP PRIMARY EQ primary_ds=schemaName COMMA REPLICA EQ schemaNames RP load_balancer=IDENTIFIER LP  funcProperties RP
     ;
 
-tableRule
-    : tableName EQ tableRuleDefinition
+shardingTableRuleDefinition
+    : tableName columName shardingAlgorithmDefinition
     ;
 
-tableRuleDefinition
-    : strategyType LP strategyDefinition RP
+shardingAlgorithmDefinition
+    : shardingAlgorithmType LP shardingAlgorithmProperties RP
     ;
 
-strategyType
+shardingAlgorithmType
     : IDENTIFIER
     ;
 
-strategyDefinition
-    : columName COMMA strategyProps
+shardingAlgorithmProperties
+    : shardingAlgorithmProperty (COMMA shardingAlgorithmProperty)*
     ;
 
-strategyProps
-    : strategyProp (COMMA strategyProp)*
+shardingAlgorithmProperty
+    : shardingAlgorithmPropertyKey EQ shardingAlgorithmPropertyValue
     ;
 
-strategyProp
-    : IDENTIFIER | NUMBER | INT
+shardingAlgorithmPropertyKey
+    : IDENTIFIER
+    ;
+
+shardingAlgorithmPropertyValue
+    : NUMBER | INT | STRING
     ;
 
 tableName
@@ -103,12 +107,8 @@ columName
     : IDENTIFIER
     ;
 
-showDataSources
-    : SHOW DATASOURCES (FROM schemaName)?
-    ;
-
-showRule
-    : SHOW ruleType RULE (FROM schemaName)?
+dropShardingRule
+    : DROP SHARDING RULE LP tableName (COMMA tableName)* RP
     ;
 
 ruleType
@@ -121,4 +121,12 @@ schemaNames
 
 schemaName
     : IDENTIFIER
+    ;
+
+funcProperties
+    : funcPropertie (COMMA funcPropertie)*
+    ;
+
+funcPropertie
+    : key=IDENTIFIER EQ value=(NUMBER | INT | STRING)
     ;

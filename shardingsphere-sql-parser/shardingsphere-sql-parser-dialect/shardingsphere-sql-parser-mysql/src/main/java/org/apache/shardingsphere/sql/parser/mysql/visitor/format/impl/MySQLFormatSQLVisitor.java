@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
@@ -68,16 +69,19 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TypeDat
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WithClauseContext;
 
+import java.util.Properties;
+
 /**
  * MySQL Format SQL visitor for MySQL.
  */
+@NoArgsConstructor
 @Getter
 @Setter
 public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<String> {
 
     private StringBuilder result = new StringBuilder();
 
-    private boolean uperCase = true;
+    private boolean upperCase = true;
 
     private boolean parameterized = true;
 
@@ -85,7 +89,21 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
 
     private int lines;
 
-    private final int projectionsCountOfLine = 3;
+    private int projectionsCountOfLine = 3;
+
+    public MySQLFormatSQLVisitor(final Properties props) {
+        if (null != props) {
+            if (props.containsKey("upperCase")) {
+                setUpperCase(Boolean.valueOf(props.getProperty("upperCase")));
+            }
+            if (props.containsKey("parameterized")) {
+                setParameterized(Boolean.valueOf(props.getProperty("parameterized")));
+            }
+            if (props.containsKey("projectionsCountOfLine")) {
+                setProjectionsCountOfLine(Integer.valueOf(props.getProperty("projectionsCountOfLine")));
+            }
+        }
+    }
 
     @Override
     public String visitSelect(final SelectContext ctx) {
@@ -677,7 +695,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
 
     @Override
     public String visitTerminal(final TerminalNode node) {
-        if (isUperCase()) {
+        if (isUpperCase()) {
             formatPrint(node.getText().toUpperCase());
         } else {
             formatPrint(node.getText().toLowerCase());

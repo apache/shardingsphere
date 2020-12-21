@@ -29,25 +29,40 @@ dataSources:
     password:
 
 ## sharding Rules
-shardingRule:
+rules:
+- !SHARDING
   tables:
     t_account:
       actualDataNodes: db.t_account_${0..1}
       tableStrategy: 
-        inline:
+        standard:
           shardingColumn: account_id
-          algorithmExpression: t_account_${account_id % 2}
+          shardingAlgorithmName: account_table_inline
       keyGenerateStrategy:
-        type: TEST
         column: account_id
+        keyGeneratorName: snowflake
     t_account_detail:
       actualDataNodes: db.t_account_detail_${0..1}
       tableStrategy: 
-        inline:
+        standard:
           shardingColumn: order_id
-          algorithmExpression: t_account_detail_${account_id % 2}
+          shardingAlgorithmName: account_detail_table_inline
   bindingTables:
     - t_account, t_account_detail
+  shardingAlgorithms:
+    account_table_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_account_${account_id % 2}
+    account_detail_table_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_account_detail_${account_id % 2}
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+      props:
+        worker-id: 123
 ```
 
 Assert data are in the xml under test type in `test\resources`. In the xml file, `yaml-rule` means the environment configuration file path, `input` contains the target SQL and parameters, `output` contains the expected SQL and parameters.

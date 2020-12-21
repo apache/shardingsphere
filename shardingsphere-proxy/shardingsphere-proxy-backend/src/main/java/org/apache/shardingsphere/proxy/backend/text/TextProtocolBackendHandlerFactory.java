@@ -22,11 +22,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.metadata.rdl.RDLBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.SchemaBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.metadata.schema.SchemaBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.distsql.DistSQLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.sctl.utils.SCTLUtils;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
@@ -34,13 +36,19 @@ import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBacke
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 
+import java.sql.SQLException;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Text protocol backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TextProtocolBackendHandlerFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(DatabaseAdminBackendHandlerFactory.class);
+    }
     
     /**
      * Create new instance of text protocol backend handler.
@@ -49,8 +57,9 @@ public final class TextProtocolBackendHandlerFactory {
      * @param sql SQL to be executed
      * @param backendConnection backend connection
      * @return text protocol backend handler
+     * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final BackendConnection backendConnection) {
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final BackendConnection backendConnection) throws SQLException {
         if (Strings.isNullOrEmpty(sql)) {
             return new SkipBackendHandler();
         }
@@ -63,13 +72,17 @@ public final class TextProtocolBackendHandlerFactory {
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((TCLStatement) sqlStatement, sql, backendConnection);
         }
-        Optional<SchemaBackendHandler> schemaBackendHandler = SchemaBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
-        if (schemaBackendHandler.isPresent()) {
-            return schemaBackendHandler.get();
+        Optional<DatabaseAdminBackendHandlerFactory> adminBackendHandlerEngine = TypedSPIRegistry.findRegisteredService(
+                DatabaseAdminBackendHandlerFactory.class, databaseType.getName(), new Properties());
+        if (adminBackendHandlerEngine.isPresent()) {
+            Optional<DatabaseAdminBackendHandler> databaseAdminBackendHandler = adminBackendHandlerEngine.get().newInstance(sqlStatement, backendConnection);
+            if (databaseAdminBackendHandler.isPresent()) {
+                return databaseAdminBackendHandler.get();
+            }
         }
-        Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
-        if (rdlBackendHandler.isPresent()) {
-            return rdlBackendHandler.get();
+        Optional<TextProtocolBackendHandler> distSQLBackendHandler = DistSQLBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection);
+        if (distSQLBackendHandler.isPresent()) {
+            return distSQLBackendHandler.get();
         }
         return DatabaseBackendHandlerFactory.newInstance(sqlStatement, sql, backendConnection);
     }

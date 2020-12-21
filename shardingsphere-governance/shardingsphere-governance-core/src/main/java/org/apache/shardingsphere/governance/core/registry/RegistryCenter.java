@@ -35,7 +35,7 @@ public final class RegistryCenter {
     private final RegistryRepository repository;
     
     private final GovernanceInstance instance;
-
+    
     public RegistryCenter(final RegistryRepository registryRepository) {
         node = new RegistryCenterNode();
         repository = registryRepository;
