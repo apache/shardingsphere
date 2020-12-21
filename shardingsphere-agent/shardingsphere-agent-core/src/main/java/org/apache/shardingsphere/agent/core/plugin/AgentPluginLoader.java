@@ -78,6 +78,22 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
         super(AgentPluginLoader.class.getClassLoader());
     }
     
+    /**
+     * Get agent plugin loader instance.
+     *
+     * @return agent plugin loader instance
+     */
+    public static AgentPluginLoader getInstance() {
+        if (null == agentPluginLoader) {
+            synchronized (AgentPluginLoader.class) {
+                if (null == agentPluginLoader) {
+                    agentPluginLoader = new AgentPluginLoader();
+                }
+            }
+        }
+        return agentPluginLoader;
+    }
+    
     @Override
     protected Class<?> findClass(final String name) throws ClassNotFoundException {
         String path = classNameToPath(name);
@@ -133,22 +149,6 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
                 log.error("close is ", ex);
             }
         }
-    }
-    
-    /**
-     * To get agent plugin loader instance.
-     *
-     * @return plugin loader
-     */
-    public static AgentPluginLoader getInstance() {
-        if (null == agentPluginLoader) {
-            synchronized (AgentPluginLoader.class) {
-                if (null == agentPluginLoader) {
-                    agentPluginLoader = new AgentPluginLoader();
-                }
-            }
-        }
-        return agentPluginLoader;
     }
     
     /**
