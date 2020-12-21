@@ -24,7 +24,6 @@ import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.core.LoggingListener;
 import org.apache.shardingsphere.agent.core.ShardingSphereTransformer;
-import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.AgentConfigurationLoader;
 import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
 import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
@@ -45,22 +44,24 @@ public class ShardingSphereAgent {
      * @throws IOException IO exception
      */
     public static void premain(final String agentArgs, final Instrumentation instrumentation) throws IOException {
-        AgentConfiguration agentConfiguration = AgentConfigurationLoader.load();
-        SingletonHolder.INSTANCE.put(agentConfiguration);
-        ByteBuddy byteBuddy = new ByteBuddy().with(TypeValidation.ENABLED);
-        AgentBuilder builder = new AgentBuilder.Default()
-            .with(byteBuddy)
-            .ignore(ElementMatchers.isSynthetic())
-            .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."));
-        AgentPluginLoader agentPluginLoader = AgentPluginLoader.getInstance();
-        agentPluginLoader.loadAllPlugins();
-        builder.type(agentPluginLoader.typeMatcher())
-               .transform(new ShardingSphereTransformer(agentPluginLoader))
-               .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
-               .with(new LoggingListener())
-               .installOn(instrumentation);
-        agentPluginLoader.initialAllServices();
-        agentPluginLoader.startAllServices();
+        SingletonHolder.INSTANCE.put(AgentConfigurationLoader.load());
+        AgentBuilder agentBuilder = createAgentBuilder();
+        AgentPluginLoader agentPluginLoader = createAgentPluginLoader(instrumentation, agentBuilder);
         Runtime.getRuntime().addShutdownHook(new Thread(agentPluginLoader::shutdownAllServices));
+    }
+    
+    private static AgentBuilder createAgentBuilder() {
+        ByteBuddy byteBuddy = new ByteBuddy().with(TypeValidation.ENABLED);
+        return new AgentBuilder.Default().with(byteBuddy).ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."));
+    }
+    
+    private static AgentPluginLoader createAgentPluginLoader(final Instrumentation instrumentation, final AgentBuilder agentBuilder) throws IOException {
+        AgentPluginLoader result = AgentPluginLoader.getInstance();
+        result.loadAllPlugins();
+        agentBuilder.type(result.typeMatcher())
+                .transform(new ShardingSphereTransformer(result)).with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION).with(new LoggingListener()).installOn(instrumentation);
+        result.initialAllServices();
+        result.startAllServices();
+        return result;
     }
 }
