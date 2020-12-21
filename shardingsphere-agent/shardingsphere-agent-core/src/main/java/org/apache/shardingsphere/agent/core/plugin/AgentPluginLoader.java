@@ -29,6 +29,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
+import net.bytebuddy.matcher.ElementMatcher.Junction;
 import org.apache.shardingsphere.agent.core.common.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
@@ -78,67 +79,10 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
         super(AgentPluginLoader.class.getClassLoader());
     }
     
-    @Override
-    protected Class<?> findClass(final String name) throws ClassNotFoundException {
-        String path = classNameToPath(name);
-        for (UberJar jar : jars) {
-            ZipEntry entry = jar.jarFile.getEntry(path);
-            if (Objects.nonNull(entry)) {
-                try {
-                    byte[] data = ByteStreams.toByteArray(jar.jarFile.getInputStream(entry));
-                    return defineClass(name, data, 0, data.length);
-                } catch (final IOException ex) {
-                    log.error("Failed to load class {}.", name, ex);
-                }
-            }
-        }
-        throw new ClassNotFoundException("Class " + name + " not found.");
-    }
-    
-    @Override
-    protected Enumeration<URL> findResources(final String name) {
-        List<URL> resources = Lists.newArrayList();
-        for (UberJar jar : jars) {
-            JarEntry entry = jar.jarFile.getJarEntry(name);
-            if (Objects.nonNull(entry)) {
-                try {
-                    resources.add(new URL("jar:file:" + jar.sourcePath.getAbsolutePath() + "!/" + name));
-                } catch (final MalformedURLException ignored) {
-                }
-            }
-        }
-        return Collections.enumeration(resources);
-    }
-    
-    @Override
-    protected URL findResource(final String name) {
-        for (UberJar jar : jars) {
-            JarEntry entry = jar.jarFile.getJarEntry(name);
-            if (Objects.nonNull(entry)) {
-                try {
-                    return new URL("jar:file:" + jar.sourcePath.getAbsolutePath() + "!/" + name);
-                } catch (final MalformedURLException ignored) {
-                }
-            }
-        }
-        return null;
-    }
-    
-    @Override
-    public void close() {
-        for (UberJar jar : jars) {
-            try {
-                jar.jarFile.close();
-            } catch (final IOException ex) {
-                log.error("close is ", ex);
-            }
-        }
-    }
-    
     /**
-     * To get agent plugin loader instance.
+     * Get agent plugin loader instance.
      *
-     * @return plugin loader
+     * @return agent plugin loader instance
      */
     public static AgentPluginLoader getInstance() {
         if (null == agentPluginLoader) {
@@ -154,7 +98,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     /**
      * Load all plugins.
      *
-     * @throws IOException the IO exception
+     * @throws IOException IO exception
      */
     public void loadAllPlugins() throws IOException {
         File[] jarFiles = AgentPathBuilder.getPluginPath().listFiles(file -> file.getName().endsWith(".jar"));
@@ -162,8 +106,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
             return;
         }
         Map<String, PluginAdviceDefinition> pluginAdviceDefinitionMap = Maps.newHashMap();
-        AgentConfiguration configuration = SingletonHolder.INSTANCE.get(AgentConfiguration.class);
-        List<String> activatedLists = configuration.getActivatedPlugins();
+        List<String> activatedLists = SingletonHolder.INSTANCE.get(AgentConfiguration.class).getActivatedPlugins();
         if (null == activatedLists) {
             activatedLists = Lists.newArrayList();
         }
@@ -215,8 +158,49 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
         pluginDefineMap = ImmutableMap.<String, PluginAdviceDefinition>builder().putAll(pluginAdviceDefinitionMap).build();
     }
     
-    private String classNameToPath(final String className) {
-        return className.replace(".", "/") + ".class";
+    /**
+     * Initial all services.
+     */
+    public void initialAllServices() {
+        services.forEach(service -> {
+            try {
+                service.setup();
+                // CHECKSTYLE:OFF
+            } catch (final Throwable ex) {
+                // CHECKSTYLE:ON
+                log.error("Failed to initial service.", ex);
+            }
+        });
+    }
+    
+    /**
+     * Start all services.
+     */
+    public void startAllServices() {
+        services.forEach(service -> {
+            try {
+                service.start();
+                // CHECKSTYLE:OFF
+            } catch (final Throwable ex) {
+                // CHECKSTYLE:ON
+                log.error("Failed to start service.", ex);
+            }
+        });
+    }
+    
+    /**
+     * Shutdown all services.
+     */
+    public void shutdownAllServices() {
+        services.forEach(service -> {
+            try {
+                service.cleanup();
+                // CHECKSTYLE:OFF
+            } catch (final Throwable ex) {
+                // CHECKSTYLE:ON
+                log.error("Failed to shutdown service.", ex);
+            }
+        });
     }
     
     /**
@@ -225,7 +209,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
      * @return type matcher
      */
     public ElementMatcher<? super TypeDescription> typeMatcher() {
-        return new ElementMatcher.Junction<TypeDescription>() {
+        return new Junction<TypeDescription>() {
             
             @Override
             public boolean matches(final TypeDescription target) {
@@ -290,49 +274,65 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
         }
     }
     
-    /**
-     * Initial all services.
-     */
-    public void initialAllServices() {
-        services.forEach(service -> {
-            try {
-                service.setup();
-                // CHECKSTYLE:OFF
-            } catch (final Throwable ex) {
-                // CHECKSTYLE:ON
-                log.error("Failed to initial service.", ex);
+    @Override
+    protected Class<?> findClass(final String name) throws ClassNotFoundException {
+        String path = classNameToPath(name);
+        for (UberJar jar : jars) {
+            ZipEntry entry = jar.jarFile.getEntry(path);
+            if (Objects.nonNull(entry)) {
+                try {
+                    byte[] data = ByteStreams.toByteArray(jar.jarFile.getInputStream(entry));
+                    return defineClass(name, data, 0, data.length);
+                } catch (final IOException ex) {
+                    log.error("Failed to load class {}.", name, ex);
+                }
             }
-        });
+        }
+        throw new ClassNotFoundException("Class " + name + " not found.");
     }
     
-    /**
-     * Start all services.
-     */
-    public void startAllServices() {
-        services.forEach(service -> {
-            try {
-                service.start();
-                // CHECKSTYLE:OFF
-            } catch (final Throwable ex) {
-                // CHECKSTYLE:ON
-                log.error("Failed to start service.", ex);
-            }
-        });
+    private String classNameToPath(final String className) {
+        return className.replace(".", "/") + ".class";
     }
     
-    /**
-     * Shutdown all services.
-     */
-    public void shutdownAllServices() {
-        services.forEach(service -> {
-            try {
-                service.cleanup();
-                // CHECKSTYLE:OFF
-            } catch (final Throwable ex) {
-                // CHECKSTYLE:ON
-                log.error("Failed to shutdown service.", ex);
+    @Override
+    protected Enumeration<URL> findResources(final String name) {
+        List<URL> resources = Lists.newArrayList();
+        for (UberJar jar : jars) {
+            JarEntry entry = jar.jarFile.getJarEntry(name);
+            if (Objects.nonNull(entry)) {
+                try {
+                    resources.add(new URL("jar:file:" + jar.sourcePath.getAbsolutePath() + "!/" + name));
+                } catch (final MalformedURLException ignored) {
+                }
             }
-        });
+        }
+        return Collections.enumeration(resources);
+    }
+    
+    @Override
+    protected URL findResource(final String name) {
+        for (UberJar jar : jars) {
+            JarEntry entry = jar.jarFile.getJarEntry(name);
+            if (Objects.nonNull(entry)) {
+                try {
+                    return new URL("jar:file:" + jar.sourcePath.getAbsolutePath() + "!/" + name);
+                } catch (final MalformedURLException ignored) {
+                }
+            }
+        }
+        return null;
+    }
+    
+    @Override
+    public void close() {
+        for (UberJar jar : jars) {
+            try {
+                jar.jarFile.close();
+            } catch (final IOException ex) {
+                log.error("close is ", ex);
+            }
+        }
     }
     
     @RequiredArgsConstructor
