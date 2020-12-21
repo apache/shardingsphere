@@ -46,10 +46,11 @@ public final class CalciteFilterableTable extends AbstractCalciteTable implement
     
     private final Map<DataNode, String> tableQuerySQLs = new LinkedMap<>();
     
-    public CalciteFilterableTable(final Map<String, DataSource> dataSources, final Collection<DataNode> dataNodes, final DatabaseType databaseType) throws SQLException {
-        super(dataSources, dataNodes, databaseType);
+    public CalciteFilterableTable(final Map<String, DataSource> dataSources, final Map<String, Collection<String>> dataSourceRules,
+                                  final Collection<DataNode> tableDataNodes, final DatabaseType databaseType) throws SQLException {
+        super(dataSources, dataSourceRules, tableDataNodes, databaseType);
         String columns = Joiner.on(",").join(getTableMetaData().getColumns().keySet());
-        for (DataNode each : dataNodes) {
+        for (DataNode each : tableDataNodes) {
             tableQuerySQLs.put(each, String.format("SELECT %s FROM %s", columns, each.getTableName()));
         }
     }
@@ -76,7 +77,7 @@ public final class CalciteFilterableTable extends AbstractCalciteTable implement
     
     private ResultSet getResultSet(final Entry<DataNode, String> tableSQL) {
         try {
-            Statement statement = getDataSources().get(tableSQL.getKey().getDataSourceName()).getConnection().createStatement();
+            Statement statement = getActualDataSource(tableSQL.getKey().getDataSourceName()).getConnection().createStatement();
             return statement.executeQuery(tableSQL.getValue());
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
