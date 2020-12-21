@@ -23,6 +23,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
+import java.util.Properties;
 
 /**
  * Table rule segment.
@@ -40,5 +41,5 @@ public final class ReplicaQueryRuleSegment implements ASTNode {
     
     private String loadBalancer;
     
-    private Collection<String> properties;
+    private Properties properties;
 }

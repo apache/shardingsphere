@@ -18,14 +18,20 @@
 package org.apache.shardingsphere.distsql.parser.core;
 
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AddResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropShardingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.FuncPropertieContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingAlgorithmPropertiesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingAlgorithmPropertyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingTableRuleDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.StrategyPropContext;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ReplicaQueryRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.TableNameContext;
@@ -44,6 +50,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.props.PropertiesVal
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Properties;
 
 /**
  * Dist SQL visitor.
@@ -102,9 +109,9 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         for (SchemaNameContext each : ctx.schemaNames().schemaName()) {
             replicaDatasources.add(each.getText());
         }
-        Collection<String> properties = new LinkedList<>();
-        for (StrategyPropContext each : ctx.strategyProps().strategyProp()) {
-            properties.add(each.getText());
+        Properties properties = new Properties();
+        for (FuncPropertieContext each : ctx.funcProperties().funcPropertie()) {
+            properties.setProperty(each.key.getText(), each.value.getText());
         }
         String primaryDatasource = ctx.primary_ds.getText();
         String loadBalancer = ctx.load_balancer.getText();
